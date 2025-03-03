@@ -1,5 +1,5 @@
 Use the Tenable.sc integration to get a real-time, continuous assessment of your security posture so you can find and fix vulnerabilities faster.
-All data in Tenable.sc is managed using group level permissions. If you have several groups, data (scans, scan results, assets, etc) can be viewable but not manageable. Users with Security Manager role  can manage everything. These permissions come into play when multiple groups are in use.
+All data in Tenable.sc is managed using group level permissions. If you have several groups, data (scans, scan results, assets, etc) can be viewable but not manageable. Users with Security Manager role  can manage everything. These permissions come into play when multiple groups are in use.
 It is important to know what data is manageable for the user in order to work with the integration.
 This integration was integrated and tested with Tenable.sc v5.7.0.
 
@@ -11,30 +11,26 @@ This integration was integrated and tested with Tenable.sc v5.7.0.
     * View policies, repositories, credentials, users and more system information.
     * View and real-time receiving of alerts.
 
-## Configure Tenable.sc on Cortex XSOAR
+## Configure Tenable.sc in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Tenable.sc.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g. https://192.168.0.1) | The server URL. | True |
-    | Access key | See the help for instructions to generate the access key. | False |
-    | Secret key |  | False |
-    | Username | The Username is either admin or secman \(depend on the role you want to log into\) and your password to the tenable server. | False |
-    | Password |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | The timestamp to start the fetch from. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g. https://192.168.0.1) | The server URL. | True |
+| Access key | See the help for instructions to generate the access key. | False |
+| Secret key |  | False |
+| Username | The Username is either admin or secman \(depend on the role you want to log into\) and your password to the tenable server. | False |
+| Password |  | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | The timestamp to start the fetch from. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### tenable-sc-list-scans
@@ -1708,3 +1704,22 @@ Creates a remediation scan. Requires security manager role. This command is a pr
 ## Troubleshooting
 
 For errors within Tenable.sc, the cause is generally specified, e.g., The currently logged in used is not an administrator, Unable to retrieve Asset #2412. Asset #2412 does not exist or Invalid login credentials. However there might be connection errors, for example when the server URL provided is incorrect.
+
+### tenable-sc-get-organization
+
+***
+Requires administrator role. Command to get a list of organizations' information, depending on the comma-separated list of fields provided.
+
+#### Base Command
+
+`tenable-sc-get-organization`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| fields | Optional fields to return specific values, example: restrictedIPs. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.

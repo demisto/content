@@ -1,8 +1,12 @@
 """
 Tests module for the LDAP Authentication integration
 """
+from unittest.mock import MagicMock, patch
+import unittest
+import json
+
 import pytest
-from OpenLDAP import LdapClient
+from OpenLDAP import LdapClient, entries_paged_search
 
 
 class Entry:
@@ -219,12 +223,6 @@ class TestsOpenLDAP:
             client._is_valid_dn(dn, client.USER_IDENTIFIER_ATTRIBUTE)
         assert e.value.args[0] == f'OpenLDAP {user_identifier_attribute} attribute was not found in user DN : {dn}'
 
-    # def test_get_user_data(self):
-    #     client = LdapClient({'ldap_server_vendor': 'OpenLDAP', 'host': 'server_ip',
-    #                          'connection_type': 'SSL', 'user_identifier_attribute': 'uid'})
-    #
-    #     mocker.patch('OpenLDAP.LdapClient.search_user_data', return_value=)
-
 
 class TestLDAPAuthentication:
     """
@@ -300,3 +298,174 @@ class TestLDAPAuthentication:
             client._get_formatted_custom_attributes()
         assert e.value.args[0] == (f'User defined attributes must be of the form "attrA=valA,attrB=valB,...", but got: '
                                    f'{client.CUSTOM_ATTRIBUTE}')
+
+    @pytest.mark.parametrize('user_logon_name', [
+        ('test*'),
+        ('test?test'),
+    ])
+    def test_has_wildcards_in_user_logon(self, user_logon_name):
+        """
+            Given:
+                1. A user logon name contains the "*" symbol.
+                2. A user logon name contains the "?" symbol.
+            When:
+                - Running the 'has_wildcards_in_user_logon()' function.
+            Then:
+                - Verify that an exception is raised due to the use of wildcards in the logon name.
+        """
+        client = LdapClient({'ldap_server_vendor': 'Active Directory', 'host': 'server_ip'})
+
+        with pytest.raises(Exception) as e:
+            client._has_wildcards_in_user_logon(user_logon_name)
+        assert 'Wildcards were detected in the user logon name' in e.value.args[0]
+        assert user_logon_name in e.value.args[0]
+
+
+class TestEntriesPagedSearch(unittest.TestCase):
+
+    def setUp(self):
+        """
+        Set up the test by creating a mock connection and search parameters.
+        """
+        self.connection = MagicMock()
+        self.search_params = {'search_base': 'dc=example,dc=com', 'search_filter': '(objectClass=person)'}
+        self.page_size = 10
+
+    def test_first_page(self):
+        """
+        when running the entries_paged_search function with a page number of 1 then the search method should be called with
+        the correct parameters and the results should be returned.
+        """
+        self.connection.search.return_value = [{'name': 'John Doe'}]
+
+        results = entries_paged_search(self.connection, self.search_params, page=1, page_size=self.page_size)
+
+        self.connection.search.assert_called_once_with(**self.search_params, paged_size=self.page_size)
+        assert results == [{'name': 'John Doe'}]
+
+    def test_subsequent_page(self):
+        """
+        when running the entries_paged_search function with a page number greater than 1 then the search method should be called
+        with the correct parameters and the results should be returned. The search method should be called twice, once to skip
+        the results and once to get the actual results.
+        """
+        # Mock the connection's search method for the first search (to skip results)
+        self.connection.search.side_effect = [
+            None,  # First call returns None to simulate the skip search
+            [{'name': 'Jane Doe'}]  # Second call returns the actual results
+        ]
+        # Mock the result of the first search to include the cookie
+        self.connection.result = {
+            'controls': {
+                '1.2.840.113556.1.4.319': {
+                    'value': {
+                        'cookie': b'cookie_value'
+                    }
+                }
+            }
+        }
+
+        results = entries_paged_search(self.connection, self.search_params, page=2, page_size=self.page_size)
+
+        # Assert the search method was called twice with the correct parameters
+        assert self.connection.search.call_count == 2
+        self.connection.search.assert_any_call(**self.search_params, paged_size=self.page_size * 1)
+        self.connection.search.assert_any_call(**self.search_params, paged_size=self.page_size, paged_cookie=b'cookie_value')
+        assert results == [{'name': 'Jane Doe'}]
+
+
+class TestEntriesSearchCommand(unittest.TestCase):
+    """
+    Test class for the entries_search_command function.
+    """
+
+    def setUp(self):
+        """
+        Set up the test by creating an instance of the LdapClient class and mocking the _get_auto_bind_value method.
+        """
+        self.instance = LdapClient({
+            'host': 'server_ip',
+            'port': '636',
+            'credentials': {'identifier': 'username', 'password': 'password'},
+            'base_dn': 'dc=example,dc=com',
+            'connection_type': 'SSL',
+            'ssl_version': 'TLSv1_2',
+            'fetch_groups': True,
+            'insecure': False,
+            'ldap_server_vendor': 'OpenLDAP',
+        })
+
+        self.instance._get_auto_bind_value = MagicMock(return_value=True)
+
+    @patch('OpenLDAP.Connection')
+    @patch('OpenLDAP.create_entries_search_filter', return_value='(objectClass=*)')
+    @patch('OpenLDAP.get_search_attributes', return_value=['cn', 'mail'])
+    def test_entries_search_command_first_page(self, mock_get_search_attributes, mock_create_entries_search_filter,
+                                               mock_connection):
+        """
+        when running the entries_search_command function with a page number of 1 then the search method should be called with
+        the correct parameters and the results should be returned.
+        """
+        # Mock the LDAP connection
+        mock_conn_instance = mock_connection.return_value.__enter__.return_value
+        mock_conn_instance.entries = [MagicMock(entry_to_json=MagicMock(return_value=json.dumps({
+            'attributes': {'cn': ['John Doe'], 'mail': ['john.doe@example.com']},
+            'dn': 'cn=John Doe,dc=example,dc=com'
+        })))]
+
+        args = {
+            'search_base': 'dc=example,dc=com',
+            'search_scope': 'SUBTREE',
+            'page': '1',
+            'page_size': '50'
+        }
+
+        result = self.instance.entries_search_command(args)
+
+        self.instance._get_auto_bind_value.assert_called_once()
+        mock_create_entries_search_filter.assert_called_once_with(args)
+        mock_get_search_attributes.assert_called_once_with('all')
+        mock_connection.assert_called_once_with(
+            self.instance._ldap_server, self.instance._username, self.instance._password, auto_bind=True)
+
+        assert len(result.outputs) == 1
+        assert result.outputs[0]['cn'] == ['John Doe']
+        assert result.outputs[0]['mail'] == ['john.doe@example.com']
+        assert result.outputs[0]['dn'] == 'cn=John Doe,dc=example,dc=com'
+
+    @patch('OpenLDAP.Connection')
+    @patch('OpenLDAP.create_entries_search_filter', return_value='(objectClass=*)')
+    @patch('OpenLDAP.get_search_attributes', return_value=['cn', 'mail'])
+    def test_entries_search_command_subsequent_page(self, mock_get_search_attributes, mock_create_entries_search_filter,
+                                                    mock_connection):
+        """
+        when running the entries_search_command function with a page number greater than 1 then the search method should be
+        called with the correct parameters and the results should be returned. The search method should be called twice, once
+        to skip the results and once to get the actual results.
+        """
+        # Mock the LDAP connection
+        mock_conn_instance = mock_connection.return_value.__enter__.return_value
+        mock_conn_instance.entries = [MagicMock(entry_to_json=MagicMock(return_value=json.dumps({
+            'attributes': {'cn': ['Jane Doe'], 'mail': ['jane.doe@example.com']},
+            'dn': 'cn=Jane Doe,dc=example,dc=com'
+        })))]
+
+        args = {
+            'search_base': 'dc=example,dc=com',
+            'search_scope': 'SUBTREE',
+            'page': '2',
+            'page_size': '50'
+        }
+
+        result = self.instance.entries_search_command(args)
+
+        self.instance._get_auto_bind_value.assert_called_once()
+        mock_create_entries_search_filter.assert_called_once_with(args)
+        mock_get_search_attributes.assert_called_once_with('all')
+        mock_connection.assert_called_once_with(
+            self.instance._ldap_server, self.instance._username, self.instance._password, auto_bind=True)
+
+        assert len(result.outputs) == 1
+        assert result.outputs[0]['cn'] == ['Jane Doe']
+        assert result.outputs[0]['mail'] == ['jane.doe@example.com']
+        assert result.outputs[0]['dn'] == 'cn=Jane Doe,dc=example,dc=com'

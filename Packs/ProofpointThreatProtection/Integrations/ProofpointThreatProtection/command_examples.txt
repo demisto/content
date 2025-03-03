@@ -1,0 +1,4 @@
+proofpoint-tp-safelist-get
+proofpoint-tp-blocklist-get
+proofpoint-tp-safelist-add-or-delete-entry action=add attribute=$ip operator=equal value=8.8.8.8
+proofpoint-tp-blocklist-add-or-delete-entry action=delete attribute=$host operator=contain value=somehostname

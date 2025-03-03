@@ -1,0 +1,112 @@
+[
+        {
+            "values": {
+                "SysRequestID": "000000000000402",
+                "Submitter": "appadmin",
+                "Submit Date": "2024-06-29T14:38:36.000+0000",
+                "System Assignee": null,
+                "Status": "Planning",
+                "Status-History": {
+                    "Draft": {
+                        "user": "appadmin",
+                        "timestamp": "2022-06-29T14:38:37.000+0000"
+                    },
+                    "Submitted": {
+                        "user": "appadmin",
+                        "timestamp": "2022-06-29T14:38:37.000+0000"
+                    },
+                    "Waiting Approval": {
+                        "user": "Remedy Application Service",
+                        "timestamp": "2022-06-29T14:39:49.000+0000"
+                    },
+                    "Planning": {
+                        "user": "Remedy Application Service",
+                        "timestamp": "2022-06-29T14:39:49.000+0000"
+                    }
+                },
+                "Assignee Groups": "1000000003;'appadmin';",
+                "InstanceId": "AGGAI7ZXDK9WFAR4IUA2R3J3RVIB6V",
+                "Vendor Assignee Groups": null,
+                "Vendor Assignee Groups_parent": null,
+                "Assignee Groups_parent": "",
+                "z1D_WorkInfoType": null,
+                "z1D_WorkInfoSummary": null,
+                "z1D_WorkInfoDetails": null,
+                "z1D_WorkInfoSecureLog": null,
+                "z1D_WorkInfoViewAccess": null,
+                "z1D_WorkInfoDate": null,
+                "z1D_CommunicationSource": null,
+                "Assignee Group": "Backoffice Support",
+                "Assignee": "Mary Mann",
+                "Recurring Price Basis": null,
+                "Location Company": "Calbro Services",
+                "Organization": null,
+                "Assigned Support Organization": "IT Support",
+                "Last Name": "Admin",
+                "First Name": "App",
+                "Service Location Address": "1114 Eighth Avenue, 31st Floor. \r\nNew York, New York  10036 \r\nUnited States",
+                "Internet E-mail": null,
+                "Phone Number": "###",
+                "Navigation Tier 1": "File & Print",
+                "Navigation Tier 2": null,
+                "Navigation Tier 3": null,
+                "z1D Action": null,
+                "Request Manager Group ID": null,
+                "Company": "Calbro Services",
+                "Status_Reason": null,
+                "Details": null,
+                "Urgency": "2-High",
+                "Impact": "1-Extensive/Widespread",
+                "Assigned Group": null,
+                "Request Manager": null,
+                "Assigned Support Company": "Calbro Services",
+                "Request Manager Login": null,
+                "Total Escalation Level": 0,
+                "Request Number": "REQ000000000401",
+                "Date Required": null,
+                "Next Target Date": null,
+                "SLM Status": null,
+                "Customer First Name": "App",
+                "Customer Last Name": "Admin",
+                "Customer Company": "Calbro Services",
+                "Customer Organization": null,
+                "Customer Department": null,
+                "Customer Internet E-mail": null,
+                "Customer Phone Number": "###"
+            },
+            "CreateDate": "2024-06-29T14:38:36.000+0000"
+        },
+        {
+            "values": {
+                "SysRequestID": "000000000000403",
+                "Submitter": "appadmin",
+                "Submit Date": "2022-06-29T14:38:36.000+0000",
+                "System Assignee": null,
+                "Status": "Planning",
+                "Status-History": {
+                    "Draft": {
+                        "user": "appadmin",
+                        "timestamp": "2022-06-29T14:38:37.000+0000"
+                    },
+                    "Submitted": {
+                        "user": "appadmin",
+                        "timestamp": "2022-06-29T14:38:37.000+0000"
+                    },
+                    "Waiting Approval": {
+                        "user": "Remedy Application Service",
+                        "timestamp": "2022-06-29T14:39:43.000+0000"
+                    },
+                    "Planning": {
+                        "user": "Remedy Application Service",
+                        "timestamp": "2022-06-29T14:39:43.000+0000"
+                    }
+                },
+                "Assignee Groups": "1000000003;'appadmin';",
+                "InstanceId": "AGGAI7ZXDK9WFAR4IUA2R3J3RVIB6S",
+                "Vendor Assignee Groups": null,
+                "Vendor Assignee Groups_parent": null,
+                "Assignee Groups_parent": ""
+            },
+            "CreateDate": "2022-06-29T14:38:36.000+0000"
+        }
+    ]

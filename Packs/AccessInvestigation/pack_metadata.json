@@ -2,7 +2,7 @@
     "name": "Access Investigation",
     "description": "This Content Pack automates response to unauthorised access incidents and contains customer access incident views and layouts to aid investigation.",
     "support": "xsoar",
-    "currentVersion": "1.2.8",
+    "currentVersion": "1.2.10",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

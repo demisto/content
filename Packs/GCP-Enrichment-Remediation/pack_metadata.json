@@ -2,7 +2,7 @@
     "name": "GCP Enrichment and Remediation",
     "description": "Playbooks using multiple GCP content packs for enrichment and remediation purposes",
     "support": "xsoar",
-    "currentVersion": "1.1.18",
+    "currentVersion": "1.1.21",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

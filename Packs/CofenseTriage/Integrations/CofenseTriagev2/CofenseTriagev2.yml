@@ -6,33 +6,42 @@ fromversion: 5.0.0
 display: Cofense Triage v2
 category: Data Enrichment & Threat Intelligence
 description: Use the Cofense Triage integration to ingest reported phishing indicators.
+sectionOrder:
+  - Connect
+  - Collect
 configuration:
 - display: Server URL (e.g., https://192.168.0.1)
   name: host
-  defaultvalue: ""
+  defaultvalue: ''
   type: 0
   required: true
+  section: Connect
 - display: User
   name: user
-  defaultvalue: ""
+  defaultvalue: ''
   type: 0
   required: true
+  section: Connect
 - display: API Token
   name: token
-  defaultvalue: ""
+  defaultvalue: ''
   type: 4
   required: true
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
-- display: "Mailbox Location"
+  section: Collect
+- display: Mailbox Location
   name: mailbox_location
   defaultvalue: Processed_Reports
+  section: Collect
   type: 15
   required: true
   options:
@@ -43,36 +52,43 @@ configuration:
   defaultvalue: 3 days
   type: 0
   required: false
+  section: Collect
 - display: Category ID to fetch
   name: category_id
   additionalinfo: Corresponds to category IDs defined in Triage. Eg, "1".
-  defaultvalue: ""
+  defaultvalue: ''
   type: 0
   required: false
+  section: Collect
 - display: Match Priority - the highest match priority based on rule hits for the report
   name: match_priority
-  defaultvalue: ""
+  defaultvalue: ''
   type: 0
   required: false
+  section: Collect
 - display: 'Tags - CSV list of tags of processed reports by which to filter '
   name: tags
-  defaultvalue: ""
+  defaultvalue: ''
   type: 0
   required: false
+  section: Collect
 - display: Maximum number of incidents to fetch each time
   name: max_fetch
-  defaultvalue: "30"
+  defaultvalue: '30'
   type: 0
   required: false
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "false"
+  defaultvalue: 'false'
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 script:
   script: '-'
   type: python
@@ -97,12 +113,12 @@ script:
     - name: max_matches
       default: true
       description: Maximum number of matches to fetch. Default is 30.
-      defaultValue: "30"
+      defaultValue: '30'
     - name: verbose
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
       description: Returns all fields of a report.
     outputs:
     - contextPath: Cofense.Report.ID
@@ -152,7 +168,7 @@ script:
       type: number
     - contextPath: Cofense.Report.Sha256
       description: SHA256 hash of the file.
-    description: 'Runs a query for reports.'
+    description: Runs a query for reports.
   - name: cofense-search-inbox-reports
     arguments:
     - name: file_hash
@@ -172,12 +188,12 @@ script:
     - name: max_matches
       default: true
       description: Maximum number of matches to fetch. Default is 30.
-      defaultValue: "30"
+      defaultValue: '30'
     - name: verbose
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
       description: Returns all fields of a report.
     outputs:
     - contextPath: Cofense.Report.ID
@@ -227,7 +243,7 @@ script:
       type: number
     - contextPath: Cofense.Report.Sha256
       description: SHA256 hash of the file.
-    description: 'Runs a query for reports from the `inbox` mailbox.'
+    description: Runs a query for reports from the `inbox` mailbox.
   - name: cofense-get-attachment
     arguments:
     - name: attachment_id
@@ -352,11 +368,11 @@ script:
     - name: set_white_bg
       auto: PREDEFINED
       predefined:
-      - "True"
-      - "False"
+      - 'True'
+      - 'False'
       description: Change background to white.
-      defaultValue: "False"
-    description: 'Retrieves a report by the report ID number and displays as PNG.'
+      defaultValue: 'False'
+    description: Retrieves a report by the report ID number and displays as PNG.
   - name: cofense-get-threat-indicators
     arguments:
     - name: type
@@ -377,9 +393,9 @@ script:
       - Suspicious
       - Benign
     - name: start_date
-      description: "designated start date tagged by analyst (format example: YYYY-MM-DD+HH:MM:SS). Default: 6 days ago."
+      description: 'designated start date tagged by analyst (format example: YYYY-MM-DD+HH:MM:SS). Default: 6 days ago.'
     - name: end_date
-      description: "designated end date from assignment (format example: YYYY-MM-DD+HH:MM:SS). Default: current date."
+      description: 'designated end date from assignment (format example: YYYY-MM-DD+HH:MM:SS). Default: current date.'
     outputs:
     - contextPath: Cofense.ThreatIndicators
       description: Threat indicator output.
@@ -402,7 +418,7 @@ script:
       description: Value of the threat indicator.
       type: string
     description: Threat Indicators that are designated by analysts as malicious, suspicious or benign.
-  dockerimage: demisto/chromium:124.0.6367.93838
+  dockerimage: demisto/chromium:131.0.6778.117810
   isfetch: true
 tests:
 - No test - partner integration (test pb exists - Cofense Triage Test)

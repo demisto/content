@@ -1,0 +1,605 @@
+{
+    "object_schema_list": {
+        "response": {
+            "objectschemas": [
+                {
+                    "created": "2024-05-23T11:54:15.000Z",
+                    "id": 1,
+                    "name": "Test 1",
+                    "objectCount": 2,
+                    "objectSchemaKey": "T1",
+                    "objectTypeCount": 5,
+                    "status": "Ok",
+                    "updated": "2024-05-23T11:54:15.000Z"
+                },
+                {
+                    "created": "2024-05-23T11:54:15.000Z",
+                    "id": 2,
+                    "name": "Test 2",
+                    "objectCount": 2,
+                    "objectSchemaKey": "T2",
+                    "objectTypeCount": 5,
+                    "status": "Ok",
+                    "updated": "2024-05-23T11:54:15.000Z"
+                },
+                {
+                    "created": "2024-05-23T11:54:15.000Z",
+                    "id": 3,
+                    "name": "Test 3",
+                    "objectCount": 2,
+                    "objectSchemaKey": "T3",
+                    "objectTypeCount": 5,
+                    "status": "Ok",
+                    "updated": "2024-05-23T11:54:15.000Z"
+                }
+            ]
+        }
+    },
+    "object_type_list": {
+        "response": [
+            {
+                "id": 2,
+                "name": "Engineer",
+                "type": 0,
+                "description": "An engineering employee.",
+                "icon": {
+                    "id": 10,
+                    "name": "Users",
+                    "url16": "https://jira-dc-qa.paloaltonetworks.com/rest/insight/1.0/objecttype/2/icon.png?size=16",
+                    "url48": "https://jira-dc-qa.paloaltonetworks.com/rest/insight/1.0/objecttype/2/icon.png?size=48"
+                },
+                "position": 0,
+                "created": "2024-05-26T11:32:56.000Z",
+                "updated": "2024-05-26T11:32:56.000Z",
+                "objectCount": 0,
+                "parentObjectTypeId": 1,
+                "objectSchemaId": 1,
+                "inherited": false,
+                "abstractObjectType": false,
+                "parentObjectTypeInherited": false
+            },
+            {
+                "id": 1,
+                "name": "Employee",
+                "type": 0,
+                "description": "An abstract object type for employees",
+                "icon": {
+                    "id": 10,
+                    "name": "Users",
+                    "url16": "https://jira-dc-qa.paloaltonetworks.com/rest/insight/1.0/objecttype/1/icon.png?size=16",
+                    "url48": "https://jira-dc-qa.paloaltonetworks.com/rest/insight/1.0/objecttype/1/icon.png?size=48"
+                },
+                "position": 0,
+                "created": "2024-05-26T10:15:28.000Z",
+                "updated": "2024-05-26T10:16:03.000Z",
+                "objectCount": 0,
+                "objectSchemaId": 1,
+                "inherited": false,
+                "abstractObjectType": true,
+                "parentObjectTypeInherited": false
+            },
+            {
+                "id": 3,
+                "name": "SW_Engineer",
+                "type": 0,
+                "icon": {
+                    "id": 10,
+                    "name": "Users",
+                    "url16": "https://jira-dc-qa.paloaltonetworks.com/rest/insight/1.0/objecttype/3/icon.png?size=16",
+                    "url48": "https://jira-dc-qa.paloaltonetworks.com/rest/insight/1.0/objecttype/3/icon.png?size=48"
+                },
+                "position": 0,
+                "created": "2024-05-26T11:55:46.000Z",
+                "updated": "2024-05-26T13:32:32.000Z",
+                "objectCount": 0,
+                "parentObjectTypeId": 2,
+                "objectSchemaId": 1,
+                "inherited": false,
+                "abstractObjectType": false,
+                "parentObjectTypeInherited": false
+            },
+            {
+                "id": 4,
+                "name": "HW Engineer",
+                "type": 0,
+                "icon": {
+                    "id": 10,
+                    "name": "Users",
+                    "url16": "https://jira-dc-qa.paloaltonetworks.com/rest/insight/1.0/objecttype/4/icon.png?size=16",
+                    "url48": "https://jira-dc-qa.paloaltonetworks.com/rest/insight/1.0/objecttype/4/icon.png?size=48"
+                },
+                "position": 1,
+                "created": "2024-05-26T11:55:53.000Z",
+                "updated": "2024-05-26T11:55:53.000Z",
+                "objectCount": 0,
+                "parentObjectTypeId": 2,
+                "objectSchemaId": 1,
+                "inherited": false,
+                "abstractObjectType": false,
+                "parentObjectTypeInherited": false
+            },
+            {
+                "id": 5,
+                "name": "Electrical Engineer",
+                "type": 0,
+                "icon": {
+                    "id": 10,
+                    "name": "Users",
+                    "url16": "https://jira-dc-qa.paloaltonetworks.com/rest/insight/1.0/objecttype/5/icon.png?size=16",
+                    "url48": "https://jira-dc-qa.paloaltonetworks.com/rest/insight/1.0/objecttype/5/icon.png?size=48"
+                },
+                "position": 2,
+                "created": "2024-05-26T11:56:04.000Z",
+                "updated": "2024-05-26T11:56:04.000Z",
+                "objectCount": 0,
+                "parentObjectTypeId": 2,
+                "objectSchemaId": 1,
+                "inherited": false,
+                "abstractObjectType": false,
+                "parentObjectTypeInherited": false
+            }
+        ]
+    },
+    "object_type_attributes": {
+        "response": [
+            {
+                "id": 1,
+                "name": "Key",
+                "label": false,
+                "type": 0,
+                "defaultType": {
+                    "id": 0,
+                    "name": "Text"
+                },
+                "editable": false,
+                "system": true,
+                "sortable": true,
+                "summable": false,
+                "indexed": true,
+                "minimumCardinality": 1,
+                "maximumCardinality": 1,
+                "removable": false,
+                "objectAttributeExists": true,
+                "hidden": false,
+                "includeChildObjectTypes": false,
+                "uniqueAttribute": false,
+                "options": "",
+                "position": 0
+            },
+            {
+                "id": 2,
+                "name": "Name",
+                "label": true,
+                "type": 0,
+                "description": "Employee's name",
+                "defaultType": {
+                    "id": 0,
+                    "name": "Text"
+                },
+                "editable": true,
+                "system": false,
+                "sortable": true,
+                "summable": false,
+                "indexed": true,
+                "minimumCardinality": 1,
+                "maximumCardinality": 1,
+                "removable": false,
+                "objectAttributeExists": true,
+                "hidden": false,
+                "includeChildObjectTypes": false,
+                "uniqueAttribute": false,
+                "options": "",
+                "position": 1
+            },
+            {
+                "id": 3,
+                "name": "Created",
+                "label": false,
+                "type": 0,
+                "defaultType": {
+                    "id": 6,
+                    "name": "DateTime"
+                },
+                "editable": false,
+                "system": true,
+                "sortable": true,
+                "summable": false,
+                "indexed": true,
+                "minimumCardinality": 1,
+                "maximumCardinality": 1,
+                "removable": false,
+                "objectAttributeExists": true,
+                "hidden": false,
+                "includeChildObjectTypes": false,
+                "uniqueAttribute": false,
+                "options": "",
+                "position": 2
+            },
+            {
+                "id": 4,
+                "name": "Updated",
+                "label": false,
+                "type": 0,
+                "defaultType": {
+                    "id": 6,
+                    "name": "DateTime"
+                },
+                "editable": false,
+                "system": true,
+                "sortable": true,
+                "summable": false,
+                "indexed": true,
+                "minimumCardinality": 1,
+                "maximumCardinality": 1,
+                "removable": false,
+                "objectAttributeExists": true,
+                "hidden": false,
+                "includeChildObjectTypes": false,
+                "uniqueAttribute": false,
+                "options": "",
+                "position": 3
+            },
+            {
+                "id": 9,
+                "name": "ReportsTo",
+                "label": false,
+                "type": 1,
+                "description": "Who this employee reports to",
+                "referenceType": {
+                    "id": 2,
+                    "name": "Link",
+                    "description": "Link",
+                    "color": "1ab812",
+                    "url16": "https://jira-dc-qa.paloaltonetworks.com/rest/insight/1.0/config/referencetype/2/image.png?size=16",
+                    "removable": false
+                },
+                "referenceObjectTypeId": 1,
+                "referenceObjectType": {
+                    "id": 1,
+                    "name": "Employee",
+                    "type": 0,
+                    "description": "An abstract object type for employees",
+                    "icon": {
+                        "id": 10,
+                        "name": "Users",
+                        "url16": "https://jira-dc-qa.paloaltonetworks.com/rest/insight/1.0/objecttype/1/icon.png?size=16",
+                        "url48": "https://jira-dc-qa.paloaltonetworks.com/rest/insight/1.0/objecttype/1/icon.png?size=48"
+                    },
+                    "position": 0,
+                    "created": "2024-05-26T10:15:28.000Z",
+                    "updated": "2024-05-26T10:16:03.000Z",
+                    "objectCount": 0,
+                    "objectSchemaId": 1,
+                    "inherited": false,
+                    "abstractObjectType": true,
+                    "parentObjectTypeInherited": false
+                },
+                "editable": true,
+                "system": false,
+                "sortable": true,
+                "summable": false,
+                "indexed": true,
+                "minimumCardinality": 0,
+                "maximumCardinality": 1,
+                "removable": true,
+                "objectAttributeExists": false,
+                "hidden": false,
+                "includeChildObjectTypes": false,
+                "uniqueAttribute": false,
+                "options": "",
+                "position": 4
+            },
+            {
+                "id": 10,
+                "name": "AnnualSalary",
+                "label": false,
+                "type": 0,
+                "description": "Employee's annual salary, in USD.",
+                "defaultType": {
+                    "id": 1,
+                    "name": "Integer"
+                },
+                "editable": true,
+                "system": false,
+                "sortable": true,
+                "summable": false,
+                "indexed": true,
+                "minimumCardinality": 0,
+                "maximumCardinality": 1,
+                "removable": true,
+                "objectAttributeExists": false,
+                "hidden": false,
+                "includeChildObjectTypes": false,
+                "uniqueAttribute": false,
+                "options": "",
+                "position": 5
+            }
+        ]
+    },
+    "object_create": {
+        "response": {
+            "id": 1
+        }
+    },
+    "object_update": {
+        "response": {
+            "id": 1
+        }
+    },
+    "get_object": {
+        "response": {
+            "id": 1,
+            "label": "Israel Israeli",
+            "objectKey": "TFZ-1",
+            "avatar": {
+                "url16": "https://jira-dc-qa.paloaltonetworks.com/rest/assets/1.0/objecttype/3/icon.png?size=16&uuid=4d2cc052-70e2-413c-8378-019ea9ebdc83",
+                "url48": "https://jira-dc-qa.paloaltonetworks.com/rest/assets/1.0/objecttype/3/icon.png?size=48&uuid=4d2cc052-70e2-413c-8378-019ea9ebdc83",
+                "url72": "https://jira-dc-qa.paloaltonetworks.com/rest/assets/1.0/objecttype/3/icon.png?size=72&uuid=4d2cc052-70e2-413c-8378-019ea9ebdc83",
+                "url144": "https://jira-dc-qa.paloaltonetworks.com/rest/assets/1.0/objecttype/3/icon.png?size=144&uuid=4d2cc052-70e2-413c-8378-019ea9ebdc83",
+                "url288": "https://jira-dc-qa.paloaltonetworks.com/rest/assets/1.0/objecttype/3/icon.png?size=288&uuid=4d2cc052-70e2-413c-8378-019ea9ebdc83",
+                "objectId": 1
+            },
+            "objectType": {
+                "id": "3",
+                "name": "SW_Engineer",
+                "type": 0,
+                "icon": {
+                    "id": 10,
+                    "name": "Users",
+                    "url16": "https://jira-dc-qa.paloaltonetworks.com/rest/insight/1.0/objecttype/3/icon.png?size=16",
+                    "url48": "https://jira-dc-qa.paloaltonetworks.com/rest/insight/1.0/objecttype/3/icon.png?size=48"
+                },
+                "position": 0,
+                "created": "2024-05-26T11:55:46.000Z",
+                "updated": "2024-05-26T13:32:32.000Z",
+                "objectCount": 0,
+                "parentObjectTypeId": 2,
+                "objectSchemaId": 1,
+                "inherited": false,
+                "abstractObjectType": false,
+                "parentObjectTypeInherited": false
+            },
+            "created": "2024-05-26T11:58:38.000Z",
+            "updated": "2024-05-26T11:58:38.000Z",
+            "hasAvatar": false,
+            "timestamp": 1716724718000,
+            "attributes": [
+                {
+                    "id": 1,
+                    "objectTypeAttributeId": 13,
+                    "objectAttributeValues": [
+                        {
+                            "value": "TFZ-1",
+                            "searchValue": "TFZ-1",
+                            "displayValue": "TFZ-1",
+                            "referencedType": false
+                        }
+                    ],
+                    "objectId": 1
+                },
+                {
+                    "id": 4,
+                    "objectTypeAttributeId": 14,
+                    "objectAttributeValues": [
+                        {
+                            "value": "Israel Israeli",
+                            "searchValue": "Israel Israeli",
+                            "displayValue": "Israel Israeli",
+                            "referencedType": false
+                        }
+                    ],
+                    "objectId": 1
+                },
+                {
+                    "id": 2,
+                    "objectTypeAttributeId": 15,
+                    "objectAttributeValues": [
+                        {
+                            "value": "2024-05-26T11:58:38.000Z",
+                            "searchValue": "2024-05-26T11:58:38.000Z",
+                            "displayValue": "26/May/24 2:58 PM",
+                            "referencedType": false
+                        }
+                    ],
+                    "objectId": 1
+                },
+                {
+                    "id": 3,
+                    "objectTypeAttributeId": 16,
+                    "objectAttributeValues": [
+                        {
+                            "value": "2024-05-26T11:58:38.000Z",
+                            "searchValue": "2024-05-26T11:58:38.000Z",
+                            "displayValue": "26/May/24 2:58 PM",
+                            "referencedType": false
+                        }
+                    ],
+                    "objectId": 1
+                },
+                {
+                    "id": 5,
+                    "objectTypeAttributeId": 26,
+                    "objectAttributeValues": [
+                        {
+                            "value": "100000",
+                            "searchValue": "100000",
+                            "displayValue": "100000",
+                            "referencedType": false
+                        }
+                    ],
+                    "objectId": 1
+                },
+                {
+                    "id": 6,
+                    "objectTypeAttributeId": 31,
+                    "objectAttributeValues": [
+                        {
+                            "value": "Python",
+                            "searchValue": "Python",
+                            "displayValue": "Python",
+                            "referencedType": false
+                        }
+                    ],
+                    "objectId": 1
+                }
+            ],
+            "_links": {
+                "self": "https://jira-dc-qa.paloaltonetworks.com/secure/ShowObject.jspa?id=1"
+            },
+            "name": "Israel Israeli"
+        }
+    },
+    "search_objects": {
+        "response": {
+            "objectEntries": [
+                {
+                    "id": 1,
+                    "label": "Israel Israeli",
+                    "objectKey": "TFZ-1",
+                    "avatar": {
+                        "url16": "https://jira-dc-qa.paloaltonetworks.com/rest/assets/1.0/objecttype/3/icon.png?size=16&uuid=4d2cc052-70e2-413c-8378-019ea9ebdc83",
+                        "url48": "https://jira-dc-qa.paloaltonetworks.com/rest/assets/1.0/objecttype/3/icon.png?size=48&uuid=4d2cc052-70e2-413c-8378-019ea9ebdc83",
+                        "url72": "https://jira-dc-qa.paloaltonetworks.com/rest/assets/1.0/objecttype/3/icon.png?size=72&uuid=4d2cc052-70e2-413c-8378-019ea9ebdc83",
+                        "url144": "https://jira-dc-qa.paloaltonetworks.com/rest/assets/1.0/objecttype/3/icon.png?size=144&uuid=4d2cc052-70e2-413c-8378-019ea9ebdc83",
+                        "url288": "https://jira-dc-qa.paloaltonetworks.com/rest/assets/1.0/objecttype/3/icon.png?size=288&uuid=4d2cc052-70e2-413c-8378-019ea9ebdc83",
+                        "objectId": 1
+                    },
+                    "objectType": {
+                        "id": "3",
+                        "name": "SW_Engineer",
+                        "type": 0,
+                        "icon": {
+                            "id": 10,
+                            "name": "Users",
+                            "url16": "https://jira-dc-qa.paloaltonetworks.com/rest/insight/1.0/objecttype/3/icon.png?size=16",
+                            "url48": "https://jira-dc-qa.paloaltonetworks.com/rest/insight/1.0/objecttype/3/icon.png?size=48"
+                        },
+                        "position": 0,
+                        "created": "2024-05-26T11:55:46.000Z",
+                        "updated": "2024-05-26T13:32:32.000Z",
+                        "objectCount": 0,
+                        "parentObjectTypeId": 2,
+                        "objectSchemaId": 1,
+                        "inherited": false,
+                        "abstractObjectType": false,
+                        "parentObjectTypeInherited": false
+                    },
+                    "created": "2024-05-26T11:58:38.000Z",
+                    "updated": "2024-05-26T11:58:38.000Z",
+                    "hasAvatar": false,
+                    "timestamp": 1716724718000,
+                    "attributes": [
+                        {
+                            "id": 1,
+                            "objectTypeAttributeId": 13,
+                            "objectAttributeValues": [
+                                {
+                                    "value": "TFZ-1",
+                                    "searchValue": "TFZ-1",
+                                    "displayValue": "TFZ-1",
+                                    "referencedType": false
+                                }
+                            ],
+                            "objectId": 1
+                        },
+                        {
+                            "id": 4,
+                            "objectTypeAttributeId": 14,
+                            "objectAttributeValues": [
+                                {
+                                    "value": "Israel Israeli",
+                                    "searchValue": "Israel Israeli",
+                                    "displayValue": "Israel Israeli",
+                                    "referencedType": false
+                                }
+                            ],
+                            "objectId": 1
+                        },
+                        {
+                            "id": 2,
+                            "objectTypeAttributeId": 15,
+                            "objectAttributeValues": [
+                                {
+                                    "value": "2024-05-26T11:58:38.000Z",
+                                    "searchValue": "2024-05-26T11:58:38.000Z",
+                                    "displayValue": "26/May/24 2:58 PM",
+                                    "referencedType": false
+                                }
+                            ],
+                            "objectId": 1
+                        },
+                        {
+                            "id": 3,
+                            "objectTypeAttributeId": 16,
+                            "objectAttributeValues": [
+                                {
+                                    "value": "2024-05-26T11:58:38.000Z",
+                                    "searchValue": "2024-05-26T11:58:38.000Z",
+                                    "displayValue": "26/May/24 2:58 PM",
+                                    "referencedType": false
+                                }
+                            ],
+                            "objectId": 1
+                        },
+                        {
+                            "id": 5,
+                            "objectTypeAttributeId": 26,
+                            "objectAttributeValues": [
+                                {
+                                    "value": "100000",
+                                    "searchValue": "100000",
+                                    "displayValue": "100000",
+                                    "referencedType": false
+                                }
+                            ],
+                            "objectId": 1
+                        },
+                        {
+                            "id": 6,
+                            "objectTypeAttributeId": 31,
+                            "objectAttributeValues": [
+                                {
+                                    "value": "Python",
+                                    "searchValue": "Python",
+                                    "displayValue": "Python",
+                                    "referencedType": false
+                                }
+                            ],
+                            "objectId": 1
+                        }
+                    ],
+                    "_links": {
+                        "self": "https://jira-dc-qa.paloaltonetworks.com/secure/ShowObject.jspa?id=1"
+                    },
+                    "name": "Israel Israeli"
+                }
+            ]
+        }
+    },
+    "attachment_list": {
+        "response": [
+            {
+                "id": 7,
+                "author": "JIRAUSER82500",
+                "mimeType": "text/plain",
+                "filename": "test.txt",
+                "filesize": "4 B",
+                "created": "2024-06-16T06:17:54.000Z",
+                "comment": "",
+                "commentOutput": "",
+                "url": "https://jira-dc-qa.paloaltonetworks.com/rest/insight/1.0/attachments/7/test.txt"
+            },
+            {
+                "id": 8,
+                "author": "JIRAUSER82500",
+                "mimeType": "text/plain",
+                "filename": "test.txt",
+                "filesize": "4 B",
+                "created": "2024-06-16T06:17:54.000Z",
+                "comment": "",
+                "commentOutput": "",
+                "url": "https://jira-dc-qa.paloaltonetworks.com/rest/insight/1.0/attachments/7/test.txt"
+            }
+        ]
+    }
+}

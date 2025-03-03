@@ -3,7 +3,8 @@
     "associatedTypes": [
         "Guardicore Incident",
         "Graph Security Alert",
-        "CrowdStrike Falcon IDP Detection"
+        "CrowdStrike Falcon IDP Detection",
+        "Exabeam Notable User"
     ],
     "breachScript": "",
     "caseInsensitive": true,

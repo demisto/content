@@ -1,7 +1,7 @@
 [RULE: cisco_asa_main_fields_extraction]
-alter event_id = to_integer(arrayindex(regextract(_raw_log , "ASA\-[session]*\-*\d\-(\d+)\:"),0)),
-    severity = arrayindex(regextract(_raw_log, "ASA\-[session]*\-*(\d+)\-\d+\:"),0),
-    message = arrayindex(regextract(_raw_log, "\%ASA\-[session]*\-*\d\-\d+[\:|\s\-]+\s(.*)"),0),
+alter event_id = to_integer(arrayindex(regextract(_raw_log , "ASA\-(?:session)*\-*\d\-(\d+)\:"),0)),
+    severity = arrayindex(regextract(_raw_log, "ASA\-(?:session)*\-*(\d+)\-\d+\:"),0),
+    message = arrayindex(regextract(_raw_log, "\%ASA\-(?:session)*\-*\d\-\d+[\:|\s\-]+\s(.*)"),0),
     observer_name = arrayindex(regextract(_raw_log , "([\w\-\_\.\@]+)\s\:*\s*\%ASA-\d+"),0);
 
 [MODEL: dataset=cisco_asa_raw]
@@ -47,34 +47,42 @@ config case_sensitive = true
     xdm.observer.name = observer_name,
     xdm.event.is_completed = if(action contains "Teardown",true, false);
 
-
 //<source_interface>:<source_ip>/<source_port> to <dest_interface>:<dest_ip>/<dest_port>
 config case_sensitive = true
-| filter _raw_log ~= "\w+\s[a-zA-Z0-9-_]+\:\d+\.\d+\.\d+\.\d+\/\d+\sto\s[a-zA-Z0-9-_]+\:\d+\.\d+\.\d+\.\d+\/\d+" or
+
+| filter 
+    _raw_log ~= "\w+\s[\w\-]+\:(?:[\w\-\.]+)\/\d{1,5}(?:\s*\(.+?\)\s*)?\sto\s[\w\-]+\:(?:[\w\-\.]+)\/\d{1,5}(?:\s*\(.+?\)\s*)?" or 
     //<source_interface>:<source_ip>/<source_port>(<source_username>) to <dest_interface>:<dest_ip>/<dest_port>
-    _raw_log ~= "\w+\s[a-zA-Z0-9-_]+\:\d+\.\d+\.\d+\.\d+\/\d+\([^\)]+\)\sto\s[a-zA-Z0-9-_]+\:\d+\.\d+\.\d+\.\d+\/\d+" or
+    _raw_log ~= "\w+\s[\w\-]+\:\d+\.\d+\.\d+\.\d+\/\d+\([^\)]+\)\sto\s[\w\-]+\:\d+\.\d+\.\d+\.\d+\/\d+" or
     //<source_interface>:<source_ip>/<source_port> (<mapped_source_ip>/<mapped_source_port>) to <dest_interface>:<dest_ip>/<dest_port> (<mapped_dst_ip>/<mapped_dst_port>)
-    _raw_log ~= "\w+\s[a-zA-Z0-9-_]+\:\d+\.\d+\.\d+\.\d+\/\d+\s\(\d+\.\d+\.\d+\.\d+\/\d+\)\sto\s[a-zA-Z0-9-_]+\:\d+\.\d+\.\d+\.\d+\/\d+\s\(\d+\.\d+\.\d+\.\d+\/\d+\)" or
+    _raw_log ~= "\w+\s[\w\-]+\:\d+\.\d+\.\d+\.\d+\/\d+\s\(\d+\.\d+\.\d+\.\d+\/\d+\)\sto\s[\w\-]+\:\d+\.\d+\.\d+\.\d+\/\d+\s\(\d+\.\d+\.\d+\.\d+\/\d+\)" or
     //<source_interface>:<source_ip>/<source_port> (<mapped_source_ip>/<mapped_source_port>)(<source_username>) to <dest_interface>:<dest_ip>/<dest_port> (<mapped_dst_ip>/<mapped_dst_port>) (<dst_username>)
-    _raw_log ~= "\w+\s[a-zA-Z0-9-_]+\:\d+\.\d+\.\d+\.\d+\/\d+\s\(\d+\.\d+\.\d+\.\d+\/\d+\)\([^\)]+\)\sto\s[a-zA-Z0-9-_]+\:\d+\.\d+\.\d+\.\d+\/\d+\s\(\d+\.\d+\.\d+\.\d+\/\d+\)"
+    _raw_log ~= "\w+\s[\w\-]+\:\d+\.\d+\.\d+\.\d+\/\d+\s\(\d+\.\d+\.\d+\.\d+\/\d+\)\([^\)]+\)\sto\s[\w\-]+\:\d+\.\d+\.\d+\.\d+\/\d+\s\(\d+\.\d+\.\d+\.\d+\/\d+\)"
 | call cisco_asa_main_fields_extraction
-| alter action = arrayindex(regextract(_raw_log,"\%ASA\-[session]*\-*\d\-\d+\:\s([A-Za-z\s\:]+)\sfrom"),0)
+| alter action = arrayindex(regextract(_raw_log,"\%ASA\-(?:session)*\-*\d\-\d+\:\s([A-Za-z\s\:]+)\sfrom"),0)
 | alter
-    src_ip = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\s[o|O]utside\:(\d+\.\d+\.\d+\.\d+)\/\d+\s*"),0),
-    action contains "Built outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\sinside\:(\d+\.\d+\.\d+\.\d+)\/\d+"),0),
-    arrayindex(regextract(_raw_log ,"[for|from]{3,4}\s[\w\-\_]+\:(\d+\.\d+\.\d+\.\d+)\/\d+"),0)),
-    source_port = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\s[o|O]utside\:\s*\d+\.\d+\.\d+\.\d+\/(\d+)"),0),
-    action contains "Built outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\sinside\:\s*\d+\.\d+\.\d+\.\d+\/(\d+)"),0),arrayindex(regextract(_raw_log ,"[for|from]{3,4}\s[\w\-\_]+\:\d+\.\d+\.\d+\.\d+\/(\d+)"),0)),
-    dest_ip = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\s[i|I]nside\:(\d+\.\d+\.\d+\.\d+)\/\d+"),0),action contains "Built outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\soutside\:(\d+\.\d+\.\d+\.\d+)\/\d+"),0),
+    src_ip = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,"(?:for|to)\s[o|O]utside\:(\d+\.\d+\.\d+\.\d+)\/\d+\s*"),0),
+    action contains "Built outbound",arrayindex(regextract(_raw_log ,"(?:for|to)\sinside\:(\d+\.\d+\.\d+\.\d+)\/\d+"),0),
+    arrayindex(regextract(_raw_log ,"(?:for|from)\s[\w\-\_]+\:(\d+\.\d+\.\d+\.\d+)\/\d+"),0)),
+    source_port = if(event_id in(302014, 302015, 302016), arrayindex(regextract(_raw_log, "connection \d+ for \S+?:[\w\-\.]+\/(\d{1,5})"), 0), action contains "Built inbound",arrayindex(regextract(_raw_log ,"(?:for|to)\s[o|O]utside\:\s*\d+\.\d+\.\d+\.\d+\/(\d+)"),0), action contains "Built outbound",arrayindex(regextract(_raw_log ,"(?:for|to)\sinside\:\s*\d+\.\d+\.\d+\.\d+\/(\d+)"),0),arrayindex(regextract(_raw_log ,"(?:for|from)\s[\w\-\_]+\:\d+\.\d+\.\d+\.\d+\/(\d+)"),0)),
+    dest_ip = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,"(?:for|to)\s[i|I]nside\:(\d+\.\d+\.\d+\.\d+)\/\d+"),0),action contains "Built outbound",arrayindex(regextract(_raw_log ,"(?:for|to)\soutside\:(\d+\.\d+\.\d+\.\d+)\/\d+"),0),
     arrayindex(regextract(_raw_log ,"to\s[\w\-\_]+\:(\d+\.\d+\.\d+\.\d+)\/\d+"),0)),
-    dest_port = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\s[i|I]nside\:\d+\.\d+\.\d+\.\d+\/(\d+)"),0),
-    action contains "Built outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\soutside\:\d+\.\d+\.\d+\.\d+\/(\d+)"),0),
+    dest_port = if(event_id in(302014, 302015, 302016), arrayindex(regextract(_raw_log, "to \S+?:[\w\-\.]+\/(\d{1,5})"), 0), action contains "Built inbound",arrayindex(regextract(_raw_log ,"(?:for|to)\s[i|I]nside\:\d+\.\d+\.\d+\.\d+\/(\d+)"),0),
+    action contains "Built outbound",arrayindex(regextract(_raw_log ,"(?:for|to)\soutside\:\d+\.\d+\.\d+\.\d+\/(\d+)"),0),
     arrayindex(regextract(_raw_log ,"to\s[\w\-\_]+\:\d+\.\d+\.\d+\.\d+\/(\d+)"),0)),
-    source_interface = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\s([o|O]utside)\:\d+\.\d+\.\d+\.\d+\/\d+"),0), action contains "Built outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\s([i|I]nside)\:\d+\.\d+\.\d+\.\d+\/\d+"),0),arrayindex(regextract(_raw_log ,"[for|from]{3,4}\s([\w\-\_]+)\:\d+\.\d+\.\d+\.\d+\/\d+"),0)),
-    dest_interface = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\s([i|I]nside)\:\d+\.\d+\.\d+\.\d+\/\d+"),0), action contains "Built outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\s([o|O]utside)\:\d+\.\d+\.\d+\.\d+\/\d+"),0),arrayindex(regextract(_raw_log ,"to\s([\w\-\_]+)\:\d+\.\d+\.\d+\.\d+\/\d+"),0)),
-    source_username = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\s[o|O]utside\:\d+\.\d+\.\d+\.\d+\/\d+\s*\([^\)]+\)\(([^\)]+)\)"),0), action contains "Built outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\s[i|I]nside\:\d+\.\d+\.\d+\.\d+\/\d+\s*\([^\)]+\)\s\(([^\)]+)\)"),0),arrayindex(regextract(_raw_log ,"[for|from]{3,4}\s[\w+\_\-]+\:\d+\.\d+\.\d+\.\d+\/\d+\(*[^\)]*\)*\s*\(([^\)]+)\)"),0)),
-    dst_username1 = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\s[i|I]nside\:\d+\.\d+\.\d+\.\d+\/\d+\s*\([^\)]+\)\s\(([^\)]+)\)"),0), action contains "Built outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\s[o|O]utside\:\d+\.\d+\.\d+\.\d+\/\d+\s*\([^\)]+\)\(([^\)]+)\)"),0),arrayindex(regextract(_raw_log ,"to\s[\w+\_\-]+\:\d+\.\d+\.\d+\.\d+\/\d+\s*\([^\)]+\)\s\(([^\)]+)\)"),0)),
+    source_interface = if(event_id in(302014, 302015, 302016), arrayindex(regextract(_raw_log, "for (\S+?):[\w\-\.]+\/\d{1,5}"), 0), action contains "Built inbound",arrayindex(regextract(_raw_log ,"(?:for|to)\s([o|O]utside)\:\d+\.\d+\.\d+\.\d+\/\d+"),0), action contains "Built outbound",arrayindex(regextract(_raw_log ,"(?:for|to)\s([i|I]nside)\:\d+\.\d+\.\d+\.\d+\/\d+"),0),arrayindex(regextract(_raw_log ,"(?:for|from)\s([\w\-\_]+)\:\d+\.\d+\.\d+\.\d+\/\d+"),0)),
+    dest_interface = if(event_id in(302014, 302015, 302016), arrayindex(regextract(_raw_log, "to (\S+?):[\w\-\.]+\/\d{1,5}"), 0), action contains "Built inbound",arrayindex(regextract(_raw_log ,"(?:for|to)\s([i|I]nside)\:\d+\.\d+\.\d+\.\d+\/\d+"),0), action contains "Built outbound",arrayindex(regextract(_raw_log ,"(?:for|to)\s([o|O]utside)\:\d+\.\d+\.\d+\.\d+\/\d+"),0),arrayindex(regextract(_raw_log ,"to\s([\w\-\_]+)\:\d+\.\d+\.\d+\.\d+\/\d+"),0)),
+    source_username = if(
+        event_id in (302014, 302016), arrayindex(regextract(_raw_log ,"for\s[\w+\-]+\:(?:\d{1,3}\.){3}\d{1,3}\/\d{1,5}\s*\(\s*([^\)\s]+)\s*\)"), 0), 
+        action contains "Built (?:inbound|outbound)", arrayindex(regextract(_raw_log ,"(?:for|to)\s(?:[o|O]utside|[i|I]nside)\:(?:\d{1,3}\.){3}\d{1,3}\/\d{1,5}\s*\([^\)]+\)\(([^\)]+)\)"), 0), 
+        arrayindex(regextract(_raw_log ,"(?:for|from)\s[\w+\-]+\:(?:\d{1,3}\.){3}\d{1,3}\/\d{1,5}\(*[^\)]*\)*\s*\(([^\)]+)\)"), 0)),
+    dst_username1 = if(
+        event_id in (302014, 30216), arrayindex(regextract(_raw_log ,"to\s[\w+\-]+\:(?:\d{1,3}\.){3}\d{1,3}\/\d{1,5}\s*\(\s*([^\)\s]+)\s*\)"), 0), 
+        action contains "Built (?:inbound|outbound)",arrayindex(regextract(_raw_log ,"(?:for|to)\s(?:[i|I]nside|[o|O]utside)\:(?:\d{1,3}\.){3}\d{1,3}\/\d{1,5}\s*\([^\)]+\)\s\(([^\)]+)\)"), 0), 
+        arrayindex(regextract(_raw_log ,"to\s[\w+\_\-]+\:\d+\.\d+\.\d+\.\d+\/\d+\s*\([^\)]+\)\s\(([^\)]+)\)"),0)),
     dst_username2 = arrayindex(regextract(_raw_log ,",\suser\s([\w\_\-]+)\s"),0),
+    source_host = if(event_id in(302014, 302015, 302016), arrayindex(regextract(_raw_log, "connection \d+ for \S+?:([\w\-\.]+)\/\d{1,5}"), 0)),
+    dest_host = if(event_id in(302014, 302015, 302016), arrayindex(regextract(_raw_log, "to \S+?:([\w\-\.]+)\/\d{1,5}"), 0)),
     bytes1 = arrayindex(regextract(_raw_log  ,"\d{2}\:\d{2}\sbytes\s(\d+)"),0),
     bytes2 = arrayindex(regextract(_raw_log  ,"label\slength\s(\d+)\sbytes\sexceeds"),0),
     protocol1 = arrayindex(regextract(_raw_log ,"\d+\-\d+\:\s*[A-Za-z]*\s+[A-Z]*[a-z]+\s+([A-Z]+)\s+"),0),
@@ -89,12 +97,14 @@ config case_sensitive = true
     connection_id = arrayindex(regextract(_raw_log ,"connection\s(\d+)\sfor"),0)
 | alter source_username = if(source_username ~= "\d+\.\d+\.\d+\.\d+",null,source_username ),
     dst_username1 = if(dst_username1 ~= "\d+\.\d+\.\d+\.\d+",null,dst_username1 ),
-    src_ip = if(src_ip = null,arrayindex(regextract(_raw_log ,"[for|from]{3,4}\s[\w\-\_]+\:(\d+\.\d+\.\d+\.\d+)\/\d+"),0),src_ip),
+    src_ip = if(src_ip = null,arrayindex(regextract(_raw_log ,"(?:for|from)\s[\w\-\_]+\:(\d+\.\d+\.\d+\.\d+)\/\d+"),0),src_ip),
     dest_ip = if(dest_ip = null,arrayindex(regextract(_raw_log ,"to\s[\w\-\_]+\:(\d+\.\d+\.\d+\.\d+)\/\d+"),0),dest_ip),
-    source_port = if(source_port = null,arrayindex(regextract(_raw_log ,"[for|from]{3,4}\s[\w\-\_]+\:\d+\.\d+\.\d+\.\d+\/(\d+)"),0),source_port),
-    dest_port = if(dest_port = null,arrayindex(regextract(_raw_log ,"to\s[\w\-\_]+\:\d+\.\d+\.\d+\.\d+\/(\d+)"),0),dest_port),
-    source_interface = if(source_interface = null,arrayindex(regextract(_raw_log ,"[for|from]{3,4}\s([\w\-\_]+)\:\d+\.\d+\.\d+\.\d+\/\d+"),0),source_interface),
-    dest_interface = if(dest_interface = null,arrayindex(regextract(_raw_log ,"to\s([\w\-\_]+)\:\d+\.\d+\.\d+\.\d+\/\d+"),0),dest_interface)
+    source_port = to_integer(if(source_port = null,arrayindex(regextract(_raw_log ,"(?:for|from)\s[\w\-\_]+\:\d+\.\d+\.\d+\.\d+\/(\d+)"),0),source_port)),
+    dest_port = to_integer(if(dest_port = null,arrayindex(regextract(_raw_log ,"to\s[\w\-\_]+\:\d+\.\d+\.\d+\.\d+\/(\d+)"),0),dest_port)),
+    source_interface = if(source_interface = null,arrayindex(regextract(_raw_log ,"(?:for|from)\s([\w\-\_]+)\:\d+\.\d+\.\d+\.\d+\/\d+"),0),source_interface),
+    dest_interface = if(dest_interface = null,arrayindex(regextract(_raw_log ,"to\s([\w\-\_]+)\:\d+\.\d+\.\d+\.\d+\/\d+"),0),dest_interface),
+    source_host = if(source_host !~= "(?:\d{1,3}\.){3}\d{1,3}", source_host),
+    dest_host = if(dest_host !~= "(?:\d{1,3}\.){3}\d{1,3}", dest_host)
 // duration
 | alter
         duration_string_no_days = arrayindex(regextract(_raw_log ,"[D|d]uration\:*\s+([hH0-9]+:[mM0-9]+:[sS0-9]+)[\s|\,]*"),0),
@@ -115,32 +125,46 @@ config case_sensitive = true
         duration_part_2_millis = if(duration_part_2 contains "s", multiply(to_integer(arrayindex(regextract(duration_part_2 ,"\d+"),0)),1000) ,duration_part_2 ~= "\d+" and duration_part_2 != "0", multiply(to_integer(duration_part_2), 1000), 0),
         duration_part_days = if(duration_days != null, multiply(to_integer(arrayindex(regextract(duration_days ,"\d+"),0)),86400000),0)
 | alter duration = add(add(add(duration_part_0_millis , duration_part_1_millis ),duration_part_2_millis), duration_part_days)
-| alter bytes = coalesce(bytes1 , bytes2 ),
+| alter sent_bytes = to_integer(coalesce(bytes1, bytes2)),
     icmp_code = coalesce(icmp_code1, icmp_code2),
     protocol = coalesce(protocol1, protocol2, protocol3, protocol4, protocol5),
     dst_username = coalesce(dst_username1, dst_username2)
-//
-| alter xdm.network.ip_protocol = if(protocol="HOPOPT",XDM_CONST.IP_PROTOCOL_HOPOPT, protocol="ICMP",XDM_CONST.IP_PROTOCOL_ICMP, protocol="IGMP",XDM_CONST.IP_PROTOCOL_IGMP, protocol="GGP",XDM_CONST.IP_PROTOCOL_GGP, protocol="IP",XDM_CONST.IP_PROTOCOL_IP, protocol="ST",XDM_CONST.IP_PROTOCOL_ST, protocol="TCP",XDM_CONST.IP_PROTOCOL_TCP, protocol="CBT",XDM_CONST.IP_PROTOCOL_CBT, protocol="EGP",XDM_CONST.IP_PROTOCOL_EGP, protocol="IGP",XDM_CONST.IP_PROTOCOL_IGP, protocol="BBN_RCC_MON",XDM_CONST.IP_PROTOCOL_BBN_RCC_MON, protocol="NVP_II",XDM_CONST.IP_PROTOCOL_NVP_II, protocol="PUP",XDM_CONST.IP_PROTOCOL_PUP, protocol="ARGUS",XDM_CONST.IP_PROTOCOL_ARGUS, protocol="EMCON",XDM_CONST.IP_PROTOCOL_EMCON, protocol="XNET",XDM_CONST.IP_PROTOCOL_XNET, protocol="CHAOS",XDM_CONST.IP_PROTOCOL_CHAOS, protocol="UDP",XDM_CONST.IP_PROTOCOL_UDP, protocol="MUX",XDM_CONST.IP_PROTOCOL_MUX, protocol="DCN_MEAS",XDM_CONST.IP_PROTOCOL_DCN_MEAS, protocol="HMP",XDM_CONST.IP_PROTOCOL_HMP, protocol="PRM",XDM_CONST.IP_PROTOCOL_PRM, protocol="XNS_IDP",XDM_CONST.IP_PROTOCOL_XNS_IDP, protocol="TRUNK_1",XDM_CONST.IP_PROTOCOL_TRUNK_1, protocol="TRUNK_2",XDM_CONST.IP_PROTOCOL_TRUNK_2, protocol="LEAF_1",XDM_CONST.IP_PROTOCOL_LEAF_1, protocol="LEAF_2",XDM_CONST.IP_PROTOCOL_LEAF_2, protocol="RDP",XDM_CONST.IP_PROTOCOL_RDP, protocol="IRTP",XDM_CONST.IP_PROTOCOL_IRTP, protocol="ISO_TP4",XDM_CONST.IP_PROTOCOL_ISO_TP4, protocol="NETBLT",XDM_CONST.IP_PROTOCOL_NETBLT, protocol="MFE_NSP",XDM_CONST.IP_PROTOCOL_MFE_NSP, protocol="MERIT_INP",XDM_CONST.IP_PROTOCOL_MERIT_INP, protocol="DCCP",XDM_CONST.IP_PROTOCOL_DCCP, protocol="3PC",XDM_CONST.IP_PROTOCOL_3PC, protocol="IDPR",XDM_CONST.IP_PROTOCOL_IDPR, protocol="XTP",XDM_CONST.IP_PROTOCOL_XTP, protocol="DDP",XDM_CONST.IP_PROTOCOL_DDP, protocol="IDPR_CMTP",XDM_CONST.IP_PROTOCOL_IDPR_CMTP, protocol="TP",XDM_CONST.IP_PROTOCOL_TP, protocol="IL",XDM_CONST.IP_PROTOCOL_IL, protocol="IPV6",XDM_CONST.IP_PROTOCOL_IPV6, protocol="SDRP",XDM_CONST.IP_PROTOCOL_SDRP, protocol="IPV6_ROUTE",XDM_CONST.IP_PROTOCOL_IPV6_ROUTE, protocol="IPV6_FRAG",XDM_CONST.IP_PROTOCOL_IPV6_FRAG, protocol="IDRP",XDM_CONST.IP_PROTOCOL_IDRP, protocol="RSVP",XDM_CONST.IP_PROTOCOL_RSVP, protocol="GRE",XDM_CONST.IP_PROTOCOL_GRE, protocol="DSR",XDM_CONST.IP_PROTOCOL_DSR, protocol="BNA",XDM_CONST.IP_PROTOCOL_BNA, protocol="ESP",XDM_CONST.IP_PROTOCOL_ESP, protocol="AH",XDM_CONST.IP_PROTOCOL_AH, protocol="I_NLSP",XDM_CONST.IP_PROTOCOL_I_NLSP, protocol="SWIPE",XDM_CONST.IP_PROTOCOL_SWIPE, protocol="NARP",XDM_CONST.IP_PROTOCOL_NARP, protocol="MOBILE",XDM_CONST.IP_PROTOCOL_MOBILE, protocol="TLSP",XDM_CONST.IP_PROTOCOL_TLSP, protocol="SKIP",XDM_CONST.IP_PROTOCOL_SKIP, protocol="IPV6_ICMP",XDM_CONST.IP_PROTOCOL_IPV6_ICMP, protocol="IPV6_NONXT",XDM_CONST.IP_PROTOCOL_IPV6_NONXT, protocol="IPV6_OPTS",XDM_CONST.IP_PROTOCOL_IPV6_OPTS, protocol="CFTP",XDM_CONST.IP_PROTOCOL_CFTP, protocol="SAT_EXPAK",XDM_CONST.IP_PROTOCOL_SAT_EXPAK, protocol="KRYPTOLAN",XDM_CONST.IP_PROTOCOL_KRYPTOLAN, protocol="RVD",XDM_CONST.IP_PROTOCOL_RVD, protocol="IPPC",XDM_CONST.IP_PROTOCOL_IPPC, protocol="SAT_MON",XDM_CONST.IP_PROTOCOL_SAT_MON, protocol="VISA",XDM_CONST.IP_PROTOCOL_VISA, protocol="IPCV",XDM_CONST.IP_PROTOCOL_IPCV, protocol="CPNX",XDM_CONST.IP_PROTOCOL_CPNX, protocol="CPHB",XDM_CONST.IP_PROTOCOL_CPHB, protocol="WSN",XDM_CONST.IP_PROTOCOL_WSN, protocol="PVP",XDM_CONST.IP_PROTOCOL_PVP, protocol="BR_SAT_MON",XDM_CONST.IP_PROTOCOL_BR_SAT_MON, protocol="SUN_ND",XDM_CONST.IP_PROTOCOL_SUN_ND, protocol="WB_MON",XDM_CONST.IP_PROTOCOL_WB_MON, protocol="WB_EXPAK",XDM_CONST.IP_PROTOCOL_WB_EXPAK, protocol="ISO_IP",XDM_CONST.IP_PROTOCOL_ISO_IP, protocol="VMTP",XDM_CONST.IP_PROTOCOL_VMTP, protocol="SECURE_VMTP",XDM_CONST.IP_PROTOCOL_SECURE_VMTP, protocol="VINES",XDM_CONST.IP_PROTOCOL_VINES, protocol="TTP",XDM_CONST.IP_PROTOCOL_TTP, protocol="NSFNET_IGP",XDM_CONST.IP_PROTOCOL_NSFNET_IGP, protocol="DGP",XDM_CONST.IP_PROTOCOL_DGP, protocol="TCF",XDM_CONST.IP_PROTOCOL_TCF, protocol="EIGRP",XDM_CONST.IP_PROTOCOL_EIGRP, protocol="OSPFIGP",XDM_CONST.IP_PROTOCOL_OSPFIGP, protocol="SPRITE_RPC",XDM_CONST.IP_PROTOCOL_SPRITE_RPC, protocol="LARP",XDM_CONST.IP_PROTOCOL_LARP, protocol="MTP",XDM_CONST.IP_PROTOCOL_MTP, protocol="AX25",XDM_CONST.IP_PROTOCOL_AX25, protocol="IPIP",XDM_CONST.IP_PROTOCOL_IPIP, protocol="MICP",XDM_CONST.IP_PROTOCOL_MICP, protocol="SCC_SP",XDM_CONST.IP_PROTOCOL_SCC_SP, protocol="ETHERIP",XDM_CONST.IP_PROTOCOL_ETHERIP, protocol="ENCAP",XDM_CONST.IP_PROTOCOL_ENCAP, protocol="GMTP",XDM_CONST.IP_PROTOCOL_GMTP, protocol="IFMP",XDM_CONST.IP_PROTOCOL_IFMP, protocol="PNNI",XDM_CONST.IP_PROTOCOL_PNNI, protocol="PIM",XDM_CONST.IP_PROTOCOL_PIM, protocol="ARIS",XDM_CONST.IP_PROTOCOL_ARIS, protocol="SCPS",XDM_CONST.IP_PROTOCOL_SCPS, protocol="QNX",XDM_CONST.IP_PROTOCOL_QNX, protocol="AN",XDM_CONST.IP_PROTOCOL_AN, protocol="IPCOMP",XDM_CONST.IP_PROTOCOL_IPCOMP, protocol="COMPAQ_PEER",XDM_CONST.IP_PROTOCOL_COMPAQ_PEER, protocol="IPX_IN_IP",XDM_CONST.IP_PROTOCOL_IPX_IN_IP, protocol="VRRP",XDM_CONST.IP_PROTOCOL_VRRP, protocol="PGM",XDM_CONST.IP_PROTOCOL_PGM, protocol="L2TP",XDM_CONST.IP_PROTOCOL_L2TP, protocol="DDX",XDM_CONST.IP_PROTOCOL_DDX, protocol="IATP",XDM_CONST.IP_PROTOCOL_IATP, protocol="STP",XDM_CONST.IP_PROTOCOL_STP, protocol="SRP",XDM_CONST.IP_PROTOCOL_SRP, protocol="UTI",XDM_CONST.IP_PROTOCOL_UTI, protocol="SMP",XDM_CONST.IP_PROTOCOL_SMP, protocol="SM",XDM_CONST.IP_PROTOCOL_SM, protocol="PTP",XDM_CONST.IP_PROTOCOL_PTP, protocol="ISIS",XDM_CONST.IP_PROTOCOL_ISIS, protocol="FIRE",XDM_CONST.IP_PROTOCOL_FIRE, protocol="CRTP",XDM_CONST.IP_PROTOCOL_CRTP, protocol="CRUDP",XDM_CONST.IP_PROTOCOL_CRUDP, protocol="SSCOPMCE",XDM_CONST.IP_PROTOCOL_SSCOPMCE, protocol="IPLT",XDM_CONST.IP_PROTOCOL_IPLT, protocol="SPS",XDM_CONST.IP_PROTOCOL_SPS, protocol="PIPE",XDM_CONST.IP_PROTOCOL_PIPE, protocol="SCTP",XDM_CONST.IP_PROTOCOL_SCTP, protocol="FC",XDM_CONST.IP_PROTOCOL_FC, protocol="RSVP_E2E_IGNORE",XDM_CONST.IP_PROTOCOL_RSVP_E2E_IGNORE, protocol="MOBILITY",XDM_CONST.IP_PROTOCOL_MOBILITY, protocol="UDPLITE",XDM_CONST.IP_PROTOCOL_UDPLITE, protocol="MPLS_IN_IP",XDM_CONST.IP_PROTOCOL_MPLS_IN_IP,to_string(protocol)),
-    xdm.event.original_event_type = to_string(event_id),
-    xdm.event.id = to_string(event_id),
-    xdm.event.description = message,
+
+// determine if src & dst peers should be swapped 
+| alter is_teardown_direction_swap = if(event_id in (302014, 302016) and ( // tcp & udp connection teardown 
+    src_ip = "255.255.255.255" // broadcast 
+    or incidr(src_ip, "224.0.0.0/4") // multicast 
+    or (source_port < 1024 and dest_port >= 1024) // well known ports 
+    or (protocol = "UDP" and (source_port = 2944 or (source_port = 67 and dest_port = 68))))) // Megaco H248 / DHCP
+
+| alter // XDM mappings 
     xdm.alert.severity = severity,
-    xdm.source.ipv4 = src_ip,
-    xdm.source.port = to_integer(source_port),
-    xdm.source.zone = source_interface,
-    xdm.source.sent_bytes = to_integer(bytes),
-    xdm.target.ipv4 = dest_ip,
-    xdm.target.port = to_integer(dest_port),
-    xdm.target.zone = dest_interface,
-    xdm.source.user.username = coalesce(source_username,dst_username),
-    xdm.target.user.username = coalesce(source_username,dst_username),
+    xdm.event.description = message,
+    xdm.event.duration = to_integer(duration),
+    xdm.event.id = to_string(event_id),
+    xdm.event.is_completed = if(action contains "Teardown" or _raw_log contains "Teardown", true, false),
+    xdm.event.original_event_type = to_string(event_id),
+    xdm.event.outcome_reason = action,
     xdm.network.icmp.code = to_integer(icmp_code),
     xdm.network.icmp.type = to_integer(icmp_type),
-    xdm.event.outcome_reason = action,
-    xdm.event.duration = to_integer(duration),
+    xdm.network.ip_protocol = if(protocol="HOPOPT",XDM_CONST.IP_PROTOCOL_HOPOPT, protocol="ICMP",XDM_CONST.IP_PROTOCOL_ICMP, protocol="IGMP",XDM_CONST.IP_PROTOCOL_IGMP, protocol="GGP",XDM_CONST.IP_PROTOCOL_GGP, protocol="IP",XDM_CONST.IP_PROTOCOL_IP, protocol="ST",XDM_CONST.IP_PROTOCOL_ST, protocol="TCP",XDM_CONST.IP_PROTOCOL_TCP, protocol="CBT",XDM_CONST.IP_PROTOCOL_CBT, protocol="EGP",XDM_CONST.IP_PROTOCOL_EGP, protocol="IGP",XDM_CONST.IP_PROTOCOL_IGP, protocol="BBN_RCC_MON",XDM_CONST.IP_PROTOCOL_BBN_RCC_MON, protocol="NVP_II",XDM_CONST.IP_PROTOCOL_NVP_II, protocol="PUP",XDM_CONST.IP_PROTOCOL_PUP, protocol="ARGUS",XDM_CONST.IP_PROTOCOL_ARGUS, protocol="EMCON",XDM_CONST.IP_PROTOCOL_EMCON, protocol="XNET",XDM_CONST.IP_PROTOCOL_XNET, protocol="CHAOS",XDM_CONST.IP_PROTOCOL_CHAOS, protocol="UDP",XDM_CONST.IP_PROTOCOL_UDP, protocol="MUX",XDM_CONST.IP_PROTOCOL_MUX, protocol="DCN_MEAS",XDM_CONST.IP_PROTOCOL_DCN_MEAS, protocol="HMP",XDM_CONST.IP_PROTOCOL_HMP, protocol="PRM",XDM_CONST.IP_PROTOCOL_PRM, protocol="XNS_IDP",XDM_CONST.IP_PROTOCOL_XNS_IDP, protocol="TRUNK_1",XDM_CONST.IP_PROTOCOL_TRUNK_1, protocol="TRUNK_2",XDM_CONST.IP_PROTOCOL_TRUNK_2, protocol="LEAF_1",XDM_CONST.IP_PROTOCOL_LEAF_1, protocol="LEAF_2",XDM_CONST.IP_PROTOCOL_LEAF_2, protocol="RDP",XDM_CONST.IP_PROTOCOL_RDP, protocol="IRTP",XDM_CONST.IP_PROTOCOL_IRTP, protocol="ISO_TP4",XDM_CONST.IP_PROTOCOL_ISO_TP4, protocol="NETBLT",XDM_CONST.IP_PROTOCOL_NETBLT, protocol="MFE_NSP",XDM_CONST.IP_PROTOCOL_MFE_NSP, protocol="MERIT_INP",XDM_CONST.IP_PROTOCOL_MERIT_INP, protocol="DCCP",XDM_CONST.IP_PROTOCOL_DCCP, protocol="3PC",XDM_CONST.IP_PROTOCOL_3PC, protocol="IDPR",XDM_CONST.IP_PROTOCOL_IDPR, protocol="XTP",XDM_CONST.IP_PROTOCOL_XTP, protocol="DDP",XDM_CONST.IP_PROTOCOL_DDP, protocol="IDPR_CMTP",XDM_CONST.IP_PROTOCOL_IDPR_CMTP, protocol="TP",XDM_CONST.IP_PROTOCOL_TP, protocol="IL",XDM_CONST.IP_PROTOCOL_IL, protocol="IPV6",XDM_CONST.IP_PROTOCOL_IPV6, protocol="SDRP",XDM_CONST.IP_PROTOCOL_SDRP, protocol="IPV6_ROUTE",XDM_CONST.IP_PROTOCOL_IPV6_ROUTE, protocol="IPV6_FRAG",XDM_CONST.IP_PROTOCOL_IPV6_FRAG, protocol="IDRP",XDM_CONST.IP_PROTOCOL_IDRP, protocol="RSVP",XDM_CONST.IP_PROTOCOL_RSVP, protocol="GRE",XDM_CONST.IP_PROTOCOL_GRE, protocol="DSR",XDM_CONST.IP_PROTOCOL_DSR, protocol="BNA",XDM_CONST.IP_PROTOCOL_BNA, protocol="ESP",XDM_CONST.IP_PROTOCOL_ESP, protocol="AH",XDM_CONST.IP_PROTOCOL_AH, protocol="I_NLSP",XDM_CONST.IP_PROTOCOL_I_NLSP, protocol="SWIPE",XDM_CONST.IP_PROTOCOL_SWIPE, protocol="NARP",XDM_CONST.IP_PROTOCOL_NARP, protocol="MOBILE",XDM_CONST.IP_PROTOCOL_MOBILE, protocol="TLSP",XDM_CONST.IP_PROTOCOL_TLSP, protocol="SKIP",XDM_CONST.IP_PROTOCOL_SKIP, protocol="IPV6_ICMP",XDM_CONST.IP_PROTOCOL_IPV6_ICMP, protocol="IPV6_NONXT",XDM_CONST.IP_PROTOCOL_IPV6_NONXT, protocol="IPV6_OPTS",XDM_CONST.IP_PROTOCOL_IPV6_OPTS, protocol="CFTP",XDM_CONST.IP_PROTOCOL_CFTP, protocol="SAT_EXPAK",XDM_CONST.IP_PROTOCOL_SAT_EXPAK, protocol="KRYPTOLAN",XDM_CONST.IP_PROTOCOL_KRYPTOLAN, protocol="RVD",XDM_CONST.IP_PROTOCOL_RVD, protocol="IPPC",XDM_CONST.IP_PROTOCOL_IPPC, protocol="SAT_MON",XDM_CONST.IP_PROTOCOL_SAT_MON, protocol="VISA",XDM_CONST.IP_PROTOCOL_VISA, protocol="IPCV",XDM_CONST.IP_PROTOCOL_IPCV, protocol="CPNX",XDM_CONST.IP_PROTOCOL_CPNX, protocol="CPHB",XDM_CONST.IP_PROTOCOL_CPHB, protocol="WSN",XDM_CONST.IP_PROTOCOL_WSN, protocol="PVP",XDM_CONST.IP_PROTOCOL_PVP, protocol="BR_SAT_MON",XDM_CONST.IP_PROTOCOL_BR_SAT_MON, protocol="SUN_ND",XDM_CONST.IP_PROTOCOL_SUN_ND, protocol="WB_MON",XDM_CONST.IP_PROTOCOL_WB_MON, protocol="WB_EXPAK",XDM_CONST.IP_PROTOCOL_WB_EXPAK, protocol="ISO_IP",XDM_CONST.IP_PROTOCOL_ISO_IP, protocol="VMTP",XDM_CONST.IP_PROTOCOL_VMTP, protocol="SECURE_VMTP",XDM_CONST.IP_PROTOCOL_SECURE_VMTP, protocol="VINES",XDM_CONST.IP_PROTOCOL_VINES, protocol="TTP",XDM_CONST.IP_PROTOCOL_TTP, protocol="NSFNET_IGP",XDM_CONST.IP_PROTOCOL_NSFNET_IGP, protocol="DGP",XDM_CONST.IP_PROTOCOL_DGP, protocol="TCF",XDM_CONST.IP_PROTOCOL_TCF, protocol="EIGRP",XDM_CONST.IP_PROTOCOL_EIGRP, protocol="OSPFIGP",XDM_CONST.IP_PROTOCOL_OSPFIGP, protocol="SPRITE_RPC",XDM_CONST.IP_PROTOCOL_SPRITE_RPC, protocol="LARP",XDM_CONST.IP_PROTOCOL_LARP, protocol="MTP",XDM_CONST.IP_PROTOCOL_MTP, protocol="AX25",XDM_CONST.IP_PROTOCOL_AX25, protocol="IPIP",XDM_CONST.IP_PROTOCOL_IPIP, protocol="MICP",XDM_CONST.IP_PROTOCOL_MICP, protocol="SCC_SP",XDM_CONST.IP_PROTOCOL_SCC_SP, protocol="ETHERIP",XDM_CONST.IP_PROTOCOL_ETHERIP, protocol="ENCAP",XDM_CONST.IP_PROTOCOL_ENCAP, protocol="GMTP",XDM_CONST.IP_PROTOCOL_GMTP, protocol="IFMP",XDM_CONST.IP_PROTOCOL_IFMP, protocol="PNNI",XDM_CONST.IP_PROTOCOL_PNNI, protocol="PIM",XDM_CONST.IP_PROTOCOL_PIM, protocol="ARIS",XDM_CONST.IP_PROTOCOL_ARIS, protocol="SCPS",XDM_CONST.IP_PROTOCOL_SCPS, protocol="QNX",XDM_CONST.IP_PROTOCOL_QNX, protocol="AN",XDM_CONST.IP_PROTOCOL_AN, protocol="IPCOMP",XDM_CONST.IP_PROTOCOL_IPCOMP, protocol="COMPAQ_PEER",XDM_CONST.IP_PROTOCOL_COMPAQ_PEER, protocol="IPX_IN_IP",XDM_CONST.IP_PROTOCOL_IPX_IN_IP, protocol="VRRP",XDM_CONST.IP_PROTOCOL_VRRP, protocol="PGM",XDM_CONST.IP_PROTOCOL_PGM, protocol="L2TP",XDM_CONST.IP_PROTOCOL_L2TP, protocol="DDX",XDM_CONST.IP_PROTOCOL_DDX, protocol="IATP",XDM_CONST.IP_PROTOCOL_IATP, protocol="STP",XDM_CONST.IP_PROTOCOL_STP, protocol="SRP",XDM_CONST.IP_PROTOCOL_SRP, protocol="UTI",XDM_CONST.IP_PROTOCOL_UTI, protocol="SMP",XDM_CONST.IP_PROTOCOL_SMP, protocol="SM",XDM_CONST.IP_PROTOCOL_SM, protocol="PTP",XDM_CONST.IP_PROTOCOL_PTP, protocol="ISIS",XDM_CONST.IP_PROTOCOL_ISIS, protocol="FIRE",XDM_CONST.IP_PROTOCOL_FIRE, protocol="CRTP",XDM_CONST.IP_PROTOCOL_CRTP, protocol="CRUDP",XDM_CONST.IP_PROTOCOL_CRUDP, protocol="SSCOPMCE",XDM_CONST.IP_PROTOCOL_SSCOPMCE, protocol="IPLT",XDM_CONST.IP_PROTOCOL_IPLT, protocol="SPS",XDM_CONST.IP_PROTOCOL_SPS, protocol="PIPE",XDM_CONST.IP_PROTOCOL_PIPE, protocol="SCTP",XDM_CONST.IP_PROTOCOL_SCTP, protocol="FC",XDM_CONST.IP_PROTOCOL_FC, protocol="RSVP_E2E_IGNORE",XDM_CONST.IP_PROTOCOL_RSVP_E2E_IGNORE, protocol="MOBILITY",XDM_CONST.IP_PROTOCOL_MOBILITY, protocol="UDPLITE",XDM_CONST.IP_PROTOCOL_UDPLITE, protocol="MPLS_IN_IP",XDM_CONST.IP_PROTOCOL_MPLS_IN_IP,to_string(protocol)),
+    xdm.network.session_id = connection_id,
     xdm.observer.name = observer_name,
-    xdm.network.session_id= connection_id,
-    xdm.event.is_completed = if(action contains "Teardown",true, false);
+    xdm.session_context_id = connection_id,
+    xdm.source.host.hostname = if(is_teardown_direction_swap, dest_host, source_host), 
+    xdm.source.interface = if(is_teardown_direction_swap, dest_interface, source_interface),
+    xdm.source.ipv4 = if(is_teardown_direction_swap, dest_ip, src_ip),
+    xdm.source.port = if(is_teardown_direction_swap, dest_port, source_port),
+    xdm.source.sent_bytes = if(not is_teardown_direction_swap, sent_bytes),
+    xdm.source.user.username = if(is_teardown_direction_swap, dst_username, source_username),
+    xdm.source.zone = if(is_teardown_direction_swap, dest_interface, source_interface),
+    xdm.target.host.hostname = if(is_teardown_direction_swap, source_host, dest_host), 
+    xdm.target.interface = if(is_teardown_direction_swap, source_interface, dest_interface),
+    xdm.target.ipv4 = if(is_teardown_direction_swap, src_ip, dest_ip),
+    xdm.target.port = if(is_teardown_direction_swap, source_port, dest_port),
+    xdm.target.sent_bytes = if(is_teardown_direction_swap, sent_bytes),
+    xdm.target.user.username = if(is_teardown_direction_swap, source_username, dst_username),
+    xdm.target.zone = if(is_teardown_direction_swap, source_interface, dest_interface);
 
 //from <source_ip>/<source_port> to <dst_interface>:<dst_ip>:<dst_port>
 //from <source_ip>/<source_port> to <dst_interface>:<dst_ip>:<protocol>
@@ -1034,7 +1058,7 @@ config case_sensitive = true
     state2 = arrayindex(regextract(_raw_log ,"from\s[A-Za-z]+\sto\s[A-Za-z]+\,\sLoading\s([A-Za-z]+)"),0),
     alert_msg = arrayindex(regextract(_raw_log ,"\([^\)]+\)\sis\s[A-Za-z]+\:\s(.*)"),0),
     process_id = arrayindex(regextract(_raw_log ,"\d+\:\sProcess\s(\d+)\,"),0),
-    src_username = arrayindex(regextract(_raw_log ,"User\s([A-Za-z\.]+)"),0),
+    src_username = arrayindex(regextract(_raw_log ,"User\s([\w\.]+)"),0),
     network_rule = arrayindex(regextract(_raw_log ,"for\sthis\sconnection\:\s([A-Za-z]+)"),0),
     protocol1 = arrayindex(regextract(_raw_log ,"PASSWORD\:\s([A-Z]+)\/"),0),
     protocol2 = arrayindex(regextract(_raw_log ,"Configuration\srequest\sfor\s([A-Z]+)\s"),0),

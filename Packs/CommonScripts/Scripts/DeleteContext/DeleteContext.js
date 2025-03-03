@@ -8,29 +8,30 @@ function errorEntry(text) {
     };
 }
 
-function hasDuplicates(arr) {
-    return arr.some( function(item) {
-        return arr.indexOf(item) !== arr.lastIndexOf(item);
-    });
-}
-
 /**
  * Deletes keys from the context and handles errors.
  * @param {Array<string>} keysToDelete - An array of keys to delete.
+ * @param {Array<string>} _keysToKeep - An array of keys to keep.
  * @returns {string} A message summarizing the outcome of the delete operation.
  */
-function deleteKeys(keysToDelete = []) {
+function deleteKeys(keysToDelete = [], _keysToKeep = [], keepDBotScoreKey = false) {
     var deletedKeys = []
     var errors = []
     var message = '';
     for (var key of keysToDelete) {
+        if (key == DBOT_SCORE_KEY && keepDBotScoreKey){
+            continue;
+        }
         const originalKey = typeof key === "string" ? key.trim() : key;
         const keyToDelete = isSubPlaybookKey ? 'subplaybook-${currentPlaybookID}.' + originalKey: originalKey;
         const result = executeCommand('delContext', { key: keyToDelete });
         if (!result || result.type === entryTypes.error ) {
             errors.push(result.Contents);
         } else {
-            deletedKeys.push(key);
+            // Do not state deletion of _keysToKeep since they are re-created.
+            if (_keysToKeep.indexOf(keyToDelete) === -1) {
+                deletedKeys.push(key);
+            }
         }
     }
     if (deletedKeys.length > 0) {
@@ -39,10 +40,10 @@ function deleteKeys(keysToDelete = []) {
     return errors.join(LINE_SEPARATOR) + LINE_SEPARATOR + message;
 }
 
+const DBOT_SCORE_KEY = 'DBotScore';
 var shouldDeleteAll = (args.all === 'yes');
 var isSubPlaybookKey = (args.subplaybook === 'yes');
 var keysToKeep = (args.keysToKeep) ? args.keysToKeep.split(',').map(item => item.trim()) : [];
-
 if (args.subplaybook === 'auto') {
     var res = executeCommand('Print', { value: 'id=${currentPlaybookID}' });
     if (res && res[0].Contents && res[0].Contents.startsWith('id=')) {
@@ -61,23 +62,22 @@ if (!shouldDeleteAll && !args.key) {
 
 if (shouldDeleteAll) {
     var keysToKeepObj = {};
-    var KeepDBotScoreKey = false;
+    var keepDBotScoreKey = false;
+    var value;
+    
     index = keysToKeep.indexOf("DBotScore");
     if (index > -1) {
-      keysToKeep.splice(index, 1);
-      KeepDBotScoreKey = true;
+        keysToKeep.splice(index, 1);
+        keepDBotScoreKey = true;
     }
-    var value;
+    
+    // Collect all the keys to keep.
     for (var i = 0; i < keysToKeep.length; i++) {
         value = dq(invContext, keysToKeep[i]);
         if (value !== null && value !== undefined) {
             // in case the original path has a reference to a list indexing of the form "root.[0].path" or "root.[1]" remove it.
             new_context_path = keysToKeep[i].replace(/\.\[\d+\]/g, '');
 
-            if (Array.isArray(value) && hasDuplicates(value)) {
-                setContext(new_context_path, value);
-                continue;
-            }
             // in case user asks to keep the same key in different array elements, for example: Key.[0].Name,Key.[1].Name
             if (new_context_path in keysToKeepObj) {
                 if (!Array.isArray(keysToKeepObj[new_context_path])) {
@@ -90,7 +90,8 @@ if (shouldDeleteAll) {
         }
     }
     var keysToDelete = Object.keys(invContext);
-    var message = deleteKeys(keysToDelete);
+    // Delete all the keys, do not state deletion of keysToKeep since they are re-created.
+    var message = deleteKeys(keysToDelete, keysToKeep, keepDBotScoreKey);
 
     return {
         Type: entryTypes.note,
@@ -98,6 +99,7 @@ if (shouldDeleteAll) {
         ContentsFormat: formats.text,
         HumanReadable: message,
         ReadableContentsFormat: formats.markdown,
+        // Re-create keysToKeep with collected object.
         EntryContext: keysToKeepObj
     };
 

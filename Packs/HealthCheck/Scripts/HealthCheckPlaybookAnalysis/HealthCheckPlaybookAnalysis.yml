@@ -7,7 +7,7 @@ comment: Parsing playbooks.
 commonfields:
   id: HealthCheckPlaybookAnalysis
   version: -1
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.11.10.111526
 enabled: true
 name: HealthCheckPlaybookAnalysis
 runas: DBotWeakRole

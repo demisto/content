@@ -2,7 +2,7 @@
     "name": "Censys",
     "description": "Censys is a search engine that allows computer scientists to ask questions about the devices and networks that compose the Internet. Driven by Internet-wide scanning, Censys lets researchers find specific hosts and create aggregate reports on how devices, websites, and certificates are configured and deployed.",
     "support": "xsoar",
-    "currentVersion": "2.0.29",
+    "currentVersion": "2.0.31",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

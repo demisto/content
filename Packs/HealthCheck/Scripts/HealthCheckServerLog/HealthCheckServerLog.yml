@@ -6,7 +6,7 @@ comment: Read server log file line by line and display warnings, fatal errors an
 commonfields:
   id: HealthCheckServerLog
   version: -1
-dockerimage: demisto/python3:3.10.9.46032
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 name: HealthCheckServerLog
 runas: DBotWeakRole

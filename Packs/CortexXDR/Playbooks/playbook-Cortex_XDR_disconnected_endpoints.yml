@@ -34,13 +34,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "12"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 20
+          "x": 50,
+          "y": 50
         }
       }
     note: false
@@ -50,60 +50,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
-    taskid: b438c457-bde4-4f03-8e38-f8aeee661f1b
-    type: regular
-    task:
-      id: b438c457-bde4-4f03-8e38-f8aeee661f1b
-      version: -1
-      name: 'Get XDR disconnected endpoints '
-      description: Gets a list of endpoints, according to the passed filters. If there
-        are no filters, all endpoints are returned. Filtering by multiple fields will
-        be concatenated using the AND condition (OR is not supported). The maximum
-        result set size is 100. Offset is the zero-based number of the endpoint from
-        the start of the result set (start by counting from 0).
-      script: '|||xdr-get-endpoints'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      last_seen_gte:
-        complex:
-          root: inputs.LastSeenStartDate
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.LastSeenStartDate
-                iscontext: true
-      last_seen_lte:
-        complex:
-          root: inputs.LastSeenEndDate
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.LastSeenEndDate
-                iscontext: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 145
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "2":
     id: "2"
     taskid: 12957918-32bb-4c3b-8cdc-4b149812f2f7
@@ -115,10 +62,10 @@ tasks:
       description: Export the given array to a CSV file.
       tags:
       - Endpoint report
-      scriptName: ExportToCSV
       type: regular
       iscommand: false
       brand: ""
+      script: ExportToCSV
     nexttasks:
       '#none#':
       - "9"
@@ -150,7 +97,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 605
+          "y": 545
         }
       }
     note: false
@@ -160,12 +107,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "3":
     id: "3"
-    taskid: bbf59aee-7646-48d3-881d-3dda5c1f2052
+    taskid: 7b27a983-42e1-408d-8c6f-2c672b3f353f
     type: regular
     task:
-      id: bbf59aee-7646-48d3-881d-3dda5c1f2052
+      id: 7b27a983-42e1-408d-8c6f-2c672b3f353f
       version: -1
       name: Mail disconnected endpoints report
       description: Sends an mail using Gmail/EWS.
@@ -185,7 +133,7 @@ tasks:
         complex:
           root: inputs.MessageBody
       subject:
-        simple: Cortex XDR Discconcted endpoints
+        simple: Cortex XDR Disconnected Endpoints
       to:
         complex:
           root: inputs.Email
@@ -193,8 +141,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1000
+          "x": 50,
+          "y": 895
         }
       }
     note: false
@@ -204,6 +152,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "4":
     id: "4"
     taskid: 6daa6400-3c03-4285-8c7a-672e14d9bf8c
@@ -220,8 +169,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1840
+          "x": 50,
+          "y": 1770
         }
       }
     note: false
@@ -231,6 +180,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "5":
     id: "5"
     taskid: fa23f54f-4e1c-44dd-8ad7-d5c1ae59b2ca
@@ -276,8 +226,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 330
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -287,6 +237,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "6":
     id: "6"
     taskid: 004b7e07-9e8a-4ec3-8c63-a02e05bab64e
@@ -295,8 +246,7 @@ tasks:
       id: 004b7e07-9e8a-4ec3-8c63-a02e05bab64e
       version: -1
       name: Count involved users and hosts
-      description: Count the users and hosts involved in the incidents and insert
-        the amount in the incident field,
+      description: Count the users and hosts involved in the incidents and insert the amount in the incident field,
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -356,7 +306,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1190
+          "y": 1070
         }
       }
     note: false
@@ -366,6 +316,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "7":
     id: "7"
     taskid: db61aeaf-0ea6-4a74-88e1-67d2909483d2
@@ -375,17 +326,16 @@ tasks:
       version: -1
       name: Set endpoints grid
       description: Creates a grid table from items or key-value pairs.
-      scriptName: SetGridField
       type: regular
       iscommand: false
       brand: ""
+      script: SetGridField
     nexttasks:
       '#none#':
       - "10"
     scriptarguments:
       columns:
-        simple: Endpoint Name,Endpoint Status,Endpoint OS,Endpoint ID,Endpoint Last
-          Seen
+        simple: Endpoint Name,Endpoint Status,Endpoint OS,Endpoint ID,Endpoint Last Seen
       context_path:
         simple: XDR.DisconnectedEndpoints
       grid_id:
@@ -397,7 +347,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1510
+          "y": 1420
         }
       }
     note: false
@@ -407,19 +357,25 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "8":
     id: "8"
-    taskid: fec15313-a2c7-445c-8fff-808bce828aea
+    taskid: 6efdd411-a1da-45eb-8e58-49fbe793acd3
     type: regular
     task:
-      id: fec15313-a2c7-445c-8fff-808bce828aea
+      id: 6efdd411-a1da-45eb-8e58-49fbe793acd3
       version: -1
       name: Set disconnected endpoints
-      description: Set a value in context under the key you entered.
-      scriptName: Set
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Automations
       type: regular
       iscommand: false
       brand: ""
+      script: SetAndHandleEmpty
     nexttasks:
       '#none#':
       - "7"
@@ -441,7 +397,7 @@ tasks:
             - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.EndpoiPaloAltoNetworksXDR.Endpoint.endpoint_status
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
                 iscontext: true
               right:
                 value:
@@ -451,7 +407,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1345
+          "y": 1245
         }
       }
     note: false
@@ -461,6 +417,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "9":
     id: "9"
     taskid: 64c667fe-c0c9-45e5-8a98-36853b612485
@@ -492,7 +449,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 770
+          "y": 720
         }
       }
     note: false
@@ -502,6 +459,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "10":
     id: "10"
     taskid: 531e649f-d89d-4269-8cbd-e1e041e272f9
@@ -522,8 +480,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1680
+          "x": 50,
+          "y": 1595
         }
       }
     note: false
@@ -533,7 +491,64 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
+    continueonerrortype: ""
+  "12":
+    continueonerrortype: ""
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all_results:
+        simple: "false"
+      last_seen_gte:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: inputs.LastSeenStartDate
+              operator: isNotEmpty
+          root: inputs.LastSeenStartDate
+      last_seen_lte:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: inputs.LastSeenEndDate
+              operator: isNotEmpty
+          root: inputs.LastSeenEndDate
+      status:
+        simple: disconnected,lost
+      use_hr_timestamps:
+        simple: "true"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoints from the start of the result set. (Start by counting from 0).
+      id: 731a66f9-21d4-472a-8924-abf1fc7bf686
+      iscommand: true
+      name: Get XDR disconnected endpoints
+      script: '|||xdr-get-endpoints'
+      type: regular
+      version: -1
+    taskid: 731a66f9-21d4-472a-8924-abf1fc7bf686
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {
@@ -543,10 +558,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1885,
-        "width": 380,
-        "x": 162.5,
-        "y": 20
+        "height": 1785,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
       }
     }
   }
@@ -559,8 +574,7 @@ inputs:
 - key: LastSeenEndDate
   value: {}
   required: false
-  description: "Last seen end date, in relative timestamp - \"1 Day\" or  \"7 days\"\
-    \ \nFor the current day use \"0 days\""
+  description: "Last seen end date, in relative timestamp - \"1 Day\" or  \"7 days\" \nFor the current day use \"0 days\""
   playbookInputQuery:
 - key: Email
   value: {}
@@ -577,5 +591,18 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- No tests (auto formatted)
+- Test XDR Playbook general commands
+- Test XDR Playbook
 fromversion: 5.5.0
+inputSections:
+- description: Generic group for inputs.
+  inputs:
+  - LastSeenStartDate
+  - LastSeenEndDate
+  - Email
+  - MessageBody
+  name: General (Inputs group)
+outputSections:
+- description: Generic group for outputs.
+  name: General (Outputs group)
+  outputs: []

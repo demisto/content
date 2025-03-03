@@ -228,7 +228,7 @@ def test_get_password_invalid():
     with pytest.raises(ValueError) as e:
         get_password(ARGS_BOTH_PASSWORDS_NOT_IDENTICAL)
         if not e:
-            assert False
+            raise AssertionError
 
 
 def test_archive_with_slash_in_path():

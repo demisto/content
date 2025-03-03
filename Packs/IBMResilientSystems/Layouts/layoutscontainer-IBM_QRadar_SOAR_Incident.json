@@ -1,0 +1,761 @@
+{
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "id": "caseinfoid",
+                "name": "Incident Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "name",
+                                "height": 26,
+                                "id": "a4c72620-4a62-11ef-a450-29f69179b85b",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "ibmsecurityqradarsoarname",
+                                "height": 26,
+                                "id": "35f3c630-75ba-11ef-bf13-4542c05a6165",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "description",
+                                "height": 26,
+                                "id": "b30144f0-4a62-11ef-a450-29f69179b85b",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "breachconfirmation",
+                                "height": 26,
+                                "id": "bdbfd190-4a62-11ef-a450-29f69179b85b",
+                                "index": 3,
+                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "ibmsecurityqradarsoarphase",
+                                "height": 26,
+                                "id": "3c5bf100-75ba-11ef-bf13-4542c05a6165",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 26,
+                                "id": "4e32bb20-4a63-11ef-a450-29f69179b85b",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "ibmsecurityqradarsoarresolution",
+                                "height": 26,
+                                "id": "66e38b90-75ba-11ef-bf13-4542c05a6165",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "ibmsecurityqradarsoarresolutionsummary",
+                                "height": 52,
+                                "id": "69f07d70-75ba-11ef-bf13-4542c05a6165",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 26,
+                                "id": "dd227990-62ed-11ef-9c1f-a7d53581a093",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Case Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                        "items": [
+                            {
+                                "endCol": 1,
+                                "fieldId": "occurred",
+                                "height": 53,
+                                "id": "incident-occurred-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "dbotmodified",
+                                "height": 53,
+                                "id": "incident-modified-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotduedate",
+                                "height": 53,
+                                "id": "incident-dueDate-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotcreated",
+                                "height": 53,
+                                "id": "incident-created-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 53,
+                                "id": "incident-closed-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Timeline Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 5
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 26,
+                                "id": "incident-dbotClosed-field",
+                                "index": 0,
+                                "listId": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closereason",
+                                "height": 26,
+                                "id": "incident-closeReason-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closenotes",
+                                "height": 52,
+                                "id": "incident-closeNotes-field",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Closing Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 3,
+                        "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "ibmsecurityqradarsoardiscovereddate",
+                                "height": 53,
+                                "id": "712f0b10-75ba-11ef-bf13-4542c05a6165",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "ibmsecurityqradarsoarexposuretype",
+                                "height": 53,
+                                "id": "7437de40-75ba-11ef-bf13-4542c05a6165",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "ibmsecurityqradarsoarnistattackvectors",
+                                "height": 53,
+                                "id": "7d318960-75ba-11ef-bf13-4542c05a6165",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "ibmsecurityqradarsoarcriminalactivity",
+                                "height": 53,
+                                "id": "82f4c1a0-75ba-11ef-bf13-4542c05a6165",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "ibmsecurityqradarsoarnegativepr",
+                                "height": 26,
+                                "id": "893c9330-75ba-11ef-bf13-4542c05a6165",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "details",
+                                "height": 106,
+                                "id": "incident-details-field",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Investigation Data",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "caseinfoid-d20220e0-4a62-11ef-a450-29f69179b85b",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "ibmsecurityqradarsoarreportername",
+                                "height": 26,
+                                "id": "62aa9cd0-75ba-11ef-bf13-4542c05a6165",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "department",
+                                "height": 26,
+                                "id": "435f9510-4a63-11ef-a450-29f69179b85b",
+                                "index": 1,
+                                "listId": "caseinfoid-d20220e0-4a62-11ef-a450-29f69179b85b",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "displayname",
+                                "height": 26,
+                                "id": "217fb510-4a63-11ef-a450-29f69179b85b",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "firstname",
+                                "height": 26,
+                                "id": "0e98b000-4a63-11ef-a450-29f69179b85b",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "lastname",
+                                "height": 26,
+                                "id": "12eca0d0-4a63-11ef-a450-29f69179b85b",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "email",
+                                "height": 26,
+                                "id": "25d309a0-4a63-11ef-a450-29f69179b85b",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "phonenumber",
+                                "height": 26,
+                                "id": "29825600-4a63-11ef-a450-29f69179b85b",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "mobilephone",
+                                "height": 26,
+                                "id": "32bd4fe0-4a63-11ef-a450-29f69179b85b",
+                                "index": 7,
+                                "listId": "caseinfoid-d20220e0-4a62-11ef-a450-29f69179b85b",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "streetaddress",
+                                "height": 26,
+                                "id": "387f2890-4a63-11ef-a450-29f69179b85b",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "city",
+                                "height": 26,
+                                "id": "3d603e30-4a63-11ef-a450-29f69179b85b",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Reporter Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "caseinfoid-2c345b90-6d1e-11ef-9e38-4186d90d9e91",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "ibmsecurityqradarsoarcriminalactivity",
+                                "height": 26,
+                                "id": "90ae17b0-75ba-11ef-bf13-4542c05a6165",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "ibmsecurityqradarsoarexposuretype",
+                                "height": 26,
+                                "id": "946616a0-75ba-11ef-bf13-4542c05a6165",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "ibmsecurityqradarsoarnegativepr",
+                                "height": 26,
+                                "id": "96eebd50-75ba-11ef-bf13-4542c05a6165",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Implications",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 3
+                    },
+                    {
+                        "h": 4,
+                        "i": "caseinfoid-d32e6b80-6eb7-11ef-9ad0-fbeee90bca04",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Notes",
+                        "static": false,
+                        "type": "notes",
+                        "w": 1,
+                        "x": 1,
+                        "y": 3
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "notes",
+                "name": "Notes",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "notes-add-note",
+                        "items": [
+                            {
+                                "args": {
+                                    "note": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "tags": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": null,
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": "#dba039",
+                                "id": "Add a note to IBM QRadar SOAR incident",
+                                "index": 0,
+                                "listId": "notes-add-note",
+                                "name": "Add a note to IBM QRadar SOAR incident",
+                                "scriptId": "IbmAddNote",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "note_body": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "note_id": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "tags": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": null,
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": "#1e88e5",
+                                "id": "Update a note",
+                                "index": 0,
+                                "listId": "notes-update-note",
+                                "name": "Update a note",
+                                "scriptId": "IbmUpdateNote",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Buttons",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 7,
+                        "i": "notes-incident-notes",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "IBM Security QRadar SOAR SOAR Notes",
+                        "query": "IbmConvertCommentsToTable",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 2,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "h": 5,
+                        "i": "notes-92ca4270-6d1e-11ef-9e38-4186d90d9e91",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "New Notes",
+                        "static": false,
+                        "type": "notes",
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "tasks",
+                "name": "Tasks",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "tasks-buttons",
+                        "items": [
+                            {
+                                "args": {
+                                    "due_date": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "phase": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": null,
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": "#3197da",
+                                "id": "Press to add a task to the IBM QRadar SOAR incident",
+                                "index": 0,
+                                "listId": "tasks-buttons",
+                                "name": "Press to add a task to the IBM QRadar SOAR incident",
+                                "scriptId": "IbmAddTask",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "due_date": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "name": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "owner_id": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "phase": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "status": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "task_id": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": null,
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": "#28A745",
+                                "id": "Update task",
+                                "index": 1,
+                                "listId": "tasks-buttons",
+                                "name": "Update task",
+                                "scriptId": "IbmUpdateTask",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Buttons",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 6,
+                        "i": "tasks-incident-tasks",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "IBM Security QRadar SOAR SOAR Tasks",
+                        "query": "IbmConvertTasksToTable",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "attachments",
+                "name": "Attachments \u0026 Artifacts",
+                "sections": [
+                    {
+                        "h": 5,
+                        "i": "attachments-doslr3nm7o-ae2a3c40-6ca2-11ef-82f4-4d3bf40ccefd",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "New Incident Files",
+                        "query": {
+                            "categories": [
+                                "attachments"
+                            ],
+                            "lastId": "",
+                            "pageSize": 100,
+                            "tags": [],
+                            "users": []
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 3,
+                        "i": "attachments-6c7d00c0-6d1f-11ef-9e38-4186d90d9e91",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Malicious or Suspicious Indicators",
+                        "query": "reputation:Bad or reputation:Suspicious",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 3,
+                        "x": 0,
+                        "y": 8
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "i": "attachments-artifacts",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "IBM Security QRadar SOAR SOAR Artifacts",
+                        "query": "IbmConvertArtifactsToTable",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 5
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 5,
+                        "i": "attachments",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "IBM Security QRadar SOAR SOAR Attachments",
+                        "query": "IbmConvertAttachmentsToTable",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 2,
+                        "x": 1,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "IBM QRadar SOAR Incident",
+    "name": "IBM QRadar SOAR Incident",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "description": ""
+}

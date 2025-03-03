@@ -30,7 +30,7 @@
       "Alert.User.SidID": "971",
       "Alert.IngestTime": "2023-12-11T03:52:00",
       "Alert.Time": "2023-12-11T03:50:00",
-      "Url": "https://test.com/#/app/analytics/entity/Alert/A5F4B69A-F5C0-494F-B5B4-185185BC3FBE",
+      "Url": "https://test.com/analytics/entity/Alert/A5F4B69A-F5C0-494F-B5B4-185185BC3FBE",
       "Category": "Denial of Service",
       "ID": "A5F4B69A-F5C0-494F-B5B4-185185BC3FBE",
       "Name": "Deletion: Multiple directory service objects",
@@ -68,6 +68,8 @@
           "PrivilegedAccountType": "Admin",
           "Department": ""
         }
-      ]
+      ],
+      "mirror_direction": null, 
+      "mirror_instance": ""
     }
   ]

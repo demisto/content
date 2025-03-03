@@ -23,6 +23,50 @@
                 "Device Name": {
                     "simple": "device_name"
                 },
+                "MITRE Technique ID": {
+					"complex": {
+						"filters": [],
+						"root": "mitre_technique_ics_ids",
+						"transformers": [
+							{
+								"args": {
+									"item": {
+										"isContext": true,
+										"value": {
+											"simple": "mitre_technique_enterprise_ids"
+										}
+									}
+								},
+								"operator": "append"
+							},
+							{
+								"operator": "uniq"
+							}
+						]
+					}
+				},
+				"MITRE Technique Name": {
+					"complex": {
+						"filters": [],
+						"root": "mitre_technique_ics_names",
+						"transformers": [
+							{
+								"args": {
+									"item": {
+										"isContext": true,
+										"value": {
+											"simple": "mitre_technique_enterprise_names"
+										}
+									}
+								},
+								"operator": "append"
+							},
+							{
+								"operator": "uniq"
+							}
+						]
+					}
+				},
                 "Claroty xDome Alert Assignees": {
                     "simple": "alert_assignees"
                 },
@@ -34,6 +78,9 @@
                 },
                 "Claroty xDome Alert Type": {
                     "simple": "alert_type_name"
+                },
+                "Claroty xDome Alert Description": {
+                    "simple": "alert_description"
                 },
                 "Claroty xDome Device Assignees": {
                     "simple": "device_assignees"
@@ -121,6 +168,18 @@
                 },
                 "Claroty xDome Device-Alert Updated Time": {
                     "simple": "device_alert_updated_time"
+                },
+                "Claroty xDome Mitre Technique Enterprise IDs": {
+                    "simple": "mitre_technique_enterprise_ids"
+                },
+                "Claroty xDome Mitre Technique Enterprise Names": {
+                    "simple": "mitre_technique_enterprise_names"
+                },
+                "Claroty xDome Mitre Technique ICS IDs": {
+                    "simple": "mitre_technique_ics_ids"
+                },
+                "Claroty xDome Mitre Technique ICS Names": {
+                    "simple": "mitre_technique_ics_names"
                 }
             }
         }

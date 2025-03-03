@@ -1,23 +1,19 @@
 Cisco WSA
 This integration was integrated and tested with version vSeries-100 of Cisco-WSA
 
-## Configure CiscoWSA on Cortex XSOAR
+## Configure CiscoWSA in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for CiscoWSA.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | BASE_URL | True |
-    | API_KEY | True |
-    | PORT | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| BASE_URL | True |
+| API_KEY | True |
+| PORT | False |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### wsa-get-access-policies
 ***
@@ -748,4 +744,3 @@ Deleting an Access Policy
 >|wsa|
 >|---|
 >|  |
-

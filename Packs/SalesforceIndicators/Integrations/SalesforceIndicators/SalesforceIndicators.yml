@@ -97,7 +97,7 @@ configuration:
   name: key_field
   required: true
   type: 0
-- additionalinfo: "The SOQL filter to use (example: Id = '123' AND Name = 'Test')"
+- additionalinfo: 'The SOQL filter to use (example: Id = ''123'' AND Name = ''Test'')'
   display: Filter
   name: filter
   type: 12
@@ -141,7 +141,7 @@ script:
   - arguments: []
     name: salesforce-get-indicators
     description: Executes the fetch-indicators command
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.115186
   feed: true
   script: ''
   subtype: python3

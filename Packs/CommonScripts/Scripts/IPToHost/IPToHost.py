@@ -11,6 +11,9 @@ def ip_to_host(ip: str) -> CommandResults:
 
     hostname = host_info[0]
 
+    if str(hostname) == ip:
+        return CommandResults(readable_output=f"The IP address {ip} has no associated hostname.")
+
     output = {
         'Hostname': str(hostname),
         'IP': ip

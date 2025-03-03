@@ -2,13 +2,13 @@
     "name": "AWS - SNS",
     "description": "This is the integration content pack which can create or delete topic/subscription on AWS Simple Notification System and send the message via SNS as well.",
     "support": "xsoar",
-    "currentVersion": "1.0.15",
+    "currentVersion": "1.0.20",
     "author": "Jie Liau",
     "url": "",
     "email": "",
     "created": "2022-05-25T03:52:46Z",
     "categories": [
-        "Cloud Services"
+        "Cloud Service Provider"
     ],
     "tags": [],
     "useCases": [],

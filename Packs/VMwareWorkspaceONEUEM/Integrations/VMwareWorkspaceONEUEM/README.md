@@ -1,25 +1,21 @@
 VMware Workspace ONE UEM integration allows users to search enrolled corporate or employee-owned devices, provides detailed information about each device such as its serial number, installed OS's, pending OS updates, network details, and much more leveraging Workspace ONE UEM's (formerly AirWatch MDM) API.
 This integration was integrated and tested with version 21.5.0.4 of VMware Workspace ONE UEM (AirWatch MDM)
-## Configure VMware Workspace ONE UEM (AirWatch MDM) on Cortex XSOAR
+## Configure VMware Workspace ONE UEM (AirWatch MDM) in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for VMware Workspace ONE UEM (AirWatch MDM).
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL | Server URL to connect to VMware Workspace ONE UEM. | True |
-    | API Key | API key required for additional authorization. | True |
-    | Username | Username of administrative account with read access. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | Server URL to connect to VMware Workspace ONE UEM. | True |
+| API Key | API key required for additional authorization. | True |
+| Username | Username of administrative account with read access. | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## API Limitations
 - The [OS update](https://as1687.awmdm.com/api/help/#!/apis/10003?!%2FDevicesV2%2FDevicesV2_GetOSUpdatesByUUIDAsync) API returns an empty response for Windows devices even if updates can be seen in the UI.
 - As per the [devices search](https://as1687.awmdm.com/api/help/#!/apis/10003?!%2FDevicesV2%2FDevicesV2_SearchAsync) API, the model parameter doesn't work with values like iPhone 6s (32 GB Silver).
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### vmwuem-devices-search
 ***
@@ -569,4 +565,3 @@ Retrieves a list of all available OS and software updates for the specified devi
 >| 12345678-1234-1234-1234-123456789ABC | iOS | 14.6 | No | No | May 24, 2021 at 12:00:00 AM | October 09, 2021 at 12:00:00 AM |
 >| 12345678-1234-1234-1234-123456789ABC | iOS | 14.5.1 | No | No | May 03, 2021 at 12:00:00 AM | August 22, 2021 at 12:00:00 AM |
 >| 12345678-1234-1234-1234-123456789ABC | iOS | 14.5 | No | No | April 26, 2021 at 12:00:00 AM | August 01, 2021 at 12:00:00 AM |
-

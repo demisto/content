@@ -46,15 +46,20 @@ configuration:
   name: max_fetch
   type: 0
   required: false
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
 description: Use this Content Pack to search logs, fetch incident logs from LogPoint, analyze them for underlying threats, and respond to these threats in real-time.
 display: LogPoint SIEM Integration
 name: LogPoint SIEM Integration
 script:
   commands:
   - arguments:
-    - description: From Timestamp
+    - description: From Timestamp.
       name: ts_from
-    - description: To Timestamp
+    - description: To Timestamp.
       name: ts_to
     - description: Number of incidents to fetch. Accepts integer value.
       name: limit
@@ -62,82 +67,82 @@ script:
     name: lp-get-incidents
     outputs:
     - contextPath: LogPoint.Incidents.name
-      description: LogPoint Incident Name
+      description: LogPoint Incident Name.
       type: String
     - contextPath: LogPoint.Incidents.type
-      description: LogPoint Incident Type
+      description: LogPoint Incident Type.
       type: String
     - contextPath: LogPoint.Incidents.incident_id
-      description: LogPoint Incident ID
+      description: LogPoint Incident ID.
       type: String
     - contextPath: LogPoint.Incidents.assigned_to
-      description: LogPoint Incidents Assigned To
+      description: LogPoint Incidents Assigned To.
       type: String
     - contextPath: LogPoint.Incidents.status
-      description: LogPoint Incidents Status
+      description: LogPoint Incidents Status.
       type: String
     - contextPath: LogPoint.Incidents.id
-      description: LogPoint Incident Object ID
+      description: LogPoint Incident Object ID.
       type: String
     - contextPath: LogPoint.Incidents.detection_timestamp
-      description: LogPoint Incidents Detection Timestamp
+      description: LogPoint Incidents Detection Timestamp.
       type: Number
     - contextPath: LogPoint.Incidents.username
-      description: LogPoint Incident Username
+      description: LogPoint Incident Username.
       type: String
     - contextPath: LogPoint.Incidents.user_id
-      description: LogPoint Incidents User ID
+      description: LogPoint Incidents User ID.
       type: String
     - contextPath: LogPoint.Incidents.assigned_to
-      description: LogPoint Incidents Assigned To
+      description: LogPoint Incidents Assigned To.
       type: String
     - contextPath: LogPoint.Incidents.visible_to
-      description: LogPoint Incidents Visible To
+      description: LogPoint Incidents Visible To.
       type: String
     - contextPath: LogPoint.Incidents.tid
-      description: LogPoint Incidents Tid
+      description: LogPoint Incidents Tid.
       type: String
     - contextPath: LogPoint.Incidents.rows_count
-      description: LogPoint Incidents Rows Count
+      description: LogPoint Incidents Rows Count.
       type: String
     - contextPath: LogPoint.Incidents.risk_level
-      description: LogPoint Incidents Risk Level
+      description: LogPoint Incidents Risk Level.
       type: String
     - contextPath: LogPoint.Incidents.detection_timestamp
-      description: LogPoint Incidents Detection Timestamp
+      description: LogPoint Incidents Detection Timestamp.
       type: String
     - contextPath: LogPoint.Incidents.loginspect_ip_dns
-      description: LogPoint Incidents Loginspect IP DNS
+      description: LogPoint Incidents Loginspect IP DNS.
       type: String
     - contextPath: LogPoint.Incidents.status
-      description: LogPoint Incidents Status
+      description: LogPoint Incidents Status.
       type: String
     - contextPath: LogPoint.Incidents.comments
-      description: LogPoint Incidents Comments
+      description: LogPoint Incidents Comments.
       type: String
     - contextPath: LogPoint.Incidents.commentscount
-      description: LogPoint Incidents Comments Count
+      description: LogPoint Incidents Comments Count.
       type: Number
     - contextPath: LogPoint.Incidents.query
-      description: LogPoint Incidents Query
+      description: LogPoint Incidents Query.
       type: String
     - contextPath: LogPoint.Incidents.repos
-      description: LogPoint Incidents Repos
+      description: LogPoint Incidents Repos.
       type: String
     - contextPath: LogPoint.Incidents.time_range
-      description: LogPoint Incidents Time Range
+      description: LogPoint Incidents Time Range.
       type: String
     - contextPath: LogPoint.Incidents.alert_obj_id
-      description: LogPoint Incidents Alert Obj Id
+      description: LogPoint Incidents Alert Obj Id.
       type: String
     - contextPath: LogPoint.Incidents.throttle_enabled
-      description: LogPoint Incidents Throttle Enabled
+      description: LogPoint Incidents Throttle Enabled.
       type: Boolean
     - contextPath: LogPoint.Incidents.lastaction
-      description: LogPoint Incidents Last Action
+      description: LogPoint Incidents Last Action.
       type: String
     - contextPath: LogPoint.Incidents.description
-      description: LogPoint Incidents Description
+      description: LogPoint Incidents Description.
       type: String
   - arguments:
     - description: Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command.
@@ -149,403 +154,403 @@ script:
     - description: Incident Detection TImestamp. It is the value contained in 'detection_timestamp' key of the incidents obtained from 'lp-get-incidents' command.
       name: date
       required: true
-    description: Retrieves a Particular Incident's Data
+    description: Retrieves a Particular Incident's Data.
     name: lp-get-incident-data
     outputs:
     - contextPath: LogPoint.Incidents.data.use
-      description: LogPoint Incidents Data Use
+      description: LogPoint Incidents Data Use.
       type: String
     - contextPath: LogPoint.Incidents.data.used
-      description: LogPoint Incidents Data Used
+      description: LogPoint Incidents Data Used.
       type: String
     - contextPath: LogPoint.Incidents.data.log_ts
-      description: LogPoint Incidents Data Log Ts
+      description: LogPoint Incidents Data Log Ts.
       type: Number
     - contextPath: LogPoint.Incidents.data._type_str
-      description: LogPoint Incidents Data Type Str
+      description: LogPoint Incidents Data Type Str.
       type: String
     - contextPath: LogPoint.Incidents.data.msg
-      description: LogPoint Incidents Data Msg
+      description: LogPoint Incidents Data Msg.
       type: String
     - contextPath: LogPoint.Incidents.data.total
-      description: LogPoint Incidents Data Total
+      description: LogPoint Incidents Data Total.
       type: String
     - contextPath: LogPoint.Incidents.data.device_name
-      description: LogPoint Incidents Data Device Name
+      description: LogPoint Incidents Data Device Name.
       type: String
     - contextPath: LogPoint.Incidents.data._offset
-      description: LogPoint Incidents Data Offset
+      description: LogPoint Incidents Data Offset.
       type: String
     - contextPath: LogPoint.Incidents.data.logpoint_name
-      description: LogPoint Incidents Data LogPoint Name
+      description: LogPoint Incidents Data LogPoint Name.
       type: String
     - contextPath: LogPoint.Incidents.data.repo_name
-      description: LogPoint Incidents Data Repo Name
+      description: LogPoint Incidents Data Repo Name.
       type: String
     - contextPath: LogPoint.Incidents.data.free
-      description: LogPoint Incidents Data Free
+      description: LogPoint Incidents Data Free.
       type: String
     - contextPath: LogPoint.Incidents.data.source_name
-      description: LogPoint Incidents Data Source Name
+      description: LogPoint Incidents Data Source Name.
       type: String
     - contextPath: LogPoint.Incidents.data.col_ts
-      description: LogPoint Incidents Data Col Ts
+      description: LogPoint Incidents Data Col Ts.
       type: Number
     - contextPath: LogPoint.Incidents.data._tz
-      description: LogPoint Incidents Data Tz
+      description: LogPoint Incidents Data Tz.
       type: String
     - contextPath: LogPoint.Incidents.data.norm_id
-      description: LogPoint Incidents Data Norm Id
+      description: LogPoint Incidents Data Norm Id.
       type: String
     - contextPath: LogPoint.Incidents.data._identifier
-      description: LogPoint Incidents Data Identifier
+      description: LogPoint Incidents Data Identifier.
       type: String
     - contextPath: LogPoint.Incidents.data.collected_at
-      description: LogPoint Incidents Data Collected At
+      description: LogPoint Incidents Data Collected At.
       type: String
     - contextPath: LogPoint.Incidents.data.device_ip
-      description: LogPoint Incidents Data Device IP
+      description: LogPoint Incidents Data Device IP.
       type: String
     - contextPath: LogPoint.Incidents.data._fromV550
-      description: LogPoint Incidents Data From V550
+      description: LogPoint Incidents Data From V550.
       type: String
     - contextPath: LogPoint.Incidents.data._enrich_policy
-      description: LogPoint Incidents Data Enrich Policy
+      description: LogPoint Incidents Data Enrich Policy.
       type: String
     - contextPath: LogPoint.Incidents.data._type_num
-      description: LogPoint Incidents Data Type Num
+      description: LogPoint Incidents Data Type Num.
       type: String
     - contextPath: LogPoint.Incidents.data._type_ip
-      description: LogPoint Incidents Data Type IP
+      description: LogPoint Incidents Data Type IP.
       type: String
     - contextPath: LogPoint.Incidents.data.sig_id
-      description: LogPoint Incidents Data Sig Id
+      description: LogPoint Incidents Data Sig Id.
       type: String
     - contextPath: LogPoint.Incidents.data.col_type
-      description: LogPoint Incidents Data Col Type
+      description: LogPoint Incidents Data Col Type.
       type: String
     - contextPath: LogPoint.Incidents.data.object
-      description: LogPoint Incidents Data Object
+      description: LogPoint Incidents Data Object.
       type: String
     - contextPath: LogPoint.Incidents.data._labels
-      description: LogPoint Incidents Data Labels
+      description: LogPoint Incidents Data Labels.
       type: String
     - contextPath: LogPoint.Incidents.data.source_address
-      description: Source Address
+      description: Source Address.
       type: String
     - contextPath: LogPoint.Incidents.data.destination_address
-      description: Destination Address
+      description: Destination Address.
       type: String
     - contextPath: LogPoint.Incidents.data.workstation
-      description: Workstation
+      description: Workstation.
       type: String
     - contextPath: LogPoint.Incidents.data.domain
-      description: Domain
+      description: Domain.
       type: String
     - contextPath: LogPoint.Incidents.data.user
-      description: User
+      description: User.
       type: String
     - contextPath: LogPoint.Incidents.data.caller_user
-      description: Caller User
+      description: Caller User.
       type: String
     - contextPath: LogPoint.Incidents.data.target_user
-      description: Target User
+      description: Target User.
       type: String
     - contextPath: LogPoint.Incidents.data.source_machine_id
-      description: Source Machie Id
+      description: Source Machie Id.
       type: String
     - contextPath: LogPoint.Incidents.data.destination_machine_id
-      description: Destination Machine Id
+      description: Destination Machine Id.
       type: String
     - contextPath: LogPoint.Incidents.data.destination_port
-      description: Destination Port
+      description: Destination Port.
       type: String
     - contextPath: LogPoint.Incidents.data.event_type
-      description: Event Type
+      description: Event Type.
       type: String
     - contextPath: LogPoint.Incidents.data.share_path
-      description: Share Path
+      description: Share Path.
       type: String
     - contextPath: LogPoint.Incidents.data.object_name
-      description: Object Name
+      description: Object Name.
       type: String
     - contextPath: LogPoint.Incidents.data.sub_status_code
-      description: Sub Status Code
+      description: Sub Status Code.
       type: String
     - contextPath: LogPoint.Incidents.data.object_type
-      description: Object Type
+      description: Object Type.
       type: String
     - contextPath: LogPoint.Incidents.data.request_method
-      description: Request Method
+      description: Request Method.
       type: String
     - contextPath: LogPoint.Incidents.data.status_code
-      description: Status Code
+      description: Status Code.
       type: String
     - contextPath: LogPoint.Incidents.data.received_datasize
-      description: Received Datasize
+      description: Received Datasize.
       type: String
     - contextPath: LogPoint.Incidents.data.received_packet
-      description: Received Packet
+      description: Received Packet.
       type: String
     - contextPath: LogPoint.Incidents.data.user_agent
-      description: User Agent
+      description: User Agent.
       type: String
     - contextPath: LogPoint.Incidents.data.sent_datasize
-      description: Sent Datasize
+      description: Sent Datasize.
       type: String
     - contextPath: LogPoint.Incidents.data.sender
-      description: Sender
+      description: Sender.
       type: String
     - contextPath: LogPoint.Incidents.data.receiver
-      description: Receiver
+      description: Receiver.
       type: String
     - contextPath: LogPoint.Incidents.data.datasize
-      description: Datasize
+      description: Datasize.
       type: String
     - contextPath: LogPoint.Incidents.data.file
-      description: File
+      description: File.
       type: String
     - contextPath: LogPoint.Incidents.data.subject
-      description: Subject
+      description: Subject.
       type: String
     - contextPath: LogPoint.Incidents.data.status
-      description: Status
+      description: Status.
       type: String
     - contextPath: LogPoint.Incidents.data.file_count
-      description: File Count
+      description: File Count.
       type: String
     - contextPath: LogPoint.Incidents.data.protocol_id
-      description: Protocol Id
+      description: Protocol Id.
       type: String
     - contextPath: LogPoint.Incidents.data.sent_packet
-      description: Sent Packet
+      description: Sent Packet.
       type: String
     - contextPath: LogPoint.Incidents.data.service
-      description: Service
+      description: Service.
       type: String
     - contextPath: LogPoint.Incidents.data.printer
-      description: Printer
+      description: Printer.
       type: String
     - contextPath: LogPoint.Incidents.data.print_count
-      description: Print Count
+      description: Print Count.
       type: String
     - contextPath: LogPoint.Incidents.data.event_id
-      description: Event Id
+      description: Event Id.
       type: String
     - contextPath: LogPoint.Incidents.data.country_name
-      description: Country Name
+      description: Country Name.
       type: String
     - contextPath: LogPoint.Incidents.data.host
-      description: Host
+      description: Host.
       type: String
     - contextPath: LogPoint.Incidents.data.hash
-      description: Hash
+      description: Hash.
       type: String
     - contextPath: LogPoint.Incidents.data.hash_sha1
-      description: Hash SHA1
+      description: Hash SHA1.
       type: String
     - contextPath: LogPoint.Incidents.data.agent_address
-      description: Agent Address
+      description: Agent Address.
       type: String
     - contextPath: LogPoint.Incidents.data.attacker_address
-      description: Attacker Address
+      description: Attacker Address.
       type: String
     - contextPath: LogPoint.Incidents.data.broadcast_address
-      description: Broadcast Address
+      description: Broadcast Address.
       type: String
     - contextPath: LogPoint.Incidents.data.client_address
-      description: Client Address
+      description: Client Address.
       type: String
     - contextPath: LogPoint.Incidents.data.client_hardware_address
-      description: Client Hardware Address
+      description: Client Hardware Address.
       type: String
     - contextPath: LogPoint.Incidents.data.destination_hardware_address
-      description: Destination Hardware Address
+      description: Destination Hardware Address.
       type: String
     - contextPath: LogPoint.Incidents.data.destination_nat_address
-      description: Destination NAT Address
+      description: Destination NAT Address.
       type: String
     - contextPath: LogPoint.Incidents.data.device_address
-      description: Device Address
+      description: Device Address.
       type: String
     - contextPath: LogPoint.Incidents.data.external_address
-      description: External Address
+      description: External Address.
       type: String
     - contextPath: LogPoint.Incidents.data.gateway_address
-      description: Gateway Address
+      description: Gateway Address.
       type: String
     - contextPath: LogPoint.Incidents.data.hardware_address
-      description: Hardware Address
+      description: Hardware Address.
       type: String
     - contextPath: LogPoint.Incidents.data.host_address
-      description: Host Address
+      description: Host Address.
       type: String
     - contextPath: LogPoint.Incidents.data.interface_address
-      description: Interface Address
+      description: Interface Address.
       type: String
     - contextPath: LogPoint.Incidents.data.lease_address
-      description: Lease Address
+      description: Lease Address.
       type: String
     - contextPath: LogPoint.Incidents.data.local_address
-      description: Local Address
+      description: Local Address.
       type: String
     - contextPath: LogPoint.Incidents.data.nas_address
-      description: Nas ddress
+      description: Nas ddress.
       type: String
     - contextPath: LogPoint.Incidents.data.nas_ipv6_address
-      description: Nas_IPV6 Address
+      description: Nas_IPV6 Address.
       type: String
     - contextPath: LogPoint.Incidents.data.nat_address
-      description: NAT Address
+      description: NAT Address.
       type: String
     - contextPath: LogPoint.Incidents.data.nat_source_address
-      description: NAT Source Address
+      description: NAT Source Address.
       type: String
     - contextPath: LogPoint.Incidents.data.network_address
-      description: Network Address
+      description: Network Address.
       type: String
     - contextPath: LogPoint.Incidents.data.new_hardware_address
-      description: New Hardware Address
+      description: New Hardware Address.
       type: String
     - contextPath: LogPoint.Incidents.data.old_hardware_address
-      description: Old Hardware Address
+      description: Old Hardware Address.
       type: String
     - contextPath: LogPoint.Incidents.data.original_address
-      description: Original Address
+      description: Original Address.
       type: String
     - contextPath: LogPoint.Incidents.data.original_client_address
-      description: Original Client Address
+      description: Original Client Address.
       type: String
     - contextPath: LogPoint.Incidents.data.original_destination_address
-      description: Original Destination Address
+      description: Original Destination Address.
       type: String
     - contextPath: LogPoint.Incidents.data.original_server_address
-      description: Original Server Address
+      description: Original Server Address.
       type: String
     - contextPath: LogPoint.Incidents.data.original_source_address
-      description: Original Source Address
+      description: Original Source Address.
       type: String
     - contextPath: LogPoint.Incidents.data.originating_address
-      description: Originating Address
+      description: Originating Address.
       type: String
     - contextPath: LogPoint.Incidents.data.peer_address
-      description: Peer Address
+      description: Peer Address.
       type: String
     - contextPath: LogPoint.Incidents.data.private_address
-      description: Private Address
+      description: Private Address.
       type: String
     - contextPath: LogPoint.Incidents.data.proxy_address
-      description: Proxy Address
+      description: Proxy Address.
       type: String
     - contextPath: LogPoint.Incidents.data.proxy_source_address
-      description: Proxy Source Address
+      description: Proxy Source Address.
       type: String
     - contextPath: LogPoint.Incidents.data.relay_address
-      description: Relay Address
+      description: Relay Address.
       type: String
     - contextPath: LogPoint.Incidents.data.remote_address
-      description: Remote Address
+      description: Remote Address.
       type: String
     - contextPath: LogPoint.Incidents.data.resolved_address
-      description: Resolved Address
+      description: Resolved Address.
       type: String
     - contextPath: LogPoint.Incidents.data.route_address
-      description: Route Address
+      description: Route Address.
       type: String
     - contextPath: LogPoint.Incidents.data.scanner_address
-      description: Scanner Address
+      description: Scanner Address.
       type: String
     - contextPath: LogPoint.Incidents.data.server_address
-      description: Server Address
+      description: Server Address.
       type: String
     - contextPath: LogPoint.Incidents.data.server_hardware_address
-      description: Server Hardware Address
+      description: Server Hardware Address.
       type: String
     - contextPath: LogPoint.Incidents.data.source_hardware_address
-      description: Source Hardware Address
+      description: Source Hardware Address.
       type: String
     - contextPath: LogPoint.Incidents.data.start_address
-      description: Start Address
+      description: Start Address.
       type: String
     - contextPath: LogPoint.Incidents.data.supplier_address
-      description: Supplier Address
+      description: Supplier Address.
       type: String
     - contextPath: LogPoint.Incidents.data.switch_address
-      description: Switch Address
+      description: Switch Address.
       type: String
     - contextPath: LogPoint.Incidents.data.translated_address
-      description: Translated Address
+      description: Translated Address.
       type: String
     - contextPath: LogPoint.Incidents.data.virtual_address
-      description: Virtual Address
+      description: Virtual Address.
       type: String
     - contextPath: LogPoint.Incidents.data.virtual_server_address
-      description: Virtual Server Address
+      description: Virtual Server Address.
       type: String
     - contextPath: LogPoint.Incidents.data.vpn_address
-      description: VPN Address
+      description: VPN Address.
       type: String
     - contextPath: LogPoint.Incidents.data.hash_length
-      description: Hash Length
+      description: Hash Length.
       type: String
     - contextPath: LogPoint.Incidents.data.hash_sha256
-      description: Hash SHA256
+      description: Hash SHA256.
       type: String
     - contextPath: LogPoint.Incidents.data.alternate_user
-      description: Alternate User
+      description: Alternate User.
       type: String
     - contextPath: LogPoint.Incidents.data.authenticated_user
-      description: Authenticated User
+      description: Authenticated User.
       type: String
     - contextPath: LogPoint.Incidents.data.authorized_user
-      description: Authorized User
+      description: Authorized User.
       type: String
     - contextPath: LogPoint.Incidents.data.certificate_user
-      description: Certificate User
+      description: Certificate User.
       type: String
     - contextPath: LogPoint.Incidents.data.current_user
-      description: Current User
+      description: Current User.
       type: String
     - contextPath: LogPoint.Incidents.data.database_user
-      description: Database User
+      description: Database User.
       type: String
     - contextPath: LogPoint.Incidents.data.destination_user
-      description: Destination User
+      description: Destination User.
       type: String
     - contextPath: LogPoint.Incidents.data.logon_user
-      description: Logon User
+      description: Logon User.
       type: String
     - contextPath: LogPoint.Incidents.data.new_max_user
-      description: New Max User
+      description: New Max User.
       type: String
     - contextPath: LogPoint.Incidents.data.new_user
-      description: New User
+      description: New User.
       type: String
     - contextPath: LogPoint.Incidents.data.old_max_user
-      description: Old Max User
+      description: Old Max User.
       type: String
     - contextPath: LogPoint.Incidents.data.os_user
-      description: OS User
+      description: OS User.
       type: String
     - contextPath: LogPoint.Incidents.data.remote_user
-      description: Remote User
+      description: Remote User.
       type: String
     - contextPath: LogPoint.Incidents.data.source_user
-      description: Source User
+      description: Source User.
       type: String
     - contextPath: LogPoint.Incidents.data.system_user
-      description: System User
+      description: System User.
       type: String
     - contextPath: LogPoint.Incidents.data.target_logon_user
-      description: Target Logon User
+      description: Target Logon User.
       type: String
     - contextPath: LogPoint.Incidents.data.zone_user
-      description: Zone User
+      description: Zone User.
       type: String
   - arguments:
-    - description: From Timestamp
+    - description: From Timestamp.
       name: ts_from
-    - description: To Timestamp
+    - description: To Timestamp.
       name: ts_to
     - description: Number of incident states data to fetch. Accepts integer value.
       name: limit
@@ -553,16 +558,16 @@ script:
     name: lp-get-incident-states
     outputs:
     - contextPath: LogPoint.Incidents.states.id
-      description: LogPoint Incidents States Id
+      description: LogPoint Incidents States Id.
       type: String
     - contextPath: LogPoint.Incidents.states.status
-      description: LogPoint Incidents States Status
+      description: LogPoint Incidents States Status.
       type: String
     - contextPath: LogPoint.Incidents.states.assigned_to
-      description: LogPoint Incidents States Assigned To
+      description: LogPoint Incidents States Assigned To.
       type: String
     - contextPath: LogPoint.Incidents.states.comments
-      description: LogPoint Incidents States Comments
+      description: LogPoint Incidents States Comments.
       type: String
   - arguments:
     - description: Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command.
@@ -571,11 +576,11 @@ script:
     - description: Comment to be added to the incidents.
       name: comment
       required: true
-    description: Add comments to the incidents
+    description: Add comments to the incidents.
     name: lp-add-incident-comment
     outputs:
     - contextPath: LogPoint.Incidents.comment
-      description: LogPoint Incidents Comment
+      description: LogPoint Incidents Comment.
       type: String
   - arguments:
     - description: Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple id can be provided by separating them using comma.
@@ -585,11 +590,11 @@ script:
     - description: Id of the user whom the incidents are assigned.  It can be displayed using 'lp-get-users' command.
       name: new_assignee
       required: true
-    description: Assigning/Re-assigning Incidents
+    description: Assigning/Re-assigning Incidents.
     name: lp-assign-incidents
     outputs:
     - contextPath: LogPoint.Incidents.assign
-      description: LogPoint Incidents Assign
+      description: LogPoint Incidents Assign.
       type: String
   - arguments:
     - description: Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple id can be provided by separating them using comma.
@@ -600,7 +605,7 @@ script:
     name: lp-resolve-incidents
     outputs:
     - contextPath: LogPoint.Incidents.resolve
-      description: LogPoint Incidents Resolve
+      description: LogPoint Incidents Resolve.
       type: String
   - arguments:
     - description: Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple id can be provided by separating them using comma.
@@ -611,31 +616,32 @@ script:
     name: lp-close-incidents
     outputs:
     - contextPath: LogPoint.Incidents.close
-      description: LogPoint Incidents Close
+      description: LogPoint Incidents Close.
       type: String
   - arguments:
     - description: Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple id can be provided by separating them using comma.
       isArray: true
       name: incident_obj_ids
       required: true
-    description: Re-opens the closed incidents
+    description: Re-opens the closed incidents.
     name: lp-reopen-incidents
     outputs:
     - contextPath: LogPoint.Incidents.reopen
-      description: LogPoint Incidents Reopen
+      description: LogPoint Incidents Reopen.
       type: String
   - description: Gets Incident users and user groups.
     name: lp-get-users
     outputs:
     - contextPath: LogPoint.Incidents.users.id
-      description: LogPoint Incidents Users Id
+      description: LogPoint Incidents Users Id.
       type: String
     - contextPath: LogPoint.Incidents.users.name
-      description: LogPoint Incidents Users Name
+      description: LogPoint Incidents Users Name.
       type: String
     - contextPath: LogPoint.Incidents.users.usergroups
-      description: LogPoint Incidents Users Usergroups
+      description: LogPoint Incidents Users Usergroups.
       type: String
+    arguments: []
   - description: Gets LogPoint user's preference such as timezone, date format, etc.
     name: lp-get-users-preference
     outputs:
@@ -648,6 +654,7 @@ script:
     - contextPath: LogPoint.User.Preference.hour_format
       description: LogPoint user's hour format.
       type: String
+    arguments: []
   - description: Gets user's LogPoints.
     name: lp-get-logpoints
     outputs:
@@ -657,6 +664,7 @@ script:
     - contextPath: LogPoint.LogPoints.ip
       description: LogPoint's IP address.
       type: String
+    arguments: []
   - description: Gets the list of LogPoint repos that can be accessed by the user.
     name: lp-get-repos
     outputs:
@@ -666,6 +674,7 @@ script:
     - contextPath: LogPoint.Repos.address
       description: LogPoint repo address.
       type: String
+    arguments: []
   - description: Gets devices associated with LogPoint.
     name: lp-get-devices
     outputs:
@@ -675,6 +684,7 @@ script:
     - contextPath: LogPoint.Devices.address
       description: Device IP address.
       type: String
+    arguments: []
   - description: Gets live search results of the alerts and dashboards.
     name: lp-get-livesearches
     outputs:
@@ -690,6 +700,7 @@ script:
     - contextPath: LogPoint.LiveSearches.query
       description: The live search query.
       type: String
+    arguments: []
   - arguments:
     - description: LogPoint search query. This should be the exact query to use to search logs in the LogPoint UI.
       name: query
@@ -703,6 +714,9 @@ script:
     - description: A comma-separated list of LogPoint repos from which logs are to be fetched. If not provided, it will display logs from all repos.
       isArray: true
       name: repos
+    - defaultValue: '60'
+      description: LogPoint search timeout in seconds.
+      name: timeout
     description: Gets the search ID based on the provided search parameters.
     name: lp-get-searchid
     outputs:
@@ -719,10 +733,10 @@ script:
     - contextPath: LogPoint.SearchLogs
       description: Search results.
       type: String
-  dockerimage: demisto/python3:3.10.14.90585
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:
@@ -730,5 +744,4 @@ tests:
 - LogPoint SIEM Integration - Test Playbook 2
 - LogPoint SIEM Integration - Test Playbook 3
 defaultmapperin: LogPoint SIEM Integration - Incoming Mapper
-defaultclassifier:
 fromversion: 6.0.0

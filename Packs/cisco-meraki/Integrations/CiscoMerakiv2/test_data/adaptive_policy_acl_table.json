@@ -1,0 +1,20 @@
+[
+    {
+        "ACL ID": "12345678",
+        "Name": "Block sensitive web traffic",
+        "Description": "Blocks sensitive web traffic",
+        "Created At": "2021-05-19T17:08:25Z",
+        "Rules Policy": [
+            "deny"
+        ],
+        "Rules Protocol": [
+            "tcp"
+        ],
+        "Rules Destination Port": [
+            "22-30"
+        ],
+        "Rules Source Port": [
+            "1,33"
+        ]
+    }
+]

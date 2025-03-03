@@ -5,6 +5,13 @@ from CommonServerPython import *
 MAX_ENTRIES = 30
 
 
+def get_clickable_incident_id(incident_id):
+    incident_id_url = os.path.join("Custom/caseinfoid", incident_id)
+    if not is_xsiam_or_xsoar_saas():
+        incident_id_url = f'#/{incident_id_url}'
+    return f'[{incident_id}]({incident_id_url})'
+
+
 def get_open_to_do_tasks_of_current_user() -> List[Dict]:
     body = {
         "dataType": "todos",
@@ -28,8 +35,6 @@ def get_open_to_do_tasks_of_current_user() -> List[Dict]:
                 title = task.get('title', '')
                 description = task.get('description', '')
                 task_id = task.get('id', '')
-                incident_id = task.get('incidentId', '')
-                clickable_incident_id = f'[{incident_id}]({os.path.join("#/Custom/caseinfoid", incident_id)})'
                 if sla := task.get('dueDate', ''):
                     sla_dt = parse(sla)
                     assert sla_dt is not None, f'could not parse {sla}'
@@ -41,7 +46,7 @@ def get_open_to_do_tasks_of_current_user() -> List[Dict]:
                     'Task ID': task_id,
                     'SLA': sla,
                     'Opened By': opened_by,
-                    'Incident ID': clickable_incident_id
+                    'Incident ID': get_clickable_incident_id(incident_id=task.get('incidentId', ''))
                 })
     else:
         demisto.error(f'Failed running POST query to /v2/statistics/widgets/query.\n{str(todo_tasks_query_res)}')

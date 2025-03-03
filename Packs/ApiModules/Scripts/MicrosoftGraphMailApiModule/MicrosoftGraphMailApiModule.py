@@ -1,7 +1,8 @@
-from urllib.parse import quote
 import binascii
-from MicrosoftApiModule import *  # noqa: E402
+import uuid
+from urllib.parse import quote
 
+from MicrosoftApiModule import *  # noqa: E402
 
 API_DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
@@ -36,6 +37,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
                  mark_fetched_read: bool = False,
                  look_back: int | None = 0,
                  fetch_html_formatting=True,
+                 legacy_name=False,
                  **kwargs):
         super().__init__(retry_on_rate_limit=True, managed_identities_resource_uri=Resources.graph,
                          command_prefix="msgraph-mail",
@@ -48,6 +50,23 @@ class MsGraphMailBaseClient(MicrosoftClient):
         self._mark_fetched_read = mark_fetched_read
         self._look_back = look_back
         self.fetch_html_formatting = fetch_html_formatting
+        self.legacy_name = legacy_name
+
+    @classmethod
+    def _build_inline_layout_attachments_input(cls, inline_from_layout_attachments):
+        # Added requires_upload for handling the attachment in upload session
+        file_attachments_result = []
+        for attachment in inline_from_layout_attachments:
+            file_attachments_result.append(
+                {
+                    'data': attachment.get('data'),
+                    'isInline': True,
+                    'name': attachment.get('name'),
+                    'contentId': attachment.get('cid'),
+                    'requires_upload': True,
+                    'size': len(attachment.get('data')),
+                })
+        return file_attachments_result
 
     @classmethod
     def _build_attachments_input(cls, ids, attach_names=None, is_inline=False):
@@ -260,18 +279,21 @@ class MsGraphMailBaseClient(MicrosoftClient):
         for attachment in attachments:
 
             attachment_type = attachment.get('@odata.type', '')
+            attachment_content_id = attachment.get('contentId')
+            attachment_is_inline = attachment.get('isInline')
             attachment_name = attachment.get('name', 'untitled_attachment')
-
+            if attachment_is_inline and not self.legacy_name and attachment_content_id and attachment_content_id != "None":
+                attachment_name = f"{attachment_content_id}-attachmentName-{attachment_name}"
             if not attachment_name.isascii():
                 try:
                     demisto.debug(f"Trying to decode the attachment file name: {attachment_name}")
-                    attachment_name = base64.b64decode(attachment_name)
+                    attachment_name = b64_decode(attachment_name)  # type: ignore
                 except Exception as e:
                     demisto.debug(f"Could not decode the {attachment_name=}: error: {e}")
 
             if attachment_type == self.FILE_ATTACHMENT:
                 try:
-                    attachment_content = base64.b64decode(attachment.get('contentBytes', ''))
+                    attachment_content = b64_decode(attachment.get('contentBytes', ''))
                 except Exception as e:  # skip the uploading file step
                     demisto.info(f"failed in decoding base64 file attachment with error {str(e)}")
                     continue
@@ -649,10 +671,12 @@ class MsGraphMailBaseClient(MicrosoftClient):
                 draft_id=draft_id,
                 attachment_data=attachment.get('data', ''),
                 attachment_name=attachment.get('name', ''),
-                is_inline=attachment.get('isInline', False)
+                is_inline=attachment.get('isInline', False),
+                content_id=attachment.get('contentId', None)
             )
 
-    def get_upload_session(self, email: str, draft_id: str, attachment_name: str, attachment_size: int, is_inline: bool) -> dict:
+    def get_upload_session(self, email: str, draft_id: str, attachment_name: str, attachment_size: int, is_inline: bool,
+                           content_id=None) -> dict:
         """
         Create an upload session for a specific draft ID.
         Args:
@@ -662,21 +686,24 @@ class MsGraphMailBaseClient(MicrosoftClient):
             attachment_name (str): attachment name.
             is_inline (bool): is the attachment inline, True if yes, False if not.
         """
+        json_data = {
+            'attachmentItem': {
+                'attachmentType': 'file',
+                'name': attachment_name,
+                'size': attachment_size,
+                'isInline': is_inline
+            }
+        }
+        if content_id:
+            json_data['attachmentItem']['contentId'] = content_id
         return self.http_request(
             'POST',
             f'/users/{email}/messages/{draft_id}/attachments/createUploadSession',
-            json_data={
-                'attachmentItem': {
-                    'attachmentType': 'file',
-                    'name': attachment_name,
-                    'size': attachment_size,
-                    'isInline': is_inline
-                }
-            }
+            json_data=json_data
         )
 
     def add_attachment_with_upload_session(self, email: str, draft_id: str, attachment_data: bytes,
-                                           attachment_name: str, is_inline: bool = False):
+                                           attachment_name: str, is_inline: bool = False, content_id=None):
         """
         Add an attachment using an upload session by dividing the file bytes into chunks and sent each chunk each time.
         more info here - https://docs.microsoft.com/en-us/graph/outlook-large-attachments?tabs=http
@@ -694,14 +721,16 @@ class MsGraphMailBaseClient(MicrosoftClient):
             draft_id=draft_id,
             attachment_name=attachment_name,
             attachment_size=attachment_size,
-            is_inline=is_inline
+            is_inline=is_inline,
+            content_id=content_id
         )
         upload_url = upload_session.get('uploadUrl')
         if not upload_url:
             raise Exception(f'Cannot get upload URL for attachment {attachment_name}')
 
         start_chunk_index = 0
-        end_chunk_index = self.MAX_ATTACHMENT_SIZE
+        # The if is for adding functionality of inline attachment sending from layout
+        end_chunk_index = attachment_size if attachment_size < self.MAX_ATTACHMENT_SIZE else self.MAX_ATTACHMENT_SIZE
 
         chunk_data = attachment_data[start_chunk_index: end_chunk_index]
 
@@ -1112,6 +1141,40 @@ class GraphMailUtils:
         return mails_list
 
     @staticmethod
+    def handle_html(htmlBody):
+        """
+        Extract all data-url content from within the html and return as separate attachments.
+        Due to security implications, we support only images here
+        We might not have Beautiful Soup so just do regex search
+        """
+        attachments = []
+        cleanBody = ''
+        if htmlBody:
+            lastIndex = 0
+            for i, m in enumerate(
+                re.finditer(  # pylint: disable=E1101
+                    r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"',
+                    htmlBody,
+                    re.I | re.S  # pylint: disable=E1101
+                )
+            ):
+                maintype, subtype = m.group(2).split('/', 1)
+                name = f"image{i}.{subtype}"
+                att = {
+                    'maintype': maintype,
+                    'subtype': subtype,
+                    'data': b64_decode(m.group(3)),
+                    'name': name,
+                    'cid': f'{name}@{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}',
+                }
+                attachments.append(att)
+                cleanBody += htmlBody[lastIndex:m.start(1)] + 'cid:' + att['cid']
+                lastIndex = m.end() - 1
+
+            cleanBody += htmlBody[lastIndex:]
+        return cleanBody, attachments
+
+    @staticmethod
     def prepare_args(command, args):
         """
         Receives command and prepares the arguments for future usage.
@@ -1126,7 +1189,8 @@ class GraphMailUtils:
         :rtype: ``dict``
         """
         if command in ['create-draft', 'send-mail']:
-            email_body = args.get('htmlBody') if args.get('htmlBody', None) else args.get('body', '')
+            email_body, inline_attachments = GraphMailUtils.handle_html(
+                args.get('htmlBody')) if args.get('htmlBody', None) else (args.get('body', ''), [])
             processed_args = {
                 'to_recipients': argToList(args.get('to')),
                 'cc_recipients': argToList(args.get('cc')),
@@ -1141,7 +1205,8 @@ class GraphMailUtils:
                 'attach_ids': argToList(args.get('attachIDs') or args.get('attach_ids')),
                 'attach_names': argToList(args.get('attachNames') or args.get('attach_names')),
                 'attach_cids': argToList(args.get('attachCIDs') or args.get('attach_cids')),
-                'manual_attachments': args.get('manualAttachObj', [])
+                'manual_attachments': args.get('manualAttachObj', []),
+                'inline_attachments': inline_attachments or []
             }
             if command == 'send-mail':
                 processed_args['renderBody'] = argToBoolean(args.get('renderBody') or False)
@@ -1150,7 +1215,7 @@ class GraphMailUtils:
         elif command == 'reply-to':
             return {
                 'to_recipients': argToList(args.get('to')),
-                'message_id': args.get('ID') or args.get('message_id') or '',
+                'message_id': GraphMailUtils.handle_message_id(args.get('ID') or args.get('message_id') or ''),
                 'comment': args.get('body') or args.get('comment'),
                 'attach_ids': argToList(args.get('attachIDs') or args.get('attach_ids')),
                 'attach_names': argToList(args.get('attachNames') or args.get('attach_names')),
@@ -1161,14 +1226,14 @@ class GraphMailUtils:
             return {
                 'user_id': args.get('user_id'),
                 'folder_id': args.get('folder_id'),
-                'message_id': args.get('message_id'),
+                'message_id': GraphMailUtils.handle_message_id(args.get('message_id', '')),
                 'odata': args.get('odata')
             }
 
         return args
 
     @staticmethod
-    def divide_attachments_according_to_size(attachments):
+    def divide_attachments_according_to_size(attachments=[]):
         """
         Divide attachments to those are larger than 3mb and those who are less than 3mb.
 
@@ -1202,29 +1267,66 @@ class GraphMailUtils:
         return 1
 
     @staticmethod
-    def item_result_creator(raw_attachment, user_id) -> CommandResults:
+    def item_result_creator(raw_attachment, user_id, args, client) -> dict[str, Any] | CommandResults:
+        """
+        Create a result object for an attachment item.
+        This method processes raw attachment data and returns either an XSOAR file result or a command result
+        based on the attachment type and provided arguments.
+
+        Args:
+            raw_attachment (dict): The raw attachment data from the API response.
+            user_id (str): The ID of the user associated with the attachment.
+            args (dict): Additional arguments for processing the attachment.
+            client (MsGraphMailBaseClient, optional): The client instance for making additional API calls.
+
+        Returns:
+            dict[str, Any] | CommandResults:
+                - If the attachment is a message and should be downloaded, returns a dict containing file result.
+                - If the attachment is a message but should not be downloaded, returns a CommandResults with message details.
+                - If the attachment is of an unsupported type, returns a CommandResults with an error message.
+
+        Note:
+            - The method handles different types of attachments, particularly focusing on message attachments.
+              It can either return the attachment as a downloadable file or as structured data in the command results.
+            - 'client' function argument is only relevant when 'should_download_message_attachment' command argument is True.
+        """
         item = raw_attachment.get('item', {})
         item_type = item.get('@odata.type', '')
         if 'message' in item_type:
-            message_id = raw_attachment.get('id')
-            item['id'] = message_id
-            mail_context = GraphMailUtils.build_mail_object(item, user_id=user_id, get_body=True)
-            human_readable = tableToMarkdown(
-                f'Attachment ID {message_id} \n **message details:**',
-                mail_context,
-                headers=['ID', 'Subject', 'SendTime', 'Sender', 'From', 'HasAttachments', 'Body']
-            )
-            return CommandResults(outputs_prefix='MSGraphMail',
-                                  outputs_key_field='ID',
-                                  outputs=mail_context,
-                                  readable_output=human_readable,
-                                  raw_response=raw_attachment)
+            return_message_attachment_as_downloadable_file: bool = client and argToBoolean(
+                args.get('should_download_message_attachment', False))
+            if return_message_attachment_as_downloadable_file:
+                # return the message attachment as a file result
+                attachment_content = client._get_attachment_mime(
+                    GraphMailUtils.handle_message_id(args.get('message_id', '')),
+                    args.get('attachment_id'),
+                    user_id, False)
+                attachment_name: str = (item.get("name") or item.get('subject')
+                                        or "untitled_attachment").replace(' ', '_') + '.eml'
+                demisto.debug(f'Email attachment of type "microsoft.graph.message" acquired successfully, {attachment_name=}')
+                return fileResult(attachment_name, attachment_content)
+            else:
+                # return the message attachment as a command result
+                message_id = raw_attachment.get('id')
+                item['id'] = message_id
+                mail_context = GraphMailUtils.build_mail_object(item, user_id=user_id, get_body=True)
+                human_readable = tableToMarkdown(
+                    f'Attachment ID {message_id} \n **message details:**',
+                    mail_context,
+                    headers=['ID', 'Subject', 'SendTime', 'Sender', 'From', 'HasAttachments', 'Body']
+                )
+
+                return CommandResults(outputs_prefix='MSGraphMail',
+                                      outputs_key_field='ID',
+                                      outputs=mail_context,
+                                      readable_output=human_readable,
+                                      raw_response=raw_attachment)
         else:
             human_readable = f'Integration does not support attachments from type {item_type}'
             return CommandResults(readable_output=human_readable, raw_response=raw_attachment)
 
     @staticmethod
-    def file_result_creator(raw_attachment: dict) -> dict:
+    def file_result_creator(raw_attachment: dict, legacy_name=False) -> dict:
         """Create FileResult from the attachment
 
         Args:
@@ -1236,24 +1338,27 @@ class GraphMailUtils:
         Returns:
             dict: FileResult with the b64decode of the attachment content
         """
-        name = raw_attachment.get('name')
+        name = raw_attachment.get('name', '')
+        content_id = raw_attachment.get('contentId')
+        is_inline = raw_attachment.get('isInline')
+        if is_inline and content_id and content_id != "None" and not legacy_name:
+            name = f"{content_id}-attachmentName-{name}"
         data = raw_attachment.get('contentBytes')
         try:
-            data = base64.b64decode(data)  # type: ignore
+            data = b64_decode(data)  # type: ignore
             return fileResult(name, data)
         except binascii.Error:
             raise DemistoException('Attachment could not be decoded')
 
     @staticmethod
-    def create_attachment(raw_attachment, user_id) -> CommandResults | dict:
-
+    def create_attachment(raw_attachment, user_id, args, client, legacy_name=False) -> CommandResults | dict:
         attachment_type = raw_attachment.get('@odata.type', '')
         # Documentation about the different attachment types
         # https://docs.microsoft.com/en-us/graph/api/attachment-get?view=graph-rest-1.0&tabs=http
         if 'itemAttachment' in attachment_type:
-            return GraphMailUtils.item_result_creator(raw_attachment, user_id)
+            return GraphMailUtils.item_result_creator(raw_attachment, user_id, args, client)
         elif 'fileAttachment' in attachment_type:
-            return GraphMailUtils.file_result_creator(raw_attachment)
+            return GraphMailUtils.file_result_creator(raw_attachment, legacy_name)
         else:
             human_readable = f'Integration does not support attachments from type {attachment_type}'
             return CommandResults(readable_output=human_readable, raw_response=raw_attachment)
@@ -1477,7 +1582,11 @@ class GraphMailUtils:
         return {'flagStatus': flag}
 
     @staticmethod
-    def build_file_attachments_input(attach_ids, attach_names, attach_cids, manual_attachments):
+    def build_file_attachments_input(attach_ids,
+                                     attach_names,
+                                     attach_cids,
+                                     manual_attachments,
+                                     inline_attachments_from_layout=[]):
         """
         Builds both inline and regular attachments.
 
@@ -1503,8 +1612,10 @@ class GraphMailUtils:
         manual_att_names = [att['FileName'] for att in manual_attachments if 'FileName' in att]
         manual_report_attachments = MsGraphMailBaseClient._build_attachments_input(ids=manual_att_ids,
                                                                                    attach_names=manual_att_names)
+        inline_from_layout_attachments = MsGraphMailBaseClient._build_inline_layout_attachments_input(
+            inline_attachments_from_layout)
 
-        return regular_attachments + inline_attachments + manual_report_attachments
+        return regular_attachments + inline_attachments + manual_report_attachments + inline_from_layout_attachments
 
     @staticmethod
     def build_headers_input(internet_message_headers):
@@ -1521,7 +1632,8 @@ class GraphMailUtils:
 
     @staticmethod
     def build_message(to_recipients, cc_recipients, bcc_recipients, subject, body, body_type, flag, importance,
-                      internet_message_headers, attach_ids, attach_names, attach_cids, manual_attachments, reply_to):
+                      internet_message_headers, attach_ids, attach_names, attach_cids, manual_attachments, reply_to,
+                      inline_attachments=[]):
         """
         Builds valid message dict.
         For more information https://docs.microsoft.com/en-us/graph/api/resources/message?view=graph-rest-1.0
@@ -1537,7 +1649,7 @@ class GraphMailUtils:
             'importance': importance,
             'flag': GraphMailUtils.build_flag_input(flag),
             'attachments': GraphMailUtils.build_file_attachments_input(attach_ids, attach_names, attach_cids,
-                                                                       manual_attachments)
+                                                                       manual_attachments, inline_attachments)
         }
 
         if internet_message_headers:
@@ -1592,6 +1704,16 @@ class GraphMailUtils:
             'bodyPreview': email_body[:255],
             'attachments': GraphMailUtils.build_file_attachments_input(attach_ids, attach_names, attach_cids, [])
         }
+
+    @staticmethod
+    def handle_message_id(message_id: str) -> str:
+        """
+        Handle a Microsoft Graph API message ID by replacing forward slashes with hyphens.
+        """
+        if '/' in message_id:
+            message_id = message_id.replace('/', '-')
+            demisto.debug(f'Handling message_id: {message_id}')
+        return message_id
 
 
 # COMMANDS
@@ -1712,7 +1834,11 @@ def get_message_command(client: MsGraphMailBaseClient, args) -> CommandResults:
 
 
 def delete_mail_command(client: MsGraphMailBaseClient, args) -> CommandResults:
-    delete_mail_args = {arg_key: args.get(arg_key) for arg_key in ['user_id', 'folder_id', 'message_id']}
+    delete_mail_args = {
+        'user_id': args.get('user_id'),
+        'message_id': GraphMailUtils.handle_message_id(args.get('message_id', '')),
+        'folder_id': args.get('folder_id')
+    }
     client.delete_mail(**delete_mail_args)
 
     human_readable = tableToMarkdown('Message has been deleted successfully', delete_mail_args, removeNull=True)
@@ -1722,7 +1848,7 @@ def delete_mail_command(client: MsGraphMailBaseClient, args) -> CommandResults:
 
 def list_attachments_command(client: MsGraphMailBaseClient, args) -> CommandResults:
     user_id = args.get('user_id')
-    message_id = args.get('message_id')
+    message_id = GraphMailUtils.handle_message_id(args.get('message_id', ''))
     folder_id = args.get('folder_id')
     raw_response = client.list_attachments(user_id, message_id, folder_id)
     if not (attachments := raw_response.get('value')):
@@ -1752,10 +1878,15 @@ def list_attachments_command(client: MsGraphMailBaseClient, args) -> CommandResu
 
 
 def get_attachment_command(client: MsGraphMailBaseClient, args) -> list[CommandResults | dict]:
-    kwargs = {arg_key: args.get(arg_key) for arg_key in ['message_id', 'folder_id', 'attachment_id']}
-    kwargs['user_id'] = args.get('user_id', client._mailbox_to_fetch)
+    kwargs = {
+        'message_id': GraphMailUtils.handle_message_id(args.get('message_id', '')),
+        'user_id': args.get('user_id', client._mailbox_to_fetch),
+        'folder_id': args.get('folder_id'),
+        'attachment_id': args.get('attachment_id'),
+    }
     raw_response = client.get_attachment(**kwargs)
-    return [GraphMailUtils.create_attachment(attachment, user_id=kwargs['user_id']) for attachment in raw_response]
+    return [GraphMailUtils.create_attachment(raw_attachment=attachment, user_id=kwargs['user_id'], args=args, client=client,
+                                             legacy_name=client.legacy_name) for attachment in raw_response]
 
 
 def create_folder_command(client: MsGraphMailBaseClient, args) -> CommandResults:
@@ -1838,7 +1969,7 @@ def delete_folder_command(client: MsGraphMailBaseClient, args):
 
 def move_email_command(client: MsGraphMailBaseClient, args):
     user_id = args.get('user_id')
-    message_id = args.get('message_id')
+    message_id = GraphMailUtils.handle_message_id(args.get('message_id', ''))
     destination_folder_id = args.get('destination_folder_id')
 
     raw_response = client.move_email(user_id, message_id, destination_folder_id)
@@ -1861,7 +1992,7 @@ def move_email_command(client: MsGraphMailBaseClient, args):
 
 def get_email_as_eml_command(client: MsGraphMailBaseClient, args):
     user_id = args.get('user_id')
-    message_id = args.get('message_id')
+    message_id = GraphMailUtils.handle_message_id(args.get('message_id', ''))
 
     eml_content = client.get_email_as_eml(user_id, message_id)
     file_result = fileResult(f'{message_id}.eml', eml_content)
@@ -1884,7 +2015,7 @@ def send_draft_command(client: MsGraphMailBaseClient, args):
 def update_email_status_command(client: MsGraphMailBaseClient, args) -> CommandResults:
     user_id = args.get('user_id')
     folder_id = args.get('folder_id')
-    message_ids = argToList(args['message_ids'])
+    message_ids = argToList(args['message_ids'], transform=GraphMailUtils.handle_message_id)
     status: str = args['status']
     mark_as_read = (status.lower() == 'read')
 

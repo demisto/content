@@ -1,5 +1,6 @@
 . $PSScriptRoot\CommonServerPowerShell.ps1
 
+
 $script:INTEGRATION_NAME = "Security And Compliance"
 $script:COMMAND_PREFIX = "o365-sc"
 $script:INTEGRATION_ENTRY_CONTEX = "O365.SecurityAndCompliance.ContentSearch"
@@ -268,7 +269,7 @@ function ParseSearchActionToEntryContext([psobject]$search_action, [int]$limit =
 
 #### OAuth Client - Access Token Management ####
 class OAuth2DeviceCodeClient {
-    [string]$application_id = "a0c73c16-a7e3-4564-9a95-2bdf47383716"
+    [string]$application_id
     [string]$application_scope = "offline_access%20https%3A//outlook.office365.com/.default"
     [string]$device_code
     [int]$device_code_expires_in
@@ -279,9 +280,12 @@ class OAuth2DeviceCodeClient {
     [int]$access_token_creation_time
     [bool]$insecure
     [bool]$proxy
+    [string]$app_secret
+    [string]$tenant_id
 
     OAuth2DeviceCodeClient([string]$device_code, [string]$device_code_expires_in, [string]$device_code_creation_time, [string]$access_token,
-                            [string]$refresh_token,[string]$access_token_expires_in, [string]$access_token_creation_time, [bool]$insecure, [bool]$proxy) {
+                            [string]$refresh_token,[string]$access_token_expires_in, [string]$access_token_creation_time,
+                           [bool]$insecure, [bool]$proxy, [string]$application_id, [string]$app_secret, [string]$tenant_id) {
         $this.device_code = $device_code
         $this.device_code_expires_in = $device_code_expires_in
         $this.device_code_creation_time = $device_code_creation_time
@@ -291,6 +295,9 @@ class OAuth2DeviceCodeClient {
         $this.access_token_creation_time = $access_token_creation_time
         $this.insecure = $insecure
         $this.proxy = $proxy
+        $this.application_id = $application_id
+        $this.app_secret = $app_secret
+        $this.tenant_id = $tenant_id
         <#
             .DESCRIPTION
             OAuth2DeviceCodeClient manage state of OAuth2.0 device-code flow described in https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code.
@@ -339,10 +346,10 @@ class OAuth2DeviceCodeClient {
         #>
     }
 
-    static [OAuth2DeviceCodeClient]CreateClientFromIntegrationContext([bool]$insecure, [bool]$proxy){
+    static [OAuth2DeviceCodeClient]CreateClientFromIntegrationContext([bool]$insecure, [bool]$proxy, [string]$application_id, [string]$app_secret, [string]$tenant_id) {
         $ic = GetIntegrationContext
         $client = [OAuth2DeviceCodeClient]::new($ic.DeviceCode, $ic.DeviceCodeExpiresIn, $ic.DeviceCodeCreationTime, $ic.AccessToken, $ic.RefreshToken,
-                                                $ic.AccessTokenExpiresIn, $ic.AccessTokenCreationTime, $insecure, $proxy)
+                                                $ic.AccessTokenExpiresIn, $ic.AccessTokenCreationTime, $insecure, $proxy, $application_id, $app_secret, $tenant_id)
 
         return $client
         <#
@@ -364,9 +371,11 @@ class OAuth2DeviceCodeClient {
         $this.device_code_creation_time = $null
         # Get device-code and user-code
         $params = @{
-            "URI" = "https://login.microsoftonline.com/organizations/oauth2/v2.0/devicecode"
+            "URI" = "https://login.microsoftonline.com/$($this.tenant_id)/oauth2/v2.0/devicecode"
             "Method" = "Post"
-            "Headers" = (New-Object "System.Collections.Generic.Dictionary[[String],[String]]").Add("Content-Type", "application/x-www-form-urlencoded")
+            "Headers" = @{
+                "Content-Type" = "application/x-www-form-urlencoded"
+            }
             "Body" = "client_id=$($this.application_id)&scope=$($this.application_scope)"
             "NoProxy" = !$this.proxy
             "SkipCertificateCheck" = $this.insecure
@@ -378,7 +387,7 @@ class OAuth2DeviceCodeClient {
         $this.device_code_creation_time = [int][double]::Parse((Get-Date -UFormat %s))
         $this.device_code_expires_in = [int]::Parse($response_body.expires_in)
 
-        return $response_body
+    return $response_body
 
         <#
             .DESCRIPTION
@@ -399,7 +408,7 @@ class OAuth2DeviceCodeClient {
         # Get new token using device-code
         try {
             $params = @{
-                "URI" = "https://login.microsoftonline.com/organizations/oauth2/v2.0/token"
+                "URI" = "https://login.microsoftonline.com/$($this.tenant_id)/oauth2/v2.0/token"
                 "Method" = "Post"
                 "Headers" = (New-Object "System.Collections.Generic.Dictionary[[String],[String]]").Add("Content-Type", "application/x-www-form-urlencoded")
                 "Body" = "grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Adevice_code&code=$($this.device_code)&client_id=$($this.application_id)"
@@ -449,7 +458,7 @@ class OAuth2DeviceCodeClient {
         # Get new token using refresh token
         try {
             $params = @{
-                "URI" = "https://login.microsoftonline.com/organizations/oauth2/v2.0/token"
+                "URI" = "https://login.microsoftonline.com/$($this.tenant_id)/oauth2/v2.0/token"
                 "Method" = "Post"
                 "Headers" = (New-Object "System.Collections.Generic.Dictionary[[String],[String]]").Add("Content-Type", "application/x-www-form-urlencoded")
                 "Body" = "grant_type=refresh_token&client_id=$($this.application_id)&refresh_token=$($this.refresh_token)&scope=$($this.application_scope)"
@@ -631,7 +640,7 @@ class SecurityAndComplianceClient {
     }
 
     [psobject]NewSearch([string]$search_name,  [string]$case, [string]$kql, [string]$description, [bool]$allow_not_found_exchange_locations, [string[]]$exchange_location,
-                        [string[]]$exchange_location_exclusion, [string[]]$public_folder_location, [string[]]$share_point_location, [string[]]$share_point_location_exclusion) {
+                        [string[]]$public_folder_location, [string[]]$share_point_location, [string[]]$share_point_location_exclusion) {
 
         # Establish session to remote
         $this.CreateDelegatedSession("New-ComplianceSearch")
@@ -643,7 +652,6 @@ class SecurityAndComplianceClient {
             "Description" = $description
             "AllowNotFoundExchangeLocationsEnabled" = $allow_not_found_exchange_locations
             "ExchangeLocation" = $exchange_location
-            "ExchangeLocationExclusion" = $exchange_location_exclusion
             "PublicFolderLocation" = $public_folder_location
             "SharePointLocation" = $share_point_location
             "SharePointLocationExclusion" = $share_point_location_exclusion
@@ -674,9 +682,6 @@ class SecurityAndComplianceClient {
 
             .PARAMETER exchange_location
             Mailboxes to include.
-
-            .PARAMETER exchange_location_exclusion
-            Mailboxes to exclude when you use the value "All" for the exchange_location parameter.
 
             .PARAMETER public_folder_location
             Whether to include all public folders in the search.
@@ -1326,6 +1331,27 @@ class SecurityAndComplianceClient {
         #>
     }
 
+
+    CaseHoldPolicySet([string]$identity, [bool]$enabled, [string[]]$add_exchange_locations, [string[]] $add_sharepoint_locations, [string[]]$add_public_locations,
+        [string[]]$remove_exchange_locations, [string[]]$remove_sharepoint_locations, [string[]]$remove_public_locations, [string]$comment){
+        $this.CreateDelegatedSession("Set-CaseHoldPolicy")
+      $cmd_params = @{}
+  
+      if ($identity) { $cmd_params.Identity = $identity }
+      if ($enabled) { $cmd_params.Enabled = $enabled }
+      if ($add_exchange_locations) { $cmd_params.AddExchangeLocation = $add_exchange_locations }
+      if ($add_sharepoint_locations) { $cmd_params.AddSharePointLocation = $add_sharepoint_locations }
+      if ($add_public_locations) { $cmd_params.AddPublicFolderLocation = $add_public_locations }
+      if ($remove_exchange_locations) { $cmd_params.RemoveExchangeLocation = $remove_exchange_locations }
+      if ($remove_sharepoint_locations) { $cmd_params.RemoveSharePointLocation = $remove_sharepoint_locations }
+      if ($remove_public_locations) { $cmd_params.RemovePublicFolderLocation = $remove_public_locations }
+      if ($comment) { $cmd_params.Comment = $comment }
+
+        Set-CaseHoldPolicy @cmd_params
+        $this.DisconnectSession()
+    }
+
+
     [psobject]CaseHoldRuleCreate([string]$rule_name, [string]$policy_name, [string]$query, [string]$comment, [bool]$is_disabled){
         # Establish session to remote
         $this.CreateDelegatedSession("New-CaseHoldRule")
@@ -1444,6 +1470,7 @@ class SecurityAndComplianceClient {
     }
 }
 
+
 #### COMMAND FUNCTIONS ####
 
 function TestModuleCommand () {
@@ -1495,7 +1522,6 @@ function NewSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
     # Command arguemnts parsing
     $allow_not_found_exchange_locations = ConvertTo-Boolean $kwargs.allow_not_found_exchange_locations
     $exchange_location = ArgToList $kwargs.exchange_location
-    $exchange_location_exclusion = ArgToList $kwargs.exchange_location_exclusion
     $public_folder_location = ArgToList $kwargs.public_folder_location
     $share_point_location = ArgToList $kwargs.share_point_location
     $share_point_location_exclusion = ArgToList $kwargs.share_point_location_exclusion
@@ -1504,7 +1530,7 @@ function NewSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
     }
     # Raw response
     $raw_response = $client.NewSearch($kwargs.search_name, $kwargs.case, $kwargs.kql, $kwargs.description, $allow_not_found_exchange_locations,
-                                      $exchange_location, $exchange_location_exclusion, $public_folder_location, $share_point_location, $share_point_location_exclusion)
+                                      $exchange_location, $public_folder_location, $share_point_location, $share_point_location_exclusion)
     # Human readable
     $md_columns = $raw_response | Select-Object -Property Name, Description, CreatedBy, LastModifiedTime, ContentMatchQuery
     $human_readable = TableToMarkdown $md_columns  "$script:INTEGRATION_NAME - New search '$($kwargs.search_name)' created"
@@ -1841,13 +1867,37 @@ function CaseHoldRuleDeleteCommand([SecurityAndComplianceClient]$client, [hashta
     return $human_readable, $entry_context, $raw_response
 }
 
+function CaseHoldPolicySetCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs){
+    $enabled = ConvertTo-Boolean $kwargs.enabled
+    $add_exchange_locations = ArgToList $kwargs.add_exchange_locations
+    $add_sharepoint_locations = ArgToList $kwargs.add_sharepoint_locations
+    $add_public_locations = ArgToList $kwargs.add_public_locations
+    $remove_exchange_locations = ArgToList $kwargs.remove_exchange_locations
+    $remove_sharepoint_locations = ArgToList $kwargs.remove_sharepoint_locations
+    $remove_public_locations = ArgToList $kwargs.remove_public_locations
+
+    $client.CaseHoldPolicySet($kwargs.identity, $enabled, $add_exchange_locations,
+                                $add_sharepoint_locations, $add_public_locations, $remove_exchange_locations,
+                                $remove_sharepoint_locations, $remove_public_locations, $kwargs.comment)
+
+    $raw_response = @{}
+    # Human readable
+    $human_readable = "$script:INTEGRATION_NAME - case hold policy **$($kwargs.identity)** modified!"
+    # Entry context
+    $entry_context = @{}
+
+    return $human_readable, $entry_context, $raw_response
+}
+
 #### INTEGRATION COMMANDS MANAGER ####
 
 function Main {
     $command = $Demisto.GetCommand()
     $command_arguments = $Demisto.Args()
     $integration_params = $Demisto.Params()
-
+    $app_secret = if ($integration_params.credentials_app_secret.password) {$integration_params.credentials_app_secret.password} else {$integration_params.app_secret}
+    $tenant_id = if ($integration_params.credentials_tenant_id.identifier) {$integration_params.credentials_tenant_id.identifier} else {$integration_params.tenant_id}
+    $app_id = if ($integration_params.credentials_app_id.identifier) {$integration_params.credentials_app_id.identifier} else {$integration_params.app_id}
     if ($integration_params.insecure -eq $true) {
         # Bypass SSL verification if insecure is true
         [System.Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
@@ -1857,7 +1907,8 @@ function Main {
         $Demisto.Debug("Command being called is $Command")
 
         # Creating Compliance and search client
-        $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $false)
+        $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $false,
+            $app_id, $app_secret, $tenant_id)
 
         # Executing oauth2 commands
         switch ($command) {
@@ -1878,7 +1929,7 @@ function Main {
         $cs_client = [SecurityAndComplianceClient]::new(
             $oauth2_client.access_token,
             $integration_params.delegated_auth.identifier,
-            $integration_params.tenant_id,
+            $tenant_id,
             $integration_params.connection_uri,
             $integration_params.azure_ad_authorized_endpoint_uri_base
         )
@@ -1950,6 +2001,9 @@ function Main {
             }
             "$script:COMMAND_PREFIX-case-hold-rule-delete" {
                 ($human_readable, $entry_context, $raw_response, $file_entry) = CaseHoldRuleDeleteCommand $cs_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-case-hold-policy-set" {
+                ($human_readable, $entry_context, $raw_response) = CaseHoldPolicySetCommand $cs_client $command_arguments
             }
         }
 

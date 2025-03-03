@@ -236,7 +236,7 @@ class Client(BaseClient):
 
     def get_on_call(self, args: dict):
         return self._http_request(method='GET', url_suffix=f"/v2/{SCHEDULE_SUFFIX}/{args.get('schedule')}/on-calls",
-                                  params={"scheduleIdentifierType": args.get('scheduleIdentifierType')})
+                                  params={"scheduleIdentifierType": args.get('scheduleIdentifierType'), "date": args.get('date')})
 
     def create_incident(self, args: dict):
         args['responders'] = argToList(args.get('responders'))
@@ -742,12 +742,16 @@ def get_on_call(client: Client, args: Dict[str, Any]) -> CommandResults:
         schedule_identifier_type = 'name'
     else:  # not args.get("schedule_id") and not args.get("schedule_name")
         raise DemistoException("Either schedule_id or schedule_name should be provided.")
+    date = arg_to_datetime(args.get("starting_date"))
     on_call_args = {
         'request_type': SCHEDULE_SUFFIX,
         'scheduleIdentifierType': schedule_identifier_type,
         'schedule': schedule,
         **args
     }
+    if date:
+        on_call_args['date'] = date.isoformat()
+        demisto.debug(f"get on call with date: {date}")
     result = client.get_on_call(on_call_args)
     command_result = CommandResults(
         outputs_prefix="OpsGenie.Schedule.OnCall",

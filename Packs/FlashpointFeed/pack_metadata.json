@@ -2,10 +2,10 @@
     "name": "FlashpointFeed",
     "description": "Ingest indicator feeds from Flashpoint.",
     "support": "partner",
-    "currentVersion": "1.0.27",
+    "currentVersion": "2.0.4",
     "author": "Flashpoint",
-    "url": "https://www.flashpoint-intel.com/",
-    "email": "demisto_support@flashpoint-intel.com",
+    "url": "https://flashpoint.my.site.com/helpcenter/s/",
+    "email": "support@flashpoint-intel.com",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],

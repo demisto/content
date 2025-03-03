@@ -9,7 +9,7 @@ configuration:
   required: true
   section: Connect
   type: 0
-- display: ""
+- display: ''
   displaypassword: API Key
   hiddenusername: true
   name: credentials
@@ -23,7 +23,7 @@ configuration:
   type: 8
   required: false
 - advanced: true
-  defaultvalue: "false"
+  defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   section: Connect
@@ -258,7 +258,7 @@ script:
     - contextPath: FullHunt.Subdomain.status
       description: HTTP status code
       type: number
-  dockerimage: demisto/python3:3.10.12.65389
+  dockerimage: demisto/python3:3.11.10.115186
   script: ''
   subtype: python3
   type: python

@@ -37,12 +37,17 @@ outputs:
   description: The validation error message.
   type: String
 - contextPath: ValidationResult.Line
-  description: The code line number in which the error was found in the lint.
+  description: The line number of the code where the linting error was detected.
   type: String
+- contextPath: ValidationResult.ErrorCode
+  description: The error code or the name of the linter that identified the issue.
+  type: String
+
 scripttarget: 0
 timeout: 600ns
 runas: DBotWeakRole
 fromversion: 5.5.0
-dockerimage: demisto/xsoar-tools:1.0.0.90942
+dockerimage: demisto/xsoar-tools:1.0.0.1902141
 tests:
 - ValidateContent - Test
+runonce: false

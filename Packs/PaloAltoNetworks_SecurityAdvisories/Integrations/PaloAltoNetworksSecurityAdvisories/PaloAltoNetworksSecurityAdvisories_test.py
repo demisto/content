@@ -62,6 +62,14 @@ def test_fetch_indicators_command(patched_get_advisories):
     for _field, field_value in result[0].get("fields").items():
         assert field_value
 
+    # Tests to cover CVE extraction issue. This test ensures the data which is expected in the CVE information is correct and
+    # present. Fields effected are: cvss_score, cvss_severity, cvss_vector_string
+    assert result[0].get('fields', {}).get('cvss', 0.0) == 9.3
+    assert result[0].get('fields', {}).get('cvssscore', 0.0) == 9.3
+    assert result[0].get('fields', {}).get('cvssvector', 'NONE') == ('CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:L/SI:'
+                                                                     'N/SA:N/E:A/AU:N/R:U/V:C/RE:H/U:Red')
+    assert result[0].get('fields', {}).get('cvssversion', 'NONE') == '4.0'
+
 
 def test_advisory_to_indicator() -> None:
     """
@@ -80,6 +88,6 @@ def test_advisory_to_indicator() -> None:
     mock_data = util_load_json("test_data/advisories4.json")
 
     result = advisory_to_indicator(mock_data["response"])
-    assert result["value"] == "CVE-2023-38802"
+    assert result["value"] == "CVE-2024-0012"
     assert result["type"] == "CVE"
     assert result["fields"] == mock_data["excepted_response"]["fields"]

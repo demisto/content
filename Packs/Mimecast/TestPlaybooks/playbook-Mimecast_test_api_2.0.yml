@@ -1,0 +1,915 @@
+id: Mimecast Test api 2.0
+version: -1
+name: Mimecast Test api 2.0
+description: Mimecast Test api 2.0.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 254b7446-af7c-40f8-8cbd-7f20e88946f2
+    type: start
+    task:
+      id: 254b7446-af7c-40f8-8cbd-7f20e88946f2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": -240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: f017ee84-7d5a-45d9-8539-cdb0d6220d55
+    type: regular
+    task:
+      id: f017ee84-7d5a-45d9-8539-cdb0d6220d55
+      version: -1
+      name: mimecast-get-archive-search-logs
+      description: Retrieves archived search logs.
+      script: '|||mimecast-get-archive-search-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 1054d6bf-9370-4e2f-8461-eacd7661b24b
+    type: regular
+    task:
+      id: 1054d6bf-9370-4e2f-8461-eacd7661b24b
+      version: -1
+      name: mimecast-get-search-logs
+      description: Retrieves the search logs.
+      script: '|||mimecast-get-search-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      page:
+        simple: "2"
+      page_size:
+        simple: "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 4605bbeb-0fab-4c60-8077-eee3cc4d520a
+    type: regular
+    task:
+      id: 4605bbeb-0fab-4c60-8077-eee3cc4d520a
+      version: -1
+      name: mimecast-get-view-logs
+      description: Retrieves the email view logs.
+      script: '|||mimecast-get-view-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      page:
+        simple: "2"
+      page_size:
+        simple: "2"
+      start:
+        simple: 3 year
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: b9e87eef-def6-4c5c-8e8d-b5d8b1a761ba
+    type: regular
+    task:
+      id: b9e87eef-def6-4c5c-8e8d-b5d8b1a761ba
+      version: -1
+      name: mimecast-list-account
+      description: This endpoint returns the summary details for an account in Mimecast.
+      script: '|||mimecast-list-account'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: f7d2c007-c5a0-430b-8001-b7ce13460a7a
+    type: regular
+    task:
+      id: f7d2c007-c5a0-430b-8001-b7ce13460a7a
+      version: -1
+      name: mimecast-create-block-sender-policy
+      description: Create a Blocked Sender Policy.
+      script: '|||mimecast-create-block-sender-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      description:
+        simple: test1
+      fromType:
+        simple: email_domain
+      fromValue:
+        simple: test1.com
+      option:
+        simple: no_action
+      toType:
+        simple: everyone
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 5519818f-16d4-4590-8311-1f23cfed0aad
+    type: regular
+    task:
+      id: 5519818f-16d4-4590-8311-1f23cfed0aad
+      version: -1
+      name: mimecast-update-block-sender-policy
+      description: Updates the specified policy.
+      script: '|||mimecast-update-block-sender-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      description:
+        simple: test2
+      fromType:
+        simple: email_domain
+      fromValue:
+        simple: test2.com
+      option:
+        simple: block_sender
+      policy_id:
+        simple: ${Mimecast.BlockedSendersPolicy.ID}
+      toType:
+        simple: email_domain
+      toValue:
+        simple: testto.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 882264dc-f160-4ec8-84d8-0e4d2ff8b73d
+    type: regular
+    task:
+      id: 882264dc-f160-4ec8-84d8-0e4d2ff8b73d
+      version: -1
+      name: mimecast-create-antispoofing-bypass-policy
+      description: Create a new Anti-Spoofing SPF based Bypass policy.
+      script: '|||mimecast-create-antispoofing-bypass-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      description:
+        simple: test
+      from_type:
+        simple: email_domain
+      from_value:
+        simple: google.com
+      option:
+        simple: disable_bypass
+      spf_domain:
+        simple: google.com
+      to_type:
+        simple: email_domain
+      to_value:
+        simple: amazon.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -870,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 6af98cb4-5b67-4136-8a9c-1f8d25e8e5c4
+    type: regular
+    task:
+      id: 6af98cb4-5b67-4136-8a9c-1f8d25e8e5c4
+      version: -1
+      name: mimecast-get-policy blockedsenders
+      description: Get a policy by ID.
+      script: '|||mimecast-get-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      policyID:
+        simple: ${Mimecast.BlockedSendersPolicy.ID}
+      policyType:
+        simple: blockedsenders
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 77c9af7d-d54d-4eb7-888d-df37db60c2ee
+    type: regular
+    task:
+      id: 77c9af7d-d54d-4eb7-888d-df37db60c2ee
+      version: -1
+      name: mimecast-update-antispoofing-bypass-policy
+      description: Update an existing Anti-Spoofing SPF based Bypass policy.
+      script: '|||mimecast-update-antispoofing-bypass-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      bidirectional:
+        simple: "yes"
+      description:
+        simple: test_updata
+      from_date:
+        simple: 3 day
+      from_part:
+        simple: both
+      option:
+        simple: disable_bypass
+      policy_id:
+        simple: ${Mimecast.AntispoofingBypassPolicy.id}
+      to_date:
+        simple: now
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -870,
+          "y": 375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: c7e4472b-c106-4a09-80cb-2de1a6688c30
+    type: regular
+    task:
+      id: c7e4472b-c106-4a09-80cb-2de1a6688c30
+      version: -1
+      name: mimecast-list-policies address-alteration
+      description: List all existing Mimecast blocked sender policies.
+      script: '|||mimecast-list-policies'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      limit:
+        simple: "1"
+      policyType:
+        simple: address-alteration
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1310,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 41b4418c-c405-40a7-821c-902fae39a1c6
+    type: regular
+    task:
+      id: 41b4418c-c405-40a7-821c-902fae39a1c6
+      version: -1
+      name: mimecast-get-policy antispoofing-bypass
+      description: Get a policy by ID.
+      script: '|||mimecast-get-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      policyID:
+        simple: ${Mimecast.AntispoofingBypassPolicy.id}
+      policyType:
+        simple: antispoofing-bypass
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -870,
+          "y": 665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 07d575f6-85ab-47a3-8441-6947ea6b0780
+    type: condition
+    task:
+      id: 07d575f6-85ab-47a3-8441-6947ea6b0780
+      version: -1
+      name: Check if the archive-search is not empty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Mimecast.ArchiveSearchLog
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 79702f7c-e7da-4b31-863e-e001ce716753
+    type: condition
+    task:
+      id: 79702f7c-e7da-4b31-863e-e001ce716753
+      version: -1
+      name: check the search-logs not empty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Mimecast.SearchLog
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 048d012b-df5e-495b-825a-947f09be6fe3
+    type: title
+    task:
+      id: 048d012b-df5e-495b-825a-947f09be6fe3
+      version: -1
+      name: end
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -870,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 468c23fd-2e30-4c81-87c5-307ebb77f4ba
+    type: regular
+    task:
+      id: 468c23fd-2e30-4c81-87c5-307ebb77f4ba
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+      - "3"
+      - "4"
+      - "5"
+      - "7"
+      - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": -80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 3664bbb4-f660-4966-882e-9530d8b8a94a
+    type: condition
+    task:
+      id: 3664bbb4-f660-4966-882e-9530d8b8a94a
+      version: -1
+      name: ' Check if the view-logs is not empty'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Mimecast.ViewLog.viewed
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 0854f49d-fd0e-402f-88c4-d5f6c0139cdc
+    type: condition
+    task:
+      id: 0854f49d-fd0e-402f-88c4-d5f6c0139cdc
+      version: -1
+      name: Check if the list-account is not empty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Mimecast.Account
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 5d6732f4-e060-41f6-879d-b0d0d22e91c0
+    type: title
+    task:
+      id: 5d6732f4-e060-41f6-879d-b0d0d22e91c0
+      version: -1
+      name: end
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 6c413af0-8ec7-429b-858d-5cd2dc27aa66
+    type: condition
+    task:
+      id: 6c413af0-8ec7-429b-858d-5cd2dc27aa66
+      version: -1
+      name: check update
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Mimecast.BlockedSendersPolicy.Receiver.Domain
+            iscontext: true
+          right:
+            value:
+              simple: testto.com
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: bcd505ec-8122-4b69-8e65-e972015c31e3
+    type: regular
+    task:
+      id: bcd505ec-8122-4b69-8e65-e972015c31e3
+      version: -1
+      name: |
+        mimecast-delete-policy
+      description: Delete a Blocked Sender Policy.
+      script: '|||mimecast-delete-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      policyID:
+        simple: ${Mimecast.AntispoofingBypassPolicy.id}
+      policyType:
+        simple: antispoofing-bypass
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -870,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: cab1e81e-5875-4c86-8217-20459e4667e0
+    type: condition
+    task:
+      id: cab1e81e-5875-4c86-8217-20459e4667e0
+      version: -1
+      name: check update
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Mimecast.AntispoofingBypassPolicy.policy.description
+            iscontext: true
+          right:
+            value:
+              simple: test_updata
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -870,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 76436d4f-bcec-431f-8722-30b8ac53a82f
+    type: condition
+    task:
+      id: 76436d4f-bcec-431f-8722-30b8ac53a82f
+      version: -1
+      name: check get policy
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Mimecast.BlockedSendersPolicy.Sender.Domain
+            iscontext: true
+          right:
+            value:
+              simple: test1.com
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 3040,
+        "x": -1310,
+        "y": -240
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.9.0

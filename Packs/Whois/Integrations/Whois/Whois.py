@@ -8,7 +8,9 @@ import socks
 import ipwhois
 from typing import Dict, List, Optional, Type
 import urllib
-
+import whois
+from whois.parser import PywhoisError
+import dateparser.search
 
 RATE_LIMIT_RETRY_COUNT_DEFAULT: int = 0
 RATE_LIMIT_WAIT_SECONDS_DEFAULT: int = 120
@@ -7180,7 +7182,8 @@ whois_exception_mapping: Dict[Type, str] = {
     socket.gaierror: "connection_error",
     WhoisInvalidDomain: "general_error",
     WhoisEmptyResponse: "service_error",
-    TypeError: "general_error"
+    TypeError: "general_error",
+    PywhoisError: "service_error"
 }
 
 
@@ -7213,6 +7216,7 @@ def increment_metric(execution_metrics: ExecutionMetrics, mapping: Dict[type, st
 
 def get_whois_raw(domain, server="", previous=None, never_cut=False, with_server_list=False,
                   server_list=None, is_recursive=True):
+    new_list = []
     previous = previous or []
     server_list = server_list or []
     # Sometimes IANA simply won't give us the right root WHOIS server
@@ -8115,7 +8119,7 @@ def parse_dates(dates):
                     hour = 0
                     minute = 0
                     second = 0
-                    demisto.debug(e)
+                    demisto.debug(f'{e}')
         try:
             if year > 0:
                 if month > 12:
@@ -8332,11 +8336,18 @@ def get_whois(domain: str, is_recursive=True):
 
 # Drops the mic disable-secrets-detection-end
 
-def get_domain_from_query(query):
+def get_domain_from_query(query: str):
 
     demisto.debug(f"Attempting to get domain from query '{query}'...")
 
     try:
+        # remove everything after the first appearance of one of "/", "?" or "#"
+        idx_to_split = min(
+            i for i in [query.find("#"), query.find("?"), query.replace("://", ":$$").find("/"), len(query)]
+            if i > -1
+        )
+        query = query[:idx_to_split]
+
         # checks for largest matching suffix inside tlds dictionary
         suffix_len = max([len(suffix) for suffix in tlds if query.endswith('.{}'.format(suffix))] or [0])
         # if suffix(TLD) was found increase the length by one in order to add the dot before it. --> .com instead of com
@@ -8464,7 +8475,7 @@ def prepare_readable_ip_data(response):
             'asn': response.get('asn'),
             'asn_cidr': response.get('asn_cidr'),
             'asn_date': response.get('asn_date'),
-            'country_code': network_data.get('country'),
+            'country_code': response.get('asn_country_code'),
             'network_name': network_data.get('name')
             }
 
@@ -8680,9 +8691,9 @@ def whois_command(reliability: str) -> List[CommandResults]:
 
             results.append(result)
 
-        except Exception as e:
-            demisto.error(
-                f"Exception of type {e.__class__.__name__} was caught while performing whois lookup with the domain '{domain}'")
+        except (PywhoisError, WhoisEmptyResponse) as e:  # "DOMAIN NOT FOUND", "Invalid Domain Format", "Network Issues", "WHOIS Server Changes"
+            demisto.debug(f"WHOIS lookup failed for {domain}: {e}")
+
             execution_metrics = increment_metric(
                 execution_metrics=execution_metrics,
                 mapping=whois_exception_mapping,
@@ -8698,20 +8709,13 @@ def whois_command(reliability: str) -> List[CommandResults]:
                 },
             })
 
-            if should_error:
-                results.append(CommandResults(
-                    outputs=output,
-                    readable_output=f"Exception of type {e.__class__.__name__} was caught while performing whois lookup with the domain '{domain}': {e}",
-                    entry_type=EntryType.ERROR,
-                    raw_response=str(e)
-                ))
-            else:
-                results.append(CommandResults(
-                    outputs=output,
-                    readable_output=f"Exception of type {e.__class__.__name__} was caught while performing whois lookup with the domain '{domain}': {e}",
-                    entry_type=EntryType.WARNING,
-                    raw_response=str(e)
-                ))
+            results.append(CommandResults(
+                outputs=output,
+                readable_output=f"Exception of type {e.__class__.__name__}"
+                                f" was caught while performing whois lookup with the domain '{domain}': {e}",
+                entry_type=EntryType.ERROR if should_error else EntryType.WARNING,
+                raw_response=str(e)
+            ))
 
     return append_metrics(execution_metrics=execution_metrics, results=results)
 
@@ -8757,9 +8761,9 @@ def domain_command(reliability: str) -> List[CommandResults]:
 
             results.append(result)
 
-        except Exception as e:
-            demisto.error(
-                f"Exception of type {e.__class__.__name__} was caught while performing whois lookup with the domain '{domain}'")
+        except (PywhoisError, WhoisEmptyResponse) as e:  # "DOMAIN NOT FOUND", "Invalid Domain Format", "Network Issues", "WHOIS Server Changes"
+            demisto.debug(f"WHOIS lookup failed for {domain}: {e}")
+
             execution_metrics = increment_metric(
                 execution_metrics=execution_metrics,
                 mapping=whois_exception_mapping,
@@ -8775,20 +8779,13 @@ def domain_command(reliability: str) -> List[CommandResults]:
                 },
             })
 
-            if should_error:
-                results.append(CommandResults(
-                    outputs=output,
-                    readable_output=f"Exception of type {e.__class__.__name__} was caught while performing whois lookup with the domain '{domain}': {e}",
-                    entry_type=EntryType.ERROR,
-                    raw_response=str(e)
-                ))
-            else:
-                results.append(CommandResults(
-                    outputs=output,
-                    readable_output=f"Exception of type {e.__class__.__name__} was caught while performing whois lookup with the domain '{domain}': {e}",
-                    entry_type=EntryType.WARNING,
-                    raw_response=str(e)
-                ))
+            results.append(CommandResults(
+                outputs=output,
+                readable_output=f"Exception of type {e.__class__.__name__}"
+                                f" was caught while performing whois lookup with the domain '{domain}': {e}",
+                entry_type=EntryType.ERROR if should_error else EntryType.WARNING,
+                raw_response=str(e)
+            ))
 
     return append_metrics(execution_metrics=execution_metrics, results=results)
 
@@ -8833,12 +8830,307 @@ def setup_proxy():
     socket.socket = socks.socksocket  # type: ignore
 
 
+def extract_hard_date(date: str) -> Optional[str]:
+    """
+    Extracts the first date from a given string.
+
+    Args:
+        date (str): A string containing a date.
+
+    Returns:
+        Optional[str]: The first extracted date as a string if found, otherwise None.
+    """
+    date_extracted = dateparser.search.search_dates(date)
+    return date_extracted[0][0] if date_extracted else None
+
+
+def extract_date(date) -> str:
+    """
+    Extracts and formats a date from raw data.
+
+    Args:
+        raw_data (dict): Dictionary containing date information.
+        date_requested (str): Key for the requested date in raw_data.
+
+    Returns:
+        str: Formatted date string (DD-MM-YYYY) or original value if parsing fails.
+    """
+    if date:
+        try:
+            if isinstance(date, list):
+                if isinstance(date[0], datetime):
+                    return date[0].strftime("%d-%m-%Y")
+                else:
+                    parsed_date = dateparser.parse(date[0])
+                    if parsed_date:
+                        return parsed_date.strftime("%d-%m-%Y")
+                    return extract_hard_date(date[0]) or str(date[0])
+            elif isinstance(date, datetime):
+                return date.strftime("%d-%m-%Y")
+            else:
+                parsed_date = dateparser.parse(date)  # type: ignore
+                if parsed_date:
+                    return parsed_date.strftime("%d-%m-%Y")
+                return extract_hard_date(date) or str(date)
+        except Exception as e:
+            demisto.debug(f"Couldn't extract date from {date=}. Error: {e}")
+            return str(date)
+    return ""
+
+
+def extract_name_servers(servers) -> list:
+    """
+    Extracts and normalizes name servers from input.
+
+    Args:
+        servers: String or iterable of name servers.
+
+    Returns:
+        list: Normalized list of unique name servers.
+    """
+    if not servers:
+        return []
+    if isinstance(servers, str):
+        if "\n" in servers:
+            return servers.split("\n")
+        return [servers]
+    return sorted(list(set(map(str.lower, servers))))
+
+
+def get_info_by_prefix(domain_data: dict, prefix: str) -> dict:
+    """
+    Filters domain_data by prefix, removes prefix from keys, and capitalizes them.
+
+    Args:
+        domain_data (dict): Domain information.
+        prefix (str): Prefix to filter by.
+
+    Returns:
+        dict: Filtered data with processed keys and non-None values.
+    """
+
+    def process_key(key: str):
+        return (
+            "Name"
+            if key == "registrar"
+            else (
+                "Admin"
+                if key == "admin"
+                else key.removeprefix(prefix + "_").capitalize()
+            )
+        )
+
+    return {
+        camelize_string(process_key(key)): value
+        for key, value in domain_data.items()
+        if key.startswith(prefix) and value
+    }
+
+
+def rename_keys(d: dict, key_mapping: dict) -> dict:
+    """
+    Rename keys in a dictionary according to the provided mapping.
+
+    Args:
+        d (dict): The dictionary whose keys are to be renamed.
+        key_mapping (dict): A dictionary where keys are existing keys in `d`
+                            and values are new keys to replace them.
+
+    Returns:
+        dict: A new dictionary with keys renamed according to `key_mapping`.
+
+    Example:
+        >>> data = {'a': 1, 'b': 2, 'c': 3}
+        >>> mapping = {'a': 'A', 'b': 'B'}
+        >>> rename_keys(data, mapping)
+        {'A': 1, 'B': 2, 'c': 3}
+    """
+    renamed_dict = d.copy()
+    for old_key, new_key in key_mapping.items():
+        if old_key in renamed_dict:
+            renamed_dict[new_key] = renamed_dict.pop(old_key)
+    return renamed_dict
+
+
+def check_and_remove_abuse(domain_info: Dict[str, Any]):
+    """
+    Checks for keys or values containing the word 'abuse' in a domain information dictionary.
+    Removes and collects these values, and returns them as a list. If only one value is found,
+    it returns that value directly.
+
+    Args:
+        domain_info (Dict[str, Any]): The dictionary containing domain information.
+
+    Returns:
+        A single abuse-related value if only one is found, otherwise a list of abuse-related values.
+    """
+    abuse_values = []
+    for key, value in list(domain_info.items()):
+        if isinstance(value, str):
+            if "abuse" in value.lower():
+                abuse_values.append(domain_info.pop(key))
+        elif isinstance(value, list):
+            abuse_items = [
+                item
+                for item in value
+                if isinstance(item, str) and "abuse" in item.lower()
+            ]
+            if abuse_items:
+                abuse_values.extend(abuse_items)
+                domain_info[key] = [item for item in value if item not in abuse_items]
+    return abuse_values[0] if len(abuse_values) == 1 else abuse_values
+
+
+def arrange_raw_whois_data_to_context(raw_data: dict, domain: str) -> dict:
+    """
+    Converts raw WHOIS data into a structured context dictionary.
+
+    Args:
+        raw_data (dict): Raw WHOIS data to be structured.
+        domain (str): The domain name for which the WHOIS data is provided.
+
+    Returns:
+        dict: A dictionary containing structured WHOIS context data.
+    """
+    context_data: dict[str, Any] = {
+        "Raw": {f"{key}": f"{value}" for key, value in raw_data.items()},
+        "Name": domain,
+        "NameServers": extract_name_servers(raw_data.pop("name_servers", [])),
+    }
+    raw_data.pop("name", None)
+    for key in ["creation_date", "expiration_date", "updated_date"]:
+        context_data[camelize_string(key)] = extract_date(raw_data.pop(key, None))
+
+    for prefix in ("admin", "registrant", "registrar", "tech"):
+        context_data[prefix.capitalize()] = get_info_by_prefix(raw_data, prefix)
+
+    if abuse_emails := check_and_remove_abuse(raw_data):
+        context_data.setdefault("Registrar", {})["AbuseEmail"] = abuse_emails  # type: ignore[index]
+
+    emails = raw_data.get("emails")
+    context_data["FeedRelatedIndicators"] = [
+        {"Type": "email", "Value": email}
+        for email in (emails if isinstance(emails, list) else [emails])
+        if email
+    ]
+    context_data.update(
+        {
+            camelize_string(k): v
+            for k, v in raw_data.items()
+            if not k.startswith(("admin", "registrant", "registrar", "tech"))
+        }
+    )
+
+    context_data = rename_keys(
+        context_data, {"Org": "Organization", "Status": "DomainStatus"}
+    )
+
+    remove_nulls_from_dictionary(context_data)
+    res = {**context_data, "WHOIS": context_data}
+    res.pop("Raw", None)
+    return res
+
+
+def whois_and_domain_command(command: str, reliability: str) -> list[CommandResults]:
+    args = demisto.args()
+    domains = argToList(args.get("query") or args.get("domain"))
+    should_error = argToBoolean(demisto.params().get('with_error', False))
+    execution_metrics = ExecutionMetrics()
+    results: List[CommandResults] = []
+    demisto.debug(f"{command=} is called with the query '{domains}'")
+    for domain in domains:
+        demisto.debug(f"Getting whois for a single {domain=}")
+        try:
+            domain_data = whois.whois(domain)
+            demisto.debug(
+                f"'python-whois' lib return raw_data for {domain=} is: {domain_data=}"
+            )
+            execution_metrics.success += 1
+            whois_res = {}
+            context_output = arrange_raw_whois_data_to_context(domain_data, domain)
+            whois_res.update({Common.Domain.CONTEXT_PATH: context_output})
+            whois_res.update(
+                Common.DBotScore(
+                    indicator=domain,
+                    indicator_type="domain",
+                    integration_name="Whois",
+                    score=0,
+                    reliability=reliability,
+                ).to_context()
+            )
+            hr_headers = [
+                "Name",
+                "ID",
+                "CreationDate",
+                "ExpirationDate",
+                "UpdatedDate",
+                "NameServers",
+                "Organization",
+                "Registrar",
+                "Registrant",
+                "DomainStatus",
+                "Emails",
+                "Whois_server",
+            ]
+            results.append(
+                CommandResults(
+                    outputs=whois_res,
+                    readable_output=tableToMarkdown(
+                        "Whois results for {}".format(domain),
+                        context_output,
+                        headers=hr_headers,
+                        removeNull=True,
+                    ),
+                    raw_response=dict(domain_data),
+                )
+            )
+        except (PywhoisError, WhoisEmptyResponse) as e:  # "DOMAIN NOT FOUND", "Invalid Domain Format", "Network Issues", "WHOIS Server Changes"
+            demisto.debug(f"WHOIS lookup failed for {domain}: {e}")
+
+            execution_metrics = increment_metric(
+                execution_metrics=execution_metrics,
+                mapping=whois_exception_mapping,
+                caught_exception=type(e),
+            )
+
+            output = {
+                outputPaths["domain"]: {
+                    "Name": domain,
+                    "WHOIS": {"QueryStatus": f"Failed domain lookup: {e}"},
+                },
+            }
+            results.append(
+                CommandResults(
+                    outputs=output,
+                    readable_output=f"Exception of type {e.__class__.__name__}"
+                                    f" was caught while performing whois lookup with the domain '{domain}': {e}",
+                    entry_type=EntryType.ERROR if should_error else EntryType.WARNING,
+                    raw_response=str(e),
+                )
+            )
+    return append_metrics(execution_metrics=execution_metrics, results=results)
+
+
+def new_test_command():
+    test_domain = "google.com"
+    demisto.debug(f"Testing module using domain '{test_domain}'...")
+    whois_result = arrange_raw_whois_data_to_context(whois.whois(test_domain), test_domain)
+    try:
+        if whois_result["WHOIS"]["NameServers"][0] == "ns1.google.com":
+            return "ok"
+    except Exception as e:
+        raise WhoisException(
+            f"Failed testing module using domain '{test_domain}': {e.__class__.__name__} {e}"
+        )
+
+
 ''' EXECUTION CODE '''
 
 
 def main():  # pragma: no cover
     demisto.debug(f"command is {demisto.command()}")
     command = demisto.command()
+    params = demisto.params()
     should_error = argToBoolean(demisto.params().get('with_error', False))
 
     reliability = demisto.params().get('integrationReliability')
@@ -8849,36 +9141,45 @@ def main():  # pragma: no cover
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
         raise Exception("Please provide a valid value for the Source Reliability parameter.")
-    try:
-        results: List[CommandResults] = []
-        if command == 'ip':
-            results = ip_command(reliability=reliability, should_error=should_error)
 
-        else:
-            org_socket = socket.socket
-            setup_proxy()
-            if command == 'test-module':
-                results = test_command()
-
-            elif command == 'whois':
-                results = whois_command(reliability=reliability)
-
-            elif command == "domain":
-                results = domain_command(reliability=reliability)
+    old_version = argToBoolean(params.get("old-version", "true"))
+    if old_version == False and command != "ip":
+        demisto.debug("Run by new context data layout")
+        if command == "domain" or command == "whois":
+            return_results(whois_and_domain_command(command, reliability))
+        if command == 'test-module':
+            return_results(new_test_command())
+    else:
+        try:
+            results: List[CommandResults] = []
+            if command == 'ip':
+                results = ip_command(reliability=reliability, should_error=should_error)
 
             else:
-                raise NotImplementedError()
+                org_socket = socket.socket
+                setup_proxy()
+                if command == 'test-module':
+                    results = test_command()
 
-        demisto.debug(f"Returning results for command {demisto.command()}")
-        return_results(results)
-    except Exception as e:
-        msg = f"Exception thrown calling command '{demisto.command()}' {e.__class__.__name__}: {e}"
-        demisto.error(msg)
-        return_error(message=msg, error=e)
-    finally:
-        if command != 'ip':
-            socks.set_default_proxy()  # clear proxy settings
-            socket.socket = org_socket  # type: ignore
+                elif command == 'whois':
+                    results = whois_command(reliability=reliability)
+
+                elif command == "domain":
+                    results = domain_command(reliability=reliability)
+
+                else:
+                    raise NotImplementedError()
+
+            demisto.debug(f"Returning results for command {demisto.command()}")
+            return_results(results)
+        except Exception as e:
+            msg = f"Exception thrown calling command '{demisto.command()}' {e.__class__.__name__}: {e}"
+            demisto.error(msg)
+            return_error(message=msg, error=e)
+        finally:
+            if command != 'ip':
+                socks.set_default_proxy()  # clear proxy settings
+                socket.socket = org_socket  # type: ignore
 
 
 # python2 uses __builtin__ python3 uses builtins

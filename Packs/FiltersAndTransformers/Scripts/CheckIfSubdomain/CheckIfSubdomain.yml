@@ -16,10 +16,10 @@ args:
 - name: right
   required: true
   isArray: true
-  description: A list of internal assets (for example, mycompany.com)
+  description: A list of internal assets (for example, mycompany.com).
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.11.10.116949
 runas: DBotWeakRole
 fromversion: 5.5.0
 tests:

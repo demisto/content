@@ -2,7 +2,7 @@
     "name": "EclecticIQ Platform",
     "description": "Threat Intelligence Platform that connects and interprets intelligence data from open sources, commercial suppliers and industry partnerships.",
     "support": "partner",
-    "currentVersion": "3.0.1",
+    "currentVersion": "3.0.6",
     "author": "EclecticIQ",
     "url": "https://support.eclecticiq.com",
     "email": "support@eclecticiq.com",

@@ -166,6 +166,60 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Microsoft 365 Defender to Cortex XSOAR), Outgoing (from Cortex XSOAR to  Microsoft 365 Defender), or Incoming and Outgoing (from/to Cortex XSOAR and  Microsoft 365 Defender).'
+  defaultvalue: None
+  display: Incident Mirroring Direction
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  type: 15
+  section: Collect
+  hidden:
+  - marketplacev2
+  required: false
+- additionalinfo: Incoming Mirroring - when selected, closing the Microsoft 365 Defender incident is mirrored in Cortex XSOAR.
+  defaultvalue: 'false'
+  display: Close Mirrored Cortex XSOAR Incidents
+  name: close_incident
+  type: 8
+  section: Collect
+  advanced: true
+  hidden:
+  - marketplacev2
+  required: false
+- additionalinfo: Outgoing Mirroring - when selected, closing the Cortex XSOAR incident is mirrored in Microsoft 365 Defender.
+  defaultvalue: 'false'
+  display: Close Mirrored Microsoft 365 Defender Incidents
+  name: close_out
+  type: 8
+  section: Collect
+  advanced: true
+  hidden:
+  - marketplacev2
+  required: false
+- additionalinfo: Choose a tag to add to an entry to mirror it as a comment into Microsoft 365 Defender.
+  defaultvalue: CommentToMicrosoft365Defender
+  display: Comment Entry Tag To Microsoft 365 Defender
+  name: comment_tag
+  type: 0
+  section: Collect
+  advanced: true
+  hidden:
+  - marketplacev2
+  required: false
+- additionalinfo: Choose a tag to add to an entry to mirror it as a comment from Microsoft 365 Defender.
+  defaultvalue: CommentFromMicrosoft365Defender
+  display: Comment Entry Tag From Microsoft 365 Defender
+  name: comment_tag_from_microsoft365defender
+  type: 0
+  section: Collect
+  advanced: true
+  hidden:
+  - marketplacev2
+  required: false
 description: Microsoft 365 Defender is a unified pre- and post-breach enterprise defense suite that natively coordinates detection, prevention, investigation, and response across endpoints, identities, email, and applications to provide integrated protection against sophisticated attacks.
 display: Microsoft 365 Defender
 name: Microsoft 365 Defender
@@ -239,6 +293,10 @@ script:
     - contextPath: Microsoft365Defender.Incident.alerts
       description: List of alerts relevant for the incidents.
       type: Unknown
+    - contextPath: Microsoft365Defender.Incident.tags
+      description: List of custom tags associated with an incident, for example to flag a group of incidents with a common characteristic.
+    - contextPath: Microsoft365Defender.Incident.comments
+      description: List of comments created by secops when managing the incident, for example additional information about the classification selection.
   - arguments:
     - auto: PREDEFINED
       description: Categorize incidents (as Active, Resolved, or Redirected).
@@ -261,24 +319,25 @@ script:
       - FalsePositive
       - TruePositive
       - InformationalExpectedActivity
-    - description: Comment to be added to the incident.
-      name: comment
-    - auto: PREDEFINED
-      description: Determination of the incident.
+    - description: 'Determination of the incident. Must be used with the classification field. Possible values depend on the classification field: TruePositive - MultiStagedAttack, MaliciousUserActivity, Malware, Phishing, CompromisedAccount, UnwantedSoftware, Other (default), InformationalExpectedActivity- SecurityTesting, LineOfBusinessApplication, ConfirmedActivity, Other (default), FalsePositive - NotMalicious, NoEnoughDataToValidate, Other (default), Unknown - NotAvailable.'
       name: determination
+      auto: PREDEFINED
       predefined:
-      - NotAvailable
-      - Malware
-      - SecurityTesting
-      - UnwantedSoftware
       - MultiStagedAttack
       - MaliciousUserActivity
-      - CompromisedAccount
+      - Malware
       - Phishing
+      - CompromisedAccount
+      - UnwantedSoftware
+      - Other
+      - SecurityTesting
       - LineOfBusinessApplication
       - ConfirmedActivity
       - NotMalicious
-      - Other
+      - NoEnoughDataToValidate
+      - NotAvailable
+    - description: Comment to be added to the incident.
+      name: comment
     - description: 'A comma-separated list of custom tags associated with an incident. For example: tag1,tag2,tag3.'
       isArray: true
       name: tags
@@ -321,6 +380,10 @@ script:
     - contextPath: Microsoft365Defender.Incident.alerts
       description: List of alerts relevant for the incidents.
       type: Unknown
+    - contextPath: Microsoft365Defender.Incident.tags
+      description: List of custom tags associated with an incident, for example to flag a group of incidents with a common characteristic.
+    - contextPath: Microsoft365Defender.Incident.comments
+      description: List of comments created by secops when managing the incident, for example additional information about the classification selection.
   - arguments:
     - description: Advanced hunting query.
       name: query
@@ -362,11 +425,13 @@ script:
     - contextPath: Microsoft365Defender.Incident.createdTime
       description: The date and time (in UTC) the incident was created.
       type: date
+    - contextPath: Microsoft365Defender.Incident.tags
+      description: List of custom tags associated with an incident, for example to flag a group of incidents with a common characteristic.
     - contextPath: Microsoft365Defender.Incident.lastUpdateTime
       description: The date and time (in UTC) the incident was last updated.
       type: date
     - contextPath: Microsoft365Defender.Incident.assignedTo
-      description: Owner of the incident.
+      description: 'Owner of the incident.'
       type: string
     - contextPath: Microsoft365Defender.Incident.classification
       description: 'Specification of the incident. Possible values are: Unknown, FalsePositive, and TruePositive.'
@@ -382,12 +447,59 @@ script:
       type: string
     - contextPath: Microsoft365Defender.Incident.alerts
       description: List of alerts relevant for the incidents.
-  dockerimage: demisto/crypto:1.0.0.96042
+    - contextPath: Microsoft365Defender.Incident.tags
+      description: List of custom tags associated with an incident, for example to flag a group of incidents with a common characteristic.
+    - contextPath: Microsoft365Defender.Incident.comments
+      description: List of comments created by secops when managing the incident, for example additional information about the classification selection.
+  - arguments:
+    - default: false
+      description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
+      isArray: false
+      name: lastUpdate
+      required: false
+      secret: false
+    deprecated: false
+    description: Get the list of incidents that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
+    execution: false
+    name: get-modified-remote-data
+  - arguments:
+    - default: false
+      description: The remote incident ID.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time.
+      isArray: false
+      name: lastUpdate
+      required: false
+      secret: false
+    deprecated: false
+    description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
+    execution: false
+    name: get-remote-data
+  - arguments: []
+    deprecated: false
+    description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
+    execution: false
+    name: get-mapping-fields
+  - arguments: []
+    deprecated: false
+    description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
+    execution: false
+    name: update-remote-system
+  dockerimage: demisto/crypto:1.0.0.2005673
   isfetch: true
   script: ''
   subtype: python3
   type: python
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
 fromversion: 5.5.0
 tests:
 - No tests
 defaultmapperin: Microsoft 365 Defender - Incoming Mapper
+defaultmapperout: Microsoft 365 Defender - Outgoing Mapper

@@ -48,11 +48,11 @@ class Client:
         result = self.client.get_supported_languages(parent=parent)
 
         return [
-            dict(
-                language_code=language.language_code,
-                support_source=language.support_source,
-                support_target=language.support_target
-            )
+            {
+                "language_code": language.language_code,
+                "support_source": language.support_source,
+                "support_target": language.support_target
+            }
             for language in result.languages
         ]
 
@@ -100,7 +100,9 @@ class Client:
         with open(credentials_file_path, 'w') as creds_file:
             json.dump(self.service_account, creds_file)
 
-        return translate_v3.TranslationServiceClient.from_service_account_json(credentials_file_path)
+        return translate_v3.TranslationServiceClient.from_service_account_json(  # type: ignore[call-arg]
+            filename=credentials_file_path
+        )
 
 
 def test_module(client):
@@ -119,7 +121,7 @@ def test_module(client):
         return 'ok'
 
     except Exception as e:
-        return 'Test failed: {}'.format(str(e))
+        return f'Test failed: {str(e)}'
 
 
 def supported_languages(client):

@@ -10,17 +10,16 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* Cortex Attack Surface Management
+This playbook does not use any integrations.
 
 ### Scripts
 
-* GetProjectOwners
-* GridFieldSetup
 * RankServiceOwners
+* GetProjectOwners
 
 ### Commands
 
-* asm-get-external-service
+This playbook does not use any commands.
 
 ## Playbook Inputs
 

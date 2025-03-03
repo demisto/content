@@ -1,5 +1,7 @@
 Update Grid Table from items or key value pairs.
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +11,7 @@ Update Grid Table from items or key value pairs.
 | XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description**                                                                                                                                                                                                                                                                                       |
@@ -23,8 +26,11 @@ Update Grid Table from items or key value pairs.
 | keys_from_nested | Keys to retrieve from nested dictionaries. Can be used only when the unpack_nested_elements argument is set to false. Keys will not be columns correlated. Default is all keys. **Note**: when the number of values exceeds the number of columns, it truncates the last values that are outside the range for table. |
 
 ## Command Example
+
 Assume the following:
+
 1. Entry Context:
+
 ```json
 {
   "EWS": {
@@ -59,28 +65,32 @@ Assume the following:
 ```
 
 2. Grid: \
-![Grid](https://github.com/demisto/content/raw/4510eafaf6cfeb48a42d9032dd0e71200b288ad5/Packs/Legacy/Scripts/SetGridField/doc_files/grid.png)
+![Grid](../../doc_files/grid.png)
 
 Considering the following cases:
+
 1. Key value to Grid:
+
 ```shell script
 !SetGridField columns="columnheader1,columnheader2" context_path=EWS.Items.HeadersMap grid_id=mygrid 
 keys="Received,Thread-Index,X-MS-Exchange-Organization-AuthSource,Accept-Language"
 ```
 
 Grid after update: \
-![Grid](https://github.com/demisto/content/raw/4510eafaf6cfeb48a42d9032dd0e71200b288ad5/Packs/Legacy/Scripts/SetGridField/doc_files/grid_key_value_update.png)
+![Grid](../../doc_files/grid_key_value_update.png)
  
 2. List of item properties to Grid:
+
 ```shell script
 !SetGridField columns="columnheader1,columnheader2" context_path=EWS.Items.headers grid_id=mygrid 
 keys="name, value"
 ```
 
 Grid after update: \
-![Grid](https://github.com/demisto/content/raw/4510eafaf6cfeb48a42d9032dd0e71200b288ad5/Packs/Legacy/Scripts/SetGridField/doc_files/grid_list_update.png) 
+![Grid](../../doc_files/grid_list_update.png) 
 
 Entry Context:
+
 ```json
 {
     "PaloAltoNetworksXDR": {
@@ -117,15 +127,17 @@ Entry Context:
 ```script
 !SetGridField_CopyForInvestigation columns=`User id,Risk level,Score,Reasons` grid_id=xdrriskyusers context_path=`PaloAltoNetworksXDR.RiskyUser` keys=`id,risk_level,score,reasons` keys_from_nested=description,points,severity
 ```
-![nested_dict_grid](https://github.com/demisto/content/raw/a1fbdccd9bf97d8d27f6b5bf1d08802a7bdcf475/Packs/CommonScripts/Scripts/SetGridField/doc_files/nested_dict_grid.png)
+
+![nested_dict_grid](../../doc_files/nested_dict_grid.png)
 
 ## Troubleshooting
 
 The first time you run `SetGridField` on a newly created grid field, you may see an error similar to the following:
 
-![Screen Shot 2021-12-21 at 10 36 03 PM](doc_files/troubleshoot.png)
+![Screen Shot 2021-12-21 at 10 36 03 PM](../../doc_files/troubleshoot.png)
 
 To resolve the error:
+
 1. Make sure the grid field is associated with the incident type the field is being used in.
 2. Run the following command to initialize the grid field: `!setIncident <GRID_FIELD_NAME>=[]`
 

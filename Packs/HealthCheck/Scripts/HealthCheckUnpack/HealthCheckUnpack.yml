@@ -6,13 +6,13 @@ comment: "Extract files from log bundle - supports tar.gz & tar \n\nhandle unsup
 commonfields:
   id: HealthCheckUnpack
   version: -1
-dockerimage: demisto/python3:3.10.4.29342
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 name: HealthCheckUnpack
 outputs:
-- contextPath: "no"
+- contextPath: 'no'
   description: file type is not supported.
-- contextPath: "yes"
+- contextPath: 'yes'
   description: file type is supported.
 runas: DBotWeakRole
 script: ''

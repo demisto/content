@@ -3,4 +3,3 @@ ignore=RM104
 
 [file:FeedCyCognitoGetAssetEndpoint.yml]
 ignore=BA124
-

@@ -16,7 +16,7 @@ class MicrosoftStorageClient(BaseClient):
                  account_sas_token, storage_account_name,
                  api_version, managed_identities_client_id: Optional[str] = None):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy)
-        self._account_sas_token = account_sas_token
+        self._account_sas_token = account_sas_token or ""
         self._storage_account_name = storage_account_name
         self._api_version = api_version
         self._base_url = server_url
@@ -57,7 +57,7 @@ class MicrosoftStorageClient(BaseClient):
             # The updated url_suffix after performing this logic will be:
             # url_suffix = 'container?sv=2020-08-04&ss=ay&spr=https&sig=s5&restype=directory&comp=list'
             params_query = self.params_dict_to_query_string(params, prefix='')
-            uri_token_part = self._account_sas_token if self._account_sas_token else '?'
+            uri_token_part = self._account_sas_token if self._account_sas_token.startswith('?') else f'?{self._account_sas_token}'
             url_suffix = f'{url_suffix}{uri_token_part}{params_query}'
             params = None
 
@@ -128,6 +128,7 @@ class MicrosoftStorageClient(BaseClient):
             err = f'{str(e)}'
 
         return_error(f'Error in Microsoft authorization with Azure Managed Identities: {err}')
+        return None
 
     def params_dict_to_query_string(self, params: dict = None, prefix: str = "") -> str:
         """

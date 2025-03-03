@@ -1,4 +1,3 @@
-
 from taxii2client.common import TokenAuth
 from taxii2client.v20 import Server, as_pages
 
@@ -8,6 +7,7 @@ import urllib3
 # disable insecure warnings
 urllib3.disable_warnings()
 
+INTEGRATION_NAME = "Unit42v2 Feed"
 UNIT42_TYPES_TO_DEMISTO_TYPES = {
     'ipv4-addr': FeedIndicatorType.IP,
     'ipv6-addr': FeedIndicatorType.IPv6,
@@ -80,6 +80,26 @@ class Client(STIX2XSOARParser):
         self.objects_data[kwargs.get('type')] = data
         return None
 
+    def get_report_object(self, obj_id: str):
+        """Get specific report object by id.
+
+        Args:
+        obj_id: The object ID.
+        id_to_object: a dict in the form of - id: stix_object.
+
+        Returns:
+            A sub report object.
+        """
+        sub_report_obj = self.id_to_object.get(obj_id, {})
+        if not sub_report_obj:
+            if report_from_api := self.fetch_stix_objects_from_api(type="report", id=obj_id):
+                sub_report_obj = (report_from_api[0] if len(report_from_api) == 1 else None)
+                if not sub_report_obj:
+                    demisto.debug(f"{INTEGRATION_NAME}: Found more then one object for report object {obj_id} skipping")
+            else:
+                demisto.debug(f"{INTEGRATION_NAME}: Could not find report object {obj_id}")
+        return sub_report_obj
+
 
 def extract_ioc_value(value: str):
     """
@@ -108,31 +128,29 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None,
     indicators = []
     if indicator_objects:
         for indicator_object in indicator_objects:
-            raw_name = indicator_object.get('name', '')
             pattern = indicator_object.get('pattern') or ''
+            pattern_value = Client.get_single_pattern_value(pattern)
+            if not pattern_value:
+                continue
+            raw_name = indicator_object.get('name', '')
 
-            for key in UNIT42_TYPES_TO_DEMISTO_TYPES.keys():
+            for key in UNIT42_TYPES_TO_DEMISTO_TYPES:
                 if pattern.startswith(f'[{key}'):  # retrieve only Demisto indicator types
                     indicator_obj = {
-                        "value": raw_name,
+                        "value": pattern_value,
                         "type": UNIT42_TYPES_TO_DEMISTO_TYPES.get(key),
                         "score": DEFAULT_INDICATOR_SCORE,  # default verdict of fetched indicators is malicious
                         "rawJSON": indicator_object,
                         "fields": {
                             "firstseenbysource": indicator_object.get('created'),
                             "indicatoridentification": indicator_object.get('id'),
-                            "tags": list((set(indicator_object.get('labels') or [])).union(set(feed_tags))),
+                            "tags": list(set(indicator_object.get('labels') or []).union(feed_tags)),
                             "modified": indicator_object.get('modified'),
                             "reportedby": 'Unit42',
                         }
                     }
-
-                    if "file:hashes.'SHA-256' = '" in pattern:
-                        if ioc_value := extract_ioc_value(pattern):
-                            indicator_obj['value'] = ioc_value
-
-                        if raw_name and raw_name != ioc_value:
-                            indicator_obj['fields']['associatedfilenames'] = indicator_object['name']
+                    if "file:hashes" in pattern and raw_name != pattern_value:
+                        indicator_obj['fields']['associatedfilenames'] = raw_name
 
                     if tlp_color:
                         indicator_obj['fields']['trafficlightprotocol'] = tlp_color
@@ -142,29 +160,171 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None,
     return indicators
 
 
-def get_campaign_from_sub_reports(report_object, id_to_object):
-    report_relationships = []
-    object_refs = report_object.get('object_refs', [])
-    for obj in object_refs:
-        if obj.startswith('report--'):
-            sub_report_obj = id_to_object.get(obj, {})
-            for sub_report_obj_ref in sub_report_obj.get('object_refs', []):
-                if sub_report_obj_ref.startswith('campaign--'):
-                    related_campaign = id_to_object.get(sub_report_obj_ref)
+def parse_malware(client, malware_objects: list = [], feed_tags: list = [],
+                  tlp_color: Optional[str] = None) -> list:
+    """Parse the IOC objects retrieved from the feed.
+    Args:
+      malware_objects: a list of objects containing the instances of malware.
+    Returns:
+        A list of processed malware.
+    """
 
-                    if related_campaign:
-                        entity_relation = EntityRelationship(name='related-to',
-                                                             entity_a=f"[Unit42 ATOM] {report_object.get('name')}",
-                                                             entity_a_type='Report',
-                                                             entity_b=related_campaign.get('name'),
-                                                             entity_b_type='Campaign')
-                        report_relationships.append(entity_relation.to_indicator())
-    return report_relationships
+    malware_list = []
+    for malware_object in malware_objects:
+        malware_object = STIX2XSOARParser.parse_malware(client, malware_object)[0]
+        malware_object["fields"]["tags"] = list(feed_tags)
+        if tlp_color:
+            malware_object['fields']['trafficlightprotocol'] = tlp_color
+        malware_list.append(malware_object)
+    return malware_list
 
 
-def is_sub_report(report_obj):
+def is_atom42_main_report(report_obj):
+    """ Our definition for main report is a report with 'object_refs'
+    list that contains only objects of the type not a report and a report with
+    description.
+
+    Args:
+      report_obj: The report object.
+    Returns:
+        A boolean.
+    """
     obj_refs = report_obj.get('object_refs', [])
-    return all(not obj_ref.startswith('report--') for obj_ref in obj_refs)
+    contain_report = False
+    contain_intrusion_set = False
+    if report_obj.get('name') == 'ATOM Campaign Report':
+        return False
+    for obj_ref in obj_refs:
+        if not obj_ref.startswith(('report--', 'intrusion-set--')):
+            return False
+        if obj_ref.startswith('intrusion-set--'):
+            contain_intrusion_set = True
+        if obj_ref.startswith('report--'):
+            contain_report = True
+    return contain_intrusion_set and contain_report
+
+
+def is_atom42_sub_report(report_obj):
+    """ Our definition for sub report is a report with 'object_refs'
+    list that contains only objects not for type intrusion-set or report.
+
+    Args:
+      report_obj: The report object.
+    Returns:
+        A boolean.
+    """
+    obj_refs = report_obj.get('object_refs', [])
+    is_report_description = report_obj.get('description') is not None
+    only_reports_and_intrusion_set = True
+    if report_obj.get('name') == 'ATOM Campaign Report':
+        return True
+    for obj_ref in obj_refs:
+        if not obj_ref.startswith(('report--', 'intrusion-set--')):
+            only_reports_and_intrusion_set = False
+    return not (is_report_description or only_reports_and_intrusion_set)
+
+
+def create_relationship_entity(entity_a: Optional[str], entity_b: str, entity_b_type: str):
+    """Creates relationship entity object.
+
+    Args:
+      entity_a: the indictor name of entity_a - report name is required.
+      entity_b: the indictor name of entity_b.
+      entity_b_type: the the indictor type of entity_b.
+
+    Returns:
+        A EntityRelationship object.
+    """
+    entity_relation = EntityRelationship(
+        name="related-to",
+        entity_a=f"[Unit42 ATOM] {entity_a}",
+        entity_a_type=ThreatIntel.ObjectsNames.REPORT,
+        entity_b=entity_b,
+        entity_b_type=entity_b_type,
+    )
+    return entity_relation.to_indicator()
+
+
+def create_relationship_list(id_to_object, report_object: dict,
+                             sub_report_obj: dict, campaign_only: bool) -> tuple:
+    """Creates relationship list and obj refs list.
+
+    Args:
+      id_to_object: a dict in the form of - id: stix_object.
+      report_object: A report objects.
+      sub_report_obj: A sub-report objects.
+      campaign_only: bool indicates whether to add only campaign indicators.
+
+    Returns:
+        tuple of two lists the first list is a relationships list and the second list is an object ref list.
+    """
+    obj_refs_excluding_relationships_prefix = []
+    relationships = []
+    sub_report_obj_object_refs = sub_report_obj.get("object_refs", [])
+    for related_obj in sub_report_obj_object_refs:
+        # relationship-- objects ref handled in parse_relationships
+        if not related_obj.startswith("relationship--"):
+            obj_refs_excluding_relationships_prefix.append(related_obj)
+            if id_to_object.get(related_obj):
+                entity_b_obj_type, entity_b_value = (
+                    STIX2XSOARParser.get_entity_b_type_and_value(
+                        related_obj, id_to_object, True
+                    )
+                )
+                if (not entity_b_obj_type):
+                    demisto.debug(
+                        f"{INTEGRATION_NAME}: Could not find the type/name of {related_obj} skipping."
+                    )
+                    continue
+                if campaign_only:
+                    if related_obj.startswith("campaign--"):
+                        relationship_entity = create_relationship_entity(
+                            report_object.get("name"),
+                            entity_b_value,
+                            entity_b_obj_type,
+                        )
+                        relationships.append(relationship_entity)
+                else:
+                    relationship_entity = create_relationship_entity(
+                        report_object.get("name"),
+                        entity_b_value,
+                        entity_b_obj_type,
+                    )
+                    relationships.append(relationship_entity)
+    return relationships, obj_refs_excluding_relationships_prefix
+
+
+def get_relationships_from_sub_reports(
+    client, report_object, id_to_object, campaign_only
+):
+    """Parse the Reports objects retrieved from the feed.
+
+    Args:
+      report_objects: a list of report objects containing the reports.
+      id_to_object: a dict in the form of - id: stix_object.
+      campaign_only: bool indicates whether to add only campaign indicators.
+
+    Returns:
+        A list of relationships and a list of obj_refs_excluding_relationships_prefix.
+    """
+    object_ref_to_return = []
+    object_refs = report_object.get("object_refs", [])
+    relationships: list[dict[str, Any]] = []
+    obj_refs_excluding_relationships_prefix = []
+    for obj in object_refs:
+        if obj.startswith("report--"):
+            # if the report id in the object ref we will not create relationships
+            if obj == report_object.get("id"):
+                continue
+            sub_report_obj = client.get_report_object(obj)
+            if sub_report_obj:
+                relationships_list, sub_report_obj_object_refs = create_relationship_list(
+                    id_to_object, report_object, sub_report_obj, campaign_only)
+                relationships.extend(relationships_list)
+                obj_refs_excluding_relationships_prefix.extend(sub_report_obj_object_refs)
+    if obj_refs_excluding_relationships_prefix:
+        object_ref_to_return = client.create_obj_refs_list(obj_refs_excluding_relationships_prefix)
+    return relationships, object_ref_to_return
 
 
 def parse_reports_and_report_relationships(client: Client, report_objects: list, feed_tags: Optional[list] = None,
@@ -189,9 +349,12 @@ def parse_reports_and_report_relationships(client: Client, report_objects: list,
     reports = []
 
     for report_object in report_objects:
-        if is_sub_report(report_object):
+        if is_atom42_sub_report(report_object):
+            demisto.debug(f"{INTEGRATION_NAME}: skipping {report_object.get('id')} is a sub report")
             continue
-        report_list = client.parse_report(report_object, '[Unit42 ATOM] ', ignore_reports_relationships=True)
+        is_main_report = is_atom42_main_report(report_object)
+        report_list = client.parse_report(report_object, '[Unit42 ATOM] ', ignore_reports_relationships=is_main_report,
+                                          is_unit42_report=True)
         report = report_list[0]
         report['value'] = f"[Unit42 ATOM] {report_object.get('name')}"
         report['fields']['tags'] = list((set(report_object.get('labels') or [])).union(set(feed_tags)))
@@ -209,8 +372,11 @@ def parse_reports_and_report_relationships(client: Client, report_objects: list,
             'unit42_description': report_object.get('description'),
             'unit42_object_refs': report_object.get('object_refs')
         }
-
-        report['relationships'].extend(get_campaign_from_sub_reports(report_object, id_to_object))
+        report_relationships, obj_refs_output = get_relationships_from_sub_reports(client, report_object, id_to_object,
+                                                                                   (not is_main_report))
+        if obj_refs_output:
+            report['fields'].setdefault('Report Object References', []).extend(obj_refs_output)
+        report['relationships'].extend(report_relationships)
 
         reports.append(report)
 
@@ -264,26 +430,6 @@ def handle_multiple_dates_in_one_field(field_name: str, field_value: str):
         return f"{max(dates_as_datetime).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]}Z"
 
 
-def get_attack_id_and_value_from_name(attack_indicator):
-    """
-    Split indicator name into MITRE ID and indicator value: 'T1108: Redundant Access' -> MITRE ID = T1108,
-    indicator value = 'Redundant Access'.
-    """
-    ind_name = attack_indicator.get('name')
-    separator = ':'
-    try:
-        idx = ind_name.index(separator)
-    except ValueError:
-        raise DemistoException(f"Failed parsing attack indicator {ind_name}")
-    ind_id = ind_name[:idx]
-    value = ind_name[idx + 2:]
-
-    if attack_indicator.get('x_mitre_is_subtechnique'):
-        value = attack_indicator.get('x_panw_parent_technique_subtechnique')
-
-    return ind_id, value
-
-
 def create_attack_pattern_indicator(client: Client, attack_indicator_objects, feed_tags, tlp_color) -> List:
     """Parse the Attack Pattern objects retrieved from the feed.
 
@@ -302,7 +448,7 @@ def create_attack_pattern_indicator(client: Client, attack_indicator_objects, fe
     for attack_indicator_object in attack_indicator_objects:
         attack_indicator_list = client.parse_attack_pattern(attack_indicator_object, ignore_external_id=True)
         attack_indicator = attack_indicator_list[0]
-        mitre_id, value = get_attack_id_and_value_from_name(attack_indicator_object)
+        mitre_id, value = client.get_mitre_attack_id_and_value_from_name(attack_indicator_object)
 
         attack_indicator["value"] = value
         attack_indicator["fields"].update({
@@ -422,7 +568,7 @@ def get_ioc_value(ioc, id_to_obj):
         return f"[Unit42 ATOM] {ioc_obj.get('name')}"
 
     elif ioc_obj.get('type') == 'attack-pattern':
-        return get_attack_id_and_value_from_name(ioc_obj)[1]
+        return STIX2XSOARParser.get_mitre_attack_id_and_value_from_name(ioc_obj)[1]
 
     for key in ('name', 'pattern'):
         if ioc_value := extract_ioc_value(ioc_obj.get(key, '')):
@@ -521,7 +667,6 @@ def fetch_indicators(client: Client, feed_tags: Optional[list] = None, tlp_color
 
     for type_, objects in client.objects_data.items():
         demisto.info(f'Fetched {len(objects)} Unit42 {type_} objects.')
-
     id_to_object = {
         obj.get('id'): obj for obj in
         client.objects_data['report'] + client.objects_data['indicator'] + client.objects_data['malware']
@@ -532,6 +677,7 @@ def fetch_indicators(client: Client, feed_tags: Optional[list] = None, tlp_color
     ioc_indicators = parse_indicators(client.objects_data['indicator'], feed_tags, tlp_color)
     reports = parse_reports_and_report_relationships(client, client.objects_data['report'], feed_tags, tlp_color, id_to_object)
     campaigns = parse_campaigns(client, client.objects_data['campaign'], feed_tags, tlp_color)
+    malware = parse_malware(client, client.objects_data['malware'], feed_tags, tlp_color)
     attack_patterns = create_attack_pattern_indicator(client, client.objects_data['attack-pattern'],
                                                       feed_tags, tlp_color)
     intrusion_sets = create_intrusion_sets(client, client.objects_data['intrusion-set'], feed_tags, tlp_color)
@@ -562,8 +708,9 @@ def fetch_indicators(client: Client, feed_tags: Optional[list] = None, tlp_color
         demisto.debug(f'Feed Unit42 v2: {len(course_of_actions)} Course of Actions Indicators were created.')
     if intrusion_sets:
         demisto.debug(f'Feed Unit42 v2: {len(intrusion_sets)} Intrusion Sets Indicators were created.')
-
-    return ioc_indicators + reports + campaigns + attack_patterns + course_of_actions + intrusion_sets
+    if malware:
+        demisto.debug(f'Feed Unit42 v2: {len(malware)} Malware Indicators were created.')
+    return ioc_indicators + reports + campaigns + attack_patterns + course_of_actions + intrusion_sets + malware
 
 
 def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: Optional[list] = None,

@@ -1,0 +1,43 @@
+{
+    "statusType": 2,
+    "status": "DONE",
+    "statusCode": 200,
+    "data": [
+        {
+            "numberOfAffectedEntities": 1,
+            "overallStatus": "COMPLETED_WITH_WARNINGS",
+            "operationParameters": {
+                "informUser": true,
+                "allowPostpone": true,
+                "schedulingType": "SCHEDULED",
+                "schedulingDateTime": "2024-02-06T07:58:30.000Z",
+                "generateActivityLogs": true,
+                "indicator": "8.8.8.8",
+                "originalTimeoutSeconds": 3600
+            },
+            "id": "b",
+            "comment": "Test",
+            "type": "EFR_EVENT_BY_URL",
+            "createdOn": "2024-03-05T11:37:05.211Z",
+            "remainingTimeoutSeconds": 0,
+            "aborted": false,
+            "adminName": "TAL"
+        },
+        {
+            "numberOfAffectedEntities": 1,
+            "overallStatus": "COMPLETED_WITH_WARNINGS",
+            "operationParameters": {
+                "informUser": true,
+                "allowPostpone": false,
+                "schedulingType": "IMMEDIATE",
+                "originalTimeoutSeconds": 86400
+            },
+            "id": "c",
+            "type": "AM_SCAN",
+            "createdOn": "2024-02-12T11:00:06.350Z",
+            "remainingTimeoutSeconds": 0,
+            "aborted": false,
+            "adminName": "TAL"
+        }
+    ]
+}

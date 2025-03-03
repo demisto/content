@@ -6,11 +6,13 @@ from freezegun import freeze_time
 import demistomock as demisto
 import json
 import pytest
+import dataclasses
 
-from CommonServerPython import DemistoException
-from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time, build_std_output, parse_ip_addresses, \
+from CommonServerPython import snakify, DemistoException
+from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time, build_std_output, get_machine_by_ip_command, \
+    parse_ip_addresses, \
     print_ip_addresses, get_machine_details_command, run_polling_command, run_live_response_script_action, \
-    get_live_response_file_action, put_live_response_file_action, HuntingQueryBuilder, assign_params, \
+    get_live_response_file_action, put_live_response_file_action, HuntingQueryBuilder, FileStatisticsAPIParser, assign_params, \
     get_machine_users_command, get_machine_alerts_command, get_advanced_hunting_command, create_filters_conjunction, \
     create_filters_disjunctions, create_filter, MICROSOFT_DEFENDER_FOR_ENDPOINT_API
 
@@ -61,7 +63,7 @@ def test_second_fetch_incidents(mocker):
     # Check that incident isn't extracted again
     incidents, _ = fetch_incidents(client_mocker, {'last_alert_fetched_time': "2019-09-01T13:31:07",
                                                    'existing_ids': ['da637029414680409372_735564929']}, False)
-    assert [{
+    assert incidents == [{
         'rawJSON': '{"id": "da637029414680409372_735564929", "incidentId": 14, "investigationId": null, '
                    '"assignedTo": null, "severity": "Medium", "status": "New", "classification": null, '
                    '"determination": null, "investigationState": "UnsupportedAlertType", '
@@ -73,7 +75,7 @@ def test_second_fetch_incidents(mocker):
                    '"machineId": "43df73d1dac43593d1275e20422f44a949f6dfc3", "alertUser": null, "comments": [], '
                    '"alertFiles": [], "alertDomains": [], "alertIps": []}',
         'name': 'Microsoft Defender ATP Alert da637029414680409372_735564929',
-        'occurred': '2019-09-01T13:31:08.0252869Z', 'dbotMirrorId': 'da637029414680409372_735564929'}] == incidents
+        'occurred': '2019-09-01T13:31:08.0252869Z', 'dbotMirrorId': 'da637029414680409372_735564929'}]
 
 
 def test_third_fetch_incidents(mocker):
@@ -85,6 +87,34 @@ def test_third_fetch_incidents(mocker):
                                                    'existing_ids': ['da637029413772554314_295039533']}, False)
     assert incidents[0].get('name') == \
         'Microsoft Defender ATP Alert da637029414680409372_735564929'
+
+
+test_get_machine_by_ip_data = [
+    ({'ip': '8.8.8.8', 'timestamp': '2024-05-19T01:00:05Z', 'all_results': 'True'},  # case no limit and all_results is True
+     '8.8.8.8', '2024-05-19T01:00:05Z', {"value": [{'a': 'b'}, {'c': 'd'}, {'e': 'f'}]}),  # expected two machines
+    ({'ip': '8.8.8.8', 'timestamp': '2024-05-19T01:00:05Z', 'limit': '1'},  # case with limit
+     '8.8.8.8', '2024-05-19T01:00:05Z', {"value": [{'a': 'b'}]})  # expected only 1 machine
+]
+
+
+@pytest.mark.parametrize('params, ip, timestamp, expected', test_get_machine_by_ip_data)
+def test_get_machine_by_ip_with_limit(mocker, params, ip, timestamp, expected):
+    """
+    Given:
+        -A limit argument.
+    When:
+        -running get-machine-by-ip command.
+    Then:
+        -The number of machines returned is not grater than the limit and http request is called with the right args.
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import MsClient
+    raw_response = {'value': [{'a': 'b'}, {'c': 'd'}, {'e': 'f'}]}
+    mock_get_machines = mocker.patch.object(
+        MsClient, 'get_machines_for_get_machine_by_ip_command', return_value=raw_response)
+    mock_handle_machines = mocker.patch("MicrosoftDefenderAdvancedThreatProtection.handle_machines")
+    get_machine_by_ip_command(client_mocker, params)
+    assert mock_get_machines.call_args.args[0] == f"(ip='{ip}',timestamp={timestamp})"
+    assert mock_handle_machines.call_args.args[0] == expected
 
 
 def test_get_alert_related_ips_command(mocker):
@@ -352,6 +382,20 @@ ALERT_RELATED_USER_API_RESPONSE = {
     "logOnMachinesCount": 1,
     "isDomainAdmin": "false",
     "isOnlyNetworkUser": "false"
+}
+
+FILE_STATISTICS_API_RESPONSE = {
+    '@odata.context': 'https://api.security.microsoft.com/api/$metadata#microsoft.windowsDefenderATP.api.InOrgFileStats',
+    'sha1': '0991a395da64e1c5fbe8732ed11e6be064081d9f',
+    'orgPrevalence': '14850',
+    'organizationPrevalence': 14850,  # same as 'orgPrevalence', but as integer
+    'orgFirstSeen': '2019-12-07T13:44:16Z',
+    'orgLastSeen': '2020-01-06T13:39:36Z',
+    'globalPrevalence': '705012',
+    'globallyPrevalence': 705012,  # same as 'globalPrevalence', but as integer
+    'globalFirstObserved': '2015-03-19T12:20:07.3432441Z',
+    'globalLastObserved': '2020-01-06T13:39:36Z',
+    'topFileNames': ['MREC.exe']
 }
 
 USER_DATA = {
@@ -2895,3 +2939,168 @@ def test_generate_login_url(mocker):
                    f'&client_id={client_id}&redirect_uri={redirect_uri})'
     res = MicrosoftDefenderAdvancedThreatProtection.return_results.call_args[0][0].readable_output
     assert expected_url in res
+
+
+def test_get_file_statistics_command(mocker):
+    """
+    Given:
+    - SHA1 File hash
+
+    When:
+    - Calling the get_file_statistics_command function
+
+    Then:
+    - Assert correct context output and raw response
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import get_file_statistics_command
+
+    # Set
+    response = FILE_STATISTICS_API_RESPONSE
+    mocker.patch.object(client_mocker, 'get_file_statistics', return_value=response)
+
+    # Arrange
+    results = get_file_statistics_command(client_mocker, {'file_hash': '0991a395da64e1c5fbe8732ed11e6be064081d9f'})
+    context_output = results.outputs
+
+    assert context_output['Sha1'] == response['sha1']
+    assert context_output['Statistics'] == {
+        'OrgPrevalence': response['orgPrevalence'],
+        'OrganizationPrevalence': response['organizationPrevalence'],
+        'OrgFirstSeen': response['orgFirstSeen'],
+        'OrgLastSeen': response['orgLastSeen'],
+        'GlobalPrevalence': response['globalPrevalence'],
+        'GloballyPrevalence': response['globallyPrevalence'],
+        'GlobalFirstObserved': response['globalFirstObserved'],
+        'GlobalLastObserved': response['globalLastObserved'],
+        'TopFileNames': response['topFileNames'],
+    }
+
+    assert results.raw_response == response
+
+
+@pytest.fixture
+def file_stats():
+    """Fixture to create a FileStatisticsAPIParser instance."""
+    return FileStatisticsAPIParser.from_raw_response(FILE_STATISTICS_API_RESPONSE)
+
+
+def test_file_statistics_api_parser_from_raw_response(file_stats: FileStatisticsAPIParser):
+    """
+    Given:
+    - An instance of FileStatisticsAPIParser created from file statistics API response
+
+    When:
+    - Casting the FileStatisticsAPIParser dataclass to a dictionary
+
+    Then:
+    - Assert no excluded fields in dictionary
+    - Assert all relevant fields in dictionary
+    """
+    # Set
+    response = FILE_STATISTICS_API_RESPONSE
+    excluded_key = '@odata.context'
+
+    # Arrange
+    file_stats_dict = dataclasses.asdict(file_stats)
+    snake_case_response = snakify(response)
+
+    # Assert
+    assert excluded_key not in file_stats_dict
+    assert file_stats_dict == {key: value for key, value in snake_case_response.items() if key != excluded_key}
+
+
+def test_file_statistics_api_parser_to_context(file_stats: FileStatisticsAPIParser):
+    """
+    Given:
+    - An instance of FileStatisticsAPIParser created from file statistics API response
+
+    When:
+    - Calling the FileStatisticsAPIParser.to_context_output method
+
+    Then:
+    - Assert correct context output
+    """
+    # Set
+    response = FILE_STATISTICS_API_RESPONSE
+
+    # Arrange
+    context_output = file_stats.to_context_output()
+
+    # Assert
+    assert context_output['Sha1'] == response['sha1']
+    assert context_output['Statistics'] == {
+        'OrgPrevalence': response['orgPrevalence'],
+        'OrganizationPrevalence': response['organizationPrevalence'],
+        'OrgFirstSeen': response['orgFirstSeen'],
+        'OrgLastSeen': response['orgLastSeen'],
+        'GlobalPrevalence': response['globalPrevalence'],
+        'GloballyPrevalence': response['globallyPrevalence'],
+        'GlobalFirstObserved': response['globalFirstObserved'],
+        'GlobalLastObserved': response['globalLastObserved'],
+        'TopFileNames': response['topFileNames'],
+    }
+
+
+def test_file_statistics_api_parser_to_file_indicator(file_stats: FileStatisticsAPIParser):
+    """
+    Given:
+    - SHA1 file hash and an instance FileStatisticsAPIParser created from file statistics API response
+
+    When:
+    - Calling the FileStatisticsAPIParser.to_file_indicator method
+
+    Then:
+    - Assert correct human readable table name and data
+    """
+    # Set
+    file_hash = '0991a395da64e1c5fbe8732ed11e6be064081d9f'
+    response = FILE_STATISTICS_API_RESPONSE
+
+    # Arrange
+    file_indicator = file_stats.to_file_indicator(file_hash)
+    indicator_data: dict = next(iter(file_indicator.to_context().values()))
+    indicator_data.pop('Hashes', None)  # generated by Common.File, irrelevant in this unit test
+
+    # Assert
+    assert indicator_data == {
+        'SHA1': response['sha1'],
+        'OrganizationPrevalence': response['organizationPrevalence'],
+        'GlobalPrevalence': response['globallyPrevalence'],
+        'OrganizationFirstSeen': response['orgFirstSeen'],
+        'OrganizationLastSeen': response['orgLastSeen'],
+        'FirstSeenBySource': response['globalFirstObserved'],
+        'LastSeenBySource': response['globalLastObserved'],
+    }
+
+
+def test_file_statistics_api_parser_to_human_readable(mocker, file_stats: FileStatisticsAPIParser):
+    """
+    Given:
+    - SHA1 file hash and an instance FileStatisticsAPIParser created from file statistics API response
+
+    When:
+    - Calling the FileStatisticsAPIParser.to_human_readable method
+
+    Then:
+    - Assert correct human readable table name and data
+    """
+    # Set
+    file_hash = '0991a395da64e1c5fbe8732ed11e6be064081d9f'
+    response = FILE_STATISTICS_API_RESPONSE
+    table_to_markdown = mocker.patch('MicrosoftDefenderAdvancedThreatProtection.tableToMarkdown')
+
+    # Arrange
+    file_stats.to_human_readable(file_hash)
+    table_name, table_data = table_to_markdown.call_args[0]
+
+    # Assert
+    assert table_name == f'Statistics on {file_hash} file:'
+    assert table_data == {
+        'Organization Prevalence': response['organizationPrevalence'],
+        'Organization First Seen': response['orgFirstSeen'],
+        'Organization Last Seen': response['orgLastSeen'],
+        'Global Prevalence': response['globallyPrevalence'],
+        'Global First Observed': response['globalFirstObserved'],
+        'Global Last Observed': response['globalLastObserved'],
+        'Top File Names': response['topFileNames'],
+    }

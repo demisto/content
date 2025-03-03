@@ -1,0 +1,677 @@
+id: Dispatch Incident - Vectra Detect
+version: -1
+name: Dispatch Incident - Vectra Detect
+description: This playbook is called from the Process Incident - Vectra Detect playbook. It will fetch all active detections for the entity under investigation. It will then assign the entity to a user; if an assignment already exists, it will update that assignment and add a note in Vectra.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ac5d2953-2684-4857-8c77-b5afdf69300c
+    type: start
+    task:
+      id: ac5d2953-2684-4857-8c77-b5afdf69300c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 7f8a05d3-15ec-4bef-8f40-e052d14a4a6b
+    type: regular
+    task:
+      id: 7f8a05d3-15ec-4bef-8f40-e052d14a4a6b
+      version: -1
+      name: Assign Entity in Vectra.
+      description: Assigns an Account/Host entity to a Vectra User for investigation. If an assignment already exists on this entity, it will be reassigned.
+      script: '|||vectra-assignment-assign'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      account_id:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.entity_type
+                iscontext: true
+              right:
+                value:
+                  simple: account
+          accessor: entity_id
+      assignee_id:
+        complex:
+          root: inputs.user_id
+      host_id:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.entity_type
+                iscontext: true
+              right:
+                value:
+                  simple: host
+          accessor: entity_id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 172.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 3594bb20-5dfc-45ea-8747-a97f62e2111f
+    type: regular
+    task:
+      id: 3594bb20-5dfc-45ea-8747-a97f62e2111f
+      version: -1
+      name: Add Note for a Host.
+      description: Add a note to the host.
+      script: '|||vectra-host-note-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      host_id:
+        complex:
+          root: inputs.entity_id
+      note:
+        complex:
+          root: inputs.user_id
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'This entity has been automatically processed by XSOAR. The incident has been assigned to the user with user ID '
+              suffix:
+                value:
+                  simple: ' and the XSOAR incident ID is '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: incident.id
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: .
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 662.5,
+          "y": 1285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 58f6287f-4426-4876-8e2b-fc33f4d63a52
+    type: condition
+    task:
+      id: 58f6287f-4426-4876-8e2b-fc33f4d63a52
+      version: -1
+      name: Does the assignment already exist?
+      description: Check if the Assignment already exists or not
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AssignmentID
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 172.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 0402b165-93e0-45e7-809c-d9d60eee9a37
+    type: regular
+    task:
+      id: 0402b165-93e0-45e7-809c-d9d60eee9a37
+      version: -1
+      name: Update the assignment with the provided user ID.
+      description: Assigns an Account/Host entity to a Vectra User for investigation. If an assignment already exists on this entity, it will be reassigned.
+      script: '|||vectra-assignment-assign'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      assignee_id:
+        complex:
+          root: inputs.user_id
+      assignment_id:
+        complex:
+          root: AssignmentID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 662.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 5dfb1301-29f8-4125-806b-e02bfab35d69
+    type: title
+    task:
+      id: 5dfb1301-29f8-4125-806b-e02bfab35d69
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -100,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: b5e1cd08-fc49-4dc4-85c3-a6761ba25030
+    type: condition
+    task:
+      id: b5e1cd08-fc49-4dc4-85c3-a6761ba25030
+      version: -1
+      name: Is VectraDetect Integration enabled?
+      description: Check VectraDetect integration is active.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Vectra_Detect
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 32e3eb0c-f5ca-4c8c-8313-62b1fb0b5041
+    type: regular
+    task:
+      id: 32e3eb0c-f5ca-4c8c-8313-62b1fb0b5041
+      version: -1
+      name: Get the current assignment for the entity.
+      description: Return a list of assignments. By default already resolved assignment are not returned.
+      script: '|||vectra-search-assignments'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      account_ids:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.entity_type
+                iscontext: true
+              right:
+                value:
+                  simple: account
+          accessor: entity_id
+      extend-context:
+        simple: AssignmentID=results.[0].id
+      host_ids:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.entity_type
+                iscontext: true
+              right:
+                value:
+                  simple: host
+          accessor: entity_id
+      ignore-outputs:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 172.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 7dc8e9aa-88a4-487b-8d71-2fcbf0b85328
+    type: regular
+    task:
+      id: 7dc8e9aa-88a4-487b-8d71-2fcbf0b85328
+      version: -1
+      name: Delete the context for the AssignmentID.
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      key:
+        simple: AssignmentID
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 172.5,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 57e275d5-c4f2-41e8-89aa-3f4a0dd98402
+    type: condition
+    task:
+      id: 57e275d5-c4f2-41e8-89aa-3f4a0dd98402
+      version: -1
+      name: Is entity Account or Host?
+      description: Check if the entity is a host or account.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      Account:
+      - "22"
+      Host:
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: Host
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.entity_type
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: host
+    - label: Account
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.entity_type
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: account
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 172.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: b5c3d9de-4c69-45b1-8e45-c93fde29bd48
+    type: regular
+    task:
+      id: b5c3d9de-4c69-45b1-8e45-c93fde29bd48
+      version: -1
+      name: Add Note for an Account.
+      description: Add a note to the account.
+      script: '|||vectra-account-note-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      account_id:
+        complex:
+          root: inputs.entity_id
+      note:
+        complex:
+          root: inputs.user_id
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'This entity has been automatically processed by XSOAR. The incident has been assigned to the user with user ID '
+              suffix:
+                value:
+                  simple: ' and the XSOAR incident ID is '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: incident.id
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: .
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 172.5,
+          "y": 1285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 1d272f2f-6bec-46d8-8756-23726a6bca21
+    type: regular
+    task:
+      id: 1d272f2f-6bec-46d8-8756-23726a6bca21
+      version: -1
+      name: Fetch Entity Active Detections.
+      description: Returns a list of Detection objects. All search attributes will be cumulative unless you're using the search_query_only one, in that case, only this one will be taken into account.
+      script: '|||vectra-search-detections'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      search_query:
+        complex:
+          root: inputs.entity_type
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition: {}
+              conditionB: {}
+              conditionInBetween: {}
+              else:
+                value:
+                  simple: 'detection.src_host.id:'
+              equals:
+                value:
+                  simple: account
+              lhs: {}
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs: {}
+              rhsB: {}
+              then:
+                value:
+                  simple: 'detection.src_linked_account.id:'
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.entity_id
+                iscontext: true
+      state:
+        simple: active
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 172.5,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "18_23_yes": 0.57,
+      "18_8_#default#": 0.24
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1655,
+        "width": 1142.5,
+        "x": -100,
+        "y": -120
+      }
+    }
+  }
+inputs:
+- key: user_id
+  value: {}
+  required: false
+  description: User ID for entity assignment.
+  playbookInputQuery:
+- key: entity_type
+  value:
+    complex:
+      root: incident
+      accessor: vectraentitytype
+  required: false
+  description: Type of the entity.
+  playbookInputQuery:
+- key: entity_id
+  value:
+    complex:
+      root: incident
+      accessor: accountid
+      transformers:
+      - operator: SetIfEmpty
+        args:
+          applyIfEmpty: {}
+          defaultValue:
+            value:
+              simple: incident.deviceid
+            iscontext: true
+  required: false
+  description: ID of the entity.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

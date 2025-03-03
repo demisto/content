@@ -1,28 +1,24 @@
 Run commands on Picus and automate security validation with playbooks.
 This integration was integrated and tested with version 3976 of Picus
 
-## Configure Picus on Cortex XSOAR
+## Configure Picus in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Picus.
 
 ![image](./../../doc_files/search_integration.png)
 
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Picus Manager URL |  | True |
-    | Picus Refresh Token | The refresh token will be used to generate access token. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Picus Manager URL |  | True |
+| Picus Refresh Token | The refresh token will be used to generate access token. | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ![image](./../../doc_files/test_integration.png)
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### picus-get-access-token
 ***

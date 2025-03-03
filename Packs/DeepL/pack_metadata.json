@@ -2,7 +2,7 @@
     "name": "DeepL",
     "description": "Uses DeepL (https://www.deepl.com/) to translate text or files",
     "support": "community",
-    "currentVersion": "1.2.3",
+    "currentVersion": "1.2.5",
     "author": "Harri Ruuttila",
     "url": "",
     "email": "",

@@ -19,7 +19,8 @@ from Reco import (
     get_sensitive_assets_by_name,
     get_sensitive_assets_by_id, get_link_to_user_overview_page, get_sensitive_assets_shared_with_public_link,
     get_3rd_parties_list, get_files_shared_with_3rd_parties, map_reco_alert_score_to_demisto_score,
-    get_user_context_by_email_address, get_assets_shared_externally_command, get_files_exposed_to_email_command
+    get_user_context_by_email_address, get_assets_shared_externally_command, get_files_exposed_to_email_command,
+    get_private_email_list_with_access
 )
 
 from test_data.structs import (
@@ -30,7 +31,6 @@ from test_data.structs import (
     GetTableResponse,
     GetIncidentTableResponse,
 )
-
 
 DUMMY_RECO_API_DNS_NAME = "https://dummy.reco.ai/api"
 INCIDET_ID_UUID = "87799f2f-c012-43b6-ace2-78ec984427f3"
@@ -290,6 +290,12 @@ def get_random_risky_users_response() -> GetIncidentTableResponse:
                                 key="full_name",
                                 value=base64.b64encode(
                                     "John Doe".encode(ENCODING)
+                                ).decode(ENCODING),
+                            ),
+                            KeyValuePair(
+                                key="identity_id",
+                                value=base64.b64encode(
+                                    f"{uuid.uuid4()}".encode(ENCODING)
                                 ).decode(ENCODING),
                             ),
                             KeyValuePair(
@@ -699,14 +705,20 @@ def test_add_risky_user_label(requests_mock, reco_client: RecoClient) -> None:
     requests_mock.put(
         f"{DUMMY_RECO_API_DNS_NAME}/entry-label-relations", json={}, status_code=200
     )
+    raw_result = get_random_risky_users_response()
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/risk-management/get-risk-management-table",
+        json=raw_result,
+        status_code=200,
+    )
     res = add_risky_user_label(reco_client=reco_client, email_address=label_id)
     assert "labeled as risky" in res.readable_output
 
 
 def test_get_assets_user_has_access_to(requests_mock, reco_client: RecoClient) -> None:
     raw_result = get_random_assets_user_has_access_to_response()
-    requests_mock.post(
-        f"{DUMMY_RECO_API_DNS_NAME}/asset-management", json=raw_result, status_code=200
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/asset-management/query", json=raw_result, status_code=200
     )
     actual_result = get_assets_user_has_access(
         reco_client=reco_client,
@@ -720,8 +732,8 @@ def test_get_assets_user_has_access_to(requests_mock, reco_client: RecoClient) -
 def test_get_assets_user_bad_response(
     capfd, requests_mock, reco_client: RecoClient
 ) -> None:
-    requests_mock.post(
-        f"{DUMMY_RECO_API_DNS_NAME}/asset-management", json={}, status_code=200
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/asset-management/query", json={}, status_code=200
     )
     with capfd.disabled(), pytest.raises(Exception):
         get_assets_user_has_access(
@@ -731,8 +743,8 @@ def test_get_assets_user_bad_response(
 
 def test_get_sensitive_assets_by_name(requests_mock, reco_client: RecoClient) -> None:
     raw_result = get_random_assets_user_has_access_to_response()
-    requests_mock.post(
-        f"{DUMMY_RECO_API_DNS_NAME}/asset-management", json=raw_result, status_code=200
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/asset-management/query", json=raw_result, status_code=200
     )
     actual_result = get_sensitive_assets_by_name(
         reco_client=reco_client, asset_name="test", regex_search=True
@@ -743,8 +755,8 @@ def test_get_sensitive_assets_by_name(requests_mock, reco_client: RecoClient) ->
 
 def test_get_sensitive_assets_by_id(requests_mock, reco_client: RecoClient) -> None:
     raw_result = get_random_assets_user_has_access_to_response()
-    requests_mock.post(
-        f"{DUMMY_RECO_API_DNS_NAME}/asset-management", json=raw_result, status_code=200
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/asset-management/query", json=raw_result, status_code=200
     )
     actual_result = get_sensitive_assets_by_id(
         reco_client=reco_client, asset_id="asset-id"
@@ -791,17 +803,28 @@ def test_get_exposed_publicly(requests_mock, reco_client: RecoClient) -> None:
     assert actual_result.outputs[0].get("source") is not None
 
 
+def test_get_private_email_list_with_access(requests_mock, reco_client: RecoClient) -> None:
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/risk-management/get-data-risk-management-table",
+        json={"getTableResponse": {}},
+        status_code=200
+    )
+    actual_result = get_private_email_list_with_access(
+        reco_client=reco_client
+    )
+    assert len(actual_result.outputs) == 0
+
+
 def test_get_assets_shared_externally_command(requests_mock, reco_client: RecoClient) -> None:
     raw_result = get_random_assets_user_has_access_to_response()
-    requests_mock.post(
-        f"{DUMMY_RECO_API_DNS_NAME}/asset-management", json=raw_result, status_code=200
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/asset-management/query", json=raw_result, status_code=200
     )
     actual_result = get_assets_shared_externally_command(
         reco_client=reco_client,
         email_address="g@example.com"
     )
     assert len(actual_result.outputs) == len(raw_result.getTableResponse.data.rows)
-    assert actual_result.outputs[0].get("source") is not None
 
 
 def test_get_files_exposed_to_email_command(requests_mock, reco_client: RecoClient) -> None:
@@ -890,6 +913,11 @@ def test_get_user_context_by_email(requests_mock, reco_client: RecoClient) -> No
     raw_result = get_random_user_context_response()
     requests_mock.post(
         f"{DUMMY_RECO_API_DNS_NAME}/asset-management", json=raw_result, status_code=200
+    )
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/risk-management/get-risk-management-table",
+        json=raw_result,
+        status_code=200,
     )
     res = get_user_context_by_email_address(reco_client, "charles@corp.com")
     assert res.outputs_prefix == "Reco.User"

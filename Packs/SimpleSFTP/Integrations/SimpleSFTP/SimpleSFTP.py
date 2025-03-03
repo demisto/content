@@ -67,7 +67,7 @@ def main():
             file_path = demisto.args()["file_path"]
             sftp.get(file_path, "/tmp/" + file_path[file_path.rindex("/") + 1:])  # type: ignore
             sftp.close()  # type: ignore
-            with open("/tmp/" + file_path[file_path.rindex("/") + 1:], "r") as f:
+            with open("/tmp/" + file_path[file_path.rindex("/") + 1:]) as f:
                 data = f.read()
                 if demisto.args()["return_file"] == "True":
                     demisto.results(

@@ -216,6 +216,8 @@ class Client(BaseClient):
                     # last_modified values in the context, for server version higher than 6.5.0.
                     last_run = demisto.getLastRun()
                     etag = last_run.get(url, {}).get('etag')
+                    if etag:
+                        etag = etag.strip('"')
                     last_modified = last_run.get(url, {}).get('last_modified')
                     last_updated = last_run.get(url, {}).get('last_updated')
                     # To avoid issues with indicators expiring, if 'last_updated' is over X hours old,
@@ -321,6 +323,8 @@ def get_no_update_value(response: requests.Response, url: str) -> bool:
         return True
 
     etag = response.headers.get('ETag')
+    if etag:
+        etag = etag.strip('"')
     last_modified = response.headers.get('Last-Modified')
     current_time = datetime.utcnow()
     # Save the current time as the last updated time. This will be used to indicate the last time the feed was updated in XSOAR.
@@ -379,10 +383,7 @@ def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], c
                 field = {f: {}}
                 if 'regex' in fattrs:
                     field[f]['regex'] = re.compile(fattrs['regex'])
-                if 'transform' not in fattrs:
-                    field[f]['transform'] = r'\g<0>'
-                else:
-                    field[f]['transform'] = fattrs['transform']
+                field[f]['transform'] = fattrs.get('transform', '\\g<0>')
                 fields_to_extract.append(field)
 
     line = line.strip()
@@ -420,7 +421,14 @@ def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], c
     return attributes, value
 
 
-def fetch_indicators_command(client, feed_tags, tlp_color, itype, auto_detect, create_relationships=False, **kwargs):
+def fetch_indicators_command(client,
+                             feed_tags,
+                             tlp_color,
+                             itype,
+                             auto_detect,
+                             create_relationships=False,
+                             enrichment_excluded: bool = False,
+                             **kwargs):
     iterators = client.build_iterator(**kwargs)
     indicators = []
 
@@ -440,22 +448,27 @@ def fetch_indicators_command(client, feed_tags, tlp_color, itype, auto_detect, c
                     indicator_type = determine_indicator_type(
                         client.feed_url_to_config.get(url, {}).get('indicator_type'), itype, auto_detect, value)
                     indicator_data = {
-                        "value": value,
-                        "type": indicator_type,
-                        "rawJSON": attributes,
+                        'value': value,
+                        'type': indicator_type,
+                        'rawJSON': attributes,
                     }
-                    if create_relationships and client.feed_url_to_config.get(url, {}).get('relationship_name'):
-                        if attributes.get('relationship_entity_b'):
-                            relationships_lst = EntityRelationship(
-                                name=client.feed_url_to_config.get(url, {}).get('relationship_name'),
-                                entity_a=value,
-                                entity_a_type=indicator_type,
-                                entity_b=attributes.get('relationship_entity_b'),
-                                entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
-                                    client.feed_url_to_config.get(url, {}).get('relationship_entity_b_type')),
-                            )
-                            relationships_of_indicator = [relationships_lst.to_indicator()]
-                            indicator_data['relationships'] = relationships_of_indicator
+                    if enrichment_excluded:
+                        indicator_data['enrichmentExcluded'] = enrichment_excluded
+
+                    if (create_relationships
+                            and client.feed_url_to_config.get(url, {}).get('relationship_name')
+                            and attributes.get('relationship_entity_b')
+                        ):
+                        relationships_lst = EntityRelationship(
+                            name=client.feed_url_to_config.get(url, {}).get('relationship_name'),
+                            entity_a=value,
+                            entity_a_type=indicator_type,
+                            entity_b=attributes.get('relationship_entity_b'),
+                            entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
+                                client.feed_url_to_config.get(url, {}).get('relationship_entity_b_type')),
+                        )
+                        relationships_of_indicator = [relationships_lst.to_indicator()]
+                        indicator_data['relationships'] = relationships_of_indicator
 
                     if len(client.custom_fields_mapping.keys()) > 0 or TAGS in attributes:
                         custom_fields = client.custom_fields_creator(attributes)
@@ -483,14 +496,20 @@ def determine_indicator_type(indicator_type, default_indicator_type, auto_detect
     return indicator_type
 
 
-def get_indicators_command(client: Client, args):
+def get_indicators_command(client: Client, args, enrichment_excluded: bool = False):
     itype = args.get('indicator_type', client.indicator_type)
     limit = int(args.get('limit'))
     feed_tags = args.get('feedTags')
     tlp_color = args.get('tlp_color')
     auto_detect = demisto.params().get('auto_detect_type')
     create_relationships = demisto.params().get('create_relationships')
-    indicators_list, _ = fetch_indicators_command(client, feed_tags, tlp_color, itype, auto_detect, create_relationships)[:limit]
+    indicators_list, _ = fetch_indicators_command(client,
+                                                  feed_tags,
+                                                  tlp_color,
+                                                  itype,
+                                                  auto_detect,
+                                                  create_relationships,
+                                                  enrichment_excluded)[:limit]
     entry_result = camelize(indicators_list)
     hr = tableToMarkdown('Indicators', entry_result, headers=['Value', 'Type', 'Rawjson'])
     return hr, {}, indicators_list
@@ -502,7 +521,7 @@ def test_module(client: Client, args):
         if not FeedIndicatorType.is_valid_type(indicator_type):
             indicator_types = []
             for key, val in vars(FeedIndicatorType).items():
-                if not key.startswith('__') and type(val) == str:
+                if not key.startswith('__') and isinstance(val, str):
                     indicator_types.append(val)
             supported_values = ', '.join(indicator_types)
             raise ValueError(f'Indicator type of {indicator_type} is not supported. Supported values are:'
@@ -518,6 +537,8 @@ def feed_main(feed_name, params=None, prefix=''):
         params['feed_name'] = feed_name
     feed_tags = argToList(demisto.params().get('feedTags'))
     tlp_color = demisto.params().get('tlp_color')
+    enrichment_excluded = (demisto.params().get('enrichmentExcluded', False)
+                           or (demisto.params().get('tlp_color') == 'RED' and is_xsiam_or_xsoar_saas()))
     client = Client(**params)
     command = demisto.command()
     if command != 'fetch-indicators':
@@ -534,7 +555,8 @@ def feed_main(feed_name, params=None, prefix=''):
             indicators, no_update = fetch_indicators_command(client, feed_tags, tlp_color,
                                                              params.get('indicator_type'),
                                                              params.get('auto_detect_type'),
-                                                             params.get('create_relationships'))
+                                                             params.get('create_relationships'),
+                                                             enrichment_excluded=enrichment_excluded)
 
             # check if the version is higher than 6.5.0 so we can use noUpdate parameter
             if is_demisto_version_ge('6.5.0'):

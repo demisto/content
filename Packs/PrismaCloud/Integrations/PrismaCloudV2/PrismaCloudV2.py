@@ -1,9 +1,7 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 from copy import deepcopy
-
 import json
-
+from CommonServerPython import *  # noqa: F401
+import demistomock as demisto  # noqa: F401
 
 ''' CONSTANTS '''
 
@@ -92,6 +90,80 @@ STATUSES_OPTIONS = ['Errors', 'Suppressed', 'Passed', 'Fixed']
 TIME_FIELDS = ['firstSeen', 'lastSeen', 'alertTime', 'eventOccurred', 'lastUpdated', 'insertTs', 'createdTs', 'lastModifiedTs',
                'addedOn', 'eventTs', 'createdOn', 'updatedOn', 'rlUpdatedOn', 'lastLoginTs']
 
+LICENSE_TYPES = ['OSI_APACHE', 'OSI_ARTISTIC', 'OSI_BSD', 'OSI_EFL', 'OSI_FDL', 'OSI_LGPL', 'OSI_ZPL', 'CC-BY-SA-2.1-JP',
+                 'GPL-2.0-or-later', 'AMDPLPA', 'CC-BY-SA-3.0-DE', 'ECL-2.0', 'EPICS', 'eCos-2.0', 'GPL-3.0-with-GCC-exception',
+                 'KiCad-libraries-exception', 'GFDL-1.3-invariants-or-later', 'APSL-1.1', 'MIT', 'CC-BY-NC-ND-3.0-DE', 'GPL-3.0',
+                 'CC-BY-SA-1.0', 'ADSL', 'MIT-CMU', 'Linux-man-pages-copyleft', 'diffmark', 'GPL-2.0', 'HPND', 'OSL-1.0',
+                 'ClArtistic', 'IJG', 'IPL-1.0', 'NCGL-UK-2.0', 'CC-BY-2.5', 'LGPL-3.0-or-later', 'LiLiQ-Rplus-1.1', 'CC0-1.0',
+                 'Glide', 'ImageMagick', 'CECILL-1.1', 'AGPL-3.0-only', 'eGenix', 'ANTLR-PD', 'CC-BY-NC-SA-4.0', 'CECILL-C',
+                 'GFDL-1.3-no-invariants-only', 'SHL-0.5', 'MIT-Modern-Variant', 'CC-BY-3.0-NL', 'MIT-feh', 'SMLNJ',
+                 'CC-BY-ND-2.0', 'HaskellReport', 'AGPL-1.0', 'BitTorrent-1.0', 'CDL-1.0', 'SISSL', 'CC-BY-SA-3.0', 'C-UDA-1.0',
+                 'YPL-1.1', 'AGPL-1.0-or-later', 'NLOD-2.0', 'Unlicense', 'D-FSL-1.0', 'Linux-OpenIB', 'GPL-1.0-only', 'libtiff',
+                 'Plexus', 'BSD-1-Clause', 'MPL-2.0', 'Intel-ACPI', 'Barr', 'OGL-Canada-2.0', 'ANTLR-PD-fallback', 'Zed',
+                 'MIT-open-group', 'LGPL-2.1-or-later', 'mpich2', 'Motosoto', 'OGDL-Taiwan-1.0', 'PDDL-1.0',
+                 'GFDL-1.3-invariants-only', 'EUPL-1.1', 'EUPL-1.0', 'Entessa', 'CC-BY-NC-ND-2.0', 'W3C',
+                 'GFDL-1.2-no-invariants-or-later', 'Saxpath', 'GFDL-1.3-only', 'FreeImage', 'CNRI-Python', 'Apache-1.0',
+                 'OLDAP-1.4', 'JSON', 'GPL-3.0-or-later', 'DSDP', 'MPL-2.0-no-copyleft-exception', 'Condor-1.1', 'Imlib2',
+                 'iMatix', 'OLDAP-2.6', 'Rdisc', 'LiLiQ-P-1.1', 'xpp', 'FDK-AAC', 'CC-BY-NC-3.0', 'Jam',
+                 'GFDL-1.3-no-invariants-or-later', 'GFDL-1.3-or-later', 'ICU', 'LGPL-2.1', 'AFL-2.1', 'JasPer-2.0', 'SSPL-1.0',
+                 'CC-BY-SA-2.0', 'BSD-3-Clause-Clear', 'OSL-2.0', 'CC-BY-SA-4.0', 'SISSL-1.2', 'ODC-By-1.0', 'ZPL-2.1', 'QPL-1.0',
+                 'LGPL-2.0-only', 'CC-BY-SA-2.5', 'Zimbra-1.3', 'MTLL', 'Eurosym', 'NPL-1.0', 'blessing', 'GFDL-1.3', 'GPL-1.0+',
+                 'GFDL-1.1-no-invariants-only', 'CC-BY-NC-ND-3.0', 'Xerox', 'Unicode-TOU', 'Aladdin', 'CC-BY-NC-SA-2.5',
+                 'Artistic-1.0', 'BSL-1.0', 'CC-BY-ND-2.5', 'NetCDF', 'MulanPSL-2.0', 'UCL-1.0', 'PostgreSQL', 'GFDL-1.1-only',
+                 'RHeCos-1.1', 'Sendmail-8.23', 'psfrag', 'SNIA', 'EPL-2.0', '0BSD', 'MPL-1.0', 'GFDL-1.1-or-later',
+                 'XFree86-1.1', 'WTFPL', 'CDLA-Sharing-1.0', 'CAL-1.0', 'CERN-OHL-S-2.0', 'CC-BY-NC-SA-3.0-DE', 'CC-BY-NC-1.0',
+                 'Artistic-2.0', 'BUSL-1.1', 'EUPL-1.2', 'GPL-2.0-with-font-exception', 'LGPL-2.0+', 'AGPL-1.0-only', 'SGI-B-1.0',
+                 'W3C-20150513', 'Adobe-2006', 'xinetd', 'BSD-3-Clause-No-Military-License', 'DRL-1.0', 'LGPL-2.0', 'MirOS',
+                 'PolyForm-Small-Business-1.0.0', 'CDLA-Permissive-2.0', 'LiLiQ-R-1.1', 'Vim', 'curl', 'OLDAP-2.2.2',
+                 'CATOSL-1.1', 'CC-BY-ND-4.0', 'CC-BY-NC-SA-2.0-UK', 'APSL-1.0', 'GPL-2.0-with-classpath-exception',
+                 'OLDAP-2.0.1', 'NIST-PD-fallback', 'Glulxe', 'NPL-1.1', 'CC-BY-NC-ND-1.0', 'CC-BY-NC-2.5', 'Parity-6.0.0',
+                 'CC-BY-NC-SA-3.0-IGO',
+                 'CPAL-1.0', 'CC-BY-2.5-AU', 'SWL', 'LAL-1.2', 'NRL', 'OGL-UK-3.0', 'MS-RL', 'OSL-2.1', 'LPL-1.0', 'OSET-PL-2.1',
+                 'OFL-1.0-no-RFN', 'OML', 'Arphic-1999', 'BSD-2-Clause', 'MulanPSL-1.0', 'EPL-1.0', 'BSD-4-Clause-Shortened',
+                 'Elastic-2.0', 'NLPL', 'LPPL-1.2', 'SchemeReport', 'Multics', 'Net-SNMP', 'SHL-0.51', 'MIT-advertising',
+                 'GPL-3.0-with-autoconf-exception', 'MS-PL', 'wxWindows', 'ZPL-1.1', 'ISC', 'CC-BY-NC-SA-3.0', 'GPL-2.0-only',
+                 'Giftware', 'CPL-1.0', 'EUDatagrid', 'SGI-B-1.1', 'CC-BY-1.0', 'bzip2-1.0.5', 'libselinux-1.0', 'SMPPL',
+                 'Latex2e', 'Watcom-1.0', 'VSL-1.0', 'CC-BY-NC-SA-1.0', 'FreeBSD-DOC', 'Nunit', 'LPPL-1.0', 'OLDAP-2.4',
+                 'TAPR-OHL-1.0', 'OLDAP-2.3', 'CECILL-2.0', 'LPPL-1.3a', 'Qhull', 'CNRI-Python-GPL-Compatible', 'Frameworx-1.0',
+                 'CDLA-Permissive-1.0', 'X11-distribute-modifications-variant', 'EFL-1.0', 'DOC', 'GFDL-1.2-or-later',
+                 'BSD-3-Clause-No-Nuclear-License', 'LPPL-1.1', 'CC-BY-3.0-US', 'TOSL', 'Spencer-99', 'copyleft-next-0.3.1',
+                 'FSFAP', 'CC-BY-NC-ND-4.0', 'OLDAP-2.8', 'Bahyph', 'Newsletr', 'CC-BY-NC-4.0', 'OFL-1.1', 'TU-Berlin-2.0',
+                 'GFDL-1.2-invariants-or-later', 'BSD-2-Clause-NetBSD', 'Crossword', 'YPL-1.0', 'GPL-2.0-with-bison-exception',
+                 'NIST-PD', 'IPA', 'GFDL-1.1-invariants-or-later', 'CC-BY-NC-ND-3.0-IGO', 'BSD-Source-Code', 'BitTorrent-1.1',
+                 'AFL-3.0', 'Zend-2.0', 'GFDL-1.1', 'HPND-sell-variant', 'Abstyles', 'Interbase-1.0', 'MakeIndex', 'EFL-2.0',
+                 'LPL-1.02', 'OLDAP-2.2', 'LGPL-3.0-only', 'LPPL-1.3c', 'libpng-2.0', 'Hippocratic-2.1',
+                 'BSD-3-Clause-No-Nuclear-License-2014', 'AAL', 'NOSL', 'CC-BY-3.0-AT', 'HTMLTIDY', 'GPL-1.0-or-later', 'RPL-1.5',
+                 'BSD-4-Clause-UC', 'Wsuipa', 'Cube', 'SCEA', 'IBM-pibs', 'Borceux', 'CC-BY-ND-3.0-DE', 'CC-BY-NC-SA-2.0-FR',
+                 'Afmparse', 'CUA-OPL-1.0', 'CC-BY-SA-3.0-AT', 'LGPL-2.1+', 'OLDAP-2.7', 'GLWTPL', 'CC-BY-NC-SA-2.0', 'OCCT-PL',
+                 'CNRI-Jython', 'Leptonica', 'OFL-1.0-RFN', 'OpenSSL', 'RSA-MD', 'TORQUE-1.1', 'X11', 'BSD-Protection', 'JPNIC',
+                 'App-s2p', 'GFDL-1.2-only', 'CPOL-1.02', 'CC-BY-ND-3.0', 'GPL-1.0', 'Zlib', 'Python-2.0', 'OLDAP-1.3', 'Mup',
+                 'LGPLLR', 'CC-BY-4.0', 'OCLC-2.0', 'OGTSL', 'DL-DE-BY-2.0', 'OFL-1.0', 'GFDL-1.2-invariants-only', 'Sendmail',
+                 'CC-BY-NC-3.0-DE', 'VOSTROM', 'Beerware', 'FSFULLR', 'Fair', 'BSD-2-Clause-FreeBSD', 'Community-Spec-1.0',
+                 'SSH-short', 'FSFUL', 'GFDL-1.1-no-invariants-or-later', 'CrystalStacker', 'GFDL-1.1-invariants-only', 'Ruby',
+                 'BSD-3-Clause-Open-MPI', 'Baekmuk', 'Libpng', 'GD', 'OLDAP-2.1', 'Sleepycat', 'CERN-OHL-P-2.0', 'GFDL-1.2',
+                 'CC-BY-2.0', 'SPL-1.0', 'OLDAP-1.2', 'etalab-2.0', 'TMate', 'NCSA', 'NBPL-1.0', 'Intel', 'GPL-3.0-only',
+                 'APSL-2.0', 'GPL-2.0-with-autoconf-exception', 'TU-Berlin-1.0', 'Noweb', 'SSH-OpenSSH',
+                 'BSD-3-Clause-Attribution', 'PSF-2.0', 'psutils', 'CERN-OHL-1.2', 'SimPL-2.0', 'OLDAP-2.2.1', 'SGI-B-2.0',
+                 'GPL-2.0+', 'COIL-1.0', 'Naumen', 'CC-BY-ND-1.0', 'Unicode-DFS-2016', 'AFL-1.2', 'OSL-3.0', 'OFL-1.1-RFN',
+                 'SAX-PD', 'Xnet', 'AML', 'Apache-1.1', 'NAIST-2003', 'NGPL', 'ZPL-2.0', 'OFL-1.1-no-RFN', 'APSL-1.2', 'MPL-1.1',
+                 'BlueOak-1.0.0', 'Unicode-DFS-2015', 'PHP-3.01', 'GL2PS', 'NTP-0', 'BSD-4-Clause', 'TCL', 'RSCPL', 'MIT-enna',
+                 'CERN-OHL-1.1', 'OSL-1.1', 'BSD-3-Clause-LBNL', 'Bitstream-Vera', 'Adobe-Glyph', 'MITNFA', 'CC-BY-3.0-DE',
+                 'CECILL-1.0', 'SugarCRM-1.1.3', 'CAL-1.0-Combined-Work-Exception', 'BSD-3-Clause', 'Info-ZIP', 'LGPL-3.0+',
+                 'Zimbra-1.4', 'zlib-acknowledgement', 'Spencer-94', 'MIT-0', 'AGPL-3.0', 'CC-PDDC', 'CC-BY-NC-2.0', 'mplus',
+                 'ODbL-1.0', 'RPSL-1.0', 'APAFML', 'OGL-UK-1.0', 'CDDL-1.1', 'bzip2-1.0.6', 'LGPL-2.1-only', 'OGC-1.0',
+                 'BSD-3-Clause-No-Nuclear-Warranty', 'ErlPL-1.1', 'ECL-1.0', 'CERN-OHL-W-2.0', 'OGL-UK-2.0', 'O-UDA-1.0', 'NTP',
+                 'NASA-1.3', 'copyleft-next-0.3.0', 'TCP-wrappers', 'Apache-2.0', 'CC-BY-3.0', 'CECILL-B', 'Nokia', 'GPL-3.0+',
+                 'GPL-2.0-with-GCC-exception', 'OPL-1.0', 'OPUBL-1.0', 'UPL-1.0', 'AFL-2.0', 'LGPL-2.0-or-later', 'CECILL-2.1',
+                 'gnuplot', 'Caldera', 'PolyForm-Noncommercial-1.0.0', 'OLDAP-2.0', 'CDDL-1.0', 'APL-1.0', 'dvipdfm', 'XSkat',
+                 'Spencer-86', 'NLOD-1.0', 'W3C-19980720', 'BSD-2-Clause-Patent', 'AMPAS', 'AGPL-3.0-or-later', 'RPL-1.1',
+                 'Parity-7.0.0', 'OLDAP-1.1', 'AFL-1.1', 'Artistic-1.0-cl8', 'FTL', 'Dotseqn', 'CC-BY-NC-ND-2.5',
+                 'GFDL-1.2-no-invariants-only', 'PHP-3.0', 'CC-BY-SA-2.0-UK', 'BSD-3-Clause-Modification', 'LAL-1.3',
+                 'gSOAP-1.3b', 'StandardML-NJ', 'NPOSL-3.0', 'LGPL-3.0', 'Artistic-1.0-Perl', 'OLDAP-2.5', 'BSD-2-Clause-Views']
+
+MAX_LIMIT_FOR_CODE_ISSUES = 1000
+INT_DEFAULT_LIMIT = 50
+DEFAULT_PAGE = 0
+
 ''' CLIENT CLASS '''
 
 
@@ -124,6 +196,9 @@ class Client(BaseClient):
 
         demisto.debug("Successfully got the auth token")
         self._headers[REQUEST_CSPM_AUTH_HEADER] = token
+
+    def code_issues_list_request(self, body):
+        return self._http_request('POST', '/code/api/v2/code-issues/branch_scan', json_data=body)
 
     def alert_filter_list_request(self):
         return self._http_request('GET', 'filter/alert/suggest')
@@ -211,6 +286,7 @@ class Client(BaseClient):
                                     'sort': [{'direction': sort_direction, 'field': sort_field}],
                                     'timeRange': time_range,
                                     'withResourceJson': include_resource_json,
+                                    'heuristicSearch': 'true'
                                     })
 
         return self._http_request('POST', 'search/config', json_data=data)
@@ -329,6 +405,69 @@ class Client(BaseClient):
         headers[REQUEST_CCS_AUTH_HEADER] = headers.pop(REQUEST_CSPM_AUTH_HEADER)
 
         return self._http_request('POST', 'code/api/v1/errors/files', json_data=data, headers=headers)
+
+    def access_key_creation(self, args: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Create an access key using the provided arguments.
+
+        Args:
+        - args (Dict[str, Any]): A dictionary containing the required parameters for key creation.
+            - name (str): required
+            - expires-on (str): optional
+        Returns:
+        - Dict[str, Any]: A dictionary containing the response from the API request to create the access key.
+        """
+        payload = {"name": args.get('name')}
+        if args.get('expires-on'):
+            dateparser_datetime_object = dateparser.parse(args.get('expires-on', ''),
+                                                          settings={'PREFER_DATES_FROM': 'future'})
+            if isinstance(dateparser_datetime_object, datetime):
+                payload['expiresOn'] = dateparser_datetime_object.strftime('%s') + '000'  # API require milliseconds timestamp
+        return self._http_request(
+            method='POST',
+            url_suffix='/access_keys',
+            data=json.dumps(payload)
+        )
+
+    def get_access_key_by_id(self, args: Dict[str, Any]) -> Dict[str, Any]:
+        return self._http_request(
+            method='GET',
+            url_suffix=f"/access_keys/{args.get('access-key')}"
+        )
+
+    def get_access_keys_list(self) -> List[Dict[str, Any]]:
+        return self._http_request(
+            method='GET',
+            url_suffix='/access_keys'
+        )
+
+    def patch_access_key_disable(self, access_key: str) -> Dict[str, Any]:
+        return self._http_request(
+            method='PATCH',
+            url_suffix=f'/access_keys/{access_key}/status/false',
+            resp_type='content'
+        )
+
+    def patch_access_key_enable(self, access_key: str) -> Dict[str, Any]:
+        return self._http_request(
+            method='PATCH',
+            url_suffix=f'/access_keys/{access_key}/status/true',
+            resp_type='content'
+        )
+
+    def access_key_deletion(self, access_key: str) -> Dict[str, Any]:
+        return self._http_request(
+            method='DELETE',
+            url_suffix=f'/access_keys/{access_key}',
+            resp_type='content'
+        )
+
+    def get_asset_by_id(self, params: Dict[str, Any]) -> Dict[str, Any]:
+        return self._http_request(
+            method='POST',
+            url_suffix="/uai/v1/asset",
+            json_data=params
+        )
 
 
 ''' HELPER FUNCTIONS '''
@@ -2001,6 +2140,160 @@ def fetch_incidents(client: Client, last_run: Dict[str, Any], params: Dict[str, 
     return incidents, ids_to_insert, updated_last_run_time
 
 
+def access_key_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Perform an API request to create an access key using the provided client.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing any additional arguments required for the API request.
+
+    Returns:
+    - CommandResults: An object containing the raw response and table representation of the access key.
+    """
+    access_key = client.access_key_creation(args)
+    markdown_table = tableToMarkdown('PrismaCloud Access Key Creation', access_key, headers=['id', 'secretKey'],
+                                     headerTransform=pascalToSpace)
+    return CommandResults(
+        outputs_prefix="PrismaCloud.AccessKeys",
+        outputs_key_field='id',
+        outputs=access_key,
+        raw_response=access_key,
+        readable_output=markdown_table,
+    )
+
+
+def get_access_keys_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Get information about specific access key or a list of all access keys.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary that may contain access-key ID argument for specific access-key
+
+    Returns:
+    - CommandResults: An object containing the response and table representation of the access key(s).
+    """
+    return get_access_key_by_id(client, args) if args.get('access-key') else get_access_keys_list(client, args)
+
+
+def get_access_key_by_id(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Get specific information about an access key using the provided client.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing access-key ID arguments required for the API request.
+
+    Returns:
+    - CommandResults: An object containing the raw response and table representation of the access key information.
+    """
+    access_key = client.get_access_key_by_id(args)
+    if access_key.get('expiresOn'):
+        access_key['expiresOn'] = timestamp_to_datestring(access_key.get('expiresOn'), DATE_FORMAT)
+
+    markdown_table = tableToMarkdown('PrismaCloud Access Key', access_key, headers=['id', 'name', 'expiresOn'],
+                                     headerTransform=pascalToSpace)
+    return CommandResults(
+        outputs_prefix="PrismaCloud.AccessKeys",
+        outputs_key_field='id',
+        outputs=access_key,
+        raw_response=access_key,
+        readable_output=markdown_table,
+    )
+
+
+def get_access_keys_list(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Get a list of access keys using the provided client.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing any additional arguments required for the API request, including an optional
+     'limit' to restrict the number of access keys returned.
+
+    Returns:
+    - CommandResults: An object containing the raw response and table representation of the access key list.
+    """
+    access_keys = client.get_access_keys_list()
+    limit = int(args.get('limit', DEFAULT_LIMIT))
+    limited_access_keys_list = access_keys[:limit]
+    for access_key in limited_access_keys_list:
+        access_key['createdTs'] = timestamp_to_datestring(access_key.get('createdTs'), DATE_FORMAT)
+        access_key['lastUsedTime'] = timestamp_to_datestring(access_key.get('lastUsedTime'), DATE_FORMAT)
+        access_key['expiresOn'] = timestamp_to_datestring(access_key.get('expiresOn'), DATE_FORMAT) if access_key.get(
+            'expiresOn') != 0 else ''
+        access_key['roleId'] = access_key.get('role', {}).get('id', '')
+        access_key['roleName'] = access_key.get('role', {}).get('name', '')
+
+    markdown_table = tableToMarkdown('PrismaCloud Access Keys', limited_access_keys_list,
+                                     headers=['id', 'name', 'createdBy', 'createdTs', 'lastUsedTime', 'status',
+                                              'expiresOn', 'roleId', 'roleName', 'roleType', 'username'],
+                                     headerTransform=pascalToSpace)
+
+    return CommandResults(
+        outputs_prefix="PrismaCloud.AccessKeys",
+        outputs_key_field='id',
+        outputs=access_keys,
+        raw_response=access_keys,
+        readable_output=markdown_table,
+    )
+
+
+def access_key_disable_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Disable an access key using the provided client.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing the 'access-key' ID for disabling the access key.
+
+    Returns:
+    - CommandResults: An object containing the readable output to announce that the access key has been disabled.
+    """
+    access_key = args.get('access-key', '')
+    client.patch_access_key_disable(access_key)
+    return CommandResults(
+        readable_output=f'Access key {access_key} was disabled successfully',
+    )
+
+
+def access_key_enable_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Enable an access key using the provided client.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing the 'access-key' ID for enabling the access key.
+
+    Returns:
+    - CommandResults: An object containing the readable output to announce that the access key has been enabled.
+    """
+    access_key = args.get('access-key', '')
+    client.patch_access_key_enable(access_key)
+    return CommandResults(
+        readable_output=f'Access key {access_key} was enabled successfully',
+    )
+
+
+def access_key_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Delete an access key using the provided client.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing the 'access-key' ID for deleting the access key.
+
+    Returns:
+    - CommandResults: An object containing the readable output to announce that the access key has been deleted.
+    """
+    access_key = args.get('access-key', '')
+    client.access_key_deletion(access_key)
+    return CommandResults(
+        readable_output=f'Access key {access_key} was successfully deleted successfully',
+    )
+
+
 ''' MIRRORING COMMANDS '''
 
 
@@ -2138,6 +2431,537 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     return remote_incident_id
 
 
+def validate_code_issues_list_args(args):
+    license_type = args.get('license_type')
+    args.get('term')
+    search_scopes = args.get('search_scopes')
+    search_term = args.get('search_term')
+    page = args.get('page')
+    page_size = arg_to_number(args.get('page_size'))
+
+    if page and not page_size or page_size and not page:
+        raise DemistoException(
+            "Please provide both `page` and `page_size` arguments.")
+
+    if page_size and page_size > MAX_LIMIT_FOR_CODE_ISSUES:
+        raise DemistoException("`Page_size` argument can't be more than 1000.")
+
+    if license_type and license_type not in LICENSE_TYPES:
+        raise DemistoException(
+            'Invalid license type. For the list of valid license types go to- https://pan.dev/prisma-cloud/api/code/get-periodic-findings/#request')
+
+    if search_scopes and not search_term:
+        raise DemistoException('The `search_term` argument is required when specifying `search_scopes`.')
+
+    # Create a copy of the dictionary excluding `limit`, `scopes`, and `term`
+    filtered_args = {
+        key: value for key, value in args.items()
+        if key not in ['limit', 'search_scopes', 'search_term', 'page', 'page_size']
+    }
+
+    # Ensure there is at least one valid filtering argument
+    if not filtered_args:
+        raise DemistoException(
+            "At least one filtering argument is required, excluding `search_scopes`, `search_term`, and `limit`. For example, \
+    `fixable_only` or 'branch`"
+        )
+
+
+def get_labels(labels) -> Optional[List]:
+    """
+    Converts the labels from a code issue into a list of strings,
+    handling both string lists and lists of label dictionaries
+    """
+    if labels:
+        res = []
+        for label in labels:
+            if isinstance(label, str):
+                res.append(label)
+            else:
+                res.append(label.get('label'))
+        return res
+    return None
+
+
+def code_issues_list_request_body(fixable_only: Optional[bool] = None,
+                                  search_scopes: Optional[List[str]] = [], search_term: Optional[str] = None,
+                                  branch: Optional[str] = None, check_status: Optional[str] = None,
+                                  git_users: Optional[List[str]] = [],
+                                  iac_categories: Optional[List[str]] = [], iac_labels: Optional[List[str]] = [],
+                                  file_types: Optional[List[str]] = [], repositories: Optional[List[str]] = [],
+                                  secrets_risk_factors: Optional[List[str]] = [], severities: Optional[List[str]] = [],
+                                  vulnerability_risk_factors: Optional[List[str]] = [], iac_tags: Optional[List[str]] = [],
+                                  license_type: Optional[List[str]] = [], code_categories: Optional[List[str]] = [],
+                                  limit: Optional[float] = 50, offset: Optional[float] = 0):
+    return assign_params(
+        filters=assign_params(
+            branch=branch,
+            checkStatus=check_status,
+            codeCategories=code_categories,
+            fileTypes=file_types,
+            fixableOnly=fixable_only,
+            gitUsers=git_users,
+            iacCategories=iac_categories,
+            iacLabels=iac_labels,
+            iacTags=iac_tags,
+            licenseType=license_type,
+            repositories=repositories,
+            secretsRiskFactors=secrets_risk_factors,
+            severities=severities,
+            vulnerabilityRiskFactors=vulnerability_risk_factors
+        ),
+        search=assign_params(
+            scopes=search_scopes,
+            term=search_term),
+        limit=limit,
+        offset=offset
+    )
+
+
+def code_issues_list_command(client, args):
+
+    validate_code_issues_list_args(args)
+
+    fixable_only = argToBoolean(args.get('fixable_only', False))
+    search_scopes = argToList(args.get('search_scopes'))
+    search_term = args.get('search_term')
+    branch = args.get('branch')
+    check_status = args.get('check_status')
+    git_users = argToList(args.get('git_users'))
+    iac_categories = argToList(args.get('iac_categories'))
+    iac_labels = argToList(args.get('iac_labels'))
+    file_types = argToList(args.get('file_types'))
+    repositories = argToList(args.get('repositories'))
+    secrets_risk_factors = argToList(args.get('secrets_risk_factors'))
+    severities = argToList(args.get('severities'))
+    vulnerability_risk_factors = argToList(args.get('vulnerability_risk_factors'))
+    iac_tags = argToList(args.get('iac_tags'))
+    license_type = argToList(args.get('license_type'))
+    code_categories = argToList(args.get('code_categories'))
+    limit = arg_to_number(args.get('limit')) or INT_DEFAULT_LIMIT
+    page = arg_to_number(args.get('page')) or DEFAULT_PAGE
+    page_size = arg_to_number(args.get('page_size'))
+
+    limit_for_request = min(limit, MAX_LIMIT_FOR_CODE_ISSUES)
+
+    # pagination
+    if page_size:
+        limit_for_request = page_size
+        offset = page * page_size
+        limit = page_size
+    else:
+        offset = 0
+
+    has_next = True
+
+    res_issues: List[Dict] = []
+    issues_for_readable_output = []
+    while len(res_issues) < limit and has_next:
+        body = code_issues_list_request_body(fixable_only=fixable_only, search_scopes=search_scopes,
+                                             search_term=search_term, branch=branch, check_status=check_status,
+                                             git_users=git_users, iac_categories=iac_categories, iac_labels=iac_labels,
+                                             file_types=file_types, repositories=repositories,
+                                             secrets_risk_factors=secrets_risk_factors, severities=severities,
+                                             vulnerability_risk_factors=vulnerability_risk_factors, iac_tags=iac_tags,
+                                             license_type=license_type, code_categories=code_categories,
+                                             limit=limit_for_request, offset=offset)
+
+        response = client.code_issues_list_request(body)
+
+        res_issues.extend(response['data'])
+
+        for issue in response['data']:
+            issues_for_readable_output.append({
+                'Repository': issue.get('repository'),
+                'First Detected': issue['firstDetected'],
+                'Policy': issue['policy'],
+                'Severity': issue['severity'],
+                'Labels': get_labels(issue.get('labels')),
+                'Repository Source': issue.get('repositorySource')
+            })
+
+        has_next = response['hasNext']
+        offset = len(res_issues)
+
+    res_issues = res_issues[0:limit]
+    issues_for_readable_output = issues_for_readable_output[0:limit]
+
+    headers = ['Repository', 'First Detected', 'Policy', 'Severity', 'Labels', 'Repository Source']
+    readable_output = tableToMarkdown('Issues list:', issues_for_readable_output, headers, removeNull=True)
+    return CommandResults(outputs_prefix='PrismaCloud.CodeIssue',
+                          outputs=res_issues,
+                          readable_output=readable_output,
+                          raw_response=res_issues
+                          )
+
+
+def get_asset_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve information about an asset using the provided client.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing the 'asset-id' ID for retrieving the asset information.
+
+    Returns:
+    - CommandResults: An object containing the information about the asset.
+    """
+    asset_id = args.get('asset_id')
+    finding_type = args.get('finding_type')
+    risk_factors = argToList(args.get('risk_factors'))
+    timeline_item_id = args.get('timeline_item_id')
+    alert_ids = argToList(args.get('alert_ids'))
+    limit = arg_to_number(args.get('limit')) or INT_DEFAULT_LIMIT
+    permission_type = args.get('permission_type')
+    page_token = args.get('page_token')
+    findings_only = argToBoolean(args.get('prisma_cloud_findings_only', False))
+    vulnerability_info_type_id = args.get('vulnerability_info_type_id')
+    vulnerability_info_type = args.get('vulnerability_info_type')
+
+    data = assign_params(
+        assetId=asset_id,
+        type="asset",
+        findingType=finding_type,
+        riskFactors=risk_factors,
+        timelineItemId=timeline_item_id,
+        alertIds=alert_ids,
+        limit=limit,
+        permissionType=permission_type,
+        pageToken=page_token,
+        prismaCloudFindingsOnly=findings_only,
+        vulnerabilityInfoTypeId=vulnerability_info_type_id,
+        vulnerabilityInfoType=vulnerability_info_type
+    )
+    response = client.get_asset_by_id(data)
+    outputs = response.get('data', {}).get('asset', {})
+
+    return CommandResults(
+        outputs_prefix='PrismaCloud.Asset',
+        outputs_key_field="id",
+        outputs=outputs,
+        readable_output=tableToMarkdown(
+            'Asset',
+            outputs,
+            headerTransform=pascalToSpace,
+            sort_headers=False,
+        ),
+        raw_response=response
+    )
+
+
+def get_asset_generic_command(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Retrieve specific information about an asset using the provided client.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing the 'asset-id' ID for retrieving the asset information.
+
+    Returns:
+    - Dict[str, Any]: A dictionary containing the specific information about the asset.
+    """
+    asset_id = args.get('asset_id')
+    asset_type = args.get('type')
+    finding_type = args.get('finding_type')
+    risk_factors = argToList(args.get('risk_factors'))
+    timeline_item_id = args.get('timeline_item_id')
+    alert_ids = argToList(args.get('alert_ids'))
+    limit = arg_to_number(args.get('limit')) or INT_DEFAULT_LIMIT
+    permission_type = args.get('permission_type')
+    page_token = args.get('page_token')
+    findings_only = argToBoolean(args.get('prisma_cloud_findings_only', False))
+    vulnerability_info_type_id = args.get('vulnerability_info_type_id')
+    vulnerability_info_type = args.get('vulnerability_info_type')
+
+    data = assign_params(
+        assetId=asset_id,
+        type=asset_type,
+        findingType=finding_type,
+        riskFactors=risk_factors,
+        timelineItemId=timeline_item_id,
+        alertIds=alert_ids,
+        limit=limit,
+        permissionType=permission_type,
+        pageToken=page_token,
+        prismaCloudFindingsOnly=findings_only,
+        vulnerabilityInfoTypeId=vulnerability_info_type_id,
+        vulnerabilityInfoType=vulnerability_info_type
+    )
+    response = client.get_asset_by_id(data)
+
+    return response
+
+
+def get_asset_findings_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve information about an asset findings using the provided client.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing the 'asset-id' ID for retrieving the asset information.
+
+    Returns:
+    - CommandResults: An object containing the information about the asset findings.
+    """
+    asset_id = args.get('asset_id')
+    finding_type = args.get('finding_type')
+    risk_factors = argToList(args.get('risk_factors'))
+    timeline_item_id = args.get('timeline_item_id')
+    alert_ids = argToList(args.get('alert_ids'))
+    limit = arg_to_number(args.get('limit')) or INT_DEFAULT_LIMIT
+    permission_type = args.get('permission_type')
+    page_token = args.get('page_token')
+    findings_only = argToBoolean(args.get('prisma_cloud_findings_only', False))
+    vulnerability_info_type_id = args.get('vulnerability_info_type_id')
+    vulnerability_info_type = args.get('vulnerability_info_type')
+
+    data = assign_params(
+        assetId=asset_id,
+        type='findings',
+        findingType=finding_type,
+        riskFactors=risk_factors,
+        timelineItemId=timeline_item_id,
+        alertIds=alert_ids,
+        limit=limit,
+        permissionType=permission_type,
+        pageToken=page_token,
+        prismaCloudFindingsOnly=findings_only,
+        vulnerabilityInfoTypeId=vulnerability_info_type_id,
+        vulnerabilityInfoType=vulnerability_info_type
+    )
+    response = client.get_asset_by_id(data)
+    outputs = response.get('data', {}).get('asset', {}).get('findings')
+
+    return CommandResults(
+        outputs_prefix='PrismaCloud.AssetFindings',
+        outputs_key_field="id",
+        outputs=outputs,
+        readable_output=tableToMarkdown(
+            'Asset Findings',
+            outputs,
+            headerTransform=pascalToSpace,
+            sort_headers=False,
+        ),
+        raw_response=response
+    )
+
+
+def get_asset_vulnerabilities_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve information about an asset vulnerabilities using the provided client.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing the 'asset-id' ID for retrieving the asset information.
+
+    Returns:
+    - CommandResults: An object containing the information about the asset vulnerabilities.
+    """
+    asset_id = args.get('asset_id')
+    finding_type = args.get('finding_type')
+    risk_factors = argToList(args.get('risk_factors'))
+    timeline_item_id = args.get('timeline_item_id')
+    alert_ids = argToList(args.get('alert_ids'))
+    limit = arg_to_number(args.get('limit')) or INT_DEFAULT_LIMIT
+    permission_type = args.get('permission_type')
+    page_token = args.get('page_token')
+    findings_only = argToBoolean(args.get('prisma_cloud_findings_only', False))
+    vulnerability_info_type_id = args.get('vulnerability_info_type_id')
+    vulnerability_info_type = args.get('vulnerability_info_type')
+
+    data = assign_params(
+        assetId=asset_id,
+        type='vulnerabilities',
+        findingType=finding_type,
+        riskFactors=risk_factors,
+        timelineItemId=timeline_item_id,
+        alertIds=alert_ids,
+        limit=limit,
+        permissionType=permission_type,
+        pageToken=page_token,
+        prismaCloudFindingsOnly=findings_only,
+        vulnerabilityInfoTypeId=vulnerability_info_type_id,
+        vulnerabilityInfoType=vulnerability_info_type
+    )
+    response = client.get_asset_by_id(data)
+    outputs = response.get('data', {}).get('asset', {}).get('vulnerabilities')
+
+    return CommandResults(
+        outputs_prefix='PrismaCloud.AssetVulnerabilities',
+        outputs_key_field="id",
+        outputs=outputs,
+        readable_output=tableToMarkdown(
+            'Asset Vulnerabilities',
+            outputs,
+            headerTransform=pascalToSpace,
+            sort_headers=False,
+        ),
+        raw_response=response
+    )
+
+
+def get_asset_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve information about an asset alerts using the provided client.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing the 'asset-id' ID for retrieving the asset information.
+
+    Returns:
+    - CommandResults: An object containing the information about the asset alerts.
+    """
+    asset_id = args.get('asset_id')
+    finding_type = args.get('finding_type')
+    risk_factors = argToList(args.get('risk_factors'))
+    timeline_item_id = args.get('timeline_item_id')
+    alert_ids = argToList(args.get('alert_ids'))
+    limit = arg_to_number(args.get('limit')) or INT_DEFAULT_LIMIT
+    permission_type = args.get('permission_type')
+    page_token = args.get('page_token')
+    findings_only = argToBoolean(args.get('prisma_cloud_findings_only', False))
+    vulnerability_info_type_id = args.get('vulnerability_info_type_id')
+    vulnerability_info_type = args.get('vulnerability_info_type')
+
+    data = assign_params(
+        assetId=asset_id,
+        type='alerts',
+        findingType=finding_type,
+        riskFactors=risk_factors,
+        timelineItemId=timeline_item_id,
+        alertIds=alert_ids,
+        limit=limit,
+        permissionType=permission_type,
+        pageToken=page_token,
+        prismaCloudFindingsOnly=findings_only,
+        vulnerabilityInfoTypeId=vulnerability_info_type_id,
+        vulnerabilityInfoType=vulnerability_info_type
+    )
+    response = client.get_asset_by_id(data)
+    outputs = response.get('data', {}).get('asset', {}).get('alerts')
+
+    return CommandResults(
+        outputs_prefix='PrismaCloud.AssetAlerts',
+        outputs_key_field="id",
+        outputs=outputs,
+        readable_output=tableToMarkdown(
+            'Asset Alerts',
+            outputs,
+            headerTransform=pascalToSpace,
+            sort_headers=False,
+        ),
+        raw_response=response
+    )
+
+
+def get_asset_relationships_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve information about an asset relationships using the provided client.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing the 'asset-id' ID for retrieving the asset information.
+
+    Returns:
+    - CommandResults: An object containing the information about the asset relationships.
+    """
+    asset_id = args.get('asset_id')
+    finding_type = args.get('finding_type')
+    risk_factors = argToList(args.get('risk_factors'))
+    timeline_item_id = args.get('timeline_item_id')
+    alert_ids = argToList(args.get('alert_ids'))
+    limit = arg_to_number(args.get('limit')) or INT_DEFAULT_LIMIT
+    permission_type = args.get('permission_type')
+    page_token = args.get('page_token')
+    findings_only = argToBoolean(args.get('prisma_cloud_findings_only', False))
+    vulnerability_info_type_id = args.get('vulnerability_info_type_id')
+    vulnerability_info_type = args.get('vulnerability_info_type')
+
+    data = assign_params(
+        assetId=asset_id,
+        type='relationships',
+        findingType=finding_type,
+        riskFactors=risk_factors,
+        timelineItemId=timeline_item_id,
+        alertIds=alert_ids,
+        limit=limit,
+        permissionType=permission_type,
+        pageToken=page_token,
+        prismaCloudFindingsOnly=findings_only,
+        vulnerabilityInfoTypeId=vulnerability_info_type_id,
+        vulnerabilityInfoType=vulnerability_info_type
+    )
+    response = client.get_asset_by_id(data)
+    outputs = response.get('data', {}).get('asset', {}).get('relationships')
+
+    return CommandResults(
+        outputs_prefix='PrismaCloud.AssetRelationships',
+        outputs_key_field="id",
+        outputs=outputs,
+        readable_output=tableToMarkdown(
+            'Asset Relationships',
+            outputs,
+            headerTransform=pascalToSpace,
+            sort_headers=False,
+        ),
+        raw_response=response
+    )
+
+
+def get_asset_network_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve information about an asset network using the provided client.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing the 'asset-id' ID for retrieving the asset information.
+
+    Returns:
+    - CommandResults: An object containing the information about the asset network.
+    """
+    asset_id = args.get('asset_id')
+    finding_type = args.get('finding_type')
+    risk_factors = argToList(args.get('risk_factors'))
+    timeline_item_id = args.get('timeline_item_id')
+    alert_ids = argToList(args.get('alert_ids'))
+    limit = arg_to_number(args.get('limit')) or INT_DEFAULT_LIMIT
+    permission_type = args.get('permission_type')
+    page_token = args.get('page_token')
+    findings_only = argToBoolean(args.get('prisma_cloud_findings_only', False))
+    vulnerability_info_type_id = args.get('vulnerability_info_type_id')
+    vulnerability_info_type = args.get('vulnerability_info_type')
+
+    data = assign_params(
+        assetId=asset_id,
+        type='network',
+        findingType=finding_type,
+        riskFactors=risk_factors,
+        timelineItemId=timeline_item_id,
+        alertIds=alert_ids,
+        limit=limit,
+        permissionType=permission_type,
+        pageToken=page_token,
+        prismaCloudFindingsOnly=findings_only,
+        vulnerabilityInfoTypeId=vulnerability_info_type_id,
+        vulnerabilityInfoType=vulnerability_info_type
+    )
+    response = client.get_asset_by_id(data)
+    outputs = response.get('data', {}).get('asset', {}).get('network')
+
+    return CommandResults(
+        outputs_prefix='PrismaCloud.AssetNetwork',
+        outputs_key_field="id",
+        outputs=outputs,
+        readable_output=tableToMarkdown(
+            'Asset Network',
+            outputs,
+            headerTransform=pascalToSpace,
+            sort_headers=False,
+        ),
+        raw_response=response
+    )
+
+
 ''' TEST MODULE '''
 
 
@@ -2234,6 +3058,18 @@ def main() -> None:
 
             'get-remote-data': get_remote_data_command,
             'update-remote-system': update_remote_system_command,
+            'prisma-cloud-access-key-create': access_key_create_command,
+            'prisma-cloud-access-keys-list': get_access_keys_command,
+            'prisma-cloud-access-key-disable': access_key_disable_command,
+            'prisma-cloud-access-key-enable': access_key_enable_command,
+            'prisma-cloud-access-key-delete': access_key_delete_command,
+            'prisma-cloud-asset-get': get_asset_command,
+            'prisma-cloud-asset-generic-get': get_asset_generic_command,
+            'prisma-cloud-asset-findings-get': get_asset_findings_command,
+            'prisma-cloud-asset-alerts-get': get_asset_alerts_command,
+            'prisma-cloud-asset-vulnerabilities-get': get_asset_vulnerabilities_command,
+            'prisma-cloud-asset-relationships-get': get_asset_relationships_command,
+            'prisma-cloud-asset-network-get': get_asset_network_command,
         }
         commands_v1 = {
             'redlock-search-alerts': alert_search_v1_command,
@@ -2266,6 +3102,9 @@ def main() -> None:
             })
         elif command == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(client, args, params))
+        elif command == 'prisma-cloud-code-issues-list':
+            return_results(code_issues_list_command(client, args))
+
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 

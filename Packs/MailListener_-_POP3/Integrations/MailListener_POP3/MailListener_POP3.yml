@@ -44,7 +44,7 @@ configuration:
   name: incidentType
   type: 13
   required: false
-description: Listen to a mailbox, enable incident triggering via e-mail
+description: Listen to a mailbox, enable incident triggering via e-mail.
 display: MailListener - POP3
 name: MailListener - POP3 Beta
 script:
@@ -52,7 +52,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.11.10.115186
 tests:
 - MailListener-POP3 - Test
 fromversion: 5.0.0

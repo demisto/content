@@ -2,22 +2,19 @@
 Create and Manage Azure Storage Container services.
 This integration was integrated and tested with version "2020-10-02" of Azure Storage Container
 
-## Configure Azure Storage Container on Cortex XSOAR
+## Configure Azure Storage Container in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Azure Storage Container.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Storage account name | True |
-    | Account SAS Token | False |
-    | Use Azure Managed Identities | False |
-    | Azure Managed Identities Client ID | False |   
-    | Use system proxy settings | False |
-    | Trust any certificate (not secure) | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Storage account name | True |
+| Account SAS Token | False |
+| Use Azure Managed Identities | False |
+| Azure Managed Identities Client ID | False |   
+| Shared Key | False |
+| Use system proxy settings | False |
+| Trust any certificate (not secure) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## ## Shared Access Signatures Information (SAS)
 * The required SAS token for this integration should be taken at the **storage account level and not at container level**.
@@ -29,8 +26,10 @@ please make sure your SAS token contains the following permissions:
   2. 'Service', 'Container' and 'Object' resource types.
   3. 'Read', 'Write', 'Delete', 'List', 'Create', 'Add', 'Update' and 'Immutable storage' permissions.
   4. 'Blob versioning permissions'
+## Shared Key Permissions
+To set the AllowSharedKeyAccess property for an Azure Storage account, a user needs to have the permissions to create and manage storage accounts.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### azure-storage-container-list
 ***
@@ -590,7 +589,8 @@ There is no context output for this command.
 
 >Blob xsoar.txt properties successfully updated.
 
-### azure-storage-container-blob-property-get
+### azure-storage-container-sas-create
+
 ***
 Retrieve Blob properties.
 
@@ -607,6 +607,32 @@ Retrieve Blob properties.
 | signed_resources | specifies which resources are accessible via the shared access signature. Options available c(container), b(blob), bv(blob version),bs(blob snapshot),d(directory)                                                                                                                     | Required | 
 | signed_permissions | The permissions that are associated with the shared access signature. The user is restricted to operations that are allowed by the permissions. Possible permission: r = Read, a=access, c=create, w=write. Also must follow the  this order "racwdxltmeop"Example: r,c,a,w,rac, racw. | Required | 
 | signed_ip | specifies a public IP address or a range of public IP addresses from which to accept requests.                                                                                                                                                                                         | Required |
+| account_key | The account key to create the SAS token with.                                                                                                                                                                                         |  |
 
 #### Command Example
-```!azure-storage-container-sas-create expiry_time="1" signed_resources="test signed_permissions="test signed_ip="127.0.0.1"```
+```!azure-storage-container-sas-create account_key="TestAccountKey" expiry_time="1" signed_resources="test signed_permissions="test signed_ip="127.0.0.1"```
+
+### azure-storage-container-block-public-access
+***
+Block public access to a container..
+
+
+#### Base Command
+
+`azure-storage-container-block-public-access`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| container_name | The name of the Blob Container. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!azure-storage-container-block-public-access container_name="xsoar"```
+
+#### Human Readable Output
+
+>xsoar.txt Public access to container '{container_name}' has been successfully blocked.

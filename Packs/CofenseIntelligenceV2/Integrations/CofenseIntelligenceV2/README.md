@@ -16,33 +16,29 @@ Threshold = Major (Default value)
 | 1 | Minor | Suspicious | Suspicious |
 | 2 | Moderate | Suspicious | Suspicious |
 | 3  | Major | Bad | Malicious |
-## Configure CofenseIntelligenceV2 on Cortex XSOAR
+## Configure CofenseIntelligenceV2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for CofenseIntelligenceV2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL | The Api endpoint (https://www.threathq.com) | True |
-    | Token Name | Cofense API Token name | True |
-    | Password | Cofense API password | True |
-    | Source Reliability | Reliability of the source providing the intelligence data. | False |
-    | IP Threshold | Threshold for IP related threats' severity. | False |
-    | File Threshold | Threshold for file related threats' severity. | False |
-    | URL Threshold | Threshold for URL related threats' severity. | False |
-    | Email Threshold | Threshold for email related threats' severity. | False |
-    | Domain Threshold | Threshold for domain related threats' severity. | False |
-    | Time limit for collecting data | The maximum number of days from which to start returning data. 90 days is recomended by Cofense. |
-    | Create relationships | Create relationships between indicators as part of Enrichment. | False |
-    | Score Mapping | Mapping of Cofense Intelligence indicator rating to XSOAR DBOT Score standard rating.<br/>For Example-: None:0, Minor:1, Moderate:2, Major:3<br/><br/>Note: Cofense Indicator ratings are Major, Minor, Moderate, None. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | The Api endpoint (https://www.threathq.com) | True |
+| Token Name | Cofense API Token name | True |
+| Password | Cofense API password | True |
+| Source Reliability | Reliability of the source providing the intelligence data. | False |
+| IP Threshold | Threshold for IP related threats' severity. | False |
+| File Threshold | Threshold for file related threats' severity. | False |
+| URL Threshold | Threshold for URL related threats' severity. | False |
+| Email Threshold | Threshold for email related threats' severity. | False |
+| Domain Threshold | Threshold for domain related threats' severity. | False |
+| Time limit for collecting data | The maximum number of days from which to start returning data. 90 days is recomended by Cofense. |
+| Create relationships | Create relationships between indicators as part of Enrichment. | False |
+| Score Mapping | Mapping of Cofense Intelligence indicator rating to XSOAR DBOT Score standard rating.<br/>For Example-: None:0, Minor:1, Moderate:2, Major:3<br/><br/>Note: Cofense Indicator ratings are Major, Minor, Moderate, None. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ip
 ***

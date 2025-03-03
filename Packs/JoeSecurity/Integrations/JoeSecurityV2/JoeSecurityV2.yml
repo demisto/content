@@ -6,7 +6,7 @@ configuration:
 - name: url
   display: Server URL
   required: true
-  defaultvalue: https://jbxcloud.joesecurity.org/api
+  defaultvalue: https://jbxcloud.joesecurity.org
   type: 0
 - name: credentials
   displaypassword: API Key
@@ -625,6 +625,7 @@ script:
     arguments:
     - name: submission_ids
       description: A comma-separated list of submission IDs.
+      required: true
     - name: full_display
       description: When set to true, indicators information, including their DBot Scores, will be displayed.
       defaultValue: "true"
@@ -1262,7 +1263,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/vendors-sdk:1.0.0.89427
+  dockerimage: demisto/vendors-sdk:1.0.0.115493
 fromversion: 6.8.0
 tests:
 - testplaybook-JoeSecuirtyV2

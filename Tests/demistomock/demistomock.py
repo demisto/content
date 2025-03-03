@@ -428,6 +428,11 @@ contentSecrets = {
 }
 
 
+def initialize():
+    """Runs some initializations to the demisto object. Should not be used in integration code"""
+    pass
+
+
 def params():
     """(Integration only)
     Retrieves the integration parameters object
@@ -1074,7 +1079,7 @@ def searchIndicators(fromDate='', query='', size=100, page=0, toDate='', value='
       page (int): Response paging (Default value = 0)
       todate (str): The end date to search until to (Default value = '')
       value (str): The indicator value to search (Default value = '')
-      searchAfter (str): Use the last searchIndicators() outputs for search batch (Default value = None)
+      searchAfter (list): Use the last searchIndicators() outputs for search batch (Default value = None)
       populateFields (str): Comma separated fields to filter (e.g. "value,type")
 
     Returns:
@@ -1304,7 +1309,7 @@ def searchRelationships(args):
     return {'data': []}
 
 
-def _apiCall(name=None, params=None, data=None, headers=None, method=None, path=None, timeout=None):
+def _apiCall(name=None, params=None, data=None, headers=None, method=None, path=None, timeout=None, response_data_type=None):
     """
     Special apiCall to internal xdr api. Only available to OOB content.
 
@@ -1316,6 +1321,7 @@ def _apiCall(name=None, params=None, data=None, headers=None, method=None, path=
         method: HTTP method to use.
         path: path to append to the base url.
         timeout: The amount of time (in seconds) that a request will wait for a client to send data before the request is aborted.
+        response_data_type: The type of the response. should be None unless the response value is binary then it should be 'bin'.
 
         *Note if data is empty then a GET request is performed instead of a POST.
 

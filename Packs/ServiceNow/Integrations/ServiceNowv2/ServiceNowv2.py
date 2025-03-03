@@ -255,7 +255,7 @@ def create_ticket_context(data: dict, additional_fields: list | None = None) -> 
     }
     if additional_fields:
         for additional_field in additional_fields:
-            if camelize_string(additional_field) not in context.keys():
+            if camelize_string(additional_field) not in context:
                 # in case of a nested additional field (in the form of field1.field2)
                 nested_additional_field_list = additional_field.split('.')
                 if value := dict_safe_get(data, nested_additional_field_list):
@@ -287,8 +287,8 @@ def create_ticket_context(data: dict, additional_fields: list | None = None) -> 
     priority = data.get('priority')
     if priority:
         if isinstance(priority, dict):
-            context['Priority'] = TICKET_PRIORITY.get(str(int(priority.get('value', ''))),
-                                                      str(int(priority.get('value', '')))),
+            value = priority.get('value', '')
+            context['Priority'] = TICKET_PRIORITY.get(str(int(value)), str(int(value))) if value else ''
         else:
             context['Priority'] = TICKET_PRIORITY.get(priority, priority)
     state = data.get('state')
@@ -1502,6 +1502,24 @@ def delete_attachment_command(client: Client, args: dict) -> tuple[str, dict, di
     raise DemistoException("Error: No record found. Record doesn't exist or ACL restricts the record retrieval.")
 
 
+def get_attachment_command(client: Client, args: dict) -> list | CommandResults:
+    """Retreives attachment from a ticket.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Command results and file results.
+    """
+    sys_id = str(args.get('sys_id', ''))
+
+    result = client.get_ticket_attachment_entries(sys_id)
+    if result:
+        return [CommandResults(readable_output=f'Successfully retrieved attachments for ticket with sys id {sys_id}.'), result]
+    return CommandResults(readable_output=f'Ticket with sys id {sys_id} has no attachments to retrieve.')
+
+
 def add_tag_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
     """Add tag to a ticket.
 
@@ -2420,8 +2438,8 @@ def test_instance(client: Client):
     """
     # Validate fetch_time parameter is valid (if not, parse_date_range will raise the error message)
     parse_date_range(client.fetch_time, DATE_FORMAT)
-
-    result = client.send_request(f'table/{client.ticket_type}', params={'sysparm_limit': 1}, method='GET')
+    params = {'sysparm_limit': 1, 'sysparm_query': 'active=true'}
+    result = client.send_request(f'table/{client.ticket_type}', params=params, method='GET')
     if 'result' not in result:
         raise Exception('ServiceNow error: ' + str(result))
     ticket = result.get('result')
@@ -2602,6 +2620,9 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
     if client.use_display_value and client.display_date_format:
         timezone_offset = get_timezone_offset(ticket, client.display_date_format)
         ticket = format_incidents_response_with_display_values(ticket)[0]
+    else:
+        timezone_offset = None
+        demisto.debug(f"not ({client.use_display_value=} and {client.display_date_format=}) setting {timezone_offset=}")
 
     ticket_last_update = arg_to_timestamp(
         arg=ticket.get('sys_updated_on'),
@@ -2699,11 +2720,13 @@ def is_new_incident(ticket_id: str) -> bool:
     Returns:
         bool: Whether its a new incident in XSOAR.
     """
-    last_fetched_ids = get_integration_context().get("last_fetched_incident_ids") or []
+    int_context = get_integration_context()
+    last_fetched_ids = int_context.get("last_fetched_incident_ids") or []
     demisto.debug(f"ServiceNowV2 - Last fetched incident ids are: {last_fetched_ids}")
     if ticket_id_in_last_fetch := ticket_id in last_fetched_ids:
         last_fetched_ids.remove(ticket_id)
-        set_integration_context({"last_fetched_incident_ids": last_fetched_ids})
+        int_context["last_fetched_incident_ids"] = last_fetched_ids
+        set_integration_context(int_context)
     return ticket_id_in_last_fetch
 
 
@@ -2833,8 +2856,14 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
                 if not file_extension:
                     file_extension = ''
                 if params.get('file_tag_from_service_now') not in entry.get('tags', []):
-                    client.upload_file(ticket_id, entry.get('id'), file_name + '_mirrored_from_xsoar' + file_extension,
-                                       ticket_type)
+                    try:
+                        client.upload_file(ticket_id, entry.get('id'), file_name + '_mirrored_from_xsoar' + file_extension,
+                                           ticket_type)
+                    except Exception as e:
+                        demisto.error(f"An attempt to mirror a file has failed. entry_id={entry.get('id')}, {file_name=}\n{e}")
+                        text_for_snow_comment = "An attempt to mirror a file from Cortex XSOAR was failed." \
+                                                f"\nFile name: {file_name}\nError from integration: {e}"
+                        client.add_comment(ticket_id, ticket_type, 'comments', text_for_snow_comment)
             else:
                 # Mirroring comment and work notes as entries
                 tags = entry.get('tags', [])
@@ -3102,7 +3131,7 @@ def get_co_human_readable(ticket: dict, ticket_type: str, additional_fields: Ite
         'Business Impact': BUSINESS_IMPACT.get(str(ticket.get('business_criticality', {}).get('value', '')), ''),
         'Urgency': ticket.get('urgency', {}).get('display_value', ''),
         'Severity': ticket.get('severity', {}).get('value', ''),
-        'Priority': TICKET_PRIORITY.get(str(int(priority)), str(int(priority))),
+        'Priority': TICKET_PRIORITY.get(str(int(priority)), str(int(priority))) if priority else '',
         'State': states.get(str(int(state)), str(int(state))),
         'Approval': ticket.get('approval_history', {}).get('value', ''),
         'Created On': ticket.get('sys_created_on', {}).get('value', ''),
@@ -3333,6 +3362,8 @@ def main():
             return_results(get_tasks_for_co_command(client, demisto.args()))
         elif demisto.command() == 'servicenow-get-ticket-notes':
             return_results(get_ticket_notes_command(client, args, params))
+        elif demisto.command() == 'servicenow-get-ticket-attachments':
+            return_results(get_attachment_command(client, args))
         elif command in commands:
             md_, ec_, raw_response, ignore_auto_extract = commands[command](client, args)
             return_outputs(md_, ec_, raw_response, ignore_auto_extract=ignore_auto_extract)

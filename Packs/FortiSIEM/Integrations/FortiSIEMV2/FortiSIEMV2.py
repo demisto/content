@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-# type: ignore
-# mypy: ignore-errors
+
 import json
 import re
 from collections.abc import Callable
@@ -128,8 +127,8 @@ class FortiSIEMClient(BaseClient):
         Returns:
             Dict[str,Any]: API response from FortiSIEM.
         """
-        include_ip_set = build_ip_set([include_ip_list, include_ip_range])
-        exclude_ip_set = build_ip_set([exclude_ip_list, exclude_ip_rage])
+        include_ip_set = build_ip_set([include_ip_list, include_ip_range])  # type: ignore[list-item]
+        exclude_ip_set = build_ip_set([exclude_ip_list, exclude_ip_rage])  # type: ignore[list-item]
         params = assign_params(includeIps=include_ip_set,
                                excludeIps=exclude_ip_set)
 
@@ -425,7 +424,7 @@ def search_events_with_polling_command(client: FortiSIEMClient, args: dict[str, 
        """
     ScheduledCommand.raise_error_if_not_supported()
     interval_in_secs = arg_to_number(args.get('interval_in_seconds', '10'))
-    if interval_in_secs < 10:
+    if interval_in_secs < 10:  # type: ignore[operator]
         raise ValueError(
             "The minimum time to wait between command execution when 'polling' should be at least 10 seconds.")
     timeout = arg_to_number(args.get('timeout_in_seconds', '60'))
@@ -442,7 +441,7 @@ def search_events_with_polling_command(client: FortiSIEMClient, args: dict[str, 
         # schedule first poll
         scheduled_command = ScheduledCommand(
             command=cmd,
-            next_run_in_seconds=interval_in_secs,
+            next_run_in_seconds=interval_in_secs,  # type: ignore[arg-type]
             args=polling_args,
             timeout_in_seconds=timeout)
         command_results.scheduled_command = scheduled_command
@@ -459,7 +458,7 @@ def search_events_with_polling_command(client: FortiSIEMClient, args: dict[str, 
         }
         scheduled_command = ScheduledCommand(
             command=cmd,
-            next_run_in_seconds=interval_in_secs,
+            next_run_in_seconds=interval_in_secs,  # type: ignore[arg-type]
             args=polling_args,
             timeout_in_seconds=timeout)
         command_results = CommandResults(scheduled_command=scheduled_command)
@@ -478,13 +477,13 @@ def events_search_init_command(client: FortiSIEMClient, args: dict[str, Any]) ->
     Returns:
        CommandResults: Command results with raw response, outputs and readable outputs.
     """
-    from_time = convert_date_to_timestamp(arg_to_datetime(args['from_time']))
-    to_time = convert_date_to_timestamp(arg_to_datetime(args['to_time']))
+    from_time = convert_date_to_timestamp(arg_to_datetime(args['from_time']))  # type: ignore[arg-type]
+    to_time = convert_date_to_timestamp(arg_to_datetime(args['to_time']))  # type: ignore[arg-type]
     query = args.get('query')
     extend_data = argToBoolean(args.get('extended_data', False))
     events_constraint = query or build_constraint_from_args(copy.deepcopy(args))
-    payload = build_query_xml(events_constraint, from_time, to_time, extend_data)
-    response = client.events_search_init_request(payload.decode('utf-8'))
+    payload = build_query_xml(events_constraint, from_time, to_time, extend_data)  # type: ignore[arg-type]
+    response = client.events_search_init_request(payload.decode('utf-8'))  # type: ignore[attr-defined]
     if "<?xml" in response:  # invalid query argument
         raise ValueError("The query argument is invalid. Please use another query.")
     outputs = {"search_id": response}
@@ -541,10 +540,11 @@ def events_search_results_command(client: FortiSIEMClient, args: dict[str, Any])
     search_id = args['search_id']
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     page = arg_to_number(args.get('page'), DEFAULT_PAGE)
-    start_index = (page - 1) * limit
-    response = client.events_search_results_request(search_id, start_index, limit)
-    outputs, total_pages = format_search_events_results(response, limit)
-    header = format_readable_output_header(f"Search Query: {search_id} Results", limit, page, total_pages)
+    start_index = (page - 1) * limit  # type: ignore[operator]
+    response = client.events_search_results_request(search_id, start_index, limit)  # type: ignore[arg-type]
+    outputs, total_pages = format_search_events_results(response, limit)  # type: ignore[arg-type]
+    header = format_readable_output_header(
+        f"Search Query: {search_id} Results", limit, page, total_pages)  # type: ignore[arg-type]
     readable_outputs = tableToMarkdown(header, get_list_events_readable_output(outputs),
                                        headers=["eventID", "eventReceiveTime", "eventType", "message", "sourceIP",
                                                 "destinationIP",
@@ -580,9 +580,10 @@ def cmdb_devices_list_command(client: FortiSIEMClient, args: dict[str, Any]) -> 
     validate_ip_address(include_ip_list, exclude_ip_list)
     validate_ip_ranges(include_ip_range, exclude_ip_range)
 
-    response = client.cmdb_devices_list_request(include_ip_list, exclude_ip_list, include_ip_range, exclude_ip_range)
-    outputs, total_pages = format_list_commands_output(response, ['devices', 'device'], page, limit)
-    header = format_readable_output_header('List CMDB devices', limit, page, total_pages)
+    response = client.cmdb_devices_list_request(include_ip_list, exclude_ip_list,  # type: ignore[arg-type]
+                                                include_ip_range, exclude_ip_range)  # type: ignore[arg-type]
+    outputs, total_pages = format_list_commands_output(response, ['devices', 'device'], page, limit)  # type: ignore[arg-type]
+    header = format_readable_output_header('List CMDB devices', limit, page, total_pages)  # type: ignore[arg-type]
     readable_output = tableToMarkdown(header, outputs,
                                       headers=['name', 'accessIp', 'approved', 'unmanaged',
                                                'deviceType'],
@@ -616,7 +617,7 @@ def cmdb_device_get_command(client: FortiSIEMClient, args: dict[str, Any]) -> Li
         try:
             validate_ip_address(ip_address)
             response = client.cmdb_device_get_request(ip_address)
-            outputs = format_outputs_time_attributes_to_iso(copy.deepcopy(response.get('device')))
+            outputs = format_outputs_time_attributes_to_iso(copy.deepcopy(response.get('device')))  # type: ignore[arg-type]
             readable_output = tableToMarkdown(f'CMDB device {ip_address}', outputs,
                                               headers=['name', 'accessIp', 'approved', 'unmanaged',
                                                        'deviceType', 'discoverTime', 'discoverMethod'],
@@ -650,10 +651,11 @@ def monitored_organizations_list_command(client: FortiSIEMClient, args: dict[str
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     page = arg_to_number(args.get('page', DEFAULT_PAGE))
     response = client.monitored_organizations_list_request()
-    outputs, total_pages_number = format_organizations_output(response, page, limit)
+    outputs, total_pages_number = format_organizations_output(response, page, limit)  # type: ignore[arg-type]
 
     readable_output = tableToMarkdown(
-        format_readable_output_header('List Monitored Organizations', limit, page, total_pages_number), outputs,
+        format_readable_output_header('List Monitored Organizations', limit, page,  # type: ignore[arg-type]
+                                      total_pages_number), outputs,  # type: ignore[arg-type]
         headers=['domainId', 'name', 'custId', 'creationTime', 'lastModified', 'disabled'],
         headerTransform=pascalToSpace)
     command_results = CommandResults(
@@ -688,8 +690,15 @@ def incident_update_command(client: FortiSIEMClient, args: dict[str, Any]) -> Co
     external_ticket_state = args.get('external_ticket_state')
     external_assigned_user = args.get('external_assigned_user')
 
-    response = client.incident_update_request(incident_id, comments, incident_status, external_ticket_type,
-                                              external_ticket_id, external_ticket_state, external_assigned_user)
+    response = client.incident_update_request(
+        incident_id,
+        comments,  # type: ignore[arg-type]
+        incident_status,  # type: ignore[arg-type]
+        external_ticket_type,  # type: ignore[arg-type]
+        external_ticket_id,  # type: ignore[arg-type]
+        external_ticket_state,  # type: ignore[arg-type]
+        external_assigned_user  # type: ignore[arg-type]
+    )
     command_results = CommandResults(readable_output=format_update_incident_readable_output(incident_id, response))
 
     return command_results
@@ -708,10 +717,10 @@ def events_list_command(client: FortiSIEMClient, args: dict[str, Any]) -> Comman
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     page = arg_to_number(args.get('page', DEFAULT_PAGE))
     incident_id = args['incident_id']
-    response = client.events_list_request(limit * page, incident_id)
-    outputs = format_list_events_output(response, incident_id, page, limit)
+    response = client.events_list_request(limit * page, incident_id)  # type: ignore[operator]
+    outputs = format_list_events_output(response, incident_id, page, limit)  # type: ignore[arg-type]
     readable_output = tableToMarkdown(
-        format_readable_output_header(f'List Events for incident ID {incident_id}', limit, page),
+        format_readable_output_header(f'List Events for incident ID {incident_id}', limit, page),  # type: ignore[arg-type]
         get_list_events_readable_output(outputs),
         headers=["eventID", "eventReceiveTime", "eventType", "message", "sourceIP", "destinationIP",
                  "hostName", "hostIp", "user", "fileName", "command", "filePath", "SHA256Hash", "MD5Hash", "rawEventLog"
@@ -746,7 +755,7 @@ def watchlist_list_command(client: FortiSIEMClient, args: dict[str, Any]) -> Com
         response = client.watchlist_list_all()
     outputs, total_pages = format_watchlist_output(response, page=page, limit=limit)
     readable_outputs = tableToMarkdown(
-        format_readable_output_header('List Watchlist Groups', limit, page, total_pages),
+        format_readable_output_header('List Watchlist Groups', limit, page, total_pages),  # type: ignore[arg-type]
         outputs, headers=['id', 'name', 'displayName', 'description', 'valueType'],
         headerTransform=pascalToSpace)
     command_results = CommandResults(
@@ -849,22 +858,22 @@ def watchlist_add_command(client: FortiSIEMClient, args: dict[str, Any]) -> Comm
     is_case_sensitive = argToBoolean(args.get('is_case_sensitive'))
     data_creation_type = args.get('data_creation_type')
     value_type = args.get('value_type')
-    age_out = datetime_to_age_out_in_days(arg_to_datetime(args.get('age_out')))
+    age_out = datetime_to_age_out_in_days(arg_to_datetime(args.get('age_out')))  # type: ignore[arg-type]
     inclusive = argToBoolean(args.get('entry_inclusive'))
     entry_value = args.get('entry_value')
-    entry_age_out = datetime_to_age_out_in_days(arg_to_datetime(args.get('entry_age_out')))
+    entry_age_out = datetime_to_age_out_in_days(arg_to_datetime(args.get('entry_age_out')))  # type: ignore[arg-type]
     count = args.get('entry_count')
-    first_seen = convert_date_to_timestamp(arg_to_datetime(args.get('entry_first_seen')))
-    last_seen = convert_date_to_timestamp(arg_to_datetime(args.get('entry_last_seen')))
+    first_seen = convert_date_to_timestamp(arg_to_datetime(args.get('entry_first_seen')))  # type: ignore[arg-type]
+    last_seen = convert_date_to_timestamp(arg_to_datetime(args.get('entry_last_seen')))  # type: ignore[arg-type]
     triggering_rules = args.get('triggering_rules')
 
-    validate_add_watchlist_args(first_seen, last_seen)
-    response = client.watchlist_add_request(display_name, description, is_case_sensitive,
-                                            data_creation_type,
-                                            value_type, age_out, inclusive,
-                                            entry_value,
-                                            entry_age_out, count, first_seen, last_seen,
-                                            triggering_rules)
+    validate_add_watchlist_args(first_seen, last_seen)  # type: ignore[arg-type]
+    response = client.watchlist_add_request(display_name, description, is_case_sensitive,  # type: ignore[arg-type]
+                                            data_creation_type,  # type: ignore[arg-type]
+                                            value_type, age_out, inclusive,  # type: ignore[arg-type]
+                                            entry_value,  # type: ignore[arg-type]
+                                            entry_age_out, count, first_seen, last_seen,  # type: ignore[arg-type]
+                                            triggering_rules)  # type: ignore[arg-type]
 
     output, _ = format_watchlist_output(response,
                                         f"The Watchlist group: {display_name} "
@@ -898,19 +907,19 @@ def watchlist_entry_add_command(client: FortiSIEMClient, args: dict[str, Any]) -
     count = arg_to_number(args.get('count'))
     triggering_rules = args.get('triggering_rules')
     value = args.get('value')
-    age_out = datetime_to_age_out_in_days(arg_to_datetime(args.get('age_out')))
-    first_seen = convert_date_to_timestamp(arg_to_datetime(args.get('first_seen')))
-    last_seen = convert_date_to_timestamp(arg_to_datetime(args.get('last_seen')))
+    age_out = datetime_to_age_out_in_days(arg_to_datetime(args.get('age_out')))  # type: ignore[arg-type]
+    first_seen = convert_date_to_timestamp(arg_to_datetime(args.get('first_seen')))  # type: ignore[arg-type]
+    last_seen = convert_date_to_timestamp(arg_to_datetime(args.get('last_seen')))  # type: ignore[arg-type]
     data_creation_type = args.get('data_creation_type')
     description = args.get('description')
-    validate_add_watchlist_args(first_seen, last_seen)
+    validate_add_watchlist_args(first_seen, last_seen)  # type: ignore[arg-type]
     disable_age_out = not age_out
-    response = client.watchlist_entry_add_request(watchlist_id, value, inclusive, count,
-                                                  triggering_rules,
-                                                  age_out, last_seen, first_seen,
-                                                  data_creation_type, description, disable_age_out)
+    response = client.watchlist_entry_add_request(watchlist_id, value, inclusive, count,  # type: ignore[arg-type]
+                                                  triggering_rules,  # type: ignore[arg-type]
+                                                  age_out, last_seen, first_seen,  # type: ignore[arg-type]
+                                                  data_creation_type, description, disable_age_out)  # type: ignore[arg-type]
     command_results = CommandResults(
-        readable_output=format_add_watchlist_entry_message(watchlist_id, value, response)
+        readable_output=format_add_watchlist_entry_message(watchlist_id, value, response)  # type: ignore[arg-type]
     )
 
     return command_results
@@ -931,15 +940,15 @@ def watchlist_entry_update_command(client: FortiSIEMClient, args: dict[str, Any]
     count = arg_to_number(args.get('count'))
     triggering_rules = args.get('triggering_rules')
     value = args.get('value')
-    age_out = datetime_to_age_out_in_days(arg_to_datetime(args.get('age_out')))
-    first_seen = convert_date_to_timestamp(arg_to_datetime(args.get('first_seen')))
-    last_seen = convert_date_to_timestamp(arg_to_datetime(args.get('last_seen')))
-    expiry_time = convert_date_to_timestamp(arg_to_datetime(args.get('expired_time')))
+    age_out = datetime_to_age_out_in_days(arg_to_datetime(args.get('age_out')))  # type: ignore[arg-type]
+    first_seen = convert_date_to_timestamp(arg_to_datetime(args.get('first_seen')))  # type: ignore[arg-type]
+    last_seen = convert_date_to_timestamp(arg_to_datetime(args.get('last_seen')))  # type: ignore[arg-type]
+    expiry_time = convert_date_to_timestamp(arg_to_datetime(args.get('expired_time')))  # type: ignore[arg-type]
     data_creation_type = args.get('data_creation_type')
     description = args.get('description')
-    validate_add_watchlist_args(first_seen, last_seen)
+    validate_add_watchlist_args(first_seen, last_seen)  # type: ignore[arg-type]
 
-    response = client.watchlist_entry_update_request(entry_id, value, inclusive=inclusive, count=count,
+    response = client.watchlist_entry_update_request(entry_id, value, inclusive=inclusive, count=count,  # type: ignore[arg-type]
                                                      description=description,
                                                      triggeringRules=triggering_rules, ageOut=age_out,
                                                      firstSeen=first_seen, lastSeen=last_seen, expiredTime=expiry_time,
@@ -1052,7 +1061,7 @@ def fetch_incidents(client: FortiSIEMClient, max_fetch: int, first_fetch: str, s
     last_incident_create_time = last_run.get('create_time')
     time_from = last_incident_create_time or first_fetch_epoch
 
-    relevant_incidents = fetch_relevant_incidents(client, numeric_status_list, time_from,
+    relevant_incidents = fetch_relevant_incidents(client, numeric_status_list, time_from,  # type: ignore[arg-type]
                                                   date_to_timestamp(datetime.now()), last_run, max_fetch)
     formatted_incidents = format_incidents(relevant_incidents)  # for Layout
 
@@ -1128,10 +1137,10 @@ def watchlist_entry_get_command(client: FortiSIEMClient, args: dict[str, Any]) -
             )
             command_results_list.append(command_results)
         except Exception as error:
-            error = CommandResults(
+            error = CommandResults(  # type: ignore[assignment]
                 readable_output=f'**{error}**'
             )
-            command_results_list.append(error)
+            command_results_list.append(error)  # type: ignore[arg-type]
     return command_results_list
 
 
@@ -1424,7 +1433,7 @@ def format_watchlist_output(response: dict[str, Any], failure_message: str = Non
             message = failure_message or response_content
             raise ValueError(message)
 
-    outputs, total_results = format_list_commands_output(response_content, [], page or 1, limit or 1)
+    outputs, total_results = format_list_commands_output(response_content, [], page or 1, limit or 1)  # type: ignore[arg-type]
     for watchlist in outputs:
         if watchlist.get('entries'):
             watchlist['entries'] = format_outputs_time_attributes_to_iso(watchlist['entries'])
@@ -1443,7 +1452,7 @@ def format_message_delete_watchlist(watchlist_id: int, response: dict[str, Any])
     status = response.get('status')
     message = response.get('response')
     if status == 'Success':
-        deleted_count = int(message.split(": ")[1])
+        deleted_count = int(message.split(": ")[1])  # type: ignore[union-attr]
         if deleted_count >= 1:
             return f'The watchlist {watchlist_id} was deleted successfully.'
     raise ValueError(f'Failed to delete Watchlist group: {watchlist_id}.')
@@ -1461,7 +1470,7 @@ def format_message_delete_entry(entry_id: int, response: dict[str, Any]) -> str:
     status = response.get('status')
     message = response.get('response')
     if status == 'Success':
-        deleted_count = int(message.split("- ")[1])
+        deleted_count = int(message.split("- ")[1])  # type: ignore[union-attr]
         if deleted_count >= 1:
             return f'The entry {entry_id} were deleted successfully.'
     raise ValueError(f'Failed to delete entry {entry_id}.')
@@ -1547,7 +1556,7 @@ def fetch_relevant_incidents(client: FortiSIEMClient,
         List[dict]: Relevant incidents.
     """
     demisto.debug(f'Fetch incident from: {str(time_from)} to {str(time_to)}')
-    filtered_incidents = []
+    filtered_incidents = []  # type: ignore[var-annotated]
     start_index = last_run.get('start_index') or 0
     last_incident_create_time = last_run.get('create_time') or time_from
     last_fetch_incidents: List[int] = last_run.get('last_incidents') or []
@@ -1558,13 +1567,13 @@ def fetch_relevant_incidents(client: FortiSIEMClient,
     total = response.get('total')
     demisto.debug(f'Got: {total} total incidents.')
     # filtering & pagination
-    while len(filtered_incidents) < max_fetch and start_index < total:
-        for incident in incidents:
+    while len(filtered_incidents) < max_fetch and start_index < total:  # type: ignore[operator]
+        for incident in incidents:  # type: ignore[union-attr]
             if incident.get('incidentId') not in last_fetch_incidents and \
                     len(filtered_incidents) < max_fetch and \
                     incident.get('incidentFirstSeen') >= last_incident_create_time:
                 filtered_incidents.append(incident)
-        if len(incidents) < page_size:  # last page
+        if len(incidents) < page_size:  # type: ignore[arg-type]
             break
 
         start_index += page_size
@@ -1585,7 +1594,8 @@ def format_incidents(relevant_incidents: List[dict]) -> List[dict]:
         List[dict]: Formatted incidents.
     """
     for incident in relevant_incidents:
-        incident['normalizedEventSeverity'] = INCIDENT_EVENT_CATEGORY_MAPPING.get(incident.get('eventSeverityCat'), 0.5)
+        incident['normalizedEventSeverity'] = INCIDENT_EVENT_CATEGORY_MAPPING.get(
+            incident.get('eventSeverityCat'), 0.5)  # type: ignore[arg-type]
         format_integer_field_to_verbal(incident)  # formatting integer attributes.
 
         for attribute_name in REFORMAT_INCIDENT_FIELDS:  # formatting nested attributes.
@@ -1602,7 +1612,7 @@ def format_incidents(relevant_incidents: List[dict]) -> List[dict]:
     return relevant_incidents
 
 
-def format_nested_incident_attribute(attribute_value: str | None) -> tuple:
+def format_nested_incident_attribute(attribute_value: str | None) -> tuple:  # type: ignore[return]
     """
     Format nested attributes to be readable. For example:
     for the attribute_value "srcIpAddr:192.168.1.1,",
@@ -1664,7 +1674,7 @@ def get_mapping_for_verbal_incident_attrib(field_name: str) -> tuple:
         'incidentReso': (INCIDENT_RESOLUTION_INT_VERBAL_MAPPING, 'None'),
         'phIncidentCategory': (INCIDENT_CATEGORY_INT_VERBAL_MAPPING, 'AVAILABILITY')
     }
-    return routing.get(field_name)
+    return routing.get(field_name)  # type: ignore[return-value]
 
 
 def build_readable_attribute_key(key: str, attribute_name: str):
@@ -1770,18 +1780,18 @@ def get_list_events_readable_output(outputs: List[dict]) -> List[dict]:
             "eventReceiveTime": event.get('receiveTime'),
             "eventID": event.get('id'),
             "eventType": event.get('eventType'),
-            "message": attributes.get('rawMessage') or event.get('msg'),
-            "sourceIP": attributes.get("Source IP") or attributes.get('srcIpAddr'),
-            "destinationIP": attributes.get("Destination IP") or attributes.get('destIpAddr'),
-            "hostName": attributes.get("Host Name") or attributes.get('hostName'),
-            "hostIp": attributes.get("Host IP") or attributes.get('hostIpAddr'),
-            "user": attributes.get("User") or attributes.get('user'),
-            "fileName": attributes.get("File Name") or attributes.get('fileName'),
-            "command": attributes.get("Command") or attributes.get('command'),
-            "filePath": attributes.get("File Path") or attributes.get('filePath'),
-            "SHA256Hash": attributes.get("SHA256 Hash") or attributes.get('hashSHA256'),
-            "MD5Hash": attributes.get("MD5 Hash") or attributes.get('hashMD5'),
-            "rawEventLog": attributes.get("Raw Event Log") or attributes.get('rawEventMsg'),
+            "message": attributes.get('rawMessage') or event.get('msg'),  # type: ignore[union-attr]
+            "sourceIP": attributes.get("Source IP") or attributes.get('srcIpAddr'),  # type: ignore[union-attr]
+            "destinationIP": attributes.get("Destination IP") or attributes.get('destIpAddr'),  # type: ignore[union-attr]
+            "hostName": attributes.get("Host Name") or attributes.get('hostName'),  # type: ignore[union-attr]
+            "hostIp": attributes.get("Host IP") or attributes.get('hostIpAddr'),  # type: ignore[union-attr]
+            "user": attributes.get("User") or attributes.get('user'),  # type: ignore[union-attr]
+            "fileName": attributes.get("File Name") or attributes.get('fileName'),  # type: ignore[union-attr]
+            "command": attributes.get("Command") or attributes.get('command'),  # type: ignore[union-attr]
+            "filePath": attributes.get("File Path") or attributes.get('filePath'),  # type: ignore[union-attr]
+            "SHA256Hash": attributes.get("SHA256 Hash") or attributes.get('hashSHA256'),  # type: ignore[union-attr]
+            "MD5Hash": attributes.get("MD5 Hash") or attributes.get('hashMD5'),  # type: ignore[union-attr]
+            "rawEventLog": attributes.get("Raw Event Log") or attributes.get('rawEventMsg'),  # type: ignore[union-attr]
         })
     return readable_outputs
 
@@ -1799,7 +1809,7 @@ def datetime_to_age_out_in_days(age_out_date: datetime) -> str:
         delta = now - age_out_date
         days = delta.days  # interested in interval only.
         return f'{days}d'
-    return None
+    return None  # type: ignore[return-value]
 
 
 def update_last_run_obj(last_run: dict[str, Any], formatted_incidents: List[dict]):
@@ -1834,13 +1844,13 @@ def main() -> None:
     fetch_with_events = params.get('fetch_mode') == 'Fetch With Events'
     max_events_fetch = arg_to_number(params.get('max_events_fetch', DEFAULT_EVENTS_FETCH))
     status_filter_list = argToList(params.get('status'))
-    headers = {}
+    headers = {}  # type: ignore[var-annotated]
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
 
     try:
-        requests.packages.urllib3.disable_warnings()
+        requests.packages.urllib3.disable_warnings()  # type: ignore[attr-defined]
         client: FortiSIEMClient = FortiSIEMClient(urljoin(url, ''), verify_certificate, proxy, headers=headers,
                                                   auth=(f'super/{username}', password))
 
@@ -1879,10 +1889,10 @@ def main() -> None:
                         status_filter_list)
         elif command == 'fetch-incidents':
 
-            incidents, last_run = fetch_incidents(client, max_fetch,
-                                                  first_fetch,
+            incidents, last_run = fetch_incidents(client, max_fetch,  # type: ignore[arg-type]
+                                                  first_fetch,  # type: ignore[arg-type]
                                                   status_filter_list, fetch_with_events,
-                                                  max_events_fetch, demisto.getLastRun())
+                                                  max_events_fetch, demisto.getLastRun())  # type: ignore[arg-type]
 
             demisto.setLastRun(last_run)
             demisto.incidents(incidents)

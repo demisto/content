@@ -1,24 +1,25 @@
 Leverage the power of Sixgill to supercharge Cortex XSOAR with real-time Threat Intelligence indicators. Enrich IOCs such as domains, URLs, hashes, and IP addresses straight from XSOAR platform.
 This integration was integrated and tested with sixgill-clients
-## Configure Sixgill_Darkfeed_Enrichment on Cortex XSOAR
+
+## Configure Sixgill_Darkfeed_Enrichment in Cortex
 
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Sixgill_Darkfeed_Enrichment.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | client_id | Sixgill API client ID | True |
-    | client_secret | Sixgill API client secret | True |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| client_id | Sixgill API client ID | True |
+| client_secret | Sixgill API client secret | True |
+| insecure | Trust any certificate \(not secure\) | False |
+| proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Returns information and a reputation for each IP in the input list.
 
@@ -26,6 +27,7 @@ Returns information and a reputation for each IP in the input list.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -41,7 +43,7 @@ Returns information and a reputation for each IP in the input list.
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Score | Number | The score of the indicator. | 
 | DBotScore.Type | String | Indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the indicator score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | SixgillDarkfeed.IP.created | Date | The timestamp when the indicator was created. | 
 | SixgillDarkfeed.IP.id | String | The unique ID of the indicator. | 
 | SixgillDarkfeed.IP.description | String | The description of the indicator. | 
@@ -65,6 +67,7 @@ Returns information and a reputation for each IP in the input list.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -72,6 +75,7 @@ Returns information and a reputation for each IP in the input list.
 
 
 ### domain
+
 ***
 Returns information and a reputation for each domain name in the input list.
 
@@ -81,6 +85,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -96,7 +101,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Score | Number | The score of the indicator. | 
 | DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the indicator score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | SixgillDarkfeed.Domain.created | Date | The timestamp when the indicator was created. | 
 | SixgillDarkfeed.Domain.id | String | The unique ID of the indicator. | 
 | SixgillDarkfeed.Domain.description | String | The description of the indicator. | 
@@ -120,6 +125,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -127,6 +133,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 ### url
+
 ***
 Returns information and a reputation for each URL in the input list.
 
@@ -136,6 +143,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -151,7 +159,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Score | Number | The score of the indicator. | 
 | DBotScore.Type | String | Indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the indicator score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | SixgillDarkfeed.URL.created | Date | The timestamp when the indicator was created. | 
 | SixgillDarkfeed.URL.id | String | The unique ID of the indicator. | 
 | SixgillDarkfeed.URL.description | String | The description of the indicator. | 
@@ -175,6 +183,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -182,6 +191,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 ### file
+
 ***
 Returns information and a reputation for each file hash in the input list.
 
@@ -189,6 +199,7 @@ Returns information and a reputation for each file hash in the input list.
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -204,7 +215,7 @@ Returns information and a reputation for each file hash in the input list.
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Score | Number | The score of the indicator. | 
 | DBotScore.Type | String | Indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the indicator score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | SixgillDarkfeed.File.created | Date | The timestamp when the indicator was created. | 
 | SixgillDarkfeed.File.id | String | The unique ID of the indicator. | 
 | SixgillDarkfeed.File.description | String | The description of the indicator. | 
@@ -231,6 +242,7 @@ Returns information and a reputation for each file hash in the input list.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -238,6 +250,7 @@ Returns information and a reputation for each file hash in the input list.
 
 
 ### sixgill-get-actor
+
 ***
 Returns information and a reputation for each actor in the input list.
 
@@ -245,6 +258,7 @@ Returns information and a reputation for each actor in the input list.
 #### Base Command
 
 `sixgill-get-actor`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -279,6 +293,7 @@ Returns information and a reputation for each actor in the input list.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -286,6 +301,7 @@ Returns information and a reputation for each actor in the input list.
 
 
 ### sixgill-get-post-id
+
 ***
 Returns information and a reputation for each post ID in the input list.
 
@@ -293,6 +309,7 @@ Returns information and a reputation for each post ID in the input list.
 #### Base Command
 
 `sixgill-get-post-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -327,8 +344,8 @@ Returns information and a reputation for each post ID in the input list.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
-
 

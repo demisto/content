@@ -19,7 +19,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: "3.10"
       - name: Setup Poetry
         uses: Gr1N/setup-poetry@v9
       - name: Print Context
@@ -30,7 +30,7 @@ jobs:
 
       - name: Install Python Dependencies
         run: |
-          poetry install --with ci
+          poetry install --with github-actions
       - name: set pythonpath
         run: |
           echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
@@ -40,7 +40,7 @@ jobs:
           EVENT_PAYLOAD: ${{ toJson(github.event) }}
         run: |
           echo "Updating External PR ${{ github.event.pull_request.html_url }}"
-          cd Utils/github_workflow_scripts
+          cd .github/github_workflow_scripts
           poetry run ./handle_external_pr.py
           echo "Finished Handling External PR"
 
@@ -54,11 +54,12 @@ jobs:
           LABEL: "Contribution Form Filled"
 
       - name: Send Notification
+        if: startsWith(github.event.pull_request.title, 'test') != true
         env:
           CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
           EVENT_PAYLOAD: ${{ toJson(github.event) }}
           CORTEX_XSOAR_SLACK_TOKEN: ${{ secrets.CORTEX_XSOAR_SLACK_TOKEN }}
         run: |
           echo "Sending notification about External PR ${{ github.event.pull_request.html_url }}"
-          cd Utils/github_workflow_scripts
+          cd .github/github_workflow_scripts
           poetry run ./send_slack_message.py

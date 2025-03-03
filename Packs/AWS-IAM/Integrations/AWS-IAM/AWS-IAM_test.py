@@ -3,7 +3,7 @@ import datetime
 import pytest
 import importlib
 import demistomock as demisto
-
+from pytest_mock import MockerFixture
 AWS_IAM = importlib.import_module("AWS-IAM")
 
 ATTACHED_POLICIES = [
@@ -79,6 +79,15 @@ class Boto3Client:
         pass
 
     def list_attached_role_policies(self):
+        pass
+
+    def deactivate_mfa_device(self):
+        pass
+
+    def delete_virtual_mfa_device(self):
+        pass
+
+    def list_mfa_devices(self):
         pass
 
     @property
@@ -430,7 +439,7 @@ def test_get_access_key_last_used_command(args, mocked_res, expected_hr, expecte
     cr_obj = AWS_IAM.get_access_key_last_used_command(args, client)
     assert expected_hr == cr_obj.readable_output
     assert expected_ec == cr_obj.outputs
-    assert type(cr_obj.raw_response.get("AccessKeyLastUsed", {}).get("LastUsedDate")) == str
+    assert type(cr_obj.raw_response.get("AccessKeyLastUsed", {}).get("LastUsedDate")) is str
 
 
 @pytest.mark.parametrize('tags_ls, expected_output', [
@@ -516,3 +525,99 @@ def test_list_attached_role_policies(mocker, is_truncated: bool, expeted_second_
     assert result[1].outputs.get('Marker') == expected_marker
     assert result[1].raw_response == response
     assert result[1].readable_output == expeted_second_output
+
+
+def test_deactivate_mfa_device(mocker: MockerFixture):
+    """
+    Given:
+        args - userName, serialNumber.
+    When:
+        calling deactivate_mfa_device function.
+    Then:
+        Ensure that the response returns as expected and contains the userName.
+    """
+    mock_res = {
+        "ResponseMetadata": {
+            "HTTPStatusCode": 200
+        }
+    }
+
+    args = {
+        "userName": "test",
+        "serialNumber": "test1"
+    }
+    mocker.patch.object(Boto3Client, "deactivate_mfa_device", return_value=mock_res)
+    results = mocker.patch.object(demisto, 'results')
+
+    client = Boto3Client()
+    AWS_IAM.deactivate_mfa_device(args, client)
+
+    assert results.call_args[0][0] == "The User test mfa device has been deactivated"
+
+
+def test_delete_virtual_mfa_device(mocker: MockerFixture):
+    """
+    Given:
+        args - serialNumber.
+    When:
+        calling delete_virtual_mfa_device function.
+    Then:
+        Ensure that the response returns as expected and contains the userName.
+    """
+    mock_res = {
+        "ResponseMetadata": {
+            "HTTPStatusCode": 200
+        }
+    }
+
+    args = {
+        "serialNumber": "test1"
+    }
+    mocker.patch.object(Boto3Client, "delete_virtual_mfa_device", return_value=mock_res)
+    results = mocker.patch.object(demisto, 'results')
+
+    client = Boto3Client()
+    AWS_IAM.delete_virtual_mfa_device(args, client)
+
+    assert results.call_args[0][0] == "The User test1 mfa device has been deleted"
+
+
+@pytest.mark.parametrize(
+    "page_size",
+    [
+        1,
+        2
+    ]
+)
+def test_list_mfa_devices(mocker: MockerFixture, page_size: int):
+    """
+    Given:
+        - page_size argument
+    Then:
+        - run `list_mfa_devices` function
+    When:
+        - Ensure that `outputs_prefix` is as expected
+        - Ensure that the number of returned devices is as expected
+    """
+    mock_res = {
+        "MFADevices": [
+            {
+                "UserName": "test",
+                "SerialNumber": "test",
+                "EnableDate": datetime.datetime(2021, 11, 7, 15, 55, 3)
+            },
+            {
+                "UserName": "test2",
+                "SerialNumber": "test2",
+                "EnableDate": datetime.datetime(2022, 11, 7, 15, 55, 3)
+            }
+        ],
+        "Marker": "test"
+    }
+    mocker.patch.object(Boto3Client, "list_mfa_devices", return_value=mock_res)
+
+    client = Boto3Client()
+    res = AWS_IAM.list_mfa_devices({"page_size": page_size, "page": 1}, client)
+
+    assert len(res.outputs["Devices"]) == page_size
+    assert res.outputs_prefix == "AWS.IAM.MFADevices"

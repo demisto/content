@@ -187,6 +187,13 @@ configuration:
   type: 9
   additionalinfo:
   displaypassword: ""
+  hiddenusername: false
+- name: TimeoutOverride
+  display: Override the default timeout value
+  required: false
+  defaultvalue: "60"
+  type: 0
+  additionalinfo: Specify a timeout override value in seconds for devices that have a lengthy login process or are behind a latent connection. (Default 60 seconds).
 description: Multi-vendor library to simplify SSH connections to network devices. Utilizes the Python library Netmiko for connections. Supports SSH Key authentication and username / password.
 display: Netmiko
 name: Netmiko
@@ -212,13 +219,15 @@ script:
       predefined:
       - "false"
       - "true"
-    - auto: PREDEFINED
-      defaultValue: "false"
-      description: Whether an exit argument is required after comamnds are executed (default is false).
+    - defaultValue: "false"
+      description: Whether an exit argument is required after commands are executed (default is false).
       name: require_exit
+      auto: PREDEFINED
       predefined:
       - "false"
       - "true"
+      required: false
+      isArray: false
     - defaultValue: q
       description: Optional exit argument used to exit the terminal after commands are executed. Default is q.
       name: exit_argument
@@ -452,7 +461,7 @@ script:
     - contextPath: Netmiko.Output
       description: The results of the command.
       type: string
-  dockerimage: demisto/netmiko:1.0.0.87750
+  dockerimage: demisto/netmiko:1.0.0.114712
   script: ""
   subtype: python3
   type: python

@@ -424,7 +424,7 @@ def test_demisto_upload_file_error(mocker):
     mocker.patch('UploadFile.upload_file', return_value=RAW_RESPONSE_ERROR)
 
     with pytest.raises(Exception,
-                       match="There was an issue uploading the file. Check your API key and input argument."):
+                       match="There was an issue uploading the file."):
         upload_file_command({'incidentId': '1', 'entryID': '12@12', 'body': "test_bark"})
 
 

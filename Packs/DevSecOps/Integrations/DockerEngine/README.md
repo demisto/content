@@ -1,27 +1,23 @@
 The Engine API is an HTTP API served by Docker Engine. It is the API the Docker client uses to communicate with the Engine, so everything the Docker client can do can be done with the API.
 This integration was integrated and tested with version 20.10.17 ([API Version 1.41](https://docs.docker.com/engine/api/v1.41/)) of Docker Engine API
-## Configure Docker Engine API on Cortex XSOAR
+## Configure Docker Engine API in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Docker Engine API.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g. https://www.example.com:1000) | True |
-    | Docker Client Certificate | True |
-    | Docker Client Private Key | True |
-    | CA Certificate | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Registry Identity Token | False |
-    | Registry Username | False |
-    | Registry Password | False |
-    | Registry Server Address (e.g. docker.io) | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL (e.g. https://www.example.com:1000) | True |
+| Docker Client Certificate | True |
+| Docker Client Private Key | True |
+| CA Certificate | False |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| Registry Identity Token | False |
+| Registry Username | False |
+| Registry Password | False |
+| Registry Server Address (e.g. docker.io) | False |
 
 Note: The Docker private key must be first stored into XSOAR as a credential attribute of a [saved credential](https://xsoar.pan.dev/docs/reference/articles/managing-credentials#configure-cortex-xsoar-credentials), and this credential must be selected as the auth key.
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Docker Engine
 Docker Engine is an open source containerization technology for building and containerizing your applications. Docker Engine acts as a client-server application with:
@@ -49,7 +45,7 @@ If a CA cert is not provided, the Docker server certificate will be validated us
 ### Docker Registry Authentication
 Authentication for registries is handled by the integration not the Docker Server. This is configured as a integration parameter. This can be in the form of either a identitytoken or Username/Password/Serveraddress. These four parameters are optional and if none authentication credentials are provided the integration will function in "Anonymous mode". Some Commands may not function as a result.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### docker-build-prune
 ***
@@ -7139,4 +7135,3 @@ Delete unused volumes
 >|SpaceReclaimed|VolumesDeleted|
 >|---|---|
 >| 0 | temp-volume |
-

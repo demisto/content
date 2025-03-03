@@ -64,5 +64,5 @@ type: python
 tests:
 - No test
 subtype: python3
-dockerimage: demisto/python3:3.10.12.66339
+dockerimage: demisto/python3:3.11.10.115186
 fromversion: 5.0.0

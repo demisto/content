@@ -1,29 +1,25 @@
 Streamline alerts and related forensic information from Varonis SaaS
 
-## Configure Varonis SaaS on Cortex XSOAR
+## Configure Varonis SaaS in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Varonis SaaS.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | The FQDN/IP the integration should connect to |  | True |
-    | X-API-Key |  | True |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | First fetch time |  | False |
-    | Minimum severity of alerts to fetch |  | False |
-    | Varonis threat model name | Comma-separated list of threat model names of alerts to fetch | False |
-    | Varonis alert status |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| The FQDN/IP the integration should connect to |  | True |
+| X-API-Key |  | True |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| First fetch time |  | False |
+| Minimum severity of alerts to fetch |  | False |
+| Varonis threat model name | Comma-separated list of threat model names of alerts to fetch | False |
+| Varonis alert status |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### varonis-get-threat-models
@@ -43,12 +39,10 @@ Get Varonis threat models
 
 #### Context Output
 
-| **Path** | **Type** | **Description**                                                                                                                                                                                                                      |
-| --- |----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ID | Number   | ID of the threat model                                                                                                                                                                                                              | 
-| Name | String   | Name of the threat model                                                                                                                                                                                                     | 
-                                                                                                                                                                                                | 
-
+| **Path** | **Type** | **Description** |
+| --- |----------|----------------------|
+| ID | Number    | ID of the threat model | 
+| Name | String  | Name of the threat model | 
 
 #### Command example
 ```!varonis-get-threat-models```  
@@ -374,4 +368,44 @@ There is no context output for this command.
 ```!varonis-close-alert  alert_id=C98A3E72-99E9-4E5C-A560-7D04FA60686E close_reason="Inaccurate alert logic"  note="Alert is irrelevant. Closed" ```
 
 
+### get-mapping-fields
+***
+Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
 
+
+#### Base Command
+
+`get-mapping-fields`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+## Incident Mirroring
+
+You can enable outgoing incident mirroring between Cortex XSOAR incidents and Varonis alerts (available from Cortex XSOAR version 6.0.0).
+To set up the mirroring:
+1. Enable *Fetching incidents* in your instance configuration.
+2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored (currently only outgoing mirroring is available):
+
+    | **Option** | **Description** |
+    | --- | --- |
+    | None | Turns off incident mirroring. |
+    | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in Varonis SaaS service (outgoing mirrored fields). |
+
+
+Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+
+### Mirroring Out Notes
+The supported fields in the mirroring out process are:
+- Varonis Alert Status.
+- Varonis Close Reason
+- Incident Close Notes
+
+**Important Note:**
+You have two options how to close Varonis Alert:
+ - The first option is to change the Varonis Alert Status field in the XSOAR incident. In this case, the status of the alert in Varonis SaaS service will be change by the mirroring functionality, but the Incident in XSOAR won't be closed.
+ - The second one is to close the incident in XSOAR. In this case, the Varonis Alert will be closed on the Varonis side by the post-processing script.

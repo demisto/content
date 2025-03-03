@@ -2,7 +2,7 @@
     "name": "AWS - CloudWatchLogs",
     "description": "Amazon Web Services CloudWatch Logs (logs).",
     "support": "xsoar",
-    "currentVersion": "1.2.21",
+    "currentVersion": "1.2.26",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

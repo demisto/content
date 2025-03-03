@@ -2,6 +2,7 @@ id: PAN-OS DAG Configuration
 version: -1
 name: PAN-OS DAG Configuration
 fromversion: 5.0.0
+toversion: 6.9.9
 description: "This playbook utilizes the Dynamic Address Group (DAG) capability of PAN-OS.\nDAG enables analysts to create a rule one time, where the group is the source/destination, and adds IP addresses dynamically without the need to commit the configuration every time.\n\nThe playbook checks if the given tag already exists. If the tag exists, then the IP address is added to the tag.\n\nIf the tag does not exist, a new address group is created with the given tag and a matching rule, and the configuration is committed. \n"
 starttaskid: "0"
 tasks:

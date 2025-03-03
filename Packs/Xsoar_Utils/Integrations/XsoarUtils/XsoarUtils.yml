@@ -16,20 +16,23 @@ configuration:
   required: true
   type: 0
 - additionalinfo: Check this to ignore certificate signature
-  defaultvalue: "false"
+  defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
-description: |-
-  This is a wrapper on top of XSOAR API. Can be used to implement commands that call the XSOAR API in the background.  This is mostly to avoid  constructing raw json strings while calling the demisto rest api integration.
+description: 'This is a wrapper on top of XSOAR API. Can be used to implement commands that call the XSOAR API in the background.  This is mostly to avoid  constructing raw json strings while calling the demisto rest api integration.
+
 
   The first implemented command can be used to create an entry on any investigation; playground by default.  An example use-case could be debugging a pre-process script. (Call demisto.execute_command("xsoar-create-entry",{arguments})
 
-  The idea is to use the same code to test from a local machine.
-  python3  Xsoar_Utils.py  xsoar-create-entry  '{"data":"# testapi4","inv_id":"122c7bff-feae-4177-867e-37e2096cd7d9"}'
 
-  Read the code to understand more.
+  The idea is to use the same code to test from a local machine.
+
+  python3  Xsoar_Utils.py  xsoar-create-entry  ''{"data":"# testapi4","inv_id":"122c7bff-feae-4177-867e-37e2096cd7d9"}''
+
+
+  Read the code to understand more.'
 display: Xsoar_Utils
 name: Xsoar_Utils
 script:
@@ -41,7 +44,7 @@ script:
       name: inv_id
     description: Creates an entry into an investigation warroom or  by default on the playground.
     name: xsoar-create-entry
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: ''
   subtype: python3

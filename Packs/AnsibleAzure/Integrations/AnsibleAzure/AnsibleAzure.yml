@@ -40,7 +40,7 @@ configuration:
   name: api_profile
   required: true
   type: 0
-description: Manage Azure resources
+description: Manage Azure resources.
 display: Ansible Azure
 fromversion: 6.0.0
 name: AnsibleAzure
@@ -157,7 +157,7 @@ script:
       description: Current state of the availability set.
       type: unknown
     - contextPath: Azure.AzureRmAvailabilityset.changed
-      description: Whether or not the resource has changed
+      description: Whether or not the resource has changed.
       type: boolean
   - arguments:
     - description: Limit results to a specific availability set.
@@ -311,7 +311,7 @@ script:
     - description: The name of the Shared Image Gallery. Valid names consist of less than 80 alphanumeric characters, underscores and periods.
       name: name
       required: true
-    - description: Resource location
+    - description: Resource location.
       name: location
     - description: The description of this Shared Image Gallery resource. This property is updatable.
       name: description
@@ -338,12 +338,12 @@ script:
     name: azure-rm-gallery
     outputs:
     - contextPath: Azure.AzureRmGallery.id
-      description: Resource Id
+      description: Resource Id.
       type: string
   - arguments:
     - description: The name of the resource group.
       name: resource_group
-    - description: Resource name
+    - description: Resource name.
       name: name
     - description: Your Azure subscription Id.
       name: subscription_id
@@ -363,7 +363,7 @@ script:
     - description: The name of the gallery Image Definition to be created or updated. The allowed characters are alphabets and numbers with dots, dashes, and periods allowed in the middle. The maximum length is 80 characters.
       name: name
       required: true
-    - description: Resource location
+    - description: Resource location.
       name: location
     - description: The description of this gallery Image Definition resource. This property is updatable.
       name: description
@@ -425,7 +425,7 @@ script:
     name: azure-rm-galleryimage
     outputs:
     - contextPath: Azure.AzureRmGalleryimage.id
-      description: Resource Id
+      description: Resource Id.
       type: string
   - arguments:
     - description: The name of the resource group.
@@ -434,7 +434,7 @@ script:
     - description: The name of the shared image gallery from which the image definitions are to be retrieved.
       name: gallery_name
       required: true
-    - description: Resource name
+    - description: Resource name.
       name: name
     - description: Your Azure subscription Id.
       name: subscription_id
@@ -454,10 +454,10 @@ script:
     - description: The name of the gallery Image Definition in which the Image Version is to be created.
       name: gallery_image_name
       required: true
-    - description: 'The name of the gallery Image Version to be created. Needs to follow semantic version name pattern: The allowed characters are digit and period. Digits must be within the range of a 32-bit integer. Format: <MajorVersion>.<MinorVersion>.<Patch>'
+    - description: 'The name of the gallery Image Version to be created. Needs to follow semantic version name pattern: The allowed characters are digit and period. Digits must be within the range of a 32-bit integer. Format: <MajorVersion>.<MinorVersion>.<Patch>.'
       name: name
       required: true
-    - description: Resource location
+    - description: Resource location.
       name: location
     - description: Publishing profile.
       isArray: true
@@ -486,7 +486,7 @@ script:
     name: azure-rm-galleryimageversion
     outputs:
     - contextPath: Azure.AzureRmGalleryimageversion.id
-      description: Resource Id
+      description: Resource Id.
       type: string
   - arguments:
     - description: The name of the resource group.
@@ -498,7 +498,7 @@ script:
     - description: The name of the gallery Image Definition in which the Image Version resides.
       name: gallery_image_name
       required: true
-    - description: Resource name
+    - description: Resource name.
       name: name
     - description: Your Azure subscription Id.
       name: subscription_id
@@ -872,11 +872,11 @@ script:
     - description: The name of the resource group.
       name: resource_group
       required: true
-    - description: Resource name
+    - description: Resource name.
       name: name
-    - description: Resource location
+    - description: Resource location.
       name: location
-    - description: SKU
+    - description: SKU.
       isArray: true
       name: sku
     - auto: PREDEFINED
@@ -911,7 +911,7 @@ script:
     name: azure-rm-snapshot
     outputs:
     - contextPath: Azure.AzureRmSnapshot.id
-      description: Resource Id
+      description: Resource Id.
       type: string
   - arguments:
     - description: Name of the resource group containing the VM.
@@ -2607,7 +2607,7 @@ script:
     - contextPath: Azure.AzureRmDnszoneInfo.dnszones
       description: List of zone dicts, which share the same layout as azure_rm_dnszone module parameter.
       type: unknown
-  dockerimage: demisto/ansible-runner:1.0.0.89756
+  dockerimage: demisto/ansible-runner:1.0.0.2024530
   script: ''
   subtype: python3
   type: python

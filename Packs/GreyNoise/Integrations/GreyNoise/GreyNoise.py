@@ -734,6 +734,10 @@ def query_command(client: Client, args: dict) -> CommandResults:
         query_link = query_link.replace("*", "&ast;")
         query_link = query_link.replace('"', "&quot;")
         human_readable += f"\n*To view the detailed query result please click [here]({query_link}).*"
+    else:
+        outputs = {}
+        human_readable = ""
+        demisto.debug(f'{query_response["message"]=} do not match any condition. {outputs=} , {human_readable=}')
 
     return CommandResults(
         readable_output=human_readable, outputs=remove_empty_elements(outputs), raw_response=original_response
@@ -992,6 +996,9 @@ def riot_command(client: Client, args: dict, reliability: str) -> CommandResults
             name=name, t=hr, headers=headers,
             removeNull=False
         )
+    else:
+        dbot_score_int = 0
+        demisto.debug(f'{response.get("riot")=} -> {dbot_score_int=}')
 
     try:
         response_quick: Any = ip_quick_check_command(client, {"ip": ip})
@@ -1106,6 +1113,158 @@ def context_command(client: Client, args: dict, reliability: str) -> CommandResu
     )
 
 
+@exception_handler
+@logger
+def cve_command(client: Client, args: dict, reliability: str) -> List[CommandResults]:
+    """
+    Returns information about CVE.
+
+    :type client: ``Client``
+    :param client: client object
+
+    :type reliability: ``String``
+    :param reliability: string
+
+    :type args: ``dict``
+    :param args: All command arguments, usually passed from ``demisto.args()``.
+    :return: A ``CommandResults`` object that is then passed to ``return_results``,
+           that contains the IP information.
+    :rtype: ``CommandResults``
+
+    """
+    cve_list = argToList(args.get("cve"), ",")
+    command_results = []
+    reliability = reliability if reliability else DBotScoreReliability.B
+    for cve_arg in cve_list:
+        cvss = 0
+        description = ""
+        published = ""
+        modified = ""
+        response = client.cve(cve_arg)
+        cve_raw_response = copy.deepcopy(response)
+        response = remove_empty_elements(response)
+        if isinstance(response, dict) and response.get("id"):
+            cvss = response["details"].get("cve_cvss_score", "")
+            description = response["details"].get("vulnerability_description", "")
+            vendor = response["details"].get("vendor", "")
+            product = response["details"].get("product", "")
+            if "timeline" in response:
+                published = response["timeline"].get("cve_published_date", "").split("T")[0]
+                modified = response["timeline"].get("cve_last_updated_date", "").split("T")[0]
+            name = "GreyNoise CVE Lookup"
+            hr = {
+                "CVE ID": response.get("id"),
+                "CVSS": cvss,
+                "Vendor": vendor,
+                "Product": product,
+                "Published to NVD": response["details"].get("published_to_nist_nvd", False)
+            }
+            human_readable = f"### CVE: {cve_arg} is found\n"
+            human_readable += tableToMarkdown(
+                name=name, t=hr, headers=["CVE ID", "CVSS", "Vendor", "Product", "Published to NVD"],
+                removeNull=False
+            )
+            if "timeline" in response:
+                name = "Timeline Details"
+                hr = {
+                    "Added to Kev": response["timeline"].get("cisa_kev_date_added", "").split("T")[0],
+                    "Last Updated": modified,
+                    "CVE Published": published,
+                    "First Published": response["timeline"].get("first_known_published_date", "").split("T")[0],
+                }
+                human_readable += tableToMarkdown(
+                    name=name, t=hr, headers=["Added to Kev", "Last Updated", "CVE Published", "First Published"],
+                    removeNull=False
+                )
+            if "exploitation_details" in response:
+                name = "Exploitation Details"
+                hr = {
+                    "Attack Vector": response["exploitation_details"].get("attack_vector", ""),
+                    "EPSS Base Score": response["exploitation_details"].get("epss_score", ""),
+                    "Exploit Found": response["exploitation_details"].get("exploit_found", ""),
+                    "Exploit Registered in KEV": response["exploitation_details"].get("exploitation_registered_in_kev", ""),
+                }
+                human_readable += tableToMarkdown(
+                    name=name, t=hr, headers=["Attack Vector", "EPSS Base Score", "Exploit Found", "Exploit Registered in KEV"],
+                    removeNull=False
+                )
+            if "exploitation_stats" in response:
+                name = "Exploitation Stats"
+                hr = {
+                    "# of Available Exploits": response["exploitation_stats"].get("number_of_available_exploits", ""),
+                    "# of Botnets Exploiting": response["exploitation_stats"].get("number_of_botnets_exploiting_vulnerability",
+                                                                                  ""),
+                    "# of Threat Actors Exploiting": response["exploitation_stats"].get(
+                        "number_of_threat_actors_exploiting_vulnerability", ""),
+                }
+                human_readable += tableToMarkdown(
+                    name=name, t=hr,
+                    headers=["# of Available Exploits", "# of Botnets Exploiting", "# of Threat Actors Exploiting"],
+                    removeNull=False
+                )
+            if "exploitation_activity" in response:
+                name = "Exploitation Activity - GreyNoise Insights"
+                hr = {
+                    "GreyNoise Observed Activity": response["exploitation_activity"].get("activity_seen", ""),
+                    "# of Benign IPs - Last Day": response["exploitation_activity"].get("benign_ip_count_1d", ""),
+                    "# of Benign IPs - Last 10 Days": response["exploitation_activity"].get("benign_ip_count_10d", ""),
+                    "# of Benign IPs - Last 30 Days": response["exploitation_activity"].get("benign_ip_count_30d", ""),
+                    "# of Threat IPs - Last Day": response["exploitation_activity"].get("threat_ip_count_1d", ""),
+                    "# of Threat IPs - Last 10 Days": response["exploitation_activity"].get("threat_ip_count_10d", ""),
+                    "# of Threat IPs - Last 30 Days": response["exploitation_activity"].get("threat_ip_count_30d", ""),
+                }
+                human_readable += tableToMarkdown(
+                    name=name, t=hr, headers=[
+                        "GreyNoise Observed Activity",
+                        "# of Benign IPs - Last Day",
+                        "# of Benign IPs - Last 10 Days",
+                        "# of Benign IPs - Last 30 Days",
+                        "# of Threat IPs - Last Day",
+                        "# of Threat IPs - Last 10 Days",
+                        "# of Threat IPs - Last 30 Days"
+                    ],
+                    removeNull=False
+                )
+        else:
+            name = "GreyNoise CVE IP Lookup"
+            hr = {
+                "CVE ID": cve_arg,
+            }
+            human_readable = f"### CVE: {cve_arg} is not found\n"
+            human_readable += tableToMarkdown(
+                name=name, t=hr, headers=["CVE ID"],
+                removeNull=False
+            )
+
+        dbot_score = Common.DBotScore(
+            indicator=cve_arg,
+            indicator_type=DBotScoreType.CVE,
+            score=Common.DBotScore.NONE,
+            integration_name="GreyNoise",
+            reliability=reliability
+        )
+        cve = Common.CVE(
+            id=cve_arg,
+            cvss=cvss,
+            description=description,
+            published=published,
+            modified=modified,
+            dbot_score=dbot_score,
+        )
+
+        command_results.append(
+            CommandResults(
+                outputs_prefix='GreyNoise.CVE',
+                outputs_key_field='id',
+                outputs=cve_raw_response,
+                indicator=cve,
+                readable_output=human_readable
+            )
+        )
+
+    return command_results
+
+
 """ MAIN FUNCTION """
 
 
@@ -1122,7 +1281,7 @@ def main() -> None:
     else:
         packs = []
 
-    pack_version = "1.3.0"
+    pack_version = "1.4.0"
     if isinstance(packs, list):
         for pack in packs:
             if pack["name"] == "GreyNoise":
@@ -1189,6 +1348,10 @@ def main() -> None:
 
         elif demisto.command() == "greynoise-context":
             result = context_command(client, demisto.args(), reliability)
+            return_results(result)
+
+        elif demisto.command() == "cve":
+            result = cve_command(client, demisto.args(), reliability)
             return_results(result)
     # Log exceptions and return errors
     except DemistoException as err:

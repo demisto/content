@@ -1,10 +1,7 @@
 Automate Detection and Response to Network Threats and data leakage in your organization with Fidelis Elevate Network Integration.
 This integration was integrated and tested with version 9.2.4 of Fidelis Elevate Network
-## Configure Fidelis Elevate Network on Cortex XSOAR
+## Configure Fidelis Elevate Network in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Fidelis Elevate Network.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -16,9 +13,8 @@ This integration was integrated and tested with version 9.2.4 of Fidelis Elevate
 | incidentType | Incident type | False |
 | fetch_time | First fetch timestamp (\<number\> \<time unit\>, e.g., 12 hours, 7 days, 3 months, 1 year) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### fidelis-get-alert
 ***

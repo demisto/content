@@ -15,18 +15,18 @@ args:
   - all
   type: textArea
 - auto: PREDEFINED
-  defaultValue: "True"
+  defaultValue: 'True'
   description: 'Output the resulting tables to the war room? Default: true'
   name: OutputToWarRoom
   predefined:
-  - "True"
-  - "False"
+  - 'True'
+  - 'False'
   type: unknown
 comment: "Parses the output from the !SSLVerifierV2 automation into a markdown table and separate context key . \n\nThis automation uses the SSLVerifierV2 key by default, but a custom context key can be specified in the event extend-context is used with the SSLVerifierV2 automation. \n\nOption to specify whether to output certificates with an expiring, warning, or good status (or all at once). \n\nOption to specify whether or not to output the generated tables to the war room. \n\n"
 commonfields:
   id: SSLVerifierV2_ParseOutput
   version: -1
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 name: SSLVerifierV2_ParseOutput
 outputs:

@@ -6,3 +6,7 @@ pychrome
 [tests_require_network]
 Rasterize
 Rasterize v2 Pre-Release
+
+# GR103 is temporary, see CIAC-11705
+[file:playbook-Process_Email_-_Generic_for_rasterize.yml]
+ignore=GR103

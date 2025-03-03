@@ -44,6 +44,77 @@ BASIC FUNCTIONS
 '''
 
 
+class Client(BaseClient):
+
+    def get_artifacts(self, alert_id):
+
+        url = f'/alerts/{alert_id}/downloadzip'
+        response = self._http_request(
+            method='POST',
+            url_suffix=url,
+            resp_type='response'
+        )
+        return response
+
+    def get_yara_rulesets(self, policy_uuid):
+
+        url = f'/policies/{policy_uuid}/configuration/rules/yara/rulesets'
+        response = self._http_request(
+            method='GET',
+            url_suffix=url
+        )
+        return response
+
+    def get_yara_file(self, policy_uuid, ruleset_uuid):
+
+        url = f'/policies/{policy_uuid}/configuration/rules/yara/rulesets/{ruleset_uuid}/file'
+        response = self._http_request(
+            method='GET',
+            url_suffix=url,
+            resp_type='response'
+        )
+        return response
+
+    def upload_yara_file(self, policy_uuid, ruleset_uuid, files):
+
+        url = f'/policies/{policy_uuid}/configuration/rules/yara/rulesets/{ruleset_uuid}/file'
+        response = self._http_request(
+            method='PUT',
+            headers={
+                'x-fireeye-api-key': API_KEY
+            },
+            url_suffix=url,
+            files=files,
+            resp_type='response'
+        )
+        return response
+
+    def get_events_data(self, message_id):
+
+        url = f'/events/{message_id}'
+
+        response = self._http_request(
+            method='GET',
+            url_suffix=url,
+            resp_type='json'
+        )
+        return response
+
+    def quarantine_release(self, message_id):
+
+        url = f'/quarantine/release/{message_id}'
+
+        response = self._http_request(
+            method='POST',
+            headers={
+                'x-fireeye-api-key': API_KEY
+            },
+            url_suffix=url,
+            resp_type='response'
+        )
+        return response
+
+
 def set_proxies():
     if not demisto.params().get('proxy', False):
         del os.environ['HTTP_PROXY']
@@ -478,6 +549,101 @@ def get_alerts_command():
     demisto.results(entry)
 
 
+def upload_yara_file_command(client, args):
+
+    entry_id = args.get('entryID')
+    policy_uuid = args.get('policy_uuid')
+    ruleset_uuid = args.get('ruleset_uuid')
+
+    file_obj = demisto.getFilePath(entry_id)
+    file_path = file_obj['path']
+
+    with open(file_path, "rb") as file:
+        data = file.read()
+        files = {
+            'file': ('new.yara', data)
+        }
+        response = client.upload_yara_file(policy_uuid, ruleset_uuid, files)
+        if response.status_code == 202:
+            return CommandResults(readable_output='Upload of Yara file succesfully.')
+        else:
+            return CommandResults(readable_output='Upload of Yara file failed.')
+
+
+def get_events_data_command(client, args):
+
+    message_id = args.get('message_id')
+
+    response = client.get_events_data(message_id)
+
+    result_output = {}
+    result_output['Logs'] = response['data'][message_id]
+
+    for log in result_output['Logs']:
+        if log['action_on_msg'] == "MTA_RCPT_DELIVERED_OUTBOUND":
+            result_output['Delivered_msg'] = log['display_msg']
+            result_output['Delivered_status'] = "Delivered"
+            result_output['InternetMessageId'] = result_output['Delivered_msg'].split('<')[1].split('>')[0]
+        if log['action_on_msg'] == "MTA_RCPT_DELIVERY_PERM_FAILURE_OUTBOUND":
+            result_output['Delivered_msg'] = log['display_msg']
+            result_output['Delivered_status'] = "Failed"
+
+    command_results = CommandResults(
+        outputs=result_output,
+        readable_output=tableToMarkdown("Events", result_output, headers=[
+                                        "Logs", "Delivered_msg", "Delivered_status"],
+                                        is_auto_json_transform=True),
+        outputs_prefix='FireEyeETP.Events'
+    )
+    return command_results
+
+
+def download_alert_artifacts_command(client, args):
+    alert_id = args.get('alert_id')
+
+    response = client.get_artifacts(alert_id)
+    file_entry = fileResult(alert_id + '.zip', data=response.content, file_type=EntryType.FILE)
+
+    return [
+        CommandResults(
+            readable_output='Download alert artifact completed successfully'),
+        file_entry
+    ]
+
+
+def list_yara_rulesets_command(client, args):
+
+    policy_uuid = args.get('policy_uuid')
+
+    response = client.get_yara_rulesets(policy_uuid)
+
+    command_results = CommandResults(outputs=response['data']['rulesets'],
+                                     readable_output=tableToMarkdown("Rulesets",
+                                                                     response['data']['rulesets'],
+                                                                     headers=[
+                                                                         "name",
+                                                                         "description",
+                                                                         "uuid",
+                                                                         "yara_file_name"
+                                                                     ]
+                                                                     ),
+                                     outputs_prefix=f'FireEyeETP.Policy.{policy_uuid}')
+
+    return command_results
+
+
+def download_yara_file_command(client, args):
+
+    policy_uuid = args.get('policy_uuid')
+    ruleset_uuid = args.get('ruleset_uuid')
+
+    response = client.get_yara_file(policy_uuid, ruleset_uuid)
+
+    file_entry = fileResult('original.yara', data=response.content, file_type=EntryType.FILE)
+
+    return [CommandResults(readable_output='Download yara file completed successfully.'), file_entry]
+
+
 def get_alert_request(alert_id):
     url = '{}/alerts/{}'.format(BASE_PATH, alert_id)
     response = http_request(
@@ -487,6 +653,19 @@ def get_alert_request(alert_id):
     if response['meta']['total'] == 0:
         return {}
     return response['data'][0]
+
+
+def quarantine_release_command(client, args):
+    message_id = args.get('message_id')
+
+    response = client.quarantine_release(message_id)
+
+    command_results = CommandResults(
+        readable_output=tableToMarkdown("Quarantine", response.json()['data'], headers=[
+                                        "type", "operation", "successful_message_ids"])
+    )
+
+    return command_results
 
 
 def get_alert_command():
@@ -607,11 +786,32 @@ EXECUTION
 
 
 def main():
+    """
+    main function, parses params and runs command functions
+    """
+
+    params = demisto.params()
+    args = demisto.args()
+    proxy = params.get('proxy', False)
+
+    verify_certificate = not params.get('unsecure', False)
+
     if not API_KEY:
         return_error('API key must be provided.')
     set_proxies()
 
     try:
+        headers = {
+            'Content-Type': 'application/json',
+            'x-fireeye-api-key': API_KEY
+        }
+
+        client = Client(
+            base_url=BASE_PATH,
+            verify=verify_certificate,
+            headers=headers,
+            proxy=proxy)
+
         if demisto.command() == 'test-module':
             get_alerts_request(size=1)
             # request was succesful
@@ -626,6 +826,18 @@ def main():
             get_alerts_command()
         if demisto.command() == 'fireeye-etp-get-alert':
             get_alert_command()
+        if demisto.command() == 'fireeye-etp-download-alert-artifact':
+            return_results(download_alert_artifacts_command(client, args))
+        if demisto.command() == 'fireeye-etp-list-yara-rulesets':
+            return_results(list_yara_rulesets_command(client, args))
+        if demisto.command() == 'fireeye-etp-download-yara-file':
+            return_results(download_yara_file_command(client, args))
+        if demisto.command() == 'fireeye-etp-upload-yara-file':
+            return_results(upload_yara_file_command(client, args))
+        if demisto.command() == 'fireeye-etp-get-events-data':
+            return_results(get_events_data_command(client, args))
+        if demisto.command() == 'fireeye-etp-quarantine-release':
+            return_results(quarantine_release_command(client, args))
     except ValueError as e:
         LOG(e)
         LOG.print_log()

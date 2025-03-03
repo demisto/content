@@ -19,6 +19,6 @@ outputs:
   description: The overall risk score of the domain.
 subtype: python3
 fromversion: 6.6.0
-dockerimage: demisto/python3:3.10.13.87159
+dockerimage: demisto/python3:3.11.10.115186
 tests:
 - No tests (auto formatted)

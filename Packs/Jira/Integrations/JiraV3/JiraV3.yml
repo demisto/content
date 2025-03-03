@@ -1,6 +1,9 @@
 commonfields:
   id: Jira V3
   version: -1
+sectionOrder:
+- Connect
+- Collect
 name: Jira V3
 display: Atlassian Jira v3
 category: Case Management
@@ -12,31 +15,45 @@ configuration:
   type: 0
   required: true
   additionalinfo: The base URL. For a cloud instance, use the default URL as configured. For an OnPrem instance, use your respective domain.
+  section: Connect
 - display: User name
   name: basic_credentials
   displaypassword: API key
   required: false
   type: 9
+  section: Connect
 - name: cloud_id
   display: Cloud ID
   type: 0
   additionalinfo: This field is used to configure the Jira Cloud.
   required: false
+  section: Connect
 - name: callback_url
   display: Callback URL
   type: 0
   required: false
+  section: Connect
 - display: Client ID
   type: 9
   name: credentials
   displaypassword: Client Secret
   required: false
+  section: Connect
+- display: Personal Access Token
+  displaypassword: Personal Access Token
+  name: pat_credential
+  type: 9
+  required: false
+  hiddenusername: true
+  additionalinfo: Use the Personal Access Token for API Authentication.
+  section: Connect
 - defaultvalue: status!=done
   display: Query (in JQL) for fetching incidents
-  additionalinfo: The field that was selected in the "Issue Field to fetch by" can't be used. in the query.
+  additionalinfo: The field selected in the "Issue Field to fetch by" can't be used in the query.
   name: fetch_query
   type: 0
   required: false
+  section: Collect
 - defaultvalue: id
   display: Issue Field to fetch by
   name: issue_field_to_fetch_from
@@ -47,37 +64,46 @@ configuration:
   type: 15
   additionalinfo: "This is how the field (e.g, created date) is applied to the query: created >= {created date in last run} ORDER BY created ASC"
   required: false
+  section: Collect
 - display: Issue index to start fetching incidents from
   additionalinfo: This parameter is dismissed if "id" is not chosen in "Issue Field to Fetch by". This will only fetch Jira issues that are part of the same project as the issue that is configured in this parameter. If this value is 0, then the fetch mechanism will automatically start the fetch from the smallest ID with respect to the fetch query.
   name: id_offset
   defaultvalue: '0'
   type: 0
   required: false
+  section: Collect
 - defaultvalue: 3 days
   display: Time range for initial data fetch
   additionalinfo: "The time range to consider for the initial data fetch in format: <number> <unit>. This parameter is only relevant when selecting to fetch by created time, or updated time. Default is 3 days. For example: 2 minutes, 2 hours, 2 days, 2 months, 2 years"
   name: first_fetch
   type: 0
   required: false
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   defaultvalue: 'false'
   required: false
+  section: Connect
+  advanced: true
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8
   defaultvalue: 'false'
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - defaultvalue: 'false'
   additionalinfo: When selected, marking the Jira issue as resolved will be mirrored in Cortex XSOAR, and will close the corresponding incident. Please make sure the `Resolved` field in your Jira instance is configured in order for this to work properly, if not, it will rely on if the status of the issue is changed to `Done`.
   display: Close Mirrored XSOAR Incident
@@ -86,6 +112,7 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  section: Collect
 - defaultvalue: None
   display: Mirroring Direction
   name: mirror_direction
@@ -98,6 +125,7 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  section: Collect
 - additionalinfo: Add this tag to an entry to mirror it as an attachment to Jira.
   defaultvalue: attachment tag
   display: Attachment Entry Tag to Jira
@@ -106,6 +134,8 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  section: Collect
+  advanced: true
 - additionalinfo: Add this tag to an entry to mirror it as an attachment from Jira.
   defaultvalue: attachment tag from Jira
   display: Attachment Entry Tag from Jira
@@ -114,6 +144,8 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  section: Collect
+  advanced: true
 - additionalinfo: Add this tag to an entry to mirror it as a comment in Jira.
   defaultvalue: comment tag
   display: Comment Entry Tag to Jira
@@ -122,6 +154,8 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  section: Collect
+  advanced: true
 - additionalinfo: Add this tag to an entry to mirror it as a comment from Jira.
   defaultvalue: comment tag from Jira
   display: Comment Entry Tag from Jira
@@ -130,24 +164,29 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  section: Collect
+  advanced: true
 - additionalinfo: Fetch comments for a Jira ticket.
   display: Fetch comments
   name: fetch_comments
   defaultvalue: 'false'
   type: 8
   required: false
+  section: Collect
 - additionalinfo: Fetch attachments for a Jira ticket.
   display: Fetch attachments
   name: fetch_attachments
   defaultvalue: 'false'
   type: 8
   required: false
+  section: Collect
 - defaultvalue: '50'
   display: Max incidents per fetch
   name: max_fetch
   additionalinfo: "The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value that is higher than this number, your search results will be truncated. Default value is 50"
   type: 0
   required: false
+  section: Collect
 script:
   commands:
   - arguments:
@@ -316,6 +355,9 @@ script:
       type: String
     - contextPath: Ticket.Description
       description: The ticket's description.
+      type: String
+    - contextPath: Ticket.RawDescription
+      description: The ticket's raw description.
       type: String
     - contextPath: Ticket.Labels
       description: The ticket's labels.
@@ -486,6 +528,9 @@ script:
     - contextPath: Ticket.Description
       description: The ticket's project description.
       type: String
+    - contextPath: Ticket.RawDescription
+      description: The ticket's project raw description.
+      type: String
     - contextPath: Ticket.Labels
       description: The ticket's project labels.
       type: Array
@@ -542,6 +587,9 @@ script:
       type: String
     - contextPath: Ticket.Description
       description: The ticket's project description.
+      type: String
+    - contextPath: Ticket.RawDescription
+      description: The ticket's project raw description.
       type: String
     - contextPath: Ticket.Labels
       description: The ticket's project labels.
@@ -757,6 +805,12 @@ script:
       type: String
     - contextPath: InfoFile.Info
       description: Basic information about the file.
+      type: String
+    - contextPath: Ticket.Description
+      description: The ticket's description.
+      type: String
+    - contextPath: Ticket.RawDescription
+      description: The ticket's raw description.
       type: String
   - arguments:
     - description: The maximum number of results to return. Default is 50 and maximum is 5000.
@@ -1461,6 +1515,65 @@ script:
     description: Use this command to create a link between two issues.
     name: jira-issue-to-issue-link
   - arguments:
+    - description: The issue ID.
+      name: issue_id
+      required: true
+    description: Fetches questions and answers for forms tied to a Jira issue. This command requires Jira Service Desk, the ProForma plugin and an API user with `Service Desk Team` or higher permissions on the Jira project the forms are being pulled from.
+    name: jira-issue-get-forms
+    outputs:
+    - contextPath: JiraForms.ID
+      description: The ID of the form.
+      type: Unknown
+    - contextPath: JiraForms.Issue
+      description: Issue the form belongs to.
+      type: Unknown
+    - contextPath: JiraForms.Questions
+      description: Questions for the form.
+      type: Unknown
+  - arguments:
+    - description: The user's key (On-prem only).
+      name: key
+      required: false
+    - description: The user's username (On-prem only).
+      name: username
+      required: false
+    - description: The user's account ID (Cloud only).
+      name: account_id
+      required: false
+    description: Retrieves information about a specified Jira user. For on-prem instances, you should use the user's key and username to retrieve their details. For Cloud instances, user's `account_id` is required. If no identifier is supplied, information for the user the API credentials belong to is returned.
+    name: jira-get-user-info
+    outputs:
+    - contextPath: Jira.Users.Key
+      description: The user's key or ID.
+      type: Unknown
+    - contextPath: Jira.Users.Name
+      description: Name of the user.
+      type: Unknown
+    - contextPath: Jira.Users.Email
+      description: User's email address.
+      type: Unknown
+    - contextPath: Jira.Users.Display Name
+      description: Display name for the user.
+      type: Unknown
+    - contextPath: Jira.Users.Active
+      description: If the user is active or not.
+      type: Unknown
+    - contextPath: Jira.Users.Deleted
+      description: If the user is deleted or not.
+      type: Unknown
+    - contextPath: Jira.Users.Timezone
+      description: Timezone setting for the user.
+      type: Unknown
+    - contextPath: Jira.Users.Locale
+      description: Locale setting for the user.
+      type: Unknown
+    - contextPath: Jira.Users.AccountID
+      description: The account ID of the user, which uniquely identifies the user across all Atlassian products. For example, 5b10ac8d82e05b22cc7d4ef5. Required in requests.
+      type: Unknown
+    - contextPath: Jira.Users.AccountType
+      description: "The user account type. Can take the following values: atlassian, app, customer."
+      type: Unknown
+  - arguments:
     - description: The remote incident ID.
       name: id
       required: true
@@ -1480,7 +1593,159 @@ script:
   - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
     arguments: []
-  dockerimage: demisto/btfl-soup:1.0.1.91405
+  - name: jira-create-metadata-issue-types-list
+    arguments:
+    - name: project_id_or_key
+      required: true
+      description: The ID or key of the project.
+    - name: start_at
+      description: The index of the first item to return in a page of results (page offset).
+      defaultValue: "0"
+    - name: max_results
+      description: The maximum number of items to return per page. Between 0 and 200.
+      defaultValue: "50"
+    description: Returns a page of issue type metadata for a specified project.
+    outputs:
+    - contextPath: Jira.IssueType.AvatarID
+      description: The ID of the issue type's avatar.
+      type: Number
+    - contextPath: Jira.IssueType.Description
+      description: The description of the issue type.
+      type: String
+    - contextPath: Jira.IssueType.EntityID
+      description: Unique ID for next-gen projects.
+      type: String
+    - contextPath: Jira.IssueType.Expand
+      description: Expand options that include additional issue type metadata details in the response.
+      type: String
+    - contextPath: Jira.IssueType.IconURL
+      description: The URL of the issue type's avatar.
+      type: String
+    - contextPath: Jira.IssueType.ID
+      description: The ID of the issue type.
+      type: String
+    - contextPath: Jira.IssueType.Name
+      description: The name of the issue type.
+      type: String
+    - contextPath: Jira.IssueType.Self
+      description: The URL of these issue type details.
+      type: String
+    - contextPath: Jira.IssueType.Subtask
+      description: Whether this issue type is used to create subtasks.
+      type: Boolean
+    - contextPath: Jira.IssueType.Scope
+      description: Details of the next-gen projects the issue type is available in.
+      type: Object
+    - contextPath: Jira.IssueType.Scope.type
+      description: 'The type of scope. Valid values: PROJECT, TEMPLATE.'
+      type: String
+    - contextPath: Jira.IssueType.Scope.project
+      description: The project the item has scope in.
+      type: Object
+    - contextPath: Jira.IssueType.Scope.project.self
+      description: The URL of the project details.
+      type: String
+    - contextPath: Jira.IssueType.Scope.project.id
+      description: The ID of the project.
+      type: String
+    - contextPath: Jira.IssueType.Scope.project.key
+      description: The key of the project.
+      type: String
+    - contextPath: Jira.IssueType.Scope.project.name
+      description: The name of the project.
+      type: String
+    - contextPath: Jira.IssueType.Scope.project.projectTypeKey
+      description: 'The project type of the project. Valid values: software, service_desk, business.'
+      type: String
+    - contextPath: Jira.IssueType.Scope.project.simplified
+      description: Whether or not the project is simplified.
+      type: Boolean
+    - contextPath: Jira.IssueType.Scope.project.avatarUrls
+      description: The URLs of the project's avatars.
+      type: Object
+    - contextPath: Jira.IssueType.Scope.project.projectCategory
+      description: The category the project belongs to.
+      type: Object
+    - contextPath: Jira.IssueType.Scope.project.projectCategory.self
+      description: The URL of the project category.
+      type: String
+    - contextPath: Jira.IssueType.Scope.project.projectCategory.id
+      description: The ID of the project category.
+      type: String
+    - contextPath: Jira.IssueType.Scope.project.projectCategory.description
+      description: The name of the project category.
+      type: String
+    - contextPath: Jira.IssueType.Scope.project.projectCategory.name
+      description: The description of the project category.
+      type: String
+  - name: jira-create-metadata-field-list
+    arguments:
+    - name: project_id_or_key
+      required: true
+      description: The ID or key of the project.
+    - name: issue_type_id
+      required: true
+      description: The issue type ID.
+    - name: start_at
+      description: The index of the first item to return in a page of results (page offset).
+      defaultValue: "0"
+    - name: max_results
+      description: The maximum number of items to return per page. Between 0 and 200.
+      defaultValue: "50"
+    description: Returns a page of field metadata for a specified project and issue type.
+    outputs:
+    - contextPath: Jira.IssueField.AllowedValues
+      description: The list of values allowed in the field.
+      type: Array
+    - contextPath: Jira.IssueField.AutoCompleteUrl
+      description: The URL that can be used to automatically complete the field.
+      type: String
+    - contextPath: Jira.IssueField.Configuration
+      description: The configuration properties.
+      type: Object
+    - contextPath: Jira.IssueField.DefaultValue
+      description: The default value of the field.
+      type: String
+    - contextPath: Jira.IssueField.FieldID
+      description: The field ID.
+      type: String
+    - contextPath: Jira.IssueField.HasDefaultValue
+      description: Whether the field has a default value.
+      type: Boolean
+    - contextPath: Jira.IssueField.Key
+      description: The key of the field.
+      type: String
+    - contextPath: Jira.IssueField.Name
+      description: The name of the field.
+      type: String
+    - contextPath: Jira.IssueField.Operations
+      description: The list of operations that can be performed on the field.
+      type: Array
+    - contextPath: Jira.IssueField.Required
+      description: Whether the field is required.
+      type: Boolean
+    - contextPath: Jira.IssueField.Schema
+      description: The data type for the field.
+      type: Object
+    - contextPath: Jira.IssueField.Schema.type
+      description: The data type of the field.
+      type: String
+    - contextPath: Jira.IssueField.Schema.items
+      description: When the data type is an array, the name of the field items within the array.
+      type: String
+    - contextPath: Jira.IssueField.Schema.system
+      description: If the field is a system field, the name of the field.
+      type: String
+    - contextPath: Jira.IssueField.Schema.custom
+      description: If the field is a custom field, the URI of the field.
+      type: String
+    - contextPath: Jira.IssueField.Schema.customId
+      description: If the field is a custom field, the custom ID of the field.
+      type: Number
+    - contextPath: Jira.IssueField.Schema.configuration
+      description: If the field is a custom field, the configuration of the field.
+      type: Object
+  dockerimage: demisto/btfl-soup:1.0.1.2129515
   isfetch: true
   ismappable: true
   isremotesyncin: true

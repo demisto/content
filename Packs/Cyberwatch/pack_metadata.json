@@ -1,0 +1,37 @@
+{
+    "name": "Cyberwatch",
+    "description": "Find, prioritize, and fix vulnerabilities. Use this integration to fetch Assets, CVE, and Security issues from Cyberwatch.",
+    "support": "partner",
+    "created": "2024-07-01T10:00:00Z",
+    "currentVersion": "1.0.1",
+    "author": "Cyberwatch",
+    "url": "https://cyberwatch.fr",
+    "email": "support@cyberwatch.fr",
+    "categories": [
+        "Vulnerability Management"
+    ],
+    "tags": [],
+    "useCases": [
+        "Vulnerability Management"
+    ],
+    "keywords": [
+        "Cyberwatch",
+        "Framatome",
+        "Cyberwatch Vulnerability Manager",
+        "Cyberwatch Compliance Manager",
+        "Framatome Cybersecurity"
+    ],
+    "devEmail": [
+        "support@cyberwatch.fr"
+    ],
+    "githubUser": [
+        "tarraschk",
+        "fwininger"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "dependencies": {},
+    "displayedImages": []
+}

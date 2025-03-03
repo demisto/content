@@ -20,21 +20,23 @@ args:
 - name: column
   description: Column to search for value in, if not specified, entire CSV is parsed into the context.
 - name: value
-  description: value to search for
+  description: value to search for.
 - name: add_header_row
-  description: Extra row, in CSV format, to function as header if original does not contain headers
+  description: Extra row, in CSV format, to function as header if original does not contain headers.
 outputs:
-- contextPath: LookupCSV.result
-  description: List of result objects; either a list of dicts (with header_row) or a list of lists (no header row)
+- contextPath: LookupCSV.Result
+  description: List of result objects; either a list of dicts (with header_row) or a list of lists (no header row).
 - contextPath: LookupCSV.FoundResult
   description: Boolean, for whether the result was found in the CSV or not.
 - contextPath: LookupCSV.SearchValue
   description: The value that was searched.
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.11.11.1940698
 runas: DBotWeakRole
 commonfields:
   id: LookupCSV
   version: -1
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

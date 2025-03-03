@@ -36,7 +36,7 @@ outputs:
   description: The link for the source of the indicators
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/bs4-tld:1.0.0.86470
+dockerimage: demisto/bs4-tld:1.0.0.117606
 runas: DBotWeakRole
 fromversion: 5.5.0
 tests:

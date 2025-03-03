@@ -24,7 +24,7 @@ configuration:
   name: concurrency
   required: true
   type: 0
-description: Cisco IOS Platform management over SSH
+description: Cisco IOS Platform management over SSH.
 display: Ansible Cisco IOS
 fromversion: 6.0.0
 name: AnsibleCiscoIOS
@@ -58,7 +58,7 @@ script:
     name: ios-banner
     outputs:
     - contextPath: CiscoIOS.IosBanner.commands
-      description: The list of configuration mode commands to send to the device
+      description: The list of configuration mode commands to send to the device.
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -80,7 +80,7 @@ script:
     name: ios-bgp
     outputs:
     - contextPath: CiscoIOS.IosBgp.commands
-      description: The list of configuration mode commands to send to the device
+      description: The list of configuration mode commands to send to the device.
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -109,13 +109,13 @@ script:
     name: ios-command
     outputs:
     - contextPath: CiscoIOS.IosCommand.stdout
-      description: The set of responses from the commands
+      description: The set of responses from the commands.
       type: unknown
     - contextPath: CiscoIOS.IosCommand.stdout_lines
-      description: The value of stdout split into a list
+      description: The value of stdout split into a list.
       type: unknown
     - contextPath: CiscoIOS.IosCommand.failed_conditions
-      description: The list of conditionals that have failed
+      description: The list of conditionals that have failed.
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -186,25 +186,25 @@ script:
     name: ios-config
     outputs:
     - contextPath: CiscoIOS.IosConfig.updates
-      description: The set of commands that will be pushed to the remote device
+      description: The set of commands that will be pushed to the remote device.
       type: unknown
     - contextPath: CiscoIOS.IosConfig.commands
-      description: The set of commands that will be pushed to the remote device
+      description: The set of commands that will be pushed to the remote device.
       type: unknown
     - contextPath: CiscoIOS.IosConfig.backup_path
-      description: The full path to the backup file
+      description: The full path to the backup file.
       type: string
     - contextPath: CiscoIOS.IosConfig.filename
-      description: The name of the backup file
+      description: The name of the backup file.
       type: string
     - contextPath: CiscoIOS.IosConfig.shortname
-      description: The full path to the backup file excluding the timestamp
+      description: The full path to the backup file excluding the timestamp.
       type: string
     - contextPath: CiscoIOS.IosConfig.date
-      description: The date extracted from the backup file name
+      description: The date extracted from the backup file name.
       type: string
     - contextPath: CiscoIOS.IosConfig.time
-      description: The time extracted from the backup file name
+      description: The time extracted from the backup file name.
       type: string
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -220,64 +220,64 @@ script:
     name: ios-facts
     outputs:
     - contextPath: CiscoIOS.IosFacts.net_gather_subset
-      description: The list of fact subsets collected from the device
+      description: The list of fact subsets collected from the device.
       type: unknown
     - contextPath: CiscoIOS.IosFacts.net_gather_network_resources
-      description: The list of fact for network resource subsets collected from the device
+      description: The list of fact for network resource subsets collected from the device.
       type: unknown
     - contextPath: CiscoIOS.IosFacts.net_model
-      description: The model name returned from the device
+      description: The model name returned from the device.
       type: string
     - contextPath: CiscoIOS.IosFacts.net_serialnum
-      description: The serial number of the remote device
+      description: The serial number of the remote device.
       type: string
     - contextPath: CiscoIOS.IosFacts.net_version
-      description: The operating system version running on the remote device
+      description: The operating system version running on the remote device.
       type: string
     - contextPath: CiscoIOS.IosFacts.net_iostype
-      description: The operating system type (IOS or IOS-XE) running on the remote device
+      description: The operating system type (IOS or IOS-XE) running on the remote device.
       type: string
     - contextPath: CiscoIOS.IosFacts.net_hostname
-      description: The configured hostname of the device
+      description: The configured hostname of the device.
       type: string
     - contextPath: CiscoIOS.IosFacts.net_image
-      description: The image file the device is running
+      description: The image file the device is running.
       type: string
     - contextPath: CiscoIOS.IosFacts.net_stacked_models
-      description: The model names of each device in the stack
+      description: The model names of each device in the stack.
       type: unknown
     - contextPath: CiscoIOS.IosFacts.net_stacked_serialnums
-      description: The serial numbers of each device in the stack
+      description: The serial numbers of each device in the stack.
       type: unknown
     - contextPath: CiscoIOS.IosFacts.net_api
-      description: The name of the transport
+      description: The name of the transport.
       type: string
     - contextPath: CiscoIOS.IosFacts.net_python_version
-      description: The Python version Ansible controller is using
+      description: The Python version Ansible controller is using.
       type: string
     - contextPath: CiscoIOS.IosFacts.net_filesystems
-      description: All file system names available on the device
+      description: All file system names available on the device.
       type: unknown
     - contextPath: CiscoIOS.IosFacts.net_filesystems_info
-      description: A hash of all file systems containing info about each file system (e.g. free and total space)
+      description: A hash of all file systems containing info about each file system (e.g. free and total space).
       type: unknown
     - contextPath: CiscoIOS.IosFacts.net_memfree_mb
-      description: The available free memory on the remote device in Mb
+      description: The available free memory on the remote device in Mb.
       type: number
     - contextPath: CiscoIOS.IosFacts.net_memtotal_mb
-      description: The total memory on the remote device in Mb
+      description: The total memory on the remote device in Mb.
       type: number
     - contextPath: CiscoIOS.IosFacts.net_config
-      description: The current active config from the device
+      description: The current active config from the device.
       type: string
     - contextPath: CiscoIOS.IosFacts.net_all_ipv4_addresses
-      description: All IPv4 addresses configured on the device
+      description: All IPv4 addresses configured on the device.
       type: unknown
     - contextPath: CiscoIOS.IosFacts.net_all_ipv6_addresses
-      description: All IPv6 addresses configured on the device
+      description: All IPv6 addresses configured on the device.
       type: unknown
     - contextPath: CiscoIOS.IosFacts.net_interfaces
-      description: A hash of all interfaces running on the system
+      description: A hash of all interfaces running on the system.
       type: unknown
     - contextPath: CiscoIOS.IosFacts.net_neighbors
       description: The list of CDP and LLDP neighbors from the remote device. If both, CDP and LLDP neighbor data is present on one port, CDP is preferred.
@@ -287,12 +287,12 @@ script:
       isArray: true
       name: host
       required: true
-    - description: A dictionary of interface options
+    - description: A dictionary of interface options.
       isArray: true
       name: config
     - auto: PREDEFINED
       defaultValue: merged
-      description: The state of the configuration after module completion
+      description: The state of the configuration after module completion.
       name: state
       predefined:
       - merged
@@ -309,19 +309,19 @@ script:
       description: The configuration as structured data after module completion.
       type: unknown
     - contextPath: CiscoIOS.IosInterfaces.commands
-      description: The set of commands pushed to the remote device
+      description: The set of commands pushed to the remote device.
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
-    - description: A dictionary of Layer-2 interface options
+    - description: A dictionary of Layer-2 interface options.
       isArray: true
       name: config
     - auto: PREDEFINED
       defaultValue: merged
-      description: The state of the configuration after module completion
+      description: The state of the configuration after module completion.
       name: state
       predefined:
       - merged
@@ -338,19 +338,19 @@ script:
       description: The configuration as structured data after module completion.
       type: unknown
     - contextPath: CiscoIOS.IosL2Interfaces.commands
-      description: The set of commands pushed to the remote device
+      description: The set of commands pushed to the remote device.
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
-    - description: A dictionary of Layer-3 interface options
+    - description: A dictionary of Layer-3 interface options.
       isArray: true
       name: config
     - auto: PREDEFINED
       defaultValue: merged
-      description: The state of the configuration after module completion
+      description: The state of the configuration after module completion.
       name: state
       predefined:
       - merged
@@ -367,7 +367,7 @@ script:
       description: The configuration as structured data after module completion.
       type: unknown
     - contextPath: CiscoIOS.IosL3Interfaces.commands
-      description: The set of commands pushed to the remote device
+      description: The set of commands pushed to the remote device.
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -379,7 +379,7 @@ script:
       name: config
     - auto: PREDEFINED
       defaultValue: merged
-      description: The state of the configuration after module completion
+      description: The state of the configuration after module completion.
       name: state
       predefined:
       - merged
@@ -402,12 +402,12 @@ script:
       isArray: true
       name: host
       required: true
-    - description: A dictionary of LACP lacp_interfaces option
+    - description: A dictionary of LACP lacp_interfaces option.
       isArray: true
       name: config
     - auto: PREDEFINED
       defaultValue: merged
-      description: The state of the configuration after module completion
+      description: The state of the configuration after module completion.
       name: state
       predefined:
       - merged
@@ -436,7 +436,7 @@ script:
       name: config
     - auto: PREDEFINED
       defaultValue: merged
-      description: The state of the configuration after module completion
+      description: The state of the configuration after module completion.
       name: state
       predefined:
       - merged
@@ -453,7 +453,7 @@ script:
       description: The configuration as structured data after module completion.
       type: unknown
     - contextPath: CiscoIOS.IosLagInterfaces.commands
-      description: The set of commands pushed to the remote device
+      description: The set of commands pushed to the remote device.
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -493,7 +493,7 @@ script:
     name: ios-linkagg
     outputs:
     - contextPath: CiscoIOS.IosLinkagg.commands
-      description: The list of configuration mode commands to send to the device
+      description: The list of configuration mode commands to send to the device.
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -511,19 +511,19 @@ script:
     name: ios-lldp
     outputs:
     - contextPath: CiscoIOS.IosLldp.commands
-      description: The list of configuration mode commands to send to the device
+      description: The list of configuration mode commands to send to the device.
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
-    - description: A dictionary of LLDP options
+    - description: A dictionary of LLDP options.
       isArray: true
       name: config
     - auto: PREDEFINED
       defaultValue: merged
-      description: The state of the configuration after module completion
+      description: The state of the configuration after module completion.
       name: state
       predefined:
       - merged
@@ -539,19 +539,19 @@ script:
       description: The configuration as structured data after module completion.
       type: unknown
     - contextPath: CiscoIOS.IosLldpGlobal.commands
-      description: The set of commands pushed to the remote device
+      description: The set of commands pushed to the remote device.
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
-    - description: A dictionary of LLDP options
+    - description: A dictionary of LLDP options.
       isArray: true
       name: config
     - auto: PREDEFINED
       defaultValue: merged
-      description: The state of the configuration after module completion
+      description: The state of the configuration after module completion.
       name: state
       predefined:
       - merged
@@ -618,7 +618,7 @@ script:
     name: ios-logging
     outputs:
     - contextPath: CiscoIOS.IosLogging.commands
-      description: The list of configuration mode commands to send to the device
+      description: The list of configuration mode commands to send to the device.
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -647,7 +647,7 @@ script:
       - 'No'
     - description: md5 NTP authentication key of type 7.
       name: auth_key
-    - description: auth_key id. Data type string
+    - description: auth_key id. Data type string.
       name: key_id
     - auto: PREDEFINED
       defaultValue: present
@@ -660,7 +660,7 @@ script:
     name: ios-ntp
     outputs:
     - contextPath: CiscoIOS.IosNtp.commands
-      description: command sent to the device
+      description: command sent to the device.
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -718,7 +718,7 @@ script:
       name: vrf
     - description: Interface of the static route.
       name: interface
-    - description: Name of the static route
+    - description: Name of the static route.
       name: name
     - description: Admin distance of the static route.
       name: admin_distance
@@ -739,7 +739,7 @@ script:
     name: ios-static-route
     outputs:
     - contextPath: CiscoIOS.IosStaticRoute.commands
-      description: The list of configuration mode commands to send to the device
+      description: The list of configuration mode commands to send to the device.
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -760,7 +760,7 @@ script:
       name: name_servers
     - auto: PREDEFINED
       defaultValue: present
-      description: State of the configuration values in the device's current active configuration.  When set to `present`, the values should be configured in the device active configuration and when set to `absent` the values should not be in the device active configuration
+      description: State of the configuration values in the device's current active configuration.  When set to `present`, the values should be configured in the device active configuration and when set to `absent` the values should not be in the device active configuration.
       name: state
       predefined:
       - present
@@ -769,7 +769,7 @@ script:
     name: ios-system
     outputs:
     - contextPath: CiscoIOS.IosSystem.commands
-      description: The list of configuration mode commands to send to the device
+      description: The list of configuration mode commands to send to the device.
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
@@ -815,7 +815,7 @@ script:
       - 'No'
     - auto: PREDEFINED
       defaultValue: present
-      description: Configures the state of the username definition as it relates to the device operational configuration. When set to `present`, the username(s) should be configured in the device active configuration and when set to `absent` the username(s) should not be in the device active configuration
+      description: Configures the state of the username definition as it relates to the device operational configuration. When set to `present`, the username(s) should be configured in the device active configuration and when set to `absent` the username(s) should not be in the device active configuration.
       name: state
       predefined:
       - present
@@ -824,19 +824,19 @@ script:
     name: ios-user
     outputs:
     - contextPath: CiscoIOS.IosUser.commands
-      description: The list of configuration mode commands to send to the device
+      description: The list of configuration mode commands to send to the device.
       type: unknown
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
-    - description: A dictionary of VLANs options
+    - description: A dictionary of VLANs options.
       isArray: true
       name: config
     - auto: PREDEFINED
       defaultValue: merged
-      description: The state of the configuration after module completion
+      description: The state of the configuration after module completion.
       name: state
       predefined:
       - merged
@@ -862,7 +862,7 @@ script:
       required: true
     - description: The set of VRF definition objects to be configured on the remote IOS device.  Ths list entries can either be the VRF name or a hash of VRF definitions and attributes.  This argument is mutually exclusive with the `name` argument.
       name: vrfs
-    - description: The name of the VRF definition to be managed on the remote IOS device.  The VRF definition name is an ASCII string name used to uniquely identify the VRF.  This argument is mutually exclusive with the `vrfs` argument
+    - description: The name of the VRF definition to be managed on the remote IOS device.  The VRF definition name is an ASCII string name used to uniquely identify the VRF.  This argument is mutually exclusive with the `vrfs` argument.
       name: name
     - description: Provides a short description of the VRF definition in the current active configuration.  The VRF definition value accepts alphanumeric characters used to provide additional information about the VRF.
       name: description
@@ -884,7 +884,7 @@ script:
       - 'No'
     - auto: PREDEFINED
       defaultValue: present
-      description: Configures the state of the VRF definition as it relates to the device operational configuration.  When set to `present`, the VRF should be configured in the device active configuration and when set to `absent` the VRF should not be in the device active configuration
+      description: Configures the state of the VRF definition as it relates to the device operational configuration.  When set to `present`, the VRF should be configured in the device active configuration and when set to `absent` the VRF should not be in the device active configuration.
       name: state
       predefined:
       - present
@@ -911,18 +911,18 @@ script:
     name: ios-vrf
     outputs:
     - contextPath: CiscoIOS.IosVrf.commands
-      description: The list of configuration mode commands to send to the device
+      description: The list of configuration mode commands to send to the device.
       type: unknown
     - contextPath: CiscoIOS.IosVrf.start
-      description: The time the job started
+      description: The time the job started.
       type: string
     - contextPath: CiscoIOS.IosVrf.end
-      description: The time the job ended
+      description: The time the job ended.
       type: string
     - contextPath: CiscoIOS.IosVrf.delta
-      description: The time elapsed to perform all operations
+      description: The time elapsed to perform all operations.
       type: string
-  dockerimage: demisto/ansible-runner:1.0.0.24037
+  dockerimage: demisto/ansible-runner:1.0.0.2024530
   script: ''
   subtype: python3
   type: python

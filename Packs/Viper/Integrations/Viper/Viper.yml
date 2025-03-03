@@ -41,7 +41,7 @@ script:
       required: true
     description: Search for sample with file hash
     name: viper-search
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: ''
   subtype: python3

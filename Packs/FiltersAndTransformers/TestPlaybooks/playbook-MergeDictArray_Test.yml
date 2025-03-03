@@ -1,0 +1,1219 @@
+id: MergeDictArray - Test
+version: -1
+name: MergeDictArray - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fa38edfa-c238-4bd9-86c5-d9362bc93fcc
+    type: start
+    task:
+      id: fa38edfa-c238-4bd9-86c5-d9362bc93fcc
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 6db11def-cc06-4f20-8e8a-bca7ac6fa9a6
+    type: regular
+    task:
+      id: 6db11def-cc06-4f20-8e8a-bca7ac6fa9a6
+      version: -1
+      name: Set test data
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: test
+      value:
+        simple: |-
+          {
+            "value1": [
+              {
+                "Address": "8.8.8.8",
+                "ANS": 15169,
+                "Hostname": "dns.google"
+              },
+              {
+                "Address": "8.8.4.4",
+                "ANS": 15169,
+                "Hostname": "dns.google"
+              }
+            ],
+            "value2": {
+              "Address": "8.8.8.8",
+              "ISP": "Google LLC",
+              "Longitude": -122.0775,
+              "Port": [
+                53
+              ],
+              "CountryName": "United States",
+              "Latitude": 37.4056,
+              "Org": "Google LLC",
+              "ASN": "AS15169"
+            },
+            "result": [
+              {
+                "Port": [
+                  53
+                ],
+                "ANS": 15169,
+                "CountryName": "United States",
+                "Address": "8.8.8.8",
+                "Org": "Google LLC",
+                "Longitude": -122.0775,
+                "ASN": "AS15169",
+                "Hostname": "dns.google",
+                "Latitude": 37.4056,
+                "ISP": "Google LLC"
+              },
+              {
+                "ANS": 15169,
+                "Address": "8.8.4.4",
+                "Hostname": "dns.google"
+              }
+            ]
+          }
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 3af98f85-5611-4c17-8bc9-7aabff3c9908
+    type: regular
+    task:
+      id: 3af98f85-5611-4c17-8bc9-7aabff3c9908
+      version: -1
+      name: Run MergeDictArray
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+      - "6"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: result
+      value:
+        complex:
+          root: test
+          accessor: value1
+          transformers:
+          - operator: MergeDictArray
+            args:
+              appendable: {}
+              array_path: {}
+              conflict_strategy: {}
+              mapping:
+                value:
+                  simple: Address:Address
+              merge_with:
+                value:
+                  simple: test.value2
+                iscontext: true
+              out_key: {}
+              out_path: {}
+              overwrite_by_destination: {}
+              overwrite_by_source: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 2c333809-15a5-4c09-8f04-296a6d51fc8a
+    type: title
+    task:
+      id: 2c333809-15a5-4c09-8f04-296a6d51fc8a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 48cf6373-19a4-413f-8061-6ddeca985a80
+    type: regular
+    task:
+      id: 48cf6373-19a4-413f-8061-6ddeca985a80
+      version: -1
+      name: Normalize result
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: result
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: result
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: |-
+                    .=(() => {
+                      var f = function(x) {
+                        if (Array.isArray(x)) {
+                          return x.map(v => f(v));
+                        } else if (x instanceof Object) {
+                          return Object.keys(x).sort().reduce(
+                            (obj, key) => {
+                              let v = x[key];
+                              if (v instanceof Object) {
+                                obj[key] = f(v);
+                              } else {
+                                obj[key] = v;
+                              }
+                              return obj;
+                            },
+                            {}
+                          );
+                        } else {
+                          return x;
+                        }
+                      };
+                      return JSON.stringify(f(val));
+                    })()
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '['
+              suffix:
+                value:
+                  simple: ']'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: f358456d-8c4e-4f69-862a-95fd979ec922
+    type: regular
+    task:
+      id: f358456d-8c4e-4f69-862a-95fd979ec922
+      version: -1
+      name: Normalize expected result
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: expected
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: test
+          accessor: result
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: |-
+                    .=(() => {
+                      var f = function(x) {
+                        if (Array.isArray(x)) {
+                          return x.map(v => f(v));
+                        } else if (x instanceof Object) {
+                          return Object.keys(x).sort().reduce(
+                            (obj, key) => {
+                              let v = x[key];
+                              if (v instanceof Object) {
+                                obj[key] = f(v);
+                              } else {
+                                obj[key] = v;
+                              }
+                              return obj;
+                            },
+                            {}
+                          );
+                        } else {
+                          return x;
+                        }
+                      };
+                      return JSON.stringify(f(val));
+                    })()
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '['
+              suffix:
+                value:
+                  simple: ']'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 1245ecb4-5e46-4c6a-8474-ad34b16a6d30
+    type: condition
+    task:
+      id: 1245ecb4-5e46-4c6a-8474-ad34b16a6d30
+      version: -1
+      name: Validate result
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: result
+            iscontext: true
+          right:
+            value:
+              simple: expected
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 07f5df20-9ee5-4c70-8baa-1e5e664af360
+    type: regular
+    task:
+      id: 07f5df20-9ee5-4c70-8baa-1e5e664af360
+      version: -1
+      name: Set test data
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: test
+      value:
+        simple: |-
+          {
+            "value1": [
+              {
+                "Address": "8.8.8.8",
+                "ANS": 15169,
+                "Hostname": "dns.google"
+              },
+              {
+                "Address": "8.8.4.4",
+                "ANS": 15169,
+                "Hostname": "dns.google"
+              }
+            ],
+            "value2": {
+              "Address": "8.8.8.8",
+              "ISP": "Google LLC",
+              "Longitude": -122.0775,
+              "Port": [
+                53
+              ],
+              "CountryName": "United States",
+              "Latitude": 37.4056,
+              "Org": "Google LLC",
+              "ASN": "AS15169"
+            },
+            "result": [
+              {
+                "Address": "8.8.8.8",
+                "ANS": 15169,
+                "Hostname": "dns.google",
+                "out": {
+                  "Address": "8.8.8.8",
+                  "ISP": "Google LLC",
+                  "Longitude": -122.0775,
+                  "Port": [
+                    53
+                  ],
+                  "CountryName": "United States",
+                  "Latitude": 37.4056,
+                  "Org": "Google LLC",
+                  "ASN": "AS15169"
+                }
+              },
+              {
+                "Address": "8.8.4.4",
+                "ANS": 15169,
+                "Hostname": "dns.google"
+              }
+            ]
+          }
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: fc7edd39-04a8-4b85-8eea-4e5e10df1653
+    type: regular
+    task:
+      id: fc7edd39-04a8-4b85-8eea-4e5e10df1653
+      version: -1
+      name: Run MergeDictArray
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+      - "11"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: result
+      value:
+        complex:
+          root: test
+          accessor: value1
+          transformers:
+          - operator: MergeDictArray
+            args:
+              appendable: {}
+              array_path: {}
+              conflict_strategy: {}
+              mapping:
+                value:
+                  simple: Address:Address
+              merge_with:
+                value:
+                  simple: test.value2
+                iscontext: true
+              out_key:
+                value:
+                  simple: out
+              out_path: {}
+              overwrite_by_destination: {}
+              overwrite_by_source: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: b7d84a95-1c95-452c-8953-f0f4e4162c15
+    type: regular
+    task:
+      id: b7d84a95-1c95-452c-8953-f0f4e4162c15
+      version: -1
+      name: Normalize result
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: result
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: result
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: |-
+                    .=(() => {
+                      var f = function(x) {
+                        if (Array.isArray(x)) {
+                          return x.map(v => f(v));
+                        } else if (x instanceof Object) {
+                          return Object.keys(x).sort().reduce(
+                            (obj, key) => {
+                              let v = x[key];
+                              if (v instanceof Object) {
+                                obj[key] = f(v);
+                              } else {
+                                obj[key] = v;
+                              }
+                              return obj;
+                            },
+                            {}
+                          );
+                        } else {
+                          return x;
+                        }
+                      };
+                      return JSON.stringify(f(val));
+                    })()
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '['
+              suffix:
+                value:
+                  simple: ']'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 86df8eb2-3b03-47e1-8aff-3de6d57d8a0d
+    type: regular
+    task:
+      id: 86df8eb2-3b03-47e1-8aff-3de6d57d8a0d
+      version: -1
+      name: Normalize expected result
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: expected
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: test
+          accessor: result
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: |-
+                    .=(() => {
+                      var f = function(x) {
+                        if (Array.isArray(x)) {
+                          return x.map(v => f(v));
+                        } else if (x instanceof Object) {
+                          return Object.keys(x).sort().reduce(
+                            (obj, key) => {
+                              let v = x[key];
+                              if (v instanceof Object) {
+                                obj[key] = f(v);
+                              } else {
+                                obj[key] = v;
+                              }
+                              return obj;
+                            },
+                            {}
+                          );
+                        } else {
+                          return x;
+                        }
+                      };
+                      return JSON.stringify(f(val));
+                    })()
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '['
+              suffix:
+                value:
+                  simple: ']'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: d71e2bd2-2e32-4357-8200-782ab6389763
+    type: condition
+    task:
+      id: d71e2bd2-2e32-4357-8200-782ab6389763
+      version: -1
+      name: Validate result
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: result
+            iscontext: true
+          right:
+            value:
+              simple: expected
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: edc24d4d-2dab-4947-8a25-72c550573b61
+    type: regular
+    task:
+      id: edc24d4d-2dab-4947-8a25-72c550573b61
+      version: -1
+      name: Set test data
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: test
+      value:
+        simple: |-
+          {
+            "value1": [
+              {
+                "Address": "8.8.8.8",
+                "ANS": 15169,
+                "Hostname": "dns.google"
+              },
+              {
+                "Address": "8.8.4.4",
+                "ANS": 15169,
+                "Hostname": "dns.google"
+              }
+            ],
+            "value2": {
+              "Address": "8.8.8.8",
+              "ISP": "Google LLC",
+              "Longitude": -122.0775,
+              "Port": [
+                53
+              ],
+              "CountryName": "United States",
+              "Latitude": 37.4056,
+              "Org": "Google LLC",
+              "ASN": "AS15169"
+            },
+            "result": {
+              "out": [
+                {
+                  "Address": "8.8.8.8",
+                  "ANS": 15169,
+                  "Hostname": "dns.google",
+                  "ISP": "Google LLC",
+                  "Longitude": -122.0775,
+                  "Port": [
+                    53
+                  ],
+                  "CountryName": "United States",
+                  "Latitude": 37.4056,
+                  "Org": "Google LLC",
+                  "ASN": "AS15169"
+                },
+                {
+                  "Address": "8.8.4.4",
+                  "ANS": 15169,
+                  "Hostname": "dns.google"
+                }
+              ]
+            }
+          }
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: a995a1d5-6e9a-4492-8523-c323ee34409b
+    type: regular
+    task:
+      id: a995a1d5-6e9a-4492-8523-c323ee34409b
+      version: -1
+      name: Run MergeDictArray
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+      - "16"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: result
+      value:
+        complex:
+          root: test
+          accessor: value1
+          transformers:
+          - operator: MergeDictArray
+            args:
+              appendable: {}
+              array_path: {}
+              conflict_strategy: {}
+              mapping:
+                value:
+                  simple: Address:Address
+              merge_with:
+                value:
+                  simple: test.value2
+                iscontext: true
+              out_key: {}
+              out_path:
+                value:
+                  simple: out
+              overwrite_by_destination: {}
+              overwrite_by_source: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 3002896f-261b-4aa1-83b9-d5dafb1f61fc
+    type: regular
+    task:
+      id: 3002896f-261b-4aa1-83b9-d5dafb1f61fc
+      version: -1
+      name: Normalize result
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: result
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: result
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: |-
+                    .=(() => {
+                      var f = function(x) {
+                        if (Array.isArray(x)) {
+                          return x.map(v => f(v));
+                        } else if (x instanceof Object) {
+                          return Object.keys(x).sort().reduce(
+                            (obj, key) => {
+                              let v = x[key];
+                              if (v instanceof Object) {
+                                obj[key] = f(v);
+                              } else {
+                                obj[key] = v;
+                              }
+                              return obj;
+                            },
+                            {}
+                          );
+                        } else {
+                          return x;
+                        }
+                      };
+                      return JSON.stringify(f(val));
+                    })()
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '['
+              suffix:
+                value:
+                  simple: ']'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 63a1505f-0c45-433c-854e-4d5fa547e8d9
+    type: regular
+    task:
+      id: 63a1505f-0c45-433c-854e-4d5fa547e8d9
+      version: -1
+      name: Normalize expected result
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: expected
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: test
+          accessor: result
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: |-
+                    .=(() => {
+                      var f = function(x) {
+                        if (Array.isArray(x)) {
+                          return x.map(v => f(v));
+                        } else if (x instanceof Object) {
+                          return Object.keys(x).sort().reduce(
+                            (obj, key) => {
+                              let v = x[key];
+                              if (v instanceof Object) {
+                                obj[key] = f(v);
+                              } else {
+                                obj[key] = v;
+                              }
+                              return obj;
+                            },
+                            {}
+                          );
+                        } else {
+                          return x;
+                        }
+                      };
+                      return JSON.stringify(f(val));
+                    })()
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '['
+              suffix:
+                value:
+                  simple: ']'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 1ef78041-ab12-402e-8fb5-25884f138676
+    type: condition
+    task:
+      id: 1ef78041-ab12-402e-8fb5-25884f138676
+      version: -1
+      name: Validate result
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: result
+            iscontext: true
+          right:
+            value:
+              simple: expected
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2315,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.10.0
+description: Test playbook for MergeDictArray

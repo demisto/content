@@ -1,7 +1,6 @@
-from datetime import timezone
 from unittest import mock
 from unittest.mock import patch
-
+from datetime import UTC
 import pytest
 from requests.exceptions import (
     MissingSchema,
@@ -417,7 +416,7 @@ def test_module_success_with_fetch_incident(
     from FireEyeNX import test_function
 
     mock_get_alert.return_value = []
-    mock_last_run = {'alerts': {'start_time': datetime.now().replace(tzinfo=timezone.utc).timestamp(), 'alert_ids': ['1']}}
+    mock_last_run = {'alerts': {'start_time': datetime.now().replace(tzinfo=UTC).timestamp(), 'alert_ids': ['1']}}
 
     mock_request.return_value = mock_http_response(
         status=200, headers=AUTHENTICATION_RESP_HEADER, text=''
@@ -1128,7 +1127,7 @@ def test_fetch_incidents_for_alert_success(
     from FireEyeNX import fetch_incidents, API_SUPPORT_DATE_FORMAT
 
     # Configure
-    start_time = datetime.strftime(datetime.now().replace(tzinfo=timezone.utc), API_SUPPORT_DATE_FORMAT)
+    start_time = datetime.strftime(datetime.now().replace(tzinfo=UTC), API_SUPPORT_DATE_FORMAT)
     mock_last_run = {'alerts': {'start_time': start_time, 'alert_ids': ['1']}}
 
     dummy_first_fetch = 1
@@ -1167,6 +1166,7 @@ def test_fetch_incidents_for_alert_success(
     # Assert
     assert len(incidents) == mock_fetch_limit
     assert next_run.get('alerts').get('start_time') is not None
+    assert 8520 in next_run['alerts']['alert_ids']
 
 
 @patch('FireEyeNX.Client.http_request')
@@ -1221,7 +1221,7 @@ def test_fetch_incidents_for_event_success(
     from FireEyeNX import fetch_incidents
 
     # Configure
-    mock_last_run = {'alerts': {'start_time': datetime.now().replace(tzinfo=timezone.utc).timestamp(), 'alert_ids': ['1']}}
+    mock_last_run = {'alerts': {'start_time': datetime.now().replace(tzinfo=UTC).timestamp(), 'alert_ids': ['1']}}
     dummy_first_fetch = 1
     mock_fetch_limit = 1
     mock_api_token.return_value = API_TOKEN
@@ -1253,3 +1253,39 @@ def test_fetch_incidents_for_event_success(
     # Assert
     assert len(incidents) == mock_fetch_limit
     assert next_run.get('alerts').get('start_time') is not None
+
+
+def test_update_start_time_within_last_forty_eight_hours():
+    """
+        Given:
+            - Given a start time equals to 24 hours ago.
+        When:
+            - Running date_to_timestamp function.
+        Then:
+            - Shouldn't update the start time (should return the same start time).
+    """
+
+    from FireEyeNX import update_start_time, DATE_FORMAT
+
+    current_time = datetime.utcnow()
+    start_time = date_to_timestamp(current_time - timedelta(hours=24), DATE_FORMAT) / 1000.0
+    result = update_start_time(start_time)
+    assert result == start_time
+
+
+def test_update_start_time_older_than_last_forty_eight_hours():
+    """
+        Given:
+            - Given a start time equals to 72 hours ago.
+        When:
+            - Running date_to_timestamp function.
+        Then:
+            - Should update the start time to be in the last 48 hours (should return the updated start time).
+    """
+    from FireEyeNX import update_start_time, DATE_FORMAT, FORTY_EIGHT_HOURS_IN_SECOND
+
+    current_time = datetime.utcnow()
+    old_start_time = date_to_timestamp(current_time - timedelta(hours=72), DATE_FORMAT) / 1000.0
+    result = update_start_time(old_start_time)
+    expected_start_time = date_to_timestamp(current_time, DATE_FORMAT) / 1000.0 - FORTY_EIGHT_HOURS_IN_SECOND
+    assert result == expected_start_time

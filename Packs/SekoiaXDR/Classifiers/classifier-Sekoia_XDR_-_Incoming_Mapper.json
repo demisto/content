@@ -1,0 +1,141 @@
+{
+	"description": "Maps incoming Sekoia XDR incidents fields.\n",
+	"feed": false,
+	"id": "Sekoia XDR - Incoming Mapper",
+	"mapping": {
+		"Sekoia XDR": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Alert Category": {
+					"simple": "alert_type.category"
+				},
+				"Alert ID": {
+					"simple": "short_id"
+				},
+				"Alert Name": {
+					"simple": "title"
+				},
+				"Alert Type ID": {
+					"simple": "alert_type.value"
+				},
+				"Description": {
+					"simple": "details"
+				},
+				"External Link": {
+					"simple": "target"
+				},
+				"Last Seen": {
+					"simple": "last_seen_at"
+				},
+				"SekoiaXDR Alert Details": {
+					"simple": "details"
+				},
+				"SekoiaXDR Alert Status": {
+					"simple": "alert_status"
+				},
+				"SekoiaXDR First Seen": {
+					"simple": "first_seen_at"
+				},
+				"SekoiaXDR Kill Chain": {
+					"complex": {
+						"filters": [],
+						"root": "kill_chain",
+						"transformers": []
+					}
+				},
+                "SekoiaXDR MirrorOut": {
+					"simple": "mirrorOut"
+				},
+				"Source Create time": {
+					"complex": {
+						"filters": [],
+						"root": "created_at",
+						"transformers": [
+							{
+								"operator": "TimeStampToDate"
+							}
+						]
+					}
+				},
+				"Source IP": {
+					"simple": "source"
+				},
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "mirrored_id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Alert Category": {
+					"simple": "alert_type.category"
+				},
+				"Alert ID": {
+					"simple": "short_id"
+				},
+				"Alert Name": {
+					"simple": "title"
+				},
+				"Alert Type ID": {
+					"simple": "alert_type.value"
+				},
+				"Description": {
+					"simple": "details"
+				},
+				"Last Seen": {
+					"simple": "last_seen_at"
+				},
+				"SekoiaXDR Alert Details": {
+					"simple": "details"
+				},
+				"SekoiaXDR Alert Status": {
+					"simple": "status.name"
+				},
+				"SekoiaXDR First Seen": {
+					"simple": "first_seen_at"
+				},
+				"SekoiaXDR Kill Chain": {
+					"complex": {
+						"filters": [],
+						"root": "kill_chain",
+						"transformers": []
+					}
+				},
+				"Source Create time": {
+					"complex": {
+						"filters": [],
+						"root": "created_at",
+						"transformers": [
+							{
+								"operator": "TimeStampToDate"
+							}
+						]
+					}
+				},
+				"Source IP": {
+					"simple": "source"
+				},
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "mirrored_id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				}
+			}
+		}
+	},
+	"name": "Sekoia XDR - Incoming Mapper",
+	"type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

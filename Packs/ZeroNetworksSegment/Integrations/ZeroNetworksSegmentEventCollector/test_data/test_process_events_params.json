@@ -1,0 +1,128 @@
+{
+    "test_cases": [
+      {
+        "inputs": [
+          [
+            {"id": 1, "timestamp": 1000},
+            {"id": 2, "timestamp": 2000}
+          ],
+          [],
+          900,
+          3,
+          0
+        ],
+        "expected_outputs": [
+          [
+            {"id": 1, "timestamp": 1000, "_time": 1000, "source_log_type": "audit"},
+            {"id": 2, "timestamp": 2000, "_time": 2000, "source_log_type": "audit"}
+          ],
+          [2],
+          2000,
+          2
+        ]
+      },
+      {
+        "inputs": [
+          [
+            {"id": 0, "timestamp": 1000},
+            {"id": 1, "timestamp": 1000},
+            {"id": 2, "timestamp": 2000}
+          ],
+          [0, 1],
+          1000,
+          3,
+          2
+        ],
+        "expected_outputs": [
+          [
+            {"id": 2, "timestamp": 2000, "_time": 2000, "source_log_type": "audit"}
+          ],
+          [2],
+          2000,
+          3
+        ]
+      },
+      {
+        "inputs": [
+          [
+            {"id": 0, "timestamp": 1000},
+            {"id": 1, "timestamp": 1000},
+            {"id": 2, "timestamp": 2000}
+          ],
+          [0],
+          1000,
+          3,
+          1
+        ],
+        "expected_outputs": [
+          [
+            {"id": 1, "timestamp": 1000, "_time": 1000, "source_log_type": "audit"},
+            {"id": 2, "timestamp": 2000, "_time": 2000, "source_log_type": "audit"}
+          ],
+          [2],
+          2000,
+          3
+        ]
+      },
+      {
+        "inputs": [
+          [
+            {"id": 2, "timestamp": 2000}
+          ],
+          [2],
+          2000,
+          2,
+          1
+        ],
+        "expected_outputs": [
+          [],
+          [2],
+          2000,
+          1
+        ]
+      },
+      {
+        "inputs": [
+          [
+            {"id": 1, "timestamp": 2000},
+            {"id": 2, "timestamp": 2000}
+          ],
+          [],
+          2000,
+          2,
+          0
+        ],
+        "expected_outputs": [
+          [
+            {"id": 1, "timestamp": 2000, "_time": 2000, "source_log_type": "audit"},
+            {"id": 2, "timestamp": 2000, "_time": 2000, "source_log_type": "audit"}
+          ],
+          [1, 2],
+          2000,
+          2
+        ]
+      },
+      {
+        "inputs": [
+          [
+            {"id": 0, "timestamp": 1000},
+            {"id": 1, "timestamp": 1000},
+            {"id": 2, "timestamp": 2000}
+          ],
+          [0],
+          1000,
+          2,
+          1
+        ],
+        "expected_outputs": [
+          [
+            {"id": 1, "timestamp": 1000, "_time": 1000, "source_log_type": "audit"}
+          ],
+          [0, 1],
+          1000,
+          2
+        ]
+      }
+    ]
+  }
+  

@@ -18,18 +18,18 @@ configuration:
   type: 4
   hidden: true
   required: false
-- displaypassword: Key
+- displaypassword: Encryption Key
   name: credentials_auth_key
   hiddenusername: true
   type: 9
   required: false
-- displaypassword: Token
+- displaypassword: Authentication Token
   additionalinfo: The API Key to use for connection
   name: credentials_refresh_token
   hiddenusername: true
   type: 9
   required: false
-- displaypassword: ID
+- displaypassword: Registration ID
   name: credentials_reg_id
   type: 9
   hiddenusername: true
@@ -163,6 +163,18 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - name: page
+      isArray: false
+      description: Page to return.
+      required: false
+      secret: false
+      default: false
+    - name: page_size
+      isArray: false
+      description: Number of entries per page. Defaults to 50 (in case only page was provided).
+      required: false
+      secret: false
+      default: false
     description: Runs a query on  any table or field.
     execution: true
     name: cdl-query-logs
@@ -240,6 +252,18 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - name: page
+      isArray: false
+      description: Page to return.
+      required: false
+      secret: false
+      default: false
+    - name: page_size
+      isArray: false
+      description: Number of entries per page. Defaults to 50 (in case only page was provided).
+      required: false
+      secret: false
+      default: false
     description: Runs a query on the threat table according to preset queries.
     name: cdl-get-critical-threat-logs
     outputs:
@@ -381,6 +405,18 @@ script:
     - auto: PREDEFINED
       description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days, 3 weeks).
       name: time_range
+    - name: page
+      isArray: false
+      description: Page to return.
+      required: false
+      secret: false
+      default: false
+    - name: page_size
+      isArray: false
+      description: Number of entries per page. Defaults to 50 (in case only page was provided).
+      required: false
+      secret: false
+      default: false
     description: Runs a query on traffic table where app_sub_category = "social networking".
     name: cdl-get-social-applications
     outputs:
@@ -513,6 +549,18 @@ script:
     - description: The SHA256 hash of the file for the query. For example, SHA256="503ca1a4fc0d48b18c0336f544ba0f0abf305ae3a3f49b3c2b86b8645d6572dc" would return all logs associated with this file.
       name: SHA256
       required: true
+    - name: page
+      isArray: false
+      description: Page to return.
+      required: false
+      secret: false
+      default: false
+    - name: page_size
+      isArray: false
+      description: Number of entries per page. Defaults to 50 (in case only page was provided).
+      required: false
+      secret: false
+      default: false
     description: Runs a query on the threat table with the query 'SELECT * FROM `firewall.threat` WHERE file_sha_256 = <file_hash>'.
     name: cdl-search-by-file-hash
     outputs:
@@ -807,6 +855,18 @@ script:
     - defaultValue: '5'
       description: The maximum number of logs to return. Default is 5.
       name: limit
+    - name: page
+      isArray: false
+      description: Page to return.
+      required: false
+      secret: false
+      default: false
+    - name: page_size
+      isArray: false
+      description: Number of entries per page. Defaults to 50 (in case only page was provided).
+      required: false
+      secret: false
+      default: false
     - description: A destination IP address or an array of destination IPs addresses for which to search, for example 1.1.1.1,2.2.2.2.
       name: dest_ip
     - description: Destination port utilized by the session. Can be port number or an array of destination port numbers to search. For example '443' or '443,445'.
@@ -1129,6 +1189,18 @@ script:
     - defaultValue: '5'
       description: The maximum number of logs to return. Default is 5.
       name: limit
+    - name: page
+      isArray: false
+      description: Page to return.
+      required: false
+      secret: false
+      default: false
+    - name: page_size
+      isArray: false
+      description: Number of entries per page. Defaults to 50 (in case only page was provided).
+      required: false
+      secret: false
+      default: false
     - description: The IP address or an array of IP addresses for which to search. For example 1.1.1.1,2.2.2.2. Used instead of the source/destination IP address.
       name: ip
     - description: The port or array of ports to search. Used instead of the source/destination port.
@@ -1454,6 +1526,18 @@ script:
       name: time_range
     - description: The maximum number of logs to return. Default is 5.
       name: limit
+    - name: page
+      isArray: false
+      description: Page to return.
+      required: false
+      secret: false
+      default: false
+    - name: page_size
+      isArray: false
+      description: Number of entries per page. Defaults to 50 (in case only page was provided).
+      required: false
+      secret: false
+      default: false
     - description: The IP address or an array of IP addresses for which to search. For example 1.1.1.1,2.2.2.2. Used instead of the source/destination IP address.
       name: ip
     - description: The port or array of ports to search. Used instead of the source/destination port.
@@ -1748,6 +1832,18 @@ script:
     - defaultValue: '5'
       description: The maximum number of logs to return. Default is 5.
       name: limit
+    - name: page
+      isArray: false
+      description: Page to return.
+      required: false
+      secret: false
+      default: false
+    - name: page_size
+      isArray: false
+      description: Number of entries per page. Defaults to 50 (in case only page was provided).
+      required: false
+      secret: false
+      default: false
     description: Searches the Cortex firewall.file_data table.
     name: cdl-query-file-data
     outputs:
@@ -1992,7 +2088,7 @@ script:
       type: String
   - description: Use this command in case your authentication calls fail due to internal call-limit, the command will reset the limit cache.
     name: cdl-reset-authentication-timeout
-  dockerimage: demisto/python_pancloud_v2:1.0.0.91454
+  dockerimage: demisto/python_pancloud_v2:1.0.0.117311
   isfetch: true
   runonce: false
   script: '-'

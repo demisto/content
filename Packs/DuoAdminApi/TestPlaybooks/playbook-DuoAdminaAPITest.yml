@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3cbe78f6-6f61-4b51-8e98-1fee0e85ac03
+    taskid: 6ea06d80-4361-4e2f-89e6-8a9ddd515389
     type: start
     task:
-      id: 3cbe78f6-6f61-4b51-8e98-1fee0e85ac03
+      id: 6ea06d80-4361-4e2f-89e6-8a9ddd515389
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 6c1a1839-688b-4e0b-86f8-7894b1ef7350
+    taskid: 07922a2b-00d5-40a2-83d0-988244fd1176
     type: regular
     task:
-      id: 6c1a1839-688b-4e0b-86f8-7894b1ef7350
+      id: 07922a2b-00d5-40a2-83d0-988244fd1176
       version: -1
       name: Get Users Detail
       script: '|||duoadmin-get-users'
@@ -65,10 +65,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 33e09495-0cd1-4a70-81d5-2f0cccd22038
+    taskid: fc55e5e8-b632-491f-87e1-79bbbc9c41f5
     type: regular
     task:
-      id: 33e09495-0cd1-4a70-81d5-2f0cccd22038
+      id: fc55e5e8-b632-491f-87e1-79bbbc9c41f5
       version: -1
       name: Get User2 Logs
       script: '|||duoadmin-get-authentication-logs-by-user'
@@ -100,10 +100,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 03c3baa1-8200-496b-8b84-717b4ece9869
+    taskid: 468c72b9-6942-45fd-8ba6-f9b018742cad
     type: title
     task:
-      id: 03c3baa1-8200-496b-8b84-717b4ece9869
+      id: 468c72b9-6942-45fd-8ba6-f9b018742cad
       version: -1
       name: Check if two different users have different auth logs
       type: title
@@ -112,7 +112,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "40"
+      - "48"
     separatecontext: false
     view: |-
       {
@@ -130,10 +130,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 17d62ac7-c909-40e8-856b-82118f7a5a6f
+    taskid: 53b1078b-2655-4f29-89b6-d4a315a60aff
     type: regular
     task:
-      id: 17d62ac7-c909-40e8-856b-82118f7a5a6f
+      id: 53b1078b-2655-4f29-89b6-d4a315a60aff
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -163,23 +163,25 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: c846bd84-7149-45c2-865e-1b4de9bbcd13
+    taskid: a2e31677-42d3-43c0-89d8-5f6f5f3d8a91
     type: condition
     task:
-      id: c846bd84-7149-45c2-865e-1b4de9bbcd13
+      id: a2e31677-42d3-43c0-89d8-5f6f5f3d8a91
       version: -1
-      name: Are auth logs a part of user details?
+      name: Are auth logs a part of user nor empty?
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      "yes":
+      '#default#':
       - "9"
+      "yes":
+      - "50"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
@@ -202,10 +204,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 4eefe78b-2115-484c-8cfb-6bee12b90259
+    taskid: 6789fe24-b96b-409f-8238-9e3af6e643a8
     type: title
     task:
-      id: 4eefe78b-2115-484c-8cfb-6bee12b90259
+      id: 6789fe24-b96b-409f-8238-9e3af6e643a8
       version: -1
       name: User Devices Operations
       type: title
@@ -232,10 +234,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 9d18f8b7-c729-4d60-84de-71ec5b22cd7a
+    taskid: 7e744ad1-f4d7-411a-8a8f-d8755520ec7a
     type: title
     task:
-      id: 9d18f8b7-c729-4d60-84de-71ec5b22cd7a
+      id: 7e744ad1-f4d7-411a-8a8f-d8755520ec7a
       version: -1
       name: User Logs
       type: title
@@ -262,10 +264,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 79685bf7-39b8-4c53-899b-b8dca67d786a
+    taskid: 2ebf49de-01e2-4419-8923-b8ace76a2b7b
     type: title
     task:
-      id: 79685bf7-39b8-4c53-899b-b8dca67d786a
+      id: 2ebf49de-01e2-4419-8923-b8ace76a2b7b
       version: -1
       name: Devices
       type: title
@@ -292,10 +294,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 4820fd50-df75-4649-8680-44d5c20f705c
+    taskid: f4e4830d-78bc-4ec9-8327-c308b8849a3e
     type: regular
     task:
-      id: 4820fd50-df75-4649-8680-44d5c20f705c
+      id: f4e4830d-78bc-4ec9-8327-c308b8849a3e
       version: -1
       name: Get All Devices
       script: '|||duoadmin-get-devices'
@@ -322,10 +324,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: b0f26b20-004c-4016-8841-d0b96bd22818
+    taskid: 03dbd6ae-a28c-428a-8b03-f79fe806694e
     type: condition
     task:
-      id: b0f26b20-004c-4016-8841-d0b96bd22818
+      id: 03dbd6ae-a28c-428a-8b03-f79fe806694e
       version: -1
       name: Are phones a part of the DuoAdmin object?
       type: condition
@@ -378,10 +380,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: a4982747-69cc-4e61-8a52-d3957e1f057b
+    taskid: 601c5bef-fa2e-46c8-8153-4d267a088c11
     type: regular
     task:
-      id: a4982747-69cc-4e61-8a52-d3957e1f057b
+      id: 601c5bef-fa2e-46c8-8153-4d267a088c11
       version: -1
       name: Get User Phones
       script: '|||duoadmin-get-devices-by-user'
@@ -411,10 +413,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 9320979c-925a-419b-8145-1fe99c9391cf
+    taskid: f15f2308-ba45-42d6-87e8-4ff52eb510fc
     type: condition
     task:
-      id: 9320979c-925a-419b-8145-1fe99c9391cf
+      id: f15f2308-ba45-42d6-87e8-4ff52eb510fc
       version: -1
       name: Does the user have a phone?
       type: condition
@@ -467,10 +469,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 14f7c06a-9c0d-4bf5-8b06-f028757fbbb8
+    taskid: 90061888-908c-41a3-853a-9e493ed5da16
     type: regular
     task:
-      id: 14f7c06a-9c0d-4bf5-8b06-f028757fbbb8
+      id: 90061888-908c-41a3-853a-9e493ed5da16
       version: -1
       name: Get User Phones
       script: '|||duoadmin-get-devices-by-user'
@@ -500,10 +502,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 8bac786b-6073-4622-82a3-ef93ad1bbfa4
+    taskid: b8165043-43d4-4ca8-820c-65c0710f3cb2
     type: regular
     task:
-      id: 8bac786b-6073-4622-82a3-ef93ad1bbfa4
+      id: b8165043-43d4-4ca8-820c-65c0710f3cb2
       version: -1
       name: Dissociate the phone from the user
       script: '|||duoadmin-dissociate-device-from-user'
@@ -535,45 +537,28 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: aed9cd02-929b-47e6-8baf-115a4a56dbd7
+    taskid: 3e9e33e8-e7d7-4160-8f25-96494c637a3b
     type: condition
     task:
-      id: aed9cd02-929b-47e6-8baf-115a4a56dbd7
+      id: 3e9e33e8-e7d7-4160-8f25-96494c637a3b
       version: -1
       name: Does the user still has a phone?
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      "no":
+      "yes":
       - "19"
     separatecontext: false
     conditions:
-    - label: "no"
+    - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: isNotExists
           left:
             value:
               complex:
-                root: DuoAdmin
-                accessor: UserDetails
-                transformers:
-                - operator: WhereFieldEquals
-                  args:
-                    equalTo:
-                      value:
-                        simple: winitzky
-                    field:
-                      value:
-                        simple: username
-                    getField:
-                      value:
-                        simple: phones
-                - operator: atIndex
-                  args:
-                    index:
-                      value:
-                        simple: "0"
+                root: DuoAdmin.UserDetails.[3]
+                accessor: phones
             iscontext: true
     view: |-
       {
@@ -591,10 +576,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 6f4122cb-db04-4f50-8c38-f328996774dd
+    taskid: 0d182e3e-21f8-4811-829b-d11e63001b5e
     type: regular
     task:
-      id: 6f4122cb-db04-4f50-8c38-f328996774dd
+      id: 0d182e3e-21f8-4811-829b-d11e63001b5e
       version: -1
       name: Associate a dummy phone
       script: '|||duoadmin-associate-device-to-user'
@@ -626,10 +611,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 4ce8f2ee-d8a8-4b0c-8510-3f4f1b68905b
+    taskid: 2aa2de4e-2911-4262-86e5-726b4a324d40
     type: regular
     task:
-      id: 4ce8f2ee-d8a8-4b0c-8510-3f4f1b68905b
+      id: 2aa2de4e-2911-4262-86e5-726b4a324d40
       version: -1
       name: Get User0 Logs
       description: Returns authentication logs associated with a user. Limited to 30 at a time
@@ -639,7 +624,7 @@ tasks:
       brand: DUO Admin
     nexttasks:
       '#none#':
-      - "45"
+      - "49"
     scriptarguments:
       from:
         simple: 5_years_ago
@@ -651,7 +636,7 @@ tasks:
       {
         "position": {
           "x": 890,
-          "y": 2245
+          "y": 2355
         }
       }
     note: false
@@ -663,10 +648,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: b5c94cf5-1949-4cdb-8116-38c340dd0377
+    taskid: 69b73909-224c-4b8c-80e7-d0971f74218e
     type: title
     task:
-      id: b5c94cf5-1949-4cdb-8116-38c340dd0377
+      id: 69b73909-224c-4b8c-80e7-d0971f74218e
       version: -1
       name: done
       type: title
@@ -678,7 +663,7 @@ tasks:
       {
         "position": {
           "x": 890,
-          "y": 2810
+          "y": 3100
         }
       }
     note: false
@@ -690,10 +675,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 10237983-5bf1-47ec-821d-9e86b8b87177
+    taskid: 99c770ee-9baf-45ff-8dea-9c1114d6fdcb
     type: condition
     task:
-      id: 10237983-5bf1-47ec-821d-9e86b8b87177
+      id: 99c770ee-9baf-45ff-8dea-9c1114d6fdcb
       version: -1
       name: Check that user0 and user2 auth_logs are different
       type: condition
@@ -724,8 +709,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 890,
-          "y": 2435
+          "x": 780,
+          "y": 2700
         }
       }
     note: false
@@ -737,10 +722,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 746bc186-e8fc-4aac-8d69-0fb7d6c404a0
+    taskid: 83af78fa-b5b3-46ca-874f-5004fc9e1e8a
     type: regular
     task:
-      id: 746bc186-e8fc-4aac-8d69-0fb7d6c404a0
+      id: 83af78fa-b5b3-46ca-874f-5004fc9e1e8a
       version: -1
       name: Print Error in case of two users have the same auth logs
       description: Prints an error entry with a given message
@@ -758,8 +743,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 650,
-          "y": 2630
+          "x": 580,
+          "y": 2910
         }
       }
     note: false
@@ -771,10 +756,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: d89fbc49-8c64-4b86-892e-d46929d478a6
+    taskid: ab3bee4b-6c12-4b91-8ed3-50f98942bceb
     type: regular
     task:
-      id: d89fbc49-8c64-4b86-892e-d46929d478a6
+      id: ab3bee4b-6c12-4b91-8ed3-50f98942bceb
       version: -1
       name: Wait for context to update
       description: Sleep for X seconds
@@ -803,6 +788,125 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: a36117a0-3471-4051-8470-696838972ced
+    type: regular
+    task:
+      id: a36117a0-3471-4051-8470-696838972ced
+      version: -1
+      name: Wait to avoid quota limit
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      seconds:
+        simple: "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 2195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 09f9dd80-94ca-4bf9-89d5-9afbfc32a857
+    type: condition
+    task:
+      id: 09f9dd80-94ca-4bf9-89d5-9afbfc32a857
+      version: -1
+      name: Check that user0 and user2 auth_logs are not empty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DuoAdmin
+                accessor: UserDetails.[0].auth_logs.[0]
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DuoAdmin.UserDetails.[2].auth_logs
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 2515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: d5fd47a3-d1de-4652-8399-8d8582c3fa62
+    type: condition
+    task:
+      id: d5fd47a3-d1de-4652-8399-8d8582c3fa62
+      version: -1
+      name: Are auth logs a part of user details?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: DuoAdmin
+                accessor: UserDetails.[2].auth_logs
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -810,7 +914,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2825,
+        "height": 3115,
         "width": 1530,
         "x": 50,
         "y": 50

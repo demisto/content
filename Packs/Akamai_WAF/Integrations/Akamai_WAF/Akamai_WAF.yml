@@ -28,16 +28,19 @@ configuration:
   hiddenusername: true
   type: 9
   required: false
+  display: ''
 - displaypassword: Access token
   name: credentials_access_token
   hiddenusername: true
   type: 9
   required: false
+  display: ''
 - displaypassword: Client secret
   name: credentials_client_secret
   hiddenusername: true
   type: 9
   required: false
+  display: ''
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -1110,6 +1113,15 @@ script:
       name: change_path
       required: true
       type: textArea
+    - auto: PREDEFINED
+      defaultValue: post-verification-warnings-ack
+      description: Enum found as the last part of Change.allowedInput[].update hypermedia URL.
+      name: allowed_input_type_param
+      predefined:
+      - change-management-ack
+      - lets-encrypt-challenges-completed
+      - post-verification-warnings-ack
+      - pre-verification-warnings-ack
     description: Acknowledge the warning message for uploading the certs and trust chains of enrollments.
   - arguments:
     - description: A unique identifier for each configuration.
@@ -1477,7 +1489,62 @@ script:
     - contextPath: Akamai.Enrollments.Change.Status
       description: Akamai enrollments change status.
       type: Dictionary
-  dockerimage: demisto/auth-utils:1.0.0.94075
+  - arguments:
+    - description: Specify the contract on which to operate or view.
+      name: contract_id
+      required: true
+    description: 'Lists enrollments with active certificates. Note that the rate limit for this operation is 10 requests per minute per account.'
+    name: akamai-list-cps-active-certificates
+    outputs:
+    - contextPath: Akamai.Cps.Active.Certificates.Enrollments
+      description: A collection of Active Akami CPS enrollments.
+      type: Dictionary    
+  - arguments:
+    - description: The change for this enrollment on which to perform the desired operation. Default is 0. "change_path" is used.
+      name: change_id
+      required: true
+      defaultValue: '0'
+    - defaultValue: '0'
+      description: Enrollment on which to perform the desired operation. Default is 0. "change_path" is used.
+      name: enrollment_id
+      required: true
+    - description: "Change path on which to perform the desired operation. Sample: /cps/v2/enrollments/100000/changes/88888888. Note: change_path is not listed in the reference as a parameter. However it can be extracted directly from \"list_enrollments_command\". This should be the most common usage when generating the RestAPI's URL."
+      name: change_path
+    - description: For customers who manage more than one account, this runs the operation from another account. The Identity and Access Management API provides a list of available account switch keys.
+      name: account_switch_key
+    description: Cancels a pending change on CPS.
+    name: akamai-cancel-cps-change
+  - arguments:
+    - description: Enrollment ID on which to perform the desired operation.
+      name: enrollment_id
+      required: true
+    description: Get an enrollment in CPS by enrollment id.
+    name: akamai-get-cps-enrollment-by-id
+  - arguments: []
+    description: 'Lists available security configurations. Products: All.'
+    name: akamai-list-appsec-config
+    outputs:
+    - contextPath: Akamai.AppSecConfigAll
+      description: A list of dictionaries for all Akamai Security Configurations.
+      type: unknown
+  - arguments: []
+    description: List all zones that the current user has access to manage.
+    name: akamai-list-dns-zones
+    outputs:
+    - contextPath: Akamai.EdgeDns.Zones
+      description: A collection of Edge DNS zones.
+      type: Dictionary
+  - arguments:
+    - description: The name of the zone.
+      name: zone
+      required: true
+    description: Lists all record sets for this zone. It works only for PRIMARY and SECONDARY zones.
+    name: akamai-list-dns-zone-recordsets
+    outputs:
+    - contextPath: Akamai.EdgeDns.ZoneRecordSets
+      description: A collection of Edge DNS zone's record sets.
+      type: Dictionary
+  dockerimage: demisto/auth-utils:1.0.0.1839651
   script: ''
   subtype: python3
   type: python

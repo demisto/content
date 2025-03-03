@@ -42,38 +42,38 @@ name: CIRCLEHashlookup
 script:
   commands:
   - arguments: []
-    description: Get information about the hash lookup database
+    description: Get information about the hash lookup database.
     name: circl-info
     outputs:
     - contextPath: Circl.Info
-      description: Info about the hashlookup database
+      description: Info about the hashlookup database.
       type: string
   - arguments:
-    - description: List of MD5s to query
+    - description: List of MD5s to query.
       isArray: true
       name: md5_list
       required: true
       type: textArea
-    description: Bulk search of MD5 hashes
+    description: Bulk search of MD5 hashes.
     name: circl-bulk-md5
     outputs:
     - contextPath: Circl.MD5
-      description: Results of bulk MD5 query
+      description: Results of bulk MD5 query.
       type: string
   - arguments:
-    - description: List of SHA1 to search
+    - description: List of SHA1 to search.
       isArray: true
       name: sha1_list
       required: true
       type: textArea
-    description: Bulk search of SHA1 hashes
+    description: Bulk search of SHA1 hashes.
     name: circl-bulk-sha1
     outputs:
     - contextPath: Circl.SHA1
-      description: Results of bulk SHA1 query
+      description: Results of bulk SHA1 query.
       type: string
   - arguments:
-    - description: Hash to query
+    - description: Hash to query.
       isArray: true
       name: file
       required: true
@@ -83,25 +83,25 @@ script:
     name: file
     outputs:
     - contextPath: File.Name
-      description: Name of the file
+      description: Name of the file.
       type: string
     - contextPath: File.Size
-      description: Size of the file
+      description: Size of the file.
       type: number
     - contextPath: File.MD5
-      description: MD5 hash of the file
+      description: MD5 hash of the file.
       type: string
     - contextPath: File.SHA1
-      description: SHA1 hash of the file
+      description: SHA1 hash of the file.
       type: string
     - contextPath: File.SHA256
-      description: SHA256 hash of the file
+      description: SHA256 hash of the file.
       type: string
     - contextPath: File.SHA512
-      description: SHA512 hash of the file
+      description: SHA512 hash of the file.
       type: string
     - contextPath: File.SSDeep
-      description: SSDeep of the file
+      description: SSDeep of the file.
       type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -110,34 +110,34 @@ script:
       description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
-      description: Type of indicator.
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DbotScore.Indicator
       description: The indicator value.
       type: string
     - contextPath: DbotScore.Reliability
-      description: The reliability of the source providing the intelligence data
+      description: The reliability of the source providing the intelligence data.
       type: string
     - contextPath: DbotScore.Score
-      description: An integer regarding the status of the indicator
+      description: An integer regarding the status of the indicator.
       type: number
     - contextPath: DbotScore.Type
-      description: The indicator type
+      description: The indicator type.
       type: string
     - contextPath: DbotScore.Vendor
-      description: The vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: string
   - arguments: []
     description: Return the top 100 of most queried values.
     name: circl-top
     outputs:
     - contextPath: Circl.Top
-      description: The top 100 of most queried values
+      description: The top 100 of most queried values.
       type: string
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.116949
   script: ''
   subtype: python3
   type: python

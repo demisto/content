@@ -1,4 +1,4 @@
-category: Cloud Services
+category: Email
 sectionOrder:
 - Connect
 - Collect
@@ -78,7 +78,7 @@ configuration:
   section: Collect
   required: false
 - display: Email address from which to fetch incidents
-  additionalinfo: For example, "example@demisto.com"
+  additionalinfo: For example, "example@mail.com"
   name: mailbox_to_fetch
   type: 0
   section: Collect
@@ -185,6 +185,12 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- display: Use legacy attachment name
+  name: legacy_name
+  section: Collect
+  type: 8
+  advanced: true
+  defaultvalue: 'false'
 description: Microsoft Graph lets your app get authorized access to a user's Outlook mail data in a personal or organization account.
 display: O365 Outlook Mail (Using Graph API)
 fromversion: 5.0.0
@@ -449,6 +455,8 @@ script:
       name: folder_id
     - description: The ID of the attachment. In case not supplied, the command will return all the attachments.
       name: attachment_id
+    - description: Setting this argument to 'true' will return message attachments of type 'microsoft.graph.message' (also known as 'Outlook item' or '.eml') as downloadable files. Default value is 'false'. Default behavior is to return 'microsoft.graph.message' attachments inside a command result.
+      name: should_download_message_attachment
     - deprecated: true
       description: flag for rate limit retry.
       name: ran_once_flag
@@ -740,7 +748,7 @@ script:
       - flagged
     - auto: PREDEFINED
       defaultValue: Low
-      description: 'The importance of the draft. Can be: "Low", "Normal", or "High". The default is Normal.'
+      description: 'The importance of the draft. Can be: "Low", "Normal", or "High". The default is Low.'
       name: importance
       predefined:
       - Low
@@ -1141,7 +1149,7 @@ script:
       required: true
     description: Delete a specific email rule by ID for a user's mailbox using Microsoft Graph API.
     name: msgraph-mail-delete-rule
-  dockerimage: demisto/crypto:1.0.0.89294
+  dockerimage: demisto/crypto:1.0.0.111961
   isfetch: true
   runonce: false
   script: '-'

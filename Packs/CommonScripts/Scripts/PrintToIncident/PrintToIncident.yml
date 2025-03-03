@@ -1,0 +1,28 @@
+args:
+- description: The value to print to the war-room of specified incident.
+  name: value
+  required: true
+- description: The incident ID to print to.
+  name: incident_id
+  required: true
+comment: Prints a value to the specified incident's war-room.
+commonfields:
+  id: PrintToIncident
+  version: -1
+name: PrintToIncident
+script: '-'
+tags: []
+enabled: true
+scripttarget: 0
+timeout: '0'
+runas: DBotWeakRole
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.11.10.115186
+fromversion: 8.6.0
+marketplaces:
+- marketplacev2
+tests:
+- No test - unit test
+skipprepare:
+- script-name-incident-to-alert

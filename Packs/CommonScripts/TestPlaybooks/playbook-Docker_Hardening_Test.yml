@@ -301,4 +301,4 @@ inputs: []
 outputs: []
 fromversion: 5.0.0
 marketplaces:
-  - xsoar
+  - xsoar_on_prem

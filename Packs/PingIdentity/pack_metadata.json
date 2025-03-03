@@ -2,12 +2,12 @@
     "name": "PingIdentity",
     "description": "Integration with PingIdentity's PingOne identity platform",
     "support": "partner",
-    "currentVersion": "1.0.7",
+    "currentVersion": "1.0.8",
     "author": "Ping Identity",
     "url": "https://docs.pingidentity.com/bundle/p14c/page/als1564020488261.html",
     "email": "tap-global@pingidentity.com",
     "categories": [
-        "Authentication & Identity Management"
+        "Identity and Access Management"
     ],
     "tags": [],
     "useCases": [],

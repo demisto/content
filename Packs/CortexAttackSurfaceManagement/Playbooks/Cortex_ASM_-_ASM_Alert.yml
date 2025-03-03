@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 79a7c8e5-9a6b-426f-8ed3-21ff1fe9124e
+    taskid: b7b07d0b-fee5-4b51-8e6b-928088c82c42
     type: start
     task:
-      id: 79a7c8e5-9a6b-426f-8ed3-21ff1fe9124e
+      id: b7b07d0b-fee5-4b51-8e6b-928088c82c42
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     continueonerrortype: ""
   "4":
     id: "4"
-    taskid: 548459c6-a71d-49ac-8910-fa07334e477c
+    taskid: c300597e-a947-4a0e-8551-7e862c5caa53
     type: title
     task:
-      id: 548459c6-a71d-49ac-8910-fa07334e477c
+      id: c300597e-a947-4a0e-8551-7e862c5caa53
       version: -1
       name: Complete
       type: title
@@ -64,10 +64,10 @@ tasks:
     continueonerrortype: ""
   "5":
     id: "5"
-    taskid: 205caac4-7e93-4b53-8028-4798bd309ad4
+    taskid: c77b9c64-6bba-4ba5-85b5-726d41384dab
     type: title
     task:
-      id: 205caac4-7e93-4b53-8028-4798bd309ad4
+      id: c77b9c64-6bba-4ba5-85b5-726d41384dab
       version: -1
       name: Triage and Qualifier Stage
       type: title
@@ -95,10 +95,10 @@ tasks:
     continueonerrortype: ""
   "6":
     id: "6"
-    taskid: 8cdc4fa7-9865-4a60-8254-a3fe2c1face9
+    taskid: 6e545db5-41cc-4414-8755-1094a1c03fe8
     type: title
     task:
-      id: 8cdc4fa7-9865-4a60-8254-a3fe2c1face9
+      id: 6e545db5-41cc-4414-8755-1094a1c03fe8
       version: -1
       name: Enrichment Stage
       type: title
@@ -107,7 +107,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "97"
+      - "185"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -126,10 +126,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 952a8f66-7583-43da-8753-657b3f1425e2
+    taskid: 1b80b617-5189-4039-8315-7b11be105d7d
     type: title
     task:
-      id: 952a8f66-7583-43da-8753-657b3f1425e2
+      id: 1b80b617-5189-4039-8315-7b11be105d7d
       version: -1
       name: Decision Stage
       type: title
@@ -138,7 +138,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "120"
+      - "186"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -157,10 +157,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: b78597f7-5761-4cd4-8a0b-f648f78192a7
+    taskid: 4a19c6fd-f41a-40d5-87b9-811c1235dc71
     type: title
     task:
-      id: b78597f7-5761-4cd4-8a0b-f648f78192a7
+      id: 4a19c6fd-f41a-40d5-87b9-811c1235dc71
       version: -1
       name: Notification Stage
       type: title
@@ -175,8 +175,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 800,
-          "y": 1570
+          "x": 690,
+          "y": 1610
         }
       }
     note: false
@@ -188,10 +188,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 1c823068-38b4-47b9-8aef-f70adbaf768d
+    taskid: b149b6cb-541e-45b8-8b18-27fecce33932
     type: title
     task:
-      id: 1c823068-38b4-47b9-8aef-f70adbaf768d
+      id: b149b6cb-541e-45b8-8b18-27fecce33932
       version: -1
       name: Validation Stage
       type: title
@@ -219,10 +219,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: a1e55a91-099f-4100-829c-5d1caea841b3
+    taskid: e70c7cd7-c4d1-4f49-8ca1-8d1522da9d6a
     type: title
     task:
-      id: a1e55a91-099f-4100-829c-5d1caea841b3
+      id: e70c7cd7-c4d1-4f49-8ca1-8d1522da9d6a
       version: -1
       name: Remediation Stage
       type: title
@@ -231,7 +231,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "167"
+      - "187"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -250,10 +250,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 3d818954-51ff-4ae6-87bb-1951dd4c56c6
+    taskid: e460ad6f-77f0-4911-887d-9954b478ff75
     type: title
     task:
-      id: 3d818954-51ff-4ae6-87bb-1951dd4c56c6
+      id: e460ad6f-77f0-4911-887d-9954b478ff75
       version: -1
       name: Summarization Stage
       type: title
@@ -281,10 +281,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 078c10a4-ae07-4e7e-8aeb-d593bef0a521
+    taskid: c428c373-5c79-44cb-80e7-de555c354c34
     type: condition
     task:
-      id: 078c10a4-ae07-4e7e-8aeb-d593bef0a521
+      id: c428c373-5c79-44cb-80e7-de555c354c34
       version: -1
       name: Service exposure still observable?
       description: Determines if service was still observable and also if automated remediation was done.
@@ -339,10 +339,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 0c54afdb-6281-4862-8f93-2c9108347625
+    taskid: 2076296d-2bfe-4b4c-8cdf-7bb538290e97
     type: collection
     task:
-      id: 0c54afdb-6281-4862-8f93-2c9108347625
+      id: 2076296d-2bfe-4b4c-8cdf-7bb538290e97
       version: -1
       name: What to do if Remediation Confirmation Scan is inconclusive?
       description: Determines if alert should be closed or kept open for auto-closure based on analyst input.
@@ -408,10 +408,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 1c7b6823-28e7-4618-8ab0-5ef8da8b63fc
+    taskid: 21578536-97b4-4a27-842c-4b119942084d
     type: condition
     task:
-      id: 1c7b6823-28e7-4618-8ab0-5ef8da8b63fc
+      id: 21578536-97b4-4a27-842c-4b119942084d
       version: -1
       name: What was data collection task response?
       description: Determines the next action (remediation or ticket) based on the previous data collection task.
@@ -431,6 +431,8 @@ tasks:
       - "10"
       Jira ticket:
       - "156"
+      Slack message:
+      - "183"
     separatecontext: false
     conditions:
     - label: Automated remediation
@@ -465,6 +467,14 @@ tasks:
           right:
             value:
               simple: Automated remediation by creating empty S3 bucket
+        - left:
+            iscontext: true
+            value:
+              simple: alert.asmdatacollection.selected
+          operator: isEqualString
+          right:
+            value:
+              simple: Automated remediation by patching vulnerable software
     - label: Manual remediation
       condition:
       - - operator: isEqualString
@@ -513,6 +523,16 @@ tasks:
           right:
             value:
               simple: File a Jira Ticket
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: alert.asmdatacollection.selected
+          operator: isEqualString
+          right:
+            value:
+              simple: Send a Slack message
+      label: Slack message
     continueonerrortype: ""
     view: |-
       {
@@ -530,10 +550,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 363d6454-984f-4e75-8e39-fce60e8a7aa5
+    taskid: 4d07e99c-e580-4bdf-8883-f051bd03c896
     type: collection
     task:
-      id: 363d6454-984f-4e75-8e39-fce60e8a7aa5
+      id: 4d07e99c-e580-4bdf-8883-f051bd03c896
       version: -1
       name: Verify service exposure resolved by service owner
       description: Determines if manual remediation (by service owner or otherwise) was completed via analyst input.
@@ -548,8 +568,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 800,
-          "y": 2380
+          "x": 690,
+          "y": 2400
         }
       }
     note: false
@@ -597,10 +617,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: d4b249ba-f931-4211-86ec-fed38bd28f2c
+    taskid: e04643ac-8595-484f-82b5-e5afcd13544f
     type: title
     task:
-      id: d4b249ba-f931-4211-86ec-fed38bd28f2c
+      id: e04643ac-8595-484f-82b5-e5afcd13544f
       version: -1
       name: Notification Stage
       type: title
@@ -615,8 +635,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1220,
-          "y": 1500
+          "x": 1080,
+          "y": 1600
         }
       }
     note: false
@@ -628,12 +648,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: 2a74ea33-e35a-4e91-89ad-b4a454295dfc
+    taskid: 4e9b77ee-dc7b-47da-83a3-3e9c0e6f878f
     type: title
     task:
-      id: 2a74ea33-e35a-4e91-89ad-b4a454295dfc
+      id: 4e9b77ee-dc7b-47da-83a3-3e9c0e6f878f
       version: -1
-      name: Remediation Stage
+      name: Manual Remediation Stage
       type: title
       iscommand: false
       brand: ""
@@ -659,10 +679,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: 5a25a6a7-fd0f-42ba-8aee-499d94ad8d4c
+    taskid: f2dd6603-f4fa-4499-8958-14daaf688193
     type: regular
     task:
-      id: 5a25a6a7-fd0f-42ba-8aee-499d94ad8d4c
+      id: f2dd6603-f4fa-4499-8958-14daaf688193
       version: -1
       name: Set remediation grid field
       description: |-
@@ -708,10 +728,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "72":
     id: "72"
-    taskid: a7f0052c-3310-433c-8a1d-b68b6d53ce1c
+    taskid: 78bbbc1a-fe99-4e9a-8435-8960b0af1087
     type: condition
     task:
-      id: a7f0052c-3310-433c-8a1d-b68b6d53ce1c
+      id: 78bbbc1a-fe99-4e9a-8435-8960b0af1087
       version: -1
       name: Manual remediation selected?
       description: Determines if "manual remediation" was selected on main data collection task.
@@ -769,10 +789,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "73":
     id: "73"
-    taskid: 400a5d2c-27fe-4cee-833a-a3d9951384f2
+    taskid: 0b8598c4-c5e0-4cce-8383-c91f58facf2d
     type: regular
     task:
-      id: 400a5d2c-27fe-4cee-833a-a3d9951384f2
+      id: 0b8598c4-c5e0-4cce-8383-c91f58facf2d
       version: -1
       name: Set remediation grid field
       description: |-
@@ -827,10 +847,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "81":
     id: "81"
-    taskid: 3029317d-a0aa-47bd-8667-a14c4704b52d
+    taskid: b7f68d25-ba83-4275-8340-e9b0d96fd9e3
     type: regular
     task:
-      id: 3029317d-a0aa-47bd-8667-a14c4704b52d
+      id: b7f68d25-ba83-4275-8340-e9b0d96fd9e3
       version: -1
       name: Set alert summary grid field
       description: |-
@@ -897,10 +917,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "86":
     id: "86"
-    taskid: df2185f7-5dea-4431-8a00-1dff0d6b2d4d
+    taskid: 7760cd6c-8132-4e21-8eb5-9769a3834bc9
     type: playbook
     task:
-      id: df2185f7-5dea-4431-8a00-1dff0d6b2d4d
+      id: 7760cd6c-8132-4e21-8eb5-9769a3834bc9
       version: -1
       name: Cortex ASM - Detect Service
       description: Playbook that looks at what ASM sub-type the alert is and directs it to different pre/post mitigation scans (such as NMAP).
@@ -949,10 +969,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "88":
     id: "88"
-    taskid: f80b1685-d83c-4d3f-8219-8176c830ac92
+    taskid: f3b899dd-18a9-48f6-8503-7cf6263aca64
     type: collection
     task:
-      id: f80b1685-d83c-4d3f-8219-8176c830ac92
+      id: f3b899dd-18a9-48f6-8503-7cf6263aca64
       version: -1
       name: Complete manual remediation
       description: Determines if manual remediation (by service owner or otherwise) was completed via analyst input.
@@ -1014,56 +1034,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "97":
-    id: "97"
-    taskid: 71dcd381-9a60-4115-88fb-e1513cbb913b
-    type: playbook
-    task:
-      id: 71dcd381-9a60-4115-88fb-e1513cbb913b
-      version: -1
-      name: Cortex ASM - Enrichment
-      description: Used as a container folder for all enrichments of ASM alerts.
-      type: playbook
-      iscommand: false
-      brand: ""
-      playbookId: Cortex ASM - Enrichment
-    nexttasks:
-      '#none#':
-      - "125"
-    separatecontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 70,
-          "y": -870
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-    loop:
-      exitCondition: ""
-      iscommand: false
-      max: 100
-      wait: 1
-    scriptarguments:
-      AWSAssumeRoleName:
-        simple: ${inputs.AWSAssumeRoleName}
-      RemoteIP:
-        complex:
-          accessor: remoteip
-          root: alert
   "103":
     id: "103"
-    taskid: 9cd375bf-e85e-45fd-8fa4-ee8ef8bf3d10
+    taskid: 4ac1a981-fe3b-4cad-807b-3b40afbba041
     type: regular
     task:
-      id: 9cd375bf-e85e-45fd-8fa4-ee8ef8bf3d10
+      id: 4ac1a981-fe3b-4cad-807b-3b40afbba041
       version: -1
       name: Set remediation grid field
       description: |-
@@ -1108,10 +1084,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "110":
     id: "110"
-    taskid: 75485187-2003-44f4-8476-54d27fac1cf7
+    taskid: 9384d7c9-9814-45cb-863d-6cecba635833
     type: condition
     task:
-      id: 75485187-2003-44f4-8476-54d27fac1cf7
+      id: 9384d7c9-9814-45cb-863d-6cecba635833
       version: -1
       name: Close or keep open?
       description: Determines if the alert will be closed or kept open.
@@ -1214,10 +1190,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "111":
     id: "111"
-    taskid: faa2ac25-d58c-4d2b-8ad8-8ae1e27ec1c3
+    taskid: 9243de06-b239-4956-80c8-b0c36a28ce99
     type: regular
     task:
-      id: faa2ac25-d58c-4d2b-8ad8-8ae1e27ec1c3
+      id: 9243de06-b239-4956-80c8-b0c36a28ce99
       version: -1
       name: Close alert (close now)
       description: Close the current alert because auto-close was selected.
@@ -1251,10 +1227,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "112":
     id: "112"
-    taskid: 3484098d-2bfe-4d6c-8fc6-07c1cb7ad591
+    taskid: eac13f7d-5da0-4dfa-8b41-568ab413edec
     type: regular
     task:
-      id: 3484098d-2bfe-4d6c-8fc6-07c1cb7ad591
+      id: eac13f7d-5da0-4dfa-8b41-568ab413edec
       version: -1
       name: Close alert (remediated automatically)
       description: Close the current alert because Automated Remediation path was selected.
@@ -1288,10 +1264,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "113":
     id: "113"
-    taskid: f9691189-aae2-4973-89b1-45d513d7b4b1
+    taskid: b94080d0-cf5d-408b-8a5f-d1a3e781f33b
     type: regular
     task:
-      id: f9691189-aae2-4973-89b1-45d513d7b4b1
+      id: b94080d0-cf5d-408b-8a5f-d1a3e781f33b
       version: -1
       name: Close alert (close now) with rule match
       description: Close the current alert because auto-close was selected.
@@ -1334,10 +1310,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "114":
     id: "114"
-    taskid: 0d6b5b4a-6676-4565-83c3-263bbb709ccd
+    taskid: 9cce412b-6cb5-403e-8ba5-1092762c0fb6
     type: regular
     task:
-      id: 0d6b5b4a-6676-4565-83c3-263bbb709ccd
+      id: 9cce412b-6cb5-403e-8ba5-1092762c0fb6
       version: -1
       name: Close alert (remediated automatically) with rule match
       description: Close the current alert because Automated Remediation path was selected.
@@ -1378,57 +1354,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "120":
-    id: "120"
-    taskid: bbcc2ebf-4475-4f87-8692-4b6960536228
-    type: playbook
-    task:
-      id: bbcc2ebf-4475-4f87-8692-4b6960536228
-      version: -1
-      name: Cortex ASM - Remediation Path Rules
-      type: playbook
-      iscommand: false
-      brand: ""
-      playbookId: Cortex ASM - Remediation Path Rules
-      description: ''
-    nexttasks:
-      '#none#':
-      - "145"
-    scriptarguments:
-      BypassDevCheck:
-        complex:
-          root: inputs.BypassDevCheck
-      ExternallyDetectedProviders:
-        complex:
-          root: ASM.ExternalService
-          accessor: externally_detected_providers
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 70,
-          "y": 470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "121":
     id: "121"
-    taskid: abef44ae-926e-466b-8030-33c6078e12f4
+    taskid: 598c7420-4eeb-48fc-8b5f-b539d6085c05
     type: title
     task:
-      id: abef44ae-926e-466b-8030-33c6078e12f4
+      id: 598c7420-4eeb-48fc-8b5f-b539d6085c05
       version: -1
       name: Analysis Stage
       type: title
@@ -1456,10 +1387,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "124":
     id: "124"
-    taskid: 7697188d-a525-43a6-8f5f-02d63024d1f0
+    taskid: 83cd02a3-ed01-4a17-8376-a2b8c394944c
     type: regular
     task:
-      id: 7697188d-a525-43a6-8f5f-02d63024d1f0
+      id: 83cd02a3-ed01-4a17-8376-a2b8c394944c
       version: -1
       name: Set playbook stage grid field (triage)
       description: |-
@@ -1499,10 +1430,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "125":
     id: "125"
-    taskid: 73acc4cd-f162-4da9-8e80-bb677b24c0fa
+    taskid: 422e3206-c215-49c0-8c50-0225df53a429
     type: regular
     task:
-      id: 73acc4cd-f162-4da9-8e80-bb677b24c0fa
+      id: 422e3206-c215-49c0-8c50-0225df53a429
       version: -1
       name: Set playbook stage grid field (enrichment)
       description: |-
@@ -1542,10 +1473,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "126":
     id: "126"
-    taskid: e00a985a-489a-449d-805d-929b07974977
+    taskid: 4d3f708f-412f-409d-815c-d8daf22f1000
     type: regular
     task:
-      id: e00a985a-489a-449d-805d-929b07974977
+      id: 4d3f708f-412f-409d-815c-d8daf22f1000
       version: -1
       name: Set playbook stage grid field (analysis)
       description: |-
@@ -1585,10 +1516,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "128":
     id: "128"
-    taskid: daacfc48-eb95-4aa6-8b43-92ad68d6b62c
+    taskid: 028eece5-24f0-4890-89f8-3803d33144e0
     type: regular
     task:
-      id: daacfc48-eb95-4aa6-8b43-92ad68d6b62c
+      id: 028eece5-24f0-4890-89f8-3803d33144e0
       version: -1
       name: Set playbook stage grid field (decision)
       description: |-
@@ -1628,10 +1559,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "129":
     id: "129"
-    taskid: fd339520-4a29-4412-8675-9a7ffb073f0c
+    taskid: d814ba48-42c5-414d-86c9-dfeb842f02f0
     type: regular
     task:
-      id: fd339520-4a29-4412-8675-9a7ffb073f0c
+      id: d814ba48-42c5-414d-86c9-dfeb842f02f0
       version: -1
       name: Set playbook stage grid field (decision)
       description: |-
@@ -1659,7 +1590,7 @@ tasks:
       {
         "position": {
           "x": -700,
-          "y": 1120
+          "y": 1125
         }
       }
     note: false
@@ -1671,10 +1602,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "130":
     id: "130"
-    taskid: 569e4b63-d599-4604-8c97-7c7200c53c59
+    taskid: b48cba1e-0a6c-4a12-8bf7-9f2bbf47b37a
     type: regular
     task:
-      id: 569e4b63-d599-4604-8c97-7c7200c53c59
+      id: b48cba1e-0a6c-4a12-8bf7-9f2bbf47b37a
       version: -1
       name: Set playbook stage grid field (decision)
       description: |-
@@ -1701,8 +1632,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 800,
-          "y": 1105
+          "x": 690,
+          "y": 1145
         }
       }
     note: false
@@ -1714,10 +1645,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "131":
     id: "131"
-    taskid: 33010b40-f580-4f68-8ee7-95208f3b4b5e
+    taskid: 768ae5de-aa06-4975-8e4c-aa9ae75ece4b
     type: regular
     task:
-      id: 33010b40-f580-4f68-8ee7-95208f3b4b5e
+      id: 768ae5de-aa06-4975-8e4c-aa9ae75ece4b
       version: -1
       name: Set playbook stage grid field (decision)
       description: |-
@@ -1744,8 +1675,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1220,
-          "y": 1025
+          "x": 1080,
+          "y": 1125
         }
       }
     note: false
@@ -1757,10 +1688,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "133":
     id: "133"
-    taskid: d0336db6-38a5-4c68-8e16-39fba3c1c026
+    taskid: cd2d1025-4773-4743-8baf-dec1932028bd
     type: regular
     task:
-      id: d0336db6-38a5-4c68-8e16-39fba3c1c026
+      id: cd2d1025-4773-4743-8baf-dec1932028bd
       version: -1
       name: Set playbook stage grid field (remediation)
       description: |-
@@ -1800,10 +1731,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "134":
     id: "134"
-    taskid: a25d63b0-fffe-4304-8357-d10c0f1a5f34
+    taskid: 238955d2-13ea-4e94-816f-d28db1defaf2
     type: regular
     task:
-      id: a25d63b0-fffe-4304-8357-d10c0f1a5f34
+      id: 238955d2-13ea-4e94-816f-d28db1defaf2
       version: -1
       name: Set playbook stage grid field (notification)
       description: |-
@@ -1830,8 +1761,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 800,
-          "y": 1965
+          "x": 690,
+          "y": 2005
         }
       }
     note: false
@@ -1843,10 +1774,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "135":
     id: "135"
-    taskid: b89b04c5-a0d2-4ada-85e8-fb84fd8c0174
+    taskid: e33d4d1a-08ec-4517-8930-445a3b108f08
     type: regular
     task:
-      id: b89b04c5-a0d2-4ada-85e8-fb84fd8c0174
+      id: e33d4d1a-08ec-4517-8930-445a3b108f08
       version: -1
       name: Set playbook stage grid field (validation)
       description: |-
@@ -1886,10 +1817,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "136":
     id: "136"
-    taskid: ea15fff7-a44e-4f31-8e63-54f069aafdec
+    taskid: 8c17fd19-2790-46fa-878d-ad53d3fff9f8
     type: regular
     task:
-      id: ea15fff7-a44e-4f31-8e63-54f069aafdec
+      id: 8c17fd19-2790-46fa-878d-ad53d3fff9f8
       version: -1
       name: Set playbook stage grid field (summarization)
       description: |-
@@ -1929,10 +1860,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "141":
     id: "141"
-    taskid: 5fc53955-e98a-4b57-82dc-185bb48a79bb
+    taskid: 6152a9df-a84b-4bbe-8a9f-59afec75c4ae
     type: title
     task:
-      id: 5fc53955-e98a-4b57-82dc-185bb48a79bb
+      id: 6152a9df-a84b-4bbe-8a9f-59afec75c4ae
       version: -1
       name: continue
       type: title
@@ -1960,10 +1891,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "142":
     id: "142"
-    taskid: 3759b6d2-40aa-4639-8de0-d7a5768f0f78
+    taskid: 0e38bd21-c3da-422c-8ac8-a2ebcaf93a39
     type: regular
     task:
-      id: 3759b6d2-40aa-4639-8de0-d7a5768f0f78
+      id: 0e38bd21-c3da-422c-8ac8-a2ebcaf93a39
       version: -1
       name: Close alert (accepted risk)
       description: Close the current alert because the service is no longer observed.
@@ -1997,10 +1928,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "144":
     id: "144"
-    taskid: df8b6de0-ebf2-4344-808f-773d0a40298c
+    taskid: 167fe7ef-89a1-413f-85cb-94d9c086d6d1
     type: condition
     task:
-      id: df8b6de0-ebf2-4344-808f-773d0a40298c
+      id: 167fe7ef-89a1-413f-85cb-94d9c086d6d1
       version: -1
       name: Are there any matches from accepted risk lists?
       description: Checks if the system IDs, folders, and projects are present in the accepted risk lists.
@@ -2035,7 +1966,7 @@ tasks:
           right:
             value:
               complex:
-                root: inputs.AcceptedRiskDs
+                root: inputs.AcceptedRiskIDs
             iscontext: true
         - operator: inList
           left:
@@ -2121,6 +2052,27 @@ tasks:
               complex:
                 root: inputs.AcceptedRiskOther
             iscontext: true
+        - operator: inList
+          left:
+            value:
+              complex:
+                root: alert.asmsystemids
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: alert.asmsystemids.type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ASSET-RG
+                accessor: id
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.AcceptedRiskProjects
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -2138,10 +2090,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "145":
     id: "145"
-    taskid: 4766c871-f8c3-4896-8a95-02019ce271fd
+    taskid: 87cca956-c103-4e7c-84a4-0bfa10d39b81
     type: condition
     task:
-      id: 4766c871-f8c3-4896-8a95-02019ce271fd
+      id: 87cca956-c103-4e7c-84a4-0bfa10d39b81
       version: -1
       name: What is the remediation action?
       description: Determines what the remediation action is (direct action or data collection task).
@@ -2161,6 +2113,8 @@ tasks:
       - "163"
       ServiceNow Ticket:
       - "162"
+      Slack:
+      - "181"
     separatecontext: false
     conditions:
     - label: Automated Remediation
@@ -2218,6 +2172,16 @@ tasks:
           right:
             value:
               simple: Jira
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: RemediationAction
+          operator: isEqualString
+          right:
+            value:
+              simple: Slack
+      label: Slack
     continueonerrortype: ""
     view: |-
       {
@@ -2235,10 +2199,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "146":
     id: "146"
-    taskid: 0bcc9690-5c1b-4eb9-88de-d991f31820f1
+    taskid: 5cc9450d-b22b-4100-8390-f3ec343b9319
     type: title
     task:
-      id: 0bcc9690-5c1b-4eb9-88de-d991f31820f1
+      id: 5cc9450d-b22b-4100-8390-f3ec343b9319
       version: -1
       name: Automated Remediation
       type: title
@@ -2266,10 +2230,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "152":
     id: "152"
-    taskid: a4b94f6b-2c42-4a0e-8dfc-210138a74131
+    taskid: 3ca6aa20-4977-4c33-8d6f-4506f9f5af07
     type: title
     task:
-      id: a4b94f6b-2c42-4a0e-8dfc-210138a74131
+      id: 3ca6aa20-4977-4c33-8d6f-4506f9f5af07
       version: -1
       name: Manual Remediation
       type: title
@@ -2297,10 +2261,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "156":
     id: "156"
-    taskid: 3d527f85-362a-4c68-8380-316a62e1924f
+    taskid: 79daba2b-1791-4d5c-855c-fb9d663191ee
     type: title
     task:
-      id: 3d527f85-362a-4c68-8380-316a62e1924f
+      id: 79daba2b-1791-4d5c-855c-fb9d663191ee
       version: -1
       name: Notification Stage
       type: title
@@ -2315,7 +2279,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 370,
+          "x": 290,
           "y": 1630
         }
       }
@@ -2328,10 +2292,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "157":
     id: "157"
-    taskid: ee8d767a-885a-444c-8465-7c0382db096d
+    taskid: 9c6555fc-9a4f-480d-8292-0aa18468581c
     type: regular
     task:
-      id: ee8d767a-885a-444c-8465-7c0382db096d
+      id: 9c6555fc-9a4f-480d-8292-0aa18468581c
       version: -1
       name: Set playbook stage grid field (decision)
       description: |-
@@ -2358,7 +2322,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 370,
+          "x": 290,
           "y": 1175
         }
       }
@@ -2371,10 +2335,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "161":
     id: "161"
-    taskid: f12b3c1f-6c94-4918-807a-e758e467373b
+    taskid: 5617a3f5-278a-492e-8d16-09e896120c1d
     type: title
     task:
-      id: f12b3c1f-6c94-4918-807a-e758e467373b
+      id: 5617a3f5-278a-492e-8d16-09e896120c1d
       version: -1
       name: Jira Ticket
       type: title
@@ -2389,7 +2353,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 370,
+          "x": 290,
           "y": 1040
         }
       }
@@ -2402,10 +2366,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "162":
     id: "162"
-    taskid: bcef69e4-70a6-497d-8373-e29789f4c2e1
+    taskid: 0d78ff20-65b6-48a7-8f3e-c0d99809a5bf
     type: title
     task:
-      id: bcef69e4-70a6-497d-8373-e29789f4c2e1
+      id: 0d78ff20-65b6-48a7-8f3e-c0d99809a5bf
       version: -1
       name: ServiceNow Ticket
       type: title
@@ -2420,8 +2384,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 800,
-          "y": 970
+          "x": 690,
+          "y": 1010
         }
       }
     note: false
@@ -2433,10 +2397,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "163":
     id: "163"
-    taskid: 2313dded-570c-4388-8dd7-0de43fbbf80c
+    taskid: 68147b67-a457-4d09-817b-bbf1a7539f20
     type: title
     task:
-      id: 2313dded-570c-4388-8dd7-0de43fbbf80c
+      id: 68147b67-a457-4d09-817b-bbf1a7539f20
       version: -1
       name: Email Notification
       type: title
@@ -2451,8 +2415,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1220,
-          "y": 890
+          "x": 1080,
+          "y": 990
         }
       }
     note: false
@@ -2464,10 +2428,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "164":
     id: "164"
-    taskid: 83b8f6d3-b38f-4c08-884c-0a8f684e3b39
+    taskid: cf574345-4885-46c3-8781-6fe82703cd32
     type: regular
     task:
-      id: 83b8f6d3-b38f-4c08-884c-0a8f684e3b39
+      id: cf574345-4885-46c3-8781-6fe82703cd32
       version: -1
       name: Set remediation grid field
       description: |-
@@ -2498,7 +2462,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -700,
+          "x": -690,
           "y": 1860
         }
       }
@@ -2511,10 +2475,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "165":
     id: "165"
-    taskid: ec8df44c-301c-4a09-84ba-5c8855f89129
+    taskid: 3b65d35e-d409-446e-8200-8c7a2d26b927
     type: condition
     task:
-      id: ec8df44c-301c-4a09-84ba-5c8855f89129
+      id: 3b65d35e-d409-446e-8200-8c7a2d26b927
       version: -1
       name: Are there service owners with emails?
       description: Verifies if we have emails for service owners.
@@ -2552,7 +2516,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -700,
+          "x": -690,
           "y": 2210
         }
       }
@@ -2565,10 +2529,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "166":
     id: "166"
-    taskid: e9e352cd-b065-465f-899b-190f21c9ce72
+    taskid: ddad11be-1a2e-45a3-8030-1696ba3fe875
     type: regular
     task:
-      id: e9e352cd-b065-465f-899b-190f21c9ce72
+      id: ddad11be-1a2e-45a3-8030-1696ba3fe875
       version: -1
       name: Send remediation notification email to service owners
       description: Send an email to service owners regarding the status of the automated remediation action that was taken.
@@ -2615,52 +2579,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "167":
-    id: "167"
-    taskid: 7d17750d-0e91-4915-887a-43ddbbfbe339
-    type: playbook
-    task:
-      id: 7d17750d-0e91-4915-887a-43ddbbfbe339
-      version: -1
-      name: Cortex ASM - Remediation
-      description: This playbook contains all the cloud provider sub playbooks for remediation.
-      type: playbook
-      iscommand: false
-      brand: ""
-      playbookId: Cortex ASM - Remediation
-    nexttasks:
-      '#none#':
-      - "164"
-    separatecontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -690,
-          "y": 1685
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-    loop:
-      exitCondition: ""
-      iscommand: false
-      max: 100
-      wait: 1
-    scriptarguments:
-      AWSAssumeRoleName:
-        simple: ${inputs.AWSAssumeRoleName}
   "168":
     id: "168"
-    taskid: e28aa7c4-0b2f-4e12-8041-731c10074f0b
+    taskid: 3f1c6f44-04d4-4590-838c-d88bc36fbd79
     type: regular
     task:
-      id: e28aa7c4-0b2f-4e12-8041-731c10074f0b
+      id: 3f1c6f44-04d4-4590-838c-d88bc36fbd79
       version: -1
       name: Set playbook stage grid field (remediation)
       description: |-
@@ -2700,10 +2624,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "169":
     id: "169"
-    taskid: ee06492a-abbb-4981-8851-732e9045e95b
+    taskid: ef95362b-ca5f-483b-8f1c-b49eaa591bb5
     type: regular
     task:
-      id: ee06492a-abbb-4981-8851-732e9045e95b
+      id: ef95362b-ca5f-483b-8f1c-b49eaa591bb5
       version: -1
       name: Set playbook stage grid field (notification)
       description: |-
@@ -2743,10 +2667,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "171":
     id: "171"
-    taskid: a44a0f99-00de-4901-8cd8-85bc94ed366a
+    taskid: 1b619bad-e5c8-41f8-85f8-54c7ad48c8bc
     type: regular
     task:
-      id: a44a0f99-00de-4901-8cd8-85bc94ed366a
+      id: 1b619bad-e5c8-41f8-85f8-54c7ad48c8bc
       version: -1
       name: Initialize grid fields
       description: Clear ASM grid fields in case the playbook is rerun.
@@ -2808,10 +2732,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "172":
     id: "172"
-    taskid: aae9af2f-62f1-49cf-8987-9bbc9912fab4
+    taskid: 24dedd51-5427-4637-8cfc-b5dc476678a7
     type: regular
     task:
-      id: aae9af2f-62f1-49cf-8987-9bbc9912fab4
+      id: 24dedd51-5427-4637-8cfc-b5dc476678a7
       version: -1
       name: GenerateSummaryReport - Analysis
       description: Generate an ASM Alert Summary report.
@@ -2914,10 +2838,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "175":
     id: "175"
-    taskid: 1c18b32d-27ea-4d7d-8387-d96f9b6422af
+    taskid: 27b52a79-73b2-46f1-8df7-8f139873b8f4
     type: playbook
     task:
-      id: 1c18b32d-27ea-4d7d-8387-d96f9b6422af
+      id: 27b52a79-73b2-46f1-8df7-8f139873b8f4
       version: -1
       name: Cortex ASM - Remediation Guidance
       type: playbook
@@ -2946,10 +2870,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "176":
     id: "176"
-    taskid: a68a7331-0bff-40c2-8231-c42822b96c12
+    taskid: e7101013-512c-48bf-8a4c-6a70b08dec6d
     type: playbook
     task:
-      id: a68a7331-0bff-40c2-8231-c42822b96c12
+      id: e7101013-512c-48bf-8a4c-6a70b08dec6d
       version: -1
       name: Cortex ASM - Email Notification
       description: This playbook is used to send email notifications to service owners to notify them of their internet exposures.
@@ -2980,8 +2904,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1220,
-          "y": 1635
+          "x": 1080,
+          "y": 1795
         }
       }
     note: false
@@ -2993,10 +2917,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "177":
     id: "177"
-    taskid: c5ee8b3b-80c8-4e66-8d23-fed4fe1714d7
+    taskid: ac48f670-dfa1-4419-8bd3-a0bdc2b54c40
     type: regular
     task:
-      id: c5ee8b3b-80c8-4e66-8d23-fed4fe1714d7
+      id: ac48f670-dfa1-4419-8bd3-a0bdc2b54c40
       version: -1
       name: GenerateSummaryReport - Summary
       description: Generate an ASM Alert Summary report.
@@ -3103,10 +3027,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "178":
     id: "178"
-    taskid: 38b28acb-6ef9-4c39-88a9-f396fd067a70
+    taskid: 31a1fbd0-1f8f-462a-81fd-79b5f5c2d462
     type: playbook
     task:
-      id: 38b28acb-6ef9-4c39-88a9-f396fd067a70
+      id: 31a1fbd0-1f8f-462a-81fd-79b5f5c2d462
       version: -1
       name: Cortex ASM - Jira Notification
       type: playbook
@@ -3137,8 +3061,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 370,
-          "y": 1780
+          "x": 290,
+          "y": 1830
         }
       }
     note: false
@@ -3150,10 +3074,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "179":
     id: "179"
-    taskid: a9ddad5d-48a5-408c-8ffa-0befe07917c4
+    taskid: 70be4075-98e6-4a30-85bd-2a2fd6c3bbbd
     type: playbook
     task:
-      id: a9ddad5d-48a5-408c-8ffa-0befe07917c4
+      id: 70be4075-98e6-4a30-85bd-2a2fd6c3bbbd
       version: -1
       name: Cortex ASM - ServiceNow Notification
       type: playbook
@@ -3184,8 +3108,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 800,
-          "y": 1755
+          "x": 690,
+          "y": 1815
         }
       }
     note: false
@@ -3197,10 +3121,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "180":
     id: "180"
-    taskid: 21d391e7-543a-4bd0-8b0b-bc56ac517439
+    taskid: bd53973d-cb69-4fd3-838f-093a8acec197
     type: regular
     task:
-      id: 21d391e7-543a-4bd0-8b0b-bc56ac517439
+      id: bd53973d-cb69-4fd3-838f-093a8acec197
       version: -1
       name: Delete context
       description: |-
@@ -3208,7 +3132,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       type: regular
       iscommand: false
       brand: ""
@@ -3235,6 +3161,281 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "181":
+    continueonerrortype: ""
+    id: "181"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "182"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ab2861ef-0661-4556-82e8-ca82ca8247cd
+      iscommand: false
+      name: Slack Message
+      type: title
+      version: -1
+      description: ''
+    taskid: ab2861ef-0661-4556-82e8-ca82ca8247cd
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 960
+        }
+      }
+  "182":
+    continueonerrortype: ""
+    id: "182"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "183"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmplaybookstage
+      keys:
+        simple: stage,timestamp
+      val1:
+        simple: decision
+      val2:
+        simple: TIMESTAMP
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      id: 98805312-6ca7-42e5-8c15-1d823f925f77
+      iscommand: false
+      name: Set playbook stage grid field (decision)
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: 98805312-6ca7-42e5-8c15-1d823f925f77
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 1085
+        }
+      }
+  "183":
+    continueonerrortype: ""
+    id: "183"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "184"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 27daf64d-b14d-4a42-8a5b-cf42d0953d35
+      iscommand: false
+      name: Notification Stage
+      type: title
+      version: -1
+      description: ''
+    taskid: 27daf64d-b14d-4a42-8a5b-cf42d0953d35
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 1580
+        }
+      }
+  "184":
+    continueonerrortype: ""
+    id: "184"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "134"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      InstantMessageChannel:
+        simple: ${inputs.InstantMessageChannel}
+      OwnerNotificationBody:
+        simple: ${inputs.OwnerNotificationBody}
+      RemediationGuidance:
+        simple: ${RemediationGuidance}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This playbook is used to create instant messages toward service owners to notify them of their internet exposures.
+      id: 0f2ae625-39be-4cb7-8d21-7e1632aa18a0
+      iscommand: false
+      name: 'Cortex ASM - Instant Message'
+      playbookId: 'Cortex ASM - Instant Message'
+      type: playbook
+      version: -1
+    taskid: 0f2ae625-39be-4cb7-8d21-7e1632aa18a0
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 1780
+        }
+      }
+  "185":
+    continueonerrortype: ""
+    id: "185"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "125"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AWSAssumeRoleName:
+        simple: ${inputs.AWSAssumeRoleName}
+      RemoteIP:
+        complex:
+          accessor: remoteip
+          root: alert
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 937819ab-91bd-438e-8329-4b00b1d6dfeb
+      iscommand: false
+      name: Cortex ASM - Enrichment
+      playbookId: Cortex ASM - Enrichment
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 937819ab-91bd-438e-8329-4b00b1d6dfeb
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -870
+        }
+      }
+  "186":
+    continueonerrortype: ""
+    id: "186"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "145"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      BypassDevCheck:
+        simple: ${inputs.BypassDevCheck}
+      ExternallyDetectedProviders:
+        simple: ${alert.asmprovider}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3898edf1-25e6-484d-8f4e-572a9c84455c
+      iscommand: false
+      name: Cortex ASM - Remediation Path Rules
+      playbookId: Cortex ASM - Remediation Path Rules
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 3898edf1-25e6-484d-8f4e-572a9c84455c
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 480
+        }
+      }
+  "187":
+    continueonerrortype: ""
+    id: "187"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "164"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AWSAssumeRoleName:
+        simple: ${inputs.AWSAssumeRoleName}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 647b684a-7cfd-4edb-883d-4de8c9516d5b
+      iscommand: false
+      name: Cortex ASM - Remediation
+      playbookId: Cortex ASM - Remediation
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 647b684a-7cfd-4edb-883d-4de8c9516d5b
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -690,
+          "y": 1675
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {
@@ -3245,13 +3446,14 @@ view: |-
       "145_163_Notification Email": 0.74,
       "20_135_no": 0.53,
       "48_10_ServiceNow ticket": 0.82,
+      "48_183_Slack message": 0.87,
       "48_60_Notification email": 0.88,
       "48_63_Manual remediation": 0.52
     },
     "paper": {
       "dimensions": {
         "height": 7105,
-        "width": 2710,
+        "width": 2960,
         "x": -1110,
         "y": -1780
       }
@@ -3317,7 +3519,7 @@ inputs:
 
     Set to "True" if you want to bypass.  Default is "False".
   playbookInputQuery:
-- key: AcceptedRiskDs
+- key: AcceptedRiskIDs
   value: {}
   required: false
   description: Comma-separated list of instance/VM IDs that are considered an accepted risk and that should be closed.
@@ -3325,7 +3527,7 @@ inputs:
 - key: AcceptedRiskProjects
   value: {}
   required: false
-  description: Comma-separated list of projects numbers that are considered an accepted risk and that should be closed.  For example, a list of GCP projects and AWS accounts.
+  description: Comma-separated list of projects numbers that are considered an accepted risk and that should be closed.  For example, a list of GCP projects, names of Azure Resource Groups, and AWS accounts.
   playbookInputQuery:
 - key: AcceptedRiskOther
   value: {}
@@ -3342,7 +3544,32 @@ inputs:
   playbookInputQuery:
   required: false
   value: {}
+- description: Channel to send instant messages for notification purposes.  For Slack, this will be the channel ID.
+  key: InstantMessageChannel
+  playbookInputQuery:
+  required: false
+  value: {}
 outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0
+inputSections:
+- description: Generic group for inputs
+  inputs:
+  - OwnerNotificationSubject
+  - OwnerNotificationBody
+  - NotificationTicketType
+  - RemediationNotificationSubject
+  - RemediationNotificationHTMLBody
+  - BypassDevCheck
+  - AcceptedRiskIDs
+  - AcceptedRiskProjects
+  - AcceptedRiskOther
+  - JiraProjectKey
+  - AWSAssumeRoleName
+  - InstantMessageChannel
+  name: General (Inputs group)
+outputSections:
+- description: Generic group for outputs
+  name: General (Outputs group)
+  outputs: []

@@ -1,9 +1,9 @@
 {
     "name": "GenericSQL",
-    "description": "Connect and execute sql queries in 4 Databases: MySQL, PostgreSQL, Microsoft SQL Server and Oracle",
+    "description": "Connect and execute sql queries in 5 Databases: MySQL, PostgreSQL, Microsoft SQL Server, Oracle and Teradata",
     "support": "xsoar",
     "serverMinVersion": "5.0.0",
-    "currentVersion": "1.3.0",
+    "currentVersion": "1.3.8",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

@@ -855,7 +855,7 @@ script:
     - contextPath: Lacework.Vulnerability.Host.vulnHash
       description: A unique hash of all data contained in the vulnerability
       type: String
-  dockerimage: demisto/lacework:1.0.0.47313
+  dockerimage: demisto/lacework:1.0.0.117192
   isfetch: true
   runonce: false
   script: '-'

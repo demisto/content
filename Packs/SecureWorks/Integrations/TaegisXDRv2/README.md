@@ -1,24 +1,20 @@
 
-## Configure Taegis XDR on Cortex XSOAR
+## Configure Taegis XDR in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Taegis XDR
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Taegis Environment | The environment to utilize | True |
-    | Client ID | Client ID as described in the [Taegis Documentation](https://docs.ctpx.secureworks.com/apis/api_authenticate/) | True |
-    | Client Secret | Client Secret as described in the [Taegis Documentation](https://docs.ctpx.secureworks.com/apis/api_authenticate/) | True |
-    | Use system proxy settings | Defines whether the system proxy is used or not | False |
-    | Fetch Incident Type | The type of incident to fetch from Taegis (Alerts or Investigations) | True |
-    | Include Assets in Fetch | When using the Investigations fetch type, should assets be included? This can cause API failures or latency and should only be enabled if necessary | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Taegis Environment | The environment to utilize | True |
+| Client ID | Client ID as described in the [Taegis Documentation](https://docs.ctpx.secureworks.com/apis/api_authenticate/) | True |
+| Client Secret | Client Secret as described in the [Taegis Documentation](https://docs.ctpx.secureworks.com/apis/api_authenticate/) | True |
+| Use system proxy settings | Defines whether the system proxy is used or not | False |
+| Fetch Incident Type | The type of incident to fetch from Taegis (Alerts or Investigations) | True |
+| Include Assets in Fetch | When using the Investigations fetch type, should assets be included? This can cause API failures or latency and should only be enabled if necessary | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 

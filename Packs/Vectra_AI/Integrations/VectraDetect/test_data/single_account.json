@@ -120,6 +120,7 @@
     "last_detection_timestamp": "2022-07-03T23:34:07Z",
     "ldap": null,
     "name": "O365:darcy@corp.example.com",
+    "display_name": "O365:darcy@corp.example.com",
     "note": null,
     "note_modified_by": null,
     "note_modified_timestamp": null,

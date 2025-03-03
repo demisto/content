@@ -138,6 +138,14 @@ severity_to_text = [
     'High',
     'Critical'
 ]
+
+
+FETCH_COMMAND = {
+    'events': 0,
+    'assets': 1
+}
+
+
 PARAMS = demisto.params()
 BASE_URL = PARAMS['url']
 ACCESS_KEY = PARAMS.get('credentials_access_key', {}).get('password') or PARAMS.get('access-key')
@@ -162,9 +170,14 @@ DATE_FORMAT = '%Y-%m-%d'
 VENDOR = 'tenable'
 PRODUCT = 'io'
 CHUNK_SIZE = 5000
-MAX_CHUNKS_PER_FETCH = 10
+ASSETS_NUMBER = 100
+MAX_CHUNKS_PER_FETCH = 8
+MAX_VULNS_CHUNKS_PER_FETCH = 8
 ASSETS_FETCH_FROM = '90 days'
+VULNS_FETCH_FROM = '3 days'
 MIN_ASSETS_INTERVAL = 60
+NOT_FOUND_ERROR = '404'
+XSIAM_EVENT_CHUNK_SIZE_LIMIT = 4 * (10 ** 6)    # 4 MB
 
 
 class Client(BaseClient):
@@ -252,7 +265,7 @@ class Client(BaseClient):
                 },
             "num_assets": num_assets
         }
-
+        demisto.debug(f"my payload is: {payload}")
         res = self._http_request(method='POST', url_suffix='/vulns/export', headers=self._headers, json_data=payload)
         return res.get('export_uuid', '')
 
@@ -266,10 +279,11 @@ class Client(BaseClient):
 
         """
         res = self._http_request(method='GET', url_suffix=f'/vulns/export/{export_uuid}/status',
-                                 headers=self._headers)
-        status = res.get('status')
-        chunks_available = res.get('chunks_available', [])
-        return status, chunks_available
+                                 headers=self._headers, ok_codes=(200, 404))
+        if isinstance(res, dict) and (res.get("status") == 404 or res.get('error')):
+            return 'ERROR', []
+
+        return res.get('status'), res.get('chunks_available') or []
 
     def download_vulnerabilities_chunk(self, export_uuid: str, chunk_id: int):
         """
@@ -281,8 +295,14 @@ class Client(BaseClient):
         Returns: Chunk of vulnerabilities from API.
 
         """
-        return self._http_request(method='GET', url_suffix=f'/vulns/export/{export_uuid}/chunks/{chunk_id}',
-                                  headers=self._headers)
+
+        result = self._http_request(method='GET', url_suffix=f'/vulns/export/{export_uuid}/chunks/{chunk_id}',
+                                    headers=self._headers, ok_codes=(200, 404))
+
+        if isinstance(result, dict) and (result.get("status") == 404 or result.get('error')):
+            demisto.debug(f"404 error was received, result from api: {result}")
+            return NOT_FOUND_ERROR
+        return result
 
     def get_asset_export_uuid(self, fetch_from):
         """
@@ -312,7 +332,10 @@ class Client(BaseClient):
         Returns: The assets' chunk id.
 
         """
-        res = self._http_request(method='GET', url_suffix=f'assets/export/{export_uuid}/status', headers=self._headers)
+        res = self._http_request(method='GET', url_suffix=f'assets/export/{export_uuid}/status', headers=self._headers,
+                                 ok_codes=(200, 404))
+        if isinstance(res, dict) and (res.get("status") == 404 or res.get('error')):
+            return 'ERROR', []
         return res.get('status'), res.get('chunks_available')
 
     def download_assets_chunk(self, export_uuid: str, chunk_id: int):
@@ -325,8 +348,13 @@ class Client(BaseClient):
         Returns: Chunk of assets from API.
 
         """
-        return self._http_request(method='GET', url_suffix=f'/assets/export/{export_uuid}/chunks/{chunk_id}',
-                                  headers=self._headers)
+        result = self._http_request(method='GET', url_suffix=f'/assets/export/{export_uuid}/chunks/{chunk_id}',
+                                    headers=self._headers, ok_codes=(404, 200))
+        # export uuid has expired
+        if isinstance(result, dict) and (result.get("status") == 404 or result.get('error')):
+            demisto.debug(f"404 error was received, result from api: {result}")
+            return NOT_FOUND_ERROR
+        return result
 
 
 def flatten(d):
@@ -588,9 +616,9 @@ def generate_export_uuid(client: Client, last_run):
         last_run: last run object.
     """
     demisto.info("Getting vulnerabilities export uuid for report.")
-    last_found: float = get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM))   # type: ignore
+    last_found: float = get_timestamp(arg_to_datetime(VULNS_FETCH_FROM))   # type: ignore
 
-    export_uuid = client.get_vuln_export_uuid(num_assets=CHUNK_SIZE, last_found=last_found)
+    export_uuid = client.get_vuln_export_uuid(num_assets=ASSETS_NUMBER, last_found=last_found)
 
     demisto.info(f'vulnerabilities export uuid is {export_uuid}')
     last_run.update({'vuln_export_uuid': export_uuid})
@@ -607,7 +635,7 @@ def generate_assets_export_uuid(client: Client, assets_last_run):
 
     """
 
-    demisto.info("Getting assets export uuid.")
+    demisto.info("Generating assets export uuid.")
     fetch_from = round(get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM)))
 
     export_uuid = client.get_asset_export_uuid(fetch_from=fetch_from)
@@ -625,22 +653,70 @@ def handle_assets_chunks(client: Client, assets_last_run):
         assets_last_run: assets last run object.
 
     """
+    demisto.debug("in handle assets chunks")
     stored_chunks = assets_last_run.get('assets_available_chunks', [])
     updated_stored_chunks = stored_chunks.copy()
     export_uuid = assets_last_run.get('assets_export_uuid')
     assets = []
     for chunk_id in stored_chunks[:MAX_CHUNKS_PER_FETCH]:
-        assets.extend(client.download_assets_chunk(export_uuid=export_uuid, chunk_id=chunk_id))
+        result = client.download_assets_chunk(export_uuid=export_uuid, chunk_id=chunk_id)
+        if result == NOT_FOUND_ERROR:
+            demisto.info("generating new export uuid to start new fetch due to 404 error.")
+
+            export_uuid = client.get_asset_export_uuid(fetch_from=round(get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM))))
+            assets_last_run.update({'assets_export_uuid': export_uuid})
+            assets_last_run.update({'nextTrigger': '30', "type": FETCH_COMMAND.get('assets')})
+            assets_last_run.pop('assets_available_chunks', None)
+            demisto.debug(f"after resetting last run sending lastrun: {assets_last_run}")
+            return [], assets_last_run
+        assets.extend(result)
         updated_stored_chunks.remove(chunk_id)
     if updated_stored_chunks:
         assets_last_run.update({'assets_available_chunks': updated_stored_chunks,
-                                'nextTrigger': '0', "type": 1})
+                                'nextTrigger': '30', "type": FETCH_COMMAND.get('assets')})
     else:
-        assets_last_run.pop('nextTrigger', None)
-        assets_last_run.pop('type', None)
         assets_last_run.pop('assets_available_chunks', None)
         assets_last_run.pop('assets_export_uuid', None)
     return assets, assets_last_run
+
+
+def handle_vulns_chunks(client: Client, assets_last_run):   # pragma: no cover
+    """
+    Handle vulns chunks stored in the last run object.
+
+    Args:
+        client: Client class object.
+        assets_last_run: assets last run object.
+
+    """
+    demisto.debug("in handle vulns chunks")
+    stored_chunks = assets_last_run.get('vulns_available_chunks', [])
+    updated_stored_chunks = stored_chunks.copy()
+    export_uuid = assets_last_run.get('vuln_export_uuid')
+    vulnerabilities = []
+    for chunk_id in stored_chunks[:MAX_VULNS_CHUNKS_PER_FETCH]:
+        result = client.download_vulnerabilities_chunk(export_uuid=export_uuid, chunk_id=chunk_id)
+        if result == NOT_FOUND_ERROR:
+            demisto.info("generating new export uuid to start new fetch due to 404 error.")
+
+            export_uuid = client.get_vuln_export_uuid(num_assets=ASSETS_NUMBER,
+                                                      last_found=round(get_timestamp(arg_to_datetime(VULNS_FETCH_FROM))))
+            assets_last_run.update({'vuln_export_uuid': export_uuid})
+            assets_last_run.update({'nextTrigger': '30', "type": FETCH_COMMAND.get('assets')})
+            assets_last_run.pop('vulns_available_chunks', None)
+            demisto.debug(f"after resetting last run sending lastrun: {assets_last_run}")
+            return [], assets_last_run
+        vulnerabilities.extend(result)
+        updated_stored_chunks.remove(chunk_id)
+    for vuln in vulnerabilities:
+        vuln['_time'] = vuln.get('received') or vuln.get('indexed')
+    if updated_stored_chunks:
+        assets_last_run.update({'vulns_available_chunks': updated_stored_chunks,
+                                'nextTrigger': '30', "type": FETCH_COMMAND.get('assets')})
+    else:
+        assets_last_run.pop('vulns_available_chunks', None)
+        assets_last_run.pop('vuln_export_uuid', None)
+    return vulnerabilities, assets_last_run
 
 
 def get_asset_export_job_status(client: Client, assets_last_run):
@@ -661,7 +737,7 @@ def get_asset_export_job_status(client: Client, assets_last_run):
     return status
 
 
-def get_vulnerabilities_chunks(client: Client, export_uuid: str):
+def get_vulnerabilities_export_status(client: Client, assets_last_run):
     """
     If job has succeeded (status FINISHED) get all information from all chunks available.
     Args:
@@ -671,15 +747,13 @@ def get_vulnerabilities_chunks(client: Client, export_uuid: str):
     Returns: All information from all chunks available.
 
     """
-    vulnerabilities = []
-    status, chunks_available = client.get_vuln_export_status(export_uuid=export_uuid)
+    status, chunks_available = client.get_vuln_export_status(export_uuid=assets_last_run.get("vuln_export_uuid"))
     demisto.info(f'Report status is {status}, and number of available chunks is {chunks_available}')
     if status == 'FINISHED':
-        for chunk_id in chunks_available:
-            vulnerabilities.extend(client.download_vulnerabilities_chunk(export_uuid=export_uuid, chunk_id=chunk_id))
-    for vuln in vulnerabilities:
-        vuln['_time'] = vuln.get('received') or vuln.get('indexed')
-    return vulnerabilities, status
+        demisto.debug(f"returned {len(chunks_available)} vulns chunks")
+        assets_last_run.update({'vulns_available_chunks': chunks_available})
+
+    return status
 
 
 def test_module(client: Client, params):
@@ -1660,6 +1734,29 @@ def get_audit_logs_command(client: Client, from_date: Optional[str] = None, to_d
 ''' FETCH COMMANDS '''
 
 
+def set_index_audit_logs(dt_now: datetime, dt_start_date: datetime, audit_logs: List[dict], last_index_fetched: int) -> int:
+    """
+    This function set the new index_audit_logs by the following logic:
+        1. if dt_now > dt_start_date that means we're starting a new day (the fetch is per day, so we need to restart the index).
+        2. same day with new audit_logs - adding the amount of the new events to the exists index.
+        3. same day without new audit_logs - leave the index as the same.
+    Args:
+        dt_now: the current datetime
+        dt_start_date: the start day to fetch in the current cycle
+        audit_logs: the audit logs are retrieved in this cycle of fetch
+        last_index_fetched: the last index from the previous cycle
+
+    Returns:
+        The new last index fetched
+    """
+    if dt_now > dt_start_date:
+        return 0
+    elif audit_logs:
+        return len(audit_logs) + last_index_fetched
+    else:
+        return last_index_fetched
+
+
 def fetch_events_command(client: Client, first_fetch: datetime, last_run: dict, limit: int = 1000):
     """
     Fetches audit logs.
@@ -1690,14 +1787,22 @@ def fetch_events_command(client: Client, first_fetch: datetime, last_run: dict, 
     for audit_log in audit_logs:
         audit_log['_time'] = audit_log.get('received') or audit_log.get('indexed')
 
-    next_run: str = datetime.now(tz=timezone.utc).strftime(DATE_FORMAT)
-    last_run.update({'index_audit_logs': len(audit_logs) + last_index_fetched if audit_logs else last_index_fetched,
-                     'last_fetch_time': next_run})
+    # creating date now as a string and as a datetime object for comparing
+    date_now_as_str = datetime.utcnow().date().strftime(DATE_FORMAT)
+    date_now_as_dt = datetime.strptime(date_now_as_str, DATE_FORMAT)
+
+    start_date_as_dt = datetime.strptime(start_date, DATE_FORMAT)  # convert back the start_date to datetime object for comparing
+    demisto.debug(f"Tenable_io - {date_now_as_str=}, {start_date=}, {len(audit_logs)}, {last_index_fetched=}")
+    index_audit_logs = set_index_audit_logs(date_now_as_dt, start_date_as_dt, audit_logs, last_index_fetched)
+    demisto.debug(f"Tenable_io - {index_audit_logs=}")
+
+    last_run.update({'index_audit_logs': index_audit_logs,
+                     'last_fetch_time': date_now_as_str})
     demisto.info(f'Done fetching {len(audit_logs)} audit logs, Setting {last_run=}.')
     return audit_logs, last_run
 
 
-def fetch_assets_command(client: Client, assets_last_run):
+def fetch_assets_command(client: Client, assets_last_run):     # pragma: no cover
     """
     Fetches assets.
     Args:
@@ -1718,20 +1823,20 @@ def fetch_assets_command(client: Client, assets_last_run):
         status = get_asset_export_job_status(client=client, assets_last_run=assets_last_run)
 
         if status in ['PROCESSING', 'QUEUED']:
-            assets_last_run.update({'nextTrigger': '30', "type": 1})
+            assets_last_run.update({'nextTrigger': '30', "type": FETCH_COMMAND.get('assets')})
         # set params for next run
         if status == 'FINISHED':
             assets, assets_last_run = handle_assets_chunks(client, assets_last_run)
         elif status in ['CANCELLED', 'ERROR']:
             export_uuid = client.get_asset_export_uuid(fetch_from=round(get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM))))
             assets_last_run.update({'assets_export_uuid': export_uuid})
-            assets_last_run.update({'nextTrigger': '30', "type": 1})
+            assets_last_run.update({'nextTrigger': '30', "type": FETCH_COMMAND.get('assets')})
 
     demisto.info(f'Done fetching {len(assets)} assets, {assets_last_run=}.')
     return assets
 
 
-def run_assets_fetch(client, last_run):
+def run_assets_fetch(client, last_run):     # pragma: no cover
 
     demisto.info("fetch assets from the API")
     # starting new fetch for assets, not polling from prev call
@@ -1741,7 +1846,7 @@ def run_assets_fetch(client, last_run):
     return fetch_assets_command(client, last_run)
 
 
-def fetch_vulnerabilities(client: Client, last_run: dict):
+def fetch_vulnerabilities(client: Client, assets_last_run: dict):     # pragma: no cover
     """
     Fetches vulnerabilities if job has succeeded.
     Args:
@@ -1752,24 +1857,27 @@ def fetch_vulnerabilities(client: Client, last_run: dict):
         Vulnerabilities fetched from the API.
     """
     vulnerabilities = []
-    export_uuid = last_run.get('vuln_export_uuid')
-    if export_uuid:
-        demisto.info(f'Got export uuid from API {export_uuid}')
-        vulnerabilities, status = get_vulnerabilities_chunks(client=client, export_uuid=export_uuid)
+    # if already in assets_last_run meaning its still polling chunks from api
+    export_uuid = assets_last_run.get('vuln_export_uuid')
+    # if exists, still downloading chunks from prev fetch call
+    available_chunks = assets_last_run.get('vulns_available_chunks', [])
+    if available_chunks:
+        vulnerabilities, assets_last_run = handle_vulns_chunks(client, assets_last_run)
+    elif export_uuid:
+        status = get_vulnerabilities_export_status(client=client, assets_last_run=assets_last_run)
+
         if status in ['PROCESSING', 'QUEUED']:
-            last_run.update({'nextTrigger': '30', "type": 1})
+            assets_last_run.update({'nextTrigger': '30', "type": FETCH_COMMAND.get('assets')})
         # set params for next run
         if status == 'FINISHED':
-            last_run.pop('vuln_export_uuid', None)
-            if not last_run.get('assets_export_uuid'):
-                last_run.pop('nextTrigger', None)
-                last_run.pop('type', None)
+            vulnerabilities, assets_last_run = handle_vulns_chunks(client, assets_last_run)
         elif status in ['CANCELLED', 'ERROR']:
-            export_uuid = client.get_vuln_export_uuid(num_assets=CHUNK_SIZE,
-                                                      last_found=get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM)))
-            last_run.update({'vuln_export_uuid': export_uuid})
+            export_uuid = client.get_vuln_export_uuid(num_assets=ASSETS_NUMBER,
+                                                      last_found=get_timestamp(arg_to_datetime(VULNS_FETCH_FROM)))
+            assets_last_run.update({'vuln_export_uuid': export_uuid})
+            assets_last_run.update({'nextTrigger': '30', "type": FETCH_COMMAND.get('assets')})
 
-    demisto.info(f'Done fetching {len(vulnerabilities)} vulnerabilities, {last_run=}.')
+    demisto.info(f'Done fetching {len(vulnerabilities)} vulnerabilities, {assets_last_run=}.')
     return vulnerabilities
 
 
@@ -1782,16 +1890,38 @@ def run_vulnerabilities_fetch(client, last_run):
     return fetch_vulnerabilities(client, last_run)
 
 
-def skip_fetch_assets(last_run):
+def skip_fetch_assets(last_run):     # pragma: no cover
     time_to_check = last_run.get("assets_last_fetch")
     if not time_to_check:
         return False
     passed_time = (time.time() - time_to_check) / 60
-    to_skip = not last_run.get('nextTrigger') and (passed_time < MIN_ASSETS_INTERVAL)
+    to_skip = not (last_run.get('vuln_export_uuid') or last_run.get('assets_export_uuid')) and (passed_time < MIN_ASSETS_INTERVAL)
     if to_skip:
         demisto.info(f"Skipping fetch-assets command. Only {passed_time} minutes have passed since the last fetch. "
                      f"It should be a minimum of 1 hour.")
     return to_skip
+
+
+def parse_vulnerabilities(vulns):
+
+    demisto.debug("Parse the vulnerabilities...")
+    if not isinstance(vulns, list):
+        demisto.debug(f"result is of type: {type(vulns)}")
+        vulns = list(vulns)
+    for vuln in vulns:
+        vuln_str = json.dumps(vuln)
+        if sys.getsizeof(vuln_str) > XSIAM_EVENT_CHUNK_SIZE_LIMIT:
+            demisto.debug("found object with size: {size}".format(size=sys.getsizeof(sys.getsizeof(vuln_str))))
+            if vuln.get('output'):
+                demisto.debug("replacing output key")
+                vuln['output'] = ""
+                vuln['isTruncated'] = True
+            else:
+                demisto.debug("skipping object...")
+                continue
+        else:
+            vuln['isTruncated'] = False
+    return vulns
 
 
 def main():  # pragma: no cover
@@ -1888,26 +2018,31 @@ def main():  # pragma: no cover
             assets_last_run_copy = assets_last_run.copy()
             if skip_fetch_assets(assets_last_run):
                 return
-            elif not assets_last_run.get("nextTrigger"):
+            elif not (assets_last_run.get('vuln_export_uuid') or assets_last_run.get('assets_export_uuid')):
                 # starting a whole new fetch process for assets
+                demisto.debug("starting new fetch")
                 assets_last_run.update({"assets_last_fetch": time.time()})
-            # Fetch Assets (no nextTrigger -> new fetch, or assets_export_uuid -> continue prev fetch)
-            if assets_last_run_copy.get('assets_export_uuid') or not assets_last_run_copy.get('nextTrigger'):
+            # Fetch Assets (assets_export_uuid -> continue prev fetch, or, no vuln_export_uuid -> new fetch)
+            if assets_last_run_copy.get('assets_export_uuid') or not assets_last_run_copy.get('vuln_export_uuid'):
                 assets = run_assets_fetch(client, assets_last_run)
-
             # Fetch Vulnerabilities
-            if assets_last_run_copy.get('vuln_export_uuid') or not assets_last_run_copy.get('nextTrigger'):
+            if assets_last_run_copy.get('vuln_export_uuid') or not assets_last_run_copy.get('assets_export_uuid'):
                 vulnerabilities = run_vulnerabilities_fetch(client, last_run=assets_last_run)
 
-            demisto.info(f"Sending {len(assets)} assets and {len(vulnerabilities)} vulnerabilities to XSIAM.")
-
-            send_data_to_xsiam(data=assets, vendor=VENDOR, product=f'{PRODUCT}_assets', data_type='assets')
-            send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product=f'{PRODUCT}_vulnerabilities')
-
-            demisto.info("Done Sending data to XSIAM.")
+            demisto.info(f"Received {len(assets)} assets and {len(vulnerabilities)} vulnerabilities.")
 
             demisto.debug(f"new lastrun assets: {assets_last_run}")
             demisto.setAssetsLastRun(assets_last_run)
+
+            if assets:
+                demisto.debug('sending assets to XSIAM.')
+                send_data_to_xsiam(data=assets, vendor=VENDOR, product=f'{PRODUCT}_assets', data_type='assets')
+            if vulnerabilities:
+                vulnerabilities = parse_vulnerabilities(vulnerabilities)
+                demisto.debug('sending vulnerabilities to XSIAM.')
+                send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product=f'{PRODUCT}_vulnerabilities')
+
+            demisto.info("Done Sending data to XSIAM.")
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')

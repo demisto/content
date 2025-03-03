@@ -23,7 +23,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: "USTA is an Cyber Intelligence Platform that responds directly and effectively to today's complex cyber threats. "
+description: 'USTA is an Cyber Intelligence Platform that responds directly and effectively to today''s complex cyber threats. '
 display: USTA
 name: USTA
 script:
@@ -251,7 +251,7 @@ script:
     - contextPath: Usta.CloseIncident.id
       description: If the incident is closed, returns the id value that was closed.
     name: usta-close-incident
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: ''
   subtype: python3

@@ -2,12 +2,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import sys
 from datetime import datetime, timedelta
-
 import requests
 
-
-''' CONSTANTS '''
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 VERIFY_SSL = not demisto.params().get('insecure', False)
 
@@ -17,7 +13,7 @@ if not demisto.params().get('proxy', False):
 
 def test_module() -> str:
     try:
-        base_url = urljoin(demisto.params()['url'], '/rest/json/cves/1.0')
+        base_url = urljoin(demisto.params()['url'], '/rest/json/cves/2.0')
         headers = {'Accept': 'application/json'}
         req = requests.get(base_url, headers=headers, verify=VERIFY_SSL)
         if req.status_code != 200:
@@ -31,8 +27,7 @@ def test_module() -> str:
 def connection(url, additional_parameters):
 
     headers = {'Accept': 'application/json'}
-    endpoint = url + additional_parameters
-    req = requests.get(endpoint, headers=headers, verify=VERIFY_SSL)
+    req = requests.get(url, headers=headers, params=additional_parameters, verify=VERIFY_SSL)
     if req.status_code != 200:
         return_results(req.content)
         sys.exit(1)
@@ -44,73 +39,92 @@ def connection(url, additional_parameters):
 def extractVulnDetails(requestfromconnection):
     req = requestfromconnection
     pretty_list = []  # list()
-    if (not ('vulns') in req):
-        for i in req['result']['CVE_Items']:
+
+    def get_value_from_hierarchy(mapping, key_chain):
+        """Retrieve value from a nested dictionary based on a dot-separated key chain."""
+        keys = key_chain.split('.')
+        value = mapping
+        for key in keys:
+            if key in value:
+                value = value[key]
+            else:
+                return None
+        return value
+
+    key_locations = {
+        'CVSS Attack Vector': ['cvssData.attackVector', 'cvssData.accessVector', 'attackVector'],
+        'CVSS Attack Complexity': ['cvssData.attackComplexity', 'cvssData.accessComplexity', 'attackComplexity'],
+        'CVSS Base Score': ['cvssData.baseScore', 'baseScore'],
+        'CVSS Base Severity': ['cvssData.baseSeverity', 'baseSeverity'],
+        'Exploitability Score': ['cvssData.exploitabilityScore', 'exploitabilityScore'],
+        'Impact Score': ['cvssData.impactScore', 'impactScore'],
+        'CVSS Version': ['cvssData.version', 'version'],
+        'CVSS Vector String': ['cvssData.vectorString', 'vectorString'],
+        'CVSS Privileges Required': ['cvssData.privilegesRequired', 'obtainAllPrivilege'],
+        'CVSS User Interaction': ['cvssData.userInteraction', 'userInteractionRequired'],
+        'CVSS Scope': ['cvssData.scope'],
+        'CVSS Confidentiality Impact': ['cvssData.confidentialityImpact', 'confidentialityImpact'],
+        'CVSS Integrity Impact': ['cvssData.integrityImpact', 'integrityImpact'],
+        'CVSS Availability Impact': ['cvssData.availabilityImpact', 'availabilityImpact']
+    }
+
+    if ('vulns' not in req):
+        for i in req['vulnerabilities']:
             pretty_dict = {}
-            pretty_dict['CVE ID'] = i['cve']['CVE_data_meta']['ID']
-            pretty_dict['Published Date'] = i['publishedDate']
-            pretty_dict['Last Modified Date'] = i['lastModifiedDate']
-            for k in i['cve']['description']['description_data']:
-                pretty_dict['Description'] = k['value']
+            pretty_dict['CVE ID'] = i['cve']['id']
+            pretty_dict['Published Date'] = i['cve']['published']
+            pretty_dict['Last Modified Date'] = i['cve']['lastModified']
+            description = []
+            for k in i['cve']['descriptions']:
+                description.append(k['value'])
+            pretty_dict['Description'] = description
             reference_data = []
-            for j in i['cve']['references']['reference_data']:
+            for j in i['cve']['references']:
                 reference_data.append(j['url'])
             pretty_dict['References'] = reference_data
-            if (('impact') in i and ('baseMetricV3') in i['impact']):
-                pretty_dict['CVSSv3 Base Score'] = i['impact']['baseMetricV3']['cvssV3']['baseScore']
-                pretty_dict['CVSSv3 Base Severity'] = i['impact']['baseMetricV3']['cvssV3']['baseSeverity']
-                pretty_dict['Exploitability Score'] = i['impact']['baseMetricV3']['exploitabilityScore']
-                pretty_dict['Impact Score'] = i['impact']['baseMetricV3']['impactScore']
-                pretty_dict['CVSSv3 Version'] = i['impact']['baseMetricV3']['cvssV3']['version']
-                pretty_dict['CVSSv3 Vector String'] = i['impact']['baseMetricV3']['cvssV3']['vectorString']
-                pretty_dict['CVSSv3 Attack Vector'] = i['impact']['baseMetricV3']['cvssV3']['attackVector']
-                pretty_dict['CVSSv3 Attack Complexity'] = i['impact']['baseMetricV3']['cvssV3']['attackComplexity']
-                pretty_dict['CVSSv3 Privileges Required'] = i['impact']['baseMetricV3']['cvssV3']['privilegesRequired']
-                pretty_dict['CVSSv3 User Interaction'] = i['impact']['baseMetricV3']['cvssV3']['userInteraction']
-                pretty_dict['CVSSv3 Scope'] = i['impact']['baseMetricV3']['cvssV3']['scope']
-                pretty_dict['CVSSv3 Confidentiality Impact'] = i['impact']['baseMetricV3']['cvssV3']['confidentialityImpact']
-                pretty_dict['CVSSv3 Integrity Impact'] = i['impact']['baseMetricV3']['cvssV3']['integrityImpact']
-                pretty_dict['CVSSv3 Availability Impact'] = i['impact']['baseMetricV3']['cvssV3']['availabilityImpact']
-            """if (('configurations') in i):
-                cpe23UriString = ''
-                for l in i['configurations']['nodes']:
-                    if(('children') in l):
-                        for m in l['children']:
-                            cpe23Uri = []
-                            for n in m['cpe_match']:
-                                cpe23Uri += n['cpe23Uri']+ '\n' #+ n['vulnerable']
-                                #pretty_dict['vulnerable'] = n['vulnerable']
-                                #pretty_dict['cpe23Uri'] = n['cpe23Uri']
-                        pretty_dict['configurations'] = cpe23UriString
-                    elif(('cpe_match') in l):
-                        for m in l['cpe_match']:
-                            cpe23UriString += m['cpe23Uri'] + '\n' #+ m['vulnerable']
-                            #pretty_dict['vulnerable'] = m['vulnerable']
-                            #pretty_dict['cpe23Uri'] = m['cpe23Uri']
-                        pretty_dict['configurations'] = cpe23UriString"""
-            pretty_list.append(pretty_dict)
-    elif ('vulns') in req:
-        if (not len(req['vulns'])):
-            demisto.results("Vendor name may be wrong or no CPE added")
+            pretty_dict['Vulnerability Status'] = i['cve']['vulnStatus']
 
-    if (('result') in req):
-        if (not len(req['result']['CVE_Items'])):
-            demisto.results("There were no vulnerability in the criteria you were looking for.")
+            if ('metrics' in list(i['cve'].keys())):
+                cvssmetricslist = []
+
+                for _cvssmetrickey, cvssmetric in i['cve']['metrics'].items():
+                    cvssmetricsdict = {}
+                    cvssmetric = cvssmetric[0]
+
+                    for key, locations in key_locations.items():
+                        cvssmetricsdict[key] = next(
+                            (
+                                get_value_from_hierarchy(cvssmetric, loc)
+                                for loc in locations
+                                if get_value_from_hierarchy(cvssmetric, loc) is not None
+                            ),
+                            None,
+                        )
+                    cvssmetricslist.append(cvssmetricsdict)
+
+            pretty_dict['metrics'] = cvssmetricslist
+            pretty_list.append(pretty_dict)
+    elif ('vulns') in req and (not len(req['vulns'])):
+        demisto.results("Vendor name may be wrong or no CPE added")
+
+    if (('result') in req) and (not len(req['result']['CVE_Items'])):
+        demisto.results("There were no vulnerability in the criteria you were looking for.")
     return pretty_list
 
 
 def generalSearch():
 
-    base_url = urljoin(demisto.params()['url'], '/rest/json/cves/1.0')
+    base_url = urljoin(demisto.params()['url'], '/rest/json/cves/2.0')
     time = int(demisto.args().get('time'))
-    last_time = datetime.today() - timedelta(hours=int(time))
-    start_date = last_time.strftime('%Y-%m-%dT%H:%M:%S:000')
+    last_time = datetime.today() - timedelta(days=int(time))
+    start_date = last_time.strftime('%Y-%m-%dT%H:%M:%S.000')
+    end_date = datetime.today().strftime('%Y-%m-%dT%H:%M:%S.000')
     startIndex = demisto.args().get('startIndex')
     resultsPerPage = demisto.args().get('resultsPerPage')
-    additional_parameters = '?modStartDate=' + start_date + ' UTC-00:00' + \
-        '&startIndex=' + str(startIndex) + '&resultsPerPage=' + str(resultsPerPage)
+    additional_parameters = {"lastModStartDate": f"{start_date}+00:00", "lastModEndDate": f"{end_date}+00:00",
+                             "startIndex": f"{startIndex}", "resultsPerPage": f"{resultsPerPage}"}
+
     generalSearchRequest = connection(base_url, additional_parameters)
-    demisto.results(generalSearchRequest)
     generalVulnerabilityList = extractVulnDetails(generalSearchRequest)
 
     headers = ['CVE ID', 'Description', 'Published Date', 'Last Modified Date', 'References']
@@ -129,16 +143,21 @@ def generalSearch():
 
 def keywordSearch():
 
-    base_url = urljoin(demisto.params()['url'], '/rest/json/cves/1.0')
+    base_url = urljoin(demisto.params()['url'], '/rest/json/cves/2.0')
     keyword = demisto.args().get('keyword')
-    isExactMatch = demisto.args().get('isExactMatch')
+    isExactMatch = argToBoolean(demisto.args().get('isExactMatch'))
     time = int(demisto.args().get('time'))
-    last_time = datetime.today() - timedelta(hours=int(time))
-    start_date = last_time.strftime('%Y-%m-%dT%H:%M:%S:000')
+    last_time = datetime.today() - timedelta(days=int(time))
+    start_date = last_time.strftime('%Y-%m-%dT%H:%M:%S%z')
+    end_date = datetime.today().strftime('%Y-%m-%dT%H:%M:%S.000')
     startIndex = demisto.args().get('startIndex')
     resultsPerPage = demisto.args().get('resultsPerPage')
-    additional_parameters = '?modStartDate=' + start_date + ' UTC-00:00' + '&keyword=' + keyword + \
-        '&isExactMatch=' + isExactMatch + '&startIndex=' + str(startIndex) + '&resultsPerPage=' + str(resultsPerPage)
+    additional_parameters = {"lastModStartDate": f"{start_date}+00:00", "lastModEndDate": f"{end_date}+00:00",
+                             "keywordSearch": keyword, "startIndex": f"{startIndex}", "resultsPerPage": f"{resultsPerPage}"}
+    if isExactMatch:
+        additional_parameters["keywordExactMatch"] = None
+        additional_parameters = '&'.join([k if v is None else
+                                          f"{k}={v}" for k, v in additional_parameters.items()])  # type: ignore
     generalSearchRequest = connection(base_url, additional_parameters)
     generalVulnerabilityList = extractVulnDetails(generalSearchRequest)
 
@@ -158,10 +177,11 @@ def keywordSearch():
 
 def cvssSearch():
 
-    base_url = urljoin(demisto.params()['url'], '/rest/json/cves/1.0')
+    base_url = urljoin(demisto.params()['url'], '/rest/json/cves/2.0')
     time = int(demisto.args().get('time'))
-    last_time = datetime.today() - timedelta(hours=int(time))
-    start_date = last_time.strftime('%Y-%m-%dT%H:%M:%S:000')
+    last_time = datetime.today() - timedelta(days=int(time))
+    start_date = last_time.strftime('%Y-%m-%dT%H:%M:%S.000')
+    end_date = datetime.today().strftime('%Y-%m-%dT%H:%M:%S.000')
 
     cvssType = demisto.args().get('cvssType')
     key = demisto.args().get('key')
@@ -171,8 +191,9 @@ def cvssSearch():
     startIndex = demisto.args().get('startIndex')
     resultsPerPage = demisto.args().get('resultsPerPage')
 
-    additional_parameters = '?modStartDate=' + start_date + ' UTC-00:00' + '&' + searchParameters + \
-        '=' + value + '&startIndex=' + str(startIndex) + '&resultsPerPage=' + str(resultsPerPage)
+    additional_parameters = {"lastModStartDate": f"{start_date}+00:00", "lastModEndDate": f"{end_date}+00:00",
+                             f"{searchParameters}": f"{value}", "startIndex": f"{startIndex}",
+                             "resultsPerPage": f"{resultsPerPage}"}
     generalSearchRequest = connection(base_url, additional_parameters)
     generalVulnerabilityList = extractVulnDetails(generalSearchRequest)
 
@@ -192,17 +213,18 @@ def cvssSearch():
 
 def cweSearch():
 
-    base_url = urljoin(demisto.params()['url'], '/rest/json/cves/1.0')
+    base_url = urljoin(demisto.params()['url'], '/rest/json/cves/2.0')
     time = int(demisto.args().get('time'))
-    last_time = datetime.today() - timedelta(hours=int(time))
-    start_date = last_time.strftime('%Y-%m-%dT%H:%M:%S:000')
+    last_time = datetime.today() - timedelta(days=int(time))
+    start_date = last_time.strftime('%Y-%m-%dT%H:%M:%S.000')
+    end_date = datetime.today().strftime('%Y-%m-%dT%H:%M:%S.000')
 
     cweId = demisto.args().get('cweId')
     startIndex = demisto.args().get('startIndex')
     resultsPerPage = demisto.args().get('resultsPerPage')
 
-    additional_parameters = '?modStartDate=' + start_date + ' UTC-00:00' + '&cweId=' + \
-        cweId + '&startIndex=' + str(startIndex) + '&resultsPerPage=' + str(resultsPerPage)
+    additional_parameters = {"lastModStartDate": f"{start_date}+00:00", "lastModEndDate": f"{end_date}+00:00",
+                             "cweId": f"{cweId}", "startIndex": f"{startIndex}", "resultsPerPage": f"{resultsPerPage}"}
     generalSearchRequest = connection(base_url, additional_parameters)
     generalVulnerabilityList = extractVulnDetails(generalSearchRequest)
 
@@ -222,17 +244,19 @@ def cweSearch():
 
 def cpeSearch():
 
-    base_url = urljoin(demisto.params()['url'], '/rest/json/cves/1.0')
+    base_url = urljoin(demisto.params()['url'], '/rest/json/cves/2.0')
     time = int(demisto.args().get('time'))
-    last_time = datetime.today() - timedelta(hours=int(time))
-    start_date = last_time.strftime('%Y-%m-%dT%H:%M:%S:000')
+    last_time = datetime.today() - timedelta(days=int(time))
+    start_date = last_time.strftime('%Y-%m-%dT%H:%M:%S.000')
+    end_date = datetime.today().strftime('%Y-%m-%dT%H:%M:%S.000')
 
-    cpeMatchString = demisto.args().get('cpe')
+    cpeName = demisto.args().get('cpe')
     startIndex = demisto.args().get('startIndex')
     resultsPerPage = demisto.args().get('resultsPerPage')
 
-    additional_parameters = '?modStartDate=' + start_date + ' UTC-00:00' + '&cpeMatchString=' + \
-        cpeMatchString + '&startIndex=' + str(startIndex) + '&resultsPerPage=' + str(resultsPerPage)
+    additional_parameters = {"lastModStartDate": f"{start_date}+00:00", "lastModEndDate": f"{end_date}+00:00",
+                             "cpeName": f"{cpeName}", "startIndex": f"{str(startIndex)}",
+                             "resultsPerPage": f"{str(resultsPerPage)}"}
     generalSearchRequest = connection(base_url, additional_parameters)
     generalVulnerabilityList = extractVulnDetails(generalSearchRequest)
 
@@ -252,19 +276,18 @@ def cpeSearch():
 
 def cveSearch():
 
-    base_url = urljoin(demisto.params()['url'], '/rest/json/cve/1.0/')
+    base_url = urljoin(demisto.params()['url'], '/rest/json/cves/2.0/')
     cve = demisto.args().get('cve')
 
-    additional_parameters = cve
+    additional_parameters = {"cveId": cve}
     generalSearchRequest = connection(base_url, additional_parameters)
-    demisto.results(generalSearchRequest)
     generalVulnerabilityList = extractVulnDetails(generalSearchRequest)
     headers = ['CVE ID', 'Description', 'Published Date', 'Last Modified Date',
-               'References', 'CVSSv3 Base Score', 'CVSSv3 Base Severity',
-               'Exploitability Score', 'Impact Score', 'CVSSv3 Version',
-               'CVSSv3 Vector String', 'CVSSv3 Attack Vector', 'CVSSv3 Attack Complexity',
-               'CVSSv3 Privileges Required', 'CVSSv3 User Interaction', 'CVSSv3 Scope',
-               'CVSSv3 Confidentiality Impact', 'CVSSv3 Integrity Impact', 'CVSSv3 Availability Impact']
+               'References', 'CVSS Base Score', 'CVSS Base Severity',
+               'Exploitability Score', 'Impact Score', 'CVSS Version',
+               'CVSS Vector String', 'CVSS Attack Vector', 'CVSS Attack Complexity',
+               'CVSS Privileges Required', 'CVSS User Interaction', 'CVSS Scope',
+               'CVSS Confidentiality Impact', 'CVSS Integrity Impact', 'CVSS Availability Impact', 'Vulnerability Status']
     markdown = 'CVE Search\n'
     markdown += tableToMarkdown('Vulnerabilities', generalVulnerabilityList, headers=headers, removeNull=True)
 
@@ -287,7 +310,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
 
     ''' EXECUTION '''
-    LOG('command is %s' % (demisto.command(), ))
+    demisto.info(f'command is {demisto.command()}')
     try:
         if demisto.command() == 'test-module':
             demisto.results(test_module())

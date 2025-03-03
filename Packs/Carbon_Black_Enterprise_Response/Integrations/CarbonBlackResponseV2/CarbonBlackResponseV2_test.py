@@ -1,5 +1,4 @@
 import json
-import io
 
 import dateparser
 import pytest
@@ -9,7 +8,7 @@ import demistomock as demisto
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -486,7 +485,7 @@ def test_endpoint_command(mocker):
     }
 
     results = outputs[0].to_context()
-    for key, val in results.get("EntryContext").items():
+    for key, _val in results.get("EntryContext").items():
         assert results.get("EntryContext")[key] == get_endpoints_response[key]
     assert results.get("EntryContext") == get_endpoints_response
     assert len(outputs) == 1

@@ -3,7 +3,7 @@ from pathlib import Path
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-# type: ignore
+
 from MicrosoftApiModule import *  # noqa: E402
 import copy
 from requests import Response
@@ -29,8 +29,13 @@ OUTGOING_MIRRORED_FIELDS = {'status': 'The status of the pull request.',
                             'repository_id': 'The repository ID of the pull request target branch.',
                             'pull_request_id': 'the ID of the pull request'}
 
-GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE, 'Authorization Code': AUTHORIZATION_CODE}
-AZURE_DEVOPS_SCOPE = "499b84ac-1321-427f-aa17-267ca6975798/user_impersonation offline_access"
+GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE,
+                       'Authorization Code': AUTHORIZATION_CODE,
+                       'Client Credentials': CLIENT_CREDENTIALS}
+SCOPE_DEVICE_AUTH_FLOW = "499b84ac-1321-427f-aa17-267ca6975798/user_impersonation offline_access"
+SCOPE = '499b84ac-1321-427f-aa17-267ca6975798/.default'
+
+
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'  # ISO8601 format with UTC, default in XSOAR
 
 
@@ -67,12 +72,13 @@ class Client:
         client_args = assign_params(
             self_deployed=True,
             auth_id=client_id,
-            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
+            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token' if 'Device Code' in
+                                                                                                       auth_type else None,
             grant_type=GRANT_BY_CONNECTION[auth_type],
             base_url=f'https://dev.azure.com/{organization}',
             verify=verify,
             proxy=proxy,
-            scope=AZURE_DEVOPS_SCOPE,
+            scope=SCOPE if 'Device Code' not in auth_type else SCOPE_DEVICE_AUTH_FLOW,
             tenant_id=tenant_id,
             enc_key=enc_key,
             auth_code=auth_code,
@@ -1812,7 +1818,7 @@ def is_new_pr(project: str, repository: str, client: Client, last_id: int) -> bo
     response = client.pull_requests_list_request(project, repository, skip=0, limit=1)
     num_prs = response.get("count", 0)
     last_pr_id = response.get('value', [])[0].get('pullRequestId', 0) if len(response.get('value', [])) > 0 else None
-    if num_prs == 0 or last_pr_id <= last_id:
+    if num_prs == 0 or last_pr_id <= last_id:  # type: ignore[operator]
         demisto.debug(f'Number of PRs is: {num_prs}. Last fetched PR id: {last_pr_id}')
         return False
 
@@ -2516,7 +2522,9 @@ def test_module(client: Client) -> str:
                                "and `!azure-deops-auth-complete` to log in."
                                "You can validate the connection by running `!azure-devops-auth-test`\n"
                                "For more details press the (?) button.")
-
+    elif client.connection_type == 'Client Credentials':
+        client.ms_client.get_access_token()
+        return 'ok'
     else:
         raise Exception("When using user auth flow configuration, "
                         "Please enable the integration and run the !azure-devops-auth-test command in order to test it")

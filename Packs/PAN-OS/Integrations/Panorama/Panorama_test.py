@@ -2,7 +2,9 @@ import json
 from defusedxml import ElementTree
 import pytest
 import requests_mock
-
+from pytest_mock import MockerFixture
+from requests_mock.mocker import Mocker as RequestsMock
+import panos.errors
 import demistomock as demisto
 from unittest.mock import patch, MagicMock
 from panos.device import Vsys
@@ -11,9 +13,11 @@ from panos.firewall import Firewall
 from CommonServerPython import DemistoException, CommandResults
 from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
 import dateparser
+
 from test_data import fetch_incidents_input
 from test_data import mock_rules
 from freezegun import freeze_time
+from typing import cast
 
 integration_firewall_params = {
     'port': '443',
@@ -3267,6 +3271,7 @@ class TestUniversalCommand:
     SHOW_SYSTEM_INFO_XML = "test_data/show_system_info.xml"
     SHOW_JOB_XML = "test_data/show_jobs_all.xml"
     SHOW_COMMIT_JOB_XML = "test_data/show_commit_jobs_all.xml"
+    SHOW_JOB_WITH_FAILED_XML = "test_data/show_jobs_with_failed.xml"
 
     @patch("Panorama.run_op_command")
     def test_get_system_info(self, patched_run_op_command, mock_topology):
@@ -3309,8 +3314,41 @@ class TestUniversalCommand:
         for result_dataclass in result:
             for key, value in result_dataclass.__dict__.items():
                 # Nullable Values
-                if key not in ["description", "user"]:
+                if key not in ["description", "user", "details", "warnings"]:
                     assert value
+
+    @patch("Panorama.run_op_command")
+    @patch("Panorama.demisto.debug")
+    def test_get_jobs_with_failed(self, patched_debug, patched_run_op_command):
+        """Given the output XML for show jobs with a failed job, assert it is skipped."""
+        from Panorama import UniversalCommand, ShowJobsAllResultData, Panorama
+
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestUniversalCommand.SHOW_JOB_WITH_FAILED_XML)
+        MockTopology = type('MockTopology', (), {'all': lambda *x, **y: [Panorama(hostname='123')]})
+
+        result = UniversalCommand.show_jobs(MockTopology())
+
+        assert patched_debug.call_args_list[0].args[0] == (
+            '\'ShowJobsAllResultData\' cannot be instantiated with element: '
+            '{"job": {"type": "Failed-Job", "details": {"line": "job failed because of configd restart"}, "warnings": null}}'
+            '\nerror=TypeError("ShowJobsAllResultData.__init__() missing 9 required positional arguments: '
+            "'id', 'tfin', 'status', 'result', 'user', 'tenq', 'stoppable', 'positionInQ', and 'progress'\")")
+        assert isinstance(result, ShowJobsAllResultData)
+        assert result.__dict__ == {
+            'description': 'description',
+            'hostid': '123',
+            'id': 7,
+            'positionInQ': '0',
+            'progress': '100',
+            'result': 'OK',
+            'status': 'FIN',
+            'stoppable': 'no',
+            'tenq': '2024/08/25 22:07:53',
+            'tfin': '2024/08/25 22:09:00',
+            'type': 'Job Type',
+            'user': None,
+            'warnings': None
+        }
 
     def test_download_software(self, mock_topology):
         """
@@ -6491,21 +6529,7 @@ class TestFetchIncidentsHelperFunctions:
               according to the queries log type last fetch time.
         """
         from Panorama import add_time_filter_to_query_parameter
-        assert add_time_filter_to_query_parameter(query, last_fetch) == expected_result
-
-    def test_add_time_filter_to_query_parameter_fail(self):
-        """
-        Given:
-            - a query from parameters containing a 'time_generated' query filter
-        When:
-            - a fetch incidents cycle starts
-        Then:
-            - add_time_filter_to_query_parameter function will throw a DemistoException.
-        """
-        from Panorama import add_time_filter_to_query_parameter
-        with pytest.raises(DemistoException):
-            add_time_filter_to_query_parameter('time_generated geq "2020-01-01T00:00:00Z"',
-                                               fetch_incidents_input.utc_time_twelve)
+        assert add_time_filter_to_query_parameter(query, last_fetch, 'time_generated') == expected_result
 
     @pytest.mark.parametrize('params, expected_result', fetch_incidents_input.test_parse_queries_args)
     def test_log_types_queries_to_dict(self, params, expected_result):
@@ -6540,7 +6564,6 @@ class TestFetchIncidentsHelperFunctions:
                 'name': 'dummy_device 1',
                 'occurred': occured.strftime(DATE_FORMAT),
                 'rawJSON': json.dumps(raw_entry),
-                'type': 'TYPE'
             }
         assert incident_entry_to_incident_context(raw_entry) == context_entry
 
@@ -6569,20 +6592,25 @@ class TestFetchIncidentsHelperFunctions:
 
     @pytest.mark.parametrize('incident_entries, expected_result',
                              fetch_incidents_input.test_parse_incident_entries_args)
-    def test_parse_incident_entries(self, incident_entries, expected_result):
-        from Panorama import parse_incident_entries
+    def test_get_parsed_incident_entries(self, incident_entries, expected_result):
+        from Panorama import get_parsed_incident_entries, LastFetchTimes, LastIDs
 
-        assert parse_incident_entries(incident_entries) == expected_result
+        last_id_dict = LastIDs()
+        last_fetch_dict = LastFetchTimes(Url='2022/01/01 12:00:00')
+
+        res = get_parsed_incident_entries({'Url': incident_entries}, last_fetch_dict, last_id_dict)
+
+        assert last_id_dict.get('Url') == expected_result[0]
+        assert last_fetch_dict['Url'] == expected_result[1]  # type: ignore
+        assert res == expected_result[2]
 
     @pytest.mark.parametrize('incident_entries_dict, last_fetch_dict, last_id_dict, expected_result',
                              fetch_incidents_input.get_parsed_incident_entries_args)
-    def test_get_parsed_incident_entries(
-            self, mocker, incident_entries_dict, last_fetch_dict, last_id_dict, expected_result):
+    def test_get_parsed_incident_entries_2(self, mocker, incident_entries_dict, last_fetch_dict, last_id_dict, expected_result):
         from Panorama import get_parsed_incident_entries
-        mocker.patch('Panorama.parse_incident_entries', return_value=fetch_incidents_input.one_incident_result)
+
         assert get_parsed_incident_entries(incident_entries_dict, last_fetch_dict, last_id_dict) == expected_result
 
-    @patch("Panorama.GET_LOG_JOB_ID_MAX_RETRIES", 1)
     @pytest.mark.parametrize('response, debug_msg, expected_result',
                              fetch_incidents_input.get_query_entries_by_id_request_args)
     def test_get_query_entries_by_id_request(self, mocker, response, debug_msg, expected_result):
@@ -6598,11 +6626,9 @@ class TestFetchIncidentsHelperFunctions:
             1. Verify the command output is the returned response, and the debug message is called with 'FIN' status.
             2. Retry to query the job status in 1 second, and return empty dict if max retries exceeded.
          """
-        from Panorama import get_query_entries_by_id_request, GET_LOG_JOB_ID_MAX_RETRIES
+        from Panorama import get_query_entries_by_id_request
         mocker.patch('Panorama.http_request', return_value=response)
-        debug = mocker.patch('demistomock.debug')
-        assert get_query_entries_by_id_request('000', GET_LOG_JOB_ID_MAX_RETRIES) == expected_result
-        assert debug.called_with(debug_msg)
+        assert get_query_entries_by_id_request('000', 1) == expected_result
 
 
 class TestFetchIncidentsFlows:
@@ -6618,7 +6644,7 @@ class TestFetchIncidentsFlows:
         - no incidents should be returned.
         """
 
-        from Panorama import fetch_incidents, GET_LOG_JOB_ID_MAX_RETRIES
+        from Panorama import fetch_incidents
         last_run = {}
         first_fetch = '24 hours'
         queries_dict = {'X_log_type': "(receive_time geq '2021/01/22 08:00:00)"}
@@ -6626,12 +6652,12 @@ class TestFetchIncidentsFlows:
 
         mocker.patch('Panorama.get_query_entries', return_value={})
 
-        last_fetch_dict, last_id_dict, incident_entries_list = fetch_incidents(
-            last_run, first_fetch, queries_dict, max_fetch, GET_LOG_JOB_ID_MAX_RETRIES)
+        new_last_run, incident_entries_list = fetch_incidents(
+            last_run, first_fetch, queries_dict, max_fetch, 5)
 
         assert incident_entries_list == []
-        assert last_fetch_dict == {'X_log_type': ''}
-        assert last_id_dict == {}
+        assert new_last_run['last_fetch_dict'] == {'X_log_type': ''}
+        assert new_last_run['last_id_dict'] == {}
 
     def test_first_fetch_with_one_incident_flow(self, mocker):
         """
@@ -6647,7 +6673,7 @@ class TestFetchIncidentsFlows:
         - X_log_type last fetch should be created.
         - X_log_type last id should be created.
         """
-        from Panorama import fetch_incidents, GET_LOG_JOB_ID_MAX_RETRIES
+        from Panorama import fetch_incidents
         last_run = {}
         first_fetch = '24 hours'
         queries_dict = {'X_log_type': "(receive_time geq '2021/01/01 08:00:00)"}
@@ -6656,18 +6682,18 @@ class TestFetchIncidentsFlows:
         raw_entries = {'seqno': '000000001', 'type': 'X_log_type', 'time_generated': '2022/1/1 12:00:00',
                        'device_name': 'device_for_test'}
         expected_parsed_incident_entries = {'name': 'device_for_test 000000001', 'occurred': '2022-01-01T12:00:00Z',
-                                            'rawJSON': json.dumps(raw_entries), 'type': 'X_log_type'}
+                                            'rawJSON': json.dumps(raw_entries)}
         fetch_start_datetime_dict = {'X_log_type': dateparser.parse('2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'})}
 
         mocker.patch('Panorama.get_query_entries', return_value=[raw_entries])
         mocker.patch('Panorama.get_fetch_start_datetime_dict', return_value=fetch_start_datetime_dict)
 
-        last_fetch_dict, last_id_dict, incident_entries_dict = fetch_incidents(
-            last_run, first_fetch, queries_dict, max_fetch, GET_LOG_JOB_ID_MAX_RETRIES)
+        new_last_run, incident_entries_dict = fetch_incidents(
+            last_run, first_fetch, queries_dict, max_fetch, 5)
 
         assert incident_entries_dict[0] == expected_parsed_incident_entries
-        assert last_fetch_dict.get('X_log_type', '') == '2022-01-01 12:00:00'
-        assert last_id_dict.get('X_log_type', '') == {'device_for_test': '000000001'}
+        assert new_last_run['last_fetch_dict'].get('X_log_type', '') == '2022-01-01 12:00:00'
+        assert new_last_run['last_id_dict'].get('X_log_type', '') == {'device_for_test': '000000001'}
 
     def test_second_fetch_with_no_incidents_flow(self, mocker):
         """
@@ -6683,7 +6709,7 @@ class TestFetchIncidentsFlows:
         - last_fetch_dict X_log_type value should not be updated.
         - last_id_dict X_log_type value should not be updated.
         """
-        from Panorama import fetch_incidents, GET_LOG_JOB_ID_MAX_RETRIES
+        from Panorama import fetch_incidents
         last_run = {'last_fetch_dict': {'X_log_type': '2022-01-01T12:00:00'},
                     'last_id_dict': {'X_log_type': '000000001'}}
         first_fetch = '24 hours'
@@ -6698,12 +6724,12 @@ class TestFetchIncidentsFlows:
         mocker.patch('Panorama.get_query_entries', return_value=raw_entries)
         mocker.patch('Panorama.get_fetch_start_datetime_dict', return_value=fetch_start_datetime_dict)
 
-        last_fetch_dict, last_id_dict, incident_entries_dict = fetch_incidents(
-            last_run, first_fetch, queries_dict, max_fetch, GET_LOG_JOB_ID_MAX_RETRIES)
+        new_last_run, incident_entries_dict = fetch_incidents(
+            last_run, first_fetch, queries_dict, max_fetch, 5)
 
         assert incident_entries_dict == expected_parsed_incident_entries
-        assert last_fetch_dict.get('X_log_type', '') == '2022-01-01T12:00:00'
-        assert last_id_dict.get('X_log_type', '') == '000000001'
+        assert new_last_run['last_fetch_dict'].get('X_log_type', '') == '2022-01-01T12:00:00'
+        assert new_last_run['last_id_dict'].get('X_log_type', '') == '000000001'
 
     def test_second_fetch_with_two_incidents_with_same_log_type_flow(self, mocker):
         """
@@ -6720,7 +6746,7 @@ class TestFetchIncidentsFlows:
         - last_fetch_dict X_log_type value should be updated.
         - last_id_dict X_log_type value should be updated.
         """
-        from Panorama import fetch_incidents, GET_LOG_JOB_ID_MAX_RETRIES
+        from Panorama import fetch_incidents
         last_run = {'last_fetch_dict': {'X_log_type': '2022-01-01 13:00:00'},
                     'last_id_dict': {'X_log_type': {'dummy_device': '000000001'}}}
         first_fetch = '24 hours'
@@ -6731,18 +6757,18 @@ class TestFetchIncidentsFlows:
                         'device_name': 'dummy_device'}]
 
         expected_parsed_incident_entries = [{'name': 'dummy_device 000000002', 'occurred': '2022-01-01T13:00:00Z',
-                                             'rawJSON': json.dumps(raw_entries[0]), 'type': 'X_log_type'}]
+                                             'rawJSON': json.dumps(raw_entries[0])}]
         fetch_start_datetime_dict = {'X_log_type': dateparser.parse('2022/1/1 12:00:00', settings={'TIMEZONE': 'UTC'})}
 
         mocker.patch('Panorama.get_query_entries', return_value=raw_entries)
         mocker.patch('Panorama.get_fetch_start_datetime_dict', return_value=fetch_start_datetime_dict)
 
-        last_fetch_dict, last_id_dict, incident_entries_dict = fetch_incidents(
-            last_run, first_fetch, queries_dict, max_fetch, GET_LOG_JOB_ID_MAX_RETRIES)
+        new_last_run, incident_entries_dict = fetch_incidents(
+            last_run, first_fetch, queries_dict, max_fetch, 5)
 
         assert incident_entries_dict == expected_parsed_incident_entries
-        assert last_fetch_dict.get('X_log_type', '') == '2022-01-01 13:00:00'
-        assert last_id_dict.get('X_log_type', '') == {'dummy_device': '000000002'}
+        assert new_last_run['last_fetch_dict'].get('X_log_type', '') == '2022-01-01 13:00:00'
+        assert new_last_run['last_id_dict'].get('X_log_type', '') == {'dummy_device': '000000002'}
 
     def test_second_fetch_with_two_incidents_with_different_log_types_flow(self, mocker):
         """
@@ -6762,7 +6788,7 @@ class TestFetchIncidentsFlows:
         - X_log_type last fetch time will be updated.
         - X_log_type last id is updated.
         """
-        from Panorama import fetch_incidents, GET_LOG_JOB_ID_MAX_RETRIES
+        from Panorama import fetch_incidents
         last_run = {'last_fetch_dict': {'X_log_type': '2022-01-01 12:00:00'},
                     'last_id_dict': {'X_log_type': {'dummy_device1': '000000001'}}}
         first_fetch = '24 hours'
@@ -6778,9 +6804,9 @@ class TestFetchIncidentsFlows:
         fetch_incidents_request_result = {'X_log_type': [raw_entries[0]], 'Y_log_type': [raw_entries[1]]}
 
         expected_parsed_incident_entries = [{'name': 'dummy_device1 000000002', 'occurred': '2022-01-01T13:00:00Z',
-                                             'rawJSON': json.dumps(raw_entries[0]), 'type': 'X_log_type'},
+                                             'rawJSON': json.dumps(raw_entries[0])},
                                             {'name': 'dummy_device2 000000001', 'occurred': '2022-01-01T13:00:00Z',
-                                             'rawJSON': json.dumps(raw_entries[1]), 'type': 'Y_log_type'}]
+                                             'rawJSON': json.dumps(raw_entries[1])}]
         fetch_start_datetime_dict = {'X_log_type': dateparser.parse(
             '2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'}),
             'Y_log_type': dateparser.parse(
@@ -6789,14 +6815,14 @@ class TestFetchIncidentsFlows:
         mocker.patch('Panorama.fetch_incidents_request', return_value=fetch_incidents_request_result)
         mocker.patch('Panorama.get_fetch_start_datetime_dict', return_value=fetch_start_datetime_dict)
 
-        last_fetch_dict, last_id_dict, incident_entries_dict = fetch_incidents(
-            last_run, first_fetch, queries_dict, max_fetch, GET_LOG_JOB_ID_MAX_RETRIES)
+        new_last_run, incident_entries_dict = fetch_incidents(
+            last_run, first_fetch, queries_dict, max_fetch, 5)
 
         assert incident_entries_dict == expected_parsed_incident_entries
-        assert last_fetch_dict.get('X_log_type', '') == '2022-01-01 13:00:00'
-        assert last_id_dict.get('X_log_type', '') == {'dummy_device1': '000000002'}
-        assert last_fetch_dict.get('Y_log_type', '') == '2022-01-01 13:00:00'
-        assert last_id_dict.get('Y_log_type', '') == {'dummy_device2': '000000001'}
+        assert new_last_run['last_fetch_dict'].get('X_log_type', '') == '2022-01-01 13:00:00'
+        assert new_last_run['last_id_dict'].get('X_log_type', '') == {'dummy_device1': '000000002'}
+        assert new_last_run['last_fetch_dict'].get('Y_log_type', '') == '2022-01-01 13:00:00'
+        assert new_last_run['last_id_dict'].get('Y_log_type', '') == {'dummy_device2': '000000001'}
 
     def test_second_fetch_with_two_incidents_with_different_log_types_and_different_last_fetch_flow(self, mocker):
         """
@@ -6816,7 +6842,7 @@ class TestFetchIncidentsFlows:
         - X_log_type last fetch time will be updated.
         - X_log_type last id is updated.
         """
-        from Panorama import fetch_incidents, GET_LOG_JOB_ID_MAX_RETRIES
+        from Panorama import fetch_incidents
         last_run = {'last_fetch_dict': {'X_log_type': '2022-01-01 11:00:00', 'Y_log_type': '2022-01-01 13:00:00'},
                     'last_id_dict': {'X_log_type': {'dummy_device1': '000000001'}, 'Y_log_type': {'dummy_device2': '000000002'}}}
         first_fetch = '24 hours'
@@ -6831,42 +6857,23 @@ class TestFetchIncidentsFlows:
         fetch_incidents_request_result = {'X_log_type': X_log_type_raw_entries, 'Y_log_type': Y_log_type_raw_entries}
 
         expected_parsed_incident_entries = [{'name': 'dummy_device1 000000002', 'occurred': '2022-01-01T13:00:00Z',
-                                             'rawJSON': json.dumps(X_log_type_raw_entries[0]), 'type': 'X_log_type'},
+                                             'rawJSON': json.dumps(X_log_type_raw_entries[0])},
                                             {'name': 'dummy_device2 000000003', 'occurred': '2022-01-01T13:00:00Z',
-                                             'rawJSON': json.dumps(Y_log_type_raw_entries[0]), 'type': 'Y_log_type'}]
+                                             'rawJSON': json.dumps(Y_log_type_raw_entries[0])}]
         fetch_start_datetime_dict = {'X_log_type': dateparser.parse('2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'}),
                                      'Y_log_type': dateparser.parse('2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'})}
 
         mocker.patch('Panorama.fetch_incidents_request', return_value=fetch_incidents_request_result)
         mocker.patch('Panorama.get_fetch_start_datetime_dict', return_value=fetch_start_datetime_dict)
 
-        last_fetch_dict, last_id_dict, incident_entries_dict = fetch_incidents(
-            last_run, first_fetch, queries_dict, max_fetch, GET_LOG_JOB_ID_MAX_RETRIES)
+        new_last_run, incident_entries_dict = fetch_incidents(
+            last_run, first_fetch, queries_dict, max_fetch, 5)
 
         assert incident_entries_dict == expected_parsed_incident_entries
-        assert last_fetch_dict.get('X_log_type', '') == '2022-01-01 13:00:00'
-        assert last_id_dict.get('X_log_type', '') == {'dummy_device1': '000000002'}
-        assert last_fetch_dict.get('Y_log_type', '') == '2022-01-01 13:00:00'
-        assert last_id_dict.get('Y_log_type', '') == {'dummy_device2': '000000003'}
-
-
-def test_update_max_fetch_dict(mocker):
-    """
-    Given:
-    - configured_max_fetch - maximum number of incidents the client configured to fetch.
-    - max_fetch_dict - dictionary with the maximum number of incidents to fetch per log type.
-    - last_fetch_dict - dictionary with the last fetch time per log type.
-    When:
-        - update_max_fetch_dict is called.
-        - max_fetch_dict has a log type that is not in last_fetch_dict.
-    Then:
-        - The max_fetch_dict is updated with the maximum number of incidents to fetch per log type.
-    """
-    from Panorama import update_max_fetch_dict
-    mocker.patch('demistomock.getLastRun', return_value={"last_fetch_dict": {"log_type1": "2023-05-01 07:22:08"}})
-    res = update_max_fetch_dict(configured_max_fetch=5, max_fetch_dict={"log_type1": 10, "log_type2": 15},
-                                last_fetch_dict={"log_type1": "2023-05-01 07:22:08", "log_type2": "2023-05-01 07:22:08"})
-    assert res == {'log_type1': 15, 'log_type2': 5}
+        assert new_last_run['last_fetch_dict'].get('X_log_type', '') == '2022-01-01 13:00:00'
+        assert new_last_run['last_id_dict'].get('X_log_type', '') == {'dummy_device1': '000000002'}
+        assert new_last_run['last_fetch_dict'].get('Y_log_type', '') == '2022-01-01 13:00:00'
+        assert new_last_run['last_id_dict'].get('Y_log_type', '') == {'dummy_device2': '000000003'}
 
 
 def test_find_largest_id_per_device(mocker):
@@ -6909,21 +6916,6 @@ def test_filter_fetched_entries(mocker):
     res = filter_fetched_entries(raw_entries, id_dict)
     assert res == {'log_type1': [{'device_name': 'dummy_device2', 'seqno': '000000001'}],
                    'log_type2': [{'device_name': 'dummy_device3', 'seqno': '000000004'}]}
-
-
-def test_create_max_fetch_dict():
-    """
-    Given:
-    - dictionary of queries and max_fetch.
-    When:
-    - create_max_fetch_dict is called.
-    Then:
-    - return a dictionary of queries and max_fetch.
-    """
-    from Panorama import create_max_fetch_dict
-    queries_dict = {'log_type1': '(mock)', 'log_type2': '(mocker)'}
-    res = create_max_fetch_dict(queries_dict, 5)
-    assert res == {'log_type1': 5, 'log_type2': 5}
 
 
 @pytest.mark.parametrize('name_match, name_contain, filters, expected_result',
@@ -7242,18 +7234,21 @@ def test_build_tag_element(mocker, device_group, vsys, args, expected_response):
     assert response == expected_response
 
 
-@pytest.mark.parametrize("element_to_change, element_value, current_objects_items, params_element, "
-                         "expected_exception, expected_warning, expected_warning_exit", [
-                             ('tag', ['tag3'], ['tag3'], '<tag></tag>', False, False, False),  # Last tag
-                             ('tag', ['tag2'], ['tag3', 'tag2'], '<tag><member>tag3</member></tag>',
-                              False, False, False),  # Not last tag
-                             ('tag', ['nonexistent_tag'], ['tag1'], '', False, True, True),  # Non-existent tag > exit
-                             ('tag', ['nonexistent_tag', 'tag1'], ['tag1'], '<tag></tag>',
-                              False, True, False),  # Non-existent tag & existent > warning
-                             ('source', ['source'], ['source'], '', True, False, False)  # raise exception
-                         ])
-def test_panorama_edit_rule_items_remove(mocker, element_to_change, element_value, current_objects_items, params_element,
-                                         expected_exception, expected_warning, expected_warning_exit):
+@pytest.mark.parametrize(
+    ("element_to_change, context_element, element_value, current_objects_items, params_element, "
+     "expected_exception, expected_warning, expected_warning_exit"),
+    [
+        ('tag', 'Tags', ['tag3'], ['tag3'], '<tag></tag>', False, False, False),  # Last tag
+        ('tag', 'Tags', ['tag2'], ['tag3', 'tag2'], '<tag><member>tag3</member></tag>', False, False, False),  # Not last tag
+        ('tag', 'Tags', ['nonexistent_tag'], ['tag1'], '', False, True, True),  # Non-existent tag > exit
+        ('tag', 'Tags', ['nonexistent_tag', 'tag1'], ['tag1'], '<tag></tag>',
+         False, True, False),  # Non-existent tag & existent > warning
+        ('source', 'Source', ['source'], ['source'], '', True, False, False)  # raise exception
+    ]
+)
+def test_panorama_edit_rule_items_remove(
+        mocker, element_to_change, context_element, element_value, current_objects_items,
+        params_element, expected_exception, expected_warning, expected_warning_exit):
     """
     Given:
      - element_to_change: The element to be changed in the rule.
@@ -7301,6 +7296,8 @@ def test_panorama_edit_rule_items_remove(mocker, element_to_change, element_valu
             assert request_mock.call_args.kwargs['body']['action'] == 'edit'
             assert request_mock.call_args.kwargs['body']['element'] == params_element
             assert return_results_mock.call_args[0][0]['HumanReadable'] == 'Rule edited successfully.'
+            assert isinstance(return_results_mock.call_args[0][0]['EntryContext'][
+                'Panorama.SecurityRule(val.Name == obj.Name)'][context_element], list)
 
 
 def test_list_device_groups_names(mocker):
@@ -7435,3 +7432,637 @@ def test_pan_os_delete_security_profile_group_command(mocker):
     command_results = Panorama.pan_os_delete_security_profile_group_command({"group_name": "test_spg"})
     assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
     assert command_results.readable_output == 'Successfully deleted Security Profile Group: "test_spg"'
+
+
+@pytest.mark.parametrize(
+    "profile_name, profile_type, device_group, action, threat_id, expected_xpath",
+    [
+        # test cases for device_group
+        (
+            'name',
+            'vulnerability',
+            'device_group',
+            'set',
+            '1000',
+            (
+                "/config/devices/entry[@name='localhost.localdomain']"
+                "/device-group/entry[@name='device_group']"
+                "/profiles/vulnerability/entry[@name='name']/threat-exception"
+            )
+        ),
+        (
+            'name',
+            'spyware',
+            'device_group',
+            'set',
+            '1000',
+            (
+                "/config/devices/entry[@name='localhost.localdomain']"
+                "/device-group/entry[@name='device_group']"
+                "/profiles/spyware/entry[@name='name']/threat-exception"
+            )
+        ),
+        # test case for VSYS
+        (
+            'name',
+            'vulnerability',
+            None,
+            'set',
+            '1000',
+            (
+                "/config/devices/entry[@name='localhost.localdomain']"
+                "/vsys/entry[@name='vsys']"
+                "/profiles/vulnerability/entry[@name='name']/threat-exception"
+            )
+        ),
+        (
+            'name',
+            'spyware',
+            None,
+            'set',
+            '1000',
+            (
+                "/config/devices/entry[@name='localhost.localdomain']"
+                "/vsys/entry[@name='vsys']"
+                "/profiles/spyware/entry[@name='name']/threat-exception"
+            )
+        ),
+        # test case for EDIT action type
+        (
+            'name',
+            'spyware',
+            'device_group',
+            'edit',
+            '1000',
+            (
+                "/config/devices/entry[@name='localhost.localdomain']"
+                "/device-group/entry[@name='device_group']"
+                "/profiles/spyware/entry[@name='name']/threat-exception"
+                "/entry[@name='1000']"
+            )
+        ),
+        (
+            'name',
+            'vulnerability',
+            'device_group',
+            'edit',
+            '1000',
+            (
+                "/config/devices/entry[@name='localhost.localdomain']"
+                "/device-group/entry[@name='device_group']"
+                "/profiles/vulnerability/entry[@name='name']/threat-exception"
+                "/entry[@name='1000']"
+            )
+        ),
+        # test case for DELETE action type
+        (
+            'name',
+            'vulnerability',
+            'device_group',
+            'delete',
+            '1000',
+            (
+                "/config/devices/entry[@name='localhost.localdomain']"
+                "/device-group/entry[@name='device_group']"
+                "/profiles/vulnerability/entry[@name='name']/threat-exception"
+                "/entry[@name='1000']"
+            )
+        ),
+        (
+            'name',
+            'spyware',
+            'device_group',
+            'delete',
+            '1000',
+            (
+                "/config/devices/entry[@name='localhost.localdomain']"
+                "/device-group/entry[@name='device_group']"
+                "/profiles/spyware/entry[@name='name']/threat-exception"
+                "/entry[@name='1000']"
+            )
+        ),
+        (
+            'name',
+            'spyware',
+            None,
+            'delete',
+            '1000',
+            (
+                "/config/devices/entry[@name='localhost.localdomain']"
+                "/vsys/entry[@name='vsys']"
+                "/profiles/spyware/entry[@name='name']/threat-exception"
+                "/entry[@name='1000']"
+            )
+        ),
+    ]
+)
+def test_pan_os_xpath_creation_for_exception_crud(profile_name, profile_type, device_group, action, threat_id, expected_xpath):
+    """
+    Given:
+        - A profile name, profile type, device group name, action, and threat ID.
+    When:
+        - Running build_xpath_for_profile_exception_commands function to generate the XPath.
+    Then:
+        - Ensure the returned XPath is correctly constructed for both Vulnerability Protection and Anti Spyware profiles.
+    """
+    import Panorama
+    Panorama.VSYS = 'vsys'
+
+    result = Panorama.build_xpath_for_profile_exception_commands(
+        profile_name, profile_type, device_group, action, threat_id
+    )
+    assert result == expected_xpath
+
+
+def test_pan_os_check_profile_type_by_given_profile_name(mocker):
+    """
+    Given:
+        - A profile name that could exist in either 'Vulnerability Protection Profile' or 'Anti Spyware Profile'.
+    When:
+        - Checking the profile type by the given profile name.
+    Then:
+        - Ensure the correct profile type is returned or an appropriate exception is raised.
+    """
+    import Panorama
+
+    mocker.patch('Panorama.get_all_profile_names_from_profile_type', side_effect=[
+        ['profile_1', 'profile_2'],
+        ['profile_3', 'profile_4'],
+        [],
+        ['profile_3'],
+        ['profile_5'],
+        ['profile_5'],
+        [],
+        []
+    ])
+
+    result = Panorama.check_profile_type_by_given_profile_name('profile_1', 'device_group')
+    assert result == 'vulnerability'
+
+    result = Panorama.check_profile_type_by_given_profile_name('profile_3', None)
+    assert result == 'spyware'
+
+    with pytest.raises(DemistoException, match="Profile name was found both in Vulnerability Protection Profiles "
+                       "and in Anti Spyware Profiles. Please specify profile_type."):
+        Panorama.check_profile_type_by_given_profile_name('profile_5', 'device_group')
+
+    with pytest.raises(DemistoException, match="Profile name was not found in Vulnerability Protection Profiles "
+                       "or in Anti Spyware Profiles."):
+        Panorama.check_profile_type_by_given_profile_name('profile_6', 'device_group')
+
+
+def test_pan_os_get_threat_id_from_predefined_threats(mocker):
+    """
+    Given:
+        - A threat name that may match a threat name, ID, or CVE in the predefined threats list.
+    When:
+        - Searching for the threat ID using the provided threat name.
+    Then:
+        - Ensure the correct threat ID, name, and CVEs are returned, or an appropriate exception is raised.
+    """
+    import Panorama
+
+    mock_predefined_threats = [
+        {
+            "@name": "10003",
+            "threatname": "Test Threat 1",
+            "cve": {"member": ["CVE-2023-1234"]}
+        },
+        {
+            "@name": "10004",
+            "threatname": "Test Threat 2",
+            "cve": {"member": ["CVE-2023-5678"]}
+        },
+        {
+            "@name": "10005",
+            "threatname": "Test Threat 3",
+            "cve": {"member": ["CVE-2023-9012"]}
+        }
+    ]
+
+    mocker.patch.object(Panorama, 'get_predefined_threats_list', return_value=mock_predefined_threats)
+
+    result = Panorama.get_threat_id_from_predefined_threats('Test Threat 1')
+    assert result == ("10003", "Test Threat 1", ["CVE-2023-1234"])
+
+    result = Panorama.get_threat_id_from_predefined_threats('10004')
+    assert result == ("10004", "Test Threat 2", ["CVE-2023-5678"])
+
+    result = Panorama.get_threat_id_from_predefined_threats('CVE-2023-9012')
+    assert result == ("10005", "Test Threat 3", ["CVE-2023-9012"])
+
+    with pytest.raises(DemistoException, match="Threat was not found."):
+        Panorama.get_threat_id_from_predefined_threats('Nonexistent Threat')
+
+
+def test_pan_os_add_profile_exception(mocker):
+    """
+    Given:
+        - A profile name, profile type, threat name, and device group.
+    When:
+        - Running the `pan_os_add_profile_exception_command` to add an exception to a security profile.
+    Then:
+        - Ensure the returned response indicates the successful creation of the exception with the correct threat name and ID.
+    """
+    import Panorama
+
+    mock_response = {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    mocker.patch.object(Panorama, 'http_request', return_value=mock_response)
+    mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threats', return_value=('1000', 'threatname', 'cve'))
+
+    command_results = Panorama.pan_os_add_profile_exception_command(args={"profile_name": "test_spg",
+                                                                          "threat_name": '1000',
+                                                                          "profile_type": "Vulnerability Protection Profile",
+                                                                          "device_group": 'device_group'})
+    assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    assert command_results.readable_output == (
+        'Successfully created exception "threatname" with threat ID 1000 in the "test_spg" '
+        'profile of type "vulnerability".'
+    )
+
+
+def test_pan_os_edit_profile_exception(mocker):
+    """
+    Given:
+        - A profile name, profile type, threat name, and device group.
+    When:
+        - Running the `pan_os_edit_profile_exception_command` to edit an exception in a security profile.
+    Then:
+        - Ensure the returned response indicates the successful editing of the exception with the correct threat name and ID.
+    """
+    import Panorama
+    Panorama.URL = 'https://1.1.1.1:443/'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
+    Panorama.DEVICE_GROUP = 'device_group'
+
+    mock_response = {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    mocker.patch.object(Panorama, 'http_request', return_value=mock_response)
+    mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threats', return_value=('1000', 'threatname', 'cve'))
+    command_results = Panorama.pan_os_edit_profile_exception_command(args={"profile_name": "test_spg",
+                                                                           "threat_name": '1000',
+                                                                           "profile_type": "Vulnerability Protection Profile",
+                                                                           "device_group": 'device_group'})
+    assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    assert command_results.readable_output == (
+        'Successfully edited exception "threatname" with threat ID 1000 in the "test_spg" '
+        'profile of type "vulnerability".'
+    )
+
+
+def test_pan_os_delete_profile_exception(mocker):
+    """
+    Given:
+        - A profile name, profile type, threat name, and device group.
+    When:
+        - Running the `pan_os_delete_profile_exception_command` to delete an exception from a security profile.
+    Then:
+        - Ensure the returned response indicates the successful deletion of the exception with the correct threat name and ID.
+    """
+    import Panorama
+
+    mock_response = {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    mocker.patch.object(Panorama, 'http_request', return_value=mock_response)
+    mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threats', return_value=('1000', 'threatname', 'cve'))
+
+    command_results = Panorama.pan_os_delete_profile_exception_command(args={"profile_name": "test_spg",
+                                                                             "threat_name": '1000',
+                                                                             "profile_type": "Vulnerability Protection Profile",
+                                                                             "device_group": 'device_group'})
+    assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    assert command_results.readable_output == (
+        'Successfully deleted exception "threatname" with threat ID 1000 in the "test_spg" '
+        'profile of type "vulnerability".'
+    )
+
+
+def test_pan_os_list_profile_exception(mocker):
+    """
+    Given:
+        - A profile name and profile type.
+    When:
+        - Running the `pan_os_list_profile_exception_command` to list exceptions in a security profile.
+    Then:
+        - Ensure the returned response is of type `CommandResults` and the readable output lists the correct profile exceptions.
+    """
+    import Panorama
+    Panorama.URL = 'https://1.1.1.1:443/'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
+    Panorama.DEVICE_GROUP = 'device_group'
+    mocker.patch.object(
+        Panorama,
+        'profile_exception_crud_requests',
+        return_value=({'raw_response': {
+            'response': {
+                'result': {
+                    'threat-exception': {
+                        'entry': [
+                            {
+                                '@name': '10003',
+                                'action': {'block': {}},
+                                'exempt-ip': {'entry': {'@name': '192.168.1.1'}},
+                                'packet-capture': 'yes',
+                                '@admin': 'admin1',
+                                '@dirtyId': 'dirty1',
+                                '@time': '2024-08-14T12:00:00'
+                            },
+                            {
+                                '@name': '10002',
+                                'action': {'allow': {}},
+                                'packet-capture': 'no',
+                                '@admin': 'admin2',
+                                '@dirtyId': 'dirty2',
+                                '@time': '2024-08-14T12:00:00'
+                            }
+                        ]
+                    }
+                }
+            },
+        },
+            'exception_id': 'id',
+            'exception_name': 'name',
+            'profile_type': 'vulnerability'})
+    )
+
+    mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threats', return_value=('test', 'threatname', 'cve'))
+
+    args = {"profile_name": "test_profile", "profile_type": "Vulnerability Protection Profile"}
+    result = Panorama.pan_os_list_profile_exception_command(args)
+
+    assert isinstance(result, CommandResults)
+
+    expected_hr = [
+        {
+            "ID": "10003",
+            "Name": 'threatname',
+            "CVE": 'cve',
+            "Action": "block",
+            "Exempt IP": "192.168.1.1",
+            "Packet Capture": "yes",
+        },
+        {
+            "ID": "10002",
+            "Name": 'threatname',
+            "CVE": 'cve',
+            "Action": "allow",
+            "Exempt IP": "",
+            "Packet Capture": "no",
+        },
+    ]
+
+    expected_output = {
+        'Name': 'test_profile',
+        'Exception': [
+            {
+                'id': '10003',
+                'name': 'threatname',
+                'CVE': 'cve',
+                'action': 'block',
+                'packet-capture': 'yes',
+                'exempt-ip': '192.168.1.1'
+            },
+            {
+                'id': '10002',
+                'name': 'threatname',
+                'CVE': 'cve',
+                'action': 'allow',
+                'packet-capture': 'no',
+            },
+        ]
+    }
+
+    assert "Profile Exceptions" in result.readable_output
+
+    for hr_entry in expected_hr:
+        for _, value in hr_entry.items():
+            assert value in result.readable_output
+
+    assert result.outputs == expected_output
+    assert result.outputs_prefix == 'Panorama.Vulnerability'
+    assert result.outputs_key_field == 'Name'
+
+
+def test_fetch_incidents_correlation(mocker: MockerFixture):
+    '''
+    Given:
+        -
+    When:
+        -
+    Then:
+        -
+    '''
+    from Panorama import fetch_incidents, LastIDs, LastFetchTimes, LastRun, MaxFetch, QueryMap
+    corr_logs = load_json('test_data/corr_logs.json')
+    mock_get_query_entries = mocker.patch('Panorama.get_query_entries')
+
+    last_fetch_dict = LastFetchTimes(Correlation='2024/04/08 07:22:54')
+    last_id_dict = LastIDs(Correlation=0)
+    max_fetch_dict = MaxFetch(Correlation=10)
+    last_run = LastRun(
+        last_fetch_dict=last_fetch_dict,
+        last_id_dict=last_id_dict,
+        max_fetch_dict=max_fetch_dict
+    )
+
+    # assert duplicates are removed:
+
+    mock_get_query_entries.return_value = corr_logs[:5]
+    _, entries = fetch_incidents(
+        last_run, '2024/04/08 07:22:54', QueryMap(Correlation='query'), max_fetch_dict, 1
+    )
+
+    assert entries[0]["name"] == "Correlation 1"
+    assert "CORRELATION" in entries[0]["rawJSON"]
+    assert mock_get_query_entries.call_args_list[0].args == (
+        "Correlation", "query and (match_time geq '2024/04/08 07:22:54')", 10, 1, 0
+    )  # asserting that "match_time" is used instead of "time_generated".
+    assert last_fetch_dict == LastFetchTimes(Correlation="2024-04-09 07:22:54")  # the max date
+    assert last_id_dict == LastIDs(Correlation=4)
+    assert max_fetch_dict == MaxFetch(Correlation=10)
+
+    # test with dict from older versions
+
+    last_id_dict['Correlation'] = cast(int, {})
+
+    _, entries = fetch_incidents(
+        last_run, '2024/04/08 07:22:54', QueryMap(Correlation='query'), max_fetch_dict, 1
+    )
+    assert entries[0]["name"] == "Correlation 1"
+
+
+def test_fetch_incidents_offset(mocker: MockerFixture):
+    '''
+    Given: Panorama incidents.
+
+    When: Using fetch-incidents command using offset to get the next incidents.
+
+    Then: Assert the correct amount of incidents were fetched and the correct offset value was stored.
+
+    '''
+    from Panorama import fetch_incidents, LastIDs, LastFetchTimes, LastRun, MaxFetch, QueryMap, Offset
+    corr_logs = load_json('test_data/corr_logs_time_dif.json')
+    mock_get_query_entries = mocker.patch('Panorama.get_query_entries')
+
+    last_fetch_dict = LastFetchTimes(Correlation='2024/04/08 07:22:54')
+    last_id_dict = LastIDs()
+    max_fetch_dict = MaxFetch(Correlation=5)
+    offset_dict = Offset(Correlation=0)
+
+    last_run = LastRun(
+        last_fetch_dict=last_fetch_dict,
+        last_id_dict=last_id_dict,
+        max_fetch_dict=max_fetch_dict,
+        offset_dict=offset_dict
+    )
+
+    # assert duplicates are removed:
+
+    mock_get_query_entries.return_value = corr_logs[:5]
+    new_last_run, entries = fetch_incidents(
+        last_run, '2024/04/08 07:22:54', QueryMap(Correlation='query'), max_fetch_dict, 1
+    )
+
+    assert entries[0]["name"] == "Correlation 1"
+    assert "CORRELATION" in entries[0]["rawJSON"]
+    assert mock_get_query_entries.call_args_list[0].args == (
+        "Correlation", "query and (match_time geq '2024/04/08 07:22:54')", 5, 1, 0
+    )  # asserting that "match_time" is used instead of "time_generated".
+    assert last_fetch_dict == LastFetchTimes(Correlation="2024-04-08 07:22:54")  # the max date
+    assert last_id_dict == LastIDs(Correlation=5)
+    assert max_fetch_dict == MaxFetch(Correlation=5)
+    assert offset_dict == Offset(Correlation=5)
+
+    mock_get_query_entries.return_value = corr_logs[5:]
+    new_last_run, entries = fetch_incidents(
+        new_last_run, '2024/04/08 07:22:54', QueryMap(Correlation='query'), max_fetch_dict, 1
+    )
+
+    assert entries[0]["name"] == "Correlation 6"
+    assert "CORRELATION" in entries[0]["rawJSON"]
+    assert mock_get_query_entries.call_args_list[1].args == (
+        "Correlation", "query and (match_time geq '2024/04/08 07:22:54')", 5, 1, 5
+    )  # asserting that "match_time" is used instead of "time_generated".
+    assert last_fetch_dict == LastFetchTimes(Correlation="2024-04-08 07:22:55")  # the max date
+    assert last_id_dict == LastIDs(Correlation=10)
+    assert max_fetch_dict == MaxFetch(Correlation=5)
+    assert offset_dict == Offset(Correlation=2)
+
+
+def test_build_master_key_create_or_update_cmd():
+    """
+    Given:
+        - Command arguments for updating Panorama / PAN-OS master key
+
+    When:
+        - Calling build_master_key_create_or_update_cmd.
+
+    Assert:
+        - Correct XML command string.
+    """
+    from Panorama import build_master_key_create_or_update_cmd
+
+    # Set
+    args = {
+        'current_master_key': 'MyFakeMasterKey1',
+        'new_master_key': 'MyFakeMasterKey2',
+        'lifetime_in_hours': '2160',
+        'reminder_in_hours': '1992',
+    }
+    # Arrange
+    cmd = build_master_key_create_or_update_cmd(args, action='update')
+
+    # Assert
+    assert cmd == (
+        '<request><master-key><lifetime>2160</lifetime><reminder>1992</reminder>'
+        '<new-master-key>MyFakeMasterKey2</new-master-key>'
+        '<current-master-key>MyFakeMasterKey1</current-master-key>'
+        '<on-hsm>no</on-hsm></master-key></request>'
+    )
+
+
+def test_pan_os_create_master_key_command(requests_mock: RequestsMock):
+    """
+    Given:
+        - Command arguments for creating Panorama / PAN-OS master key
+
+    When:
+        - Calling pan_os_create_master_key_command.
+
+    Assert:
+        - Correct human readable output and raw response.
+    """
+    from Panorama import pan_os_create_master_key_command, xml2json
+    import Panorama
+
+    # Set
+    args = {'master_key': 'MyFakeMasterKey1', 'lifetime_in_hours': '2160', 'reminder_in_hours': '1992'}
+    Panorama.URL = 'https://1.1.1.1:443/api/'
+
+    xml_root = load_xml_root_from_test_file('test_data/create_master_key.xml')
+    response_result = xml_root.find('result').text
+
+    xml_response_text = ElementTree.tostring(xml_root, encoding='unicode')
+    requests_mock.get(Panorama.URL, text=xml_response_text)
+
+    # Arrange
+    command_results: CommandResults = pan_os_create_master_key_command(args)
+
+    # Assert
+    assert command_results.readable_output == (
+        f'{response_result}. \n\n⚠️ The current API key is no longer valid! (by design) '
+        'Generate a new API key and update it in the integration instance configuration to keep using the integration.'
+    )
+    assert command_results.raw_response == json.loads(xml2json(xml_response_text))
+
+
+def test_pan_os_get_master_key_details_command(mocker: MockerFixture, requests_mock: RequestsMock):
+    """
+    When:
+        - Calling pan_os_get_master_key_command.
+
+    Assert:
+        - Correct human readable, context output, and raw response.
+    """
+    from Panorama import pan_os_get_master_key_details_command, xml2json
+    import Panorama
+
+    # Set
+    Panorama.URL = 'https://1.1.1.1:443/api/'
+
+    xml_root = load_xml_root_from_test_file('test_data/get_master_key.xml')
+    xml_response_text = ElementTree.tostring(xml_root, encoding='unicode')
+    requests_mock.get(Panorama.URL, text=xml_response_text)
+
+    table_to_markdown = mocker.patch('Panorama.tableToMarkdown')
+
+    # Arrange
+    command_results: CommandResults = pan_os_get_master_key_details_command()
+    table_name: str = table_to_markdown.call_args[0][0]
+    table_data: dict = table_to_markdown.call_args[0][1]
+    raw_response: dict = json.loads(xml2json(xml_response_text))
+
+    # Assert
+    assert table_name == 'Master Key Details'
+    assert table_data == raw_response['response']['result']
+    assert command_results.outputs == raw_response['response']['result']
+    assert command_results.raw_response == raw_response
+
+
+@patch("Panorama.run_op_command")
+def test_show_jobs_id_not_found(patched_run_op_command):
+    """
+    Given:
+        - A specific job_id (23)
+
+    When:
+        - running show_jobs function
+
+    Then:
+        - Ensure DemistoException is thrown with ann informative message (since the given ID does not exist in all devices)
+    """
+    from Panorama import UniversalCommand
+
+    patched_run_op_command.side_effect = panos.errors.PanDeviceXapiError("job 23 not found")
+    MockTopology = type('MockTopology', (), {'all': lambda *x, **y: [Panorama(hostname='123')]})
+
+    with pytest.raises(DemistoException, match="The given ID 23 is not found in all devices of the topology."):
+        UniversalCommand.show_jobs(topology=MockTopology(), id=23)

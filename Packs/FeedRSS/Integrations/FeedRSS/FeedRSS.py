@@ -17,8 +17,8 @@ class Client(BaseClient):
     """
 
     def __init__(self, server_url, use_ssl, proxy, reliability, feed_tags, tlp_color, content_max_size=45,
-                 read_timeout=20):
-        super().__init__(base_url=server_url, proxy=proxy, verify=use_ssl)
+                 read_timeout=20, enrichment_excluded=False, headers=None):
+        super().__init__(base_url=server_url, proxy=proxy, verify=use_ssl, headers=headers)
         self.feed_tags = feed_tags
         self.tlp_color = tlp_color
         self.content_max_size = content_max_size * 1000
@@ -26,6 +26,8 @@ class Client(BaseClient):
         self.feed_data = None
         self.reliability = reliability
         self.read_timeout = read_timeout
+        self.enrichment_excluded = enrichment_excluded
+        self.channel_link = None
 
     def request_feed_url(self):
         return self._http_request(method='GET', resp_type='response', timeout=self.read_timeout,
@@ -39,24 +41,47 @@ class Client(BaseClient):
             raise DemistoException(f"Failed to parse feed.\nError:\n{str(err)}")
 
     def create_indicators_from_response(self):
+        if hasattr(self.feed_data, 'channel') and hasattr(self.feed_data.channel, 'link'):  # type: ignore
+            self.channel_link = self.feed_data.channel.link  # type: ignore
+            if not self.channel_link.startswith(('http://', 'https://')):
+                self.channel_link = 'https://' + self.channel_link
+                demisto.debug(f'feed channel link is: {self.channel_link}')
+
         parsed_indicators: list = []
         if not self.feed_data:
             raise DemistoException(f"Could not parse feed data {self._base_url}")
 
         for indicator in reversed(self.feed_data.entries):
+
+            link = indicator.get('link')
+            if link and not link.startswith(('http://', 'https://')):
+                link = urljoin(self.channel_link, link)
+                demisto.debug(f'indicator link is: {link}')
+
             publications = []
             if indicator:
-                published = dateparser.parse(indicator.published)
-                if not published:
-                    continue
-                published_iso = published.strftime('%Y-%m-%dT%H:%M:%S')
+                published = None
+                if hasattr(indicator, 'published'):
+                    published = dateparser.parse(indicator.published)
+                published_iso = published.strftime('%Y-%m-%dT%H:%M:%S') if published else ''
+
                 publications.append({
-                    'timestamp': indicator.get('published'),
-                    'link': indicator.get('link'),
+                    'timestamp': published_iso,
+                    'link': link,
                     'source': self._base_url,
                     'title': indicator.get('title')
                 })
-                text = self.get_url_content(indicator.get('link'))
+
+                if indicator.get('links', []):
+                    for tmp_link in indicator['links']:
+                        publications.append({
+                            'timestamp': published_iso,
+                            'link': tmp_link.href,
+                            'source': self._base_url,
+                            'title': indicator.get('title')
+                        })
+
+                text = self.get_url_content(link)
                 if not text:
                     continue
                 indicator_obj = {
@@ -75,6 +100,9 @@ class Client(BaseClient):
                 if self.tlp_color:
                     indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
 
+                if self.enrichment_excluded:
+                    indicator_obj['enrichmentExcluded'] = self.enrichment_excluded
+
             parsed_indicators.append(indicator_obj)
 
         return parsed_indicators
@@ -82,8 +110,13 @@ class Client(BaseClient):
     def get_url_content(self, link: str) -> str:
         """Returns the link content only from the relevant tags (listed on HTML_TAGS). For better performance - if the
          extracted content is bigger than "content_max_size" we trim him"""
-
-        response_url = self._http_request(method='GET', full_url=link, resp_type='str', timeout=self.read_timeout)
+        demisto.debug(f"Getting url content for {link=}")
+        try:
+            response_url = self._http_request(method='GET', full_url=link, resp_type='str', timeout=self.read_timeout)
+            demisto.debug(f"Got response {response_url=}")
+        except DemistoException as e:
+            demisto.debug(f"Failed to get content for {link=} - Skipping\nError:\n{e}")
+            return ""
         report_content = 'This is a dumped content of the article. Use the link under Publications field to read ' \
                          'the full article. \n\n'
         soup = BeautifulSoup(response_url.content, "html.parser")
@@ -145,6 +178,14 @@ def check_feed(client: Client) -> str:
 def main():
     params = demisto.params()
     server_url = (params.get('server_url')).rstrip()
+    default_headers = params.get('default_headers')
+    if default_headers:
+        try:
+            default_headers = json.loads(default_headers.strip())
+        except ValueError as e:
+            return_error(
+                'Unable to parse Request headers value. Please verify the headers value is a valid JSON. - ' + str(e))
+
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
@@ -163,7 +204,10 @@ def main():
                         feed_tags=argToList(params.get('feedTags')),
                         tlp_color=params.get('tlp_color'),
                         content_max_size=int(params.get('max_size', '45')),
-                        read_timeout=int(params.get('read_timeout', '20')))
+                        read_timeout=int(params.get('read_timeout', '20')),
+                        enrichment_excluded=(argToBoolean(params.get('enrichmentExcluded', False))
+                                             or (params.get('tlp_color') == 'RED' and is_xsiam_or_xsoar_saas())),
+                        headers=default_headers)
 
         if command == 'test-module':
             return_results(check_feed(client))

@@ -4,7 +4,6 @@ from CommonServerPython import *
 import json
 import urllib3
 import traceback
-from typing import Tuple
 
 
 # Disable insecure warnings
@@ -321,7 +320,7 @@ class Client(BaseClient):
         self.max_fetch = max_fetch
 
         if not headers:
-            headers = dict()
+            headers = {}
 
         headers["X-KB4-Integration"] = "Cortex XSOAR PhishER"
         super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
@@ -639,7 +638,7 @@ def phisher_delete_tags_command(client: Client, args: dict) -> str:
         return "The tags weren't deleted - check the ID"
 
 
-def fetch_incidents(client: Client, last_run: dict, first_fetch_time: str, max_fetch: int) -> Tuple[str, list]:
+def fetch_incidents(client: Client, last_run: dict, first_fetch_time: str, max_fetch: int) -> tuple[str, list]:
     """
     fetch_incidents is being called from the fetch_incidents_command function.
     it checks the last message fetch, checking number of new events, and getting all messages

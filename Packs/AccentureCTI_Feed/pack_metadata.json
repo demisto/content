@@ -2,7 +2,7 @@
     "name": "Accenture CTI Feed",
     "description": "Accenture Cyber Threat Intelligence Feed",
     "support": "partner",
-    "currentVersion": "1.1.36",
+    "currentVersion": "1.1.41",
     "author": "Accenture",
     "url": "https://www.accenture.com/us-en/services/security/cyber-defense",
     "email": "CTI.AcctManagement@accenture.com",

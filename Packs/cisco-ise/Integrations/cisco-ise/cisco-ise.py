@@ -71,7 +71,7 @@ def http_request(method, url_suffix, params=None, data=None, headers=None, is_ad
         return_error(err_msg)
 
     if response.status_code in (201, 204):
-        return
+        return None
 
     if is_admin_api:
         return response.content
@@ -143,6 +143,7 @@ def get_groups():
 
     return_outputs(tableToMarkdown('Cisco ISE Groups', humanreadable, ['ID', 'Name', 'Description'], removeNull=True),
                    entry_context, groups_data)
+    return None
 
 
 def get_endpoint_id(mac_address=None):
@@ -150,8 +151,7 @@ def get_endpoint_id(mac_address=None):
     Returns endpoint id by specific mac address
     """
 
-    if mac_address is not None:
-        api_endpoint = f'/ers/config/endpoint?filter=mac.EQ.{mac_address}'
+    api_endpoint = f'/ers/config/endpoint?filter=mac.EQ.{mac_address}' if mac_address is not None else ""
     return http_request('GET', api_endpoint, '')
 
 
@@ -165,7 +165,12 @@ def get_endpoint_id_command():
         return_error('Given MAC address is invalid')
 
     endpoint_data = get_endpoint_id(mac_address)
-    endpoint_id = endpoint_data.get('SearchResult', {}).get('resources', [])[0].get('id', None)
+
+    resources = endpoint_data.get('SearchResult', {}).get('resources', [])
+    if resources:
+        endpoint_id = resources[0].get('id', None)
+    else:
+        endpoint_id = None
 
     entry_context = {
         'Endpoint(val.ID === obj.ID)': {
@@ -188,6 +193,7 @@ def get_endpoint_details(endpoint_id):
         return response
     else:
         return_error('Endpoint was not found.')
+        return None
 
 
 def get_endpoint_details_command():
@@ -205,8 +211,9 @@ def get_endpoint_details_command():
         return_error('Either endpoint ID or MAC address should be provided')
 
     if endpoint_mac_address and not endpoint_id:
-        endpoint_id = get_endpoint_id(endpoint_mac_address).get('SearchResult', {}).get('resources', [])[0].get('id',
-                                                                                                                None)
+        resources = get_endpoint_id(endpoint_mac_address).get('SearchResult', {}).get('resources', [])
+        if resources:
+            endpoint_id = resources[0].get('id', None)
 
     endpoint_data = get_endpoint_details(endpoint_id)
 
@@ -262,7 +269,7 @@ def reauthenticate_endpoint(mac_address, psn_address):
     """
     Reauthenticates an endpoint
     """
-    api_endpoint = "/admin/API/mnt/CoA/Reauth/{}/{}/1".format(psn_address, mac_address)
+    api_endpoint = f"/admin/API/mnt/CoA/Reauth/{psn_address}/{mac_address}/1"
     response = http_request('GET', api_endpoint)
     return response
 
@@ -271,12 +278,13 @@ def get_psn_for_mac(mac_address):
     """
     Retrieves psn for an endpoint
     """
-    api_endpoint = "/admin/API/mnt/AuthStatus/MACAddress/{}/86400/0/0".format(mac_address)
+    api_endpoint = f"/admin/API/mnt/AuthStatus/MACAddress/{mac_address}/86400/0/0"
     response = http_request('GET', api_endpoint)
     if response:
         return response
     else:
         return_error('Could not reauthenticate the endpoint')
+        return None
 
 
 def reauthenticate_endpoint_command():
@@ -307,6 +315,7 @@ def reauthenticate_endpoint_command():
     }
 
     return_outputs('Activation result was : ' + str(activation_result_boolean), entry_context, activation_result)
+    return None
 
 
 def get_endpoints():
@@ -353,6 +362,7 @@ def get_endpoints_command(return_bool: bool = False):
         entry_context,
         endpoints
     )
+    return None
 
 
 def update_endpoint_by_id(endpoint_id, endpoint_details):
@@ -403,7 +413,6 @@ def update_endpoint_custom_attribute_command():
 
         update_result = update_endpoint_by_id(endpoint_id, endpoint_details)
         if not update_result:
-            # result = update_result.get('ERSResponse', {}).get('messages', [])
             demisto.results("Update failed for endpoint " + endpoint_id + ". Please check if the custom "
                                                                           "fields are defined in the system. "
                                                                           "Got the following response: "
@@ -420,7 +429,7 @@ def update_endpoint_custom_attribute_command():
         demisto.results('Successfully updated endpoint %s' % endpoint_id + updated_fields_string)
 
     except Exception as e:
-        raise Exception("Exception: Failed to update endpoint {}: ".format(endpoint_id) + str(e))
+        raise Exception(f"Exception: Failed to update endpoint {endpoint_id}: " + str(e))
 
 
 def update_endpoint_group_command():
@@ -436,9 +445,9 @@ def update_endpoint_group_command():
     if endpoint_group_name and not endpoint_group_id:
         endpoint_group_data = get_endpoint_id(endpoint_group_name).get('SearchResult', {})
         if endpoint_group_data.get('total', 0) < 1:
-            demisto.results('No endpoints were found. Please make sure you entered the correct group name')
-
-        endpoint_group_id = endpoint_group_data.get('resources')[0].get('id')
+            return_error('No endpoints were found. Please make sure you entered the correct group name')
+        else:
+            endpoint_group_id = endpoint_group_data.get('resources')[0].get('id')
 
     endpoint_id = demisto.args().get('id')
     endpoint_mac_address = demisto.args().get('macAddress')
@@ -458,17 +467,22 @@ def update_endpoint_group_command():
         return_error('Failed to get endpoint %s' % endpoint_id)
 
     try:
-        endpoint_details['ERSEndPoint']['groupId'] = endpoint_group_id
-        update_result = update_endpoint_by_id(endpoint_id, endpoint_details)
+        updated_endpoint_details = {'ERSEndPoint': {}}  # type: Dict[str, Any]
+        updated_endpoint_details['ERSEndPoint']['groupId'] = endpoint_group_id
+        updated_endpoint_details['ERSEndPoint']['id'] = endpoint_details.get('ERSEndPoint', {}).get('id')
+        updated_endpoint_details['ERSEndPoint']['mac'] = endpoint_details.get('ERSEndPoint', {}).get('mac')
+        updated_endpoint_details['ERSEndPoint']['name'] = endpoint_details.get('ERSEndPoint', {}).get('name')
+
+        update_result = update_endpoint_by_id(endpoint_id, updated_endpoint_details)
         if update_result:
             # Create result
             msg = "Endpoint " + endpoint_id + " updated successfully"
         else:
-            "Update failed for endpoint " + endpoint_id + ", got the following response: " + update_result.get(
+            msg = "Update failed for endpoint " + endpoint_id + ", got the following response: " + update_result.get(
                 'ERSResponse', {}).get('messages', [])
 
     except Exception as e:
-        raise Exception("Exception: Failed to update endpoint {}: ".format(endpoint_id) + str(e))
+        raise Exception(f"Exception: Failed to update endpoint {endpoint_id}: " + str(e))
 
     demisto.results(msg)
 
@@ -521,6 +535,7 @@ def get_policies():
         context,
         policies_data
     )
+    return None
 
 
 def get_policy_by_name(policy_name):
@@ -542,8 +557,7 @@ def get_policy():
     if not policy_name:
         return_error('Please enter either policy name or policy id')
 
-    if policy_name:
-        policy_data = get_policy_by_name(policy_name).get('ErsAncPolicy', {})
+    policy_data = get_policy_by_name(policy_name).get('ErsAncPolicy', {}) if policy_name else None
 
     if policy_data:
         data.append({
@@ -691,7 +705,14 @@ def get_blacklist_group_id():
 def get_blacklist_endpoints_request():
 
     blacklist = get_blacklist_group_id().get('SearchResult', {})
-    blacklist_id = blacklist.get('resources', [])[0]
+
+    resources = blacklist.get('resources', [])
+    blacklist_id = {}
+    if resources:
+        blacklist_id = resources[0]
+    else:
+        return_error('No blacklist endpoint were found.')
+
     black_id = blacklist_id.get('id')
 
     api_endpoint = f'/ers/config/endpoint?filter=groupId.EQ.{black_id}'

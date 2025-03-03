@@ -1,37 +1,16 @@
 # Marketplace Related - Marketplace PMs only
-/Tests/Marketplace/approved_tags.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
-/Tests/Marketplace/approved_usecases.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
+/Config/approved_tags.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
+/Config/approved_usecases.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
 /Tests/Marketplace/landingPage_sections.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
-/Tests/Marketplace/approved_categories.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
-/Tests/Marketplace/core_packs_list.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
-/Tests/Marketplace/core_packs_mpv2_list.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
-/Tests/Marketplace/versions-metadata.json @yaakovpraisler
-/Tests/Marketplace/corepacks_override.json @yaakovpraisler
+/Config/approved_categories.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
+/Config/core_packs_list.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
+/Config/core_packs_mpv2_list.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
+/Config/corepacks_override.json @yaakovpraisler
 
 # Docker native image
-/Tests/docker_native_image_config.json @JudahSchwartz @samuelFain
-
-# Marketplace & Upload-Flow
-/Tests/scripts/create_artifacts_graph/create_artifacts.py @RosenbergYehuda
-/Tests/Marketplace/upload_git_snapshot.py @yaakovpraisler
-/Tests/Marketplace/install_packs.sh @yaakovpraisler
-/Tests/Marketplace/configure_and_install_packs.py @yaakovpraisler
-/Tests/Marketplace/copy_and_upload_packs.py @yaakovpraisler
-/Tests/Marketplace/marketplace_services.py @yaakovpraisler @RosenbergYehuda
-/Tests/Marketplace/marketplace_statistics.py @yaakovpraisler
-/Tests/Marketplace/marketplace_constants.py @yaakovpraisler
-/Tests/Marketplace/zip_packs.py @yaakovpraisler
-/Tests/Marketplace/upload_packs.py @yaakovpraisler @RosenbergYehuda
-/Tests/Marketplace/packs_dependencies.py @yaakovpraisler
-/Tests/Marketplace/search_and_install_packs.py @yaakovpraisler
-/Tests/scripts/prepare_content_packs_for_testing.sh @yaakovpraisler
-/Utils/trigger_test_upload_flow.sh @yaakovpraisler
-/Utils/trigger_upload_packs_to_production.sh @yaakovpraisler
-/Utils/should_trigger_test_upload.sh @yaakovpraisler
-/Utils/test_upload_flow/* @yaakovpraisler
+/Tests/docker_native_image_config.json @JudahSchwartz @shmuel44
 
 # Test Collection
-/Tests/scripts/collect_tests @dorschw @michal-dagan
 /Tests/conf.json @sapirshuker
 
 # PANW Products
@@ -47,6 +26,7 @@
 /Packs/ContentManagement/* @adi88d
 /Packs/TAXIIServer/Integrations/TAXII2Server/* @Ni-Knight
 /Packs/FeedTAXII/Integrations/FeedTAXII2/* @Ni-Knight
+/Packs/rasterize/Integrations/rasterize/* @ilaredo
 
 # Important Scripts
 /Packs/CommonScripts/Scripts/SetGridField/* @altmannyarden
@@ -55,6 +35,7 @@
 /Packs/ApiModules/Scripts/MicrosoftGraphMailApiModule @michal-dagan
 /Packs/ApiModules/Scripts/TAXII2ApiModule/* @Ni-Knight
 /Packs/CommonScripts/Scripts/StixCreator/* @Ni-Knight
+/Packs/Base/Scripts/CommonServerPython/CommonServerPython.py @RosenbergYehuda @demisto/content-leaders
 
 # Common Packs
 /Packs/CommonTypes/ @altmannyarden @idovandijk
@@ -73,36 +54,14 @@
 /Packs/CommonScripts/Scripts/ExtractEmailV2/* @Ni-Knight
 /Packs/CommonScripts/Scripts/UnEscapeIPs/* @Ni-Knight
 
-
-# Build related
-.circleci/config.yml @yucohen
-.gitlab/ci/* @yucohen
-.gitlab/* @yucohen
-.gitlab-ci.yml @yucohen
-/Tests/scripts/wait_in_line_for_cloud_env.sh @yucohen
-/Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh @yucohen
-/Tests/Marketplace/search_and_uninstall_pack.py @yucohen
-/Tests/scripts/install_content_and_test_integrations.sh @yucohen
-/Tests/configure_and_test_integration_instances.py @yucohen
-/Tests/scripts/print_cloud_machine_details.sh @yucohen
-/Tests/scripts/run_tests.sh @yucohen
-/Tests/scripts/download_demisto_conf.sh @yucohen
-Tests/scripts/test_modeling_rules.sh @AradCarmi
-Tests/scripts/lock_cloud_machines.py @yucohen
-Tests/Marketplace/server_content_items.json @dantavori
-validation_config.toml @YuvHayun @JudahSchwartz @anara123 @SamuelFain
-
 # SDK Related
-.gitlab/ci/.gitlab-ci.sdk-nightly.yml @SamuelFain
-.pre-commit-config_template.yaml @SamuelFain
+.pre-commit-config_template.yaml @SamuelFain @YuvHayun
+validation_config.toml @YuvHayun
 
 # XDR Related
-/Packs/CortexXDR/Integrations/ @maimorag
-/Packs/Core/Integrations/ @maimorag
-/Packs/ApiModules/Scripts/CoreIRApiModule/* @maimorag
-
-# Dependencies
-poetry.lock @dorschw
+/Packs/CortexXDR/Integrations/ @tcarmeli1
+/Packs/Core/Integrations/ @tcarmeli1
+/Packs/ApiModules/Scripts/CoreIRApiModule/* @tcarmeli1
 
 # Demisto Class
 Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavori
@@ -118,9 +77,14 @@ Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavo
 
 # ML scripts
 /Packs/ML/ @jlevypaloalto
-/Packs/PhishingURL/Scripts/DBotPredictURLPhishing/ @jlevypaloalto
+/Packs/PhishingURL/ @jlevypaloalto
+/Packs/Phishing/Scripts/PhishingDedupPreprocessingRule @jlevypaloalto
+/Packs/Phishing/Scripts/FindDuplicateEmailIncidents @jlevypaloalto
+/Packs/Base/Scripts/DrawRelatedIncidentsCanvas@jlevypaloalto
+/Packs/Campaign/Scripts/FindEmailCampaign/ @jlevypaloalto
 /Packs/CortexXDR/Scripts/DBotGroupXDRIncidents/ @jlevypaloalto
 /Packs/CommonScripts/Scripts/DBotUpdateLogoURLPhishing/ @jlevypaloalto
+/Packs/Base/Scripts/FindSimilarIncidentsByText/ @jlevypaloalto
 /Packs/Base/Scripts/DBotTrainTextClassifierV2/ @jlevypaloalto
 /Packs/Base/Scripts/DBotShowClusteringModelInfo/ @jlevypaloalto
 /Packs/Base/Scripts/DBotPredictPhishingWords/ @jlevypaloalto

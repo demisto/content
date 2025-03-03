@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 7ce53ad6-ea9f-4586-8279-983848313e89
+    taskid: fc0772ab-dc81-48be-8447-9a738e8547c3
     type: start
     task:
-      id: 7ce53ad6-ea9f-4586-8279-983848313e89
+      id: fc0772ab-dc81-48be-8447-9a738e8547c3
       version: -1
       name: ""
       iscommand: false
@@ -23,7 +23,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 910,
           "y": 50
         }
       }
@@ -32,12 +32,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: ddb9d210-0a94-4c22-8956-846e9dc599fb
+    taskid: 260f1502-823f-4a7b-831b-591e1f9c36dc
     type: regular
     task:
-      id: ddb9d210-0a94-4c22-8956-846e9dc599fb
+      id: 260f1502-823f-4a7b-831b-591e1f9c36dc
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -50,11 +53,7 @@ tasks:
       - "6"
       - "13"
       - "15"
-      - "17"
       - "21"
-      - "23"
-      - "8"
-      - "10"
     scriptarguments:
       all:
         simple: "yes"
@@ -62,7 +61,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 910,
           "y": 195
         }
       }
@@ -71,15 +70,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 523a03ea-ae00-47e1-8b0b-1705218ea9aa
+    taskid: 4f7f7453-5365-4b3d-880c-4c414fc9f104
     type: regular
     task:
-      id: 523a03ea-ae00-47e1-8b0b-1705218ea9aa
+      id: 4f7f7453-5365-4b3d-880c-4c414fc9f104
       version: -1
       name: Get searchable mailboxes
-      script: '|||ews-get-searchable-mailboxes'
+      script: 'EWS v2|||ews-get-searchable-mailboxes'
       type: regular
       iscommand: true
       brand: ""
@@ -90,8 +92,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 545
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -99,12 +101,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 12d4afe7-7e9a-4b0c-844b-a99df4e3d6ee
+    taskid: 4a5f5ea6-d9da-406f-8566-2195ea742f27
     type: condition
     task:
-      id: 12d4afe7-7e9a-4b0c-844b-a99df4e3d6ee
+      id: 4a5f5ea6-d9da-406f-8566-2195ea742f27
       version: -1
       name: Verify Mailboxes context key
       type: condition
@@ -130,8 +135,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 720
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -139,15 +144,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: c7f3fb44-ed0a-459c-8252-34305b03d352
+    taskid: 758d522f-fb9d-4ea1-8dbb-86280bbd04d8
     type: regular
     task:
-      id: c7f3fb44-ed0a-459c-8252-34305b03d352
+      id: 758d522f-fb9d-4ea1-8dbb-86280bbd04d8
       version: -1
       name: Get contacts
-      script: '|||ews-get-contacts'
+      script: 'EWS v2|||ews-get-contacts'
       type: regular
       iscommand: true
       brand: ""
@@ -163,8 +171,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3920,
-          "y": 545
+          "x": 480,
+          "y": 370
         }
       }
     note: false
@@ -172,12 +180,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 78727767-acc1-4070-861f-8cf6e67abd7e
+    taskid: 36661064-e0ce-47ca-8d77-63627e1d3b27
     type: condition
     task:
-      id: 78727767-acc1-4070-861f-8cf6e67abd7e
+      id: 36661064-e0ce-47ca-8d77-63627e1d3b27
       version: -1
       name: Verify Contacts context key
       type: condition
@@ -203,38 +214,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3920,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "8":
-    id: "8"
-    taskid: 412078ab-5a29-462d-860a-08ef147c8f4d
-    type: regular
-    task:
-      id: 412078ab-5a29-462d-860a-08ef147c8f4d
-      version: -1
-      name: Get item attachment
-      script: '|||ews-get-attachment'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      item-id:
-        simple: AAMkADQ1OWE0NzI5LTUxZTktNDE2Zi1hYTdkLWRiMDFmZDgxNDY1MABGAAAAAAAEzx7ZB+bhTYeJK95WqEa8BwBL/fkrvLLNQrnWSaIq1hMZAAAApMXAAABL/fkrvLLNQrnWSaIq1hMZAAAApM+rAAA=
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
+          "x": 480,
           "y": 545
         }
       }
@@ -243,12 +223,51 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: d8ff6bb9-f1c3-4b08-8721-6035d8ec8a9e
+    type: regular
+    task:
+      id: d8ff6bb9-f1c3-4b08-8721-6035d8ec8a9e
+      version: -1
+      name: Get item attachment
+      script: 'EWS v2|||ews-get-attachment'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      item-id:
+        complex:
+          root: EWS.Items
+          accessor: itemId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: e36aad59-231d-48db-86d0-456db16f0238
+    taskid: 0c2736e0-f748-448a-862d-f4a20b3c6572
     type: condition
     task:
-      id: e36aad59-231d-48db-86d0-456db16f0238
+      id: 0c2736e0-f748-448a-862d-f4a20b3c6572
       version: -1
       name: Verify Items context
       type: condition
@@ -256,7 +275,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "25"
+      - "33"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -266,11 +285,8 @@ tasks:
             value:
               simple: EWS.Items.ItemAttachments.datetimeCreated
             iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: EWS.Items.ItemAttachments.headers
-            iscontext: true
+          right:
+            value: {}
       - - operator: isExists
           left:
             value:
@@ -279,18 +295,18 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: EWS.Items.ItemAttachments.body
+              simple: EWS.Items.ItemAttachments.hasAttachments
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: EWS.Items.ItemAttachments.hasAttachments
+              simple: EWS.Items.ItemAttachments.attachmentType
             iscontext: true
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 720
+          "y": 1915
         }
       }
     note: false
@@ -298,32 +314,37 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: c8a1f539-5da9-4972-802d-3d5c57d78bd0
+    taskid: ec5ffa8a-5ba6-4fb8-8c90-bb75b1bc9900
     type: regular
     task:
-      id: c8a1f539-5da9-4972-802d-3d5c57d78bd0
+      id: ec5ffa8a-5ba6-4fb8-8c90-bb75b1bc9900
       version: -1
       name: Get file attachment
-      script: '|||ews-get-attachment'
+      script: 'EWS v2|||ews-get-attachment'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "42"
     scriptarguments:
       attachment-ids:
-        simple: AAMkADQ1OWE0NzI5LTUxZTktNDE2Zi1hYTdkLWRiMDFmZDgxNDY1MABGAAAAAAAEzx7ZB+bhTYeJK95WqEa8BwBL/fkrvLLNQrnWSaIq1hMZAAAApMXAAABL/fkrvLLNQrnWSaIq1hMZAAAApM+qAAABEgAQAPINyV3OXiNAtzjDCQ1jdJw=
+        simple: ${EWS.Items.FileAttachments.attachmentId}
       item-id:
-        simple: AAMkADQ1OWE0NzI5LTUxZTktNDE2Zi1hYTdkLWRiMDFmZDgxNDY1MABGAAAAAAAEzx7ZB+bhTYeJK95WqEa8BwBL/fkrvLLNQrnWSaIq1hMZAAAApMXAAABL/fkrvLLNQrnWSaIq1hMZAAAApM+qAAA=
+        complex:
+          root: EWS.Items
+          accessor: itemId
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 4350,
-          "y": 370
+          "x": 1135,
+          "y": 3140
         }
       }
     note: false
@@ -331,12 +352,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 14f2925e-4db9-4461-8da3-faec7665d677
+    taskid: 2d81d28b-de39-4988-8aa7-9bb807ee8e9a
     type: condition
     task:
-      id: 14f2925e-4db9-4461-8da3-faec7665d677
+      id: 2d81d28b-de39-4988-8aa7-9bb807ee8e9a
       version: -1
       name: Verify EWS file attachment
       type: condition
@@ -362,8 +386,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4350,
-          "y": 545
+          "x": 1135,
+          "y": 3490
         }
       }
     note: false
@@ -371,12 +395,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 1fe0d1eb-2079-4a9c-8bd6-2fb5fabc6ae3
+    taskid: 23efabe3-e88c-44df-881f-5df4a83d9488
     type: condition
     task:
-      id: 1fe0d1eb-2079-4a9c-8bd6-2fb5fabc6ae3
+      id: 23efabe3-e88c-44df-881f-5df4a83d9488
       version: -1
       name: Verify file context
       type: condition
@@ -384,21 +411,23 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "25"
+      - "36"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: containsGeneral
           left:
             value:
-              simple: File.Name
-            iscontext: true
+              simple: ${File.Name}
+          right:
+            value:
+              simple: for-tpb-pyEWS
     view: |-
       {
         "position": {
-          "x": 4350,
-          "y": 720
+          "x": 1135,
+          "y": 3665
         }
       }
     note: false
@@ -406,15 +435,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 22027822-7b5f-4109-86e1-22980fda37b1
+    taskid: 1631eadb-02b9-4051-8f1d-8e4116442ea5
     type: regular
     task:
-      id: 22027822-7b5f-4109-86e1-22980fda37b1
+      id: 1631eadb-02b9-4051-8f1d-8e4116442ea5
       version: -1
       name: Get out of office status
-      script: '|||ews-get-out-of-office'
+      script: 'EWS v2|||ews-get-out-of-office'
       type: regular
       iscommand: true
       brand: ""
@@ -423,13 +455,13 @@ tasks:
       - "14"
     scriptarguments:
       target-mailbox:
-        simple: DEM174861@demisto.int
+        simple: demistoadmin@demisto.int
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 545
+          "x": 910,
+          "y": 370
         }
       }
     note: false
@@ -437,12 +469,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 413adcf7-1c51-4d85-8acc-f1f08787174a
+    taskid: c0deb192-3a02-41d0-860f-6dcb0f43324b
     type: condition
     task:
-      id: 413adcf7-1c51-4d85-8acc-f1f08787174a
+      id: c0deb192-3a02-41d0-860f-6dcb0f43324b
       version: -1
       name: Verify out of office context key
       type: condition
@@ -478,8 +513,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 720
+          "x": 910,
+          "y": 545
         }
       }
     note: false
@@ -487,15 +522,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: ac7760c2-9759-4592-8e84-e07d6a8f5c18
+    taskid: 2cd7f7cc-fc5c-4494-8231-1d8efd07278c
     type: regular
     task:
-      id: ac7760c2-9759-4592-8e84-e07d6a8f5c18
+      id: 2cd7f7cc-fc5c-4494-8231-1d8efd07278c
       version: -1
       name: Find folders
-      script: '|||ews-find-folders'
+      script: 'EWS v2|||ews-find-folders'
       type: regular
       iscommand: true
       brand: ""
@@ -506,8 +544,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
-          "y": 545
+          "x": 1340,
+          "y": 370
         }
       }
     note: false
@@ -515,12 +553,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 58455273-c84d-4de1-8064-78f89adff082
+    taskid: 4c801c6f-2b94-4b1a-83ea-ebf21a1d11d8
     type: condition
     task:
-      id: 58455273-c84d-4de1-8064-78f89adff082
+      id: 4c801c6f-2b94-4b1a-83ea-ebf21a1d11d8
       version: -1
       name: Verify folders context key
       type: condition
@@ -541,8 +582,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
-          "y": 720
+          "x": 1340,
+          "y": 545
         }
       }
     note: false
@@ -550,15 +591,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 78588475-f2a8-4498-8f09-eac22b05a10d
+    taskid: c5ade2d7-dbf9-4d98-83b7-ad2308e15b40
     type: regular
     task:
-      id: 78588475-f2a8-4498-8f09-eac22b05a10d
+      id: c5ade2d7-dbf9-4d98-83b7-ad2308e15b40
       version: -1
       name: Get items
-      script: '|||ews-get-items'
+      script: 'EWS v2|||ews-get-items'
       type: regular
       iscommand: true
       brand: ""
@@ -567,13 +611,15 @@ tasks:
       - "18"
     scriptarguments:
       item-ids:
-        simple: AAMkADQ1OWE0NzI5LTUxZTktNDE2Zi1hYTdkLWRiMDFmZDgxNDY1MABGAAAAAAAEzx7ZB+bhTYeJK95WqEa8BwBL/fkrvLLNQrnWSaIq1hMZAAAApMXAAABL/fkrvLLNQrnWSaIq1hMZAAAApM+qAAA=
+        complex:
+          root: EWS.Items
+          accessor: itemId
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 3275,
-          "y": 370
+          "x": 685,
+          "y": 3490
         }
       }
     note: false
@@ -581,12 +627,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 33a6df30-ab19-4994-8686-b0800f78e649
+    taskid: 84c25969-ef36-4249-8226-7fb570fdff65
     type: condition
     task:
-      id: 33a6df30-ab19-4994-8686-b0800f78e649
+      id: 84c25969-ef36-4249-8226-7fb570fdff65
       version: -1
       name: Filter item id
       type: condition
@@ -596,24 +645,21 @@ tasks:
       '#default#':
       - "19"
       "yes":
-      - "20"
+      - "36"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: inList
+      - - operator: isExists
           left:
             value:
               simple: EWS.Items.itemId
             iscontext: true
-          right:
-            value:
-              simple: AAMkADQ1OWE0NzI5LTUxZTktNDE2Zi1hYTdkLWRiMDFmZDgxNDY1MABGAAAAAAAEzx7ZB+bhTYeJK95WqEa8BwBL/fkrvLLNQrnWSaIq1hMZAAAApMXAAABL/fkrvLLNQrnWSaIq1hMZAAAApM+qAAA=
     view: |-
       {
         "position": {
-          "x": 3275,
-          "y": 545
+          "x": 685,
+          "y": 3665
         }
       }
     note: false
@@ -621,12 +667,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: bbee830d-d192-4dc4-8c8a-da2e17a3f2b0
+    taskid: 4f8772e3-921c-453d-8f9e-a2d13e6482ec
     type: regular
     task:
-      id: bbee830d-d192-4dc4-8c8a-da2e17a3f2b0
+      id: 4f8772e3-921c-453d-8f9e-a2d13e6482ec
       version: -1
       name: Did not find item in content
       description: Prints an error entry with a given message
@@ -641,8 +690,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3060,
-          "y": 720
+          "x": 675,
+          "y": 3840
         }
       }
     note: false
@@ -650,40 +699,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "20":
-    id: "20"
-    taskid: 71a45991-7602-4501-8f4f-7bcf695c1a98
-    type: title
-    task:
-      id: 71a45991-7602-4501-8f4f-7bcf695c1a98
-      version: -1
-      name: Found
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 3490,
-          "y": 735
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 584e2c4e-def6-4b24-8279-8f85b912afb5
+    taskid: e2424daf-8daa-4b72-86b9-d25b9d67b191
     type: regular
     task:
-      id: 584e2c4e-def6-4b24-8279-8f85b912afb5
+      id: e2424daf-8daa-4b72-86b9-d25b9d67b191
       version: -1
       name: Get expanded group
-      script: '|||ews-expand-group'
+      script: 'EWS v2|||ews-expand-group'
       type: regular
       iscommand: true
       brand: ""
@@ -697,8 +724,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
-          "y": 545
+          "x": 1770,
+          "y": 370
         }
       }
     note: false
@@ -706,12 +733,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: d915ce7c-81fd-4be6-88aa-a83537a9260f
+    taskid: 22b783f3-f158-4388-8a62-5b75653f7eeb
     type: condition
     task:
-      id: d915ce7c-81fd-4be6-88aa-a83537a9260f
+      id: 22b783f3-f158-4388-8a62-5b75653f7eeb
       version: -1
       name: Verify Expanded Group members
       type: condition
@@ -732,40 +762,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "23":
-    id: "23"
-    taskid: d5f286a8-9d6d-45ff-8bbc-c7891d6d8fad
-    type: regular
-    task:
-      id: d5f286a8-9d6d-45ff-8bbc-c7891d6d8fad
-      version: -1
-      name: Get items from folder
-      script: '|||ews-get-items-from-folder'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "24"
-    scriptarguments:
-      folder-path:
-        simple: Inbox\TEST
-      limit:
-        simple: "10"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 2630,
+          "x": 1770,
           "y": 545
         }
       }
@@ -774,12 +771,51 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 25903e54-29c1-4b05-8c71-a8f12e398b74
+    type: regular
+    task:
+      id: 25903e54-29c1-4b05-8c71-a8f12e398b74
+      version: -1
+      name: Get items from folder
+      script: 'EWS v2|||ews-get-items-from-folder'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      folder-path:
+        simple: Inbox\DO_NOT_DELETE-TPB:pyEWS_TEST
+      limit:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 5ef115f9-6e8e-4513-8a24-f335aa599c1f
+    taskid: 2621f7d7-5d7e-4968-8acd-0a0d051df3c1
     type: condition
     task:
-      id: 5ef115f9-6e8e-4513-8a24-f335aa599c1f
+      id: 2621f7d7-5d7e-4968-8acd-0a0d051df3c1
       version: -1
       name: Verify items from folder
       type: condition
@@ -787,7 +823,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "25"
+      - "31"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -800,7 +836,38 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2630,
+          "x": 910,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 50cb5f28-b0a5-417e-875e-b67546c16a9e
+    type: title
+    task:
+      id: 50cb5f28-b0a5-417e-875e-b67546c16a9e
+      version: -1
+      name: Start main test flow
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "43"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
           "y": 720
         }
       }
@@ -809,24 +876,43 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "25":
-    id: "25"
-    taskid: 0b969dae-3342-46d6-8f95-9501a484bf2f
-    type: title
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: aceefa3e-706e-4921-8d2c-a024de91f520
+    type: regular
     task:
-      id: 0b969dae-3342-46d6-8f95-9501a484bf2f
+      id: aceefa3e-706e-4921-8d2c-a024de91f520
       version: -1
-      name: Done
-      type: title
-      iscommand: false
+      name: Send mail
+      description: Sends an email using Microsoft Graph.
+      script: 'EWS v2|||send-mail'
+      type: regular
+      iscommand: true
       brand: ""
-      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      attachIDs:
+        simple: ${File.EntryID}
+      body:
+        simple: i_am_for_tpb_pyEWS
+      from:
+        simple: demistoadmin@demisto.int
+      subject:
+        simple: for tpb pyEWS with fileAttachment
+      to:
+        simple: demistoadmin@demisto.int
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1770,
-          "y": 895
+          "x": 910,
+          "y": 2440
         }
       }
     note: false
@@ -834,13 +920,625 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 05853e24-99f5-46f0-85b5-ad4823a431a2
+    type: regular
+    task:
+      id: 05853e24-99f5-46f0-85b5-ad4823a431a2
+      version: -1
+      name: upload a file
+      description: |
+        Creates a file (using the given data input or entry ID) and uploads it to the current investigation War Room.
+      scriptName: FileCreateAndUploadV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      data:
+        simple: hi i am fot tpb
+      filename:
+        simple: for-tpb-pyEWS
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 83f8ecee-9198-4f69-8bff-8b689c5e68ff
+    type: regular
+    task:
+      id: 83f8ecee-9198-4f69-8bff-8b689c5e68ff
+      version: -1
+      name: Sleep for 60 seconds
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      seconds:
+        simple: "90"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 42fdf67f-5555-45ca-8372-2d69880dc783
+    type: regular
+    task:
+      id: 42fdf67f-5555-45ca-8372-2d69880dc783
+      version: -1
+      name: Delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key:
+        complex:
+          root: EWS
+          accessor: Items
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 404bd878-1620-4f54-8bbd-e0353d1748ed
+    type: regular
+    task:
+      id: 404bd878-1620-4f54-8bbd-e0353d1748ed
+      version: -1
+      name: search for mail with itemAttachment
+      description: Searches for items in the specified mailbox. Specific permissions are needed for this operation to search in a target mailbox other than the default.
+      script: 'EWS v2|||ews-search-mailbox'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      folder-path:
+        simple: Inbox/DO_NOT_DELETE-TPB:pyEWS_TEST
+      limit:
+        simple: "1"
+      query:
+        simple: 'body: this_is_for_pyEWS TPB'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 3e6c41e4-2329-4dab-8e01-78f871f993bd
+    type: regular
+    task:
+      id: 3e6c41e4-2329-4dab-8e01-78f871f993bd
+      version: -1
+      name: Delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key:
+        simple: ${EWS.Items}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 8a19a778-2cc0-42db-8163-6aad5c464fd2
+    type: regular
+    task:
+      id: 8a19a778-2cc0-42db-8163-6aad5c464fd2
+      version: -1
+      name: Search mail with fileAttachment
+      description: Searches for items in the specified mailbox. Specific permissions are needed for this operation to search in a target mailbox other than the default.
+      script: 'EWS v2|||ews-search-mailbox'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+      - "41"
+    scriptarguments:
+      folder-path:
+        simple: Inbox
+      limit:
+        simple: "1"
+      query:
+        simple: body:for tpb pyEWS with fileAttachment
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 3bcd53e2-03f3-425a-8728-111c66601804
+    type: regular
+    task:
+      id: 3bcd53e2-03f3-425a-8728-111c66601804
+      version: -1
+      name: Sleep for 60 seconds
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+      - "10"
+    scriptarguments:
+      seconds:
+        simple: "60"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: d463d749-9260-4231-8114-0f00150abb19
+    type: regular
+    task:
+      id: d463d749-9260-4231-8114-0f00150abb19
+      version: -1
+      name: Delete mail from DO_NOT_DELETE-TPB:pyEWS_TEST
+      description: Delete items from mailbox.
+      script: 'EWS v2|||ews-delete-items'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      delete-type:
+        simple: hard
+      item-ids:
+        complex:
+          root: EWS.Items
+          accessor: itemId
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 3840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 26d64ecf-3b00-437b-85cf-6549788f6076
+    type: regular
+    task:
+      id: 26d64ecf-3b00-437b-85cf-6549788f6076
+      version: -1
+      name: search mail in sent Items
+      description: Searches for items in the specified mailbox. Specific permissions are needed for this operation to search in a target mailbox other than the default.
+      script: 'EWS v2|||ews-search-mailbox'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      folder-path:
+        simple: Sent Items
+      query:
+        simple: body:for tpb pyEWS with fileAttachment
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 4190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: ae8d4793-84be-49e7-8e92-f017b60520f9
+    type: regular
+    task:
+      id: ae8d4793-84be-49e7-8e92-f017b60520f9
+      version: -1
+      name: Delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 4015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: febd4367-7611-4f01-8920-c87f443ad963
+    type: regular
+    task:
+      id: febd4367-7611-4f01-8920-c87f443ad963
+      version: -1
+      name: Delete mail from sent items
+      description: Delete items from mailbox.
+      script: 'EWS v2|||ews-delete-items'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      delete-type:
+        simple: hard
+      item-ids:
+        complex:
+          root: EWS.Items
+          accessor: itemId
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 4540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 5bed75fc-afca-4d57-8095-cbe70c0453c9
+    type: regular
+    task:
+      id: 5bed75fc-afca-4d57-8095-cbe70c0453c9
+      version: -1
+      name: Sleep for 30 seconds
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      seconds:
+        simple: "30"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 4365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 9f5668ac-5760-42fb-8fd9-88f2ffe8f2b4
+    type: regular
+    task:
+      id: 9f5668ac-5760-42fb-8fd9-88f2ffe8f2b4
+      version: -1
+      name: Delete file key context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: File
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1145,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 5b8a8042-8908-4cdc-8d88-ae3fbcd9b1ae
+    type: regular
+    task:
+      id: 5b8a8042-8908-4cdc-8d88-ae3fbcd9b1ae
+      version: -1
+      name: Sleep for 45 seconds
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      seconds:
+        simple: "45"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1135,
+          "y": 3315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: a37e3464-602e-4182-8929-8fbc0bf80ae3
+    type: regular
+    task:
+      id: a37e3464-602e-4182-8929-8fbc0bf80ae3
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 2f599f36-c173-4595-8ae8-a70adb01a966
+    type: title
+    task:
+      id: 2f599f36-c173-4595-8ae8-a70adb01a966
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 4715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 910,
-        "width": 4680,
+        "height": 4730,
+        "width": 2100,
         "x": 50,
         "y": 50
       }

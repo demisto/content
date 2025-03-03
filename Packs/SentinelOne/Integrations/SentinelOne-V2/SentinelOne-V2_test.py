@@ -603,6 +603,176 @@ def test_get_installed_applications(mocker, requests_mock):
     assert command_results.outputs == [{'InstalledOn': '2023-02-10', 'Name': 'test', 'Publisher': 'abc', 'Size': 50, 'Version': '2.1'}]  # noqa
 
 
+def test_get_remote_script_status(mocker, requests_mock):
+    """
+    Given
+        - required parentTaskId argument
+    When
+        - running sentinelone-get-remote-script-task-status command
+    Then
+        - returns a table of result had the list of taskIds which are available on ParentTaskIds
+    """
+    json_output = {
+        "data": [
+            {
+                "accountId": "1234567890",
+                "accountName": "Metron Team",
+                "agentComputerName": "MSEDGEWIN10",
+                "agentId": "0987654321",
+                "agentIsActive": True,
+                "agentIsDecommissioned": False,
+                "agentMachineType": "desktop",
+                "agentOsType": "windows",
+                "agentUuid": "25682583752987932878722323",
+                "createdAt": "2024-07-30T06:43:22.938877Z",
+                "description": "A test get cloud services",
+                "detailedStatus": "Execution completed successfully",
+                "groupId": "12334654321",
+                "groupName": "Default Group",
+                "id": "123456",
+                "initiatedBy": "user",
+                "initiatedById": "099999",
+                "parentTaskId": "123456789",
+                "scriptResultsSignature": "34324324324324235r24fe2r2333432",
+                "siteId": "99999999",
+                "siteName": "Default site",
+                "status": "completed",
+                "statusCode": None,
+                "statusDescription": "Completed",
+                "type": "script_execution",
+                "updatedAt": "2024-07-30T06:44:50.881432Z"
+            }
+        ]
+    }
+    requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/remote-scripts/status",
+                      json=json_output)
+    mocker.patch.object(demisto, 'params', return_value={'token': 'token',
+                                                         'url': 'https://usea1.sentinelone.net',
+                                                         'api_version': '2.1'})
+    mocker.patch.object(demisto, 'command', return_value='sentinelone-get-remote-script-task-status')
+    mocker.patch.object(demisto, 'args', return_value={
+        'parent_task_id': '123456789'
+    })
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+    assert_response = util_load_json('test_data/get_remote_script_task_status.json')
+    assert command_results.outputs == assert_response
+
+
+def test_remote_script_results(mocker, requests_mock):
+    """
+    Given
+        - required taskIds argument
+    When
+        - running sentinelone-get-remote-script-task-results command
+    Then
+        - returns file details
+    """
+    task_ids = "1234566"
+    output_json = {
+        "data": {
+            "download_links": [
+                {
+                    "downloadUrl": "https://url/1",
+                    "fileName": "file1.zip",
+                    "taskId": task_ids
+                }
+            ],
+            "errors": []
+        }
+    }
+    requests_mock.post('https://usea1.sentinelone.net/web/api/v2.1/remote-scripts/fetch-files', json=output_json)
+    requests_mock.get('https://url/1', json={})
+    mocker.patch.object(demisto, 'params', return_value={'token': 'token',
+                                                         'url': 'https://usea1.sentinelone.net',
+                                                         'api_version': '2.1',
+                                                         'fetch_threat_rank': '4'})
+    mocker.patch.object(demisto, 'command', return_value='sentinelone-get-remote-script-task-results')
+    mocker.patch.object(demisto, 'args', return_value={
+        'task_ids': task_ids,
+    })
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+    outputs = command_results[0].outputs
+    assert outputs[0].get("taskId") == task_ids
+    assert outputs[0].get("fileName") == "file1.zip"
+    assert outputs[0].get("downloadUrl") == "https://url/1"
+
+
+def test_get_power_query_results(mocker, requests_mock):
+    """
+    Given
+        - required query, from_date and to_date arguments
+    When
+        - running sentinelone-get-power-query-results command
+    Then
+        - returns a table of result if data present
+    """
+    json_output = util_load_json('test_data/get_power_query_response.json')
+    requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/dv/events/pq-ping",
+                      json=json_output)
+    mocker.patch.object(demisto, 'params', return_value={'token': 'token',
+                                                         'url': 'https://usea1.sentinelone.net',
+                                                         'api_version': '2.1'})
+    mocker.patch.object(demisto, 'command', return_value='sentinelone-get-power-query-results')
+    mocker.patch.object(demisto, 'args', return_value={
+        'query_id': 'pq123456789',
+        'from_date': '2024-08-20T04:49:26.257525Z',
+        'to_date': '2024-08-21T04:49:26.257525Z',
+        'query': 'event.time = * | columns eventTime = event.time, agentUuid = agent.uuid, siteId = site.id'
+    })
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+    readable_output = ('### SentinelOne - Get Power Query Results for ID pqe5a4cbb0a0f0981f4125976b49fb0ebb'
+                       '\nRecommendation: Result set limited to 1000 rows by default. To display more rows, add'
+                       ' a command like \"| limit 10000\".\n\nSummary information and details about the power query'
+                       '\n|Agent Uuid|Event Time|Site Id|\n|---|---|---|\n'
+                       '| ed8f14f1-f35b-0eca-1c1e-e31e97aefc71 | 1724151854609 | 123456789 |\n'
+                       '| ed8f14f1-f35b-0eca-1c1e-e31e97aefc71 | 1724151823332 | 123456789 |\n')
+    assert command_results.readable_output == readable_output
+
+
+def test_get_power_query_results_without_query_id(mocker, requests_mock):
+    """
+    Given
+        - required query, from_date and to_date arguments
+    When
+        - running sentinelone-get-power-query-results command
+    Then
+        - returns a table of result if data present
+    """
+    json_output = util_load_json('test_data/get_power_query_response.json')
+    requests_mock.post("https://usea1.sentinelone.net/web/api/v2.1/dv/events/pq",
+                       json=json_output)
+    mocker.patch.object(demisto, 'params', return_value={'token': 'token',
+                                                         'url': 'https://usea1.sentinelone.net',
+                                                         'api_version': '2.1'})
+    mocker.patch.object(demisto, 'command', return_value='sentinelone-get-power-query-results')
+    mocker.patch.object(demisto, 'args', return_value={
+        'from_date': '2024-08-20T04:49:26.257525Z',
+        'to_date': '2024-08-21T04:49:26.257525Z',
+        'query': 'event.time = * | columns eventTime = event.time, agentUuid = agent.uuid, siteId = site.id'
+    })
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+    readable_output = ('### SentinelOne - Get Power Query Results for ID pqe5a4cbb0a0f0981f4125976b49fb0ebb'
+                       '\nRecommendation: Result set limited to 1000 rows by default. To display more rows, add'
+                       ' a command like \"| limit 10000\".\n\nSummary information and details about the power query'
+                       '\n|Agent Uuid|Event Time|Site Id|\n|---|---|---|\n'
+                       '| ed8f14f1-f35b-0eca-1c1e-e31e97aefc71 | 1724151854609 | 123456789 |\n'
+                       '| ed8f14f1-f35b-0eca-1c1e-e31e97aefc71 | 1724151823332 | 123456789 |\n')
+    assert command_results.readable_output == readable_output
+
+
 def test_get_remote_data_command(mocker, requests_mock):
     """
     Given

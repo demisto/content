@@ -7,10 +7,12 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Username
   name: credentials
   type: 9
   required: false
+  section: Connect
 - additionalinfo: Cluster Authentication Token
   display: Username
   displaypassword: API Token
@@ -18,6 +20,7 @@ configuration:
   type: 9
   hiddenusername: true
   required: false
+  section: Connect
 - defaultvalue: "generic,abnormalAuth,accountManipulation,accountTampering,ueba,bruteForce,compromisedCredentials, cryptomining,dataAccessAbuse,dataExfiltration,dlp,departedEmployee,dataDestruction,evasion,lateralMovement,alertTriage, malware,phishing,privilegeAbuse,physicalSecurity,privilegeEscalation,privilegedActivity,ransomware,workforceProtection"
   display: Exabeam Incident Type
   name: incident_type
@@ -48,6 +51,8 @@ configuration:
   - workforceProtection
   type: 16
   required: false
+  section: Collect
+  advanced: true
 - defaultvalue: low,medium,high,critical
   display: Priority
   name: priority
@@ -58,6 +63,8 @@ configuration:
   - critical
   type: 16
   required: false
+  section: Collect
+  advanced: true
 - defaultvalue: closed,closedFalsePositive,inprogress,new,pending,resolved
   display: Status
   name: status
@@ -74,16 +81,20 @@ configuration:
   name: isFetch
   type: 8
   required: false
+  section: Collect
+  advanced: true
 - defaultvalue: '50'
   display: Max incidents per fetch
   name: max_fetch
   type: 0
   required: false
+  section: Collect
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   type: 0
   required: false
+  section: Collect
 - display: 'Advanced: Minutes to look back when fetching'
   name: look_back
   type: 0
@@ -98,12 +109,49 @@ configuration:
   name: insecure
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+  advanced: true
+- display: Fetch Type
+  defaultvalue: Exabeam Incident
+  name: fetch_type
+  type: 16
+  options:
+  - Exabeam Incident
+  - Exabeam Notable User
+  section: Collect
+- display: Max Users Per Fetch
+  name: max_fetch_users
+  additionalinfo: Applies only when the Fetch Type is set to Exabeam Notable User.
+  type: 0
+  section: Collect
+  defaultvalue: 50
+- display: Notable Users Fetch Interval
+  name: notable_users_fetch_interval
+  additionalinfo: The interval, in whole hours, between consecutive fetch operations.
+  defaultvalue: "60"
+  type: 19
+  section: Collect
+  advanced: true
+- defaultvalue: 3 months
+  display: Notable Users First Fetch Timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: notable_users_first_fetch
+  type: 0
+  section: Collect
+  advanced: true
+- display: Minimum Risk Score To Fetch Users
+  name: minimum_risk_score_to_fetch_users
+  type: 0
+  section: Collect
+  advanced: true
+  defaultvalue: 90
 description: The Exabeam Security Management Platform provides end-to-end detection, User Event Behavioral Analytics, and SOAR.
-display: Exabeam
+display: Exabeam Advanced Analytics
 name: Exabeam
 script:
   commands:
@@ -1692,7 +1740,7 @@ script:
     - contextPath: Exabeam.incidents.fields.description
       description: The incident description.
       type: String
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
   script: '-'
@@ -1701,3 +1749,5 @@ script:
 tests:
 - Exabeam - Test
 fromversion: 5.0.0
+defaultclassifier: "Exabeam Classifier"
+defaultmapperin: "Exabeam mapping"

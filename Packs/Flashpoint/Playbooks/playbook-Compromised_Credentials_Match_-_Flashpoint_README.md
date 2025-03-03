@@ -1,4 +1,4 @@
-Compromised Credentials Match playbook uses the details of the compromised credentials ingested from the Flashpoint and authenticates using the Active Directory integration by providing the compromised credentials of the user, expires the credentials if it matches, and sends an email alert about the breach.
+The Compromised Credentials Match playbook uses the details of the compromised credentials ingested from Flashpoint Ignite and authenticates using the Active Directory integration by providing the compromised credentials of the user. It then expires the credentials if it matches, and sends an email alert about the breach.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

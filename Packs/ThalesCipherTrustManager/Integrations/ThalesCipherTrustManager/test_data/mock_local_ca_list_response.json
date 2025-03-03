@@ -1,0 +1,24 @@
+{
+    "skip": 0,
+    "limit": 1,
+    "total": 21,
+    "resources" : [
+        {
+    "id": "fa1e2a3k4e5f6a7k8e",
+    "uri": "fake:fake:ca:fa1e2a3k4e5f6a7k8e",
+    "account": "fake:admin:accounts:fake",
+    "createdAt": "2025-06-15T07:30:00Z",
+    "updatedAt": "2025-06-15T07:50:00Z",
+    "name": "fake-ca-fa1e2a3k4e5f6a7k8e",
+    "state": "pending",
+    "csr": "-----BEGIN CERTIFICATE REQUEST-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAfafaeeefakakefeekafaeaa\nfeakfafeefaafakfafeakffakeeafffkafeafeekaffakeefaakfefaefaefakfaffka\nfaeffakeeffeakafakefeaefeffaafkekaeffkaeffafakfaefffaeefffaeffakekafa\nfeakfeafakefafeaefakeffafakeefaffakefkeffaeakeffaeakffaeakffaefakffa\n-----END CERTIFICATE REQUEST-----\n",
+    "subject": "/C=FA/ST=Fk/L=FakeCity/O=FakeOrg/OU=FakeUnit/OU=FakeGroup/CN=fake.example.com",
+    "notBefore": "2025-06-15T00:00:00Z",
+    "notAfter": "2025-12-31T23:59:59Z",
+    "sha1Fingerprint": "fa1e2a3k4e5f6a7k8e9fa1e2a3k4e5f6a7k8e9fa",
+    "sha256Fingerprint": "fak12345efa12345fak12345efa12345fak12345efa12345fak12345efa12345",
+    "sha512Fingerprint": "fake12345fake12345fake12345fake12345fake12345fake12345fake12345fake12345fake12345fake12345fake12345fake12345fake12345fake12345fake12345fake12345"
+}
+
+    ]
+}

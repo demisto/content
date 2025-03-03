@@ -1,6 +1,0 @@
-!octoxlabs-get-adapters
-!octoxlabs-get-connections page=1
-!octoxlabs-get-discoveries page=1
-!octoxlabs-get-last-discovery
-!octoxlabs-search-devices query="Adapters = active-directory AND (Hostname = a* OR IpAddresses ~ 192)" fields="Adapters,Hostname,Groups"
-!octoxlabs-get-device hostname="octoxlabs01"

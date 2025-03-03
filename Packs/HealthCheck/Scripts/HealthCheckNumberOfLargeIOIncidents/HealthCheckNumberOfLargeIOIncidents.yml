@@ -1,8 +1,8 @@
-comment: Widget Script to present the number of incidents with large input and outputs
+comment: Widget Script to present the number of incidents with large input and outputs.
 commonfields:
   id: HealthCheckNumberOfLargeIOIncidents
   version: -1
-dockerimage: demisto/python3:3.10.11.58677
+dockerimage: demisto/python3:3.11.10.113941
 enabled: true
 name: HealthCheckNumberOfLargeIOIncidents
 runas: DBotWeakRole

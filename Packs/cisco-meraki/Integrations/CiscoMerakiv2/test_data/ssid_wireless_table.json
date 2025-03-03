@@ -1,0 +1,15 @@
+[
+    {
+        "Number": 0,
+        "Name": "My SSID",
+        "Admin Splash URL": "http://www.example.com",
+        "IP Assignment Mode": "NAT mode",
+        "Enable": true,
+        "Radius Enabled": true,
+        "Visible": true,
+        "Availability Tags": [
+            "tag1",
+            "tag2"
+        ]
+    }
+]

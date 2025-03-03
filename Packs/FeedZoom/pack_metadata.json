@@ -5,7 +5,7 @@
     "videos": [
         "https://www.youtube.com/embed/s9lRtJltTGI"
     ],
-    "currentVersion": "1.1.14",
+    "currentVersion": "1.1.16",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

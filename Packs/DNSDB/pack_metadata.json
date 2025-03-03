@@ -2,7 +2,7 @@
     "name": "Farsight DNSDB",
     "description": "Query Farsight DNSDB service",
     "support": "partner",
-    "currentVersion": "2.1.22",
+    "currentVersion": "2.1.25",
     "author": "Farsight Security, Inc.",
     "url": "https://www.farsightsecurity.com",
     "email": "support@farsightsecurity.com",

@@ -7,11 +7,13 @@
         "AWS CloudTrail Misconfiguration",
         "AWS IAM Policy Misconfiguration",
         "AWS EC2 Instance Misconfiguration",
-        "Netwitness Incident",
+        "NetWitness Incident",
         "Symantec DLP Discover Incident",
         "Symantec DLP Endpoint Incident",
         "Symantec DLP Network Incident",
-		"Prisma Cloud - VM Alert Prioritization"
+		"Prisma Cloud - VM Alert Prioritization",
+        "Exabeam Notable User",
+        "CrowdStrike Falcon OFP Detection"
     ],
     "caseInsensitive": true,
     "cliName": "firstseen",
@@ -33,7 +35,8 @@
         "Symantec DLP Discover Incident",
         "Symantec DLP Endpoint Incident",
         "Symantec DLP Network Incident",
-        "Prisma Cloud - VM Alert Prioritization"
+        "Prisma Cloud - VM Alert Prioritization",
+        "CrowdStrike Falcon OFP Detection"
     ],
     "threshold": 72,
     "type": "shortText",

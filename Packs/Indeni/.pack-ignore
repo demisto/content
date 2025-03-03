@@ -13,3 +13,6 @@ ignore=IM111
 [file:classifier-indeni.json]
 ignore=BA101
 
+[file:playbook-Indeni_Demo.yml]
+ignore=GR107
+

@@ -254,7 +254,7 @@
         "asowner": {
             "simple": "",
             "complex": {
-                "root": "URL",
+                "root": "IP",
                 "filters": [],
                 "accessor": "ASOwner",
                 "transformers": [
@@ -446,6 +446,30 @@
                     }
                 ]
             }
+        },
+        "organizationprevalence": {
+            "simple": "IP.OrganizationPrevalence",
+            "complex": null
+        },
+        "globalprevalence": {
+            "simple": "IP.GlobalPrevalence",
+            "complex": null
+        },
+        "organizationfirstseen": {
+            "simple": "IP.OrganizationFirstSeen",
+            "complex": null
+        },
+        "organizationlastseen": {
+            "simple": "IP.OrganizationLastSeen",
+            "complex": null
+        },
+        "firstseenbysource": {
+            "simple": "IP.FirstSeenBySource",
+            "complex": null
+        },
+        "lastseenbysource": {
+            "simple": "IP.LastSeenBySource",
+            "complex": null
         }
     },
     "manualMapping": null,

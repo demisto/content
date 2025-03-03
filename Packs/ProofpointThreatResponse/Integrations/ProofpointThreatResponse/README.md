@@ -1,30 +1,26 @@
 Use the Proofpoint Threat Response integration to orchestrate and automate incident response.
 
-## Configure Proofpoint Threat Response on Cortex XSOAR
+## Configure Proofpoint Threat Response in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Proofpoint Threat Response.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g. https://192.168.0.1) |  | True |
-    | API Key |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | First fetch timestamp ("number" "time unit", e.g., 12 hours, 7 days) | The time range for the initial data fetch. If timeout errors occur, consider changing this value. | False |
-    | Fetch limit - maximum number of incidents per fetch  |  | False |
-    | Fetch delta - The delta time in each batch. e.g. 1 hour, 3 minutes.  | The time range between create_after and created_before that is sent to the API when fetching older incidents. If timeout errors occur, consider changing this value. | False |
-    | Fetch incidents with specific event sources. Can be a list of comma separated values. |  | False |
-    | Fetch incidents with specific 'Abuse Disposition' values. Can be a list of comma separated values. |  | False |
-    | Fetch incident with specific states. |  | False |
-    | POST URL of the JSON alert source. | You can find this value by navigating to Sources -> JSON event source -> POST URL. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g. https://192.168.0.1) |  | True |
+| API Key |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| First fetch timestamp ("number" "time unit", e.g., 12 hours, 7 days) | The time range for the initial data fetch. If timeout errors occur, consider changing this value. | False |
+| Fetch limit - maximum number of incidents per fetch  |  | False |
+| Fetch delta - The delta time in each batch. e.g. 1 hour, 3 minutes.  | The time range between create_after and created_before that is sent to the API when fetching older incidents. If timeout errors occur, consider changing this value. | False |
+| Fetch incidents with specific event sources. Can be a list of comma separated values. |  | False |
+| Fetch incidents with specific 'Abuse Disposition' values. Can be a list of comma separated values. |  | False |
+| Fetch incident with specific states. |  | False |
+| POST URL of the JSON alert source. | You can find this value by navigating to Sources -> JSON event source -> POST URL. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### proofpoint-tr-get-list
 ***
@@ -453,9 +449,12 @@ Verify if an email has been quarantined.
 
 | **Argument Name** | **Description**                           | **Required** |
 |-------------------|-------------------------------------------| --- |
-| message_id        | The ID value of an email.                  | Required | 
-| time              | The email delivery time (ISO8601 format).      | Required | 
-| recipient         | The email recipient. | Required | 
+| message_id        | The ID value of an email.                  | True | 
+| time              | The creation time of the incident in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z. | True | 
+| recipient         | The email recipient. | True | 
+| limit_quarantine_occurred_time | Whether or not to limit the results to include only quarantines that occurred within a limited time after alert creation. Automated quarantine actions for example typically occur within 120 seconds of alert firing. Manual actions executed by human may take longer. Default is True.| False |
+| quarantine_limit | Only used if 'limit_quarantine_occurred_time' argument is set to true. Sets a limit on the quarantines retrieved to include only those where the time difference between alert time and quarantined time is less than the number of seconds specified. The time is in seconds. Default is 120. | False|
+| fetch_delta | The time frame (in hours) used to identify the size of batches when retrieving the messages. e.g., 12. Default is 6. | False |
 
 
 #### Context Output

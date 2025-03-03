@@ -11,7 +11,7 @@ This integration was integrated and tested with version v1 of FraudWatch Phishpo
 6. Set the API token in the **Password** parameter.
 **NOTE**: no need to set the **Username** parameter it can be left blank (visible only on 6.0.2 and lower versions).
 
-![FraudWatch Retrieve API token](https://raw.githubusercontent.com/demisto/content/f411a49c2732b217fb424ca54f7e7931634d743b/Packs/FraudWatch/doc_files/Token_Generate_Image.png)
+![FraudWatch Retrieve API token](../../doc_files/Token_Generate_Image.png)
 
 ## Configure FraudWatch on Cortex XSOAR
 

@@ -16,7 +16,7 @@ Checks the given datetime has occurred after the provided relative time.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| left | Date value to check - Can be any non-timezone aware time format. ex. "2020-01-01T00:00:00" |
+| left | Date value to check - Can be any time format. ex. "2020-01-01T00:00:00" |
 | right | Relative time ex. "6 months ago" |
 
 ## Outputs

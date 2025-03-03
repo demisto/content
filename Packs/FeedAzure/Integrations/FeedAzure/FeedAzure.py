@@ -1,6 +1,5 @@
 import re
 import urllib3
-from typing import Dict, List, Tuple, Optional
 
 from CommonServerPython import *
 
@@ -8,7 +7,7 @@ from CommonServerPython import *
 urllib3.disable_warnings()
 
 INTEGRATION_NAME = 'Azure'
-AZUREJSON_URL = 'https://www.microsoft.com/en-us/download/confirmation.aspx?id=56519'  # disable-secrets-detection
+AZUREJSON_URL = 'https://www.microsoft.com/en-us/download/details.aspx?id=56519'  # disable-secrets-detection
 
 ERROR_TYPE_TO_MESSAGE = {
     requests.ConnectionError: F'Connection error in the API call to {INTEGRATION_NAME}.\n',
@@ -36,7 +35,7 @@ class Client(BaseClient):
         self._polling_timeout = polling_timeout
 
     @staticmethod
-    def build_ip_indicator(azure_ip_address, **indicator_metadata) -> Dict:
+    def build_ip_indicator(azure_ip_address, **indicator_metadata) -> dict:
         """Creates an IP data dict.
 
         Args:
@@ -83,20 +82,23 @@ class Client(BaseClient):
             headers={'User-Agent': 'PANW-XSOAR'},
             stream=False,
             timeout=self._polling_timeout,
-            resp_type='text'
+            resp_type='text',
+            retries=4,
+            status_list_to_retry=[403, 404]
         )
 
-        download_link_search_regex = re.search(r'downloadData={.+(https://(.)+\.json)\",', azure_url_response)
+        download_link_search_regex = re.search(r'.+\"(https://download\.microsoft\.com/download/.+\.json)\",', azure_url_response)
         download_link = download_link_search_regex.group(1) if download_link_search_regex else None
 
         if download_link is None:
+            demisto.debug(f"azure response is: {azure_url_response}")
             raise RuntimeError(F'{INTEGRATION_NAME} - Download link not found')
 
         demisto.debug(F'download link: {download_link}')
 
         return download_link
 
-    def get_download_file_content_values(self, download_link: str) -> Dict:
+    def get_download_file_content_values(self, download_link: str) -> dict:
         """Create a request to receive file content from link.
 
         Args:
@@ -116,7 +118,7 @@ class Client(BaseClient):
         return file_download_response.get('values')
 
     @staticmethod
-    def extract_metadata_of_indicators_group(indicators_group_data: Dict) -> Dict:
+    def extract_metadata_of_indicators_group(indicators_group_data: dict) -> dict:
         """Extracts metadata of an indicators group.
 
         Args:
@@ -125,7 +127,7 @@ class Client(BaseClient):
         Returns:
             Dict. Indicators group metadata.
         """
-        indicator_metadata = dict()
+        indicator_metadata = {}
 
         indicator_metadata['id'] = indicators_group_data.get('id')
         indicator_metadata['name'] = indicators_group_data.get('name')
@@ -147,7 +149,7 @@ class Client(BaseClient):
         return indicator_metadata
 
     @staticmethod
-    def filter_and_aggregate_values(address_list: List) -> List:
+    def filter_and_aggregate_values(address_list: list) -> list:
         """For each indicator value from the given list we aggregate the all the different keys found.
 
         Args:
@@ -165,9 +167,9 @@ class Client(BaseClient):
             else:
                 indicator_objects[current_value] = item_to_search
 
-        return [value for value in indicator_objects.values()]
+        return list(indicator_objects.values())
 
-    def extract_indicators_from_values_dict(self, values_from_file: Dict) -> List:
+    def extract_indicators_from_values_dict(self, values_from_file: dict) -> list:
         """Builds a list of all IP indicators in the input dict.
 
         Args:
@@ -208,7 +210,7 @@ class Client(BaseClient):
                 )
         return self.filter_and_aggregate_values(results)
 
-    def build_iterator(self) -> List:
+    def build_iterator(self) -> list:
         """Retrieves all entries from the feed.
         Returns:
             A list of objects, containing the indicators.
@@ -233,7 +235,7 @@ class Client(BaseClient):
             raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {err}')
 
 
-def test_module(client: Client) -> Tuple[str, Dict, Dict]:
+def test_module(client: Client) -> tuple[str, dict, dict]:
     """Test the ability to fetch Azure file.
     Args:
         client: Client object.
@@ -259,7 +261,10 @@ def test_module(client: Client) -> Tuple[str, Dict, Dict]:
     return 'ok', {}, {}
 
 
-def get_indicators_command(client: Client, feedTags: list, tlp_color: Optional[str]) -> Tuple[str, Dict, Dict]:
+def get_indicators_command(client: Client,
+                           feedTags: list,
+                           tlp_color: str | None,
+                           enrichment_excluded: bool = False) -> tuple[str, dict, dict]:
     """Retrieves indicators from the feed to the war-room.
 
     Args:
@@ -273,7 +278,7 @@ def get_indicators_command(client: Client, feedTags: list, tlp_color: Optional[s
             Dict. The raw data of the indicators.
     """
     limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 10
-    indicators, raw_response = fetch_indicators_command(client, feedTags, tlp_color, limit)
+    indicators, raw_response = fetch_indicators_command(client, feedTags, tlp_color, limit, enrichment_excluded)
 
     human_readable = tableToMarkdown('Indicators from Azure Feed:', indicators,
                                      headers=['value', 'type'], removeNull=True)
@@ -281,8 +286,11 @@ def get_indicators_command(client: Client, feedTags: list, tlp_color: Optional[s
     return human_readable, {}, {'raw_response': raw_response}
 
 
-def fetch_indicators_command(client: Client, feedTags: list, tlp_color: Optional[str], limit: int = -1) \
-        -> Tuple[List[Dict], List]:
+def fetch_indicators_command(client: Client,
+                             feedTags: list,
+                             tlp_color: str | None,
+                             limit: int = -1,
+                             enrichment_excluded: bool = False) -> tuple[list[dict], list]:
     """Fetches indicators from the feed to the indicators tab.
     Args:
         client (Client): Client object configured according to instance arguments.
@@ -311,11 +319,14 @@ def fetch_indicators_command(client: Client, feedTags: list, tlp_color: Optional
                 'service': indicator.get('azure_system_service'),
                 'tags': feedTags,
             },
-            'rawJSON': indicator
+            'rawJSON': indicator,
         }
 
         if tlp_color:
             indicator_obj['fields']['trafficlightprotocol'] = tlp_color
+
+        if enrichment_excluded:
+            indicator_obj['enrichmentExcluded'] = enrichment_excluded
 
         indicators.append(indicator_obj)
         raw_response.append(indicator)
@@ -337,6 +348,7 @@ def main():
 
     feedTags = argToList(demisto.params().get('feedTags'))
     tlp_color = demisto.params().get('tlp_color')
+    enrichment_excluded = demisto.params().get('enrichmentExcluded', False)
 
     polling_arg = demisto.params().get('polling_timeout', '')
     polling_timeout = int(polling_arg) if polling_arg.isdigit() else 20
@@ -355,7 +367,7 @@ def main():
                 feedTags['tags'] = feedTags
             return_outputs(*get_indicators_command(client, feedTags, tlp_color))
         elif command == 'fetch-indicators':
-            indicators, _ = fetch_indicators_command(client, feedTags, tlp_color)
+            indicators, _ = fetch_indicators_command(client, feedTags, tlp_color, enrichment_excluded=enrichment_excluded)
             for single_batch in batch(indicators, batch_size=2000):
                 demisto.createIndicators(single_batch)
 

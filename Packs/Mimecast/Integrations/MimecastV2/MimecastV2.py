@@ -17,12 +17,17 @@ from xml.etree import ElementTree
 
 
 ''' GLOBALS/PARAMS '''
-
 BASE_URL = demisto.params().get('baseUrl')
 ACCESS_KEY = demisto.params().get('accessKey')
-SECRET_KEY = demisto.params().get('secretKey') or demisto.params().get('secretKey_creds', {}).get('password', '')
+
+SECRET_KEY = demisto.params().get('secretKey') or demisto.params().get('secretKey_creds')
+if isinstance(SECRET_KEY, dict):
+    SECRET_KEY = SECRET_KEY.get('password', '')
 APP_ID = demisto.params().get('appId')
-APP_KEY = demisto.params().get('appKey') or demisto.params().get('appKey_creds', {}).get('password', '')
+APP_KEY = demisto.params().get('appKey') or demisto.params().get('appKey_creds', {})
+if isinstance(APP_KEY, dict):
+    APP_KEY = APP_KEY.get('password', '')
+
 USE_SSL = None  # assigned in determine_ssl_usage
 PROXY = bool(demisto.params().get('proxy'))
 # Flags to control which type of incidents are being fetched
@@ -33,12 +38,24 @@ FETCH_ATTACHMENTS = 'Attachments' in FETCH_PARAMS or FETCH_ALL
 FETCH_IMPERSONATIONS = 'Impersonation' in FETCH_PARAMS or FETCH_ALL
 FETCH_HELD_MESSAGES = 'Held Messages' in FETCH_PARAMS or FETCH_ALL
 # Used to refresh token / discover available auth types / login
-EMAIL_ADDRESS = demisto.params().get('email') or demisto.params().get('credentials', {}).get('identifier', '')
-PASSWORD = demisto.params().get('password') or demisto.params().get('credentials', {}).get('password', '')
+EMAIL_ADDRESS = demisto.params().get('email') or demisto.params().get('credentials', {})
+if isinstance(EMAIL_ADDRESS, dict):
+    EMAIL_ADDRESS = EMAIL_ADDRESS.get('identifier', '')
+PASSWORD = demisto.params().get('password') or demisto.params().get('credentials', {})
+if isinstance(PASSWORD, dict):
+    PASSWORD = PASSWORD.get('password', '')
 FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
 
 
+CLIENT_ID = demisto.params().get('client_id')
+CLIENT_SECRET = demisto.params().get('client_secret', {}).get("password") if demisto.params().get('client_secret') else None
+USE_OAUTH2 = bool(CLIENT_ID and CLIENT_SECRET)
+TOKEN_OAUTH2 = ""
+DEFAULT_POLICY_TYPE = 'blockedsenders'
 LOG(f"command is {demisto.command()}")
+PAGE_SIZE_MAX = 100
+DEFAULT_PAGE_SIZE = 50
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S+00:00'
 
 # default query xml template for test module
 default_query_xml = "<?xml version=\"1.0\"?> \n\
@@ -77,17 +94,17 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
     Creates paging response for relevant commands.
 
     """
-    headers = None
+    headers = {}
     if page and page_size:
         limit = page * page_size
-    pagination = {'page_size': limit}
+    pagination = {'pageSize': limit}
     payload = {
         'meta': {
             'pagination': pagination
-        },
-        'data': data
+        }
     }  # type: Dict[str, Any]
-
+    if data and data != [{}]:
+        payload['data'] = data
     if use_headers:
         headers = generate_user_auth_headers(api_endpoint)
     response = http_request('POST', api_endpoint, payload, headers=headers, is_file=is_file)
@@ -121,11 +138,17 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
     return results, len_of_results
 
 
-def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, is_file=False, headers=None):
+def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, is_file=False, headers={}, data=None):
     is_user_auth = True
     url = BASE_URL + api_endpoint
-    # 2 types of auth, user and non user, mostly user is needed
-    if user_auth:
+    # 3 types of auth, user, non user and OAuth2
+    if USE_OAUTH2:
+        if TOKEN_OAUTH2:
+            headers['Authorization'] = f'Bearer {TOKEN_OAUTH2}'
+            headers['Accept'] = 'application/json'
+            headers['Content-Type'] = 'application/json'
+
+    elif user_auth:
         headers = headers or generate_user_auth_headers(api_endpoint)
 
     else:
@@ -149,9 +172,9 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
             verify=USE_SSL,
             params=params,
             headers=headers,
-            json=payload
+            json=payload,
+            data=data
         )
-
         res.raise_for_status()
         if is_file:
             return res
@@ -171,6 +194,22 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
     except Exception as e:
         LOG(e)
         raise
+
+
+def token_oauth2_request():
+    api_endpoint = '/oauth/token'
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+    data = {
+        'client_id': CLIENT_ID,
+        'client_secret': CLIENT_SECRET,
+        'grant_type': 'client_credentials'
+    }
+    response = http_request('POST', api_endpoint, user_auth=False, headers=headers, data=data)
+    if response.get('fail'):
+        raise Exception(json.dumps(response.get('fail')[0].get('message')))
+    return response.get('access_token')
 
 
 def search_message_request(args):
@@ -437,6 +476,29 @@ def auto_refresh_token():
             demisto.setIntegrationContext({'token_last_update': current_ts})
 
 
+def updating_token_oauth2():
+    """
+    Ensures the OAuth2 token is up to date, refreshing it if necessary.
+
+    Returns:
+        str: The updated OAuth2 token.
+    """
+    global TOKEN_OAUTH2
+    global USE_SSL
+    USE_SSL = False
+
+    integration_context = demisto.getIntegrationContext()
+    current_ts = epoch_seconds()
+    last_update_ts = integration_context.get("last_update")
+    if last_update_ts is None or (current_ts - last_update_ts > 15 * 60):
+        TOKEN_OAUTH2 = token_oauth2_request()
+        if TOKEN_OAUTH2:
+            token_oauth2 = {"value": TOKEN_OAUTH2, "last_update": current_ts}
+            demisto.setIntegrationContext(token_oauth2)
+    else:
+        TOKEN_OAUTH2 = integration_context.get("value")
+
+
 def generate_user_auth_headers(api_endpoint):
     # type: (str) -> dict
     """
@@ -481,7 +543,7 @@ def parse_query_args(args):
     if args.get('body'):
         query_xml = query_xml.replace('<text></text>', '<text>(body: ' + args.get('body') + ')</text>')
     if args.get('subject'):
-        query_xml = query_xml.replace('<text></text>', '<text>(subject: ' + args.get('subject') + ')</text>')
+        query_xml = query_xml.replace('<text></text>', '<text>subject: ' + args.get('subject') + '</text>')
     if args.get('text'):
         query_xml = query_xml.replace('<text></text>', '<text>' + args.get('text') + '</text>')
     if args.get('date'):
@@ -507,11 +569,21 @@ def parse_query_args(args):
         query_xml = query_xml.replace('<date select=\"last_year\"/>',
                                       '<date select=\"between\" to=\"' + date_to + '\" />')
 
+    sent_from = ""
+    sent_to = ""
     if args.get('sentFrom'):
-        query_xml = query_xml.replace('<sent></sent>', '<sent select=\"from\" >' + args.get('sentFrom') + '</sent>')
+        sent_from = args.get('sentFrom')
     if args.get('sentTo'):
-        query_xml = query_xml.replace('<sent></sent>', '<sent select=\"to\" >' + args.get('sentTo') + '</sent>')
+        sent_to = args.get('sentTo')
+    if sent_from and sent_to:
+        query_xml = query_xml.replace('<sent></sent>', f'<sent select=\"from\" >{sent_from}</sent>'
+                                                       f'<sent select=\"to\" >{sent_to}</sent>')
+    elif sent_from:
+        query_xml = query_xml.replace('<sent></sent>', '<sent select=\"from\" >' + sent_from + '</sent>')
+    elif sent_to:
+        query_xml = query_xml.replace('<sent></sent>', '<sent select=\"to\" >' + sent_to + '</sent>')
     query_xml = query_xml.replace('<sent></sent>', '')  # no empty tag
+
     if args.get('attachmentText'):
         query_xml = query_xml.replace('</docs>', args.get('attachmentText') + '</docs>')
     if args.get('attachmentType'):
@@ -700,9 +772,18 @@ def build_get_message_info_for_specific_id(id, show_recipient_info, show_deliver
 
 
 def test_module():
-    if not ACCESS_KEY:
-        raise Exception('Cannot test valid connection without the Access Key parameter.')
-    list_managed_url()
+    if USE_OAUTH2:
+        list_policies_command({'policyType': 'blockedsenders', 'limit': 1})
+        return 'ok'
+
+    if ACCESS_KEY:
+        list_managed_url()
+        return 'ok'
+
+    raise Exception(
+        "Cannot test a valid connection without the Client ID and Client Secret parameters for API 2.0\
+        or without the Access Key parameter for API 1.0."
+    )
 
 
 def parse_queried_fields(query_xml: str) -> tuple[str, ...]:
@@ -827,21 +908,22 @@ def url_decode_request(url):
     return response.get('data')[0].get('url')
 
 
-def get_policy():
+def list_blocked_sender_policies_command(args):
     headers = ['Policy ID', 'Sender', 'Reciever', 'Bidirectional', 'Start', 'End']
     contents = []
     context = {}
-    title = 'Mimecast list blocked sender policies: \n These are the existing Blocked Sender Policies:'
-    policy_id = demisto.args().get('policyID')
+    policy_id = args.get('policyID')
+    title = 'Mimecast list blocked sender policies: \n These are the existing blocked sender Policies:'
+
     if policy_id:
         title = 'Mimecast Get Policy'
 
-    policies_list = get_policy_request(policy_id)
+    policies_list = get_policy_request(policy_type='blockedsenders', policy_id=policy_id)
     policies_context = []
     for policy_list in policies_list:
-        policy = policy_list.get('policy')
-        sender = policy.get('from')
-        reciever = policy.get('to')
+        policy = policy_list.get('policy', {})
+        sender = policy.get('from', {})
+        reciever = policy.get('to', {})
         contents.append({
             'Policy ID': policy_list['id'],
             'Sender': {
@@ -893,13 +975,94 @@ def get_policy():
     return results
 
 
-def get_policy_request(policy_id=None):
-    # Setup required variables
-    api_endpoint = '/api/policy/blockedsenders/get-policy'
+def get_policy_command(args):
+    headers = ['Policy ID', 'Sender', 'Reciever', 'Bidirectional', 'Start', 'End']
+    contents = []
+    policy_id = args.get('policyID')
+    policy_type = args.get('policyType', 'blockedsenders')
+    title = f'Mimecast Get {policy_type} Policy'
+
+    policies_list = get_policy_request(policy_type, policy_id)
+    policies_context = []
+    for policy_list in policies_list:
+        policy = policy_list.get('policy', {})
+        sender = policy.get('from', {})
+        reciever = policy.get('to', {})
+        contents.append({
+            'Policy ID': policy_list['id'],
+            'Sender': {
+                'Group': sender.get('groupId'),
+                'Email Address': sender.get('emailAddress'),
+                'Domain': sender.get('emailDomain'),
+                'Type': sender.get('type')
+            },
+            'Reciever': {
+                'Group': reciever.get('groupId'),
+                'Email Address': reciever.get('emailAddress'),
+                'Domain': reciever.get('emailDomain'),
+                'Type': reciever.get('type')
+            },
+            'Bidirectional': policy.get('bidirectional'),
+            'Start': policy.get('fromDate'),
+            'End': policy.get('toDate')
+        })
+        policies_context.append({
+            'ID': policy_list['id'],
+            'Sender': {
+                'Group': sender.get('groupId'),
+                'Address': sender.get('emailAddress'),
+                'Domain': sender.get('emailDomain'),
+                'Type': sender.get('type')
+            },
+            'Reciever': {
+                'Group': reciever.get('groupId'),
+                'Address': reciever.get('emailAddress'),
+                'Domain': reciever.get('emailDomain'),
+                'Type': reciever.get('type')
+            },
+            'Bidirectional': policy.get('bidirectional'),
+            'FromDate': policy.get('fromDate'),
+            'ToDate': policy.get('toDate')
+        })
+
+    output_type = {
+        "blockedsenders": "Blockedsenders",
+        "antispoofing-bypass": "AntispoofingBypassPolicy",
+        "address-alteration": "AddressAlterationPolicy",
+    }
+
+    return [
+        CommandResults(
+            outputs_prefix="Mimecast.Policy",
+            outputs=policies_context,
+            readable_output=tableToMarkdown(title, contents, headers),
+            outputs_key_field="id",
+        ),
+        CommandResults(
+            outputs_prefix=f"Mimecast.{output_type[policy_type]}",
+            outputs=policies_context,
+            readable_output=tableToMarkdown(title, contents, headers),
+            outputs_key_field="id",
+        ),
+    ]
+
+
+def get_policy_request(policy_type='blockedsenders', policy_id=None):
+    if not policy_type:
+        policy_type = 'blockedsenders'
+    api_endpoints = {
+        'blockedsenders': 'blockedsenders/get-policy',
+        'antispoofing-bypass': 'antispoofing-bypass/get-policy',
+        'address-alteration': 'address-alteration/get-address-alteration-set',
+    }
+    api_endpoint = f'/api/policy/{api_endpoints[policy_type]}'
     data = []
+
+    id = 'id' if policy_type != 'address-alteration' else 'folderId'
+
     if policy_id:
         data.append({
-            'id': policy_id
+            id: policy_id
         })
     payload = {
         'data': data
@@ -921,26 +1084,121 @@ def get_arguments_for_policy_command(args):
           tuple. policy arguments, and option to choose from the policy configuration.
      """
 
-    description = args.get('description', '')
-    from_part = args.get('fromPart', '')
-    from_type = args.get('fromType', '')
-    from_value = args.get('fromValue', '')
-    to_type = args.get('toType', '')
-    to_value = args.get('toValue', '')
+    spf_domain = args.get('spf_domain')
+    bidirectional = argToBoolean(args.get('bidirectional')) if args.get('bidirectional') else ""
+    comment = args.get('comment', '')
+    enabled = argToBoolean(args.get('enabled')) if args.get('enabled') else ""
+    enforced = argToBoolean(args.get('enforced')) if args.get('enforced') else ""
+    from_date = arg_to_datetime(args.get('from_date')).strftime(DATE_FORMAT) if args.get('from_date') else ""  # type: ignore
+    from_eternal = argToBoolean(args.get('from_eternal')) if args.get('from_eternal') else ""
+    to_date = arg_to_datetime(args.get('to_date')).strftime(DATE_FORMAT) if args.get('to_date') else ""  # type: ignore
+    to_eternal = argToBoolean(args.get('to_eternal')) if args.get('to_eternal') else ""
+    override = argToBoolean(args.get('override')) if args.get('override') else ""
+    description = args.get('description', '') or args.get('policy_description', '')
+    from_part = args.get('fromPart', '') or args.get('from_part', '')
+    from_type = args.get('fromType', '') or args.get('from_type', '')
+    from_value = args.get('fromValue', '') or args.get('from_value', '')
+    to_type = args.get('toType', '') or args.get('to_type', '')
+    conditions = args.get('conditions')
+    to_value = args.get('toValue', '') or args.get('to_value', '')
     option = str(args.get('option', ''))
-    policy_obj = {
+    policy_obj: dict[str, Any] = {
         'description': description,
-        'fromPart': from_part,
         'fromType': from_type,
         'fromValue': from_value,
         'toType': to_type,
-        'toValue': to_value
+        'toValue': to_value,
+        'bidirectional': bidirectional,
+        'comment': comment,
+        'enabled': enabled,
+        'enforced': enforced,
+        'override': override,
+        "toDate": to_date,
+        'fromPart': from_part,
+        'fromDate': from_date,
+        'fromEternal': from_eternal,
+        'toEternal': to_eternal
     }
+
+    if spf_domain:
+        policy_obj['conditions'] = {'spfDomains': [spf_domain]}
+
+    if conditions:
+        policy_obj['conditions'] = {'sourceIPs': [conditions]}
 
     return policy_obj, option
 
 
-def create_policy():
+def create_block_sender_policy_command(policy_args):
+    headers = ['Policy ID', 'Description', 'Sender', 'Receiver', 'Bidirectional', 'Start', 'End']
+    policy_obj, option = get_arguments_for_policy_command(policy_args)
+    policy_list = create_or_update_policy_request(policy_obj, option)
+    policy = policy_list.get('policy')
+    policy_id = policy_list.get('id')
+    title = 'Mimecast Create block sender Policy: \n Policy Was Created Successfully!'
+    sender = policy.get('from')
+    receiver = policy.get('to')
+    description = policy.get('description')
+    content = {
+        'Policy ID': policy_id,
+        'Description': description,
+        'Sender': {
+            'Group': sender.get('groupId'),
+            'Email Address': sender.get('emailAddress'),
+            'Domain': sender.get('emailDomain'),
+            'Type': sender.get('type')
+        },
+        'Receiver': {
+            'Group': receiver.get('groupId'),
+            'Email Address': receiver.get('emailAddress'),
+            'Domain': receiver.get('emailDomain'),
+            'Type': receiver.get('type')
+        },
+        'Reciever': {
+            'Group': receiver.get('groupId'),
+            'Email Address': receiver.get('emailAddress'),
+            'Domain': receiver.get('emailDomain'),
+            'Type': receiver.get('type')
+        },
+        'Bidirectional': policy.get('bidirectional'),
+        'Start': policy.get('fromDate'),
+        'End': policy.get('toDate')
+    }  # type: Dict[Any, Any]
+    policies_context = {
+        'ID': policy_id,
+        'Description': description,
+        'Sender': {
+            'Group': sender.get('groupId'),
+            'Address': sender.get('emailAddress'),
+            'Domain': sender.get('emailDomain'),
+            'Type': sender.get('type')
+        },
+        'Receiver': {
+            'Group': receiver.get('groupId'),
+            'Address': receiver.get('emailAddress'),
+            'Domain': receiver.get('emailDomain'),
+            'Type': receiver.get('type')
+        },
+        'Reciever': {
+            'Group': receiver.get('groupId'),
+            'Email Address': receiver.get('emailAddress'),
+            'Domain': receiver.get('emailDomain'),
+            'Type': receiver.get('type')
+        },
+        'Bidirectional': policy.get('bidirectional'),
+        'FromDate': policy.get('fromDate'),
+        'ToDate': policy.get('toDate')
+    }  # type: Dict[Any, Any]
+
+    return CommandResults(
+        outputs_prefix='Mimecast.BlockedSendersPolicy',
+        outputs=policies_context,
+        readable_output=tableToMarkdown(title, content, headers),
+        outputs_key_field='id'
+    )
+
+
+def create_policy_command():
     headers = ['Policy ID', 'Description', 'Sender', 'Receiver', 'Bidirectional', 'Start', 'End']
     context = {}
     policy_args = demisto.args()
@@ -948,7 +1206,7 @@ def create_policy():
     policy_list = create_or_update_policy_request(policy_obj, option)
     policy = policy_list.get('policy')
     policy_id = policy_list.get('id')
-    title = 'Mimecast Create Policy: \n Policy Was Created Successfully!'
+    title = 'Mimecast Create block sender Policy: \n Policy Was Created Successfully!'
     sender = policy.get('from')
     receiver = policy.get('to')
     description = policy.get('description')
@@ -1039,17 +1297,17 @@ def set_empty_value_args_policy_update(policy_obj, option, policy_id):
     # Check if there are any empty arguments
     if len(empty_args_list) > 0:
         # Fill the empty arguments with the current data using get policy request function
-        policy_details = get_policy_request(policy_id)[0]
+        policy_details = get_policy_request(policy_id=policy_id)[0]
         for arg in empty_args_list:
             if arg == "option":
                 option = policy_details["option"]
             else:
-                policy_obj[arg] = policy_details["policy"][arg]
+                policy_obj[arg] = policy_details["policy"].get(arg, "")
 
     return policy_obj, option, policy_id
 
 
-def update_policy():
+def update_policy_command():
     """
           Update policy according to policy ID
      """
@@ -1120,8 +1378,75 @@ def update_policy():
     return results
 
 
-def create_or_update_policy_request(policy, option, policy_id=None):
+def update_block_sender_policy_command(policy_args):
+    """
+          Update policy according to policy ID
+     """
+    headers = ['Policy ID', 'Description', 'Sender', 'Receiver', 'Bidirectional', 'Start', 'End']
+    policy_obj, option = get_arguments_for_policy_command(policy_args)
+    policy_id = str(policy_args.get('policy_id', ''))
+    if not policy_id:
+        raise Exception("You need to enter policy ID")
+    policy_obj, option, policy_id = set_empty_value_args_policy_update(policy_obj, option, policy_id)
+    response = create_or_update_policy_request(policy_obj, option, policy_id=policy_id)
+    policy = response.get('policy')
+    title = 'Mimecast Update Policy: \n Policy Was Updated Successfully!'
+    sender = policy.get('from')
+    receiver = policy.get('to')
+    description = policy.get('description')
+    contents = {
+        'Policy ID': policy_id,
+        'Description': description,
+        'Sender': {
+            'Group': sender.get('groupId'),
+            'Email Address': sender.get('emailAddress'),
+            'Domain': sender.get('emailDomain'),
+            'Type': sender.get('type')
+        },
+        'Receiver': {
+            'Group': receiver.get('groupId'),
+            'Email Address': receiver.get('emailAddress'),
+            'Domain': receiver.get('emailDomain'),
+            'Type': receiver.get('type')
+        },
+        'Bidirectional': policy.get('bidirectional'),
+        'Start': policy.get('fromDate'),
+        'End': policy.get('toDate')
+    }  # type: Dict[Any, Any]
+    policies_context = {
+        'ID': policy_id,
+        'Description': description,
+        'Sender': {
+            'Group': sender.get('groupId'),
+            'Address': sender.get('emailAddress'),
+            'Domain': sender.get('emailDomain'),
+            'Type': sender.get('type')
+        },
+        'Receiver': {
+            'Group': receiver.get('groupId'),
+            'Address': receiver.get('emailAddress'),
+            'Domain': receiver.get('emailDomain'),
+            'Type': receiver.get('type')
+        },
+        'Bidirectional': policy.get('bidirectional'),
+        'FromDate': policy.get('fromDate'),
+        'ToDate': policy.get('toDate')
+    }  # type: Dict[Any, Any]
+
+    return CommandResults(
+        outputs_prefix='Mimecast.BlockedSendersPolicy',
+        outputs=policies_context,
+        readable_output=tableToMarkdown(title, contents, headers),
+        outputs_key_field='id'
+    )
+
+
+def create_or_update_policy_request(policy, option, policy_id=None, policy_type='blockedsenders'):
     # Setup required variables
+
+    # Using dictionary comprehension to filter out keys with None or empty string values
+    policy = {k: v for k, v in policy.items() if v is not None and v != ""}
+
     api_endpoint = '/api/policy/blockedsenders/create-policy'
     payload = {
         'data': [{
@@ -1139,36 +1464,53 @@ def create_or_update_policy_request(policy, option, policy_id=None):
     return response.get('data')[0]
 
 
-def delete_policy():
-    contents = []  # type: List[Any]
-    context = {}
-    policy_id = demisto.args().get('policyID')
+def delete_policy(args):
+    policy_id = args.get('policyID')
+    policy_type = args.get('policyType')
 
-    delete_policy_request(policy_id)
+    delete_policy_request(policy_type, policy_id)
 
-    context['Mimecast.Policy(val.ID && val.ID == obj.ID)'] = {
+    context = {
         'ID': policy_id,
         'Deleted': True
     }
 
-    results = {
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': f'Mimecast Policy {policy_id} deleted successfully!',
-        'EntryContext': context
+    output_type = {
+        'blockedsenders': 'Blockedsenders',
+        'antispoofing-bypass': 'AntispoofingBypassPolicy',
+        'address-alteration': 'AddressAlterationPolicy',
     }
 
-    return results
+    return [
+        CommandResults(
+            outputs_prefix="Mimecast.Policy",
+            outputs=context,
+            readable_output=f"Mimecast Policy {policy_id} deleted successfully!",
+            outputs_key_field="ID",
+        ),
+        CommandResults(
+            outputs_prefix=f"Mimecast.{output_type[policy_type]}",
+            outputs=context,
+            readable_output=f"Mimecast Policy {policy_id} deleted successfully!",
+            outputs_key_field="ID",
+        ),
+    ]
 
 
-def delete_policy_request(policy_id=None):
+def delete_policy_request(policy_type, policy_id=None):
     # Setup required variables
-    api_endpoint = '/api/policy/blockedsenders/delete-policy'
+    api_endpoints = {
+        'antispoofing-bypass': 'antispoofing-bypass/delete-policy',
+        'address-alteration': 'address-alteration/delete-policy',
+        'blockedsenders': 'blockedsenders/delete-policy'
+    }
+    api_endpoint = f'/api/policy/{api_endpoints[policy_type]}'
+    id = 'id'
+
     data = [{
-        'id': policy_id
+        id: policy_id
     }]
+
     payload = {
         'data': data
     }
@@ -1688,6 +2030,7 @@ def fetch_incidents():
             'from': last_fetch_date_time,
             'result': 'malicious'
         }
+        demisto.debug(search_params, 'search_params')
         attachment_logs, _ = request_with_pagination(api_endpoint='/api/ttp/attachment/get-logs',
                                                      data=[search_params],
                                                      response_param='attachmentLogs')
@@ -2205,21 +2548,46 @@ def get_group_members():
     return_outputs(markdown_output, entry_context, api_response)
 
 
+def retrieve_all_results(response, all_results, api_endpoint, meta, data, limit=100):
+    """Retrieve all results according to limit or all_results arguments
+
+    Args:
+        response (dict): the response of the first request
+        all_results (bool): whether to retrieve all results
+        api_endpoint (str): the api endpoint
+        meta (dict): metadata for request
+        data (dict): data for request
+        limit (int, optional): the limit of group members to retrieve. Defaults to 100.
+    """
+    next_page = response.get('meta', {}).get('pagination', {}).get('next')
+    group_members = response.get('data', [{}])[0].get('groupMembers', [])
+    while (int(limit) > len(group_members) and next_page) or (all_results and next_page):
+        meta['pagination'] = {
+            'pageToken': next_page
+        }
+        payload = {
+            'meta': meta,
+            'data': [data]
+        }
+        current_response = http_request('POST', api_endpoint, payload)
+        next_page = current_response.get('meta', {}).get('pagination', {}).get('next')
+        current_group_members = current_response.get('data', [{}])[0].get('groupMembers', [])
+        group_members.extend(current_group_members)
+
+
 def create_get_group_members_request(group_id=-1, limit=100):
     api_endpoint = '/api/directory/get-group-members'
-    group_id = demisto.args().get('group_id', group_id)
-    limit = demisto.args().get('limit', limit)
+    args = demisto.args()
+    group_id = args.get('group_id', group_id)
+    limit = args.get('limit', limit)
+    all_results = argToBoolean(args.get("all_results", False))
+    API_MAX_VALUE = 500
 
     meta = {}
     data = {}
-
-    if limit:
-        meta['pagination'] = {
-            'pageSize': int(limit)
-        }
-
+    page_size = API_MAX_VALUE if all_results else arg_to_number(limit)
+    meta['pagination'] = {'pageSize': page_size}
     data['id'] = group_id
-
     payload = {
         'meta': meta,
         'data': [data]
@@ -2228,11 +2596,12 @@ def create_get_group_members_request(group_id=-1, limit=100):
     response = http_request('POST', api_endpoint, payload)
     if isinstance(response, dict) and response.get('fail'):
         raise Exception(json.dumps(response.get('fail', [{}])[0].get('errors')))
+    retrieve_all_results(response, all_results, api_endpoint, meta, data, limit)
     return response
 
 
 def group_members_api_response_to_markdown(api_response):
-    num_users_found = api_response.get('meta', {}).get('pagination', {}).get('pageSize', 0)
+    num_users_found = len(api_response.get('data', [{}])[0].get('groupMembers', []))
     group_id = demisto.args().get('group_id', '')
 
     if not num_users_found:
@@ -2248,13 +2617,14 @@ def group_members_api_response_to_markdown(api_response):
             'Email address': user.get('emailAddress'),
             'Domain': user.get('domain'),
             'Type': user.get('type'),
-            'Internal user': user.get('internal')
+            'Internal user': user.get('internal'),
+            'Notes': user.get('notes')
         }
 
         users_list.append(user_entry)
 
     md = tableToMarkdown(md, users_list,
-                         ['Name', 'Email address', 'Domain', 'Type', 'Internal user'])
+                         ['Name', 'Email address', 'Domain', 'Type', 'Internal user', 'Notes'])
 
     return md
 
@@ -2290,7 +2660,8 @@ def group_members_api_response_to_context(api_response, group_id=-1):
             'Domain': user.get('domain'),
             'Type': user.get('type'),
             'InternalUser': user.get('internal'),
-            'IsRemoved': False
+            'IsRemoved': False,
+            'Notes': user.get('notes')
         }
 
         users_list.append(user_entry)
@@ -2335,6 +2706,7 @@ def create_add_remove_group_member_request(api_endpoint):
     group_id = demisto.args().get('group_id', '')
     email = demisto.args().get('email_address', '')
     domain = demisto.args().get('domain_address', '')
+    notes = demisto.args().get('notes', '')
 
     data = {
         'id': group_id,
@@ -2345,6 +2717,9 @@ def create_add_remove_group_member_request(api_endpoint):
 
     if domain:
         data['domain'] = domain
+
+    if notes:
+        data['notes'] = notes
 
     payload = {
         'data': [data]
@@ -2988,8 +3363,283 @@ def list_email_queues_command(args):
     return CommandResults(
         outputs_prefix='Mimecast.EmailQueue',
         readable_output=total_markdown,
+        outputs=response
+    )
+
+
+def get_archive_search_logs_command(args: dict) -> CommandResults:
+    """
+    Retrieves archive search logs based on the provided arguments.
+
+    :param args: A dictionary containing the command arguments.
+
+    :return: The CommandResults object containing the outputs and raw response.
+    """
+    api_endpoint = "/api/archive/get-archive-search-logs"
+    query = args.get("query", "")
+    page = arg_to_number(args.get("page"))
+    page_size = arg_to_number(args.get("page_size"))
+    limit = arg_to_number(args.get("limit"))
+
+    data = assign_params(query=query)
+
+    result_list = request_with_pagination(
+        api_endpoint, [data], response_param="logs", limit=limit, page=page, page_size=page_size  # type: ignore
+    )
+
+    return CommandResults(
+        outputs_prefix="Mimecast.ArchiveSearchLog",
+        outputs=result_list[0]
+    )
+
+
+def get_search_logs_command(args: dict) -> CommandResults:
+    query = args.get('query', '')
+    start = arg_to_datetime(args.get('start')).strftime(DATE_FORMAT) if args.get('start') else None  # type: ignore
+    end = arg_to_datetime(args.get('end')).strftime(DATE_FORMAT) if args.get('end') else None  # type: ignore
+
+    page = arg_to_number(args.get('page'))
+    page_size = arg_to_number(args.get('page_size'))
+    limit = arg_to_number(args.get('limit'))
+
+    data = assign_params(query=query, start=start, end=end)
+
+    api_endpoint = "/api/archive/get-archive-search-logs"
+    result_list, _ = request_with_pagination(
+        api_endpoint, [data], response_param="logs", limit=limit, page=page, page_size=page_size)  # type: ignore
+
+    return CommandResults(
+        outputs_prefix='Mimecast.SearchLog',
+        outputs=result_list[0]
+    )
+
+
+def get_view_logs_command(args: dict) -> CommandResults:
+    query = args.get('query', '')
+    start = arg_to_datetime(args.get('start')).strftime(DATE_FORMAT) if args.get('start') else None  # type: ignore
+    end = arg_to_datetime(args.get('end')).strftime(DATE_FORMAT) if args.get('end') else None  # type: ignore
+
+    page = arg_to_number(args.get('page'))
+    page_size = arg_to_number(args.get('page_size'))
+    limit = arg_to_number(args.get('limit'))
+
+    data = assign_params(query=query, start=start, end=end)
+
+    response = request_with_pagination(
+        "/api/archive/get-view-logs", [data], limit=limit, page=page, page_size=page_size  # type: ignore
+    )
+
+    return CommandResults(
+        outputs_prefix='Mimecast.ViewLog',
+        outputs=response[0]
+    )
+
+
+def list_account_command(args: dict) -> CommandResults:
+    account_name = args.get('account_name', '')
+    account_code = args.get('account_code', '')
+    admin_email = args.get('admin_email', '')
+    region = args.get('region', '')
+    user_count = arg_to_number(args.get('user_count', ''))
+
+    page = arg_to_number(args.get('page'))
+    page_size = arg_to_number(args.get('page_size'))
+    limit = arg_to_number(args.get('limit'))
+
+    data = assign_params(accountName=account_name, accountCode=account_code, adminEmail=admin_email, region=region,
+                         userCount=user_count)
+
+    response = request_with_pagination(
+        "/api/account/get-account", [data], limit=limit, page=page, page_size=page_size  # type: ignore
+    )
+
+    return CommandResults(
+        outputs_prefix='Mimecast.Account',
+        outputs=response[0],
+        outputs_key_field='accountCode'
+    )
+
+
+def list_policies_command(args: dict) -> CommandResults:
+    policy_type = args.get('policyType', 'blockedsenders')
+    page = arg_to_number(args.get('page'))
+    page_size = arg_to_number(args.get('page_size'))
+    limit = arg_to_number(args.get('limit'))
+
+    api_endpoints = {
+        'blockedsenders': 'blockedsenders/get-policy',
+        'antispoofing-bypass': 'antispoofing-bypass/get-policy',
+        'address-alteration': 'address-alteration/get-policy',
+    }
+    api_endpoint = f'/api/policy/{api_endpoints[policy_type]}'
+
+    policies_list, _ = request_with_pagination(api_endpoint, data=[], limit=limit, page=page, page_size=page_size)  # type: ignore
+
+    contents = []
+    for policy_list in policies_list:
+        policy = policy_list.get('policy', {})
+        sender = policy.get('from', {})
+        reciever = policy.get('to', {})
+        contents.append({
+            'Policy ID': policy_list['id'],
+            'Sender': {
+                'Group': sender.get('groupId'),
+                'Email Address': sender.get('emailAddress'),
+                'Domain': sender.get('emailDomain'),
+                'Type': sender.get('type')
+            },
+            'Reciever': {
+                'Group': reciever.get('groupId'),
+                'Email Address': reciever.get('emailAddress'),
+                'Domain': reciever.get('emailDomain'),
+                'Type': reciever.get('type')
+            },
+            'Bidirectional': policy.get('bidirectional'),
+            'Start': policy.get('fromDate'),
+            'End': policy.get('toDate')
+        })
+    headers = ['Policy ID', 'Sender', 'Reciever', 'Bidirectional', 'Start', 'End']
+
+    title = f'Mimecast list {policy_type} policies: \n These are the existing {policy_type} Policies:'
+
+    output_type = {
+        'blockedsenders': 'BlockedSendersPolicy',
+        'antispoofing-bypass': 'AntispoofingBypassPolicy',
+        'address-alteration': 'AddressAlterationPolicy',
+    }
+    return CommandResults(
+        outputs_prefix=f'Mimecast.{output_type[policy_type]}',
+        outputs=policies_list,
+        readable_output=tableToMarkdown(title, contents, headers),
+        outputs_key_field='id'
+    )
+
+
+def create_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
+    policy_obj, option = get_arguments_for_policy_command(args)
+    # Using dictionary comprehension to filter out keys with None or empty string values
+    policy_obj = {k: v for k, v in policy_obj.items() if v is not None and v != ""}
+
+    from_attribute_id = args.get('from_attribute_id')
+    from_attribute_name = args.get('from_attribute_name')
+    from_attribute_value = args.get('from_attribute_value')
+
+    data: dict[str, Any] = {
+        "option": option,
+        "policy": policy_obj
+    }
+
+    from_attribute_data = {}
+    if from_attribute_id:
+        from_attribute_data['id'] = from_attribute_id
+    if from_attribute_name:
+        from_attribute_data['name'] = from_attribute_name
+    if from_attribute_value:
+        from_attribute_data['value'] = from_attribute_value
+
+    if from_attribute_data:
+        data['policy']['from'] = {"type": "address_attribute_value"}
+        data['policy']['from']['attribute'] = from_attribute_data
+
+    payload = {"data": [data]}
+    api_endpoint = '/api/policy/antispoofing-bypass/create-policy'
+    response = http_request('POST', api_endpoint, payload)
+
+    if response.get('fail'):
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
+
+    id = response['data'][0]['id']
+
+    return CommandResults(
+        outputs_prefix='Mimecast.AntispoofingBypassPolicy',
         outputs=response.get('data'),
-        raw_response=response
+        readable_output=f'Anti-Spoofing Bypass policy {id} was created successfully',
+        outputs_key_field='id'
+    )
+
+
+def update_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
+    description = args.get('description')
+    id = args.get('policy_id')
+    enabled = argToBoolean(args.get('enabled'))
+    from_date = arg_to_datetime(args.get('from_date')).strftime(DATE_FORMAT) if args.get('from_date') else None  # type: ignore
+    from_eternal = argToBoolean(args.get('from_eternal'))
+    from_part = args.get('from_part')
+    to_date = arg_to_datetime(args.get('to_date')).strftime(DATE_FORMAT) if args.get('to_date') else None  # type: ignore
+    to_eternal = argToBoolean(args.get('to_eternal'))
+    bidirectional = argToBoolean(args.get('bidirectional')) if args.get('bidirectional') else None
+    option = args.get('option')
+
+    policy = assign_params(description=description, enabled=enabled, fromDate=from_date, fromEternal=from_eternal,
+                           fromPart=from_part, toDate=to_date, toEternal=to_eternal, bidirectional=bidirectional)
+
+    data: dict[str, Any] = {
+        'id': id,
+        'option': option,
+        'policy': policy
+    }
+
+    payload = {"data": [data]}
+    api_endpoint = '/api/policy/antispoofing-bypass/update-policy'
+    response = http_request('POST', api_endpoint, payload)
+
+    if response.get('fail'):
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
+
+    return CommandResults(
+        outputs_prefix='Mimecast.AntispoofingBypassPolicy',
+        outputs=response.get('data'),
+        readable_output=f'Policy ID- {id} has been updated successfully.',
+        outputs_key_field='id'
+    )
+
+
+def create_address_alteration_policy_command(args: dict) -> CommandResults:
+    policy_obj, _ = get_arguments_for_policy_command(args)
+    # Using dictionary comprehension to filter out keys with None or empty string values
+    policy_obj = {k: v for k, v in policy_obj.items() if v is not None and v != ""}
+    folder_id = args.get("folder_id")
+
+    data: dict[str, Any] = {"addressAlterationSetId": folder_id, "policy": policy_obj}
+
+    payload = {"data": [data]}
+    api_endpoint = "/api/policy/address-alteration/create-policy"
+    response = http_request("POST", api_endpoint, payload)
+
+    if response.get("fail"):
+        raise Exception(json.dumps(response.get("fail")[0].get("errors")))
+
+    return CommandResults(
+        outputs_prefix="Mimecast.AddressAlterationPolicy",
+        outputs=response.get("data"),
+        readable_output="Address Alteration policy was created successfully",
+        outputs_key_field="id",
+    )
+
+
+def update_address_alteration_policy_command(args: dict) -> CommandResults:
+    policy_obj, _ = get_arguments_for_policy_command(args)
+    # Using dictionary comprehension to filter out keys with None or empty string values
+    policy_obj = {k: v for k, v in policy_obj.items() if v is not None and v != ""}
+    id = args.get('policy_id')
+
+    data: dict[str, Any] = {
+        'id': id,
+        'policy': policy_obj
+    }
+
+    payload = {'data': [data]}
+    api_endpoint = '/api/policy/address-alteration/update-policy'
+    response = http_request('POST', api_endpoint, payload)
+
+    if response.get('fail'):
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
+
+    return CommandResults(
+        outputs_prefix='Mimecast.AddressAlterationPolicy',
+        outputs=response.get('data'),
+        readable_output=f'{id} has been updated successfully',
+        outputs_key_field='id'
     )
 
 
@@ -3000,9 +3650,13 @@ def main():
     args = demisto.args()
 
     try:
+        if USE_OAUTH2 and any([APP_KEY, APP_ID, SECRET_KEY, ACCESS_KEY]):
+            raise ValueError("When you use API 2.0 (Client ID and Client Secret) do not enter values in api 1.0 fields.")
         handle_proxy()
         determine_ssl_usage()
-        if ACCESS_KEY:
+        if USE_OAUTH2:
+            updating_token_oauth2()
+        elif ACCESS_KEY:
             auto_refresh_token()
         if command == 'test-module':
             # This is the call made when pressing the integration test button.
@@ -3012,16 +3666,20 @@ def main():
             fetch_incidents()
         elif command == 'mimecast-query':
             demisto.results(query(args))
-        elif command == 'mimecast-list-blocked-sender-policies':
-            demisto.results(get_policy())
         elif command == 'mimecast-get-policy':
-            demisto.results(get_policy())
+            return_results(get_policy_command(args))
+        elif command == 'mimecast-list-blocked-sender-policies':
+            return_results(list_blocked_sender_policies_command(args))
         elif command == 'mimecast-create-policy':
-            demisto.results(create_policy())
+            demisto.results(create_policy_command())
+        elif command == 'mimecast-create-block-sender-policy':
+            return_results(create_block_sender_policy_command(args))
         elif command == 'mimecast-update-policy':
-            demisto.results(update_policy())
+            demisto.results(update_policy_command())
+        elif command == 'mimecast-update-block-sender-policy':
+            return_results(update_block_sender_policy_command(args))
         elif command == 'mimecast-delete-policy':
-            demisto.results(delete_policy())
+            return_results(delete_policy(args))
         elif command == 'mimecast-manage-sender':
             demisto.results(manage_sender())
         elif command == 'mimecast-list-managed-url':
@@ -3082,6 +3740,24 @@ def main():
             return_results(search_processing_message_command(args))
         elif command == 'mimecast-list-email-queues':
             return_results(list_email_queues_command(args))
+        elif command == 'mimecast-get-archive-search-logs':
+            return_results(get_archive_search_logs_command(args))
+        elif command == 'mimecast-get-search-logs':
+            return_results(get_search_logs_command(args))
+        elif command == 'mimecast-get-view-logs':
+            return_results(get_view_logs_command(args))
+        elif command == 'mimecast-list-account':
+            return_results(list_account_command(args))
+        elif command == 'mimecast-list-policies':
+            return_results(list_policies_command(args))
+        elif command == 'mimecast-create-antispoofing-bypass-policy':
+            return_results(create_antispoofing_bypass_policy_command(args))
+        elif command == 'mimecast-update-antispoofing-bypass-policy':
+            return_results(update_antispoofing_bypass_policy_command(args))
+        elif command == 'mimecast-create-address-alteration-policy':
+            return_results(create_address_alteration_policy_command(args))
+        elif command == 'mimecast-update-address-alteration-policy':
+            return_results(update_address_alteration_policy_command(args))
 
     except Exception as e:
         return_error(e)

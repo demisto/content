@@ -72,7 +72,7 @@ script:
       name: SpamCheck
     - description: 'A collection of JSON key/value pairs allowing you to specify handling instructions for your email. You may not overwrite the following headers: x-sg-id, x-sg-eid, received, dkim-signature, Content-Type, Content-Transfer-Encoding, To, From, Subject, Reply-To, CC, BCC. For ex: {"key1":"value1","key2":"value2","key3":"value3"}.'
       name: Headers
-    - description: An email template ID. A template that contains a subject and content — either text or html — will override any subject and content values specified at the personalisations or message level.
+    - description: "An email template ID. A template that contains a subject and content - either text or html - will override any subject and content values specified at the personalisations or message level."
       name: TemplateID
     - description: 'Values that are specific to this personalization that will be carried along with the email and its activity data. Substitutions will not be made on custom arguments, so any string that is entered into this parameter will be assumed to be the custom argument that you would like to be used. This field may not exceed 10,000 bytes. For Ex: {"marketing": "true","activationAttempt": "1","customerAccountNumber": "1234"}.'
       name: CustomArgs
@@ -344,8 +344,8 @@ script:
     name: sg-delete-list
     outputs:
     - contextPath: Sendgrid.DeleteListJobId
-      description: 'Job id of the async job.'
-  dockerimage: demisto/py3-tools:1.0.0.73969
+      description: Job id of the async job.
+  dockerimage: demisto/py3-tools:1.0.0.117220
   script: ''
   subtype: python3
   type: python

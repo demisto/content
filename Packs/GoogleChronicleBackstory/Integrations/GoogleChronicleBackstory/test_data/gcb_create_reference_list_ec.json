@@ -3,6 +3,7 @@
     "name": "dummy_name",
     "description": "dummy_description",
     "createTime": "2022-06-06T08:06:40.390111Z",
+    "contentType": "PLAIN_TEXT",
     "lines": [
       "L1",
       "L2",

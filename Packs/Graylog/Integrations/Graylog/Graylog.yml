@@ -102,10 +102,10 @@ script:
       description: Query (Lucene syntax)
     - name: range
       description: Relative timeframe to search in. Default 300s
-      defaultValue: "300"
+      defaultValue: '300'
     - name: limit
       description: Maximum number of messages to return. Default 20
-      defaultValue: "20"
+      defaultValue: '20'
     - name: offset
       description: offset (integer)
     - name: filter
@@ -117,8 +117,8 @@ script:
     - name: decorate
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
       description: Run decorators on search result (default True)
     outputs:
     - contextPath: Graylog.Search
@@ -143,7 +143,7 @@ script:
       description: how many per page (integer)
     - name: timerange
       description: Relative timerange to search in seconds
-      defaultValue: "300"
+      defaultValue: '300'
     - name: sort_by
       description: how to sort
     outputs:
@@ -164,7 +164,7 @@ script:
       description: Search for messages using an absolute timerange, specified as from/to with format yyyy-MM-ddTHH:mm:ss.SSSZ (e.g. 2014-01-23T15:34:49.000Z) or yyyy-MM-dd HH:mm:ss.
     - name: limit
       description: Maximum number of messages to return.
-      defaultValue: "20"
+      defaultValue: '20'
     - name: offset
       description: Offset
     - name: filter
@@ -180,15 +180,15 @@ script:
     - name: decorate
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
       description: Run decorators on search result
     outputs:
     - contextPath: Graylog.SearchAbsolute
       description: Search results of Absolute search
       type: String
     description: Search with absolute times
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   subtype: python3
 fromversion: 5.0.0

@@ -497,7 +497,7 @@ script:
     name: gcloud-clusters-set-legacy-auth
     outputs:
     - contextPath: GKE.Operation.Name
-      description: The server-assigned ID for the operation
+      description: The server-assigned ID for the operation.
       type: String
     - contextPath: GKE.Operation.Zone
       description: The name of the Google Compute Engine zone in which the operation is taking place. This field is deprecated, use location instead.
@@ -532,7 +532,7 @@ script:
       - 'true'
       - 'false'
       required: true
-    - description: Cidrs define up to 50 external networks that could access Kubernetes master through HTTPS. Comma-seprated e.g. "192.168.0.0/24,10.0.0.0/32"
+    - description: Cidrs define up to 50 external networks that could access Kubernetes master through HTTPS. Comma-seprated e.g. "192.168.0.0/24,10.0.0.0/32".
       isArray: true
       name: cidrs
     description: |-
@@ -541,7 +541,7 @@ script:
     name: gcloud-clusters-set-master-authorized-network
     outputs:
     - contextPath: GKE.Operation.Name
-      description: The server-assigned ID for the operation
+      description: The server-assigned ID for the operation.
       type: String
     - contextPath: GKE.Operation.Zone
       description: The name of the Google Compute Engine zone in which the operation is taking place. This field is deprecated, use location instead.
@@ -581,7 +581,7 @@ script:
     name: gcloud-clusters-set-k8s-stackdriver
     outputs:
     - contextPath: GKE.Operation.Name
-      description: The server-assigned ID for the operation
+      description: The server-assigned ID for the operation.
       type: String
     - contextPath: GKE.Operation.Zone
       description: The name of the Google Compute Engine zone in which the operation is taking place. This field is deprecated, use location instead.
@@ -620,7 +620,7 @@ script:
     name: gcloud-clusters-set-binary-auth
     outputs:
     - contextPath: GKE.Operation.Name
-      description: The server-assigned ID for the operation
+      description: The server-assigned ID for the operation.
       type: String
     - contextPath: GKE.Operation.Zone
       description: The name of the Google Compute Engine zone in which the operation is taking place. This field is deprecated, use location instead.
@@ -659,7 +659,7 @@ script:
     name: gcloud-clusters-set-intra-node-visibility
     outputs:
     - contextPath: GKE.Operation.Name
-      description: The server-assigned ID for the operation
+      description: The server-assigned ID for the operation.
       type: String
     - contextPath: GKE.Operation.Zone
       description: The name of the Google Compute Engine zone in which the operation is taking place. This field is deprecated, use location instead.
@@ -853,7 +853,7 @@ script:
     name: gcloud-node-pool-set-management
     outputs:
     - contextPath: GKE.Operation.Name
-      description: The server-assigned ID for the operation
+      description: The server-assigned ID for the operation.
       type: String
     - contextPath: GKE.Operation.Zone
       description: The name of the Google Compute Engine zone in which the operation is taking place. This field is deprecated, use location instead.
@@ -882,7 +882,7 @@ script:
     name: gcloud-operations-list
     outputs:
     - contextPath: GKE.Operation.Name
-      description: The server-assigned ID for the operation
+      description: The server-assigned ID for the operation.
       type: String
     - contextPath: GKE.Operation.Zone
       description: The name of the Google Compute Engine zone in which the operation is taking place. This field is deprecated, use location instead.
@@ -914,7 +914,7 @@ script:
     name: gcloud-operations-describe
     outputs:
     - contextPath: GKE.Operation.Name
-      description: The server-assigned ID for the operation
+      description: The server-assigned ID for the operation.
       type: String
     - contextPath: GKE.Operation.Zone
       description: The name of the Google Compute Engine zone in which the operation is taking place. This field is deprecated, use location instead.
@@ -947,7 +947,7 @@ script:
       required: true
     description: Cancel operation by operation name.
     name: gcloud-operations-cancel
-  dockerimage: demisto/google-k8s-engine:1.0.0.91030
+  dockerimage: demisto/google-k8s-engine:1.0.0.117480
   runonce: false
   script: '-'
   subtype: python3

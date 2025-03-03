@@ -25,6 +25,8 @@ BACKSTORY_API_V1_URL = 'https://{}backstory.googleapis.com/v1'
 BACKSTORY_API_V2_URL = 'https://{}backstory.googleapis.com/v2'
 MAX_ATTEMPTS = 60
 DEFAULT_FIRST_FETCH = "3 days"
+DEFAULT_CONTENT_TYPE = 'PLAIN_TEXT'
+VALID_CONTENT_TYPE = ['PLAIN_TEXT', 'CIDR', 'REGEX']
 REGIONS = {
     "General": "",
     "Europe": "europe-",
@@ -43,7 +45,7 @@ CHRONICLE_OUTPUT_PATHS = {
     'Domain': 'GoogleChronicleBackstory.Domain(val.IoCQueried && val.IoCQueried == obj.IoCQueried)',
     'Alert': 'GoogleChronicleBackstory.Alert(val.AssetName && val.AssetName == obj.AssetName)',
     'UserAlert': 'GoogleChronicleBackstory.UserAlert(val.User && val.User == obj.User)',
-    'Events': 'GoogleChronicleBackstory.Events',
+    'Events': 'GoogleChronicleBackstory.Events(val.id == obj.id)',
     'UDMEvents': 'GoogleChronicleBackstory.Events(val.id == obj.id)',
     'Detections': 'GoogleChronicleBackstory.Detections(val.id == obj.id && val.ruleVersion == obj.ruleVersion)',
     'CuratedRuleDetections': 'GoogleChronicleBackstory.CuratedRuleDetections(val.id == obj.id)',
@@ -54,6 +56,7 @@ CHRONICLE_OUTPUT_PATHS = {
     'LiveRuleStatusChange': 'GoogleChronicleBackstory.LiveRuleStatusChange(val.ruleId == obj.ruleId)',
     'RetroHunt': 'GoogleChronicleBackstory.RetroHunt(val.retrohuntId == obj.retrohuntId)',
     'ReferenceList': 'GoogleChronicleBackstory.ReferenceList(val.name == obj.name)',
+    'VerifyReferenceList': 'GoogleChronicleBackstory.VerifyReferenceList(val.command_name == obj.command_name)',
     'ListReferenceList': 'GoogleChronicleBackstory.ReferenceLists(val.name == obj.name)',
     'StreamRules': 'GoogleChronicleBackstory.StreamRules(val.id == obj.id)',
     'AssetAliases': 'GoogleChronicleBackstory.AssetAliases(val.asset.asset_ip_address == obj.asset.asset_ip_address '
@@ -63,7 +66,10 @@ CHRONICLE_OUTPUT_PATHS = {
     'UserAliases': 'GoogleChronicleBackstory.UserAliases(val.user.email == obj.user.email '
                    '&& val.user.username == obj.user.username && val.user.windows_sid == obj.user.windows_sid && '
                    'val.user.employee_id == obj.user.employee_id && val.user.product_object_id == '
-                   'obj.user.product_object_id ) '
+                   'obj.user.product_object_id ) ',
+    'VerifyValueInReferenceList': 'GoogleChronicleBackstory.VerifyValueInReferenceList(val.value == obj.value && '
+                                  'val.case_insensitive == obj.case_insensitive)',
+    'VerifyRule': 'GoogleChronicleBackstory.VerifyRule(val.command_name == obj.command_name)',
 }
 
 ARTIFACT_NAME_DICT = {
@@ -165,6 +171,7 @@ LAST_SEEN = 'Last Seen'
 FIRST_SEEN_AGO = 'First Seen Ago'
 FIRST_SEEN = 'First Seen'
 ALERT_NAMES = 'Alert Names'
+MARKDOWN_CHARS = r"\*_{}[]()#+-!"
 
 ''' CLIENT CLASS '''
 
@@ -188,8 +195,6 @@ class Client:
         service_account_credential = json.loads(encoded_service_account, strict=False)
         # Create a credential using the Google Developer Service Account Credential and Chronicle API scope.
         credentials = service_account.Credentials.from_service_account_info(service_account_credential, scopes=SCOPES)
-        # Build an HTTP client which can make authorized OAuth requests.
-        self.http_client = auth_requests.AuthorizedSession(credentials)
 
         proxies = {}
         if proxy:
@@ -199,6 +204,11 @@ class Client:
             https_proxy = proxies['https']
             if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
                 proxies['https'] = 'https://' + https_proxy
+        else:
+            skip_proxy()
+
+        # Build an HTTP client which can make authorized OAuth requests.
+        self.http_client = auth_requests.AuthorizedSession(credentials)
         self.proxy_info = proxies
         self.disable_ssl = disable_ssl
 
@@ -315,20 +325,18 @@ def validate_response(client: Client, url, method='GET', body=None):
 
     if 500 <= raw_response.status_code <= 599:
         raise ValueError(
-            'Internal server error occurred. Failed to execute request with 3 retries.\nMessage: {}'.format(
-                parse_error_message(raw_response.text, client.region)))
+            f'Internal server error occurred. Failed to execute request with 3 retries.\n'
+            f'Message: {parse_error_message(raw_response.text, client.region)}')
     if raw_response.status_code == 429:
         raise ValueError(
-            'API rate limit exceeded. Failed to execute request with 3 retries.\nMessage: {}'.format(
-                parse_error_message(raw_response.text, client.region)))
+            f'API rate limit exceeded. Failed to execute request with 3 retries.\n'
+            f'Message: {parse_error_message(raw_response.text, client.region)}')
     if raw_response.status_code == 400 or raw_response.status_code == 404:
         raise ValueError(
-            'Status code: {}\nError: {}'.format(raw_response.status_code,
-                                                parse_error_message(raw_response.text, client.region)))
+            f'Status code: {raw_response.status_code}\nError: {parse_error_message(raw_response.text, client.region)}')
     if raw_response.status_code != 200:
         raise ValueError(
-            'Status code: {}\nError: {}'.format(raw_response.status_code,
-                                                parse_error_message(raw_response.text, client.region)))
+            f'Status code: {raw_response.status_code}\nError: {parse_error_message(raw_response.text, client.region)}')
     if not raw_response.text:
         raise ValueError('Technical Error while making API call to Chronicle. '
                          f'Empty response received with the status code: {raw_response.status_code}')
@@ -350,6 +358,24 @@ def trim_args(args):
         args[key] = value.strip()
 
     return args
+
+
+def string_escape_markdown(data: Any):
+    """
+    Escape any chars that might break a markdown string.
+    :param data: The data to be modified (required).
+    :return: A modified data.
+    """
+    if isinstance(data, str):
+        data = "".join(["\\" + str(c) if c in MARKDOWN_CHARS else str(c) for c in data])
+    elif isinstance(data, list):
+        new_data = []
+        for sub_data in data:
+            if isinstance(sub_data, str):
+                sub_data = "".join(["\\" + str(c) if c in MARKDOWN_CHARS else str(c) for c in sub_data])
+            new_data.append(sub_data)
+        data = new_data
+    return data
 
 
 def validate_argument(value, name) -> str:
@@ -1189,8 +1215,7 @@ def get_gcb_alerts(client_obj, start_time, end_time, max_fetch, filter_severity)
 
     return events - list of dict representing events
     """
-    request_url = '{}/alert/listalerts?start_time={}&end_time={}&page_size={}'.format(BACKSTORY_API_V1_URL, start_time,
-                                                                                      end_time, max_fetch)
+    request_url = f'{BACKSTORY_API_V1_URL}/alert/listalerts?start_time={start_time}&end_time={end_time}&page_size={max_fetch}'
     demisto.debug(f"[CHRONICLE] Request URL for fetching alerts: {request_url}")
 
     json_response = validate_response(client_obj, request_url)
@@ -1971,8 +1996,8 @@ def get_detections(client_obj, rule_or_version_id: str, page_size: str, detectio
     if detection_for_all_versions and rule_or_version_id:
         rule_or_version_id = f"{rule_or_version_id}@-"
 
-    request_url = '{}/detect/rules/{}/detections?pageSize={}' \
-        .format(BACKSTORY_API_V2_URL, rule_or_version_id, page_size)
+    request_url = f'{BACKSTORY_API_V2_URL}/detect/rules/{rule_or_version_id}/detections?pageSize={page_size}' \
+
 
     # Append parameters if specified
     if detection_start_time:
@@ -2030,8 +2055,8 @@ def get_curatedrule_detections(client_obj, curatedrule_id: str, page_size: str, 
     :return: ec, raw_resp: Context data and raw response for the fetched detections
     """
 
-    request_url = '{}/detect/curatedRules/{}/detections?pageSize={}' \
-        .format(BACKSTORY_API_V2_URL, curatedrule_id, page_size)
+    request_url = f'{BACKSTORY_API_V2_URL}/detect/curatedRules/{curatedrule_id}/detections?pageSize={page_size}' \
+
 
     # Append parameters if specified
     if detection_start_time:
@@ -2102,11 +2127,11 @@ def deduplicate_events_and_create_incidents(contexts: list, event_identifiers: l
             new_event_hashes.append(event_hash)
         except Exception as e:
             demisto.error("[CHRONICLE] Skipping insertion of current event since error occurred while calculating"
-                          " Hash for the event {}. Error: {}".format(event, str(e)))
+                          f" Hash for the event {event}. Error: {str(e)}")
             continue
         if event_identifiers and event_hash in event_identifiers:
             demisto.info("[CHRONICLE] Skipping insertion of current event since it already exists."
-                         " Event: {}".format(event))
+                         f" Event: {event}")
             continue
         if user_alert:
             event["IncidentType"] = "UserAlert"
@@ -2148,7 +2173,7 @@ def deduplicate_detections(detection_context: list[dict[str, Any]], detection_id
         new_detection_identifiers.append(current_detection_identifier)
         if detection_identifiers and current_detection_identifier in detection_identifiers:
             demisto.info("[CHRONICLE] Skipping insertion of current detection since it already exists."
-                         " Detection: {}".format(detection))
+                         f" Detection: {detection}")
             continue
         unique_detections.append(detection)
     return new_detection_identifiers, unique_detections
@@ -2174,7 +2199,7 @@ def deduplicate_curatedrule_detections(detection_context: list[dict[str, Any]],
         new_detection_identifiers.append(current_detection_identifier)
         if detection_identifiers and current_detection_identifier in detection_identifiers:
             demisto.info("[CHRONICLE] Skipping insertion of current detection since it already exists."
-                         " Detection: {}".format(detection))
+                         f" Detection: {detection}")
             continue
         unique_detections.append(detection)
     return new_detection_identifiers, unique_detections
@@ -2908,8 +2933,7 @@ def get_user_alerts(client_obj, start_time, end_time, max_fetch):
     :rtype: list
     :return: list of alerts
     """
-    request_url = '{}/alert/listalerts?start_time={}&end_time={}&page_size={}'.format(BACKSTORY_API_V1_URL, start_time,
-                                                                                      end_time, max_fetch)
+    request_url = f'{BACKSTORY_API_V1_URL}/alert/listalerts?start_time={start_time}&end_time={end_time}&page_size={max_fetch}'
     demisto.debug(f"[CHRONICLE] Request URL for fetching user alerts: {request_url}")
 
     json_response = validate_response(client_obj, request_url)
@@ -3587,7 +3611,7 @@ def prepare_hr_for_gcb_list_retrohunts_commands(json_data):
                          removeNull=True)
     if next_page_token:
         hr += '\nMaximum number of retrohunts specified in page_size has been returned. To fetch the next set of' \
-              ' retrohunts, execute the command with the page token as {}'.format(next_page_token)
+              f' retrohunts, execute the command with the page token as {next_page_token}'
     return hr
 
 
@@ -3661,8 +3685,7 @@ def gcb_cancel_retrohunt(client_obj, rule_or_version_id, retrohunt_id):
     :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
     :return: ec, json_data: Context data and raw response of the request
     """
-    request_url = '{}/detect/rules/{}/retrohunts/{}:cancelRetrohunt'.format(BACKSTORY_API_V2_URL, rule_or_version_id,
-                                                                            retrohunt_id)
+    request_url = f'{BACKSTORY_API_V2_URL}/detect/rules/{rule_or_version_id}/retrohunts/{retrohunt_id}:cancelRetrohunt'
     json_data = validate_response(client_obj, request_url, method='POST')
     json_data = {
         'id': rule_or_version_id,
@@ -3696,7 +3719,7 @@ def prepare_hr_for_gcb_cancel_retrohunt(json_data):
     return hr
 
 
-def gcb_create_reference_list(client_obj, name, description, lines):
+def gcb_create_reference_list(client_obj, name, description, lines, content_type):
     """
     Return context data and raw response for gcb_create_reference_list command.
 
@@ -3712,16 +3735,22 @@ def gcb_create_reference_list(client_obj, name, description, lines):
     :type lines: list
     :param lines: items to put in the list
 
+    :type content_type: str
+    :param content_type: the content_type of lines
+
     :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
     :return: ec, json_data: Context data and raw response of the request
     """
+    content_type = 'CONTENT_TYPE_DEFAULT_STRING' if content_type == DEFAULT_CONTENT_TYPE else content_type
     body = {
         "name": name,
         "description": description,
-        "lines": lines
+        "lines": lines,
+        "content_type": content_type,
     }
     request_url = f'{BACKSTORY_API_V2_URL}/lists'
     json_data = validate_response(client_obj, request_url, method='POST', body=json.dumps(body))
+    json_data['contentType'] = json_data.get('contentType', DEFAULT_CONTENT_TYPE)
     ec = {
         CHRONICLE_OUTPUT_PATHS['ReferenceList']: json_data
     }
@@ -3745,10 +3774,11 @@ def prepare_hr_for_gcb_create_get_update_reference_list(json_data, table_name='R
         'Name': json_data.get('name'),
         'Description': json_data.get('description'),
         'Creation Time': json_data.get('createTime'),
-        'Content': json_data.get('lines')
+        'Content Type': json_data.get('contentType'),
+        'Content': string_escape_markdown(json_data.get('lines'))
     }
 
-    headers = ['Name', 'Description', 'Creation Time', 'Content']
+    headers = ['Name', 'Content Type', 'Description', 'Creation Time', 'Content']
 
     return tableToMarkdown(table_name, hr_output, headers=headers, removeNull=True)
 
@@ -3777,8 +3807,11 @@ def gcb_list_reference_list(client_obj, page_size, page_token, view):
     request_url = f'{BACKSTORY_API_V2_URL}/lists?{encoded_params}'
 
     json_data = validate_response(client_obj, request_url, method='GET')
+    references_list = json_data.get('lists')
+    for reference in references_list:
+        reference['contentType'] = reference.get('contentType', DEFAULT_CONTENT_TYPE)
     ec = {
-        CHRONICLE_OUTPUT_PATHS['ListReferenceList']: json_data.get('lists')
+        CHRONICLE_OUTPUT_PATHS['ListReferenceList']: references_list
     }
     return ec, json_data
 
@@ -3801,13 +3834,14 @@ def prepare_hr_for_gcb_list_reference_list(json_data):
             'Name': output.get('name'),
             'Creation Time': output.get('createTime'),
             'Description': output.get('description'),
-            'Content': output.get('lines')
+            'Content Type': output.get('contentType'),
+            'Content': string_escape_markdown(output.get('lines'))
         })
     hr = tableToMarkdown('Reference List Details', hr_output,
-                         headers=['Name', 'Creation Time', 'Description', 'Content'], removeNull=True)
+                         headers=['Name', 'Content Type', 'Creation Time', 'Description', 'Content'], removeNull=True)
     if page_token:
         hr += '\nMaximum number of reference lists specified in page_size has been returned. To fetch the next set of' \
-              ' lists, execute the command with the page token as {}'.format(page_token)
+              f' lists, execute the command with the page token as {page_token}'
     return hr
 
 
@@ -3830,13 +3864,14 @@ def gcb_get_reference_list(client_obj, name, view):
     encoded_params = urllib.parse.urlencode(assign_params(view=view))
     request_url = f'{BACKSTORY_API_V2_URL}/lists/{name}?{encoded_params}'
     json_data = validate_response(client_obj, request_url, method='GET')
+    json_data['contentType'] = json_data.get('contentType', DEFAULT_CONTENT_TYPE)
     ec = {
         CHRONICLE_OUTPUT_PATHS['ReferenceList']: json_data
     }
     return ec, json_data
 
 
-def gcb_update_reference_list(client_obj, name, lines, description):
+def gcb_update_reference_list(client_obj, name, lines, description, content_type):
     """
     Return context data and raw response for gcb_update_reference_list command.
 
@@ -3852,21 +3887,87 @@ def gcb_update_reference_list(client_obj, name, lines, description):
     :type lines: list
     :param lines: items to put in the list
 
+    :type content_type: str
+    :param content_type: the content_type of lines
+
     :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
     :return: ec, json_data: Context data and raw response of the request
     """
     request_url = f'{BACKSTORY_API_V2_URL}/lists?update_mask=list.lines'
+    content_type = 'CONTENT_TYPE_DEFAULT_STRING' if content_type == DEFAULT_CONTENT_TYPE else content_type
     body = {
         "name": name,
         "lines": lines,
-        "description": description
+        "description": description,
+        "content_type": content_type,
     }
     if description:
         request_url += ',list.description'
         # body["description"] = description
     json_data = validate_response(client_obj, request_url, method='PATCH', body=json.dumps(body))
+    json_data['contentType'] = json_data.get('contentType', DEFAULT_CONTENT_TYPE)
     ec = {
         CHRONICLE_OUTPUT_PATHS['ReferenceList']: json_data
+    }
+    return ec, json_data
+
+
+def prepare_hr_for_verify_reference_list(json_data, content_type):
+    """
+    Prepare human-readable for gcb-verify-reference-list.
+
+    :type json_data: Dict[str, Any]
+    :param json_data: Response of gcb-verify-reference-list
+
+    :type content_type: str
+    :param content_type: the content_type of lines
+
+    :rtype: str
+    :return: Human readable string for gcb-verify-reference-list
+    """
+    success = json_data.get('success', False)
+    if success:
+        return '### All provided lines meet validation criteria.'
+    json_data = json_data.get('errors', [])
+    hr_output = []
+    for output in json_data:
+        hr_output.append({
+            'Line Number': output.get('lineNumber'),
+            'Message': string_escape_markdown(output.get('errorMessage')),
+        })
+    hr = tableToMarkdown(f'The following lines contain invalid {content_type} pattern.', hr_output,
+                         headers=['Line Number', 'Message'], removeNull=True)
+    return hr
+
+
+def gcb_verify_reference_list(client_obj, lines, content_type):
+    """
+    Return context data and raw response for gcb_verify_reference_list command.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type lines: list
+    :param lines: items to validate
+
+    :type content_type: str
+    :param content_type: the content_type of lines
+
+    :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
+    :return: ec, json_data: Context data and raw response of the request
+    """
+    request_url = f'{BACKSTORY_API_V2_URL}/lists:verifyReferenceList'
+    content_type = 'CONTENT_TYPE_DEFAULT_STRING' if content_type == DEFAULT_CONTENT_TYPE else content_type
+    body = {
+        'lines': lines,
+        'content_type': content_type
+    }
+    json_data = validate_response(client_obj, request_url, method='POST', body=json.dumps(body))
+    json_data['command_name'] = 'gcb-verify-reference-list'
+    json_data['success'] = json_data.get('success', False)
+    json_data['errors'] = json_data.get('errors', [])
+    ec = {
+        CHRONICLE_OUTPUT_PATHS['VerifyReferenceList']: json_data
     }
     return ec, json_data
 
@@ -3938,8 +4039,8 @@ def gcb_list_asset_aliases(client_obj: Client, start_time: str, end_time: str, p
     :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
     :return: ec, json_data: Context data and raw response for asset aliases.
     """
-    request_url = "{}/alias/listassetaliases?asset.{}={}&start_time={}&end_time={}&page_size={}".format(
-        BACKSTORY_API_V1_URL, asset_identifier_type, asset_identifier, start_time, end_time, page_size)
+    request_url = (f"{BACKSTORY_API_V1_URL}/alias/listassetaliases?asset.{asset_identifier_type}={asset_identifier}"
+                   f"&start_time={start_time}&end_time={end_time}&page_size={page_size}")
     json_data = validate_response(client_obj, request_url, method='GET')
 
     # context data for the command
@@ -3968,8 +4069,7 @@ def gcb_list_curated_rules(client_obj: Client, page_token: str, page_size: Optio
     :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
     :return: ec, json_data: Context data and raw response for asset aliases.
     """
-    request_url = "{}/detect/curatedRules?page_size={}".format(
-        BACKSTORY_API_V2_URL, page_size)
+    request_url = f"{BACKSTORY_API_V2_URL}/detect/curatedRules?page_size={page_size}"
     if page_token:
         request_url += f"&page_token={page_token}"
     json_data = validate_response(client_obj, request_url, method='GET')
@@ -4011,8 +4111,8 @@ def gcb_list_user_aliases(client_obj: Client, start_time: str, end_time: str, pa
     :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
     :return: ec, json_data: Context data and raw response for user aliases.
     """
-    request_url = "{}/alias/listuseraliases?user.{}={}&start_time={}&end_time={}&page_size={}".format(
-        BACKSTORY_API_V1_URL, user_identifier_type, user_identifier, start_time, end_time, page_size)
+    request_url = (f"{BACKSTORY_API_V1_URL}/alias/listuseraliases?user.{user_identifier_type}={user_identifier}"
+                   f"&start_time={start_time}&end_time={end_time}&page_size={page_size}")
     json_data = validate_response(client_obj, request_url, method='GET')
 
     # context data for the command
@@ -4021,6 +4121,35 @@ def gcb_list_user_aliases(client_obj: Client, start_time: str, end_time: str, pa
             "user": {user_identifier_type: urllib.parse.unquote(user_identifier),
                      "aliases": json_data.get('userAliases')}}
     }
+    return ec, json_data
+
+
+def gcb_verify_rule(client_obj: Client, rule_text: str):
+    """
+    Return context data and raw response for gcb_verify_rule command.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api.
+
+    :type rule_text: str
+    :param rule_text: items to validate.
+
+    :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
+    :return: ec, json_data: Context data and raw response of the request.
+    """
+    req_json_data = {
+        'ruleText': rule_text
+    }
+    request_url = f"{BACKSTORY_API_V2_URL}/detect/rules:verifyRule"
+    json_data = validate_response(client_obj, request_url, method='POST', body=json.dumps(req_json_data))
+    context_data = {
+        **json_data,
+        'success': json_data.get('success', False),
+        'command_name': 'gcb-verify-rule',
+    }
+
+    ec = {CHRONICLE_OUTPUT_PATHS['VerifyRule']: context_data}
+
     return ec, json_data
 
 
@@ -4041,8 +4170,7 @@ def test_function(client_obj, params: dict[str, Any]):
     :rtype: None
     """
     demisto.debug('Running Test having Proxy {}'.format(params.get('proxy')))
-    request_url = '{}/ioc/listiocs?start_time=2019-10-15T20:37:00Z&page_size=1'.format(
-        BACKSTORY_API_V1_URL)
+    request_url = f'{BACKSTORY_API_V1_URL}/ioc/listiocs?start_time=2019-10-15T20:37:00Z&page_size=1'
 
     validate_response(client_obj, request_url)
     demisto.results('ok')
@@ -4066,8 +4194,7 @@ def gcb_list_iocs_command(client_obj, args: dict[str, Any]):
     start_time, _, page_size, _ = get_default_command_args_value(args=args)
 
     # Make a request
-    request_url = '{}/ioc/listiocs?start_time={}&page_size={}'.format(
-        BACKSTORY_API_V1_URL, start_time, page_size)
+    request_url = f'{BACKSTORY_API_V1_URL}/ioc/listiocs?start_time={start_time}&page_size={page_size}'
     json_data = validate_response(client_obj, request_url)
 
     # List of IoCs returned for further processing
@@ -4109,8 +4236,8 @@ def gcb_assets_command(client_obj, args: dict[str, str]):
 
     start_time, end_time, page_size, _ = get_default_command_args_value(args=args)
 
-    request_url = '{}/artifact/listassets?artifact.{}={}&start_time={}&end_time={}&page_size={}'.format(
-        BACKSTORY_API_V1_URL, artifact_type, urllib.parse.quote(artifact_value), start_time, end_time, page_size)
+    request_url = (f'{BACKSTORY_API_V1_URL}/artifact/listassets?artifact.{artifact_type}={urllib.parse.quote(artifact_value)}'
+                   f'&start_time={start_time}&end_time={end_time}&page_size={page_size}')
 
     response = validate_response(client_obj, request_url)
 
@@ -4147,8 +4274,7 @@ def gcb_ioc_details_command(client_obj, args: dict[str, str]):
     artifact_value = args.get('artifact_value', '')
     artifact_type = get_artifact_type(artifact_value)
 
-    request_url = '{}/artifact/listiocdetails?artifact.{}={}'.format(BACKSTORY_API_V1_URL, artifact_type,
-                                                                     urllib.parse.quote(artifact_value))
+    request_url = f'{BACKSTORY_API_V1_URL}/artifact/listiocdetails?artifact.{artifact_type}={urllib.parse.quote(artifact_value)}'
     response = validate_response(client_obj, request_url)
 
     ec = {}  # type: Dict[str, Any]
@@ -4201,8 +4327,7 @@ def ip_command(client_obj, ip_address: str):
     if not is_ip_valid(ip_address, True):
         raise ValueError(f'Invalid IP - {ip_address}')
 
-    request_url = '{}/artifact/listiocdetails?artifact.destination_ip_address={}'.format(
-        BACKSTORY_API_V1_URL, ip_address)
+    request_url = f'{BACKSTORY_API_V1_URL}/artifact/listiocdetails?artifact.destination_ip_address={ip_address}'
 
     response = validate_response(client_obj, request_url)
 
@@ -4259,8 +4384,7 @@ def domain_command(client_obj, domain_name: str):
     :return: command output
     :rtype: tuple
     """
-    request_url = '{}/artifact/listiocdetails?artifact.domain_name={}'.format(BACKSTORY_API_V1_URL,
-                                                                              urllib.parse.quote(domain_name))
+    request_url = f'{BACKSTORY_API_V1_URL}/artifact/listiocdetails?artifact.domain_name={urllib.parse.quote(domain_name)}'
     response = validate_response(client_obj, request_url)
 
     ec = {}  # type: Dict[str, Any]
@@ -4432,9 +4556,9 @@ def gcb_list_events_command(client_obj, args: dict[str, str]):
         reference_time = args.get('reference_time', start_time)
 
     # Make a request URL
-    request_url = '{}/asset/listevents?asset.{}={}&start_time={}&end_time={}&page_size={}&reference_time={}' \
-        .format(BACKSTORY_API_V1_URL, asset_identifier_type, asset_identifier, start_time, end_time, page_size,
-                reference_time)
+    request_url = (f'{BACKSTORY_API_V1_URL}/asset/listevents?asset.{asset_identifier_type}={asset_identifier}'
+                   f'&start_time={start_time}&end_time={end_time}&page_size={page_size}&reference_time={reference_time}')
+
     demisto.debug('Requested url : ' + request_url)
 
     # get list of events from Chronicle Backstory
@@ -4458,8 +4582,8 @@ def gcb_list_events_command(client_obj, args: dict[str, str]):
             hr += ' An error occurred while fetching the start time that could have been used to' \
                   ' fetch next set of events.'
         else:
-            hr += ' To fetch the next set of events, execute the command with the start time as {}.' \
-                .format(last_event_timestamp)
+            hr += f' To fetch the next set of events, execute the command with the start time as {last_event_timestamp}.' \
+
 
     parsed_ec = get_context_for_events(json_data.get('events', []))
 
@@ -4487,8 +4611,8 @@ def gcb_udm_search_command(client_obj, args: dict[str, str]):
     start_time, end_time, limit, query = get_gcb_udm_search_command_args_value(args=args, date_range='3 days')
 
     # Make a request URL
-    request_url = '{}/events:udmSearch?time_range.start_time={}&time_range.end_time={}&limit={}&query={}' \
-        .format(BACKSTORY_API_V1_URL, start_time, end_time, limit, query)
+    request_url = (f'{BACKSTORY_API_V1_URL}/events:udmSearch?time_range.start_time={start_time}&time_range.end_time={end_time}'
+                   f'&limit={limit}&query={query}')
 
     # get list of events from Chronicle Backstory
     json_data = validate_response(client_obj, request_url)
@@ -4512,8 +4636,8 @@ def gcb_udm_search_command(client_obj, args: dict[str, str]):
             hr += ' An error occurred while fetching the end time that could have been used to' \
                   ' fetch next set of events.'
         else:
-            hr += ' To fetch the next set of events, execute the command with the end time as {}.' \
-                .format(last_event_timestamp)
+            hr += f' To fetch the next set of events, execute the command with the end time as {last_event_timestamp}.' \
+
 
     parsed_ec = get_context_for_events(events)
 
@@ -4561,7 +4685,7 @@ def gcb_list_detections_command(client_obj, args: dict[str, str]):
     next_page_token = json_data.get('nextPageToken')
     if next_page_token:
         hr += '\nMaximum number of detections specified in page_size has been returned. To fetch the next set of' \
-              ' detections, execute the command with the page token as {}.'.format(next_page_token)
+              f' detections, execute the command with the page token as {next_page_token}.'
 
     return hr, ec, json_data
 
@@ -4601,7 +4725,7 @@ def gcb_list_curatedrule_detections_command(client_obj, args: dict[str, str]):
     next_page_token = json_data.get('nextPageToken')
     if next_page_token:
         hr += '\nMaximum number of detections specified in page_size has been returned. To fetch the next set of' \
-              ' detections, execute the command with the page token as {}.'.format(next_page_token)
+              f' detections, execute the command with the page token as {next_page_token}.'
 
     return hr, ec, json_data
 
@@ -4631,7 +4755,7 @@ def gcb_list_rules_command(client_obj, args: dict[str, str]):
     next_page_token = json_data.get('nextPageToken')
     if next_page_token:
         hr += '\nMaximum number of rules specified in page_size has been returned. To fetch the next set of' \
-              ' rules, execute the command with the page token as {}.'.format(next_page_token)
+              f' rules, execute the command with the page token as {next_page_token}.'
 
     return hr, ec, json_data
 
@@ -4863,7 +4987,12 @@ def gcb_create_reference_list_command(client_obj, args):
     description = validate_argument(args.get('description'), 'description')
     lines = validate_argument(args.get('lines'), 'lines')
     lines = argToList(lines, args.get('delimiter', ','))
-    ec, json_data = gcb_create_reference_list(client_obj, name=name, description=description, lines=lines)
+    valid_lines = [line for line in lines if line]  # Remove the empty("") lines
+    lines = validate_argument(valid_lines, 'lines')  # Validation for empty lines list
+    content_type = validate_single_select(
+        args.get('content_type', DEFAULT_CONTENT_TYPE).upper(), 'content_type', VALID_CONTENT_TYPE)
+    ec, json_data = gcb_create_reference_list(client_obj, name=name, description=description,
+                                              lines=lines, content_type=content_type)
     hr = prepare_hr_for_gcb_create_get_update_reference_list(json_data)
     return hr, ec, json_data
 
@@ -4930,10 +5059,150 @@ def gcb_update_reference_list_command(client_obj, args):
     name = validate_argument(args.get('name'), 'name')
     lines = validate_argument(args.get('lines'), 'lines')
     lines = argToList(lines, args.get('delimiter', ','))
+    valid_lines = [line for line in lines if line]  # Remove the empty("") lines
+    lines = validate_argument(valid_lines, 'lines')  # Validation for empty lines list
     description = args.get('description')
-    ec, json_data = gcb_update_reference_list(client_obj, name=name, lines=lines, description=description)
+    content_type = args.get('content_type')
+    if not content_type:
+        # Get the content type from the reference list
+        request_url = f'{BACKSTORY_API_V2_URL}/lists/{name}'
+        json_data = validate_response(client_obj, request_url, method='GET')
+        content_type = json_data.get('contentType', DEFAULT_CONTENT_TYPE)
+
+    content_type = validate_single_select(content_type.upper(), 'content_type', VALID_CONTENT_TYPE)
+    ec, json_data = gcb_update_reference_list(client_obj, name=name, lines=lines,
+                                              description=description, content_type=content_type)
     hr = prepare_hr_for_gcb_create_get_update_reference_list(json_data, 'Updated Reference List Details')
     return hr, ec, json_data
+
+
+def gcb_verify_reference_list_command(client_obj, args):
+    """
+    Validate lines contents.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type args: Dict[str, str]
+    :param args: it contains arguments for gcb-update-reference-list command
+
+    :return: command output
+    :rtype: str, dict, dict
+    """
+    lines = validate_argument(args.get('lines'), 'lines')
+    lines = argToList(lines, args.get('delimiter', ','))
+    valid_lines = [line for line in lines if line]  # Remove the empty("") lines
+    lines = validate_argument(valid_lines, 'lines')  # Validation for empty lines list
+    content_type = validate_single_select(
+        args.get('content_type', DEFAULT_CONTENT_TYPE).upper(), 'content_type', VALID_CONTENT_TYPE)
+
+    ec, json_data = gcb_verify_reference_list(client_obj, lines=lines, content_type=content_type)
+    hr = prepare_hr_for_verify_reference_list(json_data, content_type)
+    return hr, ec, json_data
+
+
+def gcb_verify_value_in_reference_list_command(client_obj, args):
+    """
+    Check if the value is present in the reference list.
+
+    :type client_obj: Client
+    :param client_obj: Client object which is used to get response from api.
+
+    :type args: Dict[str, str]
+    :param args: It contains arguments for gcb-verify-value-in-reference-list command.
+
+    :return: command output
+    :rtype: str, dict, dict
+    """
+    delimiter = args.get('delimiter', ',')
+    reference_lists_names = argToList(args.get('reference_list_names', []))
+    search_values = argToList(args.get('values', []), separator=delimiter)
+    case_insensitive = argToBoolean(args.get('case_insensitive_search', 'false'))
+    add_not_found_reference_lists = argToBoolean(args.get('add_not_found_reference_lists', 'false'))
+
+    reference_lists = validate_argument(get_unique_value_from_list(
+        [reference_list.strip() for reference_list in reference_lists_names]), 'reference_list_names')
+    values = validate_argument(get_unique_value_from_list([value.strip() for value in search_values]), 'values')
+
+    found_reference_lists = {}
+    not_found_reference_lists = []
+
+    for reference_list in reference_lists:
+        try:
+            _, json_data = gcb_get_reference_list(client_obj, name=reference_list, view='FULL')
+            found_reference_lists[reference_list] = json_data.get('lines', [])
+        except Exception:
+            not_found_reference_lists.append(reference_list)
+
+    if not_found_reference_lists:
+        return_warning('The following Reference lists were not found: {}'.format(', '.join(not_found_reference_lists)),
+                       exit=len(not_found_reference_lists) == len(reference_lists))
+
+    if case_insensitive:
+        for reference_list, lines in found_reference_lists.items():
+            found_reference_lists[reference_list] = [line.lower() for line in lines]
+
+    hr_dict, json_data, ec_data = [], [], []
+    for value in values:
+        overall_status = 'Not Found'
+        found_lists, not_found_lists = [], []
+        for reference_list, lines in found_reference_lists.items():
+            if value in lines:
+                found_lists.append(reference_list)
+            elif case_insensitive and value.lower() in lines:
+                found_lists.append(reference_list)
+            else:
+                not_found_lists.append(reference_list)
+
+        if found_lists:
+            overall_status = 'Found'
+
+        result = {
+            'value': value,
+            'found_in_lists': found_lists,
+            'not_found_in_lists': not_found_lists,
+            'overall_status': overall_status,
+            'case_insensitive': case_insensitive
+        }
+        json_data.append(result)
+        data = deepcopy(result)
+
+        hr_data = {
+            'value': string_escape_markdown(value),
+            'found_in_lists': ', '.join(found_lists),
+            'not_found_in_lists': ', '.join(not_found_lists),
+            'overall_status': overall_status
+        }
+
+        if not add_not_found_reference_lists:
+            hr_data['not_found_in_lists'] = []
+            data['not_found_in_lists'] = []
+
+        ec_data.append(data)
+        hr_dict.append(hr_data)
+
+    title = 'Successfully searched provided values in the reference lists in Google Chronicle.'
+    hr = tableToMarkdown(title, hr_dict, ['value', 'found_in_lists', 'not_found_in_lists', 'overall_status'],
+                         headerTransform=header_transform_to_title_case, removeNull=True)
+    ec = {
+        CHRONICLE_OUTPUT_PATHS['VerifyValueInReferenceList']: ec_data
+    }
+
+    return hr, ec, json_data
+
+
+def header_transform_to_title_case(string: str) -> str:
+    '''
+    Header transform function to convert given string to title case with the spaces between words.
+
+    :type string: ``str``
+    :param string: The string to convert to title case.
+
+    :return: The string in title case.
+    '''
+    new_string = string.split('_')
+    new_string = [i.capitalize() for i in new_string]
+    return ' '.join(new_string)
 
 
 def prepare_hr_for_gcb_test_rule_stream_command(detections):
@@ -5022,7 +5291,7 @@ def prepare_hr_for_gcb_list_curated_rules_command(aliases_response: dict[str, An
     next_page_token = aliases_response.get('nextPageToken')
     if next_page_token:
         hr += '\nMaximum number of curated rules specified in page_size has been returned. To fetch the next set of' \
-              ' curated rules, execute the command with the page token as {}.'.format(next_page_token)
+              f' curated rules, execute the command with the page token as {next_page_token}.'
 
     return hr
 
@@ -5178,6 +5447,155 @@ def gcb_list_user_aliases_command(
     return hr, ec, json_data
 
 
+def gcb_verify_rule_command(client_obj, args):
+    """
+    Verify the rule has valid YARA-L 2.0 format.
+
+    :type client_obj: Client
+    :param client_obj: Client object which is used to get response from API.
+
+    :type args: Dict[str, Any]
+    :param args: It contains arguments for gcb-verify-rule command.
+
+    :rtype: str, dict, dict
+    :return: Command output.
+    """
+    rule_text = args.get('rule_text', '')
+    validate_rule_text(rule_text)
+
+    ec, json_data = gcb_verify_rule(client_obj, rule_text)
+
+    success = json_data.get('success')
+    context = json_data.get('context')
+
+    if success:
+        hr = f'### {context.capitalize()}'
+    else:
+        hr = f'### Error: {context}'
+
+    return hr, ec, json_data
+
+
+def gcb_get_event_command(client_obj, args: dict[str, str]):
+    """
+    Get specific event With the given ID.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type args: Dict[str, str]
+    :param args: it contain arguments of gcb-get-event command
+
+    :return: command output
+    :rtype: str, dict, dict
+    """
+
+    event_id = validate_argument(args.get('event_id'), 'event_id')
+    event_id = urllib.parse.quote(event_id)
+
+    request_url = f'{BACKSTORY_API_V1_URL}/event:get?name={event_id}'
+
+    json_data = validate_response(client_obj, request_url)
+
+    event_data = deepcopy(json_data.get('udm', {}))
+
+    hr = prepare_hr_for_gcb_get_event(deepcopy(event_data))
+
+    parsed_ec = get_context_for_events([event_data])
+    ec = {
+        CHRONICLE_OUTPUT_PATHS["Events"]: parsed_ec
+    }
+
+    return hr, ec, json_data
+
+
+def prepare_hr_for_gcb_get_event(event: dict[str, Any]):
+    """
+    Prepare Human Readable output from the response received.
+
+    :type event: Dict
+    :param event: raw response received from api in json format.
+
+    :return: Human Readable output to display.
+    :rtype: str
+    """
+    event = convert_numbers_to_strings_for_object(event)
+
+    metadata = event.get('metadata', {})
+    event_id = metadata.get('id', '')
+    human_readable = (
+        tableToMarkdown(f'General Information for the given event with ID: {event_id}', metadata, removeNull=True,
+                        headerTransform=convert_string_table_case_to_title_case, is_auto_json_transform=True,)
+        if metadata else '')
+
+    principal_info = event.get('principal', {})
+    human_readable += ('\n' + tableToMarkdown('Principal Information', principal_info, is_auto_json_transform=True,
+                                              headerTransform=convert_string_table_case_to_title_case, removeNull=True)
+                       if principal_info else '')
+
+    target_info = event.get('target', {})
+    human_readable += ('\n' + tableToMarkdown('Target Information', target_info, is_auto_json_transform=True,
+                                              headerTransform=convert_string_table_case_to_title_case, removeNull=True)
+                       if target_info else '')
+
+    security_result_info = event.get('securityResult', [])
+    human_readable += ('\n' + tableToMarkdown('Security Result Information', security_result_info, is_auto_json_transform=True,
+                                              headerTransform=convert_string_table_case_to_title_case, removeNull=True)
+                       if security_result_info else '')
+
+    network_info = event.get('network', {})
+    human_readable += ('\n' + tableToMarkdown('Network Information', network_info, is_auto_json_transform=True,
+                                              headerTransform=convert_string_table_case_to_title_case, removeNull=True)
+                       if network_info else '')
+    return human_readable
+
+
+def convert_numbers_to_strings_for_object(d: Any) -> Any:
+    """
+    Recursively convert all integer and float values in a object to strings,
+
+    :param d: Input object.
+    :type d: Any
+    :return: An object with all integer and float values converted to strings.
+    :rtype: Any
+    """
+
+    def convert(x: Any) -> Any:
+        """
+        Recursively convert all integer and float values in a nested data structure to strings.
+
+        :param x: A nested data structure containing the values to be converted.
+        :return: A nested data structure with all integer and float values converted to strings.
+        """
+        if isinstance(x, (int, float)):
+            return str(x)
+        if isinstance(x, list):
+            return [convert(v) for v in x]
+        if isinstance(x, dict):
+            return {k: convert(v) for k, v in x.items()}
+        return x
+
+    if not isinstance(d, (dict, list)):
+        return convert(d)
+    if isinstance(d, list):
+        return [convert(v) for v in d]
+    return {k: convert(v) for k, v in d.items()}
+
+
+def convert_string_table_case_to_title_case(input_str: str) -> str:
+    """
+    Convert string in table case to title case.
+
+    :type input_str: str
+    :param input_str: string in table case.
+
+    :return: string in title case
+    """
+    transformed = re.sub(r'(?<=[a-z])([A-Z])', r' \1', input_str)
+
+    return transformed.title()
+
+
 def main():
     """PARSE AND VALIDATE INTEGRATION PARAMS."""
     # supported command list
@@ -5209,6 +5627,10 @@ def main():
         'gcb-list-useraliases': gcb_list_user_aliases_command,
         'gcb-list-curatedrule-detections': gcb_list_curatedrule_detections_command,
         'gcb-udm-search': gcb_udm_search_command,
+        'gcb-verify-reference-list': gcb_verify_reference_list_command,
+        'gcb-verify-value-in-reference-list': gcb_verify_value_in_reference_list_command,
+        'gcb-verify-rule': gcb_verify_rule_command,
+        'gcb-get-event': gcb_get_event_command,
     }
     # initialize configuration parameter
     proxy = demisto.params().get('proxy')

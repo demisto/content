@@ -62,13 +62,19 @@ display: ReversingLabs TitaniumScale
 name: ReversingLabs TitaniumScale
 script:
   commands:
-  - arguments:
-    - default: true
-      description: The file entry to upload.
-      name: entryId
-      required: true
+  - name: reversinglabs-titaniumscale-upload-sample-and-get-results
     description: Upload sample to TitaniumScale and retrieve analysis report.
-    name: reversinglabs-titaniumscale-upload-sample-and-get-results
+    arguments:
+    - name: entryId
+      required: true
+      default: true
+      description: The file entry to upload.
+    - name: custom_token
+      description: A custom token for filtering processing tasks.
+    - name: user_data
+      description: User-defined data in the form of a JSON string. This data is NOT included in file analysis reports.
+    - name: custom_data
+      description: User-defined data in the form of a JSON string. This data is included in file analysis reports.
     outputs:
     - contextPath: File.SHA256
       description: The SHA256 hash of the file.
@@ -109,24 +115,30 @@ script:
     - contextPath: ReversingLabs.tc_report
       description: Full report.
       type: String
-  - arguments:
-    - default: true
-      description: The file entry to upload.
-      name: entryId
-      required: true
+  - name: reversinglabs-titaniumscale-upload-sample
     description: Upload sample to TitaniumScale for analysis.
-    name: reversinglabs-titaniumscale-upload-sample
+    arguments:
+    - name: entryId
+      required: true
+      default: true
+      description: The file entry to upload.
+    - name: custom_token
+      description: A custom token for filtering processing tasks.
+    - name: user_data
+      description: User-defined data in the form of a JSON string. This data is NOT included in file analysis reports.
+    - name: custom_data
+      description: User-defined data in the form of a JSON string. This data is included in file analysis reports.
     outputs:
     - contextPath: ReversingLabs.task_Url
       description: url to get report from.
       type: Unknown
-  - arguments:
+  - name: reversinglabs-titaniumscale-get-results
+    description: Retrieve report of a previously uploaded file from TitaniumScale.
+    arguments:
     - default: true
       description: The file entry to upload.
       name: taskUrl
       required: true
-    description: Retrieve report of a previously uploaded file from TitaniumScale.
-    name: reversinglabs-titaniumscale-get-results
     outputs:
     - contextPath: File.SHA256
       description: The SHA256 hash of the file.
@@ -167,7 +179,49 @@ script:
     - contextPath: ReversingLabs.tc_report
       description: Full report.
       type: String
-  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.72317
+  - name: reversinglabs-titaniumscale-list-processing-tasks
+    description: List active processing tasks.
+    arguments:
+      - name: age
+        description: Task age in seconds.
+      - name: custom_token
+        description: A custom token for filtering processing tasks.
+    outputs:
+      - contextPath: ReversingLabs.list_processing_tasks
+        description: Processing tasks.
+        type: Unknown
+  - name: reversinglabs-titaniumscale-get-processing-task-info
+    description: Retrieves information about a completed file processing task.
+    arguments:
+      - name: task_id
+        required: true
+        default: true
+        description: Task ID.
+    outputs:
+      - contextPath: ReversingLabs.tc_report
+        description: Full report.
+        type: Unknown
+  - name: reversinglabs-titaniumscale-delete-processing-task
+    description: Deletes a processing task.
+    arguments:
+      - name: task_id
+        required: true
+        default: true
+        description: Task ID.
+  - name: reversinglabs-titaniumscale-delete-multiple-tasks
+    description: Deletes multiple processing tasks.
+    arguments:
+      - name: age
+        required: true
+        default: true
+        description: Task age in seconds.
+  - name: reversinglabs-titaniumscale-get-yara-id
+    description: Retrieves the identifier of the current set of YARA rules on the TitaniumScale Worker instance.
+    outputs:
+      - contextPath: ReversingLabs.yara_id
+        description: Identifier of the current set of YARA rules on the TitaniumScale Worker instance.
+        type: Unknown
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.1872154
   runonce: false
   script: '-'
   subtype: python3

@@ -2,7 +2,7 @@
     "name": "TIM - SIEM Integration",
     "description": "Update your SIEM with minimal fuss! This Content Pack automates the delivery of indicators to your SIEM for correlation, with minimal configuration.",
     "support": "xsoar",
-    "currentVersion": "1.1.4",
+    "currentVersion": "1.1.6",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

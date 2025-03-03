@@ -82,8 +82,11 @@ def error_handler(res):
         and "/urlCategories/" in res.request.url
     ):
         raise Exception(
-            "Bad request, This could be due to reaching your organizations quota."
-            " For more info about your quota usage, run the command zscaler-url-quota."
+            f"The request failed with the following error: {res.status_code}.\nMessage: {res.text}\n"
+            f"This error might be due to an invalid URL or exceeding your organization's quota.\n"
+            f"For more information about URL formatting, refer to the Zscaler URL Format Guidelines: "
+            f"https://help.zscaler.com/zia/url-format-guidelines\n"
+            f"To check your quota usage, run the command `zscaler-url-quota`."
         )
     else:
         if res.status_code in ERROR_CODES_DICT:
@@ -165,6 +168,7 @@ def login():
                 f"Zscaler encountered an authentication error.\nError: {str(e)}"
             )
     ts, key = obfuscateApiKey(API_KEY)
+    add_sensitive_log_strs(key)
     data = {"username": USERNAME, "timestamp": ts, "password": PASSWORD, "apiKey": key}
     json_data = json.dumps(data)
     result = http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='response')
@@ -190,7 +194,7 @@ def blacklist_url(url):
     cmd_url = "/security/advanced/blacklistUrls?action=ADD_TO_LIST"
     data = {"blacklistUrls": urls_to_blacklist}
     json_data = json.dumps(data)
-    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS)
+    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='response')
     list_of_urls = ""
     for url in urls_to_blacklist:
         list_of_urls += "- " + url + "\n"
@@ -213,7 +217,7 @@ def unblacklist_url(url):
 
     data = {"blacklistUrls": urls_to_unblacklist}
     json_data = json.dumps(data)
-    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS)
+    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='response')
     list_of_urls = ""
     for url in urls_to_unblacklist:
         list_of_urls += "- " + url + "\n"
@@ -227,7 +231,7 @@ def blacklist_ip(ip):
     cmd_url = "/security/advanced/blacklistUrls?action=ADD_TO_LIST"
     data = {"blacklistUrls": ips_to_blacklist}
     json_data = json.dumps(data)
-    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS)
+    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='response')
     list_of_ips = ""
     for ip in ips_to_blacklist:
         list_of_ips += "- " + ip + "\n"
@@ -251,7 +255,7 @@ def unblacklist_ip(ip):
         raise Exception("Given IP addresses are not blacklisted.")
     data = {"blacklistUrls": ips_to_unblacklist}
     json_data = json.dumps(data)
-    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS)
+    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='response')
     list_of_ips = ""
     for ip in ips_to_unblacklist:
         list_of_ips += "- " + ip + "\n"
@@ -613,12 +617,11 @@ def category_add(category_id, data, retaining_parent_category_data, data_type):
         if category_data.get("description"):  # Custom might not have description
             context["Description"] = category_data["description"]
         ec = {"Zscaler.Category(val.ID && val.ID === obj.ID)": context}
-        added_data = ""
-        for item in data_list:
-            added_data += f"- {item}\n"
 
-        hr = f"Added the following {data_type.upper()} addresses to category {category_id}:\n{added_data}"
-
+        added_data = "\n".join(f"- {item}" for item in data_list) + \
+            "\n".join(f"- {item}" for item in retaining_parent_category_data_list)
+        hr = (f"Added the following {data_type.upper()}, retaining-parent-category-{data_type} "
+              f"addresses to category {category_id}:\n{added_data}\n")
         entry = {
             "Type": entryTypes["note"],
             "Contents": category_data,
@@ -756,6 +759,8 @@ def get_categories_command(args):
         }
         if raw_category.get("urls"):
             category["URL"] = raw_category["urls"]
+        if raw_category.get("dbCategorizedUrls"):
+            category["RetainingParentCategoryURL"] = raw_category["dbCategorizedUrls"]
         if "description" in raw_category:
             category["Description"] = raw_category["description"]
         if "configuredName" in raw_category:
@@ -763,7 +768,7 @@ def get_categories_command(args):
         categories.append(category)
     ec = {"Zscaler.Category(val.ID && val.ID === obj.ID)": categories}
     if display_urls and not ids_and_names_only:
-        headers = ["ID", "Description", "URL", "CustomCategory", "Name"]
+        headers = ["ID", "Description", "URL", "RetainingParentCategoryURL", "CustomCategory", "Name"]
     else:
         headers = ["ID", "Description", "CustomCategory", "Name"]
     title = "Zscaler Categories"
@@ -888,7 +893,7 @@ def logout_command():
         )
     try:
         DEFAULT_HEADERS["cookie"] = session_id
-        raw_res = logout().json()
+        raw_res = logout()
     except AuthorizationError:
         return CommandResults(
             readable_output="API session is not authenticated. No action was performed."
@@ -900,7 +905,7 @@ def logout_command():
 
 
 def activate_command():
-    raw_res = activate_changes().json()
+    raw_res = activate_changes()
     return CommandResults(
         readable_output="Changes have been activated successfully.",
         raw_response=raw_res,
@@ -1301,6 +1306,9 @@ def delete_ip_destination_groups(args: dict):
 def main():  # pragma: no cover
     command = demisto.command()
 
+    add_sensitive_log_strs(USERNAME)
+    add_sensitive_log_strs(PASSWORD)
+
     demisto.debug(f"command is {command}")
     args = demisto.args()
     if command == "zscaler-login":
@@ -1308,8 +1316,8 @@ def main():  # pragma: no cover
     elif command == "zscaler-logout":
         return_results(logout_command())
     else:
-        login()
         try:
+            login()
             if command == "test-module":
                 return_results(test_module())
             elif command == "url":
@@ -1378,7 +1386,6 @@ def main():  # pragma: no cover
                 return_results(delete_ip_destination_groups(demisto.args()))
         except Exception as e:
             return_error(f"Failed to execute {command} command. Error: {str(e)}")
-            raise
         finally:
             try:
                 # activate changes only when required
@@ -1390,7 +1397,7 @@ def main():  # pragma: no cover
                 if demisto.params().get("auto_logout"):
                     logout()
             except Exception as err:
-                demisto.info("Zscaler error: " + str(err))
+                return_error("Zscaler error: " + str(err))
 
 
 # python2 uses __builtin__ python3 uses builtins

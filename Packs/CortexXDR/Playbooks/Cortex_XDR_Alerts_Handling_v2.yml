@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Cortex XDR Alerts Handling v2
-description: "This playbook is used to loop over every alert in a Cortex XDR incident. \nSupported alert categories:\n- Malware\n- Port Scan\n- Cloud Cryptojacking\n- Cloud Token Theft\n- RDP Brute-Force\n- First SSO Access\n- Cloud IAM User Access Investigation\n- Identity Analytics"
+description: "This playbook is used to loop over every alert in a Cortex XDR incident. \nSupported alert categories:\n- Malware\n- Port Scan\n- Cloud Cryptojacking\n- Cloud Token Theft\n- RDP Brute-Force\n- First SSO Access\n- Cloud IAM User Access Investigation\n- Identity Analytics\n- Malicious Pod."
 starttaskid: "0"
 tasks:
   "0":
@@ -93,7 +93,7 @@ tasks:
               simple: Malware
     - label: Port Scan
       condition:
-      - - operator: isEqualString
+      - - operator: containsString
           left:
             value:
               complex:
@@ -149,6 +149,15 @@ tasks:
           right:
             value:
               simple: Cloud Audit Log
+        - operator: isEqualString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.module_id
+            iscontext: true
+          right:
+            value:
+              simple: Cryptominers Protection
+          ignorecase: true
     - label: RDP Brute-Force
       condition:
       - - operator: containsGeneral
@@ -764,6 +773,8 @@ tasks:
       - "17"
       IAM User Access:
       - "15"
+      Malicious Pod:
+      - "23"
       Token Theft:
       - "16"
     separatecontext: false
@@ -980,6 +991,134 @@ tasks:
           right:
             value:
               simple: An identity performed a suspicious download of multiple cloud storage object
+    - label: Malicious Pod
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Cryptominers Protection - 2736470759
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Cryptominers Protection - 3395838097
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Cryptominers Protection - 4056473708
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Cryptominers Protection - 3906076747
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Cryptominers Protection - 1696441024
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Cryptominers Protection - 15999229
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Cryptominers Protection - 624304616
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Cryptominers Protection - 1099928083
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Cryptominers Protection - 779228750
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Cryptominers Protection - 807956875
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Cryptominers Protection - 3223457282
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Cryptominers Protection - 17641322
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Cryptominers Protection - 2736470759
+          ignorecase: true
+      - - operator: containsString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.agent_device_domain
+            iscontext: true
+          right:
+            value:
+              simple: compute
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -1825,11 +1964,84 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: ce90ccfb-1742-4360-8ec4-90365ea2c191
+    type: playbook
+    task:
+      id: ce90ccfb-1742-4360-8ec4-90365ea2c191
+      version: -1
+      name: Cortex XDR - Malicious Pod Response - Agent
+      description: "This playbook ensures a swift and effective response to malicious activities within Kubernetes environments, leveraging cloud-native tools to maintain cluster security and integrity.\n\nThe playbook is designed to handle agent-generated alerts due to malicious activities within Kubernetes (K8S) pods, such as mining activities, which requires immediate action. The playbook also addresses scenarios where the malicious pod is killed, but the malicious K8S workload repeatedly creates new pods.\n\nKey Features:\n\n1. Trigger: The playbook is activated when an agent-based mining alert is detected within a Kubernetes pod.\n2. AWS Function Integration: Utilizes an AWS Lambda function to facilitate rapid response actions.\n3. K8S Environment Remediation: \n    - Pod Termination: The playbook includes steps to terminate the affected pod within the K8S environment safely.\n    - Workload Suspension: If necessary, the playbook can be escalated to suspend the entire workload associated with the mining activity.\n\nWorkflow:\n\n1. Alert Detection: The playbook begins with the monitoring agent detecting a mining alert within a Kubernetes pod.\n2. Alert Validation: Validates the alert to ensure it is not a false positive.\n3. Response Decision: \n    - Pod Termination: If the mining activity is isolated to a single pod, the AWS Lambda function is invoked to terminate the affected pod within the K8S environment.\n    - Workload Suspension: If the mining activity is widespread or poses a significant threat, the AWS Lambda function suspends the entire workload within the K8S environment.\n4. Cleanup: Initiates a complete removal of all objects created for the Lambda execution for security and hardening purposes."
+      playbookName: Cortex XDR - Malicious Pod Response - Agent
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      AlerID:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.name
+                iscontext: true
+              right:
+                value:
+                  simple: Cryptominers Protection
+              ignorecase: true
+          accessor: alert_id
+      ClusterName:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          accessor: cluster_name
+          transformers:
+          - operator: uniq
+      Region:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          accessor: agent_device_domain
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: .
+              fields:
+                value:
+                  simple: "1"
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -3260,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "12_15_IAM User Access": 0.74,
-      "12_16_Token Theft": 0.58,
+      "12_15_IAM User Access": 0.84,
+      "12_16_Token Theft": 0.65,
+      "12_17_Data Exfiltration": 0.9,
       "1_11_Cloud": 0.9,
       "1_14_First SSO Access": 0.86,
       "1_18_ Remote PsExec with LOLBIN command": 0.67,
@@ -1841,8 +2053,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 925,
-        "width": 5450,
-        "x": -2840,
+        "width": 5870,
+        "x": -3260,
         "y": 70
       }
     }

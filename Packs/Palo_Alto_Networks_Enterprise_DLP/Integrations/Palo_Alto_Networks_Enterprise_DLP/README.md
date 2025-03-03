@@ -6,27 +6,22 @@ Go to the `Settings` tab on the DLP web interface.
 Choose `Alerts` on the left menu. Follow all the steps under `Setup Instructions`.
 Make sure the toggle at the bottom is switched on.
 
-## Configure Palo Alto Networks Enterprise DLP on Cortex XSOAR
+## Configure Palo Alto Networks Enterprise DLP in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Palo Alto Networks Enterprise DLP.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Access Token | Access token generated in the Enterprise DLP UI | True |
-    | Refresh Token | Refresh token generated in the Enterprise DLP UI | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Long running instance |  | False |
-    | DLP Regions |  | False |
-    | Data profiles to allow exemption | A comma-separated list of data profile names to request an exemption. Use "\*" to allow everything. | False |
-    | Bot Message | The message to send to the user to ask for feedback. | False |
-    | Fetch incidents |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Access Token | Access token generated in the Enterprise DLP UI | True |
+| Refresh Token | Refresh token generated in the Enterprise DLP UI | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Long running instance |  | False |
+| DLP Regions |  | False |
+| Data profiles to allow exemption | A comma-separated list of data profile names to request an exemption. Use "\*" to allow everything. | False |
+| Bot Message | The message to send to the user to ask for feedback. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### pan-dlp-get-report
 ***

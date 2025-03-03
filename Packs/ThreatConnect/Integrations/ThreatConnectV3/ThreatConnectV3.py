@@ -60,14 +60,14 @@ class Client(BaseClient):
         headers = self.create_header(url_suffix, method)
         if content_type:
             headers['Content-Type'] = content_type
-        response = self._http_request(method=method, url_suffix=url_suffix, data=payload, resp_type=responseType,  # type: ignore
+        response = self._http_request(method=method.value, url_suffix=url_suffix, data=payload, resp_type=responseType,
                                       params=params,
                                       headers=headers)
         return response
 
     def create_header(self, url_suffix: str, method: Method) -> dict:
         timestamp = round(time.time())
-        to_sign = f'{url_suffix}:{method}:{timestamp}'
+        to_sign = f'{url_suffix}:{method.value}:{timestamp}'
         hash = base64.b64encode(
             hmac.new(self.api_secret.encode('utf8'), to_sign.encode('utf8'), hashlib.sha256).digest()).decode()
         return {'Authorization': f'TC {self.api_id}:{hash}', 'Timestamp': str(timestamp),
@@ -158,7 +158,7 @@ def create_context(indicators, include_dbot_score=False, fields_to_return: list 
         # if there is more than one indicator results - take the one with the highest score
         if include_dbot_score:
             # see explanation in issue #42224
-            keys = (value,) if indicator_type != 'file' else filter(None, (md5, sha1, sha256))
+            keys = (value,) if indicator_type != 'file' else filter(None, (md5, sha1, sha256))  # type: ignore[var-annotated]
 
             old_val = indicators_dbot_score.get(value)
             if old_val and old_val['Score'] < dbot_score:
@@ -728,7 +728,7 @@ def list_groups(client: Client, args: dict, group_id: str = '', from_date: str =
         from_date = f' AND dateAdded > "{from_date}" '
         tql_prefix = '?tql='
     if group_type:
-        if type(group_type) == list:
+        if type(group_type) is list:
             group_type = f' AND ({create_or_query(", ".join(group_type), "typeName")})'
         else:
             group_type = f' AND typeName EQ "{group_type}"'

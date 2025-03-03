@@ -41,7 +41,7 @@ SESSION_STATE = 'session_state'
 # Deprecated, prefer using AZURE_CLOUDS
 TOKEN_RETRIEVAL_ENDPOINTS = {
     'com': 'https://login.microsoftonline.com',
-    'gcc': 'https://login.microsoftonline.us',
+    'gcc': 'https://login.microsoftonline.com',
     'gcc-high': 'https://login.microsoftonline.us',
     'dod': 'https://login.microsoftonline.us',
     'de': 'https://login.microsoftonline.de',
@@ -90,7 +90,7 @@ MICROSOFT_DEFENDER_FOR_ENDPOINT_API = {
     "geo-eu": "https://api-eu.securitycenter.microsoft.com",
     "geo-uk": "https://api-uk.securitycenter.microsoft.com",
     "gcc": "https://api-gcc.securitycenter.microsoft.us",
-    "gcc-high": "https://api-gcc.securitycenter.microsoft.us",
+    "gcc-high": "https://api-gov.securitycenter.microsoft.us",
     "dod": "https://api-gov.securitycenter.microsoft.us",
 }
 
@@ -121,7 +121,7 @@ MICROSOFT_DEFENDER_FOR_ENDPOINT_APT_SERVICE_ENDPOINTS = {
     'geo-us': 'https://securitycenter.onmicrosoft.com',
     'geo-eu': 'https://securitycenter.onmicrosoft.com',
     'geo-uk': 'https://securitycenter.onmicrosoft.com',
-    'gcc': 'https://securitycenter.onmicrosoft.us',
+    'gcc': 'https://securitycenter.onmicrosoft.com',
     'gcc-high': 'https://securitycenter.onmicrosoft.us',
     'dod': 'https://securitycenter.onmicrosoft.us',
 }
@@ -141,7 +141,7 @@ MICROSOFT_DEFENDER_FOR_APPLICATION_TYPE = {
 
 MICROSOFT_DEFENDER_FOR_APPLICATION_TOKEN_RETRIEVAL_ENDPOINTS = {
     'com': 'https://login.microsoftonline.com',
-    'gcc': 'https://login.microsoftonline.us',
+    'gcc': 'https://login.microsoftonline.com',
     'gcc-high': 'https://login.microsoftonline.us',
 }
 
@@ -185,7 +185,8 @@ class AzureCloudEndpoints:  # pylint: disable=too-few-public-methods,too-many-in
                  synapse_analytics_resource_id=None,
                  attestation_resource_id=None,
                  portal=None,
-                 keyvault=None):
+                 keyvault=None,
+                 exchange_online=None):
         # Attribute names are significant. They are used when storing/retrieving clouds from config
         self.management = management
         self.resource_manager = resource_manager
@@ -207,6 +208,7 @@ class AzureCloudEndpoints:  # pylint: disable=too-few-public-methods,too-many-in
         self.attestation_resource_id = attestation_resource_id
         self.portal = portal
         self.keyvault = keyvault
+        self.exchange_online = exchange_online
 
     def has_endpoint_set(self, endpoint_name):
         try:
@@ -304,6 +306,7 @@ AZURE_WORLDWIDE_CLOUD = AzureCloud(
         attestation_resource_id='https://attest.azure.net',
         portal='https://portal.azure.com',
         keyvault='https://vault.azure.net',
+        exchange_online='https://outlook.office365.com'
     ),
     suffixes=AzureCloudSuffixes(
         storage_endpoint='core.windows.net',
@@ -330,7 +333,7 @@ AZURE_US_GCC_CLOUD = AzureCloud(
         sql_management='https://management.core.usgovcloudapi.net:8443/',
         batch_resource_id='https://batch.core.usgovcloudapi.net/',
         gallery='https://gallery.usgovcloudapi.net/',
-        active_directory='https://login.microsoftonline.us',
+        active_directory='https://login.microsoftonline.com',
         active_directory_resource_id='https://management.core.usgovcloudapi.net/',
         active_directory_graph_resource_id='https://graph.windows.net/',
         microsoft_graph_resource_id='https://graph.microsoft.us/',
@@ -343,6 +346,7 @@ AZURE_US_GCC_CLOUD = AzureCloud(
         synapse_analytics_resource_id='https://dev.azuresynapse.usgovcloudapi.net',
         portal='https://portal.azure.us',
         keyvault='https://vault.usgovcloudapi.net',
+        exchange_online='https://outlook.office365.com'
     ),
     suffixes=AzureCloudSuffixes(
         storage_endpoint='core.usgovcloudapi.net',
@@ -379,6 +383,7 @@ AZURE_US_GCC_HIGH_CLOUD = AzureCloud(
         synapse_analytics_resource_id='https://dev.azuresynapse.usgovcloudapi.net',
         portal='https://portal.azure.us',
         keyvault='https://vault.usgovcloudapi.net',
+        exchange_online='https://outlook.office365.us'
     ),
     suffixes=AzureCloudSuffixes(
         storage_endpoint='core.usgovcloudapi.net',
@@ -415,6 +420,8 @@ AZURE_DOD_CLOUD = AzureCloud(
         synapse_analytics_resource_id='https://dev.azuresynapse.usgovcloudapi.net',
         portal='https://portal.azure.us',
         keyvault='https://vault.usgovcloudapi.net',
+        exchange_online='https://outlook-dod.office365.us'
+
     ),
     suffixes=AzureCloudSuffixes(
         storage_endpoint='core.usgovcloudapi.net',
@@ -447,7 +454,7 @@ AZURE_GERMAN_CLOUD = AzureCloud(
         media_resource_id='https://rest.media.cloudapi.de',
         ossrdbms_resource_id='https://ossrdbms-aad.database.cloudapi.de',
         portal='https://portal.microsoftazure.de',
-        keyvault='https://vault.microsoftazure.de'
+        keyvault='https://vault.microsoftazure.de',
     ),
     suffixes=AzureCloudSuffixes(
         storage_endpoint='core.cloudapi.de',
@@ -481,6 +488,7 @@ AZURE_CHINA_CLOUD = AzureCloud(
         synapse_analytics_resource_id='https://dev.azuresynapse.azure.cn',
         portal='https://portal.azure.cn',
         keyvault='https://vault.azure.cn',
+        exchange_online='https://partner.outlook.cn'
     ),
     suffixes=AzureCloudSuffixes(
         storage_endpoint='core.chinacloudapi.cn',
@@ -617,10 +625,11 @@ def get_azure_cloud(params, integration_name):
                                                  'active_directory': params.get('azure_ad_endpoint')
                                                  or 'https://login.microsoftonline.com'
                                              })
-        # in multiple Graph integrations, the url is called 'url' instead of 'server_url' and the default url is different.
-        if 'url' in params:
+        # in multiple Graph integrations, the url is called 'url' or 'host' instead of 'server_url' and the default url is
+        # different.
+        if 'url' in params or 'host' in params:
             return create_custom_azure_cloud(integration_name, defaults=AZURE_WORLDWIDE_CLOUD,
-                                             endpoints={'microsoft_graph_resource_id': params.get('url')
+                                             endpoints={'microsoft_graph_resource_id': params.get('url') or params.get('host')
                                                         or 'https://graph.microsoft.com'})
 
     # There is no need for backward compatibility support, as the integration didn't support it to begin with.
@@ -684,6 +693,7 @@ class MicrosoftClient(BaseClient):
             command_prefix: The prefix for all integration commands.
         """
         self.command_prefix = command_prefix
+        demisto.debug(f'Initializing MicrosoftClient with: {endpoint=} | {azure_cloud.abbreviation}')
         if endpoint != "__NA__":
             # Backward compatible.
             self.azure_cloud = AZURE_CLOUDS.get(endpoint, AZURE_WORLDWIDE_CLOUD)
@@ -1496,8 +1506,8 @@ def generate_login_url(client: MicrosoftClient,
                                f"Missing:{','.join(missing)}")
 
     login_url = urljoin(login_url, f'{client.tenant_id}/oauth2/v2.0/authorize?'
-                                   f'response_type=code&scope=offline_access%20{client.scope.replace(" ", "%20")}'
-                                   f'&client_id={client.client_id}&redirect_uri={client.redirect_uri}')
+                        f'response_type=code&scope=offline_access%20{client.scope.replace(" ", "%20")}'
+                        f'&client_id={client.client_id}&redirect_uri={client.redirect_uri}')
 
     result_msg = f"""### Authorization instructions
 1. Click on the [login URL]({login_url}) to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
@@ -1505,7 +1515,7 @@ You will be automatically redirected to a link with the following structure:
 ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
 2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
 and paste it in your instance configuration under the **Authorization code** parameter.
-    """
+ """
     return CommandResults(readable_output=result_msg)
 
 

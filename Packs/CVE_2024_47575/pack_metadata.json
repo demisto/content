@@ -1,0 +1,28 @@
+{
+    "name": "CVE-2024-47575 - FortiManager Authentication Bypass",
+    "description": "This pack handles CVE-2024-47575 - FortiManager Authentication Bypass vulnerability",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Case Management"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "zero-day",
+        "0-day",
+        "zero day",
+        "Fortinet",
+        "FortiManager",
+        "CVE-2024-47575",
+        "47575",
+        "FortiJump"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

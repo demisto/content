@@ -2,21 +2,21 @@ import demistomock as demisto
 import TimeComponents
 import json
 import freezegun
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 
 class TestTimeComponents:
     @freezegun.freeze_time('2022-01-23 12:34:56')
     def test_real_time(self, mocker, monkeypatch):
-        now = datetime(2022, 1, 23, 12, 34, 56, tzinfo=timezone.utc)
-        assert now == TimeComponents.parse_date_time_value(None).astimezone(timezone.utc)
+        now = datetime(2022, 1, 23, 12, 34, 56, tzinfo=UTC)
+        assert now == TimeComponents.parse_date_time_value(None).astimezone(UTC)
 
-        now = datetime(2022, 1, 23, 12, 34, 56, tzinfo=timezone.utc)
-        assert now == TimeComponents.parse_date_time_value('now').astimezone(timezone.utc)
+        now = datetime(2022, 1, 23, 12, 34, 56, tzinfo=UTC)
+        assert now == TimeComponents.parse_date_time_value('now').astimezone(UTC)
 
     @freezegun.freeze_time('2022-01-23 12:34:56')
     def test_main(self, mocker, monkeypatch):
-        with open('./test_data/test.json', 'r') as f:
+        with open('./test_data/test.json') as f:
             test_list = json.load(f)
 
         for test_case in test_list:

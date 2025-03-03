@@ -1,6 +1,9 @@
 [file:SX_-_PC_-_PingCastle_Report.yml]
-ignore=PB115
+ignore=PB115,GR107
 
 [file:PingCastle_image.png]
 ignore=IM111
 
+# GR103 is temporary, see CIAC-11656
+[file:incidenttype-PingCastle.json]
+ignore=GR103

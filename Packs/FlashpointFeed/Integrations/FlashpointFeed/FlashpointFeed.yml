@@ -116,8 +116,9 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: Flashpoint Feed Integration allows importing indicators of compromise that occur in the context of an event on the Flashpoint platform which contains finished intelligence reports data, data from illicit forums, marketplaces, chat services, blogs, paste sites, technical data, card shops, and vulnerabilities. The indicators of compromise are ingested as indicators on the Cortex XSOAR and displayed in the War Room using a command.
-display: Flashpoint Feed
+deprecated: true
+description: Deprecated. Use Flashpoint Ignite Feed instead.
+display: Flashpoint Feed (Deprecated)
 name: FlashpointFeed
 script:
   commands:
@@ -135,7 +136,7 @@ script:
       name: types
     description: Retrieves indicators from the Flashpoint API. It displays the content of the fetch-indicators command.
     name: flashpoint-get-indicators
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.12.8.1983910
   feed: true
   runonce: false
   script: '-'

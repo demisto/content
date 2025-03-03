@@ -2,7 +2,7 @@
     "name": "SecBI",
     "description": "A threat, intelligence, and investigation platform, enabled by automation of detection and investigation, including remediation and prevention policy enforcements on all integrated appliances.",
     "support": "partner",
-    "currentVersion": "1.0.5",
+    "currentVersion": "1.0.7",
     "author": "SecBI",
     "url": "https://www.secbi.com",
     "email": "support@secbi.com",

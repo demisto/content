@@ -202,7 +202,7 @@ script:
     - contextPath: Kubernetes.K8sService.result
       description: The created, patched, or otherwise present Service object. Will be empty in the case of a deletion.
       type: unknown
-  dockerimage: demisto/ansible-runner:1.0.0.89756
+  dockerimage: demisto/ansible-runner:1.0.0.2024530
   script: ''
   subtype: python3
   type: python

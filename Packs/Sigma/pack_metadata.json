@@ -1,0 +1,55 @@
+{
+    "name": "Sigma",
+    "description": "This pack contains all needed objects to import and manage Sigma rules within Cortex TIM",
+    "support": "xsoar",
+    "currentVersion": "1.0.2",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "Sigma"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "dependencies": {
+        "FeedMitreAttackv2": {
+            "mandatory": true,
+            "display_name": "MITRE ATT&CK"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "SplunkPy": {
+            "mandatory": false,
+            "display_name": "Splunk"
+        },
+        "QRadar": {
+            "mandatory": false,
+            "display_name": "Qradar"
+        },
+        "SentinelOne": {
+            "mandatory": false,
+            "display_name": "Sentinel One"
+        },
+        "CarbonBlackDefense": {
+            "mandatory": false,
+            "display_name": "Carbon Black"
+        },
+        "CortexXDR": {
+            "mandatory": false,
+            "display_name": "Cortex XDR"
+        },
+        "Elasticsearch": {
+            "mandatory": false,
+            "display_name": "Elasticsearch"
+        }
+    }
+}

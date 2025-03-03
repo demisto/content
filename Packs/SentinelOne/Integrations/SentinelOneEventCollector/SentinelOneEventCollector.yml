@@ -54,7 +54,7 @@ configuration:
   section: Collect
   required: false
 description: This integration fetches activities, threats, and alerts from SentinelOne.
-display: SentinelOne Event Collector
+display: SentinelOne Activity and Alerts
 name: SentinelOneEventCollector
 supportlevelheader: xsoar
 script:
@@ -72,7 +72,7 @@ script:
       name: limit
     description: Gets events from SentinelOne.
     name: sentinelone-get-events
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.11.10.111526
   isfetchevents: true
   script: '-'
   subtype: python3

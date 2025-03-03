@@ -25,7 +25,7 @@ jobs:
           key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
       - name: Install Python Dependencies
         run: |
-          poetry install --with ci
+          poetry install --with github-actions
       - name: Run Linking pr to Jira Script
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -37,5 +37,5 @@ jobs:
           INSTANCE_URL: ${{ secrets.GOLD_SERVER_URL_NG }}
         run: |
           echo "Checking for related Jira issues to PR: $PR_NUMBER"
-          cd Utils/github_workflow_scripts/jira_integration_scripts
+          cd .github/github_workflow_scripts/jira_integration_scripts
           poetry run python ./link_pr_to_jira_issue.py --url "$INSTANCE_URL" --pr_num "$PR_NUMBER" --pr_link "$PR_LINK" --pr_title "$PR_TITLE" --pr_body "$PR_BODY" --is_merged --username $USERNAME --password $PASSWORD

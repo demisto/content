@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "**Important Note**\n\n From version 1.0.1, the dataset name referenced in the modeling rule will be rsa_securid_raw.\n\n Change your broker vm configurations accordingly (for Product enter \"SecurID\")."
+}

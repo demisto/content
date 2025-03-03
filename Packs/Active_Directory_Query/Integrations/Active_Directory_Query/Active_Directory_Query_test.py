@@ -79,7 +79,7 @@ def ssl_bad_socket_server(port):
     # cert and keyfile generated with
     # openssl req -x509 -nodes -days 3000 -newkey rsa:2048 -keyout key.pem -out cert.pem
     try:
-        context.load_cert_chain('cert.pem', 'key.pem')
+        context.load_cert_chain('test_data/cert.pem', 'test_data/key.pem')
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0) as sock:
             sock.bind(('127.0.0.1', port))
             sock.listen(5)
@@ -131,7 +131,7 @@ def test_faulty_server(mocker):
 
 def test_ssl_custom_cert(mocker, request):
     ENV_KEY = 'SSL_CERT_FILE'
-    os.environ[ENV_KEY] = 'cert.pem'
+    os.environ[ENV_KEY] = 'test_data/cert.pem'
 
     def cleanup():
         os.environ.pop(ENV_KEY)
@@ -826,7 +826,8 @@ def test_test_credentials_command(mocker):
 
     with patch("Active_Directory_Query.create_connection", side_effect=mock_create_connection), \
             patch("Active_Directory_Query.Connection.unbind", side_effect=MockConnection.unbind):
-        command_results = Active_Directory_Query.test_credentials_command(BASE_TEST_PARAMS['server_ip'], ntlm_connection='true')
+        command_results = Active_Directory_Query.test_credentials_command(
+            BASE_TEST_PARAMS['server_ip'], "server", ntlm_connection='true', auto_bind="auto_bind")
         assert command_results.readable_output == 'Credential test with username username_test_credentials succeeded.'
 
 
@@ -856,3 +857,53 @@ def test_modify_user_ou(mocker, dn, expected):
     connection_mocker = mocker.patch.object(Active_Directory_Query.connection, 'modify_dn', return_value=True)
     Active_Directory_Query.modify_user_ou(dn, new_ou)
     assert connection_mocker.call_args[0][1] == expected
+
+
+def test_search_users_with_msDSUserAccountControlComputed(mocker):
+    """
+    Given:
+        The 'msDSUserAccountControlComputed' was returned.
+    When:
+        Run the 'ad-get-user' command
+    Then:
+        The user_account_to_boolean_fields_msDS_user_account_control_computed was called.
+    """
+
+    import Active_Directory_Query
+
+    class EntryMocker:
+        def entry_to_json(self):
+            return (
+                '{"attributes": {"displayName": [], "mail": [], "manager": [], "memberOf": ["memberOf"], '
+                '"name": ["Guest"], "sAMAccountName": ["Guest"], "userAccountControl": [0], \
+                   "msDS-User-Account-Control-Computed": [0]},"dn": "test_dn"}'
+            )
+
+    class ConnectionMocker:
+        entries = [EntryMocker()]
+        result = {"controls": {"": {"value": {"cookie": b"<cookie>"}}}}
+
+        def search(self, *args, **kwargs):
+            time.sleep(1)
+
+    mocker.patch.object(demisto, "args", return_value={"page-size": "1"})
+    mocker.patch.object(demisto, "results")
+    mocker_msDSUserAccountControlComputed = mocker.patch.object(
+        Active_Directory_Query,
+        "user_account_to_boolean_fields_msDS_user_account_control_computed",
+        return_value={"PASSWORD_EXPIRED": True, "LOCKOUT": True},
+    )
+
+    Active_Directory_Query.connection = ConnectionMocker()
+
+    Active_Directory_Query.search_users("dc", 1)
+    mocker_msDSUserAccountControlComputed.assert_called_once()
+    assert "msDS-User-Account-Control-Computed" in demisto.results.call_args[0][0][
+        "Contents"
+    ][0].get("attributes")
+    assert (
+        demisto.results.call_args[0][0]["EntryContext"]
+        .get("ActiveDirectory.Users(obj.dn == val.dn)", {})[0]
+        .get("userAccountControlFields")
+        .get("PASSWORD_EXPIRED") is True
+    )

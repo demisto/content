@@ -5,7 +5,8 @@ from CommonServerPython import *  # noqa: F401
 
 import re
 import traceback
-from typing import Any, Callable, Dict, List, Tuple
+from typing import Any
+from collections.abc import Callable
 from urllib.parse import parse_qsl
 
 import ibm_db
@@ -87,7 +88,7 @@ class Client:
         self.connection = self._connect()
 
     @staticmethod
-    def _parse_connect_parameters(connect_parameters: str) -> Dict:
+    def _parse_connect_parameters(connect_parameters: str) -> dict:
         """
         Parses a string of the form key1=value1&key2=value2 etc.
         into a dict with matching keys and values.
@@ -100,7 +101,7 @@ class Client:
         """
 
         connect_parameters_tuple_list = parse_qsl(connect_parameters, keep_blank_values=True)
-        connect_parameters_dict = dict()
+        connect_parameters_dict = {}
         for key, value in connect_parameters_tuple_list:
             connect_parameters_dict[key] = value
         return connect_parameters_dict
@@ -114,7 +115,7 @@ class Client:
             string containing all of the required parameters
         """
 
-        conn_string = ("DRIVER={0};DATABASE={1};HOSTNAME={2};PORT={3};PROTOCOL={4};UID={5};PWD={6};").format(
+        conn_string = ("DRIVER={};DATABASE={};HOSTNAME={};PORT={};PROTOCOL={};UID={};PWD={};").format(
             DRIVER_NAME,
             self.dbname,
             self.host,
@@ -129,12 +130,12 @@ class Client:
 
         return conn_string
 
-    def _options(self) -> Dict:
+    def _options(self) -> dict:
         """
         Map connection options with connection parameters
         `ibm_db.OPTION` will be called for every option
         """
-        options = dict()
+        options = {}
 
         for key, val in self.connect_parameters.items():
             option: str = key.upper()
@@ -215,7 +216,7 @@ class Client:
 
         return stmt
 
-    def execute_query(self, query: str, bind_vars: Any) -> Tuple[List, List]:
+    def execute_query(self, query: str, bind_vars: Any) -> tuple[list, list]:
         """
         Execute query at DB2 Database via connection
 
@@ -227,8 +228,8 @@ class Client:
         Returns:
             Tuple[results(List), headers(List)]
         """
-        results = list()
-        headers = list()
+        results = []
+        headers = []
         status = False
 
         stmt = self._prepare_statement(query, bind_vars)
@@ -295,7 +296,7 @@ def bind_variables(names: str, values: str) -> Any:
 
     # assuming the order of values is correct
     if values_list and not names_list:
-        return [val for val in values_list]
+        return list(values_list)
     elif len(names_list) == len(values_list):
         return dict(zip(names_list, values_list))
     else:
@@ -305,7 +306,7 @@ def bind_variables(names: str, values: str) -> Any:
 """ COMMAND FUNCTIONS """
 
 
-def query_command(client: Client, args: Dict, *_) -> CommandResults:
+def query_command(client: Client, args: dict, *_) -> CommandResults:
     """
     Executes the db2 query with the connection that was configured in the Client
 
@@ -386,7 +387,7 @@ def main():  # pragma: no cover
             use_persistent=use_persistent,
         )
 
-        commands: Dict[str, Callable] = {
+        commands: dict[str, Callable] = {
             "test-module": test_module,
             "db2-query": query_command,
         }

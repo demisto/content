@@ -2,7 +2,7 @@
     "name": "NCSC Cyber Asssessment Framework",
     "description": "This pack contains an incident type and relevant fields to initiate a self-assessment against the National Cyber Security Centre's Cyber Assessment Framework.\n\nAll assessment questions are sent via e-mail and the responses also sent via e-mail. The assessments can also be answered within the Cortex XSOAR platform.",
     "support": "community",
-    "currentVersion": "1.1.4",
+    "currentVersion": "1.1.8",
     "author": "Adam Burt",
     "url": "",
     "email": "",

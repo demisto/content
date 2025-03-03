@@ -35,10 +35,10 @@ def test_get_account_ids(mocker):
         }
     ]
 
-    account_ids = get_account_ids('instance_name')
+    account_ids = get_account_ids('instance_name', 2)
 
     assert account_ids == (["1234", "5678"], "human_readable")
-    mock_execute_command.assert_called_with("aws-org-account-list", {'using': 'instance_name'})
+    mock_execute_command.assert_called_with("aws-org-account-list", {'limit': 2, 'using': 'instance_name'})
 
 
 def test_set_instance(mocker):
@@ -165,4 +165,4 @@ def test_errors():
 
     with pytest.raises(DemistoException, match="Unexpected output from 'aws-org-account-list':\nNone"):
         sync.demisto.executeCommand = lambda *_: {}['key']
-        sync.get_account_ids('')
+        sync.get_account_ids('', 0)

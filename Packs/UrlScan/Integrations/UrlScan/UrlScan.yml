@@ -38,6 +38,35 @@ configuration:
   required: true
   type: 15
   section: Collect
+- additionalinfo: Specify which country the scan should be performed 
+  display: Scan Country
+  name: country
+  options:
+    - "AT - Austria"
+    - "AU - Australia"
+    - "CA - Canada"
+    - "CH - Switzerland"
+    - "DE - Germany"
+    - "DK - Denmark"
+    - "ES - Spain"
+    - "FI - Finland"
+    - "FR - France"
+    - "GB - United Kingdom"
+    - "IL - Israel"
+    - "IS - Iceland"
+    - "IT - Italy"
+    - "JP - Japan"
+    - "NL - Netherlands"
+    - "NO - Norway"
+    - "NZ - New Zealand"
+    - "PL - Poland"
+    - "PT - Portugal"
+    - "SE - Sweden"
+    - "SG - Singapore"
+    - "US - United States"
+  required: false
+  type: 15
+  section: Collect
 - defaultvalue: '1'
   display: URL Threshold. Minimum number of positive results from urlscan.io to consider the URL malicious.
   name: url_threshold
@@ -461,7 +490,7 @@ script:
   script: ''
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.14.92207
+  dockerimage: demisto/python3:3.11.10.116949
 fromversion: 5.0.0
 tests:
 - urlscan_malicious_Test

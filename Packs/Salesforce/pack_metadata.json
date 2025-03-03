@@ -2,7 +2,7 @@
     "name": "Salesforce",
     "description": "CRM Services",
     "support": "xsoar",
-    "currentVersion": "2.0.23",
+    "currentVersion": "2.1.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,9 +10,13 @@
     "categories": [
         "Case Management"
     ],
-    "tags": [],
+    "tags": [
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "salesforce"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"

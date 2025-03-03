@@ -72,7 +72,7 @@ script:
       required: true
     description: Manual command to fetch events and display them.
     name: gitlab-get-events
-  dockerimage: demisto/fastapi:1.0.0.91458
+  dockerimage: demisto/fastapi:0.115.4.115067
   isfetchevents: true
   subtype: python3
 marketplaces:

@@ -1,4 +1,7 @@
 category: Vulnerability Management
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Palo Alto Networks Security Advisories
   version: -1
@@ -8,17 +11,20 @@ configuration:
   name: url
   type: 0
   required: false
+  section: Connect
 - additionalinfo: The Palo Alto Networks product name to fetch indicators for, such as "PAN-OS"
   defaultvalue: PAN-OS
   display: Fetch indicator product name
   name: fetch_product_name
   type: 0
   required: false
+  section: Collect
 - name: feed
   defaultvalue: 'true'
   display: Fetch indicators
   type: 8
   required: false
+  section: Collect
 - name: feedReputation
   display: Indicator Reputation
   type: 18
@@ -29,6 +35,7 @@ configuration:
   - Bad
   additionalinfo: Indicators from this integration instance will be marked with this reputation
   required: false
+  section: Collect
 - name: feedReliability
   display: Source Reliability
   type: 15
@@ -41,6 +48,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   additionalinfo: Reliability of the source providing the intelligence data
+  section: Collect
 - name: feedExpirationPolicy
   display: ''
   type: 17
@@ -50,24 +58,29 @@ configuration:
   - indicatorType
   - suddenDeath
   required: false
+  section: Collect
 - name: feedExpirationInterval
   display: ''
   type: 1
   required: false
+  section: Collect
 - name: feedFetchInterval
   display: Feed Fetch Interval
   type: 19
   required: false
+  section: Collect
 - name: feedBypassExclusionList
   display: Bypass exclusion list
   type: 8
   additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   required: false
+  section: Collect
 - name: feedTags
   display: Tags
   type: 0
   additionalinfo: Supports CSV values.
   required: false
+  section: Collect
 - name: tlp_color
   display: Traffic Light Protocol Color
   options:
@@ -78,6 +91,7 @@ configuration:
   type: 15
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   required: false
+  section: Collect
 description: Queries the public repository of PAN-OS CVEs.
 display: Palo Alto Networks Security Advisories (Beta)
 beta: true
@@ -136,7 +150,7 @@ script:
     - contextPath: PANSecurityAdvisory.Advisory.affected_version_list
       description: List of affected versions strings.
       type: String
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.12.8.1983910
   feed: true
   runonce: false
   script: '-'

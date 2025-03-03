@@ -44,13 +44,24 @@ jobs:
         DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
         BRANCH_NAME: ${{ github.head_ref }}
       run: |
+        LABEL_NAMES=$(echo '${{ toJson(github.event.pull_request.labels) }}' | jq -r '.[].name')
+        if echo "$LABEL_NAMES" | grep -q "Contribution"; then
+            echo "Label 'Contribution' found!"
+            export DEMISTO_SDK_XSOAR_LINTER_WARNING_ANNOTATIONS=true
+        else
+          echo "Label 'Contribution' not found."
+        fi
+
         source .venv/bin/activate
         if [[ "$BRANCH_NAME" =~ ^AUD-demisto/.* ]]; then
           echo "In docker auto update branch, pre commit on docker_autoupdate mode."
           demisto-sdk pre-commit -g --mode=docker_autoupdate --show-diff-on-failure --verbose
+        elif [[ "$BRANCH_NAME" =~ ^packwise/.* ]]; then
+          echo "In packwise branch, pre commit with ignore flag."
+          demisto-sdk pre-commit -g --mode=packwise --show-diff-on-failure --verbose
         else
           echo "Not in docker auto update branch, pre commit on CI mode."
-          demisto-sdk pre-commit -g --validate --no-secrets --show-diff-on-failure --verbose --mode=ci
+          demisto-sdk pre-commit -g --validate --show-diff-on-failure --verbose --mode=ci
         fi
 
     - name: "Check coverage.xml exists"
@@ -65,17 +76,17 @@ jobs:
       id: check-pytest-junit-exists
       uses: andstor/file-existence-action@v2
       with:
-        files: ".report_pytest.xml"
+        files: "report_pytest.xml"
 
     - name: Create pack-wise pytest report
-      run: poetry run python Utils/github_workflow_scripts/parse_junit_per_pack.py
+      run: poetry run python .github/github_workflow_scripts/parse_junit_per_pack.py
       if: |
         always() && 
         steps.check-pytest-junit-exists.outputs.files_exists == 'true' && 
         github.event.pull_request.head.repo.fork == false
 
     - name: Upload junit & pack-wise pytest report
-      uses: actions/upload-artifact@v4
+      uses: PaloAltoNetworks/upload-secure-artifact@v1.0.5
       if: |
         always() && 
         steps.check-pytest-junit-exists.outputs.files_exists == 'true' && 
@@ -84,7 +95,7 @@ jobs:
         name: pytest
         path: |
           packwise_pytest_time.csv
-          .report_pytest.xml
+          report_pytest.xml
         if-no-files-found: error
 
     - name: Pytest coverage comment
@@ -97,7 +108,7 @@ jobs:
       continue-on-error: true  # may fail on output > 65k chars
       with:
         pytest-xml-coverage-path: coverage_report/coverage.xml
-        junitxml-path: .report_pytest.xml
+        junitxml-path: report_pytest.xml
     
     - uses: actions/cache/save@v3
       if: always()

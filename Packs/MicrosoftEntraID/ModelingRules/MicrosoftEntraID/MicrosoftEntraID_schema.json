@@ -1,0 +1,324 @@
+{
+    "msft_azure_raw": {
+        "activitystatusvalue": {
+            "type": "string",
+            "is_array": false
+        },
+        "activitysubstatusvalue": {
+            "type": "string",
+            "is_array": false
+        },
+        "ALERT_NAME": {
+            "type": "string",
+            "is_array": false
+        },
+        "caller": {
+            "type": "string",
+            "is_array": false
+        },
+        "callerIpAddress": {
+            "type": "string",
+            "is_array": false
+        },
+        "category": {
+            "type": "string",
+            "is_array": false
+        },
+        "CategoryValue": {
+            "type": "string",
+            "is_array": false
+        },
+        "correlationId": {
+            "type": "string",
+            "is_array": false
+        },
+        "description": {
+            "type": "string",
+            "is_array": false
+        },
+        "durationMs": {
+            "type": "string",
+            "is_array": false
+        },
+        "eventDataId": {
+            "type": "string",
+            "is_array": false
+        },
+        "HTTPRequest": {
+            "type": "string",
+            "is_array": false
+        },
+        "identity": {
+            "type": "string",
+            "is_array": false
+        },
+        "Level": {
+            "type": "string",
+            "is_array": false
+        },
+        "level": {
+            "type": "string",
+            "is_array": false
+        },
+        "location": {
+            "type": "string",
+            "is_array": false
+        },
+        "operationName": {
+            "type": "string",
+            "is_array": false
+        },
+        "operationnamevalue": {
+            "type": "string",
+            "is_array": false
+        },
+        "properties": {
+            "type": "string",
+            "is_array": false
+        },
+        "resourceId": {
+            "type": "string",
+            "is_array": false
+        },
+        "resourceprovidervalue": {
+            "type": "string",
+            "is_array": false
+        },
+        "resultDescription": {
+            "type": "string",
+            "is_array": false
+        },
+        "resultSignature": {
+            "type": "string",
+            "is_array": false
+        },
+        "resultType": {
+            "type": "string",
+            "is_array": false
+        },
+        "ruleName": {
+            "type": "string",
+            "is_array": false
+        },
+        "SEVERITY": {
+            "type": "string",
+            "is_array": false
+        },
+        "SubscriptionId": {
+            "type": "string",
+            "is_array": false
+        },
+        "tenantId": {
+            "type": "string",
+            "is_array": false
+        }
+    },
+    "msft_azure_ad_raw": {
+        "appDisplayName": {
+            "type": "string",
+            "is_array": false
+        },
+        "appliedConditionalAccessPolicies": {
+            "type": "string",
+            "is_array": false
+        },
+        "authenticationDetails": {
+            "type": "string",
+            "is_array": false
+        },
+        "authenticationMethodsUsed": {
+            "type": "string",
+            "is_array": false
+        },
+        "authenticationProcessingDetails": {
+            "type": "string",
+            "is_array": false
+        },
+        "authenticationProtocol": {
+            "type": "string",
+            "is_array": false
+        },
+        "authenticationRequirement": {
+            "type": "string",
+            "is_array": false
+        },
+        "autonomousSystemNumber": {
+            "type": "int",
+            "is_array": false
+        },
+        "clientAppUsed": {
+            "type": "string",
+            "is_array": false
+        },
+        "clientCredentialType": {
+            "type": "string",
+            "is_array": false
+        },
+        "conditionalAccessStatus": {
+            "type": "string",
+            "is_array": false
+        },
+        "correlationId": {
+            "type": "string",
+            "is_array": false
+        },
+        "deviceDetail": {
+            "type": "string",
+            "is_array": false
+        },
+        "homeTenantId": {
+            "type": "string",
+            "is_array": false
+        },
+        "homeTenantName": {
+            "type": "string",
+            "is_array": false
+        },
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "ipAddress": {
+            "type": "string",
+            "is_array": false
+        },
+        "ipAddressFromResourceProvider": {
+            "type": "string",
+            "is_array": false
+        },
+        "networkLocationDetails": {
+            "type": "string",
+            "is_array": false
+        },
+        "operatingSystem": {
+            "type": "string",
+            "is_array": false
+        },
+        "originalRequestId": {
+            "type": "string",
+            "is_array": false
+        },
+        "ProcessingTimeInMilliseconds": {
+            "type": "string",
+            "is_array": false
+        },
+        "resourceDisplayName": {
+            "type": "string",
+            "is_array": false
+        },
+        "resourceId": {
+            "type": "string",
+            "is_array": false
+        },
+        "resourceTenantId": {
+            "type": "string",
+            "is_array": false
+        },
+        "riskDetail": {
+            "type": "string",
+            "is_array": false
+        },
+        "riskEventTypes_v2": {
+            "type": "string",
+            "is_array": false
+        },
+        "riskLevelAggregated": {
+            "type": "string",
+            "is_array": false
+        },
+        "riskLevelDuringSignIn": {
+            "type": "string",
+            "is_array": false
+        },
+        "riskState": {
+            "type": "string",
+            "is_array": false
+        },
+        "servicePrincipalName": {
+            "type": "string",
+            "is_array": false
+        },
+        "signInEventTypes": {
+            "type": "string",
+            "is_array": false
+        },
+        "status": {
+            "type": "string",
+            "is_array": false
+        },
+        "tokenIssuerType": {
+            "type": "string",
+            "is_array": false
+        },
+        "userAgent": {
+            "type": "string",
+            "is_array": false
+        },
+        "userDisplayName": {
+            "type": "string",
+            "is_array": false
+        },
+        "userId": {
+            "type": "string",
+            "is_array": false
+        },
+        "userPrincipalName": {
+            "type": "string",
+            "is_array": false
+        },
+        "userType": {
+            "type": "string",
+            "is_array": false
+        }
+    },
+    "msft_azure_ad_audit_raw": {
+        "activityDisplayName": {
+            "type": "string",
+            "is_array": false
+        },
+        "additionalDetails": {
+            "type": "string",
+            "is_array": false
+        },
+        "category": {
+            "type": "string",
+            "is_array": false
+        },
+        "correlationId": {
+            "type": "string",
+            "is_array": false
+        },
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "initiatedBy": {
+            "type": "string",
+            "is_array": false
+        },
+        "loggedByService": {
+            "type": "string",
+            "is_array": false
+        },
+        "operationType": {
+            "type": "string",
+            "is_array": false
+        },
+        "parsed_fields": {
+            "type": "string",
+            "is_array": false
+        },
+        "result": {
+            "type": "string",
+            "is_array": false
+        },
+        "resultReason": {
+            "type": "string",
+            "is_array": false
+        },
+        "targetResources": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

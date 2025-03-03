@@ -2,7 +2,7 @@
     "name": "Microsoft Graph Device Management",
     "description": "Microsoft Graph Device Management",
     "support": "xsoar",
-    "currentVersion": "1.1.28",
+    "currentVersion": "1.1.33",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

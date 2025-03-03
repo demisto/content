@@ -23,14 +23,14 @@ def internal_request(method: str, uri: str, body: dict = {}) -> dict:
     )[0]['Contents']['response']  # type: ignore
 
 
-def get_account_ids(ec2_instance_name: str | None) -> tuple[list[str], str]:
+def get_account_ids(ec2_instance_name: str | None, limit: int | None) -> tuple[list[str], str]:
     '''Get the AWS organization accounts using the `aws-org-account-list` command.
 
     Returns:
         list[str]: A list of AWS account IDs.
     '''
     try:
-        command_args = {'using': ec2_instance_name} if ec2_instance_name else {}
+        command_args = assign_params(limit=limit, using=ec2_instance_name)
         account_list_result: list[dict] = demisto.executeCommand(ACCOUNT_LIST_COMMAND, command_args)  # type: ignore
         accounts = dict_safe_get(
             account_list_result, (0, 'EntryContext', 'AWS.Organizations.Account(val.Id && val.Id == obj.Id)'), []
@@ -108,6 +108,8 @@ def update_ec2_instance(account_ids: list[str], ec2_instance_name: str) -> str:
         return f'Successfully updated ***{ec2_instance_name}*** with accounts:'
     except StopIteration:
         raise DemistoException(f'AWS - EC2 instance {ec2_instance_name!r} was not found or is not an AWS - EC2 instance.')
+    except (TypeError, KeyError) as e:
+        raise DemistoException(f'Please make sure a "Core REST API" instance is enabled.\nError: {e}')
     except Exception as e:
         raise DemistoException(f'Unexpected error while configuring AWS - EC2 instance with accounts {accounts_as_str!r}:\n{e}')
 
@@ -115,7 +117,8 @@ def update_ec2_instance(account_ids: list[str], ec2_instance_name: str) -> str:
 def main():
     try:
         args: dict = demisto.args()
-        account_ids, readable_output = get_account_ids(args.get('org_instance_name'))
+        account_ids, readable_output = get_account_ids(
+            args.get('org_instance_name'), arg_to_number(args.get('max_accounts')))
         account_ids = remove_excluded_accounts(account_ids, args.get('exclude_accounts'))
         result = update_ec2_instance(account_ids, args['ec2_instance_name'])
         return_results(CommandResults(readable_output=f'## {result}  \n---  \n{readable_output}'))

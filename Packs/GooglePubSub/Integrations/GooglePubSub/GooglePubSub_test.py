@@ -602,9 +602,7 @@ class TestCommands:
             res_msg_ids,
             res_acks,
             res_max_publish_time,
-        ) = try_pull_unique_messages(
-            client, sub_name, previous_msg_ids, last_run_time, retry_times=1
-        )
+        ) = try_pull_unique_messages(client, sub_name, previous_msg_ids, last_run_time, False, retry_times=1)
         assert debug_mock.call_count == 0
         assert res_msgs is None
         assert res_msg_ids is None
@@ -637,9 +635,7 @@ class TestCommands:
             res_msg_ids,
             res_acks,
             res_max_publish_time,
-        ) = try_pull_unique_messages(
-            client, sub_name, previous_msg_ids, last_run_time, retry_times=1
-        )
+        ) = try_pull_unique_messages(client, sub_name, previous_msg_ids, last_run_time, False, retry_times=1)
         assert debug_mock.call_count == 0
         assert res_msgs is None
         assert res_msg_ids is None
@@ -671,9 +667,7 @@ class TestCommands:
             res_msg_ids,
             res_acks,
             res_max_publish_time,
-        ) = try_pull_unique_messages(
-            client, sub_name, previous_msg_ids, last_run_time, retry_times=1
-        )
+        ) = try_pull_unique_messages(client, sub_name, previous_msg_ids, last_run_time, False, retry_times=1)
         assert not any(call.args[0].startswith('GCP_PUBSUB_MSG') for call in debug_mock.call_args_list)
         assert res_msgs == [
             {
@@ -715,9 +709,7 @@ class TestCommands:
             res_msg_ids,
             res_acks,
             res_max_publish_time,
-        ) = try_pull_unique_messages(
-            client, sub_name, previous_msg_ids, last_run_time, retry_times=1
-        )
+        ) = try_pull_unique_messages(client, sub_name, previous_msg_ids, last_run_time, False, retry_times=1)
         assert len(list(filter(lambda x: x.args[0].startswith('GCP_PUBSUB_MSG'), debug_mock.call_args_list))) == 1
         assert res_msgs == [
             {
@@ -756,9 +748,7 @@ class TestCommands:
             res_msg_ids,
             res_acks,
             res_max_publish_time,
-        ) = try_pull_unique_messages(
-            client, sub_name, previous_msg_ids, last_run_time, retry_times=1
-        )
+        ) = try_pull_unique_messages(client, sub_name, previous_msg_ids, last_run_time, False, retry_times=1)
         assert not any(call.args[0].startswith('GCP_PUBSUB_MSG') for call in debug_mock.call_args_list)
         assert res_msgs == [
             {

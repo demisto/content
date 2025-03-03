@@ -130,7 +130,7 @@ configuration:
   required: false
 - defaultvalue: "100"
   display: Max incidents per fetch (for each selected Log Type Query)
-  additionalinfo: The maximum number of incidents to fetch per Log Type Query. To ensure optimal efficiency, it is strongly advised to keep the limit as low as possible.
+  additionalinfo: The maximum number of incidents to fetch per Log Type Query. To ensure optimal efficiency, it is strongly advised to keep the limit as low as possible. The maximum is 5,000.
   name: max_fetch
   type: 0
   section: Collect
@@ -156,9 +156,10 @@ configuration:
   name: fetch_job_polling_max_num_attempts
   additionalinfo: "The maximum number of attempts to try and pull results for each log type from a job that was created by its query. Each attempt takes around 1 second. Increasing this value is useful in case there are many logs to pull from a given log type.\nNote: When increasing this number, in case fetching more than 4 logs types together, it is recommended to split different log types for different integration instances"
   type: 0
-  defaultvalue: 10
+  defaultvalue: '10'
   advanced: true
   section: Collect
+  required: false
 - display: Traffic Log Type Query
   name: traffic_query
   additionalinfo: "Traffic Log Type query example: (addr.src in {source}) and (addr.dst in {destination}) and (action eq {action}).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
@@ -220,6 +221,12 @@ configuration:
   type: 13
   section: Connect
   required: false
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  section: Collect
+  type: 19
 description: Manage Palo Alto Networks Firewall and Panorama. Use this pack to manage Prisma Access through Panorama. For more information, see the Panorama documentation.
 display: Palo Alto Networks PAN-OS
 name: Panorama
@@ -881,8 +888,8 @@ script:
       isArray: true
       name: tags
     description: >
-     Creates a service.
-     Note: overrides the service if it already exists.
+      Creates a service.
+      Note: overrides the service if it already exists.
     deprecated: true
     name: panorama-create-service
     outputs:
@@ -892,7 +899,7 @@ script:
     - contextPath: Panorama.Services.Protocol
       description: The service protocol.
       type: string
-    - contextPath: Panorama.Services.Descritpion
+    - contextPath: Panorama.Services.Description
       description: The service description.
       type: string
     - contextPath: Panorama.Services.DestinationPort
@@ -4366,7 +4373,7 @@ script:
     - contextPath: Panorama.Services.Protocol
       description: The service protocol.
       type: string
-    - contextPath: Panorama.Services.Descritpion
+    - contextPath: Panorama.Services.Description
       description: The service description.
       type: string
     - contextPath: Panorama.Services.DestinationPort
@@ -5389,11 +5396,29 @@ script:
     - contextPath: Panorama.SecurityRule.Target
       description: The target firewall (Panorama instances).
       type: string
+    - contextPath: Panorama.SecurityRule.Category
+      description: The category of the rule.
+      type: string
+    - contextPath: Panorama.SecurityRule.LogForwarding
+      description: The log forwarding of the rule.
+      type: string
+    - contextPath: Panorama.SecurityRule.ProfileSetting
+      description: The profile setting of the rule.
+      type: string
+    - contextPath: Panorama.SecurityRule.SourceUser
+      description: The source user of the rule.
+      type: string
+    - contextPath: Panorama.SecurityRule.AuditComment
+      description: The audit comment of the rule.
+      type: string
     - contextPath: Panorama.SecurityRule.DeviceGroup
       description: The device group for the rule (Panorama instances).
       type: string
     - contextPath: Panorama.SecurityRule.Tags
       description: The tags for the rule.
+      type: String
+    - contextPath: Panorama.SecurityRules.ProfileSetting
+      description: The profile setting group.
       type: String
     execution: true
   - arguments:
@@ -5871,6 +5896,27 @@ script:
     - contextPath: Panorama.SecurityRule.SecurityProfile
       description: The security profile settings applied to the security rule.
       type: Unknown
+    - contextPath: Panorama.SecurityRule.SecurityProfile.file-blocking
+      description: The security profile setting for file-blocking in the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SecurityProfile.data-filtering
+      description: The security profile setting for data filtering in the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SecurityProfile.wildfire-analysis
+      description: The security profile setting for wildfire-analysis in the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SecurityProfile.spyware
+      description: The security profile setting for spyware in the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SecurityProfile.vulnerability
+      description: The security profile setting for vulnerability in the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SecurityProfile.virus
+      description: The security profile setting for viruses in the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SecurityProfile.url-filtering
+      description: The security profile setting for url-filtering in the security rule.
+      type: String
     - contextPath: Panorama.SecurityRule.Target.devices
       description: The devices targeted by the security rule.
       type: String
@@ -7895,7 +7941,7 @@ script:
       description: The host ID.
     - contextPath: PANOS.JobStatus.id
       description: The ID of the job.
-      type: String
+      type: Number
     - contextPath: PANOS.JobStatus.type
       description: The job type.
       type: String
@@ -7926,6 +7972,9 @@ script:
     - contextPath: PANOS.JobStatus.progress
       type: String
       description: The numerical progress of the job.
+    - contextPath: PANOS.JobStatus.warnings
+      type: String
+      description: The warnings of the job.
   - arguments:
     - description: The software version to upgrade to, for example, 9.1.2.
       name: version
@@ -8440,6 +8489,8 @@ script:
       required: true
     - description: Name of the file for the state file to be saved. Default will use the hostname as the filename.
       name: filename
+    - description: The IP Address of a Panorama managed firewall. Default will use Panorama-supplied IP Address.
+      name: ip_address
     description: Get the device state from the provided device. Note; This will attempt to connect directly to the provided target to get the device state. If the IP address as reported in "show system info" is unreachable, this command will fail.
     name: pan-os-platform-get-device-state
     outputs:
@@ -9495,7 +9546,259 @@ script:
     - contextPath: Panorama.AuditComment.rule_type
       description: The rule type.
       type: String
-  dockerimage: demisto/pan-os-python:1.0.0.95792
+  - name: pan-os-add-profile-exception
+    description: Add an exception to a Vulnerability Protection profile or Anti Spyware profile.
+    arguments:
+    - description: The profile name.
+      name: profile_name
+      required: true
+    - description: "The requested threat name/CVE/ID to add."
+      name: threat
+      required: true
+    - description: The profile type.
+      name: profile_type
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Vulnerability Protection Profile
+      - Anti Spyware Profile
+    - description: The action type of the exception. Default value is 'default'.
+      name: action
+      auto: PREDEFINED
+      required: false
+      predefined:
+      - Alert
+      - Allow
+      - Block IP
+      - Drop
+      - Reset Both
+      - Reset Client
+      - Reset Server
+    - description: To configure the firewall to take a packet capture when it detects a threat.
+      name: packet_capture
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Disable
+      - Single Packet
+      - Extended Capture
+    - description: An IP address. Configure an exempt IP address to enforce a threat exception only when the associated session has either a matching source or destination IP address; for all other sessions, the threat is enforced based on the default signature action.
+      name: exempt_ip
+      required: false
+    - description: Device group. This will override any configured device group or vsys.
+      name: device_group
+      required: false
+    - description: Specify whether to Track By and block the IP address using the IP source or the IP source and destination. If action = Block IP , this argument is mandatory.
+      name: ip_track_by
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Source
+      - Source And Destination
+    - description: Specify the time period (in seconds) after which to trigger the action. If action = Block IP , this argument is mandatory.
+      name: ip_duration_sec
+      required: false
+  - name: pan-os-edit-profile-exception
+    description: Edit an exception to a Vulnerability Protection profile or Anti Spyware profile.
+    arguments:
+    - description: The profile name.
+      name: profile_name
+      required: true
+    - description: "The requested threat name/CVE/ID to edit."
+      name: threat
+      required: true
+    - description: The profile type.
+      name: profile_type
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Vulnerability Protection Profile
+      - Anti Spyware Profile
+    - description: The action type of the exception. Default value is 'default'.
+      name: action
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Alert
+      - Allow
+      - Block IP
+      - Drop
+      - Reset Both
+      - Reset Client
+      - Reset Server
+    - description: To configure the firewall to take a packet capture when it detects a threat.
+      name: packet_capture
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Disable
+      - Single Packet
+      - Extended Capture
+    - description: An IP address. Configure an exempt IP address to enforce a threat exception only when the associated session has either a matching source or destination IP address; for all other sessions, the threat is enforced based on the default signature action.
+      name: exempt_ip
+      required: false
+    - description: Device group. This will override any configured device group or vsys.
+      name: device_group
+      required: false
+    - description: Specify whether to Track By and block the IP address using the IP source or the IP source and destination. If action = Block IP , this argument is mandatory.
+      name: ip_track_by
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Source
+      - Source And Destination
+    - description: Specify the time period (in seconds) after which to trigger the action. If action = Block IP , this argument is mandatory.
+      name: ip_duration_sec
+      required: false
+  - name: pan-os-delete-profile-exception
+    description: Delete an exception to a Vulnerability Protection profile or Anti Spyware profile.
+    arguments:
+    - description: The profile name.
+      name: profile_name
+      required: true
+    - description: "The requested threat name/CVE/ID to delete."
+      name: threat
+      required: true
+    - description: The profile type.
+      name: profile_type
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Vulnerability Protection Profile
+      - Anti Spyware Profile
+  - name: pan-os-list-profile-exception
+    description: List the exceptions in a Vulnerability Protection profile or Anti Spyware profile.
+    arguments:
+    - description: The profile name.
+      name: profile_name
+      required: true
+    - description: The profile type.
+      name: profile_type
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Vulnerability Protection Profile
+      - Anti Spyware Profile
+    outputs:
+    - contextPath: Panorama.Vulnerability.Name
+      description: The profile name.
+      type: String
+    - contextPath: Panorama.Vulnerability.Exception.name
+      description: The exception name.
+      type: String
+    - contextPath: Panorama.Vulnerability.Exception.id
+      description: The exception ID.
+      type: String
+    - contextPath: Panorama.Vulnerability.Exception.CVE
+      description: The exception CVE if exist.
+      type: String
+    - contextPath: Panorama.Vulnerability.Exception.action
+      description: The exception action.
+      type: String
+    - contextPath: Panorama.Vulnerability.Exception.exempt-id
+      description: The exception exempt ID.
+      type: String
+    - contextPath: Panorama.Vulnerability.Exception.packet-capture
+      description: The exception packet capture.
+      type: String
+    - contextPath: Panorama.Spyware.Name
+      description: The profile name.
+      type: String
+    - contextPath: Panorama.Spyware.Exception.name
+      description: The exception name.
+      type: String
+    - contextPath: Panorama.Spyware.Exception.id
+      description: The exception ID.
+      type: String
+    - contextPath: Panorama.Spyware.Exception.CVE
+      description: The exception CVE if exist.
+      type: String
+    - contextPath: Panorama.Spyware.Exception.action
+      description: The exception action.
+      type: String
+    - contextPath: Panorama.Spyware.Exception.exempt-id
+      description: The exception exempt ID.
+      type: String
+    - contextPath: Panorama.Spyware.Exception.packet-capture
+      description: The exception packet capture.
+      type: String
+  - name: pan-os-get-master-key-details
+    description: Show the details of the default master key that encrypts all the private keys and passwords in the configuration.
+    outputs:
+    - contextPath: Panorama.MasterKey.auto-renew-mkey
+      type: String
+      description: Whether the master key will be automatically renewed on expiry.
+    - contextPath: Panorama.MasterKey.expire-at
+      type: String
+      description: The date and time when the key is set to expire.
+    - contextPath: Panorama.MasterKey.hours-to-expiry
+      type: String
+      description: The number of hours remaining before the key expires.
+    - contextPath: Panorama.MasterKey.hours-to-reminder
+      type: String
+      description: The number of hours remaining before being notified that the key is set to expire.
+    - contextPath: Panorama.MasterKey.minutes-to-expiry
+      type: String
+      description: The number of minutes remaining before the key expires.
+    - contextPath: Panorama.MasterKey.minutes-to-reminder
+      type: String
+      description: The number of minutes remaining before being notified that the key is set to expire.
+    - contextPath: Panorama.MasterKey.on-hsm
+      type: String
+      description: Whether the master key is encrypted using a key stored on a Hardware Security Module (HSM).
+    - contextPath: Panorama.MasterKey.remind-at
+      type: String
+      description: The date and time when to be notified that the key is set to expire.
+    - contextPath: Panorama.MasterKey.seconds-to-expiry
+      type: String
+      description: The number of seconds remaining before the key expires.
+    - contextPath: Panorama.MasterKey.seconds-to-reminder
+      type: String
+      description: The number of seconds remaining before being notified that the key is set to expire.
+  - name: pan-os-create-master-key
+    description: 'Create a default master key that encrypts all the private keys and passwords in the configuration. This command is harmful because it invalidates the current API key and requires re-configuration of the integration instance.'
+    execution: true  # This command is harmful
+    arguments:
+    - description: The encryption master key. Must be exactly 16 characters.
+      name: master_key
+      type: String
+      required: true
+      isArray: false
+    - description: The lifetime of the key in hours.
+      name: lifetime_in_hours
+      type: Number
+      required: true
+      isArray: false
+    - description: The time to be notified of the key's expiration in hours.
+      name: reminder_in_hours
+      type: Number
+      required: true
+      isArray: false
+  - name: pan-os-update-master-key
+    description: 'Update the default master key that encrypts all the private keys and passwords in the configuration. This command is harmful because it invalidates the current API key and requires re-configuration of the integration instance.'
+    execution: true  # This command is harmful
+    arguments:
+    - description: The new encryption master key. Must be exactly 16 characters.
+      name: new_master_key
+      type: String
+      required: true
+      isArray: false
+    - description: The current encryption master key.
+      name: current_master_key
+      type: String
+      required: true
+      isArray: false
+    - description: The lifetime of the new key in hours.
+      name: lifetime_in_hours
+      type: Number
+      required: true
+      isArray: false
+    - description: The time to be notified of new the new key's expiration in hours.
+      name: reminder_in_hours
+      type: Number
+      required: true
+      isArray: false
+  dockerimage: demisto/pan-os-python:1.0.0.2067372
   isfetch: true
   runonce: false
   script: ''
@@ -9507,5 +9810,6 @@ tests:
 - palo_alto_panorama_test_pb
 - PAN-OS-firewall-topology-test-pb
 - PAN-OS-panorama-topology-test-pb
+- test_playbook_pan_os_firewall_exceptions_commands
 defaultmapperin: Panorama Mapper
 defaultclassifier: Panorama Classifier

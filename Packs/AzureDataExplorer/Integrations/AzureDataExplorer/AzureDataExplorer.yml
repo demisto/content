@@ -38,26 +38,27 @@ configuration:
   required: true
   defaultvalue: Device Code
   type: 15
-  additionalinfo: Type of authentication - could be Authorization Code Flow (recommended) or Device Code Flow
+  additionalinfo: Type of authentication - could be Authorization Code Flow (recommended), Device Code Flow, or Client Credentials Flow.
   options:
   - Device Code
   - Authorization Code
+  - Client Credentials
 - name: tenant_id
-  display: Tenant ID (for Authorization Code mode)
+  display: Tenant ID
   defaultvalue:
   type: 0
   additionalinfo: ""
   required: false
 - name: credentials
-  display: Client Secret (for Authorization Code mode)
+  display: Client Secret
   defaultvalue:
   type: 9
   additionalinfo: ""
-  displaypassword: Client Secret (for Authorization Code mode)
+  displaypassword: Client Secret
   hiddenusername: true
   required: false
 - name: redirect_uri
-  display: Application redirect URI (for Authorization Code mode)
+  display: Application redirect URI
   defaultvalue:
   type: 0
   additionalinfo: ""
@@ -434,7 +435,7 @@ script:
   - description: Generate the login url used for Authorization code flow.
     name: azure-data-explorer-generate-login-url
     arguments: []
-  dockerimage: demisto/auth-utils:1.0.0.94075
+  dockerimage: demisto/auth-utils:1.0.0.116752
   runonce: false
   script: "-"
   subtype: python3

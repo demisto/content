@@ -1,23 +1,230 @@
 [MODEL: dataset="aws_guardduty_raw"]
-alter 
-    targetIP1 = json_extract_scalar(Service, "$.Action.NetworkConnectionAction.RemoteIpDetails.IpAddressV4"),
-    targetIP2 = json_extract_scalar(Service, "$.Action.KubernetesApiCallAction.RemoteIpDetails.IpAddressV4"),
-    username1 = trim(json_extract_scalar(Resource,"$.AccessKeyDetails.UserName"), "\""),
-    username2 = json_extract_scalar(Resource, "$.KubernetesDetails.KubernetesUserDetails.Username"),
-    userType = json_extract_scalar(Resource, "$.AccessKeyDetails.UserType"),
-    severity = to_float(Severity)
+alter // init aliases for root level & common objects for supporting both camelCase and PascalCase field naming convention extractions
+    finding_resource = coalesce(Resource, resource), 
+    finding_service = coalesce(Service, service)
+| alter 
+    finding_process = coalesce(finding_service -> RuntimeDetails.Process{}, service -> runtimeDetails.process{}), 
+    finding_network = coalesce(finding_service -> Action.NetworkConnectionAction{}, service -> action.networkConnectionAction{}),
+    finding_aws_api = coalesce(finding_service -> Action.AwsApiCallAction, service -> action.awsApiCallAction),
+    finding_k8s_api = coalesce(finding_service -> Action.KubernetesApiCallAction, service -> action.kubernetesApiCallAction),
+    finding_rds_login = coalesce(finding_service -> Action.RdsLoginAttemptAction, service -> action.rdsLoginAttemptAction)
+    
+| alter  // extract common finding fields: https://docs.aws.amazon.com/guardduty/latest/APIReference/API_Finding.html
+    finding_account_id = coalesce(AccountId, accountId), // The ID of the account in which the finding was generated. 
+    finding_arn = coalesce(Arn, arn), // The ARN of the finding.
+    finding_description = coalesce(Description, description), // The description of the finding.
+    finding_id = coalesce(Id, id), // The ID of the finding.
+    finding_region = coalesce(Region, region), // The Region where the finding was generated.
+    finding_severity = to_float(coalesce(Severity, severity)), // The severity of the finding: https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_findings.html#guardduty_findings-severity
+    finding_title = coalesce(Title, title), // The title of the finding.
+    finding_type = coalesce(Type, type), // The type of finding.
+
+    // extract resource fields: https://docs.aws.amazon.com/guardduty/latest/APIReference/API_Resource.html
+    resource_type = coalesce(finding_resource -> ResourceType, resource -> resourceType), // The type of AWS resource.
+    resource_instance_id = coalesce(finding_resource -> InstanceDetails.InstanceId, resource -> instanceDetails.instanceId), // The ID of the EC2 instance.
+    resource_instance_type = coalesce(finding_resource -> InstanceDetails.InstanceType, resource -> instanceDetails.instanceType), // The type of the EC2 instance.
+    resource_username = coalesce(
+        finding_resource -> RdsDbUserDetails.User, resource -> rdsDbUserDetails.user, // The user name used in the anomalous login attempt.
+        finding_resource -> AccessKeyDetails.UserName, resource -> accessKeyDetails.userName,  // The name of the user.
+        finding_resource -> KubernetesDetails.KubernetesUserDetails.Username, resource -> kubernetesDetails.kubernetesUserDetails.username), // The username of the user who called the Kubernetes API.
+    resource_user_id = coalesce(
+        finding_resource -> AccessKeyDetails.PrincipalId, resource -> accessKeyDetails.principalId, // The principal ID of the user.
+        finding_resource -> KubernetesDetails.KubernetesUserDetails.Uid, resource -> kubernetesDetails.kubernetesUserDetails.uid), // The user ID of the user who called the Kubernetes API.
+    resource_user_type = coalesce(finding_resource -> AccessKeyDetails.UserType, resource -> accessKeyDetails.userType), // The type of the user.
+    resource_user_groups = coalesce(finding_resource -> KubernetesDetails.KubernetesUserDetails.Groups[], resource -> kubernetesDetails.kubernetesUserDetails.groups[]), // The groups that include the user who called the Kubernetes API.
+    resource_rdsDbUserDetails_application = coalesce(finding_resource -> RdsDbUserDetails.Application, resource -> rdsDbUserDetails.application), // The application name used in the anomalous login attempt.
+    resource_rdsDbUserDetails_auth_method = coalesce(finding_resource -> RdsDbUserDetails.AuthMethod, resource -> rdsDbUserDetails.authMethod), // The authentication method used by the user involved in the finding.
+    resource_availability_zone = coalesce( // The Availability Zone of the EC2 instance.
+        finding_resource -> Instance.InstanceDetails.AvailabilityZone, resource -> instance.instanceDetails.availabilityZone, 
+        finding_resource -> EcsClusterDetails.InstanceDetails.AvailabilityZone, resource -> ecsClusterDetails.instanceDetails.availabilityZone,
+        finding_resource -> EksClusterDetails.InstanceDetails.AvailabilityZone, resource -> eksClusterDetails.instanceDetails.availabilityZone),
+    resource_name = coalesce(
+        finding_resource -> LambdaDetails.FunctionName, resource -> lambdaDetails.functionName, // Lambda 
+        finding_resource -> ContainerDetails.Name, resource -> containerDetails.name, // Container
+        finding_resource -> RdsDbUserDetails.Database, resource -> rdsDbUserDetails.database,  // RDSDBInstance
+        finding_resource -> EcsClusterDetails.InstanceDetails.EcsClusterDetails.Name, resource -> ecsClusterDetails.instanceDetails.ecsClusterDetails.name, // ECSCluster  
+        finding_resource -> EksClusterDetails.InstanceDetails.EksClusterDetails.Name, resource -> eksClusterDetails.instanceDetails.eksClusterDetails.name, // EKSCluster  
+        finding_resource -> InstanceDetails.InstanceId, resource -> instanceDetails.instanceId, // Instance
+        finding_resource -> AccessKeyDetails.UserName, resource -> accessKeyDetails.userName, // AccessKey
+        arraystring(arraymap(finding_resource -> S3BucketDetails[], "@element" -> Name), ","), arraystring(arraymap(resource -> s3BucketDetails[], "@element" -> name), ",")),  // S3Object
+
+    // extract common service fields: https://docs.aws.amazon.com/guardduty/latest/APIReference/API_Service.html
+    service_action_type = coalesce(finding_service -> Action.ActionType, service -> action.actionType), // The GuardDuty finding activity type.
+    service_detector_id = coalesce(finding_service -> DetectorId, service -> detectorId), // The detector ID for the GuardDuty service.
+    service_evidence_threat_intelligence_details = coalesce(finding_service -> Evidence.ThreatIntelligenceDetails[], service -> evidence.threatIntelligenceDetails[]), // A list of threat intelligence details related to the evidence.
+   
+    // extract service runtime fields: https://docs.aws.amazon.com/guardduty/latest/APIReference/API_ProcessDetails.html
+    service_runtime_details_process_pid = to_integer(coalesce(finding_process -> Pid, finding_process -> pid)), // The ID of the process.
+    service_runtime_details_process_uuid = coalesce(finding_process -> Uuid, finding_process -> uuid), // The unique ID assigned to the process by GuardDuty.
+    service_runtime_details_process_parent_uuid = coalesce(finding_process -> ParentUuid, finding_process -> parentUuid), // The unique ID of the parent process. This ID is assigned to the parent process by GuardDuty.
+    service_runtime_details_process_name = coalesce(finding_process -> Name, finding_process -> name), // The name of the process.
+    service_runtime_details_process_executable_path = coalesce(finding_process -> ExecutablePath, finding_process -> executablePath), // The absolute path of the process executable file.
+    service_runtime_details_process_executable_sha256 = coalesce(finding_process -> ExecutableSha256, finding_process -> executableSha256), // The SHA256 hash of the process executable.
+    service_runtime_details_process_user = coalesce(finding_process -> User, finding_process -> user), // The user that executed the process.
+    service_runtime_details_process_user_id = coalesce(finding_process -> UserId, finding_process -> userId), // The unique ID of the user that executed the process.
+
+    // extract service network connection action fields: https://docs.aws.amazon.com/guardduty/latest/APIReference/API_NetworkConnectionAction.html
+    service_action_network_connection_is_blocked = to_boolean(coalesce(finding_network -> Blocked, finding_network -> blocked)), // Indicates whether EC2 blocked the network connection to your instance.
+    service_action_network_connection_direction = coalesce(finding_network -> ConnectionDirection, finding_network -> connectionDirection), // The network connection direction.
+    service_action_network_connection_protocol = coalesce(finding_network -> Protocol, finding_network -> protocol), // The network connection protocol.
+    service_action_network_connection_local_ipv4 = coalesce(finding_network -> LocalIpDetails.IpAddressV4, finding_network -> localIpDetails.ipAddressV4), // The IPv4 local address of the connection.
+    service_action_network_connection_local_ipv6 = coalesce(finding_network -> LocalIpDetails.IpAddressV6, finding_network -> localIpDetails.ipAddressV6), // The IPv6 local address of the connection.
+    service_action_network_connection_local_port = coalesce(finding_network -> LocalPortDetails.Port, finding_network -> localPortDetails.port), // The port number of the local connection.
+    service_action_network_connection_local_port_name = coalesce(finding_network -> LocalPortDetails.PortName, finding_network -> localPortDetails.portName), // The port name of the local connection.
+    service_action_network_connection_remote_asn = coalesce(finding_network -> RemoteIpDetails.Organization.Asn, finding_network -> remoteIpDetails.organization.asn), //(ASN) of the internet provider of the remote IP address.
+    service_action_network_connection_remote_asn_org = coalesce(finding_network -> RemoteIpDetails.Organization.AsnOrg, finding_network -> remoteIpDetails.organization.asnOrg), // The organization that registered this ASN.
+    service_action_network_connection_remote_asn_isp = coalesce(finding_network -> RemoteIpDetails.Organization.Isp, finding_network -> remoteIpDetails.organization.isp), // The ISP information for the internet provider.
+    service_action_network_connection_remote_asn_isp_org = coalesce(finding_network -> RemoteIpDetails.Organization.Org, finding_network -> remoteIpDetails.organization.org), // The name of the internet provider.
+    service_action_network_connection_remote_ipv4 = coalesce(finding_network -> RemoteIpDetails.IpAddressV4, finding_network -> remoteIpDetails.ipAddressV4), // The IPv4 remote address of the connection.
+    service_action_network_connection_remote_ipv6 = coalesce(finding_network -> RemoteIpDetails.IpAddressV6, finding_network -> remoteIpDetails.ipAddressV6), // The IPv6 remote address of the connection.
+    service_action_network_connection_remote_port = coalesce(finding_network -> RemotePortDetails.Port, finding_network -> remotePortDetails.port), // The port number of the remote connection.
+    service_action_network_connection_remote_port_name = coalesce(finding_network -> RemotePortDetails.PortName, finding_network -> remotePortDetails.portName), // The port name of the remote connection.
+
+    // extract service aws api call action (AWS_API_CALL) fields: https://docs.aws.amazon.com/guardduty/latest/APIReference/API_AwsApiCallAction.html
+    service_action_api_call_user_agent = coalesce( // The agent through which the API request was made.
+        finding_aws_api -> UserAgent, finding_aws_api -> userAgent, 
+        to_json_string(finding_service -> AdditionalInfo.Value) -> userAgent.fullUserAgent, 
+        to_json_string(finding_service -> additionalInfo.value) -> userAgent.fullUserAgent),
+    service_action_api_call_remote_ipv4 = coalesce(finding_aws_api -> RemoteIpDetails.IpAddressV4, finding_aws_api -> remoteIpDetails.ipAddressV4), // The IPv4 remote address of the connection.
+    service_action_api_call_remote_ipv6 = coalesce(finding_aws_api -> RemoteIpDetails.IpAddressV6, finding_aws_api -> remoteIpDetails.ipAddressV6), // The IPv6 remote address of the connection.
+    service_action_api_call_remote_asn = coalesce(finding_aws_api -> RemoteIpDetails.Organization.Asn, finding_aws_api -> remoteIpDetails.organization.asn), // The Autonomous System Number (ASN) of the internet provider of the remote IP address.
+    service_action_api_call_remote_asn_org = coalesce(finding_aws_api -> RemoteIpDetails.Organization.AsnOrg, finding_aws_api -> remoteIpDetails.organization.asnOrg), // The organization that registered this ASN.
+    service_action_api_call_remote_isp = coalesce(finding_aws_api -> RemoteIpDetails.Organization.Isp, finding_aws_api -> remoteIpDetails.organization.isp), // The ISP information for the internet provider.
+    service_action_api_call_remote_isp_org = coalesce(finding_aws_api -> RemoteIpDetails.Organization.Org, finding_aws_api -> remoteIpDetails.organization.org), // The name of the internet provider.
+    service_action_api_call_remote_account_id = coalesce(finding_aws_api -> RemoteAccountDetails.AccountId, finding_aws_api -> remoteAccountDetails.accountId), // The AWS account ID of the remote API caller.
+    service_action_api_call_error_code = coalesce(finding_aws_api -> ErrorCode, finding_aws_api -> errorCode), // The error code of the failed AWS API action.
+
+    // extract service dns request action (DNS_REQUEST) fields: https://docs.aws.amazon.com/guardduty/latest/APIReference/API_DnsRequestAction.html
+    service_action_dns_request_action_domain = coalesce(finding_service -> Action.DnsRequestAction.Domain, service -> action.dnsRequestAction.domain), // The domain information for the DNS query.
+    service_action_dns_request_action_protocol = coalesce(finding_service -> Action.DnsRequestAction.Protocol, service -> action.dnsRequestAction.protocol), // The network connection protocol observed in the activity that prompted GuardDuty to generate the finding.
+    service_action_dns_request_action_blocked = to_boolean(coalesce(finding_service -> Action.DnsRequestAction.Blocked, service -> action.dnsRequestAction.blocked)), // Indicates whether the targeted port is blocked.
+
+    // extract service k8s api call action (KUBERNETES_API_CALL) fields: https://docs.aws.amazon.com/guardduty/latest/APIReference/API_KubernetesApiCallAction.html
+    service_action_k8s_api_call_verb = coalesce(finding_k8s_api -> Verb, finding_k8s_api -> verb), // The Kubernetes API request HTTP verb.
+    service_action_k8s_api_call_request_uri = coalesce(finding_k8s_api -> RequestUri, finding_k8s_api -> requestUri), // The Kubernetes API request URI.
+    service_action_k8s_api_call_status_code = coalesce(finding_k8s_api -> StatusCode, finding_k8s_api -> statusCode), // The resulting HTTP response code of the Kubernetes API call action.
+    service_action_k8s_api_call_user_agent = coalesce(finding_k8s_api -> UserAgent, finding_k8s_api -> userAgent), // The user agent of the caller of the Kubernetes API.
+    service_action_k8s_api_call_resource = coalesce(finding_k8s_api -> Resource, finding_k8s_api -> resource), // The resource component in the Kubernetes API call action.
+    service_action_k8s_api_call_resource_name = coalesce(finding_k8s_api -> ResourceName, finding_k8s_api -> resourceName), // The name of the resource in the Kubernetes API call action.
+    service_action_k8s_api_call_sourceIPs = coalesce(finding_k8s_api -> SourceIPs[], finding_k8s_api -> sourceIPs[]), // The IP of the Kubernetes API caller and the IPs of any proxies or load balancers between the caller and the API endpoint.
+    service_action_k8s_api_call_remote_ipv4 = coalesce(finding_k8s_api -> RemoteIpDetails.IpAddressV4, finding_k8s_api -> remoteIpDetails.ipAddressV4), //The IPv4 remote address of the connection.
+    service_action_k8s_api_call_remote_ipv6 = coalesce(finding_k8s_api -> RemoteIpDetails.IpAddressV6, finding_k8s_api -> remoteIpDetails.ipAddressV6), //The IPv6 remote address of the connection.
+    service_action_k8s_api_call_remote_asn = coalesce(finding_k8s_api -> RemoteIpDetails.Organization.Asn, finding_k8s_api -> remoteIpDetails.organization.asn), // The Autonomous System Number (ASN) of the internet provider of the remote IP address.
+    service_action_k8s_api_call_remote_asn_org = coalesce(finding_k8s_api -> RemoteIpDetails.Organization.AsnOrg, finding_k8s_api -> remoteIpDetails.organization.asnOrg), // The organization that registered this ASN.
+    service_action_k8s_api_call_remote_isp = coalesce(finding_k8s_api -> RemoteIpDetails.Organization.Isp, finding_k8s_api -> remoteIpDetails.organization.isp), // The ISP information for the internet provider.
+    service_action_k8s_api_call_remote_isp_org = coalesce(finding_k8s_api -> RemoteIpDetails.Organization.Org, finding_k8s_api -> remoteIpDetails.organization.org), // The name of the internet provider.
+
+    // extract service port probe action (PORT_PROBE) fields: https://docs.aws.amazon.com/guardduty/latest/APIReference/API_PortProbeAction.html
+    service_action_port_probing_remote_ipv4_addresses = coalesce( // The IPv4 remote address of the connection.
+        arraymap(finding_service -> Action.PortProbeAction.PortProbeDetails[], "@element" -> RemoteIpDetails.IpAddressV4),
+        arraymap(service -> action.portProbeAction.portProbeDetails[], "@element" -> remoteIpDetails.ipAddressV4)),
+    service_action_port_probing_remote_ipv6_addresses = coalesce( // The IPv6 remote address of the connection.
+        arraymap(finding_service -> Action.PortProbeAction.PortProbeDetails[], "@element" -> RemoteIpDetails.IpAddressV6),
+        arraymap(service -> action.portProbeAction.portProbeDetails[], "@element" -> remoteIpDetails.ipAddressV6)),
+
+    // extract service k8s role fields: https://docs.aws.amazon.com/guardduty/latest/APIReference/API_KubernetesRoleDetails.html
+    service_action_k8s_role_name = coalesce(finding_service -> Action.KubernetesRoleDetails.Name, service -> action.kubernetesRoleDetails.name), // The name of the Kubernetes role.
+
+    // extract service k8s role binding fields: https://docs.aws.amazon.com/guardduty/latest/APIReference/API_KubernetesRoleBindingDetails.html
+    service_action_k8s_role_binding_name = coalesce(finding_service -> Action.KubernetesRoleBindingDetails.Name, service -> action.kubernetesRoleBindingDetails.name), // The name of the RoleBinding.
+
+    // extract service rds login attempt action fields: https://docs.aws.amazon.com/guardduty/latest/APIReference/API_RdsLoginAttemptAction.html
+    service_action_rds_login_attempt_users = coalesce( // Indicates the user name which attempted to log in.
+        arraystring(arraymap(finding_rds_login -> LoginAttribute[], "@element" -> User), ","),
+        arraystring(arraymap(finding_rds_login -> loginAttribute[], "@element" -> user), ",")),
+    service_action_rds_login_attempt_applications = coalesce( // Indicates the application name used to attempt log in.
+         arraystring(arraymap(finding_rds_login -> LoginAttribute[], "@element" -> Application), ","),
+         arraystring(arraymap(finding_rds_login -> loginAttribute[], "@element" -> application), ",")),
+    service_action_rds_login_attempt_remote_ipv4 = coalesce(finding_rds_login -> RemoteIpDetails.IpAddressV4, finding_rds_login -> remoteIpDetails.ipAddressV4), // The IPv4 remote address of the connection.
+    service_action_rds_login_attempt_remote_ipv6 = coalesce(finding_rds_login -> RemoteIpDetails.IpAddressV6, finding_rds_login -> remoteIpDetails.ipAddressV6), // The IPv6 remote address of the connection.
+    service_action_rds_login_attempt_remote_asn = coalesce(finding_rds_login -> RemoteIpDetails.Organization.Asn, finding_rds_login -> remoteIpDetails.organization.asn), // The Autonomous System Number (ASN) of the internet provider of the remote IP address.
+    service_action_rds_login_attempt_remote_asn_org = coalesce(finding_rds_login -> RemoteIpDetails.Organization.AsnOrg, finding_rds_login -> remoteIpDetails.organization.asnOrg), // The organization that registered this ASN.
+    service_action_rds_login_attempt_remote_isp = coalesce(finding_rds_login -> RemoteIpDetails.Organization.Isp, finding_rds_login -> remoteIpDetails.organization.isp), // The ISP information for the internet provider.
+    service_action_rds_login_attempt_remote_isp_org = coalesce(finding_rds_login -> RemoteIpDetails.Organization.Org, finding_rds_login -> remoteIpDetails.organization.org) // The name of the internet provider.
+
+| alter // post extraction processing 
+    is_connection_inbound = if(service_action_network_connection_direction != null and service_action_network_connection_direction = "INBOUND"),
+    is_connection_outbound = if(service_action_network_connection_direction != null and service_action_network_connection_direction = "OUTBOUND"),
+    http_code = to_integer(service_action_k8s_api_call_status_code),
+    http_verb = service_action_k8s_api_call_verb,
+    network_protocol = coalesce(service_action_network_connection_protocol, service_action_dns_request_action_protocol),
+    k8s_api_call_src_ipv4_addresses = arrayfilter(service_action_k8s_api_call_sourceIPs,  "@element" ~= "(?:\d{1,3}\.){3}\d{1,3}"),
+    k8s_api_call_src_ipv6_addresses = arrayfilter(service_action_k8s_api_call_sourceIPs,  "@element" ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}")
+| alter 
+    network_application_protocol = if(is_connection_inbound, service_action_network_connection_local_port_name, is_connection_outbound, service_action_network_connection_remote_port_name), 
+    source_ipv4 = if(is_connection_inbound, service_action_network_connection_remote_ipv4, is_connection_outbound, service_action_network_connection_local_ipv4, coalesce(service_action_api_call_remote_ipv4, service_action_k8s_api_call_remote_ipv4, service_action_rds_login_attempt_remote_ipv4)),
+    source_ipv6 = if(is_connection_inbound, service_action_network_connection_remote_ipv6, is_connection_outbound, service_action_network_connection_local_ipv6, coalesce(service_action_api_call_remote_ipv6, service_action_k8s_api_call_remote_ipv6, service_action_rds_login_attempt_remote_ipv6)),
+    target_ipv4 = if(is_connection_inbound, service_action_network_connection_local_ipv4, is_connection_outbound, service_action_network_connection_remote_ipv4),
+    target_ipv6 = if(is_connection_inbound, service_action_network_connection_local_ipv6, is_connection_outbound, service_action_network_connection_remote_ipv6)
 | alter
-    xdm.alert.category = json_extract_scalar(Resource, "$.ResourceType"),
-    xdm.alert.subcategory = Type,
-    xdm.alert.description = Description,
-    xdm.event.outcome_reason = Title,
-    xdm.alert.severity = if( severity >= 7, "High", severity >= 4 and severity < 6.9 , "Medium", severity >= 1 and severity < 3.9 , "Low", to_string(Severity)),
-    xdm.target.resource.id = AccountId,
-    xdm.target.host.hostname = json_extract_scalar(Resource, "$.EksClusterDetails.Name"),
-    xdm.source.user.user_type = if(userType in("Root","IAMUser","Role","FederatedUser","AWSAccount"),XDM_CONST.USER_TYPE_REGULAR , userType in("Directory","AWSService") ,XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,userType in("AssumedRole") ,XDM_CONST.USER_TYPE_MACHINE_ACCOUNT ,to_string(userType)),
-    xdm.target.process.name = json_extract_scalar(Service, "$.ServiceName"),
-    xdm.source.host.ipv4_addresses = arraycreate(coalesce(json_extract_scalar(Service,  "$.Action.AwsApiCallAction.RemoteIpDetails.IpAddressV4"), "")),
-    xdm.source.ipv4 = json_extract_scalar(Service, "$.Action.NetworkConnectionAction.LocalIpDetails.IpAddressV4"),
-    xdm.target.ipv4 = coalesce(targetIP1, targetIP2),
-    xdm.source.user.username = coalesce(username1, username2),
-    xdm.target.cloud.region = Region;
+    source_ipv4_addresses = if(array_length(k8s_api_call_src_ipv4_addresses) > 0, k8s_api_call_src_ipv4_addresses, array_length(service_action_port_probing_remote_ipv4_addresses) > 0, service_action_port_probing_remote_ipv4_addresses),
+    source_ipv6_addresses = if(array_length(k8s_api_call_src_ipv6_addresses) > 0, k8s_api_call_src_ipv6_addresses, array_length(service_action_port_probing_remote_ipv6_addresses) > 0, service_action_port_probing_remote_ipv6_addresses)
+| alter 
+    all_source_ipv4_addresses = if(array_length(source_ipv4_addresses) > 0 and source_ipv4 != null, arrayconcat(arraycreate(source_ipv4), source_ipv4_addresses), source_ipv4 != null, arraycreate(source_ipv4), source_ipv4_addresses),
+    all_source_ipv6_addresses = if(array_length(source_ipv6_addresses) > 0 and source_ipv6 != null, arrayconcat(arraycreate(source_ipv6), source_ipv6_addresses), source_ipv6 != null, arraycreate(source_ipv6), source_ipv6_addresses)
+
+| alter // XDM mappings 
+    xdm.alert.description = finding_description,
+    xdm.alert.name = finding_title,
+    xdm.alert.original_alert_id = finding_id,
+    xdm.alert.risks = if(array_length(service_evidence_threat_intelligence_details) > 0, service_evidence_threat_intelligence_details),
+    xdm.alert.severity = if( // https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_findings.html#guardduty_findings-severity
+        finding_severity >= 7, "High", 
+        finding_severity >= 4 and finding_severity <= 6.9 , "Medium", 
+        finding_severity >= 1 and finding_severity <= 3.9 , "Low", 
+        to_string(finding_severity)),
+    xdm.alert.subcategory = finding_type,
+    xdm.auth.auth_method = resource_rdsDbUserDetails_auth_method,
+    xdm.event.operation_sub_type = service_action_type,
+    xdm.event.outcome = if(service_action_network_connection_is_blocked or service_action_dns_request_action_blocked or service_action_api_call_error_code != null, XDM_CONST.OUTCOME_FAILED),
+    xdm.event.outcome_reason = service_action_api_call_error_code,
+    xdm.network.application_protocol = if(network_application_protocol != "Unknown", network_application_protocol),
+    xdm.network.dns.dns_question.name = service_action_dns_request_action_domain,
+    xdm.network.http.method = if(http_verb = null, http_verb, http_verb = "GET", XDM_CONST.HTTP_METHOD_GET, http_verb = "POST", XDM_CONST.HTTP_METHOD_POST, http_verb = "PUT", XDM_CONST.HTTP_METHOD_PUT, http_verb = "PATCH", XDM_CONST.HTTP_METHOD_PATCH, http_verb = "OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS, http_verb = "HEAD", XDM_CONST.HTTP_METHOD_HEAD, http_verb = "ACL", XDM_CONST.HTTP_METHOD_ACL, http_verb = "BASELINE_CONTROL", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL, http_verb = "BIND", XDM_CONST.HTTP_METHOD_BIND, http_verb = "CHECKIN", XDM_CONST.HTTP_METHOD_CHECKIN, http_verb = "CHECKOUT", XDM_CONST.HTTP_METHOD_CHECKOUT, http_verb = "CONNECT", XDM_CONST.HTTP_METHOD_CONNECT, http_verb = "COPY", XDM_CONST.HTTP_METHOD_COPY, http_verb = "DELETE", XDM_CONST.HTTP_METHOD_DELETE, http_verb = "LABEL", XDM_CONST.HTTP_METHOD_LABEL, http_verb = "LINK", XDM_CONST.HTTP_METHOD_LINK, http_verb = "LOCK", XDM_CONST.HTTP_METHOD_LOCK, http_verb = "MERGE", XDM_CONST.HTTP_METHOD_MERGE, http_verb = "MKACTIVITY", XDM_CONST.HTTP_METHOD_MKACTIVITY, http_verb = "MKCALENDAR", XDM_CONST.HTTP_METHOD_MKCALENDAR, http_verb = "MKCOL", XDM_CONST.HTTP_METHOD_MKCOL, http_verb = "MKREDIRECTREF", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, http_verb = "MKWORKSPACE", XDM_CONST.HTTP_METHOD_MKWORKSPACE, http_verb = "MOVE", XDM_CONST.HTTP_METHOD_MOVE, http_verb = "ORDERPATCH", XDM_CONST.HTTP_METHOD_ORDERPATCH, http_verb = "PRI", XDM_CONST.HTTP_METHOD_PRI, http_verb = "PROPFIND", XDM_CONST.HTTP_METHOD_PROPFIND, http_verb = "PROPPATCH", XDM_CONST.HTTP_METHOD_PROPPATCH, http_verb = "REBIND", XDM_CONST.HTTP_METHOD_REBIND, http_verb = "REPORT", XDM_CONST.HTTP_METHOD_REPORT, http_verb = "SEARCH", XDM_CONST.HTTP_METHOD_SEARCH, http_verb = "TRACE", XDM_CONST.HTTP_METHOD_TRACE, http_verb = "UNBIND", XDM_CONST.HTTP_METHOD_UNBIND, http_verb = "UNCHECKOUT", XDM_CONST.HTTP_METHOD_UNCHECKOUT, http_verb = "UNLINK", XDM_CONST.HTTP_METHOD_UNLINK, http_verb = "UNLOCK", XDM_CONST.HTTP_METHOD_UNLOCK, http_verb = "UPDATE", XDM_CONST.HTTP_METHOD_UPDATE, http_verb = "UPDATEREDIRECTREF", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, http_verb = "VERSION_CONTROL", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, uppercase(http_verb)),
+    xdm.network.http.response_code = if(http_code = null, null, http_code = 200, XDM_CONST.HTTP_RSP_CODE_OK, http_code = 201, XDM_CONST.HTTP_RSP_CODE_CREATED, http_code = 302, XDM_CONST.HTTP_RSP_CODE_FOUND, http_code = 401, XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED, http_code = 403, XDM_CONST.HTTP_RSP_CODE_FORBIDDEN, http_code = 404, XDM_CONST.HTTP_RSP_CODE_NOT_FOUND, http_code = 500, XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR, http_code = 501, XDM_CONST.HTTP_RSP_CODE_NOT_IMPLEMENTED, http_code = 502, XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY, http_code = 503, XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE, http_code = 504, XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT, http_code = 505, XDM_CONST.HTTP_RSP_CODE_HTTP_VERSION_NOT_SUPPORTED, http_code = 506, XDM_CONST.HTTP_RSP_CODE_VARIANT_ALSO_NEGOTIATES, http_code = 507, XDM_CONST.HTTP_RSP_CODE_INSUFFICIENT_STORAGE, http_code = 508, XDM_CONST.HTTP_RSP_CODE_LOOP_DETECTED, http_code = 511, XDM_CONST.HTTP_RSP_CODE_NETWORK_AUTHENTICATION_REQUIRED, http_code = 100, XDM_CONST.HTTP_RSP_CODE_CONTINUE, http_code = 101, XDM_CONST.HTTP_RSP_CODE_SWITCHING_PROTOCOLS, http_code = 102, XDM_CONST.HTTP_RSP_CODE_PROCESSING, http_code = 103, XDM_CONST.HTTP_RSP_CODE_EARLY_HINTS, http_code = 202, XDM_CONST.HTTP_RSP_CODE_ACCEPTED, http_code = 203, XDM_CONST.HTTP_RSP_CODE_NON__AUTHORITATIVE_INFORMATION, http_code = 204, XDM_CONST.HTTP_RSP_CODE_NO_CONTENT, http_code = 205, XDM_CONST.HTTP_RSP_CODE_RESET_CONTENT, http_code = 206, XDM_CONST.HTTP_RSP_CODE_PARTIAL_CONTENT, http_code = 207, XDM_CONST.HTTP_RSP_CODE_MULTI__STATUS, http_code = 208, XDM_CONST.HTTP_RSP_CODE_ALREADY_REPORTED, http_code = 226, XDM_CONST.HTTP_RSP_CODE_IM_USED, http_code = 300, XDM_CONST.HTTP_RSP_CODE_MULTIPLE_CHOICES, http_code = 301, XDM_CONST.HTTP_RSP_CODE_MOVED_PERMANENTLY, http_code = 303, XDM_CONST.HTTP_RSP_CODE_SEE_OTHER, http_code = 304, XDM_CONST.HTTP_RSP_CODE_NOT_MODIFIED, http_code = 305, XDM_CONST.HTTP_RSP_CODE_USE_PROXY, http_code = 307, XDM_CONST.HTTP_RSP_CODE_TEMPORARY_REDIRECT, http_code = 308, XDM_CONST.HTTP_RSP_CODE_PERMANENT_REDIRECT, http_code = 400, XDM_CONST.HTTP_RSP_CODE_BAD_REQUEST, http_code = 402, XDM_CONST.HTTP_RSP_CODE_PAYMENT_REQUIRED, http_code = 405, XDM_CONST.HTTP_RSP_CODE_METHOD_NOT_ALLOWED, http_code = 406, XDM_CONST.HTTP_RSP_CODE_NOT_ACCEPTABLE, http_code = 407, XDM_CONST.HTTP_RSP_CODE_PROXY_AUTHENTICATION_REQUIRED, http_code = 408, XDM_CONST.HTTP_RSP_CODE_REQUEST_TIMEOUT, http_code = 409, XDM_CONST.HTTP_RSP_CODE_CONFLICT, http_code = 410, XDM_CONST.HTTP_RSP_CODE_GONE, http_code = 411, XDM_CONST.HTTP_RSP_CODE_LENGTH_REQUIRED, http_code = 412, XDM_CONST.HTTP_RSP_CODE_PRECONDITION_FAILED, http_code = 413, XDM_CONST.HTTP_RSP_CODE_CONTENT_TOO_LARGE, http_code = 414, XDM_CONST.HTTP_RSP_CODE_URI_TOO_LONG, http_code = 415, XDM_CONST.HTTP_RSP_CODE_UNSUPPORTED_MEDIA_TYPE, http_code = 416, XDM_CONST.HTTP_RSP_CODE_RANGE_NOT_SATISFIABLE, http_code = 417, XDM_CONST.HTTP_RSP_CODE_EXPECTATION_FAILED, http_code = 421, XDM_CONST.HTTP_RSP_CODE_MISDIRECTED_REQUEST, http_code = 422, XDM_CONST.HTTP_RSP_CODE_UNPROCESSABLE_CONTENT, http_code = 423, XDM_CONST.HTTP_RSP_CODE_LOCKED, http_code = 424, XDM_CONST.HTTP_RSP_CODE_FAILED_DEPENDENCY, http_code = 425, XDM_CONST.HTTP_RSP_CODE_TOO_EARLY, http_code = 426, XDM_CONST.HTTP_RSP_CODE_UPGRADE_REQUIRED, http_code = 428, XDM_CONST.HTTP_RSP_CODE_PRECONDITION_REQUIRED, http_code = 429, XDM_CONST.HTTP_RSP_CODE_TOO_MANY_REQUESTS, http_code = 431, XDM_CONST.HTTP_RSP_CODE_REQUEST_HEADER_FIELDS_TOO_LARGE, http_code = 451, XDM_CONST.HTTP_RSP_CODE_UNAVAILABLE_FOR_LEGAL_REASONS, service_action_k8s_api_call_status_code),
+    xdm.network.http.url = service_action_k8s_api_call_request_uri,
+    xdm.network.ip_protocol = if(network_protocol = "UDP", XDM_CONST.IP_PROTOCOL_UDP, network_protocol = "TCP", XDM_CONST.IP_PROTOCOL_TCP),
+    xdm.observer.unique_identifier = service_detector_id,
+    xdm.source.application.name = if(resource_rdsDbUserDetails_application != null or service_action_rds_login_attempt_applications != null, arraystring(arraycreate(resource_rdsDbUserDetails_application, service_action_rds_login_attempt_applications), ",")),
+    xdm.source.asn.as_name = if(is_connection_inbound, service_action_network_connection_remote_asn_org, coalesce(service_action_api_call_remote_asn_org, service_action_k8s_api_call_remote_asn_org, service_action_rds_login_attempt_remote_asn_org)),
+    xdm.source.asn.as_number = to_integer(if(is_connection_inbound, service_action_network_connection_remote_asn, coalesce(service_action_api_call_remote_asn, service_action_k8s_api_call_remote_asn, service_action_rds_login_attempt_remote_asn))),
+    xdm.source.asn.isp = if(is_connection_inbound, coalesce(service_action_network_connection_remote_asn_isp, service_action_network_connection_remote_asn_isp_org), coalesce(service_action_api_call_remote_isp, service_action_api_call_remote_isp_org, service_action_k8s_api_call_remote_isp, service_action_k8s_api_call_remote_isp_org, service_action_rds_login_attempt_remote_isp, service_action_rds_login_attempt_remote_isp_org)),
+    xdm.source.cloud.project_id = coalesce(service_action_api_call_remote_account_id, finding_account_id),
+    xdm.source.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AWS,
+    xdm.source.cloud.region = finding_region,
+    xdm.source.cloud.zone = resource_availability_zone,
+    xdm.source.host.device_model = resource_instance_type, 
+    xdm.source.host.ipv4_addresses = if(array_length(all_source_ipv4_addresses) > 0, all_source_ipv4_addresses),
+    xdm.source.host.ipv6_addresses = if(array_length(all_source_ipv6_addresses) > 0, all_source_ipv6_addresses),
+    xdm.source.host.ipv4_public_addresses = arrayfilter(all_source_ipv4_addresses, not incidr("@element", "10.0.0.0/8") and not incidr("@element", "172.16.0.0/12") and not incidr("@element", "192.168.0.0/16") and not incidr("@element", "127.0.0.0/8") and not incidr("@element", "169.254.0.0/16") and not incidr("@element", "100.64.0.0/10")),
+    xdm.source.host.hostname = resource_instance_id,
+    xdm.source.ipv4 = coalesce(source_ipv4, arrayindex(all_source_ipv4_addresses, 0)),
+    xdm.source.ipv6 = coalesce(source_ipv6, arrayindex(all_source_ipv6_addresses, 0)),
+    xdm.source.port = to_integer(if(is_connection_inbound, service_action_network_connection_remote_port, is_connection_outbound, service_action_network_connection_local_port)),
+    xdm.source.process.executable.path = service_runtime_details_process_executable_path,
+    xdm.source.process.executable.sha256 = service_runtime_details_process_executable_sha256,
+    xdm.source.process.identifier = service_runtime_details_process_uuid,
+    xdm.source.process.name = service_runtime_details_process_name,
+    xdm.source.process.parent_id = service_runtime_details_process_parent_uuid,
+    xdm.source.user_agent = coalesce(service_action_api_call_user_agent, service_action_k8s_api_call_user_agent),
+    xdm.source.user.groups = if(service_action_k8s_role_name != null, arraycreate(service_action_k8s_role_name), resource_user_groups),
+    xdm.source.user.identifier = if(service_runtime_details_process_user_id != null or resource_user_id != null, arraystring(arraycreate(resource_user_id, service_runtime_details_process_user_id), ",")),
+    xdm.source.user.user_type = resource_user_type,
+    xdm.source.user.username = trim(coalesce(service_action_rds_login_attempt_users, service_runtime_details_process_user, resource_username), ","),
+    xdm.target.asn.as_name = if(is_connection_outbound, service_action_api_call_remote_asn_org),
+    xdm.target.asn.as_number = to_integer(if(is_connection_outbound, service_action_api_call_remote_asn)), 
+    xdm.target.asn.isp = if(is_connection_outbound, coalesce(service_action_api_call_remote_isp, service_action_api_call_remote_isp_org)), 
+    xdm.target.cloud.project_id = finding_account_id,
+    xdm.target.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AWS,
+    xdm.target.cloud.region = finding_region,
+    xdm.target.cloud.zone = resource_availability_zone,
+    xdm.target.host.ipv4_addresses = if(target_ipv4 !=  null, arraycreate(target_ipv4)),
+    xdm.target.host.ipv6_addresses = if(target_ipv6 !=  null, arraycreate(target_ipv6)),
+    xdm.target.host.ipv4_public_addresses = if(target_ipv4 != null and not incidr(target_ipv4, "10.0.0.0/8") and not incidr(target_ipv4, "172.16.0.0/12") and not incidr(target_ipv4, "192.168.0.0/16") and not incidr(target_ipv4, "127.0.0.0/8") and not incidr(target_ipv4, "169.254.0.0/16") and not incidr(target_ipv4, "100.64.0.0/10"), arraycreate(target_ipv4)),
+    xdm.target.ipv4 = target_ipv4,
+    xdm.target.ipv6 = target_ipv6,
+    xdm.target.port = to_integer(if(is_connection_inbound, service_action_network_connection_local_port, is_connection_outbound, service_action_network_connection_remote_port)),
+    xdm.target.resource.id = finding_arn,
+    xdm.target.resource.name = coalesce(resource_name, service_action_k8s_api_call_resource_name, service_action_k8s_role_binding_name),
+    xdm.target.resource.type = resource_type,
+    xdm.target.resource.value = service_action_k8s_api_call_resource;

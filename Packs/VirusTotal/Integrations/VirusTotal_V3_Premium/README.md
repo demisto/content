@@ -1,5 +1,5 @@
 Use the premium API capabilities of VirusTotal to analyze retro hunts, read live hunt notifications, and download files from VirusTotal.
-The differences between VirusTotal's Public API and Premium API can be found [in the VirusTotal v3 API documentation](https://developers.virustotal.com/v3.0/reference#public-vs-premium-api).
+The differences between VirusTotal's Public API and Premium API can be found [in the VirusTotal v3 API documentation](https://docs.virustotal.com/reference/public-vs-premium-api).
 
 This integration was integrated and tested with VirusTotal - Premium (API v3)
 
@@ -10,23 +10,19 @@ This integration was integrated and tested with VirusTotal - Premium (API v3)
 - Group several files from VirusTotal into a password-protected ZIP file.
 - Get a PCAP file generated from VirusTotal's sandbox for further analysis. 
 
-## Configure VirusTotal - Premium (API v3) on Cortex XSOAR  
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for VirusTotal - Premium (API v3).
-3. Click **Add instance** to create and configure a new integration instance.
+## Configure VirusTotal - Premium (API v3) in Cortex
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | API Key | API Key  | True |
-    | Fetch incidents | False |
-    | Incident type | False |
-    | Maximum number of incidents per fetch | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) or a date or epoch timestamp. | False |
-    | Tag: The ruleset's name or the identifier for the YARA rule matching the file to fetch its notifications. Leave blank to fetch all. | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| API Key | API Key  | True |
+| Fetch incidents | False |
+| Incident type | False |
+| Maximum number of incidents per fetch | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) or a date or epoch timestamp. | False |
+| Tag: The ruleset's name or the identifier for the YARA rule matching the file to fetch its notifications. Leave blank to fetch all. | False |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ### Acquire API Key 
 Your API key can be found in your VirusTotal account user menu.
@@ -49,7 +45,7 @@ The following 2 commands appear in both the *VirusTotal - Private API* and *Viru
 To enrich indicators, you can use the *VirusTotal (API v3)* integration reputation commands.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### vt-private-download-file
 ***
@@ -306,7 +302,7 @@ Search for files.
 | --- | --- | --- |
 | query | Search query. | Required | 
 | limit | Maximum number of results. Default is 10. | Optional | 
-| order | The order value can be sorted depends on the query type. See documentation. https://developers.virustotal.com/v3.0/reference#intelligence-search. | Optional | 
+| order | The order value can be sorted depends on the query type. See documentation. https://docs.virustotal.com/reference/intelligence-search. | Optional | 
 | cursor | Continuation cursor. | Optional | 
 | descriptors_only | Whether to return full object information or just object descriptors. Possible values are: true, false. Default is false. | Optional | 
 | extended_data | Whether to return full data information. Possible values are: true, false. Default is false. | Optional | 
@@ -1854,4 +1850,3 @@ Retrieve user's API usage.
 >|api_requests_monthly|cases_creation_monthly|intelligence_downloads_monthly|intelligence_retrohunt_jobs_monthly|intelligence_searches_monthly|intelligence_vtdiff_creation_monthly|
 >|---|---|---|---|---|---|
 >| group: {"inherited_from": "palo_alto_networks", "used": 13551234, "allowed": 1000000000}<br/>user: {"used": 2564, "allowed": 1000000000} | user: {"used": 0, "allowed": 20} | group: {"inherited_from": "palo_alto_networks", "used": 6214, "allowed": 100000}<br/>user: {"used": 5, "allowed": 0} | group: {"inherited_from": "palo_alto_networks", "used": 163, "allowed": 300}<br/>user: {"used": 0, "allowed": 0} | group: {"inherited_from": "palo_alto_networks", "used": 16328, "allowed": 100000}<br/>user: {"used": 12, "allowed": 0} | group: {"inherited_from": "palo_alto_networks", "used": 23, "allowed": 100000000}<br/>user: {"used": 0, "allowed": 0} |
-

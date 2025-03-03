@@ -115,35 +115,54 @@ class TestHelperFunction:
 
     date_1 = '2023-01-01T01:00:00'
     date_2 = '2023-01-01T02:00:00'
+    date_3 = '2023-01-01T00:00:00'
+    date_4 = '2023-01-01T00:00:01'
     datetime_1 = arg_to_datetime(date_1)
     datetime_2 = arg_to_datetime(date_2)
+    datetime_3 = arg_to_datetime(date_3)
+    datetime_4 = arg_to_datetime(date_4)
 
     # test_calculate_fetch_start_time parametrize arguments
-    case_last_run_exist = (date_1, datetime_2, datetime_1)
-    case_from_date_parameter = (None, datetime_1, datetime_1)  # type: ignore
-    case_first_fetch_no_from_date_parameter = (None, None, datetime(2023, 1, 1, 0, 59))
+    case_last_run_exist_after_higher_than_before = (date_1, datetime_2, (datetime(2023, 1, 1, 0, 59), datetime(2023, 1, 1, 1, 0)))
+    case_last_run_exist_after_lower_than_before = (date_3, datetime_4, (datetime_3, datetime(2023, 1, 1, 1, 0)))
+    case_from_date_parameter_after_higher_than_before = (None, datetime_1,
+                                                         (datetime(2023, 1, 1, 0, 59),
+                                                          datetime(2023, 1, 1, 1, 0)))  # type: ignore
+    case_from_date_parameter_after_lower_than_before = (None, datetime_3,
+                                                        (datetime(2023, 1, 1, 0, 0), datetime(2023, 1, 1, 1, 0)))  # type: ignore
+    case_first_fetch_no_from_date_parameter = (None, None, (datetime(2023, 1, 1, 0, 59), datetime(2023, 1, 1, 1, 0)))
 
     @pytest.mark.parametrize(
         "last_fetch_time, fetch_start_time_param, expected_result", [
-            case_last_run_exist, case_from_date_parameter, case_first_fetch_no_from_date_parameter]
+            case_last_run_exist_after_higher_than_before, case_last_run_exist_after_lower_than_before,
+            case_from_date_parameter_after_higher_than_before, case_from_date_parameter_after_lower_than_before,
+            case_first_fetch_no_from_date_parameter]
     )
     @freeze_time("2023-01-01 01:00:00")
     def test_calculate_fetch_start_time(self, last_fetch_time, fetch_start_time_param, expected_result):
         """
         Given:
-            - Case 1: last_fetch_time exist in last_run, thus being prioritized (fetch-events / armis-get-events commands).
-            - Case 2: last_run is empty & from_date parameter exist (armis-get-events command with from_date argument).
-            - Case 3: first fetch in the instance (no last_run),
+            - Case 1: last_fetch_time exist in last_run, thus being prioritized (fetch-events / armis-get-events commands)
+                      but time is larger/equal than now time.
+            - Case 2: last_fetch_time exist in last_run, thus being prioritized (fetch-events / armis-get-events commands)
+                      but time is less than now time.
+            - Case 3: last_run is empty & from_date parameter exist (armis-get-events command with from_date argument)
+                      but time is larger/equal than now time.
+            - Case 4: last_run is empty & from_date parameter exist (armis-get-events command with from_date argument)
+                      but time is less than now time.
+            - Case 5: first fetch in the instance (no last_run),
                       this will set the current date time (fetch-events / armis-get-events commands).
         When:
-            - Calculating fetch start time from current fetch cycle.
+            - Calculating fetch start time and end time from current fetch cycle.
         Then:
-            - Case 1: Prefer last_fetch_time from last run and convert it to a valid datetime object.
-            - Case 2: Use provided fetch_start_time_param (usually current time) datetime object.
-            - Case 3: Should return the now time (freezed as 2023-01-01) + 1 minute.
+            - Case 1: Use the before time - 1 minute delta.
+            - Case 2: Prefer last_fetch_time from last run and convert it to a valid datetime object.
+            - Case 3: Use the before time - 1 minute delta.
+            - Case 4: Use provided fetch_start_time_param (usually current time) datetime object.
+            - Case 5: Should return the now time (freezed as 2023-01-01) + 1 minute.
             """
         from ArmisEventCollector import calculate_fetch_start_time
-        assert calculate_fetch_start_time(last_fetch_time, fetch_start_time_param) == expected_result
+        assert calculate_fetch_start_time(last_fetch_time, fetch_start_time_param, fetch_delay=0) == expected_result
 
     @pytest.mark.parametrize('x, y, expected_result', [(datetime_1, datetime_1, True), (datetime_1, datetime_2, False)])
     def test_are_two_event_time_equal(self, x, y, expected_result):
@@ -529,7 +548,7 @@ class TestFetchFlow:
         7
     )
 
-    @ pytest.mark.parametrize('max_fetch, devices_max_fetch, last_run, fetch_start_time, event_types_to_fetch, response, events,\
+    @pytest.mark.parametrize('max_fetch, devices_max_fetch, last_run, fetch_start_time, event_types_to_fetch, response, events,\
         next_run, next', [case_first_fetch, case_second_fetch, case_second_fetch_with_duplicates,
                           case_no_new_event_from_fetch, case_all_events_from_fetch_have_the_same_time
                           ])

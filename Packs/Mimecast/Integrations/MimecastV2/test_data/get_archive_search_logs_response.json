@@ -1,0 +1,25 @@
+[{
+    "meta": {
+        "pagination": {
+            "pageSize": 10,
+            "totalCount": 234,
+            "next": "asides"
+        },
+        "status": 200
+    },
+    "data": [
+        {
+            "logs": [
+                {
+                    "createTime": "2024-03-20T11:39:36+0000",
+                    "emailAddr": "example@test.com",
+                    "source": "archive",
+                    "searchText": "aaaaasas",
+                    "searchReason": "",
+                    "description": "Message Tracking Search"
+                }
+            ]
+        }
+    ],
+    "fail": []
+}]

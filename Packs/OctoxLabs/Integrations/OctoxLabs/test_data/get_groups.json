@@ -1,0 +1,15 @@
+{
+    "count": 2,
+    "results": [
+        {
+            "id": 2,
+            "name": "Auditors",
+            "user_count": 0
+        },
+        {
+            "id": 1,
+            "name": "Administrators",
+            "user_count": 1
+        }
+    ]
+}

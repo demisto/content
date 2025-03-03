@@ -28,26 +28,27 @@ configuration:
   name: auth_type
   required: true
   type: 15
-  additionalinfo: Type of authentication. Can be Authorization Code Flow (recommended), Device Code Flow, or Azure Managed Identities.
+  additionalinfo: Type of authentication. Can be Authorization Code Flow (recommended), Device Code Flow, Azure Managed Identities or Client Credentials flow.
   defaultvalue: Device Code
   options:
   - Authorization Code
   - Device Code
   - Azure Managed Identities
+  - Client Credentials
   section: Connect
-- display: Tenant ID (for authorization code mode)
+- display: Tenant ID 
   name: tenant_id
   type: 0
   required: false
   section: Connect
-- display: Client Secret (for authorization code mode)
+- display: Client Secret
   name: credentials
   type: 9
-  displaypassword: Client Secret (for authorization code mode)
+  displaypassword: Client Secret
   hiddenusername: true
   required: false
   section: Connect
-- display: Application redirect URI (for authorization code mode)
+- display: Application redirect URI
   name: redirect_uri
   type: 0
   required: false
@@ -393,7 +394,7 @@ script:
     - contextPath: AzureKS.ResourceGroup.tags.type
       description: 'The type tag associated with the Azure Kubernetes resource group.'
       type: String
-  dockerimage: demisto/crypto:1.0.0.96042
+  dockerimage: demisto/crypto:1.0.0.114611
   runonce: false
   script: '-'
   subtype: python3

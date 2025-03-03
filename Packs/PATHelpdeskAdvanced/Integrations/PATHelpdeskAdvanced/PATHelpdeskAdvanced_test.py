@@ -60,12 +60,8 @@ def test_converts_date_fields():
     EPOCH_2023_INT = 1693573200000
     EPOCH_2022_INT = 1641042000000
 
-    STR_2023 = (
-        datetime.fromtimestamp(EPOCH_2023_INT / 1000, tz=timezone.utc)
-    ).strftime(DATETIME_FORMAT)
-    STR_2022 = (
-        datetime.fromtimestamp(EPOCH_2022_INT / 1000, tz=timezone.utc)
-    ).strftime(DATETIME_FORMAT)
+    STR_2023 = (datetime.fromtimestamp(EPOCH_2023_INT / 1000, tz=timezone.utc)).strftime(DATETIME_FORMAT)  # noqa: UP017
+    STR_2022 = (datetime.fromtimestamp(EPOCH_2022_INT / 1000, tz=timezone.utc)).strftime(DATETIME_FORMAT)  # noqa: UP017
 
     raw = {
         "Date1": f"/Date({EPOCH_2023_INT})/",

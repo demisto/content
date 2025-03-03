@@ -1,0 +1,1080 @@
+id: XQL Query Engine - Test
+version: 43
+vcShouldKeepItemLegacyProdMachine: false
+name: XQL Query Engine - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: dd8afb9f-1b0f-46b0-8068-14a87b6af9a0
+    type: start
+    task:
+      id: dd8afb9f-1b0f-46b0-8068-14a87b6af9a0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 5df6875d-86a5-4416-8a9f-92e2ee5b9762
+    type: regular
+    task:
+      id: 5df6875d-86a5-4416-8a9f-92e2ee5b9762
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: def5d2f3-f275-4792-8885-231ca85749fd
+    type: title
+    task:
+      id: def5d2f3-f275-4792-8885-231ca85749fd
+      version: -1
+      name: Generic Queries
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 13a1401a-913f-4bbb-8230-93e29ceee5f6
+    type: regular
+    task:
+      id: 13a1401a-913f-4bbb-8230-93e29ceee5f6
+      version: -1
+      name: XDR start xql query
+      description: Execute an XQL query and retrieve results of an executed XQL query
+        API. The command will be executed every 10 seconds until results are retrieved
+        or until a timeout error is raised.
+      script: '|||xdr-xql-generic-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      query:
+        simple: "dataset = xdr_data\n | filter event_type = EVENT_LOG \n | fields
+          action_evtlog_message, event_id\n| limit 1"
+      query_name:
+        simple: PlaybookTest1
+      time_frame:
+        simple: 1 month
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: c6d101d6-d916-46c6-8f32-31a8882877c6
+    type: condition
+    task:
+      id: c6d101d6-d916-46c6-8f32-31a8882877c6
+      version: -1
+      name: Verify query results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXQL.GenericQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXQL.GenericQuery.query_name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: PlaybookTest1
+                accessor: execution_id
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXQL.GenericQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXQL.GenericQuery.query_name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: PlaybookTest1
+                accessor: status
+            iscontext: true
+          right:
+            value:
+              simple: SUCCESS
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: e73ba607-cb62-41ff-8322-97dba461b313
+    type: regular
+    task:
+      id: e73ba607-cb62-41ff-8322-97dba461b313
+      version: -1
+      name: XDR get query results
+      description: Retrieve results of an executed XQL query API.
+      script: '|||xdr-xql-get-query-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      query_id:
+        complex:
+          root: PaloAltoNetworksXQL.GenericQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXQL.GenericQuery.query_name
+                iscontext: true
+              right:
+                value:
+                  simple: PlaybookTest1
+          accessor: execution_id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: eb927654-400a-4b0f-8e21-815b6af5a189
+    type: condition
+    task:
+      id: eb927654-400a-4b0f-8e21-815b6af5a189
+      version: -1
+      name: Verify query results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXQL.GenericQuery.execution_id
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PaloAltoNetworksXQL.GenericQuery.status
+            iscontext: true
+          right:
+            value:
+              simple: SUCCESS
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 14d491e5-6f1e-4a58-85f8-f36dda48aba9
+    type: regular
+    task:
+      id: 14d491e5-6f1e-4a58-85f8-f36dda48aba9
+      version: -1
+      name: XDR get quota
+      description: Retrieve the amount of query quota available and used.
+      script: '|||xdr-xql-get-quota'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: ce76c376-2c03-45be-8b07-c2f508dbc8d5
+    type: condition
+    task:
+      id: ce76c376-2c03-45be-8b07-c2f508dbc8d5
+      version: -1
+      name: Verify quota results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXQL.Quota.license_quota
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXQL.Quota.used_quota
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 70831878-9265-4788-8601-b39a68f2b708
+    type: title
+    task:
+      id: 70831878-9265-4788-8601-b39a68f2b708
+      version: -1
+      name: Built-In Queries
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: dfd8fdc5-5670-4fba-8127-6d1994cd757a
+    type: regular
+    task:
+      id: dfd8fdc5-5670-4fba-8127-6d1994cd757a
+      version: -1
+      name: XDR file event query
+      description: Query file events by file sha256.
+      script: '|||xdr-xql-file-event-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      endpoint_id:
+        simple: '*'
+      file_sha256:
+        simple: '*'
+      limit:
+        simple: "1"
+      query_name:
+        simple: FileEvent1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 64817da8-9a35-4f44-8ae1-00c9a232d3b3
+    type: regular
+    task:
+      id: 64817da8-9a35-4f44-8ae1-00c9a232d3b3
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: e12726ee-af09-401c-8aca-536c98046200
+    type: regular
+    task:
+      id: e12726ee-af09-401c-8aca-536c98046200
+      version: -1
+      name: XDR dll module query
+      description: Query DLL module events by DLL sha256.
+      script: '|||xdr-xql-dll-module-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      endpoint_id:
+        simple: '*'
+      limit:
+        simple: "2"
+      loaded_module_sha256:
+        simple: '*'
+      query_name:
+        simple: DllModule1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: e189ddf4-f8cc-4812-883c-7d6652654179
+    type: regular
+    task:
+      id: e189ddf4-f8cc-4812-883c-7d6652654179
+      version: -1
+      name: XDR network connection query
+      description: Query network connections between a source ip, destination ip and
+        port.
+      script: '|||xdr-xql-network-connection-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      endpoint_id:
+        simple: '*'
+      limit:
+        simple: "2"
+      local_ip:
+        simple: '*'
+      port:
+        simple: "4444"
+      query_name:
+        simple: NetworkConnection1
+      remote_ip:
+        simple: '*'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 192bda7b-a4ff-4f48-85fe-cdf6feb59b93
+    type: regular
+    task:
+      id: 192bda7b-a4ff-4f48-85fe-cdf6feb59b93
+      version: -1
+      name: XDR registry query
+      description: Query windows registry by registry key name.
+      script: '|||xdr-xql-registry-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      endpoint_id:
+        simple: '*'
+      limit:
+        simple: "2"
+      query_name:
+        simple: Registry1
+      reg_key_name:
+        simple: '*'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 4d4a0eb8-83e1-4075-8f63-4beecdea0176
+    type: regular
+    task:
+      id: 4d4a0eb8-83e1-4075-8f63-4beecdea0176
+      version: -1
+      name: XDR event log query
+      description: Query event logs by event ID.
+      script: '|||xdr-xql-event-log-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      endpoint_id:
+        simple: '*'
+      event_id:
+        simple: "4444"
+      limit:
+        simple: "2"
+      query_name:
+        simple: EventLog1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: cff72d8b-db4a-413d-858a-af992a69606a
+    type: regular
+    task:
+      id: cff72d8b-db4a-413d-858a-af992a69606a
+      version: -1
+      name: XDR dns query
+      description: Query by dns query or domain name.
+      script: '|||xdr-xql-dns-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      endpoint_id:
+        simple: '*'
+      external_domain:
+        simple: '*'
+      limit:
+        simple: "2"
+      query_name:
+        simple: DNS1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: e4e34945-f2b1-41d5-80e8-578736f65120
+    type: regular
+    task:
+      id: e4e34945-f2b1-41d5-80e8-578736f65120
+      version: -1
+      name: XDR file dropper query
+      description: Search for the process who wrote the given file, by its sha256
+        or file path.
+      script: '|||xdr-xql-file-dropper-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      endpoint_id:
+        simple: '*'
+      file_path:
+        simple: '*'
+      file_sha256:
+        simple: '*'
+      limit:
+        simple: "2"
+      query_name:
+        simple: FileDropper1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: dc5a3b62-9437-42f2-8efb-bcaade332de6
+    type: regular
+    task:
+      id: dc5a3b62-9437-42f2-8efb-bcaade332de6
+      version: -1
+      name: XDR process instance network activity query
+      description: Search for network connection created by a given process instace
+        ID.
+      script: '|||xdr-xql-process-instance-network-activity-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      endpoint_id:
+        simple: '*'
+      limit:
+        simple: "2"
+      process_instace_id:
+        simple: '*'
+      process_instance_id:
+        simple: '*'
+      query_name:
+        simple: ProcessInstanceNetwork1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 91b90b1f-855d-4902-8d8b-e0f1c8f83508
+    type: regular
+    task:
+      id: 91b90b1f-855d-4902-8d8b-e0f1c8f83508
+      version: -1
+      name: XDR process instance causality activity query
+      description: Search for network connection created by a given process causality
+        ID.
+      script: '|||xdr-xql-process-causality-network-activity-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      endpoint_id:
+        simple: '*'
+      limit:
+        simple: "2"
+      process_causality_id:
+        simple: '*'
+      query_name:
+        simple: ProcessInstanceCasuality1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 57320003-8df8-48ca-8444-ba8f5b4b0f90
+    type: condition
+    task:
+      id: 57320003-8df8-48ca-8444-ba8f5b4b0f90
+      version: -1
+      name: Verify query results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXQL.FileEvent
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXQL.FileEvent.query_name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: FileEvent1
+                accessor: execution_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXQL.ProcessEvent
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXQL.ProcessEvent.query_name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ProcessEvent1
+                accessor: execution_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXQL.DllModule
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXQL.DllModule.query_name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: DllModule1
+                accessor: execution_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXQL.NetworkConnection
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXQL.NetworkConnection.query_name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: NetworkConnection1
+                accessor: execution_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXQL.Registry
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXQL.Registry.query_name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Registry1
+                accessor: execution_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXQL.EventLog
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXQL.EventLog.query_name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: EventLog1
+                accessor: execution_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXQL.DNS
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXQL.DNS.query_name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: DNS1
+                accessor: execution_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXQL.FileDropper
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXQL.FileDropper.query_name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: FileDropper1
+                accessor: execution_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.query_name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ProcessInstanceNetwork1
+                accessor: execution_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.query_name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ProcessInstanceCasuality1
+                accessor: execution_id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 8b15999a-999e-4161-80d7-2a3a3e7e3db8
+    type: title
+    task:
+      id: 8b15999a-999e-4161-80d7-2a3a3e7e3db8
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 46c83ff1-4470-4506-8ad3-ef525803e803
+    type: regular
+    task:
+      id: 46c83ff1-4470-4506-8ad3-ef525803e803
+      version: -1
+      name: XDR process event query
+      description: Query process events by process sha256.
+      script: '|||xdr-xql-process-event-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      endpoint_id:
+        simple: '*'
+      limit:
+        simple: "2"
+      process_sha256:
+        simple: '*'
+      query_name:
+        simple: ProcessEvent1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "8_11_yes": 0.87
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3825,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 8.7.0
+marketplaces:
+- marketplacev2

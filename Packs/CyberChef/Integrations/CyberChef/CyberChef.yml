@@ -3,16 +3,21 @@ commonfields:
   id: CyberChef
   version: -1
 configuration:
+- display: Local execution
+  additionalinfo: Uses the [cyberchef node package](https://github.com/polarityio/cyberchef-node) for local execution of your commands
+  name: local_execution
+  required: false
+  type: 8
 - additionalinfo: URL or your CyberChef server or https://prod.apifor.io/
   display: Server URL (e.g. https://prod.apifor.io/)
   name: url
-  required: true
   type: 0
-- additionalinfo: API key if you use https://prod.apifor.io/
-  display: API Key
+  required: false
+- display: API Key
   name: apikey
   type: 4
   required: false
+  additionalinfo: API key if you use https://prod.apifor.io/
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -27,10 +32,10 @@ name: CyberChef
 script:
   commands:
   - arguments:
-    - description: input data to be used in baking
+    - description: input data to be used in baking.
       name: input
       required: true
-    - description: 'recipe how to bake. use JSON formatting. For example:  {         "op": "to decimal",         "args": {             "delimiter": "Colon"         }     }'
+    - description: 'recipe how to bake. use JSON formatting. For example:  {         "op": "to decimal",         "args": {             "delimiter": "Colon"         }     }.'
       name: recipe
       required: true
     - description: 'Optional argument to define outputType. '
@@ -39,21 +44,21 @@ script:
     name: cyberchef-bake
     outputs:
     - contextPath: CyberChef.Bake
-      description: Output of the bake
+      description: Output of the bake.
       type: string
   - arguments:
     - description: The input data for the recipe. Currently accepts strings.
       name: input
       required: true
-    - description: Arguments for the magic operation
+    - description: Arguments for the magic operation.
       name: args
-    description: CyberChef Magic function
+    description: CyberChef Magic function.
     name: cyberchef-magic
     outputs:
     - contextPath: CyberChef.Magic
-      description: Output of the Magic operation
+      description: Output of the Magic operation.
       type: string
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/cyberchef:1.0.0.118049
   runonce: false
   script: ''
   subtype: python3

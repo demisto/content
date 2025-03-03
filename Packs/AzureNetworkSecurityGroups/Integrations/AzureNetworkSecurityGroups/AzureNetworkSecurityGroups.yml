@@ -613,7 +613,297 @@ script:
     - contextPath: AzureNSG.ResourceGroup.tags.type
       description: 'The type tag associated with the Azure Network Security Groups resource group.'
       type: String
-  dockerimage: demisto/crypto:1.0.0.91402
+  - description: Gets public IP addresses in a resource group.
+    name: azure-nsg-public-ip-addresses-list
+    outputs:
+    - contextPath: AzureNSG.PublicIPAdress.name
+      description: The public IP address's name.
+      type: String
+    - contextPath: AzureNSG.PublicIPAdress.id
+      description: The public IP address's ID.
+      type: String
+    - contextPath: AzureNSG.PublicIPAdress.etag
+      description: The public IP address's etag.
+      type: String
+    - contextPath: AzureNSG.PublicIPAdress.provisioningState
+      description: The public IP address's provisioning state.
+      type: String
+    - contextPath: AzureNSG.PublicIPAdress.publicIPAddressVersion
+      description: The public IP address's version.
+      type: String
+    - contextPath: AzureNSG.PublicIPAdress.ipAddress
+      description: The public IP address's IP address.
+      type: String
+    - contextPath: AzureNSG.PublicIPAdress.domainNameLabel
+      description: The public IP address's domain name label.
+      type: String
+    - contextPath: AzureNSG.PublicIPAdress.fqdn
+      description: The public IP address's fully qualified domain name (FQDN).
+      type: String
+    arguments:
+    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’."
+      name: resource_group_name
+      default: false
+      type: String
+      isArray: false
+      required: false
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      name: subscription_id
+      default: false
+      type: String
+      isArray: false
+      required: false
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: 50
+    - name: all_results
+      description: Whether to retrieve all the results by overriding the default limit.
+      defaultValue: "false"
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+  - description: Gets virtual networks in a resource group.
+    name: azure-nsg-virtual-networks-list
+    outputs:
+    - contextPath: AzureNSG.VirtualNetwork.name
+      description: The virtual network's name.
+      type: String
+    - contextPath: AzureNSG.VirtualNetwork.etag
+      description: The virtual network's etag.
+      type: String
+    - contextPath: AzureNSG.VirtualNetwork.location
+      description: The virtual network's location.
+      type: String
+    - contextPath: AzureNSG.VirtualNetwork.properties.addressSpace.addressPrefixes
+      description: A list of address blocks reserved for this virtual network in CIDR notation.
+      type: String
+    - contextPath: AzureNSG.VirtualNetwork.properties.subnets.name
+      description: The virtual network's subnet name.
+      type: List
+    - contextPath: AzureNSG.VirtualNetwork.subnetAdrdressPrefix
+      description: The virtual network's subnet address prefix.
+      type: List
+    - contextPath: AzureNSG.VirtualNetwork.subnetID
+      description: List of the virtual network's subnets ID.
+      type: List
+    arguments:
+    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’."
+      name: resource_group_name
+      default: false
+      type: String
+      isArray: false
+      required: false
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      name: subscription_id
+      default: false
+      type: String
+      isArray: false
+      required: false
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: 50
+    - name: all_results
+      description: Whether to retrieve all the results by overriding the default limit.
+      defaultValue: "false"
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+  - description: Creates a network security group in the specified resource group.
+    name: azure-nsg-security-group-create
+    outputs:
+    - contextPath: AzureNSG.SecurityGroup.name
+      description: The network security group's name.
+      type: String
+    - contextPath: AzureNSG.SecurityGroup.etag
+      description: The network security group's etag.
+      type: String
+    - contextPath: AzureNSG.SecurityGroup.location
+      description: The network security group's location.
+      type: String
+    - contextPath: AzureNSG.SecurityGroup.properties.securityRules
+      description: A collection of security rules of the network security group.
+      type: List
+    arguments:
+    - description: "The security group name."
+      name: security_group_name
+      default: false
+      type: String
+      isArray: false
+      required: true
+    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’."
+      name: resource_group_name
+      default: false
+      type: String
+      isArray: false
+      required: false
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      name: subscription_id
+      default: false
+      type: String
+      isArray: false
+      required: false
+    - description: "The resource location."
+      name: location
+      default: false
+      type: String
+      isArray: false
+      required: true
+  - description: Gets network interfaces in a resource group.
+    name: azure-nsg-network-interfaces-list
+    outputs:
+    - contextPath: AzureNSG.NetworkInterfaces.name
+      description: The network interface's name.
+      type: String
+    - contextPath: AzureNSG.NetworkInterfaces.id
+      description: The network interface's ID.
+      type: String
+    - contextPath: AzureNSG.NetworkInterfaces.properties.provisioningState
+      description: The network interface's provisioning state.
+      type: String
+    - contextPath: AzureNSG.NetworkInterfaces.ipConfigurationName
+      description: The name of the resource that is unique within a resource group.
+      type: List
+    - contextPath: AzureNSG.NetworkInterfaces.ipConfigurationID
+      description: The resource ID.
+      type: List
+    - contextPath: AzureNSG.NetworkInterfaces.ipConfigurationPrivateIPAddress
+      description: The private IP address of the IP configuration.
+      type: List
+    - contextPath: AzureNSG.NetworkInterfaces.ipConfigurationPublicIPAddressName
+      description: The ID of the public IP address of the IP configuration.
+      type: List
+    - contextPath: AzureNSG.NetworkInterfaces.dnsServers
+      description: List of DNS servers IP addresses.
+      type: List
+    - contextPath: AzureNSG.NetworkInterfaces.appliedDnsServers
+      description: List of all DNS servers from all NICs that are part of the Availability Set.
+      type: List
+    - contextPath: AzureNSG.NetworkInterfaces.internalDomainNameSuffix
+      description: The network interface's internal domain name suffix.
+      type: String
+    - contextPath: AzureNSG.NetworkInterfaces.properties.macAddress
+      description: The network interface's MAC address.
+      type: String
+    - contextPath: AzureNSG.NetworkInterfaces.properties.virtualMachine.id
+      description: The network interface's virtual machine's ID.
+      type: String
+    - contextPath: AzureNSG.NetworkInterfaces.location
+      description: The network interface's location.
+      type: String
+    - contextPath: AzureNSG.NetworkInterfaces.kind
+      description: The network interface's kind.
+      type: String
+    arguments:
+    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’."
+      name: resource_group_name
+      default: false
+      type: String
+      isArray: false
+      required: false
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      name: subscription_id
+      default: false
+      type: String
+      isArray: false
+      required: false
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: 50
+    - name: all_results
+      description: Whether to retrieve all the results by overriding the default limit.
+      defaultValue: "false"
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+  - description: Creates or updates a network interface.
+    name: azure-nsg-network-interfaces-create
+    outputs:
+    - contextPath: AzureNSG.NetworkInterface.name
+      description: The network interface's name.
+      type: String
+    - contextPath: AzureNSG.NetworkInterface.etag
+      description: The network interface's etag.
+      type: String
+    - contextPath: AzureNSG.NetworkInterface.properties.provisioningState
+      description: The network interface's provisioning state.
+      type: String
+    - contextPath: AzureNSG.NetworkInterface.properties.ipConfigurations.name
+      description: The name of the resource that is unique within a resource group.
+      type: List
+    - contextPath: AzureNSG.NetworkInterface.ipConfigurationPrivateIPAddress
+      description: The private IP address of the IP configuration.
+      type: List
+    - contextPath: AzureNSG.NetworkInterface.ipConfigurationPublicIPAddressName
+      description: The ID of the public IP address of the IP configuration.
+      type: List
+    - contextPath: AzureNSG.NetworkInterface.subnetId
+      description: The subnet ID of the IP configuration.
+      type: List
+    arguments:
+    - description: "The network interface name."
+      name: nic_name
+      default: false
+      type: String
+      isArray: false
+      required: true
+    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’."
+      name: resource_group_name
+      default: false
+      type: String
+      isArray: false
+      required: false
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      name: subscription_id
+      default: false
+      type: String
+      isArray: false
+      required: false
+    - description: "Existing network security group name. Note: Use azure-nsg-security-groups-list in order to find existing network security group name."
+      name: nsg_name
+      default: false
+      type: String
+      isArray: false
+      required: false
+    - description: "Existing IP configuration name. Note: Use azure-nsg-public-ip-adresses-list in order to find available ip configuration."
+      name: ip_config_name
+      default: false
+      type: String
+      isArray: false
+      required: true
+    - description: "The private IP."
+      name: private_ip
+      default: false
+      type: String
+      isArray: false
+      required: false
+    - description: "The public IP address name."
+      name: public_ip_address_name
+      default: false
+      type: String
+      isArray: false
+      required: false
+    - description: "The virtual network name."
+      name: vnet_name
+      default: false
+      type: String
+      isArray: false
+      required: true
+    - description: "The subnet name."
+      name: subnet_name
+      default: false
+      type: String
+      isArray: false
+      required: true
+    - description: "The resource location."
+      name: location
+      default: false
+      type: String
+      isArray: false
+      required: true
+  dockerimage: demisto/crypto:1.0.0.2005673
   runonce: false
   script: '-'
   subtype: python3

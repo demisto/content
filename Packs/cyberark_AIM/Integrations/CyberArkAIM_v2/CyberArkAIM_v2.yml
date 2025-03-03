@@ -81,12 +81,11 @@ script:
     - contextPath: CyberArkAIM.Name
       description: The credential name of the account.
       type: String
-  dockerimage: demisto/ntlm:1.0.0.48903
+  dockerimage: demisto/ntlm:1.0.0.2034747
   runonce: false
   script: '-'
   subtype: python3
   type: python
-autoUpdateDockerImage: false  
 tests:
 - No tests
 fromversion: 5.0.0

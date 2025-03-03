@@ -2,7 +2,7 @@
     "name": "Microsoft Defender for Cloud",
     "description": "Unified security management and advanced threat protection across hybrid cloud workloads.",
     "support": "xsoar",
-    "currentVersion": "2.0.25",
+    "currentVersion": "2.0.36",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -12,7 +12,10 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "security center",
+        "azure"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"

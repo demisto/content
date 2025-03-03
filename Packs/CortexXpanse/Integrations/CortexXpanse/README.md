@@ -1,30 +1,30 @@
 Integration to pull assets and other ASM related information.
 This integration was integrated and tested with version 2.0 of Cortex Expander.
 
-## Configure Cortex Xpanse on Cortex XSOAR
+## Configure Cortex Xpanse in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cortex Xpanse.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description**                                                                                                                                                                                                                                     | **Required** |
-    | --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-    | Server URL | The web UI with \`api-\` appended to front \(e.g., https://api-xsiam.paloaltonetworks.com\). For more information, see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis. | True |
-    | API Key ID | For more information, see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis.                                                                                              | True |
-    | API Key | **Only standard API key type is supported**.                                                                                                                                                                                                        | True |
-    | Trust any certificate (not secure) |                                                                                                                                                                                                                                                     | False |
-    | Use system proxy settings |                                                                                                                                                                                                                                                     | False |
-    | Fetch incidents |                                                                                                                                                                                                                                                     | False |
-    | Incidents Fetch Interval |                                                                                                                                                                                                                                                     | False |
-    | Incident type |                                                                                                                                                                                                                                                     | False |
-    | Maximum number of alerts per fetch | The maximum number of alerts per fetch. Cannot exceed 100.                                                                                                                                                                                          | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |                                                                                                                                                                                                                                                     | False |
-    | Alert Severities to Fetch | The severity of the alerts that will be fetched. If no severity is provided then alerts of all the severities will be fetched. Note: An alert whose status was changed to a filtered status after its creation time will not be fetched.            | False |
-    | Source Reliability | Reliability of the source providing the intelligence data. Used for !ip and !domain commands.                                                                                                                                                       | False |
+| **Parameter**                                                                    | **Description**                                                                                                                                                                                                                                         | **Required** |
+|----------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| Server URL                                                                       | The web UI with \`api-\` appended to front \(e.g., <https://api-xsiam.paloaltonetworks.com\>). For more information, see <https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis>. | True         |
+| API Key ID                                                                       | For more information, see <https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis>.                                                                                                | True         |
+| API Key                                                                          | **Only standard API key type is supported**.                                                                                                                                                                                                            | True         |
+| Trust any certificate (not secure)                                               |                                                                                                                                                                                                                                                         | False        |
+| Use system proxy settings                                                        |                                                                                                                                                                                                                                                         | False        |
+| Fetch incidents                                                                  |                                                                                                                                                                                                                                                         | False        |
+| Incidents Fetch Interval                                                         |                                                                                                                                                                                                                                                         | False        |
+| Incident type                                                                    |                                                                                                                                                                                                                                                         | False        |
+| Maximum number of alerts per fetch                                               | The maximum number of alerts per fetch. Cannot exceed 100.                                                                                                                                                                                              | False        |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |                                                                                                                                                                                                                                                         | False        |
+| Alert Severities to Fetch                                                        | The severity of the alerts that will be fetched. If no severity is provided then alerts of all the severities will be fetched. Note: An alert whose status was changed to a filtered status after its creation time will not be fetched.                | False        |
+| Source Reliability                                                               | Reliability of the source providing the intelligence data. Used for !ip and !domain commands.                                                                                                                                                           | False        |
+| Look Back (Minutes to look back when fetching) | Use this parameter to determine how far back in time to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False        |
 
-4. Click **Test** to validate the URLs, token, and connection.
+
+
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### asm-list-external-service
@@ -65,8 +65,11 @@ Get a list of all your external services filtered by business units, externally 
 | ASM.ExternalService.externally_inferred_vulnerability_score | Unknown | External service vulnerability score. | 
 
 #### Command example
+
 ```!asm-list-external-service domain=acme.com is_active=yes discovery_type=directly_discovery```
+
 #### Context Example
+
 ```json
 {
     "ASM": {
@@ -187,6 +190,7 @@ Get a list of all your external services filtered by business units, externally 
 #### Human Readable Output
 
 >### External Services
+>
 >|Active Classifications|Business Units|Discovery Type|Domain|Externally Detected Providers|First Observed|Ip Address|Is Active|Last Observed|Port|Protocol|Service Id|Service Name|Service Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| HttpServer,<br/>MicrosoftOWAServer,<br/>ServerSoftware,<br/>MicrosoftIisWebServer,<br/>ApplicationServerSoftware | Acme,<br/>VanDelay Industries | DirectlyDiscovered | autodiscover.acme.com | Microsoft Azure | 1659395040000 | 1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1 | Active | 1663024320000 | 80 | TCP | 4c755fea-59e8-3719-8829-9f6adde65068 | HTTP Server at autodiscover.acme.com:80 | HttpServer |
@@ -229,8 +233,11 @@ Get service details according to the service ID.
 | ASM.ExternalService.details | String | Additional details. | 
 
 #### Command example
+
 ```!asm-get-external-service service_id=94232f8a-f001-3292-aa65-63fa9d981427```
+
 #### Context Example
+
 ```json
 {
     "ASM": {
@@ -573,12 +580,14 @@ Get service details according to the service ID.
 #### Human Readable Output
 
 >### External Service
+>
 >|Active Classifications|Business Units|Details|Discovery Type|Externally Detected Providers|Externally Inferred Cves|Externally Inferred Vulnerability Score|First Observed|Ip Address|Is Active|Last Observed|Port|Protocol|Service Id|Service Name|Service Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| SSHWeakMACAlgorithmsEnabled,<br/>SshServer,<br/>OpenSSH | Acme | serviceKey: 1.1.1.1:22<br/>serviceKeyType: IP<br/>businessUnits: {'name': 'Acme'}<br/>providerDetails: {'name': 'AWS', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000}<br/>certificates: <br/>domains: <br/>ips: {'ip': 873887795, 'protocol': 'TCP', 'provider': 'AWS', 'geolocation': {'latitude': 39.0438, 'longitude': -77.4879, 'countryCode': 'US', 'city': 'ASHBURN', 'regionCode': 'VA', 'timeZone': None}, 'activityStatus': 'Active', 'lastObserved': 1663026500000, 'firstObserved': 1662774169000}<br/>classifications: {'name': 'SshServer', 'activityStatus': 'Active', 'values': [{'jsonValue': '{"version":"2.0","serverVersion":"OpenSSH_7.6p1","extraInfo":"Ubuntu-4ubuntu0.7"}', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000}], 'firstObserved': 1662774120000, 'lastObserved': 1663026480000},<br/>{'name': 'SSHWeakMACAlgorithmsEnabled', 'activityStatus': 'Active', 'values': [{'jsonValue': '{}', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000}], 'firstObserved': 1662774120000, 'lastObserved': 1663026480000},<br/>{'name': 'OpenSSH', 'activityStatus': 'Active', 'values': [{'jsonValue': '{"version":"7.6"}', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000}], 'firstObserved': 1662774120000, 'lastObserved': 1663026480000}<br/>tlsVersions: <br/>inferredCvesObserved: {'inferredCve': {'cveId': 'CVE-2020-15778', 'cvssScoreV2': 6.8, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 7.8, 'cveSeverityV3': 'HIGH', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2021-41617', 'cvssScoreV2': 4.4, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 7.0, 'cveSeverityV3': 'HIGH', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2019-6110', 'cvssScoreV2': 4.0, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 6.8, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2019-6109', 'cvssScoreV2': 4.0, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 6.8, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2020-14145', 'cvssScoreV2': 4.3, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 5.9, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2019-6111', 'cvssScoreV2': 5.8, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 5.9, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2018-20685', 'cvssScoreV2': 2.6, 'cveSeverityV2': 'LOW', 'cvssScoreV3': 5.3, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2018-15919', 'cvssScoreV2': 5.0, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 5.3, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2016-20012', 'cvssScoreV2': 4.3, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 5.3, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2018-15473', 'cvssScoreV2': 5.0, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 5.3, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2021-36368', 'cvssScoreV2': 2.6, 'cveSeverityV2': 'LOW', 'cvssScoreV3': 3.7, 'cveSeverityV3': 'LOW', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000}<br/>enrichedObservationSource: CLOUD<br/>ip_ranges: {} | ColocatedOnIp | Amazon Web Services | CVE-2020-15778,<br/>CVE-2021-41617,<br/>CVE-2019-6110,<br/>CVE-2019-6109,<br/>CVE-2020-14145,<br/>CVE-2019-6111,<br/>CVE-2018-20685,<br/>CVE-2018-15919,<br/>CVE-2016-20012,<br/>CVE-2018-15473,<br/>CVE-2021-36368 | 7.8 | 1662774120000 | 1.1.1.1 | Active | 1663026480000 | 22 | TCP | 94232f8a-f001-3292-aa65-63fa9d981427 | SSH Server at 1.1.1.1:22 | SshServer |
 
 
 ### asm-list-external-ip-address-range
+
 ***
 Get a list of all your internet exposures filtered by business units and organization handles. Maximum result limit is 100 ranges.
 
@@ -586,6 +595,7 @@ Get a list of all your internet exposures filtered by business units and organiz
 #### Base Command
 
 `asm-list-external-ip-address-range`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -606,8 +616,11 @@ Get a list of all your internet exposures filtered by business units and organiz
 | ASM.ExternalIpAddressRange.organization_handles | String | External IP address range associated organization handles. | 
 
 #### Command example
+
 ```!asm-list-external-ip-address-range```
+
 #### Context Example
+
 ```json
 {
     "ASM": {
@@ -653,6 +666,7 @@ Get a list of all your internet exposures filtered by business units and organiz
 #### Human Readable Output
 
 >### External IP Address Ranges
+>
 >|Active Responsive Ips Count|Business Units|Date Added|First Ip|Ips Count|Last Ip|Organization Handles|Range Id|
 >|---|---|---|---|---|---|---|---|
 >| 0 | VanDelay Industries | 1663031000145 | 1.1.1.1 | 64 | 1.1.1.1 | MAINT-HK-PCCW-BIA-CS,<br/>BNA2-AP,<br/>TA66-AP | 4da29b7f-3086-3b52-981b-aa8ee5da1e60 |
@@ -660,6 +674,7 @@ Get a list of all your internet exposures filtered by business units and organiz
 
 
 ### asm-get-external-ip-address-range
+
 ***
 Get external IP address range details according to the range IDs.
 
@@ -667,6 +682,7 @@ Get external IP address range details according to the range IDs.
 #### Base Command
 
 `asm-get-external-ip-address-range`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -689,8 +705,11 @@ Get external IP address range details according to the range IDs.
 | ASM.ExternalIpAddressRange.details | String | Additional information. | 
 
 #### Command example
+
 ```!asm-get-external-ip-address-range range_id=4da29b7f-3086-3b52-981b-aa8ee5da1e60```
+
 #### Context Example
+
 ```json
 {
     "ASM": {
@@ -780,18 +799,21 @@ Get external IP address range details according to the range IDs.
 #### Human Readable Output
 
 >### External IP Address Range
+
 >|Active Responsive Ips Count|Business Units|Date Added|Details|First Ip|Ips Count|Last Ip|Organization Handles|Range Id|
 >|---|---|---|---|---|---|---|---|---|
 >| 0 | VanDelay Industries | 1663031000145 | networkRecords: {'handle': '1.1.1.1 - 1.1.1.1', 'firstIp': '1.1.1.1', 'lastIp': '1.1.1.1', 'name': 'SEARS-HK', 'whoIsServer': 'whois.apnic.net', 'lastChanged': 1663030241931, 'organizationRecords': [{'handle': 'MAINT-HK-PCCW-BIA-CS', 'dateAdded': 1663029346957, 'address': '', 'email': 'noc@acme.com', 'phone': '', 'org': '', 'formattedName': '', 'kind': 'group', 'roles': ['registrant'], 'lastChanged': None, 'firstRegistered': None, 'remarks': ''}, {'handle': 'BNA2-AP', 'dateAdded': 1663029346957, 'address': "27/F, PCCW Tower, Taikoo Place,\n979 King's Road, Quarry Bay, HK          ", 'email': 'cs@acme.com', 'phone': '+852-2888-6932', 'org': '', 'formattedName': 'BIZ NETVIGATOR ADMINISTRATORS', 'kind': 'group', 'roles': ['administrative'], 'lastChanged': 1514892767000, 'firstRegistered': 1220514857000, 'remarks': ''}, {'handle': 'TA66-AP', 'dateAdded': 1663029346957, 'address': 'HKT Limited\nPO Box 9896 GPO          ', 'email': 'noc@acme.com', 'phone': '+852-2883-5151', 'org': '', 'formattedName': 'TECHNICAL ADMINISTRATORS', 'kind': 'group', 'roles': ['technical'], 'lastChanged': 1468555410000, 'firstRegistered': 1220514856000, 'remarks': ''}], 'remarks': 'Sears Holdings Global Sourcing Ltd'} | 1.1.1.1 | 64 | 1.1.1.1 | MAINT-HK-PCCW-BIA-CS,<br/>BNA2-AP,<br/>TA66-AP | 4da29b7f-3086-3b52-981b-aa8ee5da1e60 |
 
 
 ### asm-list-asset-internet-exposure
+
 ***
 Get a list of all your internet exposures filtered by IP address, domain, type, asm id, IPv6 address, AWS/GCP/Azure tags, has XDR agent, Externally detected providers, Externally inferred cves, Business units list, has BU overrides and/or if there is an active external service. Maximum result limit is 100 assets.
 
 #### Base Command
 
 `asm-list-asset-internet-exposure`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -838,8 +860,11 @@ Get a list of all your internet exposures filtered by IP address, domain, type, 
 
 
 #### Command example
+
 ```!asm-list-asset-internet-exposure name="acme.com" type=certificate has_active_external_services=no```
+
 #### Context Example
+
 ```json
 {
     "ASM": {
@@ -936,6 +961,7 @@ Get a list of all your internet exposures filtered by IP address, domain, type, 
 #### Human Readable Output
 
 >### Asset Internet Exposures
+>
 >|Asm Ids|Asset Type|Business Units|Certificate Algorithm|Certificate Classifications|Certificate Issuer|Domain Resolves|Has Active Externally Services|Has Xdr Agent|Name|Sensor|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| cfa1cd5a-77f1-3963-8557-7f652309a143 | CERTIFICATE | Acme,<br/>VanDelay Industries | SHA256withRSA | LongExpiration,<br/>Wildcard,<br/>Expired | DigiCert | false | false | NA | *.digital-dev.acme.com | XPANSE |
@@ -943,6 +969,7 @@ Get a list of all your internet exposures filtered by IP address, domain, type, 
 
 
 ### asm-get-asset-internet-exposure
+
 ***
 Get internet exposure asset details according to the asset ID.
 
@@ -950,6 +977,7 @@ Get internet exposure asset details according to the asset ID.
 #### Base Command
 
 `asm-get-asset-internet-exposure`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -977,8 +1005,11 @@ Get internet exposure asset details according to the asset ID.
 | ASM.AssetInternetExposure.externally_inferred_vulnerability_score | Unknown | Asset vulnerability score. | 
 
 #### Command example
+
 ```!asm-get-asset-internet-exposure asm_id=3c176460-8735-333c-b618-8262e2fb660c```
+
 #### Context Example
+
 ```json
 {
     "ASM": {
@@ -1071,6 +1102,7 @@ Get internet exposure asset details according to the asset ID.
 #### Human Readable Output
 
 >### Asset Internet Exposure
+>
 >|Asm Ids|Business Units|Certificate Algorithm|Certificate Classifications|Certificate Issuer|Created|Details|Name|Resolves|Type|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 3c176460-8735-333c-b618-8262e2fb660c | Acme | SHA1withRSA | Wildcard,<br/>Expired,<br/>InsecureSignature | Thawte | 1663030146931 | providerDetails: <br/>domain: null<br/>topLevelAssetMapperDomain: null<br/>domainAssetType: null<br/>isPaidLevelDomain: false<br/>domainDetails: null<br/>dnsZone: null<br/>latestSampledIp: null<br/>subdomainMetadata: null<br/>recentIps: <br/>businessUnits: {'name': 'Acme'}<br/>certificateDetails: {"issuer": "C=US,O=Thawte\\, Inc.,CN=Thawte SSL CA", "issuerAlternativeNames": "", "issuerCountry": "US", "issuerEmail": null, "issuerLocality": null, "issuerName": "Thawte SSL CA", "issuerOrg": "Thawte\\\\, Inc.", "formattedIssuerOrg": "Thawte", "issuerOrgUnit": null, "issuerState": null, "publicKey": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAp21W/QVHuo0Nyy9l6Qp6Ye7yniuCccplWLdkL34pB0roNWBiklLJFftFTXJLtUuYEBhEbUtOPtNr5QRZFo+LQSj+JMQsGajEgNvIIMDms2xtc+vYkuJeNRsN/0zRm8iBjCNEZ0zBbWdupO6xee+Lngq5RiyRzAN2+Q5HlmHmVOcc7NtY5VIQhajp3a5Gc7tmLXa7ZxwQb+afdlpmE0iv4ZxmXFyHwlPXUlIxfETDDjtv2EzAgrnpZ5juo7TEFZA7AjsT0lO6cC2qPE9x9kC02PeC1Heg4hWf70CsXcKQBsprLqusrPYM9+OYfZnj+Dq9j6FjZD314Nz4qTGwmZrwDQIDAQAB", "publicKeyAlgorithm": "RSA", "publicKeyRsaExponent": 65537, "signatureAlgorithm": "SHA1withRSA", "subject": "C=US,ST=New Jersey,L=Wayne,O=Acme,OU=MIS,CN=*.acme.com", "subjectAlternativeNames": "*.acme.com", "subjectCountry": "US", "subjectEmail": null, "subjectLocality": "Wayne", "subjectName": "*.acme.com", "subjectOrg": "Acme", "subjectOrgUnit": "MIS", "subjectState": "New Jersey", "serialNumber": "91384582774546160650506315451812470612", "validNotBefore": 1413158400000, "validNotAfter": 1444780799000, "version": "3", "publicKeyBits": 2048, "publicKeyModulus": "a76d56fd0547ba8d0dcb2f65e90a7a61eef29e2b8271ca6558b7642f7e29074ae83560629252c915fb454d724bb54b981018446d4b4e3ed36be50459168f8b4128fe24c42c19a8c480dbc820c0e6b36c6d73ebd892e25e351b0dff4cd19bc8818c2344674cc16d676ea4eeb179ef8b9e0ab9462c91cc0376f90e479661e654e71cecdb58e5521085a8e9ddae4673bb662d76bb671c106fe69f765a661348afe19c665c5c87c253d75252317c44c30e3b6fd84cc082b9e96798eea3b4c415903b023b13d253ba702daa3c4f71f640b4d8f782d477a0e2159fef40ac5dc29006ca6b2eabacacf60cf7e3987d99e3f83abd8fa163643df5e0dcf8a931b0999af00d", "publicKeySpki": "Up3fHwOddA9cXEeO4XBOgn63bfnvkXsOrOv6AycwQAk=", "sha1Fingerprint": "77d025c36f055e254063ae2ac3625fd4bf4507fb", "sha256Fingerprint": "9a37c952ee1169cfa6e91efb57fe6d405d1ca48b26a714e9a46f008c15ea62e8", "md5Fingerprint": "498ec19ebd6c6883ecd43d064e713002"}<br/>inferredCvesObserved: <br/>ip_ranges: {} | *.acme.com | false | Certificate |
@@ -1117,8 +1149,11 @@ Get a list of all your ASM alerts filtered by alert IDs, severity and/or creatio
 | ASM.Alert.detection_timestamp | Date | Date the alert was created. | 
 
 #### Command example
+
 ```!asm-list-alerts limit=2 severity=high sort_by_creation_time=asc```
+
 #### Context Example
+
 ```json
 {
     "ASM": {
@@ -1443,6 +1478,7 @@ Get a list of all your ASM alerts filtered by alert IDs, severity and/or creatio
 #### Human Readable Output
 
 >### ASM Alerts
+>
 >|Action|Action Pretty|Agent Os Type|Alert Id|Alert Type|Description|Detection Timestamp|Events|External Id|Is Pcap|Is Whitelisted|Last Modified Ts|Local Insert Ts|Matching Status|Name|Resolution Comment|Resolution Status|Severity|Source|Starred|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| NOT_AVAILABLE | N/A | NO_HOST | 231 | Unclassified | Networking and security infrastructure, such as firewalls and routers, generally should not have their administration panels open to public Internet. Compromise of these devices, often though password guessing or vulnerability exploitation, provides privileged access to an enterprise network. | 1659452808759 | {'agent_install_type': 'NA', 'agent_host_boot_time': None, 'event_sub_type': None, 'module_id': None, 'association_strength': None, 'dst_association_strength': None, 'story_id': None, 'event_id': None, 'event_type': None, 'event_timestamp': 1659452808759, 'actor_process_instance_id': None, 'actor_process_image_path': None, 'actor_process_image_name': None, 'actor_process_command_line': None, 'actor_process_signature_status': 'N/A', 'actor_process_signature_vendor': None, 'actor_process_image_sha256': None, 'actor_process_image_md5': None, 'actor_process_causality_id': None, 'actor_causality_id': None, 'actor_process_os_pid': None, 'actor_thread_thread_id': None, 'causality_actor_process_image_name': None, 'causality_actor_process_command_line': None, 'causality_actor_process_image_path': None, 'causality_actor_process_signature_vendor': None, 'causality_actor_process_signature_status': 'N/A', 'causality_actor_causality_id': None, 'causality_actor_process_execution_time': None, 'causality_actor_process_image_md5': None, 'causality_actor_process_image_sha256': None, 'action_file_path': None, 'action_file_name': None, 'action_file_md5': None, 'action_file_sha256': None, 'action_file_macro_sha256': None, 'action_registry_data': None, 'action_registry_key_name': None, 'action_registry_value_name': None, 'action_registry_full_key': None, 'action_local_ip': None, 'action_local_ip_v6': None, 'action_local_port': None, 'action_remote_ip': None, 'action_remote_ip_v6': None, 'action_remote_port': 80, 'action_external_hostname': None, 'action_country': 'UNKNOWN', 'action_process_instance_id': None, 'action_process_causality_id': None, 'action_process_image_name': None, 'action_process_image_sha256': None, 'action_process_image_command_line': None, 'action_process_signature_status': 'N/A', 'action_process_signature_vendor': None, 'os_actor_effective_username': None, 'os_actor_process_instance_id': None, 'os_actor_process_image_path': None, 'os_actor_process_image_name': None, 'os_actor_process_command_line': None, 'os_actor_process_signature_status': 'N/A', 'os_actor_process_signature_vendor': None, 'os_actor_process_image_sha256': None, 'os_actor_process_causality_id': None, 'os_actor_causality_id': None, 'os_actor_process_os_pid': None, 'os_actor_thread_thread_id': None, 'fw_app_id': None, 'fw_interface_from': None, 'fw_interface_to': None, 'fw_rule': None, 'fw_rule_id': None, 'fw_device_name': None, 'fw_serial_number': None, 'fw_url_domain': None, 'fw_email_subject': None, 'fw_email_sender': None, 'fw_email_recipient': None, 'fw_app_subcategory': None, 'fw_app_category': None, 'fw_app_technology': None, 'fw_vsys': None, 'fw_xff': None, 'fw_misc': None, 'fw_is_phishing': 'N/A', 'dst_agent_id': None, 'dst_causality_actor_process_execution_time': None, 'dns_query_name': None, 'dst_action_external_hostname': None, 'dst_action_country': None, 'dst_action_external_port': None, 'contains_featured_host': 'NO', 'contains_featured_user': 'NO', 'contains_featured_ip': 'NO', 'image_name': None, 'container_id': None, 'cluster_name': None, 'referenced_resource': None, 'operation_name': None, 'identity_sub_type': None, 'identity_type': None, 'project': None, 'cloud_provider': None, 'resource_type': None, 'resource_sub_type': None, 'user_agent': None, 'user_name': None} | FAKE-GUID | false | false | 1660240725450 | 1659455267908 | MATCHED | Networking Infrastructure | ASM alert resolution | STATUS_070_RESOLVED_OTHER | high | ASM | false |
@@ -1483,8 +1519,11 @@ Fetches attack surface rules related to how Cortex Xpanse does assessment.
 | ASM.AttackSurfaceRules.modified | unknown | Last modification of the attack surface rule. | 
 
 #### Command example
+
 ```!asm-get-attack-surface-rule enabled_status=On limit=1```
+
 #### Context Example
+
 ```json
 {
     "ASM": {
@@ -1508,6 +1547,7 @@ Fetches attack surface rules related to how Cortex Xpanse does assessment.
 #### Human Readable Output
 
 >### Attack Surface Rules
+>
 >|Attack Surface Rule Id|Attack Surface Rule Name|Category|Created|Description|Enabled Status|Modified|Priority|Remediation Guidance|
 >|---|---|---|---|---|---|---|---|---|
 >| VMwareVRealizeAutomationAppliance | VMware vRealize Automation Appliance | Attack Surface Reduction | 1688836450000 | VMware vRealize Automation, formerly vCloud Automation Center, is a software product that offers multivendor and multicloud support. It allows for IT infrastructure personalization and resource provisioning and configuration, and it automates application delivery and container management. This issue identifies the web login interface for VMware vRealize Automation Appliance. | On | 1688074708000 | High | Due to the network access provided by VMware vRealize Automation, it is recommended for instances of VMware vRealize Automation to not be accessible to the public Internet unless there is a business need.<br>Xpanse recommends working to identify the asset owner and collaborating with them to remove the asset from the internet. |
@@ -1533,8 +1573,11 @@ Assigns tags to a list of assets.
 There is no context output for this command.
 
 #### Command example
+
 ```!asm-tag-asset-assign tags="Test" asm_id_list="76fb0c06-52cf-33b5-8166-3a130bb25eb6"```
+
 #### Context Example
+
 ```json
 {
     "ASM": {
@@ -1544,6 +1587,7 @@ There is no context output for this command.
 ```
 
 #### Human Readable Output
+
 ```Assignment operation: succeeded```
 
 ### asm-tag-asset-remove
@@ -1567,8 +1611,11 @@ Removes tags from a list of assets.
 There is no context output for this command.
 
 #### Command example
+
 ```!asm-tag-asset-remove tags="Test" asm_id_list="76fb0c06-52cf-33b5-8166-3a130bb25eb6"```
+
 #### Context Example
+
 ```json
 {
     "ASM": {
@@ -1578,6 +1625,7 @@ There is no context output for this command.
 ```
 
 #### Human Readable Output
+
 ```Removal operation: succeeded```
 
 ### asm-tag-range-assign
@@ -1601,8 +1649,11 @@ Assigns tags to a list of IP ranges.
 There is no context output for this command.
 
 #### Command example
+
 ```!asm-tag-range-assign range_id_list="ba8d8f59-6445-37c0-a145-2233f9e5a9bd" tags="Test"```
+
 #### Context Example
+
 ```json
 {
     "ASM": {
@@ -1612,6 +1663,7 @@ There is no context output for this command.
 ```
 
 #### Human Readable Output
+
 ```Assignment operation: succeeded```
 
 ### asm-tag-range-remove
@@ -1635,8 +1687,11 @@ Removes tags from a list of IP ranges.
 There is no context output for this command.
 
 #### Command example
+
 ```!asm-tag-range-remove range_id_list="ba8d8f59-6445-37c0-a145-2233f9e5a9bd" tags="Test"```
+
 #### Context Example
+
 ```json
 {
     "ASM": {
@@ -1646,6 +1701,7 @@ There is no context output for this command.
 ```
 
 #### Human Readable Output
+
 ```Removal operation: succeeded```
 
 ### asm-list-incidents
@@ -1702,8 +1758,11 @@ Fetches ASM incidents that match provided filters. Incidents are an aggregation 
 | ASM.Incident.xpanse_risk_score | Unknown | Risk score of the incident. | 
 
 #### Command example
+
 ```!asm-list-incidents limit=1 status=new```
+
 #### Context Example
+
 ```json
 {
     "ASM": {
@@ -1755,7 +1814,9 @@ Fetches ASM incidents that match provided filters. Incidents are an aggregation 
 ```
 
 #### Human Readable Output
+>
 >### ASM Incidents
+>
 >|Alert Count|Alerts Grouping Status|Creation Time|Critical Severity Alert Count|Description|High Severity Alert Count|Host Count| Hosts        |Incident Id|Incident Sources|Low Severity Alert Count|Med Severity Alert Count|Modification Time|Severity|Starred|Status|Tags|User Count|Xdr Url|
 >|---|---|---|---|---|---|---|--------------|---|---|---|---|---|---|---|---|---|---|---|
 >| 1 | Enabled | 1688837015292 | 0 | 'Insecure Communication Protocol at example.com:443' | 0 | 1 | 1.1.1.1:null | 5508 | ASM | 0 | 1 | 1688837015292 | medium | false | new | AR:Registered to You,<br>IPR:Test IP | 0 | https://exp-test.crtx.eu.paloaltonetworks.com/incident-view?caseId=5508 |
@@ -1776,6 +1837,7 @@ Returns additional details about a specific incident. Note: Incident IDs may als
 | incident_id | The ID of the incident to be fetched. | Required |
 
 #### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- |----------| --- |
 | ASM.Incident.incident_id | String   | The ID of the incident. | 
@@ -1788,8 +1850,11 @@ Returns additional details about a specific incident. Note: Incident IDs may als
 | ASM.Incident.notes | String   | User-provided notes related to the incident. | 
 
 #### Command example
+
 ```!asm-get-incident incident_id=71```
+
 #### Context Example
+
 ```json
 {
   "aggregated_score": 825,
@@ -1922,8 +1987,11 @@ Returns additional details about a specific incident. Note: Incident IDs may als
   "xpanse_risk_score": 825
 }
 ```
+
 #### Human Readable Output
+>
 >### ASM Incident
+>
 >|Aggregated Score| Alert Count | Alerts                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |Alerts Grouping Status|Assigned User Mail| Assigned User Pretty Name |Creation Time|Critical Severity Alert Count| Description                                                                                  |High Severity Alert Count|Host Count| Hosts        |Incident Id|Incident Sources|Is Blocked|Low Severity Alert Count|Med Severity Alert Count|Modification Time|Original Tags|Rule Based Score|Severity|Starred|Status|Tags|User Count|Xdr Url|Xpanse Risk Explainer|Xpanse Risk Score|
 >|---|-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---|---|---------------------------|---|---|----------------------------------------------------------------------------------------------|---|---|--------------|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 825 | 2           | {'alert_id': '113716', 'name': 'Insecure Microsoft Exchange Server (15.0.1497.36) at 1.1.1.1:443', 'description': 'This issue flags on-premises Microsoft Exchange Servers that are known to be below the current up-to-date secured versions suggested by Microsoft.' , 'resolution_status': 'STATUS_010_NEW'},<br>{'alert_id': '89896', 'name': 'Missing X-Xss-Protection at 1.1.1.1:443', 'description': 'The X-XSS-Protection header is used to reduce the risk of cross-site scripting attacks. Not including it could make your website less secure.', 'resolution_status': 'STATUS_010_NEW'} | Disabled | cs@acme.com | User One                  | 1671912678672 | 0 | 'Insecure Microsoft Exchange Server (15.0.1497.36) at 1.1.1.1:443' along with 1 other alerts | 4 | 1 | 1.1.1.1:null | 71 | ASM | false | 0 | 2 | 1696275576460 | BU:Xpanse VanDelay Demo 3 | 825 | high | true | under_investigation | AR:Registered to You | 0 | https://exp-test.crtx.eu.paloaltonetworks.com/incident-view?caseId=71 | cves: {'cveId': 'CVE-2021-26855', 'cvssScore': 9.800000190734863, 'epssScore': 0.9749900102615356, 'matchType': 'ExactVersionMatch', 'confidence': 'High', 'exploitMaturity': 'Weaponized', 'reportedExploitInTheWild': True, 'mostRecentReportedExploitDate': '2023-10-12'},<br>{'cveId': 'CVE-2021-34473', 'cvssScore': 9.800000190734863, 'epssScore': 0.9732999801635742, 'matchType': 'ExactVersionMatch', 'confidence': 'High', 'exploitMaturity': 'Weaponized', 'reportedExploitInTheWild': True, 'mostRecentReportedExploitDate': '2023-10-12'},<br>{'cveId': 'CVE-2021-34523', 'cvssScore': 9.800000190734863, 'epssScore': 0.9726300239562988, 'matchType': 'ExactVersionMatch', 'confidence': 'High', 'exploitMaturity': 'Weaponized', 'reportedExploitInTheWild': True, 'mostRecentReportedExploitDate': '2023-10-12'}<br>riskFactors: {'attributeId': 'misconfiguration', 'attributeName': 'Misconfiguration', 'issueTypes': [{'displayName': 'Insecure Microsoft Exchange Server', 'issueTypeId': 'InsecureMicrosoftExchangeServer'}, {'displayName': 'Missing X-XSS-Protection Header', 'issueTypeId': 'MissingXXssProtectionHeader'}]},<br>{'attributeId': 'critical_system', 'attributeName': 'Critical System', 'issueTypes': [{'displayName': 'Insecure Microsoft Exchange Server', 'issueTypeId': 'InsecureMicrosoftExchangeServer'}]},<br>{'attributeId': 'potential_data_loss', 'attributeName': 'Potential Data Loss', 'issueTypes': [{'displayName': 'Insecure Microsoft Exchange Server', 'issueTypeId': 'InsecureMicrosoftExchangeServer'}]}<br>versionMatched: true | 825 |
@@ -1957,8 +2025,11 @@ Updates a given incident. Can be used to modify the status, severity, assignee, 
 
 
 #### Command example
+
 ```!asm-update-incident incident_id="3674" alert_id="4372" comment="this is an xsoar test"```
+
 #### Context Example
+
 ```json
 {
     "ASM": {
@@ -1968,6 +2039,7 @@ Updates a given incident. Can be used to modify the status, severity, assignee, 
 ```
 
 #### Human Readable Output
+
 ```Update operation successful: true```
 
 
@@ -1987,6 +2059,7 @@ Updates the state of one or more alerts.
 | alert_id_list | Comma-separated list of integers of the alert ID. | Optional | 
 | status | Updated alert status. Possible values are: new, reopened, under_investigation, resolved_no_longer_observed, resolved_no_risk, resolved_risk_accepted, resolved_contested_asset, resolved_remediated_automatically, resolved. | Optional | 
 | severity | The severity of the alert. Possible values are: low, medium, high, critical. | Optional | 
+| resolution_comment | Descriptive comment explaining the alert change. | Optional |
 
 #### Context Output
 
@@ -1995,8 +2068,11 @@ Updates the state of one or more alerts.
 | ASM.UpdatedAlerts | unknown | IDs of the updated alerts. |
 
 #### Command example
+
 ```!asm-update-alerts alert_id_list=602 status=new```
+
 #### Context Example
+
 ```json
 {
     "ASM": {
@@ -2006,12 +2082,13 @@ Updates the state of one or more alerts.
 ```
 
 #### Human Readable Output
+
 ```Updated alerts: [602]```
 
 ### ip
 
 ***
-Returns enrichment for an IP address.
+(Deprecated as of version 1.2.7) Returns reputation lookup for an IP address found in Cortex Xpanse.
 
 #### Base Command
 
@@ -2025,31 +2102,41 @@ Returns enrichment for an IP address.
 
 #### Context Output
 
-| **Path**                | **Type** | **Description**                                            |
-|-------------------------|----------|------------------------------------------------------------|
-| ASM.IP.ip               | String   | The IP address of the asset.                               |
-| ASM.IP.domain           | String   | The domain affiliated with an asset.                       |
-| ASM.IP.name             | String   | The asset name.                                            |
-| ASM.IP.asset_type       | String   | The asset type.                                            |
-| ASM.IP.first_observed   | unknown  | When the asset was first observed.                         |
-| ASM.IP.last_observed    | unknown  | When the asset was last observed.                          |
-| ASM.IP.asm_ids          | unknown  | The ID of the asset.                                       |
-| ASM.IP.service_type     | unknown  | Affiliated service types for the asset.                    |
-| ASM.IP.tags             | unknown  | A list of tags that have been assigned to the asset.       |
-| ASM.IP.asset_explainers | unknown  | The asset explanation details.                             |
-| ASM.IP.domain_details   | unknown  | Additional domain details.                                 |
-| ASM.IP.recent_ips       | unknown  | Details about the recent IP observations.                  |
-| DBotScore.Vendor        | String   | The vendor reporting the score of the indicator.           |
-| DBotScore.Score         | Number   | An integer regarding the status of the indicator.          |
-| DBotScore.Indicator     | String   | The indicator value.                                       |
-| DBotScore.Type          | String   | The vendor used to calculate the score.                    |
-| DBotScore.Reliability   | String   | Reliability of the source providing the intelligence data. |
-| IP.Address              | String   | IP address.                                                |
+| **Path**                  | **Type** | **Description**                                                            |
+|---------------------------|----------|----------------------------------------------------------------------------|
+| ASM.IP.ip                 | String   | The IP address of the asset.                                               |
+| ASM.IP.domain             | String   | The domain affiliated with an asset.                                       |
+| ASM.IP.name               | String   | The asset name.                                                            |
+| ASM.IP.asset_type         | String   | The asset type.                                                            |
+| ASM.IP.first_observed     | unknown  | When the asset was first observed.                                         |
+| ASM.IP.last_observed      | unknown  | When the asset was last observed.                                          |
+| ASM.IP.asm_ids            | unknown  | The ID of the asset.                                                       |
+| ASM.IP.service_type       | unknown  | Affiliated service types for the asset.                                    |
+| ASM.IP.tags               | unknown  | A list of tags that have been assigned to the asset.                       |
+| ASM.IP.asset_explainers   | unknown  | The asset explanation details.                                             |
+| ASM.IP.domain_details     | unknown  | Additional domain details.                                                 |
+| ASM.IP.recent_ips         | unknown  | Details about the recent IP observations.                                  |
+| DBotScore.Vendor          | String   | The vendor reporting the score of the indicator.                           |
+| DBotScore.Score           | Integer  | An integer regarding the status of the indicator.                          |
+| DBotScore.Indicator       | String   | The indicator value.                                                       |
+| DBotScore.Type            | String   | The vendor used to calculate the score.                                    |
+| DBotScore.Reliability     | String   | Reliability of the source providing the intelligence data.                 |
+| IP.Address                | String   | IP address.                                                                |
+| ASM.TIM.IP.name           | String   | The existing Cortex Xpanse IP address recently updated in the Cortex XSOAR indicators        |
+| ASM.TIM.IP.indicator_type | String   | The existing Cortex Xpanse indicator type in the Cortex XSOAR indicators                     |
+| ASM.TIM.IP.id             | String   | The existing indicator ID in the Cortex XSOAR indicators                              |
+| ASM.TIM.IP.reliability    | String   | The existing indicator reliability recently updated in the Cortex XSOAR indicators    |
+| ASM.TIM.IP.score          | Integer  | The existing indicator score recently updated in the Cortex XSOAR indicators          |
 
 
 #### Command example
-```!ip ip=1.1.1.1```
+
+```!ip ip='1.1.1.1, 1.1.1.2, 8.8.8.8'```
+
 #### Context Example
+
+If the indicator was **not** updated in Cortex XSOAR in the last 3 days:
+
 ```json
 {
     "ASM": {
@@ -2124,16 +2211,59 @@ Returns enrichment for an IP address.
 }
 ```
 
+If the indicator is **related to Xpanse** was updated in Cortex XSOAR in the last 3 days:
+
+```json
+{
+    "ASM": {
+        "TIM": {
+            "id": "abcd1b2abcd1a0b20c7a8bc5d67e8eea",
+            "indicator_type": "IP",
+            "name": "1.1.1.2",
+            "reliability": "A+ - 3rd party enrichment",
+            "score": 0
+        }
+    }
+}
+```
+
 #### Human Readable Output
->### Xpanse IP List
->|asm_ids|asset_explainers|asset_type|domain|domain_details|first_observed|ip|last_observed|name|recent_ips|service_type|tags|
->|---|---|---|---|---|---|---|---|---|---|---|---|
->| 4b1f3765-de40-3a1a-8535-667420408fd9 |  | DOMAIN | *.acme.com | admin: {"city": "", "country": "us", "emailAddress": "", "faxExtension": null, "faxNumber": "", "name": "", "organization": "Acme, Inc.", "phoneExtension": null, "phoneNumber": "", "postalCode": "", "province": "AZ", "registryId": null, "street": ""}| 1679457579382 | 1.1.1.1 | 1697361335282 | *.acme.com | {'id': '218b3cc9-2d26-3a17-aadd-9eac08cc30ec', 'ip': 52529952, 'ipv6': None, 'source': {'name': 'DOMAIN_RESOLUTION'}, 'provider': {'name': 'AWS', 'additionalProviderInfo': None, 'isCdn': False, 'legacyName': 'AWS', 'displayName': 'Amazon Web Services', 'cdn': False}, 'firstObserved': 1692418207732, 'lastObserved': 1697361335282} | HttpServer | BU:Xpanse VanDelay Demo 3 |
+
+If the indicator was **not** updated in Cortex XSOAR in the last 3 days:
+
+> ### Xpanse Discovered IP List
+>
+> |asm_ids|asset_explainers|asset_type|domain|domain_details|first_observed|ip|last_observed|name|recent_ips|service_type|tags|
+> |---|---|---|---|---|---|---|---|---|---|---|---|
+> | 4b1f3765-de40-3a1a-8535-667420408fd9 |  | DOMAIN | *.acme.com | admin: {"city": "", "country": "us", "emailAddress": "", "faxExtension": null, "faxNumber": "", "name": "", "organization": "Acme, Inc.", "phoneExtension": null, "phoneNumber": "", "postalCode": "", "province": "AZ", "registryId": null, "street": ""}| 1679457579382 | 1.1.1.1 | 1697361335282 | *.acme.com | {'id': '218b3cc9-2d26-3a17-aadd-9eac08cc30ec', 'ip': 52529952, 'ipv6': None, 'source': {'name': 'DOMAIN_RESOLUTION'}, 'provider': {'name': 'AWS', 'additionalProviderInfo': None, 'isCdn': False, 'legacyName': 'AWS', 'displayName': 'Amazon Web Services', 'cdn': False}, 'firstObserved': 1692418207732, 'lastObserved': 1697361335282} | HttpServer | BU:Xpanse VanDelay Demo 3 |
+
+If the indicator is **related to Xpanse** was updated in Cortex XSOAR in the last 3 days:
+
+> ### Xpanse Discovered IP List (Existing Indicators)
+>
+> This domain list is from existing records found in Cortex XSOAR within the last 3 days.
+> If you would additional Cortex Xpanse specific information about these, use asm-list-asset-internet-exposure.
+>
+> |id|indicator_type|name|reliability|score|
+> |---|---|---|---|---|
+> | abcd1b2abcd1a0b20c7a8bc5d67e8eea | IP | 1.1.1.2 | A+ - 3rd party enrichment | 0 |
+
+If the indicator was updated in Cortex XSOAR in the last 3 days:
+
+> ### XSOAR Indicator Discovered IP List (Not Related to Cortex Xpanse)
+> 
+> This IP list is from existing records found in Cortex XSOAR within the last 3 days.
+> These IPs have not been found to be attributed to Cortex Xpanse.
+> 
+> |integrations|name|
+> |---|---|
+> | VirusTotal (API v3) | 8.8.8.8 |
+
 
 ### domain
 
 ***
-Returns enrichment for a domain.
+(Deprecated as of version 1.2.7) Returns reputation lookup for an domain found in Cortex Xpanse.
 
 #### Base Command
 
@@ -2147,29 +2277,39 @@ Returns enrichment for a domain.
 
 #### Context Output
 
-| **Path**                    | **Type** | **Description**                                            |
-|-----------------------------|----------|------------------------------------------------------------|
-| ASM.Domain.domain           | String   | The domain affiliated with an asset.                       |
-| ASM.Domain.name             | String   | The asset name.                                            |
-| ASM.Domain.asset_type       | String   | The asset type.                                            |
-| ASM.Domain.first_observed   | unknown  | When the asset was first observed.                         |
-| ASM.Domain.last_observed    | unknown  | When the asset was last observed.                          |
-| ASM.Domain.asm_ids          | unknown  | The ID of the asset.                                       |
-| ASM.Domain.service_type     | unknown  | Affiliated service types for the asset.                    |
-| ASM.Domain.tags             | unknown  | A list of tags that have been assigned to the asset.       |
-| ASM.Domain.asset_explainers | unknown  | The asset explanation details.                             |
-| ASM.Domain.domain_details   | unknown  | Additional domain details.                                 |
-| ASM.Domain.recent_ips       | unknown  | Details about the recent IP observations.                  |
-| DBotScore.Vendor            | String   | The vendor reporting the score of the indicator.           |
-| DBotScore.Score             | Number   | An integer regarding the status of the indicator.          |
-| DBotScore.Indicator         | String   | The indicator value.                                       |
-| DBotScore.Type              | String   | The vendor used to calculate the score.                    |
-| DBotScore.Reliability       | String   | Reliability of the source providing the intelligence data. |
-| Domain.Name                 | String   | Name of the domain.                                        |
+| **Path**                      | **Type** | **Description**                                                            |
+|-------------------------------|----------|----------------------------------------------------------------------------|
+| ASM.Domain.domain             | String   | The domain affiliated with an asset.                                       |
+| ASM.Domain.name               | String   | The asset name.                                                            |
+| ASM.Domain.asset_type         | String   | The asset type.                                                            |
+| ASM.Domain.first_observed     | unknown  | When the asset was first observed.                                         |
+| ASM.Domain.last_observed      | unknown  | When the asset was last observed.                                          |
+| ASM.Domain.asm_ids            | unknown  | The ID of the asset.                                                       |
+| ASM.Domain.service_type       | unknown  | Affiliated service types for the asset.                                    |
+| ASM.Domain.tags               | unknown  | A list of tags that have been assigned to the asset.                       |
+| ASM.Domain.asset_explainers   | unknown  | The asset explanation details.                                             |
+| ASM.Domain.domain_details     | unknown  | Additional domain details.                                                 |
+| ASM.Domain.recent_ips         | unknown  | Details about the recent IP observations.                                  |
+| DBotScore.Vendor              | String   | The vendor reporting the score of the indicator.                           |
+| DBotScore.Score               | Number   | An integer regarding the status of the indicator.                          |
+| DBotScore.Indicator           | String   | The indicator value.                                                       |
+| DBotScore.Type                | String   | The vendor used to calculate the score.                                    |
+| DBotScore.Reliability         | String   | Reliability of the source providing the intelligence data.                 |
+| Domain.Name                   | String   | Name of the domain.                                                        |
+| ASM.TIM.Domain.name           | String   | The existing Cortex Xpanse domain recently updated in the Cortex XSOAR indicators            |
+| ASM.TIM.Domain.indicator_type | String   | The existing Cortex Xpanse indicator type in the Cortex XSOAR indicators                     |
+| ASM.TIM.Domain.id             | String   | The existing indicator ID in the Cortex XSOAR indicators                              |
+| ASM.TIM.Domain.reliability    | String   | The existing indicator reliability recently updated in the Cortex XSOAR indicators    |
+| ASM.TIM.Domain.score          | Integer  | The existing indicator score recently updated in the Cortex XSOAR indicators          |
 
 #### Command example
-```!domain domain="*.acme.com"```
+
+```!domain domain="*.acme.com, www.example.com, www.fakedomain.com"```
+
 #### Context Example
+
+If the indicator was **not** updated in Cortex XSOAR in the last 3 days:
+
 ```json
 {
     "ASM": {
@@ -2243,11 +2383,53 @@ Returns enrichment for a domain.
 }
 ```
 
+If the indicator is **related to Xpanse** was updated in Cortex XSOAR in the last 3 days:
+
+```json
+{
+    "ASM": {
+        "TIM": {
+            "id": "abcd1b2abcd1a0b20c7a8bc5d67e8eea",
+            "indicator_type": "Domain",
+            "name": "www.example.com",
+            "reliability": "A+ - 3rd party enrichment",
+            "score": 0
+        }
+    }
+}
+```
+
 #### Human Readable Output
->### Xpanse Domain List
->|asm_ids|asset_explainers|asset_type|domain|domain_details|first_observed|last_observed|name|recent_ips|service_type|tags|
->|---|---|---|---|---|---|---|---|---|---|---|---|
->| 4b1f3765-de40-3a1a-8535-667420408fd9 |  | DOMAIN | *.acme.com | admin: {"city": "", "country": "us", "emailAddress": "", "faxExtension": null, "faxNumber": "", "name": "", "organization": "Acme, Inc.", "phoneExtension": null, "phoneNumber": "", "postalCode": "", "province": "AZ", "registryId": null, "street": ""}| 1679457579382 | 1697361335282 | *.acme.com | {'id': '218b3cc9-2d26-3a17-aadd-9eac08cc30ec', 'ip': 52529952, 'ipv6': None, 'source': {'name': 'DOMAIN_RESOLUTION'}, 'provider': {'name': 'AWS', 'additionalProviderInfo': None, 'isCdn': False, 'legacyName': 'AWS', 'displayName': 'Amazon Web Services', 'cdn': False}, 'firstObserved': 1692418207732, 'lastObserved': 1697361335282} | HttpServer | BU:Xpanse VanDelay Demo 3 |
+
+If the indicator was **not** updated in Cortex XSOAR in the last 3 days:
+
+> ### Xpanse Discovered Domain List
+>
+> |asm_ids|asset_explainers|asset_type|domain|domain_details|first_observed|last_observed|name|recent_ips|service_type|tags|
+> |---|---|---|---|---|---|---|---|---|---|---|---|
+> | 4b1f3765-de40-3a1a-8535-667420408fd9 |  | DOMAIN | *.acme.com | admin: {"city": "", "country": "us", "emailAddress": "", "faxExtension": null, "faxNumber": "", "name": "", "organization": "Acme, Inc.", "phoneExtension": null, "phoneNumber": "", "postalCode": "", "province": "AZ", "registryId": null, "street": ""}| 1679457579382 | 1697361335282 | *.acme.com | {'id': '218b3cc9-2d26-3a17-aadd-9eac08cc30ec', 'ip': 52529952, 'ipv6': None, 'source': {'name': 'DOMAIN_RESOLUTION'}, 'provider': {'name': 'AWS', 'additionalProviderInfo': None, 'isCdn': False, 'legacyName': 'AWS', 'displayName': 'Amazon Web Services', 'cdn': False}, 'firstObserved': 1692418207732, 'lastObserved': 1697361335282} | HttpServer | BU:Xpanse VanDelay Demo 3 |
+
+If the indicator is **related to Xpanse** was updated in Cortex XSOAR in the last 3 days:
+
+> ### Xpanse Discovered Domain List (Existing Indicators)
+>
+> This domain list is from existing records found in Cortex XSOAR within the last 3 days.
+> If you would like additional Cortex Xpanse specific information about these, use asm-list-asset-internet-exposure.
+>
+> |id|indicator_type|name|reliability|score|
+> |---|---|---|---|---|
+> | abcd1b2abcd1a0b20c7a8bc5d67e8eea | Domain | www.example.com | A+ - 3rd party enrichment | 0 |
+
+If the indicator was updated in Cortex XSOAR in the last 3 days:
+
+> ### XSOAR Indicator Discovered Domain List (Not Related to Xpanse)
+> 
+> This domain list is from existing records found in Cortex XSOAR within the last 3 days.
+> These domains have not been found to be attributed to Cortex Xpanse.
+> |integrations|name|
+> |---|---|
+> | VirusTotal (API v3) | www.fakedomain.com |
+
 
 ### asm-list-external-websites
 
@@ -2285,8 +2467,11 @@ Get a list of all your external websites filtered by authentication type. Maximu
 | ASM.Externalwebsite.externally_inferred_vulnerability_score | Unknown | External website vulnerability score. | 
 
 #### Command example
+
 ```!asm-list-external-website authentiaction=Form limit=5```
+
 #### Context Example
+
 ```json
 {
     "ASM":{
@@ -2714,7 +2899,72 @@ Get a list of all your external websites filtered by authentication type. Maximu
 #### Human Readable Output
 
 >### External websites
+>
 >|Host|Authentication Type|
 >|---|---|
 >| example.com | Form based authentication | 
 
+
+### asm-add-note-to-asset
+
+#### Base Command
+
+`asm-add-note-to-asset`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_id | Authentication type string on which to search. | Required | 
+| entity_type | Maximum number of assets to return. The default and maximum is 100. | Required | 
+| note_to_add | The custom note to be added to the notes section of the asset in Cortex Xpanse | Required |
+| should_append | Set to 'false' to overwrite the current note on the asset. Set to 'true' to append to the current note. Default is 'true'. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ASM.AssetAnnotation.status | String | Status of the note being added to the asset in Xpanse. | 
+
+#### Command example
+
+
+```!asm-add-note-to-asset asset_id=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx entity_type=asset note_to_add="Test adding note to asset."```
+
+
+#### Context Example
+
+```json
+{
+    "status": "succeeded"
+}
+```
+
+#### Human Readable Output
+
+> ### Status
+> 
+>|Status|
+>|---|
+>| succeeded |
+
+
+### asm-reset-last-run
+
+***
+Resets the fetch incidents last run value, which resets the fetch to its initial fetch state.
+
+
+#### Base Command
+
+`asm-reset-last-run`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+
+#### Context Output
+
+There is no context output for this command.

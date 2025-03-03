@@ -133,7 +133,6 @@ configuration:
   - never
   - interval
   - indicatorType
-  - suddenDeath
 - display: ''
   name: feedExpirationInterval
   type: 1
@@ -190,7 +189,7 @@ script:
     name: gibtia-get-indicators
     deprecated: false
     execution: false
-  dockerimage: demisto/python3:3.10.13.80593
+  dockerimage: demisto/python3:3.11.10.115186
   feed: true
   runonce: false
   script: '-'

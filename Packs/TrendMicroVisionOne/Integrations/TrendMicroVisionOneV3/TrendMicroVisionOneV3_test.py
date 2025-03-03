@@ -30,6 +30,7 @@ from TrendMicroVisionOneV3 import (
     get_email_activity_data_count,
     add_or_remove_from_block_list,
     isolate_or_restore_connection,
+    get_observed_attack_techniques,
     enable_or_disable_user_account,
     download_investigation_package,
     download_suspicious_object_list,
@@ -45,10 +46,12 @@ from pytmv1 import (
     BaseTaskResp,
     CollectFileTaskResp,
     Digest,
+    OatEvent,
     EmailActivity,
     Endpoint,
     EndpointActivity,
     GetAlertResp,
+    ListOatsResp,
     AddCustomScriptResp,
     ListCustomScriptsResp,
     ListEmailActivityResp,
@@ -1247,6 +1250,8 @@ def test_get_endpoint_activity_data(mocker):
         "query_op": "or",
         "select": "dpt,dst,endpointHostName",
         "get_activity_data_count": "true",
+        "fetch_all": "false",
+        "fetch_max_count": "50",
         "fields": json.dumps({"dpt": "443", "endpointHostName": "MSEDGEWIN10"}),
     }
     result = get_endpoint_activity_data(client, args)
@@ -1310,6 +1315,8 @@ def test_get_email_activity_data(mocker):
         "top": 50,
         "query_op": "or",
         "select": "mailFromAddresses,mailToAddresses",
+        "fetch_all": "false",
+        "fetch_max_count": "50",
         "fields": json.dumps(
             {"mailToAddresses": "testemail@gmail.com", "mailMsgSubject": "spam"}
         ),
@@ -1407,6 +1414,7 @@ def test_update_status(mocker):
         "workbench_id": "WB-20837-20220418-00000",
         "if_match": "d41d8cd98f00b204e9800998ecf8427e",
         "status": "in_progress",
+        "inv_result": "no_findings",
     }
     result = update_status(client, args)
     assert result.outputs["code"] == 204
@@ -1559,11 +1567,9 @@ def test_delete_custom_script(mocker):
 
 # Mock function to add custom script
 def add_custom_script_mock_response(*args, **kwargs):
-    with open("./test_data/add_custom_script.json") as f:
-        return_value: dict[str, str] = json.load(f)
     return Result(
         result_code=ResultCode.SUCCESS,
-        response=AddCustomScriptResp(**return_value),
+        response=AddCustomScriptResp(script_id="44c99cb0-8c5f-4182-af55-62135dbe32f1"),
     )
 
 
@@ -1612,7 +1618,7 @@ def test_update_custom_script(mocker):
     Given:
         - filename -> Name of the custom script
         - filetype -> Filetype of the custom script
-        - script_id => ID of the custom script to update
+        - script_id -> ID of the custom script to update
         - script_contents -> New contents of the custom script
         - description -> Optional description for the custom script
     When:
@@ -1635,3 +1641,53 @@ def test_update_custom_script(mocker):
     assert result.outputs["status"] == "SUCCESS"
     assert result.outputs_prefix == "VisionOne.Update_Custom_Script"
     assert result.outputs_key_field == "status"
+
+
+# Mock response for get observed attack techniques events
+def get_observed_attack_techniques_mock_response(*args, **kwargs):
+    with open("./test_data/get_observed_attack_techniques.json") as f:
+        attack_techniques: dict[str, Any] = json.load(f)
+    return Result(
+        result_code=ResultCode.SUCCESS,
+        response=ListOatsResp(
+            next_link="https://somelink.com",
+            items=[OatEvent(**attack_techniques)],
+            total_count=30,
+            count=10,
+        ),
+    )
+
+
+# Test case for fetching observed attack techniques
+def test_get_observed_attack_techniques(mocker):
+    """
+    Given:
+        - detected_start -> Detection start date time
+        - detected_end -> Detection end date time
+        - ingested_start -> Ingestion start date time
+        - ingested_end -> Ingestion end date time
+        - top -> Number of records displayed on a page.
+        - query_op -> Conditional operator used to build request that allows
+            user to retrieve a subset of the collected Observed Attack Techniques events
+        - fields -> Required filter (A dictionary object with key/value used to create a query string) for
+            retrieving a subset of the collected Observed Attack Techniques events
+    When:
+        - Execute get_observed_attack_techniques command
+    Then:
+        - validate a string id response
+    """
+    client = Mock()
+    client.oat.list = Mock(return_value=get_observed_attack_techniques_mock_response())
+    args = {
+        "detected_start": "2024-01-15T10:00:00Z",
+        "detected_end": "2024-05-15T10:00:00Z",
+        "ingested_start": "2024-01-15T10:00:00Z",
+        "ingested_end": "2024-05-15T10:00:00Z",
+        "top": 10,
+        "query_op": "or",
+        "fields": json.dumps({"endpointName": "sample-host", "riskLevel": "low"}),
+    }
+    result = get_observed_attack_techniques(client, args)
+    assert isinstance(result.outputs[0]["id"], str)
+    assert result.outputs_prefix == "VisionOne.Get_Observed_Attack_Techniques"
+    assert result.outputs_key_field == "id"

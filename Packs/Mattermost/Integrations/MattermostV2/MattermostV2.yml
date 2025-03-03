@@ -1,0 +1,532 @@
+sectionOrder:
+- Connect
+- Collect
+category: Messaging and Conferencing
+commonfields:
+  id: MattermostV2
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- displaypassword: Bot Access Token
+  additionalinfo: The Bot Access Token to use for connection.
+  name: bot_access_token
+  required: true
+  hiddenusername: true
+  type: 9
+  section: Connect
+- displaypassword: Personal Access Token
+  additionalinfo: The Personal Access Token to use for connection.
+  name: personal_access_token
+  required: true
+  hiddenusername: true
+  type: 9
+  section: Connect
+- display: Team Name
+  name: team_name
+  required: true
+  type: 0
+  section: Connect
+- display: Default Notifications Channel
+  name: notification_channel
+  advanced: true
+  required: false
+  type: 0
+  section: Connect
+  additionalinfo: If Notifications Channel name is not specified, will send notification to incidentNotificationChannel channel.
+- defaultvalue: 'true'
+  display: Enable Incident Mirroring
+  name: mirroring
+  type: 8
+  section: Collect
+  required: false
+  advanced: true
+- display: Allow external users to create incidents via DM.
+  name: allow_incidents
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+- display: Types of Notifications to Send
+  name: permitted_notifications
+  type: 16
+  section: Collect
+  advanced: true
+  required: false
+  options:
+  - incidentAssigned
+  - assign
+  - incidentOpened
+  - incidentChanged
+  - investigationClosed
+  - investigationDeleted
+  - incidentReminderSLA
+  - taskCompleted
+  - incidentStatusChanged
+  - failedFetchIncidents
+  - mentionNew
+  - mentionOld
+  additionalinfo: Notifications of type 'externalAskSubmit' or 'externalFormSubmit' are not configurable because they are required to allow Ask tasks to be sent correctly.
+- display: Long running instance. Required for investigation mirroring and direct messages.
+  name: longRunning
+  type: 8
+  required: false
+  section: Connect
+  defaultvalue: 'true'
+  advanced: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+description: Mattermost is an open-source, self-hostable online chat service with file sharing, search, and integrations. It is designed as an internal chat for organizations and companies.
+display: Mattermost v2
+name: MattermostV2
+script:
+  commands:
+  - arguments:
+    - description: The name of the team to retrieve.
+      name: team_name
+      required: true
+    description: Gets a team's details.
+    name: mattermost-get-team
+    outputs:
+    - contextPath: Mattermost.Team.id
+      description: The ID of the team.
+      type: String
+    - contextPath: Mattermost.Team.create_at
+      description: When was the team created.
+      type: Unknown
+    - contextPath: Mattermost.Team.update_at
+      description: When was the team updated.
+      type: Unknown
+    - contextPath: Mattermost.Team.delete_at
+      description: When was the team deleted.
+      type: Unknown
+    - contextPath: Mattermost.Team.display_name
+      description: The display name of the team.
+      type: String
+    - contextPath: Mattermost.Team.name
+      description: The name of the team.
+      type: String
+    - contextPath: Mattermost.Team.description
+      description: The description of the team.
+      type: String
+    - contextPath: Mattermost.Team.email
+      description: The email of the team.
+      type: String
+    - contextPath: Mattermost.Team.type
+      description: The type of the team.
+      type: String
+    - contextPath: Mattermost.Team.company_name
+      description: The company name of the team.
+      type: String
+    - contextPath: Mattermost.Team.allowed_domains
+      description: The allowed domains of the team.
+      type: String
+    - contextPath: Mattermost.Team.invite_id
+      description: The allowed domains of the team.
+      type: String
+    - contextPath: Mattermost.Team.allow_open_invite
+      description: Does the team allow open invites.
+      type: Unknown
+    - contextPath: Mattermost.Team.scheme_id
+      description: The scheme ID of the team.
+      type: String
+    - contextPath: Mattermost.Team.policy_id
+      description: The policy ID of the team.
+      type: String
+  - arguments:
+    - description: The name of the team to list channels from. Default is the team name from the integration configuration.
+      name: team
+      required: false
+    - description: Whether to include private channels. Default is false.
+      name: include_private_channels
+      required: false
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
+    - description: The page number to retrieve. Default value is 0.
+      name: page
+      required: false
+    - description: The size of the page to retrieve. Default value is 50.
+      name: page_size
+      required: false
+    - description: How many results to retrieve. Will override the page and page_size arguments if given.
+      name: limit
+      required: false
+    description: Lists channels.
+    name: mattermost-list-channels
+    outputs:
+    - contextPath: Mattermost.Channel.id
+      description: The ID of the channel.
+      type: String
+    - contextPath: Mattermost.Channel.create_at
+      description: When was the channel created.
+      type: Unknown
+    - contextPath: Mattermost.Channel.update_at
+      description: When was the channel updated.
+      type: Unknown
+    - contextPath: Mattermost.Channel.delete_at
+      description: When was the channel deleted.
+      type: Unknown
+    - contextPath: Mattermost.Channel.display_name
+      description: The display name of the channel.
+      type: String
+    - contextPath: Mattermost.Channel.name
+      description: The name of the channel.
+      type: String
+    - contextPath: Mattermost.Channel.description
+      description: The description of the channel.
+      type: String
+    - contextPath: Mattermost.Channel.header
+      description: The header of the channel.
+      type: String
+    - contextPath: Mattermost.Channel.purpose
+      description: The purpose of the channel.
+      type: String
+    - contextPath: Mattermost.Channel.last_post_at
+      description: When was the last post to the channel made.
+      type: Unknown
+    - contextPath: Mattermost.Channel.total_msg_count
+      description: The total massage count of the channel.
+      type: Unknown
+    - contextPath: Mattermost.Channel.extra_update_at
+      description: When was the channel updated.
+      type: Unknown
+    - contextPath: Mattermost.Channel.creator_id
+      description: The creator ID of the channel.
+      type: String
+  - arguments:
+    - description: The display name of the channel to create.
+      name: display_name
+      required: true
+    - description: The name of the channel to create.
+      name: name
+      required: true
+    - description: The type of the channel to create.
+      name: type
+      defaultValue: public
+      predefined:
+      - public
+      - private
+      auto: PREDEFINED
+      required: false
+    - description: The purpose of the channel to create.
+      name: purpose
+      required: false
+    - description: The header of the channel to create.
+      name: header
+      required: false
+    - description: The team name of the channel to create. Default is the team name from the integration configuration.
+      name: team
+      required: false
+    description: Creates a channel.
+    name: mattermost-create-channel
+    outputs:
+    - contextPath: Mattermost.Channel.id
+      description: The ID of the channel.
+      type: String
+    - contextPath: Mattermost.Channel.create_at
+      description: When was the channel created.
+      type: Unknown
+    - contextPath: Mattermost.Channel.update_at
+      description: When was the channel updated.
+      type: Unknown
+    - contextPath: Mattermost.Channel.delete_at
+      description: When was the channel deleted.
+      type: Unknown
+    - contextPath: Mattermost.Channel.display_name
+      description: The display name of the channel.
+      type: String
+    - contextPath: Mattermost.Channel.name
+      description: The name of the channel.
+      type: String
+    - contextPath: Mattermost.Channel.description
+      description: The description of the channel.
+      type: String
+    - contextPath: Mattermost.Channel.header
+      description: The header of the channel.
+      type: String
+    - contextPath: Mattermost.Channel.purpose
+      description: The purpose of the channel.
+      type: String
+    - contextPath: Mattermost.Channel.last_post_at
+      description: When was the last post to the channel made.
+      type: Unknown
+    - contextPath: Mattermost.Channel.total_msg_count
+      description: The total massage count of the channel.
+      type: Unknown
+    - contextPath: Mattermost.Channel.extra_update_at
+      description: When was the channel updated.
+      type: Unknown
+    - contextPath: Mattermost.Channel.creator_id
+      description: The creator ID of the channel.
+      type: String
+    - contextPath: Mattermost.Channel.scheme_id
+      description: The scheme ID of the channel.
+      type: String
+  - arguments:
+    - description: The team name of the channel to add the user to. Default is the team name from the integration configuration.
+      name: team
+      required: false
+    - description: The name of the channel to add the user to.
+      name: channel
+      required: true
+    - description: The ID of the user to add. Use the command 'mattermost-list-users' to fetch the user ID.
+      name: user_id
+      required: true
+    description: Adds a channel member.
+    name: mattermost-add-channel-member
+    outputs: []
+  - arguments:
+    - description: The team name of the channel to add the user to. Default is the team name from the integration configuration.
+      name: team
+      required: false
+    - description: The channel name of the channel to remove the user from.
+      name: channel
+      required: true
+    - description: The ID of the user to remove. Use the command 'mattermost-list-users' to fetch the user ID.
+      name: user_id
+      required: true
+    description: Removes a channel member.
+    name: mattermost-remove-channel-member
+    outputs: []
+  - arguments:
+    - description: The name of the team to filter users by.
+      name: team_name
+      required: false
+    - description: The name of the channel to filters users by. If mentioned, a team name must be mentioned as well.
+      name: channel
+      required: false
+    - description: The page number to retrieve. Should be provided with the page_size argument. Default value is 0.
+      name: page
+      required: false
+    - description: The size of the page to retrieve. Should be provided with the page argument. Default value is 50.
+      name: page_size
+      required: false
+    - description: How many results to retrieve. If provided, overrides the page and page_size arguments.
+      name: limit
+      required: false
+    description: Lists users.
+    name: mattermost-list-users
+    outputs:
+    - contextPath: Mattermost.User.id
+      description: The ID of the user.
+      type: String
+    - contextPath: Mattermost.User.create_at
+      description: When was the user created.
+      type: Unknown
+    - contextPath: Mattermost.User.update_at
+      description: When was the user updated.
+      type: Unknown
+    - contextPath: Mattermost.User.delete_at
+      description: When was the user deleted.
+      type: Unknown
+    - contextPath: Mattermost.User.username
+      description: The username of the user.
+      type: String
+    - contextPath: Mattermost.User.auth_data
+      description: The authorization data of the user.
+      type: String
+    - contextPath: Mattermost.User.auth_service
+      description: The authorization service of the user.
+      type: String
+    - contextPath: Mattermost.User.email
+      description: The email of the user.
+      type: String
+    - contextPath: Mattermost.User.nickname
+      description: The nickname of the user.
+      type: String
+    - contextPath: Mattermost.User.first_name
+      description: The first name of the user.
+      type: Unknown
+    - contextPath: Mattermost.User.last_name
+      description: The last name of the user.
+      type: Unknown
+    - contextPath: Mattermost.User.position
+      description: The position of the user.
+      type: Unknown
+    - contextPath: Mattermost.User.roles
+      description: The roles of the channel.
+      type: String
+    - contextPath: Mattermost.User.locale
+      description: The locale of the channel.
+      type: String
+    - contextPath: Mattermost.User.timezone
+      description: The timezone of the user.
+      type: Unknown
+  - arguments:
+    - description: The team name of the channel to send the file to. Default is the Team Name in the integration configuration.
+      name: team_name
+      required: false
+    - description: The channel name of the channel to send the file to. Cannot be combined with the to argument.
+      name: channel
+      required: false
+    - description: The message to send to the channel along with the file.
+      name: message
+      required: true
+    - description: The entry ID of the file.
+      name: entry_id
+      required: true
+    - description: The username or email of the user to send the file to.
+      name: to
+      required: false
+    description: Sends a file.
+    name: mattermost-send-file
+    outputs: []
+  - arguments:
+    - description: The message to send.
+      name: message
+      required: true
+    - description: The channel name to send the notification to. Default value is the channel configuration parameter.
+      name: channel
+      required: false
+    - description: An entry ID to send as a link.
+      name: entry
+      required: false
+    - description: The username or email of the user to send the file to.
+      name: to
+      required: false
+    - description: Adds the War Room link to the message.
+      name: ignoreAddURL
+      required: false
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
+    - name: mattermost_ask
+      description: The message as a JSON for asking questions to the user. Default value is false.
+      type: boolean
+      required: false
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
+    description: Send a message using a chatbot app.
+    name: send-notification
+    outputs: []
+  - arguments:
+    - description: The team name of the channel to close. Default value is the team name from the integration configuration.
+      name: team_name
+      required: false
+    - description: The channel name of the channel to close. If not provided, the mirrored investigation channel is archived (if the channel exists).
+      name: channel
+      required: false
+    description: Closes a channel.
+    name: mattermost-close-channel
+    outputs: []
+  - arguments:
+    - description: The team name of the channel to delete. Default value is the team name from the integration configuration.
+      name: team_name
+      required: false
+    - description: The channel name of the channel to close.
+      name: channel
+      required: false
+    description: Closes a mirrored Mattermost channel. If not provided, the mirrored investigation channel is archived (if the channel exists).
+    name: close-channel
+    outputs: []
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: all
+      description: The mirroring type. Can be "all", which mirrors everything, "chat", which mirrors only chats (not commands), or "none", which stops all mirroring.
+      name: type
+      predefined:
+      - all
+      - chat
+      - none
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Whether the channel is auto-closed when an investigation is closed.
+      name: autoclose
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: Both
+      description: The mirroring direction.
+      name: direction
+      predefined:
+      - Both
+      - FromDemisto
+      - ToDemisto
+    - description: The name of the channel. The default is "incident-<incidentID>".
+      name: channel
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to remove the admin from the newly created channel. Default value is false.
+      name: kickAdmin
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'group'
+      description: Mirrors the investigation to a group (private channel) or a public channel. Default is group.
+      name: mirrorTo
+      predefined:
+      - 'group'
+      - 'channel'
+    description: Mirrors the investigation between Mattermost and the Cortex XSOAR War Room.
+    name: mirror-investigation
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: all
+      description: The mirroring type. Can be "all", which mirrors everything, "chat", which mirrors only chats (not commands), or "none", which stops all mirroring.
+      name: type
+      predefined:
+      - all
+      - chat
+      - none
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Whether the channel is auto-closed when an investigation is closed.
+      name: autoclose
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: Both
+      description: The mirroring direction.
+      name: direction
+      predefined:
+      - Both
+      - FromDemisto
+      - ToDemisto
+    - description: The name of the channel. The default is "incident-<incidentID>".
+      name: channel
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to remove the admin from the newly created channel. Default value is false.
+      name: kickAdmin
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'group'
+      description: Mirrors the investigation to a group (private channel) or a public channel.
+      name: mirrorTo
+      predefined:
+      - 'group'
+      - 'channel'
+    description: Mirrors the investigation between Mattermost and the Cortex XSOAR War Room.
+    name: mattermost-mirror-investigation
+  longRunning: true
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/netutils:1.0.0.118055
+fromversion: 6.10.0
+tests:
+- MattermostV2 - testplaybook

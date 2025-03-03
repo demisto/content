@@ -4,30 +4,26 @@ This integration was integrated and tested with version v3 of EWS Extension Onli
 **Note:** This integration does not replace the **O365 - EWS - Extension** integration, but an additional EWS extension integration
 which utilizes the [EXO v3 module](https://learn.microsoft.com/en-us/powershell/exchange/exchange-online-powershell-v2?view=exchange-ps).
 
-## Configure EWS Extension Online Powershell v3 on Cortex XSOAR
+## Configure EWS Extension Online Powershell v3 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for EWS Extension Online Powershell v3.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Name | The name of the integration | True |
-    | Exchange Online URL | https://outlook.office365.com | True |
-    | Certificate | A txt certificate encoded in Base64. | True |
-    | The organization used in app-only authentication. |  | True |
-    | The application ID from the Azure portal |  | True |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Name | The name of the integration | True |
+| Exchange Online URL | https://outlook.office365.com | True |
+| Certificate | A txt certificate encoded in Base64. | True |
+| The organization used in app-only authentication. |  | True |
+| The application ID from the Azure portal |  | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 
 ### Important Notes
 ---
-* It is strongly recommended to follow the [Docker Hardening Guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Docker-Hardening-Guide) to prevent the docker container from utilizing excessive memory. Details about the known memory leak can be found [here](https://github.com/MicrosoftDocs/office-docs-powershell/issues/6924).
+* It is strongly recommended to follow the [Docker hardening guide (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Docker-Hardening-Guide) or [Docker hardening guide (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Docker-hardening-guide) or [Docker hardening guide (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Docker-hardening-guide), to prevent the docker container from utilizing excessive memory. Details about the known memory leak can be found [here](https://github.com/MicrosoftDocs/office-docs-powershell/issues/6924).
 * If your instance does experience memory management issues, please configure your playbooks to use *Retry on error*.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ews-mailbox-list
 ***
@@ -667,6 +663,285 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
 >| 0 |  |  |  |  |  |  |  |  | Deleted | outlook.office365.com | false | \{"value":"cd58060e\-d033\-4cdb\-814e\-9f9748fdf78c","Guid":"cd58060e\-d033\-4cdb\-814e\-9f9748fdf78c"\} |  |  | attacker@phishingsite.com
 
+### ews-export-quarantinemessage
+***
+Export quarantine messages.
+
+
+#### Base Command
+
+`ews-export-quarantinemessage`
+#### Input
+| **Argument Name** | **Description** | **Required**
+| --- | --- | --- |
+identities | A comma-separated list of identities of the messages to export. | Optional |
+identity | The identity of a single message to export. | Optional |
+compress_output | Specify whether the output should be compressed. | Optional |
+entity_type | The type of entity being exported. | Optional |
+force_conversion_to_mime | Specify whether to force conversion to MIME format. | Optional |
+password | Password to encrypt the exported file. | Optional |
+reason_for_export | Reason for exporting the message. | Optional |
+recipient_address | Email address to send the exported message to. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| EWS.ExportQuarantineMessage.BodyEncoding | String | Encoding used for the body of the message. |
+| EWS.ExportQuarantineMessage.Eml | String | The email message in Base64 encoding. |
+| EWS.ExportQuarantineMessage.Identity | String | Unique identifier for the retrieved message. |
+| EWS.ExportQuarantineMessage.Organization | Boolean | Identifier for the organization associated with the message. |
+
+
+#### Command Example
+```!ews-export-quarantinemessage identity="12345678-beef-dead-beef-0123456789ab\\c0ffee13-beef-dead-beef-0123456789ab"```
+
+#### Context Example
+```json
+{
+    "BodyEncoding": "Base64",
+    "Eml": "TmV2ZXIgZ29ubmEgZ2l2ZSB5b3UgdXAsIG5ldmVyIGdvbm5hIGxldCB5b3UgZG93biwgbmV2ZXIgZ29ubmEgcnVuIGFyb3VuZCBhbmQgZGVzZXJ0IHlvdQo=",
+    "Identity": "12345678-beef-dead-beef-0123456789ab\\c0ffee13-beef-dead-beef-0123456789ab",
+    "Organization": "c0ffee13-beef-dead-beef-0123456789ab"
+}
+```
+
+#### Human Readable Output
+>>### Results of ews-export-quarantinemessage
+>| **BodyEncoding** | **Eml** | **Identity** | **Organization** |
+>| --- | --- | --- | --- |
+>| Base64 | TmV2ZXIgZ29ubmEgZ2l2ZSB5b3UgdXAsIG5ldmVyIGdvbm5hIGxldCB5b3UgZG93biwgbmV2ZXIgZ29ubmEgcnVuIGFyb3VuZCBhbmQgZGVzZXJ0IHlvdQo= | 12345678-beef-dead-beef-0123456789ab\\c0ffee13-beef-dead-beef-0123456789ab | c0ffee13-beef-dead-beef-0123456789ab |
+
+### ews-get-quarantinemessage
+***
+Retrieve quarantine messages.
+
+#### Base Command
+
+`ews-get-quarantinemessage`
+#### Input
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identity | The identity of a single message to retrieve. | Optional |
+| entity_type | The type of entity being retrieved. | Optional |
+| recipient_address | Email address of the recipient. | Optional |
+| sender_address | Email address of the sender. | Optional |
+| teams_conversation_types | Types of Teams conversations to retrieve. | Optional |
+| direction | Direction of the message (Inbound/Outbound). | Optional |
+| domain | Domain associated with the message. | Optional |
+| end_expires_date | End date for the message expiration. | Optional |
+| end_received_date | End date for when the message was received. | Optional |
+| include_messages_from_blocked_sender_address | Include messages from blocked sender addresses. | Optional |
+| message_id | ID of the message. | Optional |
+| my_items | Include only items belonging to the user. | Optional |
+| page | Page number for pagination. | Optional |
+| page_size | Number of items per page. | Optional |
+| policy_name | Name of the policy associated with the message. | Optional |
+| policy_types | Types of policies associated with the message. | Optional |
+| quarantine_types | Types of quarantine associated with the message. | Optional |
+| recipient_tag | Tag associated with the recipient. | Optional |
+| release_status | Release status of the message. | Optional |
+| reported | Include only reported messages. | Optional |
+| start_expires_date | Start date for the message expiration. | Optional |
+| start_received_date | Start date for when the message was received. | Optional |
+| subject | Subject of the message. | Optional |
+| type | Type of the message. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| EWS.GetQuarantineMessage.ApprovalId | string | Approval ID of the message. |
+| EWS.GetQuarantineMessage.ApprovalUPN | string | User Principal Name (UPN) of the approver. |
+| EWS.GetQuarantineMessage.CustomData | unknown | Custom data associated with the message. |
+| EWS.GetQuarantineMessage.DeletedForRecipients | string | List of recipients for whom the message was deleted. |
+| EWS.GetQuarantineMessage.Direction | string | Direction of the message (Inbound/Outbound). |
+| EWS.GetQuarantineMessage.EntityType | string | Entity type of the message. |
+| EWS.GetQuarantineMessage.Expires | date | Expiry date of the message. |
+| EWS.GetQuarantineMessage.Identity | string | Unique identifier for the message. |
+| EWS.GetQuarantineMessage.MessageId | string | Message ID of the email. |
+| EWS.GetQuarantineMessage.MoveToQuarantineAdminActionTakenBy | string | Admin action taken by. |
+| EWS.GetQuarantineMessage.MoveToQuarantineApprovalId | string | Approval ID for moving to quarantine. |
+| EWS.GetQuarantineMessage.Organization | string | Identifier for the organization associated with the message. |
+| EWS.GetQuarantineMessage.OverrideReason | string | Reason for overriding the message. |
+| EWS.GetQuarantineMessage.OverrideReasonIntValue | number | Integer value of the override reason. |
+| EWS.GetQuarantineMessage.PermissionToAllowSender | boolean | Permission to allow the sender. |
+| EWS.GetQuarantineMessage.PermissionToBlockSender | boolean | Permission to block the sender. |
+| EWS.GetQuarantineMessage.PermissionToDelete | boolean | Permission to delete the message. |
+| EWS.GetQuarantineMessage.PermissionToDownload | boolean | Permission to download the message. |
+| EWS.GetQuarantineMessage.PermissionToPreview | boolean | Permission to preview the message. |
+| EWS.GetQuarantineMessage.PermissionToRelease | boolean | Permission to release the message. |
+| EWS.GetQuarantineMessage.PermissionToRequestRelease | boolean | Permission to request release of the message. |
+| EWS.GetQuarantineMessage.PermissionToViewHeader | boolean | Permission to view the header of the message. |
+| EWS.GetQuarantineMessage.PolicyName | string | Name of the policy applied to the message. |
+| EWS.GetQuarantineMessage.PolicyType | string | Type of the policy applied to the message. |
+| EWS.GetQuarantineMessage.QuarantineTypes | string | Types of quarantine applied to the message. |
+| EWS.GetQuarantineMessage.QuarantinedUser | string | List of users quarantined. |
+| EWS.GetQuarantineMessage.ReceivedTime | date | Time the message was received. |
+| EWS.GetQuarantineMessage.RecipientAddress | string | List of recipient email addresses. |
+| EWS.GetQuarantineMessage.RecipientCount | number | Number of recipients. |
+| EWS.GetQuarantineMessage.RecipientTag | string | Tags associated with the recipient. |
+| EWS.GetQuarantineMessage.ReleaseStatus | string | Release status of the message. |
+| EWS.GetQuarantineMessage.Released | boolean | Whether the message was released. |
+| EWS.GetQuarantineMessage.ReleasedBy | string | List of users who released the message. |
+| EWS.GetQuarantineMessage.ReleasedCount | number | Number of times the message was released. |
+| EWS.GetQuarantineMessage.ReleasedUser | string | List of users who released the message. |
+| EWS.GetQuarantineMessage.Reported | boolean | Whether the message was reported. |
+| EWS.GetQuarantineMessage.SenderAddress | string | Email address of the sender. |
+| EWS.GetQuarantineMessage.Size | number | Size of the message in bytes. |
+| EWS.GetQuarantineMessage.SourceId | string | Source ID of the message. |
+| EWS.GetQuarantineMessage.Subject | string | Subject of the message. |
+| EWS.GetQuarantineMessage.SystemReleased | boolean | Whether the system released the message. |
+| EWS.GetQuarantineMessage.TagName | string | Tag name associated with the message. |
+| EWS.GetQuarantineMessage.TeamsConversationType | string | Teams conversation type associated with the message. |
+| EWS.GetQuarantineMessage.Type | string | Type of the message. |
+
+
+#### Command Example
+```!ews-get-quarantinemessage```
+
+#### Context Example
+```json
+{
+[
+    {
+        "ApprovalId": "",
+        "ApprovalUPN": "",
+        "CustomData": null,
+        "DeletedForRecipients": [],
+        "Direction": "Outbound",
+        "EntityType": "Email",
+        "Expires": "2024-07-18T13:20:02.7166413+00:00",
+        "Identity": "12345678-beef-dead-beef-0123456789ab\\c0ffee13-beef-dead-beef-0123456789ab",
+        "MessageId": "\u003c12345678-beef-dead-beef-0123456789ab@123456.789a.bcde.example.com\u003e",
+        "MoveToQuarantineAdminActionTakenBy": "",
+        "MoveToQuarantineApprovalId": "",
+        "Organization": "c0ffee13-beef-dead-beef-0123456789ab",
+        "OverrideReason": "None",
+        "OverrideReasonIntValue": 0,
+        "PermissionToAllowSender": true,
+        "PermissionToBlockSender": false,
+        "PermissionToDelete": true,
+        "PermissionToDownload": true,
+        "PermissionToPreview": true,
+        "PermissionToRelease": true,
+        "PermissionToRequestRelease": false,
+        "PermissionToViewHeader": false,
+        "PolicyName": "Default",
+        "PolicyType": "HostedContentFilterPolicy",
+        "QuarantineTypes": "HighConfPhish",
+        "QuarantinedUser": [],
+        "ReceivedTime": "2024-07-02T13:20:02.7166413+00:00",
+        "RecipientAddress": [
+            "admin@example.com"
+        ],
+        "RecipientCount": 1,
+        "RecipientTag": [
+            ""
+        ],
+        "ReleaseStatus": "NOTRELEASED",
+        "Released": false,
+        "ReleasedBy": [],
+        "ReleasedCount": 0,
+        "ReleasedUser": [],
+        "Reported": false,
+        "SenderAddress": "alerts@example.com",
+        "Size": 31218,
+        "SourceId": "",
+        "Subject": "Informational-severity alert: Tenant Allow/Block List entry is about to expire",
+        "SystemReleased": false,
+        "TagName": "AdminOnlyAccessPolicy",
+        "TeamsConversationType": "",
+        "Type": "High Confidence Phish"
+    },
+    {
+        "ApprovalId": "",
+        "ApprovalUPN": "",
+        "CustomData": null,
+        "DeletedForRecipients": [],
+        "Direction": "Inbound",
+        "EntityType": "Email",
+        "Expires": "2024-07-13T10:59:12.7581841+00:00",
+        "Identity": "12345678-beef-dead-beef-0123456789ac\\c0ffee13-beef-dead-beef-0123456789ac",
+        "MessageId": "\u003c12345678-beef-dead-beef-0123456789ac@123456.789a.bcde.example.com\u003e",
+        "MoveToQuarantineAdminActionTakenBy": "",
+        "MoveToQuarantineApprovalId": "",
+        "Organization": "c0ffee13-beef-dead-beef-0123456789ac",
+        "OverrideReason": "None",
+        "OverrideReasonIntValue": 0,
+        "PermissionToAllowSender": true,
+        "PermissionToBlockSender": false,
+        "PermissionToDelete": true,
+        "PermissionToDownload": true,
+        "PermissionToPreview": true,
+        "PermissionToRelease": true,
+        "PermissionToRequestRelease": false,
+        "PermissionToViewHeader": false,
+        "PolicyName": "testing_quarantine_release",
+        "PolicyType": "HostedContentFilterPolicy",
+        "QuarantineTypes": "HighConfPhish",
+        "QuarantinedUser": [],
+        "ReceivedTime": "2024-06-28T10:59:12.7581841+00:00",
+        "RecipientAddress": [
+            "user@example.com"
+        ],
+        "RecipientCount": 1,
+        "RecipientTag": [
+            ""
+        ],
+        "ReleaseStatus": "RELEASED",
+        "Released": true,
+        "ReleasedBy": [
+            "SystemMailbox{deadbeef-dead-beef-dead-beefdeadbeef}@example.com"
+        ],
+        "ReleasedCount": 1,
+        "ReleasedUser": [],
+        "Reported": false,
+        "SenderAddress": "sender@example.com",
+        "Size": 14781,
+        "SourceId": "",
+        "Subject": "Check the inbox",
+        "SystemReleased": false,
+        "TagName": "testing_release",
+        "TeamsConversationType": "",
+        "Type": "High Confidence Phish"
+    }
+]
+}
+```
+#### Human Readable Output
+
+>### Results of ews-get-quarantinemessage
+>| ApprovalId | ApprovalUPN | CustomData | DeletedForRecipients | Direction | EntityType | Expires | Identity | MessageId | MoveToQuarantineAdminActionTakenBy | MoveToQuarantineApprovalId | Organization | OverrideReason | OverrideReasonIntValue | PermissionToAllowSender | PermissionToBlockSender | PermissionToDelete | PermissionToDownload | PermissionToPreview | PermissionToRelease | PermissionToRequestRelease | PermissionToViewHeader | PolicyName | PolicyType | QuarantineTypes | QuarantinedUser | ReceivedTime | RecipientAddress | RecipientCount | RecipientTag | ReleaseStatus | Released | ReleasedBy | ReleasedCount | ReleasedUser | Reported | SenderAddress | Size | SourceId | Subject | SystemReleased | TagName | TeamsConversationType | Type |
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>|  |  |  |  | Outbound | Email | 2024-07-18T13:20:02.7166413+00:00 | 12345678-beef-dead-beef-0123456789ab\c0ffee13-beef-dead-beef-0123456789ab | \u003c12345678-beef-dead-beef-0123456789ab@123456.789a.bcde.example.com\u003e |  |  | c0ffee13-beef-dead-beef-0123456789ab | None | 0 | true | false | true | true | true | true | false | false | Default | HostedContentFilterPolicy | HighConfPhish | [] | 2024-07-02T13:20:02.7166413+00:00 | ["admin@example.com"] | 1 | [""] | NOTRELEASED | false | [] | 0 | [] | false | alerts@example.com | 31218 |  | Informational-severity alert: Tenant Allow/Block List entry is about to expire | false | AdminOnlyAccessPolicy |  | High Confidence Phish |
+>|  |  |  |  | Inbound | Email | 2024-07-13T10:59:12.7581841+00:00 | 12345678-beef-dead-beef-0123456789ac\\c0ffee13-beef-dead-beef-0123456789ac | \u003c12345678-beef-dead-beef-0123456789ac@123456.789a.bcde.example.com\u003e |  |  | c0ffee13-beef-dead-beef-0123456789ac | None | 0 | true | false | true | true | true | true | false | false | testing_quarantine_release | HostedContentFilterPolicy | HighConfPhish | [] | 2024-06-28T10:59:12.7581841+00:00 | ["user@example.com"] | 1 | [""] | RELEASED | true | ["SystemMailbox{deadbeef-dead-beef-dead-beefdeadbeef}@example.com"] | 1 | [] | false | sender@example.com | 14781 |  | Check the inbox | false | testing_release |  | High Confidence Phish |
+
+### ews-release-quarantinemessage
+***
+Release quarantine messages.
+
+#### Base Command
+```ews-release-quarantinemessage```
+
+#### Input
+| **Argument Name**      | **Description**                                            | **Required** |
+|------------------------|------------------------------------------------------------|--------------|
+| user                   | The user associated with the quarantine message.           | Optional |
+| identities             | A comma-separated list of identities of the messages to release. | Optional |
+| identity               | The identity of a single message to release.               | Optional |
+| release_to_all         | Specify whether to release the message to all recipients.  | Optional |
+| allow_sender           | Specify whether to allow the sender.                       | Optional |
+| entity_type            | The type of entity being released.                         | Optional |
+| force                  | Specify whether to force the release.                      | Optional |
+| report_false_positive  | Specify whether to report the message as a false positive. | Optional |
+| action_type            | The type of action to take when releasing the message.     | Optional |
+
+#### Context Output
+There are no context outputs for this command.
+
+#### Human Readable Output
+>The message with identity 12345678-beef-dead-beef-0123456789ab\\c0ffee13-beef-dead-beef-0123456789ab has been sent for release from quarantine.
 
 ### ews-junk-rules-get
 ***
@@ -1514,3 +1789,216 @@ There are no context outputs for this command.
 #### Human Readable Output
 
 >Rule 1845290268845146113 has been deleted successfully
+
+### ews-rule-disable
+***
+Disable an existing inbox rule in a given mailbox.
+
+#### Base Command
+
+`ews-rule-disable`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| mailbox | The mailbox that contains the inbox rule. | Required | 
+| identity | The inbox rule that you want to disable. | Required | 
+
+
+#### Context Output
+There are no context outputs for this command.
+
+#### Human Readable Output
+
+>Rule 1845290268845146113 has been disabled successfully
+
+### ews-rule-enable
+***
+Enable an existing inbox rule in a given mailbox.
+
+#### Base Command
+
+`ews-rule-enable`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| mailbox | The mailbox that contains the inbox rule. | Required | 
+| identity | The inbox rule that you want to enable. | Required | 
+
+
+#### Context Output
+There are no context outputs for this command.
+
+#### Human Readable Output
+
+>Rule 1845290268845146113  has been enabled successfully
+
+### ews-mail-flow-rules-list
+***
+List all mail flow rules (transport rules) in the organization.
+
+#### Base Command
+
+`ews-mail-flow-rules-list`
+#### Input
+| **Argument Name** | **Description**                                                | **Possible Values** | **Is Array** | **Required** | **Note**        |
+|-------------------|----------------------------------------------------------------|---------------------|--------------| --- |-----------------|
+| extended_output   | Determine whether the output will be in verbose format or not. | Boolean             | No           | No | Default = False |
+| limit             | The amount of mail flow rules to return. | Number             | No           | No | Default is 1000  |
+
+#### Context Output
+| **Path** | **Type** | **Description** |
+| --- |----------| --- |
+| EWS.MailFlowRule.Size | Number   | The size of the mail flow rule in bytes, typically related to the storage or data usage of the rule. |
+| EWS.MailFlowRule.ExpiryDate | Date     | The date and time when the mail flow rule is set to expire and no longer apply. |
+| EWS.MailFlowRule.Mode | String   | The operational mode of the rule, indicating whether it is active (`Enforce`), in testing mode (`Test`), or disabled. |
+| EWS.MailFlowRule.Quarantine | Boolean  | Specifies whether the rule actions include quarantining messages that match the rule. |
+| EWS.MailFlowRule.Guid | String   | The unique identifier (Globally Unique Identifier) for the mail flow rule. |
+| EWS.MailFlowRule.OrganizationId | String   | The identifier for the organization where the mail flow rule is configured, typically used in multi-tenant environments. |
+| EWS.MailFlowRule.DistinguishedName | String   | The distinguished name of the mail flow rule in the Exchange directory structure. |
+| EWS.MailFlowRule.IsValid | Boolean  | Indicates whether the mail flow rule is valid and functional. |
+| EWS.MailFlowRule.Conditions | Array    | The conditions that trigger the mail flow rule, such as specific senders, recipients, or message properties. |
+| EWS.MailFlowRule.Comments | Unknown  | Free-form text field for adding comments or notes about the rule, typically used for documentation. |
+| EWS.MailFlowRule.WhenChanged | Date     | The date and time when the mail flow rule was last modified. |
+| EWS.MailFlowRule.Description | String   | A brief description of the mail flow rule's purpose or functionality. |
+| EWS.MailFlowRule.Actions |    Array      | The actions taken when a message matches the rule's conditions, such as redirecting, blocking, or adding headers. |
+| EWS.MailFlowRule.ImmutableId |   String       |  A persistent, unchangeable identifier for the mail flow rule, ensuring it remains identifiable across modifications. |
+| EWS.MailFlowRule.Identity |   String       |The identity of the rule, often combining the name and unique identifiers, used to reference the rule programmatically.  |
+| EWS.MailFlowRule.Name |   String       |  The user-friendly name of the mail flow rule, typically used for easy identification. |
+| EWS.MailFlowRule.CreatedBy |     String     | The user or process that created the mail flow rule. |
+| EWS.MailFlowRule.RouteMessageOutboundConnector |   Unknown       | Specifies whether messages matching the rule should be routed through a specific outbound connector. |
+
+#### Human Readable Output
+
+>### Results of ews-rule-list
+>| Name      | State    | Priority | Comment | WhenChanged                | CreatedBy|
+>|-----------|----------|----------|---------|----------------------------| --- |
+>| demisto   | Disabled | 1        | comment | 2019-10-14T07:25:04+00:00  | Edwin Becker
+>| demisto-2 | Enabled  | 2        | comment | 2019-11-15T010:21:45+00:00 | Kemp Kimmons
+>| demisto-3 | Enabled  | 3        | comment | 2019-11-16T016:26:46+00:00 | Barbara Wagner
+
+### ews-mail-flow-rule-get
+***
+Get a mail flow rule (transport rules) in the organization.
+
+#### Base Command
+
+`ews-mail-flow-rule-get`
+#### Input
+
+| **Argument Name** | **Description**                                                | **Possible Values** | **Is Array** | **Required** | **Note** |
+| --- |----------------------------------------------------------------|---------------------| --- | --- | --- |
+| extended_output | Determine whether the output will be in verbose format or not. | Boolean             | No | No | Default = False |
+| identity | Specifies the rule that you want to view.                      | string             | No | No |  |
+
+
+#### Context Output
+| **Path** | **Type** | **Description** |
+| --- |----------| --- |
+| EWS.MailFlowRule.Size | Number   | The size of the mail flow rule in bytes, typically related to the storage or data usage of the rule. |
+| EWS.MailFlowRule.ExpiryDate | Date     | The date and time when the mail flow rule is set to expire and no longer apply. |
+| EWS.MailFlowRule.Mode | String   | The operational mode of the rule, indicating whether it is active (`Enforce`), in testing mode (`Test`), or disabled. |
+| EWS.MailFlowRule.Quarantine | Boolean  | Specifies whether the rule actions include quarantining messages that match the rule. |
+| EWS.MailFlowRule.Guid | String   | The unique identifier (Globally Unique Identifier) for the mail flow rule. |
+| EWS.MailFlowRule.OrganizationId | String   | The identifier for the organization where the mail flow rule is configured, typically used in multi-tenant environments. |
+| EWS.MailFlowRule.DistinguishedName | String   | The distinguished name of the mail flow rule in the Exchange directory structure. |
+| EWS.MailFlowRule.IsValid | Boolean  | Indicates whether the mail flow rule is valid and functional. |
+| EWS.MailFlowRule.Conditions | Array    | The conditions that trigger the mail flow rule, such as specific senders, recipients, or message properties. |
+| EWS.MailFlowRule.Comments | Unknown  | Free-form text field for adding comments or notes about the rule, typically used for documentation. |
+| EWS.MailFlowRule.WhenChanged | Date     | The date and time when the mail flow rule was last modified. |
+| EWS.MailFlowRule.Description | String   | A brief description of the mail flow rule's purpose or functionality. |
+| EWS.MailFlowRule.Actions |    Array      | The actions taken when a message matches the rule's conditions, such as redirecting, blocking, or adding headers. |
+| EWS.MailFlowRule.ImmutableId |   String       |  A persistent, unchangeable identifier for the mail flow rule, ensuring it remains identifiable across modifications. |
+| EWS.MailFlowRule.Identity |   String       |The identity of the rule, often combining the name and unique identifiers, used to reference the rule programmatically.  |
+| EWS.MailFlowRule.Name |   String       |  The user-friendly name of the mail flow rule, typically used for easy identification. |
+| EWS.MailFlowRule.CreatedBy |     String     | The user or process that created the mail flow rule. |
+| EWS.MailFlowRule.RouteMessageOutboundConnector |   Unknown       | Specifies whether messages matching the rule should be routed through a specific outbound connector. |
+
+#### Human Readable Output
+
+>### Results of ews-rule-list
+>| Name      | State    | Priority | Comment | WhenChanged                | CreatedBy|
+>|-----------|----------|----------|---------|----------------------------| --- |
+>| demisto   | Disabled | 1        | comment | 2019-10-14T07:25:04+00:00  | Edwin Becker
+
+### ews-mail-flow-rule-remove
+***
+Remove a mail flow rule (transport rule) from the organization.
+
+#### Base Command
+
+`ews-mail-flow-rule-remove`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identity | The rule that you want to remove. | Required | 
+
+
+#### Context Output
+There are no context outputs for this command.
+
+#### Human Readable Output
+>Mail flow rule 1845290268845146113 has been removed successfully
+
+### ews-mail-flow-rule-disable
+***
+Disable a mail flow rule (transport rule) in the organization.
+
+#### Base Command
+
+`ews-mail-flow-rule-disable`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identity | The rule that you want to disable. | Required | 
+
+
+#### Context Output
+There are no context outputs for this command.
+
+#### Human Readable Output
+>Mail flow rule 1845290268845146113 has been disabled successfully
+
+### ews-mail-flow-rule-enable
+***
+Enable a mail flow rule (transport rule) in the organization.
+
+#### Base Command
+
+`ews-mail-flow-rule-enable`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identity | The rule that you want to enable. | Required | 
+
+
+#### Context Output
+There are no context outputs for this command.
+
+#### Human Readable Output
+>Mail flow rule 1845290268845146113 has been enabled successfully
+
+### ews-mail-forwarding-disable
+***
+Disable mail forwarding for a given user.
+
+#### Base Command
+
+`ews-mail-forwarding-disable`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identity | The mailbox that you want to modify. | Required | 
+
+
+#### Context Output
+There are no context outputs for this command.
+
+#### Human Readable Output
+>Mail forwarding for user 1845290268845146113 has been disabled successfully
+

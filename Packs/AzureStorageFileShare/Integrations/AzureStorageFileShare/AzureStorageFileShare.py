@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 import copy
 import shutil
 import urllib3
-from typing import Callable
+from collections.abc import Callable
 
 from requests import Response
 
@@ -601,11 +601,7 @@ def validate_characters(string: str, invalid_characters: str) -> bool:
         bool: True if the string is valid , otherwise False.
 
     """
-    for character in invalid_characters:
-        if character in string:
-            return False
-
-    return True
+    return all(character not in string for character in invalid_characters)
 
 
 def create_directory_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -743,6 +739,7 @@ def test_module(client: Client) -> None:
         raise exception
 
     return_results('ok')
+    return None
 
 
 def main() -> None:

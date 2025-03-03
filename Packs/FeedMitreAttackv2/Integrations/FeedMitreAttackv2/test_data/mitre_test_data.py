@@ -60,63 +60,134 @@ ATTACK_PATTERN = {
         'tags': ['T1047'],
         'tlp': ''
     },
-    'indicator': ([{'fields': {'description': 'Adversaries may abuse Windows Management '
-                                              'Instrumentation (WMI) to achieve execution.',
-                               'firstseenbysource': '2017-05-31T21:30:44.329Z',
-                               'killchainphases': ['Defense Evasion', 'Privilege Escalation', 'resource-development'],
-                               'mitreid': 'T1047',
-                               'modified': '2020-05-13T22:50:51.258Z',
-                               'operatingsystemrefs': ['Windows'],
-                               'publications': [{'link': 'https://en.wikipedia.org/wiki/Server_Message_Block',
-                                                 'source': 'Wikipedia SMB',
-                                                 'title': 'Wikipedia. (2016, June 12). Server '
-                                                          'Message Block. Retrieved June 12, '
-                                                          '2016.',
-                                                'timestamp': '2016-06-12T00:00:00'},
-                                                {'link': 'https://technet.microsoft.com/en-us/library/cc787851.aspx',
-                                                 'source': 'TechNet RPC',
-                                                 'title': 'Microsoft. (2003, March 28). What Is '
-                                                          'RPC?. Retrieved June 12, 2016.',
-                                                'timestamp': '2003-03-28T00:00:00'}],
-                               'stixid': 'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055',
-                               'tags': ['T1047'],
-                               'tlp': ''},
-                    'rawJSON': {'created': '2017-05-31T21:30:44.329Z',
-                                'description': 'Adversaries may abuse Windows Management '
-                                               'Instrumentation (WMI) to achieve execution.',
-                                'external_references': [{'external_id': 'T1047',
-                                                         'source_name': 'mitre-attack',
-                                                         'url': 'https://attack.mitre.org/techniques/T1047'},
-                                                        {'description': 'Wikipedia. (2016, June '
-                                                                        '12). Server Message '
-                                                                        'Block. Retrieved June '
-                                                                        '12, 2016.',
-                                                         'source_name': 'Wikipedia SMB',
-                                                         'url': 'https://en.wikipedia.org/wiki/Server_Message_Block'},
-                                                        {'description': 'Microsoft. (2003, '
-                                                                        'March 28). What Is '
-                                                                        'RPC?. Retrieved June '
-                                                                        '12, 2016.',
-                                                         'source_name': 'TechNet RPC',
-                                                         'url': 'https://technet.microsoft.com/en-us/library/cc787851.aspx'}],
-                                'id': 'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055',
-                                'kill_chain_phases': [{'kill_chain_name': 'mitre-attack',
-                                                       'phase_name': 'defense-evasion'},
-                                                      {'kill_chain_name': 'mitre-attack',
-                                                       'phase_name': 'privilege-escalation'},
-                                                      {'kill_chain_name': 'mitre-attack',
-                                                       'phase_name': 'resource-development'}
-                                                      ],
-                                'modified': '2020-05-13T22:50:51.258Z',
-                                'name': 'ATTACK_PATTERN 1',
-                                'type': 'attack-pattern',
-                                'x_mitre_platforms': ['Windows']},
-                    'score': 2,
-                    'type': 'Attack Pattern',
-                    'value': 'ATTACK_PATTERN 1'}],
-                  [],
-                  {'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055': 'ATTACK_PATTERN 1'},
-                  {'T1047': 'ATTACK_PATTERN 1'})
+    'indicator': (
+        [
+            {
+                "fields": {
+                    "description": "Adversaries may abuse Windows Management Instrumentation (WMI) to achieve execution.",
+                    "firstseenbysource": "2017-05-31T21:30:44.329Z",
+                    "killchainphases": [
+                        "Defense Evasion",
+                        "Privilege Escalation",
+                        "resource-development"
+                    ],
+                    "mitreid": "T1047",
+                    "modified": "2020-05-13T22:50:51.258Z",
+                    "operatingsystemrefs": [
+                        "Windows"
+                    ],
+                    "publications": [
+                        {
+                            "link": "https://en.wikipedia.org/wiki/Server_Message_Block",
+                            "source": "Wikipedia SMB",
+                            "timestamp": "2016-06-12T00:00:00",
+                            "title": "Wikipedia. (2016, June 12). Server Message Block. Retrieved June 12, 2016."
+                        },
+                        {
+                            "link": "https://technet.microsoft.com/en-us/library/cc787851.aspx",
+                            "source": "TechNet RPC",
+                            "timestamp": "2003-03-28T00:00:00",
+                            "title": "Microsoft. (2003, March 28). What Is RPC?. Retrieved June 12, 2016."
+                        }
+                    ],
+                    "stixid": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055",
+                    "tags": [
+                        "T1047"
+                    ],
+                    "tlp": ""
+                },
+                "rawJSON": {
+                    "created": "2017-05-31T21:30:44.329Z",
+                    "description": "Adversaries may abuse Windows Management Instrumentation (WMI) to achieve execution.",
+                    "external_references": [
+                        {
+                            "external_id": "T1047",
+                            "source_name": "mitre-attack",
+                            "url": "https://attack.mitre.org/techniques/T1047"
+                        },
+                        {
+                            "description": "Wikipedia. (2016, June 12). Server Message Block. Retrieved June 12, 2016.",
+                            "source_name": "Wikipedia SMB",
+                            "url": "https://en.wikipedia.org/wiki/Server_Message_Block"
+                        },
+                        {
+                            "description": "Microsoft. (2003, March 28). What Is RPC?. Retrieved June 12, 2016.",
+                            "source_name": "TechNet RPC",
+                            "url": "https://technet.microsoft.com/en-us/library/cc787851.aspx"
+                        }
+                    ],
+                    "id": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055",
+                    "kill_chain_phases": [
+                        {
+                            "kill_chain_name": "mitre-attack",
+                            "phase_name": "defense-evasion"
+                        },
+                        {
+                            "kill_chain_name": "mitre-attack",
+                            "phase_name": "privilege-escalation"
+                        },
+                        {
+                            "kill_chain_name": "mitre-attack",
+                            "phase_name": "resource-development"
+                        }
+                    ],
+                    "modified": "2020-05-13T22:50:51.258Z",
+                    "name": "ATTACK_PATTERN 1",
+                    "type": "attack-pattern",
+                    "x_mitre_platforms": [
+                        "Windows"
+                    ]
+                },
+                "relationships": [
+                    {
+                        "entityA": "ATTACK_PATTERN 1",
+                        "entityAFamily": "Indicator",
+                        "entityAType": "Attack Pattern",
+                        "entityB": "TA0005 - Defense Evasion",
+                        "entityBFamily": "Indicator",
+                        "entityBType": "Tactic",
+                        "fields": {},
+                        "name": "part-of",
+                        "reverseName": "contains",
+                        "type": "IndicatorToIndicator"
+                    },
+                    {
+                        "entityA": "ATTACK_PATTERN 1",
+                        "entityAFamily": "Indicator",
+                        "entityAType": "Attack Pattern",
+                        "entityB": "TA0004 - Privilege Escalation",
+                        "entityBFamily": "Indicator",
+                        "entityBType": "Tactic",
+                        "fields": {},
+                        "name": "part-of",
+                        "reverseName": "contains",
+                        "type": "IndicatorToIndicator"
+                    },
+                    {
+                        "entityA": "ATTACK_PATTERN 1",
+                        "entityAFamily": "Indicator",
+                        "entityAType": "Attack Pattern",
+                        "entityB": "TA0042 - Resource Development",
+                        "entityBFamily": "Indicator",
+                        "entityBType": "Tactic",
+                        "fields": {},
+                        "name": "part-of",
+                        "reverseName": "contains",
+                        "type": "IndicatorToIndicator"
+                    }
+                ],
+                "score": 2,
+                "type": "Attack Pattern",
+                "value": "ATTACK_PATTERN 1"
+            }
+        ],
+        [],
+        {
+            "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055": "ATTACK_PATTERN 1"
+        },
+        {
+            "T1047": "ATTACK_PATTERN 1"
+        })
 }
 
 STIX_ATTACK_PATTERN = {
@@ -161,9 +232,9 @@ STIX_ATTACK_PATTERN = {
     'map_result': {
         'stixid': 'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055',
         'firstseenbysource': '2017-05-31T21:30:44.329Z',
-        'stixkillchainphases': ['Defense Evasion', 'Privilege Escalation'],
+        'killchainphases': ['Defense Evasion', 'Privilege Escalation'],
         'modified': "2020-05-13T22:50:51.258Z",
-        'stixdescription': "Adversaries may abuse Windows Management Instrumentation (WMI) to achieve execution.",
+        'description': "Adversaries may abuse Windows Management Instrumentation (WMI) to achieve execution.",
         'operatingsystemrefs': ['Windows'],
         'mitreid': 'T1047',
         'publications': [{'link': "https://en.wikipedia.org/wiki/Server_Message_Block",

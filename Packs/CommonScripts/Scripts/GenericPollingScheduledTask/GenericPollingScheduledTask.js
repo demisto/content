@@ -103,7 +103,7 @@ function setNextRun(ids, playbookId, pollingCommand, pollingCommandArgName, pend
     }
     var cmd = '!GenericPollingScheduledTask pollingCommand="' + pollingCommand + '" pollingCommandArgName="' + pollingCommandArgName + '"' + playbookIdStr;
     cmd += ' ids="' + idsStr + '" pendingIds="' + pendingIds.replace(/"/g,'\\"') + '" interval="' + interval + '" timeout="' + (parseInt(timeout) - parseInt(interval)) + '" tag="' + tag + '"';
-    cmd += ' additionalPollingCommandArgNames="' + additionalArgNames + '" additionalPollingCommandArgValues="' + additionalArgValues + '"';
+    cmd += ' additionalPollingCommandArgNames="' + additionalArgNames.replace(/"/g,'\\"') + '" additionalPollingCommandArgValues="' + additionalArgValues.replace(/"/g,'\\"') + '"';
     if (extractMode !== undefined) {
         cmd += ' extractMode="' + extractMode + '" auto-extract="' + extractMode + '"';
     }

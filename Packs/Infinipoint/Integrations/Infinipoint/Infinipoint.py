@@ -6,7 +6,7 @@ from typing import Any, cast
 import jwt
 import math
 import dateparser
-from datetime import timezone
+from datetime import UTC
 
 # disable insecure warnings
 import urllib3
@@ -316,7 +316,7 @@ def fetch_incidents(client, last_run: dict[str, int], first_fetch_time: int | No
         for alert in alerts.outputs:
             if alert.get("subscription") in subscription:
                 incident_created_epoch_time = int(alert.get('timestamp', '0'))
-                incident_created_time = datetime.fromtimestamp(int(alert.get('timestamp', '0')), timezone.utc)
+                incident_created_time = datetime.fromtimestamp(int(alert.get('timestamp', '0')), UTC)
 
                 incident = {
                     'name': f'Infinipoint {alert.get("name")}',
@@ -385,7 +385,7 @@ def infinipoint_command(client: Client, args=None, optional_args=None, paginatio
         for node in res:
             # Handle time format - convert to ISO from epoch
             if '$time' in node and isinstance(node['$time'], int):
-                created_time = datetime.fromtimestamp(int(node.get('$time', '0')), timezone.utc)
+                created_time = datetime.fromtimestamp(int(node.get('$time', '0')), UTC)
                 node['$time'] = created_time.isoformat()
 
         # CVE reputation

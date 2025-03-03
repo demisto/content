@@ -61,7 +61,13 @@ def test_test_command(mocker: MockerFixture):
     'query,expected',
     [("app.paloaltonetwork.com", "paloaltonetwork.com"),
      ("test.this.google.co.il", "google.co.il"),
-     ("app.XSOAR.test", "app.XSOAR.test")
+     ("app.XSOAR.test", "app.XSOAR.test"),
+     ("https://hello.world.io/", "world.io"),
+     ("https://hello.world.io?", "world.io"),
+     ("https://hello.world.io#", "world.io"),
+     ("https://hello.world.io/a?b=c&d", "world.io"),
+     ("https://hello.world.io#a?b=c&d", "world.io"),
+     ("https://hello.world.io?a=b&c=d", "world.io"),
      ]
 )
 def test_get_domain_from_query(query, expected):
@@ -76,7 +82,7 @@ def test_socks_proxy_fail(mocker: MockerFixture, capfd: pytest.CaptureFixture):
     with capfd.disabled():
         with pytest.raises(SystemExit) as err:
             Whois.main()
-        assert err.type == SystemExit
+        assert err.type is SystemExit
         assert demisto.results.call_count == 1  # type: ignore
         # call_args is tuple (args list, kwargs). we only need the first one
         results = demisto.results.call_args[0]  # type: ignore
@@ -295,7 +301,7 @@ def test_parse_raw_whois_empty_nameserver():
                                                     (['0000-00-02T00:00:00Z'], Whois.InvalidDateHandler(year=0, month=0, day=2))
                                                     ])
 def test_parse_dates_invalid_time(input, expected_result):
-    assert type(Whois.parse_dates(input)[0]) == type(expected_result)
+    assert type(Whois.parse_dates(input)[0]) is type(expected_result)
 
 
 @pytest.mark.parametrize('input, expected_result', [(['2024-05-09T00:00:00Z'], datetime.datetime(2024, 5, 9, 0, 0, 0)),
@@ -651,3 +657,343 @@ def test_parse_nic_contact_new_regex():
     assert len(res) == 2
     assert any(entry.get('email') == 'test@test.net' for entry in res)
     assert any(entry.get('country') == 'TEST' for entry in res)
+
+
+@pytest.mark.parametrize(
+    "raw_data, domain, expected",
+    [
+        (
+            load_test_data("test_data/test-arrange-data.json")["raw"]["google"],
+            "google.com",
+            load_test_data("test_data/test-arrange-data.json")["res"]["google"],
+        ),  # noqa: E501
+        (
+            load_test_data("test_data/test-arrange-data.json")["raw"]["ansa"],
+            "ansa.it",
+            load_test_data("test_data/test-arrange-data.json")["res"]["ansa"],
+        ),  # noqa: E501
+        (
+            load_test_data("test_data/test-arrange-data.json")["raw"]["jp"],
+            "nhk.or.jp",
+            load_test_data("test_data/test-arrange-data.json")["res"]["jp"],
+        ),  # noqa: E501
+        (
+            load_test_data("test_data/test-arrange-data.json")["raw"]["microsoft"],
+            "microsoft.com",
+            load_test_data("test_data/test-arrange-data.json")["res"]["microsoft"],
+        ),  # noqa: E501
+        (
+            load_test_data("test_data/test-arrange-data.json")["raw"]["apple"],
+            "apple.com",
+            load_test_data("test_data/test-arrange-data.json")["res"]["apple"],
+        ),  # noqa: E501
+    ],
+)
+def test_arrange_raw_to_context(raw_data, domain, expected):
+    """
+    Given:
+        - 'raw_data': Raw data dictionary from a whois lookup.
+        - 'domain': Domain name associated with the raw data.
+
+    When:
+        - Calling arrange_raw_whois_data_to_context with 'raw_data' and 'domain'.
+
+    Then:
+        - Assert that the returned context dictionary 'res' matches the expected 'expected'.
+    """
+    from Whois import arrange_raw_whois_data_to_context
+    res = arrange_raw_whois_data_to_context(raw_data, domain)
+    assert res == expected
+
+
+@pytest.mark.parametrize(
+    "servers, expected",
+    [
+        (None, []),
+        ("example.com", ["example.com"]),
+        ("example.com\nexample.net", ["example.com", "example.net"]),
+        (["EXAMPLE.COM", "example.com", "example.NET"], ["example.com", "example.net"]),
+        (["server1.com", "server2.com", "server1.com"], ["server1.com", "server2.com"]),
+        ([], []),
+    ],
+)
+def test_extract_name_servers(servers, expected):
+    """
+    Given:
+        - 'servers': Input to the extract_name_servers function.
+
+    When:
+        - Calling extract_name_servers with the input 'servers'.
+
+    Then:
+        - Assert that the output matches the expected 'expected'.
+    """
+    from Whois import extract_name_servers
+
+    assert extract_name_servers(servers) == expected
+
+
+@pytest.mark.parametrize(
+    "domain_data, prefix, expected",
+    [
+        # Test case for registrar prefix
+        (
+            {"registrar": "Namecheap", "registrar_url": "https://www.namecheap.com"},
+            "registrar",
+            {"Name": "Namecheap", "Url": "https://www.namecheap.com"},
+        ),
+        # Test case for admin prefix
+        (
+            {
+                "admin_name": "John Doe",
+                "admin_email": "john@example.com",
+                "admin_phone": None,
+            },
+            "admin",
+            {"Name": "John Doe", "Email": "john@example.com"},
+        ),
+        # Test case for tech prefix with some None values
+        (
+            {
+                "tech_name": "Jane Smith",
+                "tech_email": None,
+                "tech_phone": "+1234567890",
+            },
+            "tech",
+            {"Name": "Jane Smith", "Phone": "+1234567890"},
+        ),
+        # Test case for billing prefix (empty result)
+        ({"domain_name": "example.com", "creation_date": "2020-01-01"}, "billing", {}),
+        # Test case for mixed prefixes
+        (
+            {
+                "registrar": "GoDaddy",
+                "admin_name": "Alice",
+                "tech_email": "tech@example.com",
+            },
+            "registrar",
+            {"Name": "GoDaddy"},
+        ),
+        # Test case for non-existent prefix
+        ({"registrar": "Namecheap", "admin_name": "Bob"}, "invalid_prefix", {}),
+        # Test case for empty input
+        ({}, "any_prefix", {}),
+        # Test case for registrar prefix with underscore in key
+        (
+            {"registrar": "Domain.com", "registrar_abuse_email": "abuse@domain.com"},
+            "registrar",
+            {"Name": "Domain.com", "AbuseEmail": "abuse@domain.com"},
+        ),
+        # Test case for multi-word key
+        (
+            {"admin_first_name": "John", "admin_last_name": "Doe"},
+            "admin",
+            {"FirstName": "John", "LastName": "Doe"},
+        ),
+    ],
+)
+def test_get_info_by_prefix(domain_data, prefix, expected):
+    """
+    Given:
+        - `domain_data` containing domain information.
+        - `prefix` specifying the filter criterion.
+    When:
+        - `get_info_by_prefix(domain_data, prefix)` is called.
+    Then:
+        - Ensure the returned dictionary matches `expected`,
+          verifying correct filtering based on the prefix.
+    """
+    from Whois import get_info_by_prefix
+
+    assert get_info_by_prefix(domain_data, prefix) == expected
+
+
+@pytest.mark.parametrize("date, expected", [
+    (["2023-05-17"], "17-05-2023"),
+    ("2023-05-17", "17-05-2023"),
+    ([], ""),
+    (None, ""),
+    ({}, ""),
+    (["invalid-date"], "invalid-date")
+])
+def test_extract_date(date, expected, mocker):
+    """
+    Given:
+        - `raw_data` containing the raw data to extract date from.
+        - `date_requested` specifying the key to extract the date value from `raw_data`.
+        - `mocker` for mocking `demisto.debug` function.
+    When:
+        - `extract_date(raw_data, date_requested)` is called.
+    Then:
+        - Ensure the returned date string matches `expected`, handling various scenarios
+          such as valid date formats, empty list, None, empty dictionary, and invalid date format.
+    """
+    from Whois import extract_date
+    mocker.patch.object(demisto, "debug")
+    assert extract_date(date) == expected
+
+
+@pytest.mark.parametrize(
+    "input_date, expected_output",
+    [
+        ("[接続年月日]                    09-04-2013", "09-04-2013"),
+        ("[接続年月日]                    04/09/2013", "04/09/2013"),
+        ("[接続年月日]                    04-09/2013", "04-09/2013"),
+        ("[接続年月日]                    2013/043-09", None),
+        ("[接続年月日]                    04/09-013", None),
+        ("[接続年月日]                    abc/def/ghi", None),
+        ("[接続年月日]                    123/456/789", None),
+        ("[接続年月日]                    123-456-789", None),
+        ("", None),
+    ],
+)
+def test_extract_hard_date(input_date, expected_output):
+    """
+    Given:
+        - Various input date strings representing different formats.
+    When:
+        - `extract_hard_date(input_date)` is called.
+    Then:
+        - Ensure the returned formatted date string matches `expected_output`,
+          handling different valid date formats and scenarios where the input
+          does not match expected formats and returns None.
+    """
+    from Whois import extract_hard_date
+    assert extract_hard_date(input_date) == expected_output
+
+
+@pytest.mark.parametrize(
+    "input_dict, key_mapping, expected_output",
+    [
+        ({"a": 1, "b": 2, "c": 3}, {"a": "A", "b": "B"}, {"A": 1, "B": 2, "c": 3}),
+        ({"a": 1, "b": 2, "c": 3}, {"d": "D"}, {"a": 1, "b": 2, "c": 3}),
+        ({}, {"a": "A"}, {}),
+    ],
+)
+def test_rename_keys(input_dict, key_mapping, expected_output):
+    from Whois import rename_keys
+
+    assert rename_keys(input_dict, key_mapping) == expected_output
+
+
+def test_new_test_command(mocker: MockerFixture):
+    import whois
+
+    mocker.patch.object(demisto, "results")
+    mocker.patch.object(demisto, "params", return_value={"old-version": "false"})
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(
+        whois,
+        "whois",
+        return_value=load_test_data("test_data/test-arrange-data.json")["raw"][
+            "google"
+        ],
+    )
+    mocker.patch.object(
+        Whois,
+        "arrange_raw_whois_data_to_context",
+        return_value=load_test_data("test_data/test-arrange-data.json")["res"][
+            "google"
+        ],
+    )
+    Whois.main()
+    assert_results_ok()
+
+
+def test_whois_and_domain_command(mocker: MockerFixture):
+    """
+    Test the new whois/domain command.
+
+    Given:
+    - Mock response for WHOIS call.
+
+    When:
+    - 2 results are returned.
+
+    Then:
+    - The first result raw response is JSON.
+    """
+
+    from Whois import whois_and_domain_command
+    import whois
+
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "args", return_value={"domain": "google.com"})
+    mocker.patch.object(ExecutionMetrics, "is_supported", return_value=True)
+    mocker.patch.object(
+        whois,
+        "whois",
+        return_value=load_test_data("test_data/test-arrange-data.json")["raw"][
+            "google"
+        ],
+    )
+    res = whois_and_domain_command("domain", DBotScoreReliability.B)
+    assert len(res) == 2
+    assert isinstance(res[0].raw_response, dict)
+
+
+def test_whois_and_domain_command_with_exception(mocker: MockerFixture):
+    """
+    Given:
+    - an unknown domain
+    - The "with_error" param is set to True
+
+    When:
+    - executing whois_and_domain_command function
+
+    Then:
+    - Ensure an informative message in the readable output (regarding the unknown domain)
+    - Ensure entry_type is 4 which means EntryType.ERROR (since we mocked "with_error" param as True)
+    - Ensure no exception or error was thrown
+    """
+
+    from Whois import whois_and_domain_command
+    import whois
+    from whois.parser import PywhoisError
+
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "args", return_value={"domain": "raw.githubusercontent.com"})
+    mocker.patch.object(demisto, 'params', return_value={"with_error": True})
+    mocker.patch.object(ExecutionMetrics, "is_supported", return_value=True)
+    mocker.patch.object(
+        whois,
+        "whois",
+        side_effect=PywhoisError
+    )
+    res = whois_and_domain_command("domain", DBotScoreReliability.B)
+
+    assert len(res) == 2
+    assert res[0].readable_output == \
+        "Exception of type PywhoisError was caught while performing whois lookup with the domain 'raw.githubusercontent.com': "
+    assert res[0].entry_type == 4
+
+
+@pytest.mark.parametrize(
+    "domain_info, expected_output, expected_domain_info",
+    [
+        (
+            {"contact": "abuse@domain.com", "support": "support@domain.com"},
+            "abuse@domain.com",
+            {"support": "support@domain.com"}
+        ),
+        (
+            {"emails": ["abuse@domain.com", "infoabuse@domain.com"]},
+            ["abuse@domain.com", "infoabuse@domain.com"],
+            {"emails": []}
+        ),
+        (
+            {"contact": "admin@domain.com", "emails": ["abuse@domain.com", "info@domain.com"]},
+            "abuse@domain.com",
+            {"contact": "admin@domain.com", "emails": ["info@domain.com"]}
+        ),
+        (
+            {"contact": "admin@domain.com", "support": "support@domain.com"},
+            [],
+            {"contact": "admin@domain.com", "support": "support@domain.com"}
+        ),
+    ]
+)
+def test_check_and_remove_abuse(domain_info, expected_output, expected_domain_info):
+    from Whois import check_and_remove_abuse
+    assert check_and_remove_abuse(domain_info) == expected_output
+    assert domain_info == expected_domain_info

@@ -1,0 +1,1378 @@
+commonfields:
+  id: Ignite
+  version: -1
+name: Ignite
+display: Flashpoint Ignite
+category: Data Enrichment & Threat Intelligence
+description: Use the Ignite integration to reduce business risk. Ignite allows users to ingest alerts and compromised credentials as incident alerts and executes commands such as search intelligence report, ip, url, get events, and more.
+configuration:
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+  defaultvalue: 'Flashpoint Compromised Credentials'
+- display: Server URL
+  additionalinfo: Server URL to connect to Ignite.
+  name: url
+  defaultvalue: "https://api.flashpoint.io"
+  type: 0
+  required: true
+- displaypassword: API Key
+  additionalinfo: API key used for secure communication with the Ignite platform.
+  name: credentials
+  hiddenusername: true
+  required: true
+  type: 9
+- additionalinfo: The maximum limit is 200 for alerts and compromised credentials.
+  defaultvalue: '15'
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  type: 0
+  required: false
+- additionalinfo: 'Date or relative timestamp to start fetching the incidents from. (Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.).'
+  defaultvalue: 3 days
+  display: First fetch time
+  name: first_fetch
+  type: 0
+  required: false
+- additionalinfo: Whether to fetch the Ignite alerts or the compromised credentials. Defaults to "Compromised Credentials" if nothing selected.
+  defaultvalue: Compromised Credentials
+  display: Fetch Type
+  name: fetch_type
+  options:
+  - 'Compromised Credentials'
+  - 'Alerts'
+  type: 15
+  required: false
+- additionalinfo: Set the default severity for the incidents using this instance.
+  defaultvalue: Unknown
+  display: Severity for Incidents
+  name: severity
+  options:
+  - Unknown
+  - Informational
+  - Low
+  - Medium
+  - High
+  - Critical
+  type: 15
+  required: false
+- additionalinfo: Filters the incoming alerts with the provided alert status.
+  display: Alert Status
+  name: status
+  options:
+  - Archived
+  - Starred
+  - Sent
+  - None
+  type: 15
+  required: false
+- additionalinfo: Filters the incoming alerts with the origin of the alert.
+  display: Alert Origin
+  name: origin
+  options:
+  - Searches
+  - Assets
+  type: 15
+  required: false
+- additionalinfo: Filters the incoming alerts with the source of the alert.
+  display: Alert Sources
+  name: sources
+  options:
+  - Github
+  - Gitlab
+  - Bitbucket
+  - Communities
+  - Images
+  - Marketplaces
+  type: 16
+  required: false
+- additionalinfo: Adds the 'is_fresh' flag to compromised credential queries so it only ingests username/password combinations if they haven't been seen before.
+  defaultvalue: 'true'
+  display: Fetch fresh compromised credentials alerts
+  name: is_fresh_compromised_credentials
+  type: 8
+  required: false
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  type: 15
+  required: false
+- defaultvalue: indicatorType
+  name: feedExpirationPolicy
+  display: ''
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  type: 17
+  required: false
+- defaultvalue: '20160'
+  name: feedExpirationInterval
+  display: ''
+  type: 1
+  required: false
+- defaultvalue: 'true'
+  additionalinfo: Create relationships between indicators as part of enrichment.
+  display: Create relationships
+  name: create_relationships
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+script:
+  commands:
+  - name: flashpoint-ignite-intelligence-report-search
+    arguments:
+    - name: report_search
+      required: true
+      description: Search report using keyword or text.
+    outputs:
+    - contextPath: Ignite.Report.NotifiedAt
+      description: Notify date of report.
+      type: string
+    - contextPath: Ignite.Report.PlatformUrl
+      description: Platform URL of the report. Used to help redirect the Ignite platform.
+      type: string
+    - contextPath: Ignite.Report.PostedAt
+      description: Posted date of the report.
+      type: number
+    - contextPath: Ignite.Report.Summary
+      description: Summary of the report.
+      type: string
+    - contextPath: Ignite.Report.Title
+      description: Title of the report.
+      type: string
+    - contextPath: Ignite.Report.UpdatedAt
+      description: Last updated date of the report.
+      type: string
+    - contextPath: Ignite.Report.ReportId
+      description: Unique ID of the report.
+      type: string
+    description: Search for the Intelligence Reports using a keyword.
+  - name: flashpoint-ignite-compromised-credentials-list
+    arguments:
+    - description: |-
+        Filters the data based on the start date of the breach (UTC). Note: Will consider current time as default for end_date if start_date is initialized.
+        
+        Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.
+      name: start_date
+    - description: |-
+        Filters the data based on the end date of the breach (UTC). Note: Requires start_date along with the given argument.
+
+        Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.
+      name: end_date
+    - auto: PREDEFINED
+      description: |-
+        Filters the compromised credential's breach data by either created or first observed date.
+        Note: Requires the argument value for at least 'start_date' and 'end_date'.
+      name: filter_date
+      predefined:
+      - created_at
+      - first_observed_at
+    - defaultValue: '50'
+      description: 'The maximum number of result objects to return per page. Note: The maximum value is 1,000.'
+      name: page_size
+    - defaultValue: '1'
+      description: 'Specify a page number to retrieve the compromised credentials. Note: The multiplication of page_size and page_number parameters cannot exceed 10,000.'
+      name: page_number
+    - auto: PREDEFINED
+      description: "Sort the compromised credential's breach data by either created or first observed date. Note: Will consider ascending as default for sort_order if sort_date is initialized."
+      name: sort_date
+      predefined:
+      - created_at
+      - first_observed_at
+    - auto: PREDEFINED
+      description: 'Specify the order to sort the data in. Note: Requires sort_date along with the given argument.'
+      name: sort_order
+      predefined:
+      - asc
+      - desc
+    - auto: PREDEFINED
+      description: 'Whether to fetch the fresh compromised credentials or not.'
+      name: is_fresh
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: Ignite.CompromisedCredential._id
+      description: ID of the IoC.
+      type: String
+    - contextPath: Ignite.CompromisedCredential._source.affected_domain
+      description: Affected domain of the IoC.
+      type: String
+    - contextPath: Ignite.CompromisedCredential._source.basetypes
+      description: The array contains the underlying type of the credentials object, in this case  ["credential-sighting"].
+      type: Unknown
+    - contextPath: Ignite.CompromisedCredential._source.body.raw
+      description: This is the raw content captured from the breach Flashpoint discovered.
+      type: String
+    - contextPath: Ignite.CompromisedCredential._source.breach._header
+      description: This is the breach header object.
+      type: String
+    - contextPath: Ignite.CompromisedCredential._source.breach.basetypes
+      description: Array containing the underlying base type of the breach object, i.e., ["breach"].
+      type: Unknown
+    - contextPath: Ignite.CompromisedCredential._source.breach.breach_type
+      description: Constant for future use.
+      type: String
+    - contextPath: Ignite.CompromisedCredential._source.breach.created_at.date-time
+      description: The datetime when the source breach was created, formatted as YYYY-mm-ddTHH:MM:SSZ.
+      type: Date
+    - contextPath: Ignite.CompromisedCredential._source.breach.created_at.timestamp
+      description: The UNIX timestamp when the source breach was created.
+      type: Number
+    - contextPath: Ignite.CompromisedCredential._source.breach.first_observed_at.date-time
+      description: Datetime when the source breach was first observed, formatted as YYYY-mm-ddTHH:MM:SSZ.
+      type: Date
+    - contextPath: Ignite.CompromisedCredential._source.breach.first_observed_at.timestamp
+      description: The UNIX timestamp when the source breach was first observed.
+      type: Number
+    - contextPath: Ignite.CompromisedCredential._source.breach.fpid
+      description: Flashpoint ID of the breach.
+      type: String
+    - contextPath: Ignite.CompromisedCredential._source.breach.source
+      description: Data source of breach (i.e., Analyst Research, CredentialStealer, etc.).
+      type: String
+    - contextPath: Ignite.CompromisedCredential._source.breach.source_type
+      description: Type of source of the breach.
+      type: String
+    - contextPath: Ignite.CompromisedCredential._source.breach.title
+      description: Title of the breach.
+      type: String
+    - contextPath: Ignite.CompromisedCredential._source.breach.victim
+      description: Victim of the breach.
+      type: String
+    - contextPath: Ignite.CompromisedCredential._source.credential_record_fpid
+      description: The Flashpoint ID of the associated record object. Used to retrieve sightings for a credential.
+      type: String
+    - contextPath: Ignite.CompromisedCredential._source.customer_id
+      description: Customer ID of the IoC.
+      type: String
+    - contextPath: Ignite.CompromisedCredential._source.domain
+      description: The domain object extracted off of the email address.
+      type: String
+    - contextPath: Ignite.CompromisedCredential._source.email
+      description: The email address for the compromised credential.
+      type: String
+    - contextPath: Ignite.CompromisedCredential._source.username
+      description: The username for the compromised credential.
+      type: String
+    - contextPath: Ignite.CompromisedCredential._source.extraction_id
+      description: Extraction ID of the IoC.
+      type: String
+    - contextPath: Ignite.CompromisedCredential._source.extraction_record_id
+      description: Extraction record ID of the IoC.
+      type: String
+    - contextPath: Ignite.CompromisedCredential._source.fpid
+      description: The Flashpoint ID of this credentials object.
+      type: String
+    - contextPath: Ignite.CompromisedCredential._source.header_.indexed_at
+      description: Timestamp for when this document was indexed into the Flashpoint database.
+      type: String
+    - contextPath: Ignite.CompromisedCredential._source.header_.pipeline_duration
+      description: Pipeline duration header information of the IoC.
+      type: String
+    - contextPath: Ignite.CompromisedCredential._source.is_fresh
+      description: "\"true\" if the credential has not been seen before, and it hasn't been marked \"not fresh\" by an analyst. (Historical breaches are not \"fresh\".)."
+      type: Boolean
+    - contextPath: Ignite.CompromisedCredential._source.last_observed_at.date-time
+      description: If exists, time object for when the credential was previously observed. Datetime object formatted as YYYY-mm-ddTHH:MM:SSZ.
+      type: Date
+    - contextPath: Ignite.CompromisedCredential._source.last_observed_at.timestamp
+      description: The UNIX timestamp when the source breach was first observed.
+      type: Number
+    - contextPath: Ignite.CompromisedCredential._source.password
+      description: The password for the credential (in plain text, if possible).
+      type: String
+    - contextPath: Ignite.CompromisedCredential._source.password_complexity.has_lowercase
+      description: Whether lowercase letters are present.
+      type: Boolean
+    - contextPath: Ignite.CompromisedCredential._source.password_complexity.has_number
+      description: Whether numbers are present.
+      type: Boolean
+    - contextPath: Ignite.CompromisedCredential._source.password_complexity.has_symbol
+      description: Whether symbols are present.
+      type: Boolean
+    - contextPath: Ignite.CompromisedCredential._source.password_complexity.has_uppercase
+      description: Whether uppercase letters are present.
+      type: Boolean
+    - contextPath: Ignite.CompromisedCredential._source.password_complexity.length
+      description: Integer value that represents the number of characters in the password.
+      type: Number
+    - contextPath: Ignite.CompromisedCredential._source.password_complexity.probable_hash_algorithms
+      description: List of possible hash algorithms suspected based on the text pattern of the password. (May include values like "MD5", "SHA-1", "SHA-256", "bcrypt", etc.)
+      type: Unknown
+    - contextPath: Ignite.CompromisedCredential._source.times_seen
+      description: Integer representing the number of times the credential has been seen at Flashpoint.
+      type: Number
+    - contextPath: Ignite.CompromisedCredential._type
+      description: Type of the IoC.
+      type: String
+    - contextPath: Ignite.CompromisedCredential.matched_queries
+      description: Matching queries of the IoC.
+      type: Unknown
+    - contextPath: Ignite.CompromisedCredential.sort
+      description: Sort value of the IoC.
+      type: Unknown
+    description: Retrieves the compromised credentials based on the filter values provided in the command arguments.
+  - name: flashpoint-ignite-event-list
+    arguments:
+    - name: time_period
+      description: The time period for the search.
+    - name: report_fpid
+      description: The Flashpoint report ID. To retrieve the Flashpoint report ID, run the flashpoint-ignite-intelligence-related-report-list command.
+    - name: limit
+      description: The maximum number of records.
+      defaultValue: "10"
+    - name: attack_ids
+      description: A comma-separated list of attack IDs for which to search. Attack IDs can be found in event information or on the Ignite platform by filtering events by attack IDs.
+    outputs:
+    - contextPath: Ignite.Event.EventCreatorEmail
+      description: The email of the event creator.
+      type: string
+    - contextPath: Ignite.Event.EventId
+      description: The ID of the event.
+      type: string
+    - contextPath: Ignite.Event.UUID
+      description: The UUID of the event.
+      type: string
+    - contextPath: Ignite.Event.Href
+      description: The hyperlink of the event.
+      type: string
+    - contextPath: Ignite.Event.MalwareDescription
+      description: The description of the malware.
+      type: string
+    - contextPath: Ignite.Event.Name
+      description: The name of the event.
+      type: string
+    - contextPath: Ignite.Event.ObservedTime
+      description: The date that the event was triggered.
+      type: string
+    - contextPath: Ignite.Event.Tags
+      description: The tags of the event.
+      type: string
+    description: Searches for events within the specified time period, the Flashpoint report ID, or attack IDs.
+  - name: flashpoint-ignite-event-get
+    arguments:
+    - name: event_id
+      required: true
+      description: The FPID or UUID that identifies a particular event. The event ID can be fetched from the output context path (Ignite.Event.EventId) of the flashpoint-ignite-event-list command, or the indicator reputation command response or some other investigation.
+    outputs:
+    - contextPath: Ignite.Event.EventCreatorEmail
+      description: The email of the event creator.
+      type: string
+    - contextPath: Ignite.Event.EventId
+      description: The ID of the event.
+      type: string
+    - contextPath: Ignite.Event.UUID
+      description: The UUID of the event.
+      type: string
+    - contextPath: Ignite.Event.Href
+      description: The hyperlink of the event.
+      type: string
+    - contextPath: Ignite.Event.MalwareDescription
+      description: The description of the malware.
+      type: string
+    - contextPath: Ignite.Event.Name
+      description: The name of the event.
+      type: string
+    - contextPath: Ignite.Event.ObservedTime
+      description: The date that the event was triggered.
+      type: string
+    - contextPath: Ignite.Event.Tags
+      description: The tags of the event.
+      type: string
+    description: Retrieves the details of a single event using event FPID or UUID.
+  - name: flashpoint-ignite-intelligence-report-get
+    arguments:
+    - name: report_id
+      required: true
+      description: The ID of the report for which the details are to be fetched. The report ID can be retrieved from the output context path (Ignite.Report.ReportId) of the flashpoint-ignite-intelligence-report-search command or some other investigation.
+    outputs:
+    - contextPath: Ignite.Report.NotifiedAt
+      description: Notify date of the report.
+      type: string
+    - contextPath: Ignite.Report.PlatformUrl
+      description: Platform URL of the report. Used to help redirect the Ignite platform.
+      type: string
+    - contextPath: Ignite.Report.PostedAt
+      description: Posted date of the report.
+      type: number
+    - contextPath: Ignite.Report.Summary
+      description: Summary of the report.
+      type: string
+    - contextPath: Ignite.Report.Title
+      description: Title of the report.
+      type: string
+    - contextPath: Ignite.Report.UpdatedAt
+      description: Last updated date of the report.
+      type: string
+    - contextPath: Ignite.Report.ReportId
+      description: Unique ID of the report.
+      type: string
+    - contextPath: Ignite.Report.Tags
+      description: Tags of the report.
+      type: string
+    description: Get single report details using the report id.
+  - name: flashpoint-ignite-intelligence-related-report-list
+    arguments:
+    - name: report_id
+      required: true
+      description: The report-id of the report of which the related reports are to be fetched. The report id can be known from output context path (Ignite.Report.ReportId) of flashpoint-ignite-intelligence-report-search command or some other investigation.
+    outputs:
+    - contextPath: Ignite.Report.NotifiedAt
+      description: Notify date of report.
+      type: string
+    - contextPath: Ignite.Report.PlatformUrl
+      description: Platform URL of the report. Used to help redirect the Ignite platform.
+      type: string
+    - contextPath: Ignite.Report.PostedAt
+      description: Posted date of the report.
+      type: number
+    - contextPath: Ignite.Report.Summary
+      description: Summary of the report.
+      type: string
+    - contextPath: Ignite.Report.Title
+      description: Title of the report.
+      type: string
+    - contextPath: Ignite.Report.UpdatedAt
+      description: Last updated date of the report.
+      type: string
+    - contextPath: Ignite.Report.ReportId
+      description: Unique ID of the report.
+      type: string
+    description: List related reports for a particular report using the report ID.
+  - name: flashpoint-ignite-alert-list
+    arguments:
+    - name: size
+      defaultValue: 10
+      description: The number of alerts to return.
+    - name: created_after
+      description: 'Returns alerts that occurred after the specified date. (Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc).'
+    - name: created_before
+      description: 'Returns alerts that occurred before the specified date. (Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc).'
+    - name: cursor
+      description: The cursor to retrieve next page data. Used for pagination only. The value of the cursor can be found from the output context path (Ignite.PageToken.Alert.cursor) or the HR output of the flashpoint-ignite-alert-list command.
+    - auto: PREDEFINED
+      name: status
+      description: Filter alerts by status.
+      predefined:
+      - Archived
+      - Starred
+      - Sent
+      - None
+    - auto: PREDEFINED
+      name: origin
+      description: Filter alerts by origin.
+      predefined:
+      - Searches
+      - Assets
+    - auto: PREDEFINED
+      name: sources
+      description: Filter alerts by source.
+      predefined:
+      - Github
+      - Gitlab
+      - Bitbucket
+      - Communities
+      - Images
+      - Marketplaces
+      isArray: true
+    - name: tags
+      description: A comma-separated list of alerts filtered by tags.
+      isArray: true
+    - name: asset_type
+      description: Filter alerts by asset type.
+    - name: asset_ip
+      description: Filter alerts by asset IP.
+    - name: asset_ids
+      description: A comma-separated list of alerts filtered by asset IDs. 
+      isArray: true
+    - name: query_ids
+      description: A comma-separated list of alerts filtered by search IDs. 
+      isArray: true
+    outputs:
+    - contextPath: Ignite.Alert.id
+      description: The unique identifier for the alert.
+      type: String
+    - contextPath: Ignite.Alert.resource.id
+      description: The identifier for the resource associated with the alert.
+      type: String
+    - contextPath: Ignite.Alert.resource.basetypes
+      description: Base types of the resource related to the alert.
+      type: String
+    - contextPath: Ignite.Alert.resource.container.container.name
+      description: The name of the nested container within the resource that holds the alert.
+      type: String
+    - contextPath: Ignite.Alert.resource.container.container.native_id
+      description: The native identifier for the nested container within the resource.
+      type: String
+    - contextPath: Ignite.Alert.resource.container.container.title
+      description: The title of the nested container within the resource.
+      type: String
+    - contextPath: Ignite.Alert.resource.container.name
+      description: The name of the container that holds the resource associated with the alert.
+      type: String
+    - contextPath: Ignite.Alert.resource.container.native_id
+      description: The native identifier for the container that holds the resource.
+      type: String
+    - contextPath: Ignite.Alert.resource.container.title
+      description: The title of the container that holds the resource associated with the alert.
+      type: String
+    - contextPath: Ignite.Alert.resource.created_at.date-time
+      description: The date and time when the resource associated with the alert was created in ISO 8601 format.
+      type: String
+    - contextPath: Ignite.Alert.resource.created_at.raw
+      description: The raw timestamp or other date-time representation when the resource was created.
+      type: Date
+    - contextPath: Ignite.Alert.resource.created_at.timestamp
+      description: The UNIX timestamp representing when the resource associated with the alert was created.
+      type: Number
+    - contextPath: Ignite.Alert.resource.media_v2.sha1
+      description: The SHA1 hash of the media file related to the alert.
+      type: String
+    - contextPath: Ignite.Alert.resource.media_v2.phash
+      description: The perceptual hash (pHash) of the media file, used to find visually similar images.
+      type: String
+    - contextPath: Ignite.Alert.resource.media_v2.media_type
+      description: The type of media (e.g., image, video) associated with the alert.
+      type: String
+    - contextPath: Ignite.Alert.resource.media_v2.mime_type
+      description: The MIME type of the media file associated with the alert.
+      type: String
+    - contextPath: Ignite.Alert.resource.media_v2.storage_uri
+      description: The storage URI where the media file related to the alert is located.
+      type: String
+    - contextPath: Ignite.Alert.resource.media_v2.image_enrichment.enrichments.v1.image-analysis.safe_search.racy
+      description: A score indicating the likelihood that the image contains racy content.
+      type: Number
+    - contextPath: Ignite.Alert.resource.media_v2.image_enrichment.enrichments.v1.image-analysis.safe_search.spoof
+      description: A score indicating the likelihood that the image contains spoofed content.
+      type: Number
+    - contextPath: Ignite.Alert.resource.media_v2.image_enrichment.enrichments.v1.image-analysis.safe_search.medical
+      description: A score indicating the likelihood that the image contains medical content.
+      type: Number
+    - contextPath: Ignite.Alert.resource.media_v2.image_enrichment.enrichments.v1.image-analysis.safe_search.adult
+      description: A score indicating the likelihood that the image contains sexual content.
+      type: Number
+    - contextPath: Ignite.Alert.resource.media_v2.image_enrichment.enrichments.v1.image-analysis.safe_search.adult
+      description: A score indicating the likelihood that the image contains adult content.
+      type: Number
+    - contextPath: Ignite.Alert.resource.media_v2.image_enrichment.enrichments.v1.image-analysis.safe_search.violence
+      description: A score indicating the likelihood that the image contains violent content.
+      type: Number
+    - contextPath: Ignite.Alert.resource.title
+      description: The title of the resource associated with the alert.
+      type: String
+    - contextPath: Ignite.Alert.resource.section
+      description: The section of the platform or service where the resource is categorized or located.
+      type: String
+    - contextPath: Ignite.Alert.resource.repo
+      description: Repository of the resource related to the alert.
+      type: String
+    - contextPath: Ignite.Alert.resource.snippet
+      description: Snippet of the resource related to the alert.
+      type: String
+    - contextPath: Ignite.Alert.resource.source
+      description: Source of the resource related to the alert.
+      type: String
+    - contextPath: Ignite.Alert.resource.url
+      description: URL of the resource related to the alert.
+      type: String
+    - contextPath: Ignite.Alert.resource.owner
+      description: Owner of the resource related to the alert.
+      type: String
+    - contextPath: Ignite.Alert.resource.file
+      description: File associated with the resource related to the alert.
+      type: String
+    - contextPath: Ignite.Alert.resource.parent_basetypes
+      description: The parent base types that categorize the resource.
+      type: String
+    - contextPath: Ignite.Alert.resource.site_actor.names.handle
+      description: The username or handle of the site actor related to the resource.
+      type: String
+    - contextPath: Ignite.Alert.resource.site_actor.native_id
+      description: The native identifier for the site actor associated with the resource.
+      type: String
+    - contextPath: Ignite.Alert.resource.sort_date
+      description: The date and time used for sorting the resource, typically the creation or publication date.
+      type: Date
+    - contextPath: Ignite.Alert.resource.site.title
+      description: The title of the site or platform associated with the resource.
+      type: String
+    - contextPath: Ignite.Alert.resource.shodan_host.asn
+      description: The ASN (Autonomous System Number) of the Shodan host.
+      type: String
+    - contextPath: Ignite.Alert.resource.shodan_host.country
+      description: The country of the Shodan host.
+      type: String
+    - contextPath: Ignite.Alert.resource.shodan_host.org
+      description: The organization of the Shodan host.
+      type: String
+    - contextPath: Ignite.Alert.resource.shodan_host.shodan_url
+      description: The Shodan URL of the Shodan host.
+      type: String
+    - contextPath: Ignite.Alert.resource.shodan_host.vulns
+      description: The vulnerabilities related to the Shodan host.
+      type: Unknown
+    - contextPath: Ignite.Alert.reason.id
+      description: ID of the reason for the alert.
+      type: String
+    - contextPath: Ignite.Alert.reason.name
+      description: Name of the reason for the alert.
+      type: String
+    - contextPath: Ignite.Alert.reason.text
+      description: Text related to the reason for the alert.
+      type: String
+    - contextPath: Ignite.Alert.reason.origin
+      description: Origin of the reason for the alert.
+      type: String
+    - contextPath: Ignite.Alert.reason.details.sources
+      description: Sources related to the reason for the alert.
+      type: String
+    - contextPath: Ignite.Alert.reason.details.params
+      description: Parameters related to the reason for the alert.
+      type: Unknown
+    - contextPath: Ignite.Alert.reason.details.params.include.date.end
+      description: The end date for the included date range in the alert's reason details.
+      type: String
+    - contextPath: Ignite.Alert.reason.details.params.include.date.label
+      description: The label describing the included date range in the alert's reason details.
+      type: String
+    - contextPath: Ignite.Alert.reason.details.params.include.date.start
+      description: The start date for the included date range in the alert's reason details.
+      type: String
+    - contextPath: Ignite.Alert.reason.details.type
+      description: The type of details related to the reason for the alert.
+      type: String
+    - contextPath: Ignite.Alert.reason.entity.id
+      description: ID of the entity related to the reason for the alert.
+      type: String
+    - contextPath: Ignite.Alert.reason.entity.name
+      description: Name of the entity related to the reason for the alert.
+      type: String
+    - contextPath: Ignite.Alert.reason.entity.type
+      description: Type of the entity related to the reason for the alert.
+      type: String
+    - contextPath: Ignite.Alert.status
+      description: Status of the alert.
+      type: String
+    - contextPath: Ignite.Alert.generated_at
+      description: Date when the alert was generated.
+      type: Date
+    - contextPath: Ignite.Alert.created_at
+      description: Date when the alert was created.
+      type: Date
+    - contextPath: Ignite.Alert.tags
+      description: Tags associated with the alert.
+      type: Unknown
+    - contextPath: Ignite.Alert.highlights.media_v2.image_enrichment.enrichments.v1.image-analysis.text.value
+      description: The text value extracted from the image analysis in the alert's highlights.
+      type: String
+    - contextPath: Ignite.Alert.highlights.ports
+      description: The highlighted ports related to the alert.
+      type: String
+    - contextPath: Ignite.Alert.highlights.services
+      description: The highlighted services related to the alert.
+      type: String
+    - contextPath: Ignite.Alert.highlight_text
+      description: The highlighted text associated with the alert.
+      type: String
+    - contextPath: Ignite.Alert.data_type
+      description: Data type of the alert.
+      type: String
+    - contextPath: Ignite.Alert.parent_data_type
+      description: Parent data type of the alert.
+      type: String
+    - contextPath: Ignite.Alert.source
+      description: Source of the alert.
+      type: String
+    - contextPath: Ignite.Alert.is_read
+      description: Indicates if the alert has been read.
+      type: Boolean
+    - contextPath: Ignite.Alert.highlights.body.text/plain
+      description: The plain text extracted from the body of the content highlighted in the alert.
+      type: String
+    - contextPath: Ignite.Alert.reason.details.params.include.ships_from
+      description: The shipping origin included in the alert's reason details.
+      type: String
+    - contextPath: Ignite.Alert.highlights.snippet
+      description: A snippet or excerpt highlighted in the alert.
+      type: String
+    - contextPath: Ignite.PageToken.Alert.created_after
+      description: Date for filtering alerts created after a specific time.
+      type: Date
+    - contextPath: Ignite.PageToken.Alert.created_before
+      description: Date for filtering alerts created before a specific time.
+      type: Date
+    - contextPath: Ignite.PageToken.Alert.size
+      description: Size of the page for pagination.
+      type: String
+    - contextPath: Ignite.PageToken.Alert.cursor
+      description: Cursor for pagination to retrieve the next set of alerts.
+      type: Date
+    - contextPath: Ignite.PageToken.Alert.name
+      description: The name of the command.
+      type: String
+    description: Retrieves a list of alerts based on the filter values provided in the command arguments. 
+  - name: email
+    arguments:
+    - name: email
+      required: true
+      default: true
+      description: A comma-separated list of emails.
+      isArray: true
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Reliability
+      description: The reliability of the vendor.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: Ignite.Email.Event.Href
+      description: A list of reference links of the indicator.
+      type: string
+    - contextPath: Ignite.Email.Event.EventDetails
+      description: The event details in which the indicator was observed.
+      type: string
+    - contextPath: Ignite.Email.Event.Category
+      description: The category of the indicator.
+      type: string
+    - contextPath: Ignite.Email.Event.Fpid
+      description: The Flashpoint ID of the indicator.
+      type: string
+    - contextPath: Ignite.Email.Event.Timestamp
+      description: The time and date that the indicator was observed.
+      type: string
+    - contextPath: Ignite.Email.Event.Type
+      description: The indicator type.
+      type: string
+    - contextPath: Ignite.Email.Event.Uuid
+      description: The UUID of the indicator.
+      type: string
+    - contextPath: Ignite.Email.Event.Comment
+      description: The comment that was provided when the indicator was observed.
+      type: string
+    - contextPath: Account.Description
+      description: The description of the indicator.
+      type: string
+    - contextPath: Account.Email.Name
+      description: Name of indicator.
+      type: string
+    description: Looks up the "Email" type indicator details. The reputation of Email is considered malicious if there's at least one IoC event in the Ignite database matching the Email indicator.
+  - name: filename
+    arguments:
+    - name: filename
+      required: true
+      default: true
+      description: A comma-separated list of filenames.
+      isArray: true
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Reliability
+      description: The reliability of the vendor.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: Ignite.Filename.Event.Href
+      description: A list of reference links of the indicator.
+      type: string
+    - contextPath: Ignite.Filename.Event.Filename
+      description: Filename of the indicator.
+      type: string
+    - contextPath: Ignite.Filename.Event.EventDetails
+      description: The event details in which the indicator was observed.
+      type: string
+    - contextPath: Ignite.Filename.Event.Category
+      description: The category of the indicator.
+      type: string
+    - contextPath: Ignite.Filename.Event.Fpid
+      description: The Ignite ID of the indicator.
+      type: string
+    - contextPath: Ignite.Filename.Event.Timestamp
+      description: The time and date that the indicator was observed.
+      type: string
+    - contextPath: Ignite.Filename.Event.Type
+      description: The indicator type.
+      type: string
+    - contextPath: Ignite.Filename.Event.Uuid
+      description: The UUID of the indicator.
+      type: string
+    - contextPath: Ignite.Filename.Event.Comment
+      description: The comment that was provided when the indicator was observed.
+      type: string
+    - contextPath: Filename.Malicious.Description
+      description: The description of the malicious indicator.
+      type: string
+    - contextPath: Filename.Malicious.Vendor
+      description: Vendor of the malicious filename.
+      type: string
+    - contextPath: Filename.Name
+      description: The filename.
+      type: string
+    - contextPath: Filename.Description
+      description: The description of the indicator.
+      type: string
+    description: Looks up the "Filename" type indicator details. The reputation of Filename is considered malicious if there's at least one IoC event in the Ignite database matching the Filename indicator.
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: A comma-separated list of IP addresses.
+      isArray: true
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Reliability
+      description: The reliability of the vendor.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: IP.Address
+      description: The IP address.
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: The description of the malicious indicator.
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor used to calculate the severity of the IP address.
+      type: string
+    - contextPath: IP.Description
+      description: The description of the indicator.
+      type: string
+    - contextPath: Ignite.IP.Event.Href
+      description: A list of reference links of the indicator.
+      type: string
+    - contextPath: Ignite.IP.Event.Address
+      description: The IP address of the indicator.
+      type: string
+    - contextPath: Ignite.IP.Event.EventDetails
+      description: The event details in which the indicator was observed.
+      type: string
+    - contextPath: Ignite.IP.Event.Category
+      description: The category of the indicator.
+      type: string
+    - contextPath: Ignite.IP.Event.Fpid
+      description: The Ignite ID of the indicator.
+      type: string
+    - contextPath: Ignite.IP.Event.Timestamp
+      description: The time and date that the indicator was observed.
+      type: string
+    - contextPath: Ignite.IP.Event.Type
+      description: The indicator type.
+      type: string
+    - contextPath: Ignite.IP.Event.Uuid
+      description: The UUID of the indicator.
+      type: string
+    - contextPath: Ignite.IP.Event.Comment
+      description: The comment that was provided when the indicator was observed.
+      type: string
+    - contextPath: IP.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: IP.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
+    - contextPath: Ignite.IP.id
+      description: Unique identifier for the document.
+      type: String
+    - contextPath: Ignite.IP.author
+      description: The author of the document.
+      type: String
+    - contextPath: Ignite.IP.author_id
+      description: The ID of the author of the document.
+      type: String
+    - contextPath: Ignite.IP.date
+      description: The date associated with the document.
+      type: Date
+    - contextPath: Ignite.IP.container_id
+      description: Unique identifier of the container.
+      type: String
+    - contextPath: Ignite.IP.container_title
+      description: Title of the container.
+      type: String
+    - contextPath: Ignite.IP.enrichments.bins
+      description: Number of bins associated with the document.
+      type: Number
+    - contextPath: Ignite.IP.enrichments.bitcoin_addresses
+      description: Bitcoin addresses associated with the document.
+      type: String
+    - contextPath: Ignite.IP.enrichments.cve_ids
+      description: CVE IDs associated with the document.
+      type: String
+    - contextPath: Ignite.IP.enrichments.email_addresses
+      description: Email addresses associated with the document.
+      type: String
+    - contextPath: Ignite.IP.enrichments.ethereum_addresses
+      description: Ethereum addresses associated with the document.
+      type: String
+    - contextPath: Ignite.IP.enrichments.ip_addresses
+      description: IP addresses associated with the document.
+      type: String
+    - contextPath: Ignite.IP.enrichments.location.country_code
+      description: Country code of the location associated with the document.
+      type: String
+    - contextPath: Ignite.IP.enrichments.location.name
+      description: Name of the location associated with the document.
+      type: String
+    - contextPath: Ignite.IP.enrichments.location.lat
+      description: Latitude of the location associated with the document.
+      type: Number
+    - contextPath: Ignite.IP.enrichments.location.long
+      description: Longitude of the location associated with the document.
+      type: Number
+    - contextPath: Ignite.IP.enrichments.monero_addresses
+      description: Monero addresses associated with the document.
+      type: String
+    - contextPath: Ignite.IP.enrichments.social_media_handles
+      description: Social media handles associated with the document.
+      type: String
+    - contextPath: Ignite.IP.enrichments.social_media_sites
+      description: Social media sites associated with the document.
+      type: String
+    - contextPath: Ignite.IP.enrichments.translation.language
+      description: Language of the translation associated with the document.
+      type: String
+    - contextPath: Ignite.IP.enrichments.translation.message
+      description: Translation message associated with the document.
+      type: String
+    - contextPath: Ignite.IP.enrichments.url_domains
+      description: URL domains associated with the document.
+      type: String
+    - contextPath: Ignite.IP.first_observed_at
+      description: The first observed date of the document.
+      type: Date
+    - contextPath: Ignite.IP.last_observed_at
+      description: The last observed date of the document.
+      type: Date
+    - contextPath: Ignite.IP.media.id
+      description: Unique identifier of the media.
+      type: String
+    - contextPath: Ignite.IP.media.file_name
+      description: File name of the media.
+      type: String
+    - contextPath: Ignite.IP.media.mime_type
+      description: MIME type of the media.
+      type: String
+    - contextPath: Ignite.IP.media.phash
+      description: Perceptual hash of the media.
+      type: String
+    - contextPath: Ignite.IP.media.safe_search
+      description: Safe search value of the media.
+      type: String
+    - contextPath: Ignite.IP.media.size
+      description: Size of the media.
+      type: Number
+    - contextPath: Ignite.IP.media.sort_date
+      description: Date used for sorting the media.
+      type: Date
+    - contextPath: Ignite.IP.media.storage_uri
+      description: Storage URI of the media.
+      type: String
+    - contextPath: Ignite.IP.media.type
+      description: Type of the media.
+      type: String
+    - contextPath: Ignite.IP.message
+      description: Message associated with the document.
+      type: String
+    - contextPath: Ignite.IP.message_id
+      description: ID of the message associated with the document.
+      type: String
+    - contextPath: Ignite.IP.native_id
+      description: Native ID of the document.
+      type: String
+    - contextPath: Ignite.IP.message_hash
+      description: Hash of the message associated with the document.
+      type: String
+    - contextPath: Ignite.IP.parent_container_title
+      description: Title of the parent container.
+      type: String
+    - contextPath: Ignite.IP.section
+      description: Section of the document.
+      type: String
+    - contextPath: Ignite.IP.section_id
+      description: ID of the section.
+      type: String
+    - contextPath: Ignite.IP.site
+      description: The site associated with the document.
+      type: String
+    - contextPath: Ignite.IP.site_actor_handle
+      description: Actor handle of the site associated with the document.
+      type: String
+    - contextPath: Ignite.IP.site_actor_alias
+      description: Actor alias of the site associated with the document.
+      type: String
+    - contextPath: Ignite.IP.site_actor_url
+      description: Actor URL of the site associated with the document.
+      type: String
+    - contextPath: Ignite.IP.site_actor_username
+      description: Actor username of the site associated with the document.
+      type: String
+    - contextPath: Ignite.IP.site_source_uri
+      description: Source URI of the site associated with the document.
+      type: String
+    - contextPath: Ignite.IP.site_title
+      description: Title of the site associated with the document.
+      type: String
+    - contextPath: Ignite.IP.sort_date
+      description: Date used for sorting the document.
+      type: Date
+    - contextPath: Ignite.IP.source_uri
+      description: Source URI of the document.
+      type: String
+    - contextPath: Ignite.IP.title
+      description: Title of the document.
+      type: String
+    - contextPath: Ignite.IP.title_id
+      description: ID of the title.
+      type: String
+    - contextPath: Ignite.IP.type
+      description: Type of the document.
+      type: String
+    description: Looks up details of an IP indicator. The reputation of the IP address is considered malicious if there's at least one IoC event in the Ignite database that matches the IP indicator. Alternatively, the IP address is considered suspicious if it matches any one of the community's peer IP addresses.
+  - name: flashpoint-ignite-common-lookup
+    arguments:
+    - name: indicator
+      required: true
+      default: true
+      description: List of indicators.
+      isArray: true
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Reliability
+      description: The reliability of the vendor.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    description: Looks up any type of indicator.
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: A comma-separated list of URLs.
+      isArray: true
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Reliability
+      description: The reliability of the vendor.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: Ignite.Url.Event.Href
+      description: A list of reference links of the indicator.
+      type: string
+    - contextPath: Ignite.Url.Event.Url
+      description: URL of the indicator.
+      type: string
+    - contextPath: Ignite.Url.Event.EventDetails
+      description: The event details in which the indicator was observed.
+      type: string
+    - contextPath: Ignite.Url.Event.Category
+      description: The category of the indicator.
+      type: string
+    - contextPath: Ignite.Url.Event.Fpid
+      description: The Flashpoint ID of the indicator.
+      type: string
+    - contextPath: Ignite.Url.Event.Timestamp
+      description: The time and date that the indicator was observed.
+      type: string
+    - contextPath: Ignite.Url.Event.Type
+      description: The indicator type.
+      type: string
+    - contextPath: Ignite.Url.Event.Uuid
+      description: The UUID of the indicator.
+      type: string
+    - contextPath: Ignite.Url.Event.Comment
+      description: The comment that was provided when the indicator was observed.
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: The description of the malicious indicator.
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: Vendor of the malicious URL.
+      type: string
+    - contextPath: URL.Data
+      description: The URL.
+      type: string
+    - contextPath: URL.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: URL.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
+    - contextPath: URL.Description
+      description: The description of the indicator.
+      type: string
+    description: Looks up the "URL" type indicator details. The reputation of the URL is considered malicious if there's at least one IoC event in the Ignite database matching the URL indicator.
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: A comma-separated list of domains.
+      isArray: true
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Reliability
+      description: The reliability of the vendor.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: Ignite.Domain.Event.Href
+      description: A list of reference links of the indicator.
+      type: string
+    - contextPath: Ignite.Domain.Event.Domain
+      description: The domain of the indicator.
+      type: string
+    - contextPath: Ignite.Domain.Event.EventDetails
+      description: The event details in which the indicator was observed.
+      type: string
+    - contextPath: Ignite.Domain.Event.Category
+      description: The category of the indicator.
+      type: string
+    - contextPath: Ignite.Domain.Event.Fpid
+      description: The Ignite ID of the indicator.
+      type: string
+    - contextPath: Ignite.Domain.Event.Timestamp
+      description: The time and date that the indicator was observed.
+      type: string
+    - contextPath: Ignite.Domain.Event.Type
+      description: The indicator type.
+      type: string
+    - contextPath: Ignite.Domain.Event.Uuid
+      description: The UUID of the indicator.
+      type: string
+    - contextPath: Ignite.Domain.Event.Comment
+      description: The comment that was provided when the indicator was observed.
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: The description of the malicious indicator.
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: Vendor of the malicious indicator.
+      type: string
+    - contextPath: Domain.Name
+      description: Name of the domain.
+      type: string
+    - contextPath: Domain.Description
+      description: The description of the indicator.
+      type: string
+    - contextPath: Domain.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
+    description: Looks up the "Domain" type indicator details. The reputation of Domain is considered malicious if there's at least one IoC event in the Ignite database matching the Domain indicator.
+  - name: file
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: List of files.
+      isArray: true
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Reliability
+      description: The reliability of the vendor.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: Ignite.File.Event.Href
+      description: A list of reference links of the indicator.
+      type: string
+    - contextPath: Ignite.File.Event.MD5
+      description: MD5 file hash of the indicator.
+      type: string
+    - contextPath: Ignite.File.Event.SHA1
+      description: SHA1 file hash of the indicator.
+      type: string
+    - contextPath: Ignite.File.Event.SHA256
+      description: SHA256 file hash of the indicator.
+      type: string
+    - contextPath: Ignite.File.Event.SHA512
+      description: SHA512 file hash of the indicator.
+      type: string
+    - contextPath: Ignite.File.Event.SSDeep
+      description: SSDeep file hash of the indicator.
+      type: string
+    - contextPath: Ignite.File.Event.EventDetails
+      description: The event details in which the indicator was observed.
+      type: string
+    - contextPath: Ignite.File.Event.Category
+      description: The category of the indicator.
+      type: string
+    - contextPath: Ignite.File.Event.Fpid
+      description: The Ignite ID of the indicator.
+      type: string
+    - contextPath: Ignite.File.Event.Timestamp
+      description: The time and date that the indicator was observed.
+      type: string
+    - contextPath: Ignite.File.Event.Type
+      description: The indicator type.
+      type: string
+    - contextPath: Ignite.File.Event.Uuid
+      description: The UUID of the indicator.
+      type: string
+    - contextPath: Ignite.File.Event.Comment
+      description: The comment that was provided when the indicator was observed.
+      type: string
+    - contextPath: File.Malicious.Description
+      description: The description of the malicious indicator.
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: Vendor of the malicious file.
+      type: string
+    - contextPath: File.MD5
+      description: MD5 type file.
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 type file.
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 type file.
+      type: string
+    - contextPath: File.SHA512
+      description: SHA512 type file.
+      type: string
+    - contextPath: File.SSDeep
+      description: SSDeep type file.
+      type: string
+    - contextPath: File.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: File.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
+    description: Looks up the "File" type indicator details. The reputation of File hash is considered malicious if there's at least one IoC event in the Ignite database matching the File hash indicator.
+  script: ''
+  type: python
+  dockerimage: demisto/python3:3.11.10.116439
+  isfetch: true
+  runonce: false
+  subtype: python3
+tests:
+- Ignite-Test
+defaultmapperin: "Flashpoint Compromised Credentials - Incoming Mapper"
+fromversion: 6.10.0

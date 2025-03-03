@@ -2,7 +2,7 @@
     "name": "Amazon - Security Lake",
     "description": "Amazon Security Lake is a fully managed security data lake service.",
     "support": "xsoar",
-    "currentVersion": "1.0.8",
+    "currentVersion": "1.0.13",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

@@ -7,8 +7,9 @@ from datetime import datetime
 from EclecticIQIntelligenceCenterv3 import (EclecticIQ_api, create_sighting, create_indicator, prepare_entity_observables,
                                             domain_command, ip_command, url_command, file_command, email_command,
                                             parse_reputation_results, extract_uuid_from_url, observable_id_from_url,
-                                            taxonomie_id_from_url, format_ts, format_ts_human, request_get, request_post,
-                                            request_delete, get_entity, get_entity_by_id, get_indicators, fetch_indicators)
+                                            taxonomie_id_from_url, format_ts, format_ts_human, request_get, request_patch,
+                                            request_post, request_put, request_delete, get_entity, get_entity_by_id,
+                                            get_indicators, fetch_indicators)
 
 
 SERVER = "https://test.eclecticiq.com"
@@ -65,7 +66,7 @@ def test_send_api_request_good(requests_mock):
 
 
 def entity_create_response(*args, **kwargs):
-    return_value = str("123-123-123")
+    return_value = "123-123-123"
     return return_value
 
 
@@ -261,7 +262,7 @@ def test_parse_reputation_results(mocker):
 
 def test_parse_reputation_results_empty_reply(mocker):
     response = parse_reputation_results(None, "test.com", "domain", "low", "Domain")
-    assert response[0].raw_response["result"] == 'Observable not found in EcelcticIQ IC.'
+    assert response[0].raw_response["result"] == 'Observable not found in EclecticIQ IC.'
 
 
 def test_domain_command(mocker):
@@ -666,6 +667,48 @@ def test_request_post(mocker):
 
     assert response.outputs["ReplyStatus"] == "200"
     assert response.outputs_prefix == "EclecticIQ.POST"
+
+
+def test_request_put(mocker):
+    mock_response = mocker.Mock()
+    mock_response.json.return_value = {"status": "OK"}
+    mock_response.status_code = "200"
+    mocker.patch("EclecticIQIntelligenceCenterv3.EclecticIQ_api.get_outh_token", platform_auth_mock_response)
+    mocker.patch.object(demisto, 'args', return_value={"uri": "test"})
+
+    client = EclecticIQ_api(baseurl=SERVER,
+                            eiq_api_version=API_VERSION,
+                            username="",
+                            password=PASSWORD,
+                            verify_ssl=USE_SSL)
+
+    mocker.patch.object(client, 'send_api_request', return_value=mock_response)
+
+    response = request_put(client)
+
+    assert response.outputs["ReplyStatus"] == "200"
+    assert response.outputs_prefix == "EclecticIQ.PUT"
+
+
+def test_request_patch(mocker):
+    mock_response = mocker.Mock()
+    mock_response.json.return_value = {"status": "OK"}
+    mock_response.status_code = "200"
+    mocker.patch("EclecticIQIntelligenceCenterv3.EclecticIQ_api.get_outh_token", platform_auth_mock_response)
+    mocker.patch.object(demisto, 'args', return_value={"uri": "test"})
+
+    client = EclecticIQ_api(baseurl=SERVER,
+                            eiq_api_version=API_VERSION,
+                            username="",
+                            password=PASSWORD,
+                            verify_ssl=USE_SSL)
+
+    mocker.patch.object(client, 'send_api_request', return_value=mock_response)
+
+    response = request_patch(client)
+
+    assert response.outputs["ReplyStatus"] == "200"
+    assert response.outputs_prefix == "EclecticIQ.PATCH"
 
 
 def test_request_delete(mocker):

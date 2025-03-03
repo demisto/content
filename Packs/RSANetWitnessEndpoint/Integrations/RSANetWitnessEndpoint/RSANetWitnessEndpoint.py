@@ -265,7 +265,7 @@ def parse_error_response(error_response):
         return f'Request failed with status code: ' \
                f'{error_response.status_code}\nReason: {error.ResponseStatus.ErrorCode}\n{error.ResponseStatus.Message}'
     except Exception as e:
-        demisto.debug(e)
+        demisto.debug(f'{e}')
         return f'Request failed with status code: {error_response.status_code}\n{error_response.content}'
 
 

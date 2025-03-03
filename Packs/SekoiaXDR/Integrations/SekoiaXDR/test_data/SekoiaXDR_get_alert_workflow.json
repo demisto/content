@@ -1,0 +1,24 @@
+{
+    "actions": [
+        {
+            "id": "937bdabf-6a08-434b",
+            "name": "Acknowledge",
+            "description": "Acknowledge the alert"
+        },
+        {
+            "id": "c39a0a95-aa2c-4d0d",
+            "name": "Validate",
+            "description": "Validate the alert"
+        },
+        {
+            "id": "ade85d7b-7507-4026",
+            "name": "Reject",
+            "description": "Reject the alert"
+        },
+        {
+            "id": "1390be4e-ced8-4dd6",
+            "name": "Close",
+            "description": "Close the alert"
+        }
+    ]
+}

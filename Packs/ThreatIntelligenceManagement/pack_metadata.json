@@ -2,7 +2,7 @@
     "name": "Threat Intelligence Management",
     "description": "Threat Intelligence Management Pack",
     "support": "xsoar",
-    "currentVersion": "1.1.10",
+    "currentVersion": "1.1.13",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

@@ -8,7 +8,7 @@ description: This playbook helps analysts manage the manual process of reviewing
   The playbook indicator query is set to search for indicators that have the 'pending
   review' tag. The playbook's layout displays all of the related indicators in the
   summary page. While reviewing the indicators, the analyst can go to the summary
-  page and tag the indicators accordingly with tags 'such as, 'approved_black', 'approved_white',
+  page and tag the indicators accordingly with tags 'such as, 'approved_block', 'approved_allow',
   etc. Once the analyst completes their review, the playbook can optionally send an
   email with a list of changes done by the analyst which haven't been approved. Once
   complete, the playbook removes the 'pending review' tag from the indicators.
@@ -87,8 +87,8 @@ tasks:
       description: Manually review the indicators. The review process can include
         running reputation calculation on the indicator, or reviewing the indicator
         online in various engines. At the end of the process, the analyst needs to
-        add the relevant indicator tags, such as approved_watchlist, approved_white,
-        approved_black, etc. These tags are later used by another playbook to send
+        add the relevant indicator tags, such as approved_watchlist, approved_allow,
+        approved_block, etc. These tags are later used by another playbook to send
         the indicators to relevant 3rd party systems such as SIEM, EDR, EDL etc.
       type: regular
       iscommand: false
@@ -513,7 +513,7 @@ inputs:
   required: false
   description: ""
   playbookInputQuery:
-    query: tags:pending_review and -tags:being_reviewed
+    query: tags:"pending_review" and -tags:"being_reviewed"
     queryEntity: indicators
     results: null
     daterange:

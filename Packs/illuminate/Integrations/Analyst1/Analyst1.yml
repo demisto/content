@@ -122,10 +122,10 @@ script:
       description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
-      description: The type of indicator.
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The AlienVault OTX vendor.
+      description: The vendor used to calculate the score.
       type: String
     description: Queries the Analyst1 REST API and enriches the given domain with Analyst1 Indicator data.
   - name: email
@@ -191,7 +191,7 @@ script:
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The AlienVault OTX vendor.
+      description: The vendor used to calculate the score.
       type: String
     description: Queries the Analyst1 REST API and enriches the given email with Analyst1 indicator data.
   - name: ip
@@ -254,10 +254,10 @@ script:
       description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
-      description: The type of indicator.
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The AlienVault OTX vendor.
+      description: The vendor used to calculate the score.
       type: String
     description: Queries the Analyst1 REST API and enriches the given IP address with Analyst1 indicator data.
   - name: file
@@ -326,10 +326,10 @@ script:
       description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
-      description: The type of indicator.
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The AlienVault OTX vendor.
+      description: The vendor used to calculate the score.
       type: String
     description: Queries the Analyst1 REST API and enriches the given file with Analyst1 indicator data.
   - name: analyst1-enrich-string
@@ -592,10 +592,10 @@ script:
       description: The actual score.
       type: Numbe
     - contextPath: DBotScore.Type
-      description: The type of indicator.
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The AlienVault OTX vendor.
+      description: The vendor used to calculate the score.
       type: String
     description: Queries the Analyst1 REST API and enriches the given URL with Analyst1 indicator data.
   - name: analyst1-get-sensor-taskings
@@ -746,7 +746,7 @@ script:
     - contextPath: Analyst1.EvidenceStatus.processingComplete
       description: True or false to indicate if processing of the Evidence upload is done. Determined by evaluating the id or message are present and populated. If an id is returned but blank, this is false, indicating the upload is still in progress.
     description: Check on the status of the analyst1-evidence-submit action by using its output UUID.
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.11.10.115186
   subtype: python3
   runonce: false
 fromversion: 5.0.0

@@ -14,7 +14,9 @@ This integration was integrated and tested with v21.11 of SOCRadar.
     | proxy | Whether to use XSOAR’s system proxy settings to connect to the API. | False |
 
 4. Click **Test** to validate API key and connection to SOCRadar ThreatFusion API.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
@@ -26,6 +28,7 @@ After obtaining the SOCRadar ThreatFusion API key insert it into **API Key** fie
 
 
 ### ip
+
 ***
 Scores provided IP entities' reputation in SOCRadar ThreatFusion.
 
@@ -33,6 +36,7 @@ Scores provided IP entities' reputation in SOCRadar ThreatFusion.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -87,7 +91,7 @@ Scores provided IP entities' reputation in SOCRadar ThreatFusion.
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the indicator score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | IP.Address | String | IP address | 
 | IP.ASN | String | The autonomous system name for the IP address, for example: "AS8948". | 
 | IP.Geo.Location | String | The geolocation where the IP address is located, in the format: latitude:longitude. | 
@@ -95,9 +99,11 @@ Scores provided IP entities' reputation in SOCRadar ThreatFusion.
 
 
 #### Command Example
+
 ```!ip ip="1.1.1.1"```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -196,12 +202,14 @@ Scores provided IP entities' reputation in SOCRadar ThreatFusion.
 #### Human Readable Output
 
 >### SOCRadar - Analysis results for IP: 1.1.1.1
+
 >|DNS Details|Geo Location|IP|Risk Score (Out of 1000)|Score Details|Total Encounters|Whois Details|
 >|---|---|---|---|---|---|---|
 >| PTR: one.one.one.one | Cidr: 1.1.1.0/24<br/>AsnCode: 13335<br/>AsnName: CloudFlare Inc<br/>ZipCode: 90001<br/>CityName: Los Angeles<br/>Latitude: 0.0<br/>Timezone: -07:00<br/>Longitude: 0.0<br/>RegionName: California<br/>CountryCode: US<br/>CountryName: United States of America<br/>ASN: [13335] CLOUDFLARENET, US | 1.1.1.1 | 0 |  | 0 | asn: 13335<br/>nir: null<br/>nets: {'cidr': '1.1.1.0/24', 'city': None, 'name': 'APNIC-LABS', 'range': '1.1.1.0 - 1.1.1.255', 'state': None, 'emails': ['resolver-abuse@cloudflare.com'], 'handle': 'AA1412-AP', 'address': 'PO Box 3646\nSouth Brisbane, QLD 4101\nAustralia', 'country': 'AU', 'created': None, 'updated': None, 'description': 'APNIC and Cloudflare DNS Resolver project\nRouted globally by AS13335/Cloudflare\nResearch prefix for APNIC Labs', 'postal_code': None},<br/>{'cidr': '1.1.1.0/24', 'city': None, 'name': None, 'range': '1.1.1.0 - 1.1.1.255', 'state': None, 'emails': None, 'handle': None, 'address': None, 'country': None, 'created': None, 'updated': None, 'description': 'APNIC Research and Development\n                6 Cordelia St', 'postal_code': None}<br/>query: 1.1.1.1<br/>asn_cidr: 1.1.1.0/24<br/>asn_date: 2011-08-11<br/>referral: null<br/>asn_registry: apnic<br/>raw_referral: null<br/>asn_description: CLOUDFLARENET, US<br/>asn_country_code: AU |
 
 
 ### domain
+
 ***
 Scores provided domain entities' reputation in SOCRadar ThreatFusion.
 
@@ -209,6 +217,7 @@ Scores provided domain entities' reputation in SOCRadar ThreatFusion.
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -246,7 +255,7 @@ Scores provided domain entities' reputation in SOCRadar ThreatFusion.
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the indicator score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | Domain.Name | String | The domain name, for example: "google.com". | 
 | Domain.DNS | String | A list of IP objects resolved by DNS. | 
 | Domain.CreationDate | Date | The date that the domain was created. | 
@@ -267,9 +276,11 @@ Scores provided domain entities' reputation in SOCRadar ThreatFusion.
 
 
 #### Command Example
+
 ```!domain domain="paloaltonetworks.com"```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -376,12 +387,14 @@ Scores provided domain entities' reputation in SOCRadar ThreatFusion.
 #### Human Readable Output
 
 >### SOCRadar - Analysis results for domain: paloaltonetworks.com
+
 >|DNS Details|Domain|Risk Score (Out of 1000)|Score Details|Subdomains|Total Encounters|Whois Details|
 >|---|---|---|---|---|---|---|
 >| A: 1.1.1.1<br/>MX: mx record<br/>NS: ns record<br/>SOA: domains.paloaltonetworks.com. 1627343953 3600 600 604800 3600<br/>TXT: txt record | paloaltonetworks.com | 0 |  |  | 0 | org: Palo Alto Networks, Inc.<br/>city: null<br/>name: null<br/>state: CA<br/>dnssec: signedDelegation<br/>emails: abusecomplaints@markmonitor.com,<br/>whoisrequest@markmonitor.com<br/>status: clientUpdateProhibited https:<span>//</span>icann.org/epp#clientUpdateProhibited,<br/>clientTransferProhibited https:<span>//</span>icann.org/epp#clientTransferProhibited,<br/>clientDeleteProhibited https:<span>//</span>icann.org/epp#clientDeleteProhibited,<br/>clientTransferProhibited (https:<span>//</span>www.icann.org/epp#clientTransferProhibited),<br/>clientUpdateProhibited (https:<span>//</span>www.icann.org/epp#clientUpdateProhibited),<br/>clientDeleteProhibited (https:<span>//</span>www.icann.org/epp#clientDeleteProhibited)<br/>address: null<br/>country: US<br/>zipcode: null<br/>registrar: MarkMonitor Inc.<br/>domain_name: PALOALTONETWORKS.COM<br/>name_servers: ns record<br/>referral_url: null<br/>updated_date: Thu, 01 Jul 2021 00:32:38 GMT<br/>whois_server: whois.markmonitor.com<br/>creation_date: Mon, 21 Feb 2005 02:42:10 GMT<br/>expiration_date: Wed, 21 Feb 2024 02:42:10 GMT |
 
 
 ### file
+
 ***
 Scores provided hash entities' reputation in SOCRadar ThreatFusion.
 
@@ -389,6 +402,7 @@ Scores provided hash entities' reputation in SOCRadar ThreatFusion.
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -407,15 +421,17 @@ Scores provided hash entities' reputation in SOCRadar ThreatFusion.
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the indicator score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | File.MD5 | String | The MD5 hash of the file. | 
 | File.SHA1 | String | The SHA1 hash of the file. | 
 
 
 #### Command Example
+
 ```!file file="3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792"```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -445,12 +461,14 @@ Scores provided hash entities' reputation in SOCRadar ThreatFusion.
 #### Human Readable Output
 
 >### SOCRadar - Analysis results for hash: 3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792
+
 >|File|Risk Score (Out of 1000)|Score Details|Total Encounters|
 >|---|---|---|---|
 >| 3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792 | 360.0 | Maldatabase: 360.0 | 1 |
 
 
 ### socradar-score-ip
+
 ***
 Scores provided IP entity's reputation in SOCRadar ThreatFusion.
 
@@ -458,6 +476,7 @@ Scores provided IP entity's reputation in SOCRadar ThreatFusion.
 #### Base Command
 
 `socradar-score-ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -516,9 +535,11 @@ Scores provided IP entity's reputation in SOCRadar ThreatFusion.
 
 
 #### Command Example
+
 ```!socradar-score-ip ip="1.1.1.1"```
 
 #### Context Example
+
 ```json
 {
     "SOCRadarThreatFusion": {
@@ -608,12 +629,14 @@ Scores provided IP entity's reputation in SOCRadar ThreatFusion.
 #### Human Readable Output
 
 >### SOCRadar - Analysis results for IP: 1.1.1.1
+
 >|DNS Details|Geo Location|IP|Risk Score (Out of 1000)|Score Details|Total Encounters|Whois Details|
 >|---|---|---|---|---|---|---|
 >| PTR: one.one.one.one | AsnCode: 13335<br/>AsnName: CloudFlare Inc<br/>Cidr: 1.1.1.0/24<br/>CityName: Los Angeles<br/>CountryCode: US<br/>CountryName: United States of America<br/>ASN: [13335] CLOUDFLARENET, US<br />Latitude: 0.0<br/>Longitude: 0.0<br/>RegionName: California<br/>Timezone: -07:00<br/>ZipCode: 90001 | 1.1.1.1 | 0 |  | 0 | asn: 13335<br/>asn_cidr: 1.1.1.0/24<br/>asn_country_code: AU<br/>asn_date: 2011-08-11<br/>asn_description: CLOUDFLARENET, US<br/>asn_registry: apnic<br/>nets: {'address': 'PO Box 3646\nSouth Brisbane, QLD 4101\nAustralia', 'cidr': '1.1.1.0/24', 'city': None, 'country': 'AU', 'created': None, 'description': 'APNIC and Cloudflare DNS Resolver project\nRouted globally by AS13335/Cloudflare\nResearch prefix for APNIC Labs', 'emails': ['resolver-abuse@cloudflare.com'], 'handle': 'AA1412-AP', 'name': 'APNIC-LABS', 'postal_code': None, 'range': '1.1.1.0 - 1.1.1.255', 'state': None, 'updated': None},<br/>{'address': None, 'cidr': '1.1.1.0/24', 'city': None, 'country': None, 'created': None, 'description': 'APNIC Research and Development\n                6 Cordelia St', 'emails': None, 'handle': None, 'name': None, 'postal_code': None, 'range': '1.1.1.0 - 1.1.1.255', 'state': None, 'updated': None}<br/>nir: null<br/>query: 1.1.1.1<br/>raw_referral: null<br/>referral: null |
 
 
 ### socradar-score-domain
+
 ***
 Scores provided domain entity's reputation in SOCRadar ThreatFusion.
 
@@ -621,6 +644,7 @@ Scores provided domain entity's reputation in SOCRadar ThreatFusion.
 #### Base Command
 
 `socradar-score-domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -662,9 +686,11 @@ Scores provided domain entity's reputation in SOCRadar ThreatFusion.
 
 
 #### Command Example
+
 ```!socradar-score-domain domain="paloaltonetworks.com"```
 
 #### Context Example
+
 ```json
 {
     "SOCRadarThreatFusion": {
@@ -739,12 +765,14 @@ Scores provided domain entity's reputation in SOCRadar ThreatFusion.
 #### Human Readable Output
 
 >### SOCRadar - Analysis results for domain: paloaltonetworks.com
+
 >|DNS Details|Domain|Risk Score (Out of 1000)|Score Details|Subdomains|Total Encounters|Whois Details|
 >|---|---|---|---|---|---|---|
 >| A: 1.1.1.1<br/>MX: mx record<br/>NS: ns record<br/>SOA: domains.paloaltonetworks.com. 1627343953 3600 600 604800 3600<br/>TXT: txt record | paloaltonetworks.com | 0 |  |  | 0 | org: Palo Alto Networks, Inc.<br/>city: null<br/>name: null<br/>state: CA<br/>dnssec: signedDelegation<br/>emails: abusecomplaints@markmonitor.com,<br/>whoisrequest@markmonitor.com<br/>status: clientUpdateProhibited https:<span>//</span>icann.org/epp#clientUpdateProhibited,<br/>clientTransferProhibited https:<span>//</span>icann.org/epp#clientTransferProhibited,<br/>clientDeleteProhibited https:<span>//</span>icann.org/epp#clientDeleteProhibited,<br/>clientTransferProhibited (https:<span>//</span>www.icann.org/epp#clientTransferProhibited),<br/>clientUpdateProhibited (https:<span>//</span>www.icann.org/epp#clientUpdateProhibited),<br/>clientDeleteProhibited (https:<span>//</span>www.icann.org/epp#clientDeleteProhibited)<br/>address: null<br/>country: US<br/>zipcode: null<br/>registrar: MarkMonitor Inc.<br/>domain_name: PALOALTONETWORKS.COM<br/>name_servers: ns record<br/>referral_url: null<br/>updated_date: Thu, 01 Jul 2021 00:32:38 GMT<br/>whois_server: whois.markmonitor.com<br/>creation_date: Mon, 21 Feb 2005 02:42:10 GMT<br/>expiration_date: Wed, 21 Feb 2024 02:42:10 GMT |
 
 
 ### socradar-score-hash
+
 ***
 Scores provided hash entity's reputation in SOCRadar ThreatFusion.
 
@@ -752,6 +780,7 @@ Scores provided hash entity's reputation in SOCRadar ThreatFusion.
 #### Base Command
 
 `socradar-score-hash`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -774,9 +803,11 @@ Scores provided hash entity's reputation in SOCRadar ThreatFusion.
 
 
 #### Command Example
+
 ```!socradar-score-hash hash="3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792"```
 
 #### Context Example
+
 ```json
 {
     "SOCRadarThreatFusion": {
@@ -803,6 +834,7 @@ Scores provided hash entity's reputation in SOCRadar ThreatFusion.
 #### Human Readable Output
 
 >### SOCRadar - Analysis results for hash: 3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792
+
 >|File|Risk Score (Out of 1000)|Score Details|Total Encounters|
 >|---|---|---|---|
 >| 3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792 | 360.0 | Maldatabase: 360.0 | 1 |

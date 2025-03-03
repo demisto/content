@@ -51,8 +51,10 @@ var changeKeys = function(conv, obj){
     return output;
 };
 
-var callWhoIs = function(query, parsed,url){
-    var res = sendRequest(url + query + '/whois/parsed/'+encodeToURLQuery({'api_username':params.username,'api_key':params.key}));
+var callWhoIs = function(url, query, parsed){
+    var whois_endpoint = `${url}/v1/${query}/whois/parsed/${encodeToURLQuery(DOMAINTOOLS_PARAMS)}`
+    var res = sendRequest(whois_endpoint)
+
     var error = res.response.error;
     if(error && error.code === 206){
         parsed = false;
@@ -101,7 +103,9 @@ var scoreConv = function(score, threshold){
 };
 
 var callDomain = function(url, domain, threshold){
-    var repRes = sendRequest(url + 'reputation/'+encodeToURLQuery({'api_username':params.username,'api_key':params.key, 'domain' : domain}));
+    var api_params = Object.assign(DOMAINTOOLS_PARAMS, {"domain": domain})
+    var domain_reputation_endpoint = `${url}/v1/reputation/${encodeToURLQuery(api_params)}`
+    var repRes = sendRequest(domain_reputation_endpoint)
     var md = 'Domain '+repRes.response.domain+' found with risk score of '+ repRes.response.risk_score +'.';
     var context = {
         'DBotScore' : {
@@ -127,7 +131,8 @@ var callDomain = function(url, domain, threshold){
 };
 
 var callProfile= function(url, domain){
-    var domRes = sendRequest(url + domain + '/'+encodeToURLQuery({'api_username':params.username,'api_key':params.key}));
+    var domain_profile_endpoint = `${url}/v1/${domain}/${encodeToURLQuery(DOMAINTOOLS_PARAMS)}`
+    var domRes = sendRequest(domain_profile_endpoint)
     return {
             Type: entryTypes.note,
             Contents: domRes,
@@ -155,7 +160,9 @@ var callDomainSearch = function(url, args){
     args = changeKeys(argToUrlParam,args);
     args.api_username = params.username;
     args.api_key = params.key;
-    var res = sendRequest(url +  'domain-search/'+encodeToURLQuery(args));
+
+    var api_params = Object.assign(DOMAINTOOLS_PARAMS, args)
+    var res = sendRequest(`${url}/v2/domain-search/${encodeToURLQuery(api_params)}`);
     var results = res.response.results;
 
     var md = '';
@@ -188,12 +195,15 @@ var callReverseIP = function(url, args){
     var context = {'Domain' : []};
     var res;
     var addresses;
-    if(args.domain){
-        res = sendRequest(url + args.domain+'/reverse-ip/'+encodeToURLQuery({'api_username':params.username,'api_key':params.key, 'limit': args.limit? args.limit : 50}));
 
+    var api_params = Object.assign(DOMAINTOOLS_PARAMS, {"limit": args.limit? args.limit : 50})
+    if(args.domain){
+        var reverse_ip_endpoint = `${url}/v1/${args.domain}/reverse-ip/${encodeToURLQuery(api_params)}`
+        res = sendRequest(reverse_ip_endpoint)
     }
     else if(args.ip){
-        res = sendRequest(url + args.ip+'/host-domains/'+encodeToURLQuery({'api_username':params.username,'api_key':params.key, 'limit': args.limit? args.limit : 50}));
+        var host_domains_endpoint = `${url}/v1/${args.ip}/host-domains/${encodeToURLQuery(api_params)}`
+        res = sendRequest(host_domains_endpoint)
     }
     addresses = res.response.ip_addresses;
     if(!Array.isArray(addresses)){
@@ -219,7 +229,9 @@ var callReverseIP = function(url, args){
 }
 
 var callReverseNameServer = function(url, server, limit){
-    var res = sendRequest(url +server + '/name-server-domains/' + encodeToURLQuery({'api_username':params.username,'api_key':params.key, 'limit': limit? limit : 50}));
+    var api_params = Object.assign(DOMAINTOOLS_PARAMS, {"limit": limit? limit : 50})
+    var reverse_ns_endpoint = `${url}/v1/${server}/name-server-domains/${encodeToURLQuery(api_params)}`
+    var res = sendRequest(reverse_ns_endpoint)
     var md = 'Found ' +  res.response.primary_domains.length + ' domains\n';
     var context = {'Domain' : []};
     res.response.primary_domains.forEach(function(domain){
@@ -248,7 +260,10 @@ var callReverseWhoIs = function(url, args){
     delete args.quoteModel
     delete args.onlyHistoricScope;
 
-    var res = sendRequest(url + encodeToURLQuery(args));
+    var api_params = Object.assign(DOMAINTOOLS_PARAMS, args)
+    var reverse_whois_endpoint = `${url}/v1/reverse-whois/${encodeToURLQuery(api_params)}`
+
+    var res = sendRequest(reverse_whois_endpoint);
     var context = {'Domain' : []};
     var md = 'Found '+res.response.domains.length+ ' domains: \n';
     res.response.domains.forEach(function(domain){
@@ -268,7 +283,8 @@ var callReverseWhoIs = function(url, args){
 
 /*http://api.domaintools.com/v1/domaintools.com/whois/history/*/
 var callWhoisHistory = function(url, domain){
-    var res = sendRequest(url+domain+'/whois/history/'+ encodeToURLQuery({'api_username':params.username,'api_key':params.key}));
+    var whois_history_endpoint = `${url}/v1/${domain}/whois/history/${encodeToURLQuery(DOMAINTOOLS_PARAMS)}`
+    var res = sendRequest(whois_history_endpoint)
     var splitRecord;
     var context = {'Domain' : {'Name' : domain, 'WhoisHistory' : []}};
     var md = '';
@@ -306,27 +322,37 @@ params.username = params.username || params.credentials.identifier
 if (!params.key || !params.username) {
     throw 'Username and API key must be provided.'
 }
+
+const DOMAINTOOLS_PARAMS = {
+    "api_username": params.username,
+    "api_key": params.key,
+    "app_partner": "cortex_xsoar",
+    "app_name": "enterprise_for_xsoar",
+    "app_version": "1"
+}
+
 switch (command) {
     case 'test-module':
-            var res = sendRequest(url + '/v1/demisto.com/whois/parsed/'+encodeToURLQuery({'api_username':params.username,'api_key':params.key}));
+            var account_url = `${url}/v1/account/${encodeToURLQuery(DOMAINTOOLS_PARAMS)}`
+            var res = sendRequest(account_url)
             if(res.response.error){
                 log('Something went wrong - error code ' + error.code);
             }
             return 'ok';
     case 'domain':
-        return callDomain(url+'/v1/', args.domain, args.threshold);
+        return callDomain(url, args.domain, args.threshold);
     case 'domainSearch':
-        return callDomainSearch(url+'/v2/', args);
+        return callDomainSearch(url, args);
     case 'reverseIP':
-        return callReverseIP(url+'/v1/', args);
+        return callReverseIP(url, args);
     case 'reverseNameServer':
-        return callReverseNameServer(url+'/v1/', args.nameServer, args.limit);
+        return callReverseNameServer(url, args.nameServer, args.limit);
     case 'reverseWhois':
-        return callReverseWhoIs(url + '/v1/reverse-whois/', args);
+        return callReverseWhoIs(url, args);
     case 'whois':
-        return callWhoIs(args.query, args.parsed, url+'/v1/');
+        return callWhoIs(url, args.query, args.parsed);
     case 'whoisHistory':
-        return callWhoisHistory(url+'/v1/', args.domain);
+        return callWhoisHistory(url, args.domain);
     case 'domainProfile':
-        return callProfile(url+'/v1/', args.domain);
+        return callProfile(url, args.domain);
 }

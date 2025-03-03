@@ -2,50 +2,62 @@ category: Vulnerability Management
 commonfields:
   id: Cortex Xpanse
   version: -1
+sectionorder:
+- Connect
+- Collect
 configuration:
 - additionalinfo: The web UI with `api-` appended to front (e.g., https://api-xsiam.paloaltonetworks.com). For more information, see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis.
   display: Server URL
   name: url
   required: true
   type: 0
+  section: Connect
 - additionalinfo: For more information, see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis.  Only standard API key type is supported.
   display: API Key ID
   displaypassword: API Key
   name: credentials
   required: true
   type: 9
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Connect
 - defaultvalue: "1"
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - additionalinfo: The maximum number of alerts per fetch. Cannot exceed 100.
   defaultvalue: '10'
   display: Maximum number of alerts per fetch
   name: max_fetch
   type: 0
   required: false
+  section: Collect
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   type: 0
   required: false
+  section: Collect
 - additionalinfo: 'The severity of the alerts that will be fetched. If no severity is provided then alerts of all the severities will be fetched. Note: An alert whose status was changed to a filtered status after its creation time will not be fetched.'
   display: Alert Severities to Fetch
   name: severity
@@ -57,6 +69,7 @@ configuration:
   - informational
   type: 16
   required: false
+  section: Collect
 - display: Alert Statuses to fetch
   name: status
   type: 16
@@ -72,11 +85,13 @@ configuration:
   - resolved_remediated_automatically
   - resolved
   additionalinfo: 'The statuses of the alerts that will be fetched. If no status is provided then alerts of all the statuses will be fetched. Note: An alert whose status was changed to a filtered status after its creation time will not be fetched.'
+  section: Collect
 - display: Fetch alerts with tags (comma separated string)
   name: tags
   type: 0
   required: false
   additionalinfo: 'The tags of the alerts that will be fetched. If no tags are provided then no tag filtering will be applied on fetched alerts. These should include the tag prefix, ex. AT:Asset Tag.'
+  section: Collect
 - name: integration_reliability
   display: Source Reliability
   additionalinfo: Reliability of the source providing the intelligence data.
@@ -91,12 +106,21 @@ configuration:
   - F - Reliability cannot be judged
   required: false
   type: 15
+  section: Collect
 - additionalinfo: Maximum amount of search results for listing commands.
   defaultvalue: '100'
   display: Search Limit
   name: search_limit
   required: false
   type: 0
+  section: Collect
+- defaultvalue: 0
+  display: 'Advanced: Minutes to look back when fetching (Warning: exceeding 720 could lead to issues with fetching)'
+  additionalinfo: Use this parameter to determine how far back in time to look in the search for incidents that were created before the last run time and did not match the query when they were created.
+  name: look_back
+  type: 0
+  required: false
+  section: Collect
 description: Integration to pull assets and other ASM related information.
 display: Cortex Xpanse
 name: Cortex Xpanse
@@ -553,6 +577,34 @@ script:
       required: true
       description: The name of the tags to apply to supplied assets.
     description: Assigns tags to a list of assets.
+  - name: asm-add-note-to-asset
+    arguments:
+    - name: asset_id
+      description: The asset ID to add a note to.
+      required: true
+    - name: entity_type
+      description: "The type of Xpanse asset. Allowed values are: 'asset' or 'ip_range'."
+      auto: PREDEFINED
+      predefined:
+      - ip_range
+      - asset
+      required: true
+    - name: note_to_add
+      required: true
+      description: The custom note to be added to the notes section of the asset in Cortex Xpanse.
+    - name: should_append
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      defaultValue: true
+      description: Set to 'false' to overwrite the current note on the asset. Set to 'true' to append to the current note.
+    description: Adds a note to an asset in Xpanse.
+    outputs:
+    - contextPath: ASM.AssetAnnotation.status
+      description: Status of the note being added to the asset in Cortex Xpanse.
+      type: String
   - name: asm-tag-asset-remove
     arguments:
     - name: asm_id_list
@@ -570,7 +622,7 @@ script:
   - name: asm-tag-range-remove
     arguments:
     - name: range_id_list
-      description: Comma-separated list of range IDs to remove tags from.
+      description: 'Comma-separated list of range IDs to remove tags from.'
     - name: tags
       description: The name of the tags to remove from supplied IP ranges.
     description: Removes tags from a list of IP ranges.
@@ -581,12 +633,12 @@ script:
     - name: description
       description: String to search for within the incident description field.
     - name: status
+      description: Status to search incidents for.
       auto: PREDEFINED
       predefined:
       - new
       - under_investigation
       - resolved
-      description: Status to search incidents for.
     - name: lte_creation_time
       description: A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved.
     - name: gte_creation_time
@@ -679,8 +731,8 @@ script:
   - name: asm-update-incident
     arguments:
     - name: incident_id
-      required: true
       description: ID of the incident to modify.
+      required: true
     - name: alert_id
       description: Used for scoping updates such as comments to the alert level.
     - name: assigned_user_mail
@@ -732,6 +784,8 @@ script:
       - high
       - critical
       description: The severity of the alert.
+    - name: resolution_comment
+      description: Descriptive comment explaining the alert change.
     outputs:
     - contextPath: ASM.UpdatedAlerts
       description: IDs of the updated alerts.
@@ -741,8 +795,8 @@ script:
     - name: ip
       description: IP address to enrich.
       required: true
-      default: true
       isArray: true
+      default: true
     outputs:
     - contextPath: ASM.IP.ip
       description: The IP address of the asset.
@@ -790,12 +844,28 @@ script:
     - contextPath: IP.Address
       description: IP address.
       type: String
-    description: Returns enrichment for an IP address.
+    - contextPath: ASM.TIM.IP.name
+      description: The existing Cortex Xpanse IP address recently updated in the Cortex XSOAR indicators.
+      type: String
+    - contextPath: ASM.TIM.IP.indicator_type
+      description: The existing Cortex Xpanse indicator type in the Cortex XSOAR indicators.
+      type: String
+    - contextPath: ASM.TIM.IP.id
+      description: The existing indicator ID in the Cortex XSOAR indicators.
+      type: String
+    - contextPath: ASM.TIM.IP.reliability
+      description: The existing indicator reliability recently updated in the Cortex XSOAR indicators.
+      type: String
+    - contextPath: ASM.TIM.IP.score
+      description: The existing indicator score recently updated in the Cortex XSOAR indicators.
+      type: Number
+    description: (Deprecated) Returns enrichment for an IP address.
+    deprecated: true
   - name: domain
     arguments:
     - name: domain
-      description: Domain to enrich.
       required: true
+      description: Domain to enrich.
       isArray: true
       default: true
     outputs:
@@ -842,12 +912,28 @@ script:
     - contextPath: Domain.Name
       description: 'The domain name, for example: "google.com".'
       type: String
-    description: Returns enrichment for a domain.
+    - contextPath: ASM.TIM.Domain.name
+      description: The existing Cortex Xpanse domain recently updated in XSOAR indicators.
+      type: String
+    - contextPath: ASM.TIM.Domain.indicator_type
+      description: The existing Cortex Xpanse indicator type in the Cortex XSOAR indicators.
+      type: String
+    - contextPath: ASM.TIM.Domain.id
+      description: The existing indicator ID in the Cortex XSOAR indicators.
+      type: String
+    - contextPath: ASM.TIM.Domain.reliability
+      description: The existing indicator reliability recently updated in the Cortex XSOAR indicators.
+      type: String
+    - contextPath: ASM.TIM.Domain.score
+      description: The existing indicator score recently updated in the Cortex XSOAR indicators.
+      type: Number
+    description: (Deprecated) Returns enrichment for a domain.
+    deprecated: true
   - name: asm-get-incident
     arguments:
     - name: incident_id
-      required: true
       description: The ID of the incident to be fetched.
+      required: true
     outputs:
     - contextPath: ASM.Incident.incident_id
       description: The ID of the incident.
@@ -883,7 +969,10 @@ script:
     - contextPath: ASM.ExternalWebsite
       description: A list of the websites results assets.
     description: Get external websites assets.
-  dockerimage: demisto/python3:3.10.13.89009
+  - name: asm-reset-last-run
+    arguments: []
+    description: Resets the fetch incidents last run value, which resets the fetch to its initial fetch state.
+  dockerimage: demisto/python3:3.12.8.1983910
   isFetchSamples: true
   isfetch: true
   script: ''

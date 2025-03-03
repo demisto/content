@@ -50,6 +50,8 @@ configuration:
   name: permitted_notifications
   type: 16
   section: Collect
+  hidden:
+  - marketplacev2
   required: false
   options:
   - incidentAssigned
@@ -64,8 +66,9 @@ configuration:
   - failedFetchIncidents
   - mentionNew
   - mentionOld
+  - deprecatedContentInUse
   advanced: true
-  additionalinfo: By default, externalFormSubmit is enabled in order to allow Ask tasks to be sent correctly.
+  additionalinfo: Types of notifications to send (to individual users and to the dedicated Slack channel, if specified).To enable use User (User Name) -> User Preferences -> Notifications
 - display: Type of incidents created in Slack
   name: incidentType
   type: 13
@@ -100,6 +103,7 @@ configuration:
   advanced: true
   additionalinfo: Trust any certificate (not secure). Make sure to mark this parameter if you want the SlackBlockBuilder script to send a response back to the incident context.
 - defaultvalue: 'true'
+  defaultvalue:xpanse: 'false'
   display: Enable Incident Mirroring
   name: mirroring
   type: 8
@@ -112,6 +116,7 @@ configuration:
   required: false
   additionalinfo: Whether to enable mirroring only from xsoar to slack, mark it if file mirroring is required in investigations.
 - defaultvalue: 'true'
+  defaultvalue:xpanse: 'false'
   display: Long running instance. Required for investigation mirroring and direct messages.
   name: longRunning
   type: 8
@@ -306,7 +311,7 @@ script:
       name: threadID
     - description: A comment to add to the file.
       name: comment
-    description: Sends a file to a user, channel, or group. If not specified, the file is sent to the mirrored investigation channel (if the channel exists).
+    description: 'Sends a file to a user, channel, or group. If not specified, the file is sent to the mirrored investigation channel (if the channel exists).'
     name: slack-send-file
   - arguments:
     - description: The channel name. If not specified, the topic of the mirrored investigation channel is set (if the channel exists).
@@ -377,7 +382,7 @@ script:
     name: slack-rename-channel
   - arguments:
     - default: true
-      description: The Slack user (username or email).
+      description: The Slack user (username, email or user ID).
       name: user
       required: true
     description: Get details about a specified user.
@@ -498,12 +503,13 @@ script:
       description: Set this argument to specify how many results to return.
     description: Retrieves replies to specific messages, regardless of whether it's from a public or private channel, direct message, or otherwise.
     name: slack-get-conversation-replies
-  dockerimage: demisto/slackv3:1.0.0.88538
+  dockerimage: demisto/slackv3:1.0.0.117556
   longRunning: true
   runonce: false
   script: '-'
   subtype: python3
   type: python
+  isFetchSamples: true
 fromversion: 5.5.0
 tests:
 - SlackV3 TestPB

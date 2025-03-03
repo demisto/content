@@ -2,12 +2,12 @@
     "name": "AWS Secrets Manager",
     "description": "AWS Secrets Manager helps you to securely encrypt, store, and retrieve credentials for your databases and other services.",
     "support": "xsoar",
-    "currentVersion": "1.0.40",
+    "currentVersion": "1.0.46",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Authentication & Identity Management"
+        "Identity and Access Management"
     ],
     "tags": [],
     "useCases": [],

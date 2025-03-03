@@ -58,7 +58,7 @@ tasks:
       AdditionalPollingCommandArgNames:
         simple: arg1,arg2
       AdditionalPollingCommandArgValues:
-        simple: test,test2
+        simple: test,"test2"
       Ids:
         simple: ${GP.Dummy.ID}
       Interval:
@@ -108,7 +108,7 @@ tasks:
       arg1:
         simple: test
       arg2:
-        simple: test2
+        simple: '"test2"'
       ids:
         simple: LetersNumbersSign&85 space, קצת עברית,$%$$%%dd
     separatecontext: false
@@ -213,7 +213,7 @@ tasks:
       arg1:
         simple: test
       arg2:
-        simple: test2
+        simple: '"test2"'
       ids:
         simple: ${GP.Dummy.ID}
     separatecontext: false

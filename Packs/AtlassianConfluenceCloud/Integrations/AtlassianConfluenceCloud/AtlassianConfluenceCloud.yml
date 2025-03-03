@@ -1,4 +1,7 @@
 category: Utilities
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Atlassian Confluence Cloud
   version: -1
@@ -8,20 +11,49 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - additionalinfo: The Atlassian account email.
   display: Email
   displaypassword: API Token
   name: username
   required: true
   type: 9
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
+- defaultvalue: '1'
+  display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  required: false
+  advanced: true
+  section: Collect
+  hidden:
+  - xsoar
+- defaultvalue: 10000
+  section: Collect
+  display: Max number of events per fetch
+  name: max_events_per_fetch
+  required: false
+  type: 0
+  hidden:
+  - xsoar
+- display: Fetch Events
+  defaultvalue: 'false'
+  name: isFetchEvents
+  type: 8
+  required: false
+  section: Collect
+  hidden:
+  - xsoar
 description: Atlassian Confluence Cloud allows users to interact with confluence entities like content, space, users, and groups. Users can also manage the space permissions.
 display: Atlassian Confluence Cloud
 name: Atlassian Confluence Cloud
@@ -1915,7 +1947,102 @@ script:
     - contextPath: ConfluenceCloud.Group._links.self
       description: Link to the group.
       type: String
-  dockerimage: demisto/python3:3.10.14.91134
+  - arguments:
+      - name: should_push_events
+        description: Set this argument to True in order to create events, otherwise the command will only display them.
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
+        defaultValue: "false"
+      - name: start_date
+        description: Filters the results to the records on or after the start date. The start date must be specified as epoch time in milliseconds.
+      - name: limit
+        description: The maximum number of records to return per page. Note, this may be restricted by fixed system limits.
+    name: confluence-cloud-get-events
+    description: Retrieves a list of events from the Atlassian Confluence Cloud instance.
+    outputs:
+      - contextPath: ConfluenceCloud.Event.author.type
+        description: The type of author who created this event.
+        type: String
+      - contextPath: ConfluenceCloud.Event.author.displayName
+        description: The display name of the author who created this event.
+        type: String
+      - contextPath: ConfluenceCloud.Event.author.operations
+        description: Nullable. Author's operations.
+        type: String
+      - contextPath: ConfluenceCloud.Event.author.username
+        description: Username of the author of this event.
+        type: String
+      - contextPath: ConfluenceCloud.Event.author.userKey
+        description: User key of the author of this event.
+        type: String
+      - contextPath: ConfluenceCloud.Event.author.accountId
+        description: Account ID of the author of this event.
+        type: String
+      - contextPath: ConfluenceCloud.Event.author.accountType
+        description: Type of account of the author of this event.
+        type: String
+      - contextPath: ConfluenceCloud.Event.author.externalCollaborator
+        description: Deprecated. Is the author of this event an external collaborator.
+        type: Boolean
+      - contextPath: ConfluenceCloud.Event.author.isExternalCollaborator
+        description: Deprecated. Is the author of this event an external collaborator.
+        type: Boolean
+      - contextPath: ConfluenceCloud.Event.author.publicName
+        description: The public name of the author of this event.
+        type: String
+      - contextPath: ConfluenceCloud.Event.remoteAddress
+        description: The remote address from which the event was performed.
+        type: String
+      - contextPath: ConfluenceCloud.Event.creationDate
+        description: The creation date-time of the audit record, as a timestamp.
+        type: Number
+      - contextPath: ConfluenceCloud.Event.summary
+        description: Summary of the audit.
+        type: Strings
+      - contextPath: ConfluenceCloud.Event.description
+        description: Description of the audit.
+        type: String
+      - contextPath: ConfluenceCloud.Event.category
+        description: Category of the event.
+        type: String
+      - contextPath: ConfluenceCloud.Event.sysAdmin
+        description: Was the event created by a system administrator.
+        type: Boolean
+      - contextPath: ConfluenceCloud.Event.superAdmin
+        description: Was the event created by a super administrator.
+        type: Boolean
+      - contextPath: ConfluenceCloud.Event.affectedObject.name
+        description: Name of the object affected by the event.
+        type: String
+      - contextPath: ConfluenceCloud.Event.affectedObject.objectType
+        description: Type of the object affected by the event.
+        type: String
+      - contextPath: ConfluenceCloud.Event.changedValues.name
+        description: Name of the changed value.
+        type: String
+      - contextPath: ConfluenceCloud.Event.changedValues.oldValue
+        description: The old value before the change the event describes.
+        type: String
+      - contextPath: ConfluenceCloud.Event.changedValues.hiddenOldValue
+        description: The old hidden value before the change the event describes.
+        type: String
+      - contextPath: ConfluenceCloud.Event.changedValues.newValue
+        description: The new value after the change the event describes.
+        type: String
+      - contextPath: ConfluenceCloud.Event.changedValues.hiddenNewValue
+        description: The new hidden value after the change the event describes.
+        type: String
+      - contextPath: ConfluenceCloud.Event.associatedObjects.name
+        description: Name of the associated object.
+        type: String
+      - contextPath: ConfluenceCloud.Event.associatedObjects.objectType
+        description: Type of the associated object.
+        type: String
+  dockerimage: demisto/python3:3.11.10.115186
+  isfetchevents: true
+  isfetchevents:xsoar: false
   runonce: false
   script: '-'
   subtype: python3

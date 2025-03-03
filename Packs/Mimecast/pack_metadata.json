@@ -2,7 +2,7 @@
     "name": "Mimecast",
     "description": "Mimecast unified email management offers cloud email services for email security, continuity and archiving emails. Read the detailed instructions to understand how to configure the integration's parameters.",
     "support": "xsoar",
-    "currentVersion": "2.2.6",
+    "currentVersion": "2.5.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

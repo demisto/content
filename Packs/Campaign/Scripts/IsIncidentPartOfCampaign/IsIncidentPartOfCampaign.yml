@@ -7,23 +7,24 @@ type: python
 tags:
 - phishing
 - campaign
-comment: Get the incident campaign's ID for the campaign that is linked to at least one  of the given incidents.
+comment: Gets the ID of an incident campaign that is linked to at least one of the given incidents.
 enabled: true
 args:
 - name: CampaignIncidentType
+  deprecated: true
   description: The type of incident campaign to search in.
   defaultValue: Phishing Campaign
 - name: IncidentIDs
   required: true
   isArray: true
-  description: Comma separated list of incidents ids to search for.
+  description: A comma-separated list of incidents ids to search an incident campaign for.
 outputs:
 - contextPath: ExistingCampaignID
-  description: The incident campaign's ID for the campaign that is linked to at least one  of the given incidents.
+  description: The ID of an incident campaign that is linked to at least one of the given incidents.
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.11.10.115186
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)

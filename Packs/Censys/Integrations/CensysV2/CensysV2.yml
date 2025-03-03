@@ -29,7 +29,8 @@ configuration:
   name: premium_access
   type: 8
   required: false
-  section: Connect
+  section: Collect
+  advanced: true
   additionalinfo: |-
     Censys API provides reputation data exclusively to paid subscribers. 
     When set to True, the integration will use labels to determine the IP score. 
@@ -60,6 +61,7 @@ configuration:
     Labels to classify IP as Malicious. 
     Input can be an array or comma-separated values.
   section: Collect
+  advanced: true
 - display: IP Suspicious labels
   name: suspicious_labels
   type: 16
@@ -87,18 +89,21 @@ configuration:
     Labels to classify IP as Suspicious.
     Input can be an array or comma-separated values.
   section: Collect
+  advanced: true
 - display: Malicious labels threshold
   name: malicious_labels_threshold
   type: 0
   required: false
   additionalinfo: Determines the minimum number of labels returned that are classified as malicious for IP.
   section: Collect
+  advanced: true
 - display: Suspicious labels threshold
   name: suspicious_labels_threshold
   type: 0
   required: false
   additionalinfo: Determines the minimum number of labels returned that are classified as suspicious for IP.
   section: Collect
+  advanced: true
 - display: Source Reliability
   name: integration_reliability
   defaultvalue: C - Fairly reliable
@@ -112,7 +117,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   additionalinfo: Reliability of the source providing the intelligence data.
-  section: collect
+  section: Connect
 description: Censys is a search engine that allows computer scientists to ask questions about the devices and networks that compose the internet. Driven by internet-wide scanning, Censys lets researchers find specific hosts and create aggregate reports on how devices, and certificates are configured and deployed.
 display: Censys v2
 name: CensysV2
@@ -683,7 +688,7 @@ script:
       description: The actual score.
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
-  dockerimage: demisto/python3:3.10.14.92207
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: '-'
   subtype: python3

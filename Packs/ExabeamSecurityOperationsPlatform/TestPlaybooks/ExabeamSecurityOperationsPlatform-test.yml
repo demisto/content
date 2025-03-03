@@ -1,19 +1,19 @@
 id: ExabeamSecurityOperationsPlatform-test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: ExabeamSecurityOperationsPlatform-test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 9d0b4cdf-ef28-4058-8f4b-94000ee7db23
+    taskid: d16979e6-53d5-4a0e-875c-41c9d8567fe9
     type: start
     task:
-      id: 9d0b4cdf-ef28-4058-8f4b-94000ee7db23
+      id: d16979e6-53d5-4a0e-875c-41c9d8567fe9
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
@@ -35,29 +35,352 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: c378fe50-d7c3-4110-8633-a209d575f171
+    taskid: 8d776428-f185-4dc8-8e82-f9f2d0fb1a46
     type: regular
     task:
-      id: c378fe50-d7c3-4110-8633-a209d575f171
+      id: 8d776428-f185-4dc8-8e82-f9f2d0fb1a46
       version: -1
-      name: exabeam-platform-event-search
-      description: Get events from Exabeam Security Operations Platform.
-      script: ExabeamSecOpsPlatform|||exabeam-platform-event-search
+      name: DeleteContext
+      script: DeleteContext
       type: regular
       iscommand: true
-      brand: ExabeamSecOpsPlatform
+      brand: ""
     scriptarguments:
-      end_time:
-        simple: 05.20.2024
-      start_time:
-        simple: 05.01.2024
+      all:
+        simple: "yes"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 260
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - "2"
+  "2":
+    id: "2"
+    taskid: a0e55304-3393-4853-8ee7-bacb7ffcc5af
+    type: regular
+    task:
+      id: a0e55304-3393-4853-8ee7-bacb7ffcc5af
+      version: -1
+      name: exabeam-platform-event-search
+      script: ExabeamSecOpsPlatform|||exabeam-platform-event-search
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: e1040cec-dc15-4f31-81f0-0c113e3128ac
+    type: condition
+    task:
+      id: e1040cec-dc15-4f31-81f0-0c113e3128ac
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ExabeamPlatform.Event.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ExabeamPlatform.Event.rawLogIds
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ExabeamPlatform.Event.tier
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ExabeamPlatform.Event.parsed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ExabeamPlatform.Event.rawLogs
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 890a57a6-94d1-4773-8f97-5b9d107ca613
+    type: regular
+    task:
+      id: 890a57a6-94d1-4773-8f97-5b9d107ca613
+      version: -1
+      name: exabeam-platform-case-search
+      script: ExabeamSecOpsPlatform|||exabeam-platform-case-search
+      type: regular
+      iscommand: true
+      brand: ExabeamSecOpsPlatform
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 9c64294f-e47e-4581-8c60-39b729006e26
+    type: regular
+    task:
+      id: 9c64294f-e47e-4581-8c60-39b729006e26
+      version: -1
+      name: exabeam-platform-alert-search
+      script: ExabeamSecOpsPlatform|||exabeam-platform-alert-search
+      type: regular
+      iscommand: true
+      brand: ExabeamSecOpsPlatform
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 73c86a9b-9348-410c-82ea-4fd6a5c2e127
+    type: regular
+    task:
+      id: 73c86a9b-9348-410c-82ea-4fd6a5c2e127
+      version: -1
+      name: exabeam-platform-context-table-list
+      script: ExabeamSecOpsPlatform|||exabeam-platform-context-table-list
+      type: regular
+      iscommand: true
+      brand: ExabeamSecOpsPlatform
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 9da229be-d47a-4f0f-86f8-197d6f24e06f
+    type: regular
+    task:
+      id: 9da229be-d47a-4f0f-86f8-197d6f24e06f
+      version: -1
+      name: exabeam-platform-table-record-list
+      script: ExabeamSecOpsPlatform|||exabeam-platform-table-record-list
+      type: regular
+      iscommand: true
+      brand: ExabeamSecOpsPlatform
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      table_id:
+        simple: ${ExabeamPlatform.ContextTable.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 8f74a87a-95fa-4b52-825f-28acf5cabcba
+    type: title
+    task:
+      id: 8f74a87a-95fa-4b52-825f-28acf5cabcba
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 7faaa2ec-0e93-4a5a-88ec-6fe420a62997
+    type: regular
+    task:
+      id: 7faaa2ec-0e93-4a5a-88ec-6fe420a62997
+      version: -1
+      name: exabeam-platform-case-search by case_id
+      description: Search for cases that match one or more search criteria. For example, you can search for cases that are associated with a specific caseId and that reference specific rules.
+      script: ExabeamSecOpsPlatform|||exabeam-platform-case-search
+      type: regular
+      iscommand: true
+      brand: ExabeamSecOpsPlatform
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      case_id:
+        simple: ${ExabeamPlatform.Case.caseId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: b014cb98-f1cb-417b-80d9-b93047651e04
+    type: regular
+    task:
+      id: b014cb98-f1cb-417b-80d9-b93047651e04
+      version: -1
+      name: exabeam-platform-alert-search by alert_id
+      description: Search for alerts that match one or more search criteria.
+      script: ExabeamSecOpsPlatform|||exabeam-platform-alert-search
+      type: regular
+      iscommand: true
+      brand: ExabeamSecOpsPlatform
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      alert_id:
+        simple: ${ExabeamPlatform.Alert.alertId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
@@ -72,14 +395,14 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 305,
+        "height": 1785,
         "width": 380,
-        "x": 450,
+        "x": 50,
         "y": 50
       }
     }
   }
 inputs: []
 outputs: []
-quiet: true
 fromversion: 6.10.0
+description: 'ExabeamSecurityOperationsPlatform-test'

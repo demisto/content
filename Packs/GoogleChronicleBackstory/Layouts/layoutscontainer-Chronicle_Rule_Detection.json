@@ -28,10 +28,19 @@
                             },
                             {
                                 "endCol": 2,
+                                "fieldId": "description",
+                                "height": 22,
+                                "id": "7ee26b40-0f67-11ee-bbaa-0371f85c2d92",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
                                 "fieldId": "severity",
                                 "height": 22,
                                 "id": "incident-severity-field",
-                                "index": 1,
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -40,7 +49,7 @@
                                 "fieldId": "owner",
                                 "height": 22,
                                 "id": "incident-owner-field",
-                                "index": 2,
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -49,7 +58,7 @@
                                 "fieldId": "dbotsource",
                                 "height": 22,
                                 "id": "incident-source-field",
-                                "index": 3,
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -58,7 +67,7 @@
                                 "fieldId": "sourcebrand",
                                 "height": 22,
                                 "id": "incident-sourceBrand-field",
-                                "index": 4,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -67,7 +76,7 @@
                                 "fieldId": "sourceinstance",
                                 "height": 22,
                                 "id": "incident-sourceInstance-field",
-                                "index": 5,
+                                "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -76,7 +85,7 @@
                                 "fieldId": "playbookid",
                                 "height": 22,
                                 "id": "incident-playbookId-field",
-                                "index": 6,
+                                "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -383,6 +392,17 @@
                                 "height": 53,
                                 "id": "8f80f640-4abd-11eb-bc79-5153472e1c29",
                                 "index": 3,
+                                "listId": "caseinfoid-04493090-1504-11eb-9b4e-a35aa939990c",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "detectionurl",
+                                "height": 53,
+                                "id": "6f51e430-0f67-11ee-bbaa-0371f85c2d92",
+                                "index": 4,
                                 "listId": "caseinfoid-04493090-1504-11eb-9b4e-a35aa939990c",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -934,6 +954,10 @@
                         "isVisible": true
                     },
                     {
+                        "fieldId": "incident_description",
+                        "isVisible": true
+                    },
+                    {
                         "fieldId": "incident_severity",
                         "isVisible": true
                     },
@@ -978,6 +1002,10 @@
                 "fields": [
                     {
                         "fieldId": "incident_chronicledetectionid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectionurl",
                         "isVisible": true
                     },
                     {

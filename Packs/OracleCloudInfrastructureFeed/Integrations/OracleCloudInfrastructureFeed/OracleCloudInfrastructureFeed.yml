@@ -3,7 +3,7 @@ commonfields:
   id: Oracle Cloud Infrastructure Feed
   version: -1
 configuration:
-- defaultvalue: "true"
+- defaultvalue: 'true'
   display: Fetch indicators
   name: feed
   type: 8
@@ -47,13 +47,13 @@ configuration:
   - WHITE
   type: 15
   required: false
-- defaultvalue: "30"
+- defaultvalue: '30'
   display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
   required: false
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
-  defaultvalue: "true"
+  defaultvalue: 'true'
   display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
@@ -66,7 +66,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-- display: ""
+- display: ''
   name: feedExpirationPolicy
   options:
   - never
@@ -75,7 +75,7 @@ configuration:
   - suddenDeath
   type: 17
   required: false
-- display: ""
+- display: ''
   name: feedExpirationInterval
   type: 1
   required: false
@@ -84,25 +84,25 @@ configuration:
   name: feedTags
   type: 0
   required: false
-- defaultvalue: "false"
+- defaultvalue: 'false'
   display: Create relationships
   name: create_relationships
   type: 8
   required: false
-description: |-
-  Oracle Cloud Infrastructure Feed (OCI Feed)
-  This feed provides information about public IP address ranges for services that are deployed in Oracle Cloud Infrastructure.
+description: 'Oracle Cloud Infrastructure Feed (OCI Feed)
+
+  This feed provides information about public IP address ranges for services that are deployed in Oracle Cloud Infrastructure.'
 display: Oracle Cloud Infrastructure Feed
 name: Oracle Cloud Infrastructure Feed
 script:
   commands:
   - arguments:
-    - defaultValue: "10"
+    - defaultValue: '10'
       description: The maximum number of results to return.
       name: limit
     description: Gets indicators from the feed.
     name: oci-get-indicators
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.115186
   feed: true
   script: ''
   subtype: python3

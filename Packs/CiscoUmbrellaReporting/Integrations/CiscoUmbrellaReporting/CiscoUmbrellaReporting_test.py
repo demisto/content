@@ -4,7 +4,6 @@ Tests module for Cisco Umbrella Reporting integration
 
 import pytest
 import json
-import io
 import os
 from CommonServerPython import DemistoException, urljoin
 from CiscoUmbrellaReporting import Client, get_destinations_list_command, \
@@ -25,7 +24,7 @@ client = Client(
 
 
 def util_load_json(path):
-    with io.open(path, mode='r') as f:
+    with open(path) as f:
         return json.loads(f.read())
 
 
@@ -66,7 +65,7 @@ def test_get_destinations_list_command(mocker, raw_response, expected):
         "to": 1662447255000,
         "offset": 0
     }
-    with open(os.path.join("test_data", "command_readable_output/destination_command_readable_output.md"), 'r') as f:
+    with open(os.path.join("test_data", "command_readable_output/destination_command_readable_output.md")) as f:
         readable_output = f.read()
     command_results = get_destinations_list_command(client, args)
 
@@ -100,7 +99,7 @@ def test_get_category_list_command(mocker, raw_response, expected):
         "to": 1662447255000,
         "offset": 0
     }
-    with open(os.path.join("test_data", "command_readable_output/category_command_readable_output.md"), 'r') as f:
+    with open(os.path.join("test_data", "command_readable_output/category_command_readable_output.md")) as f:
         readable_output = f.read()
     results_without_traffic = get_categories_list_command(client, args)
     args['traffic_type'] = "dns"
@@ -143,7 +142,7 @@ def test_get_identities_list_command(mocker, raw_response, expected):
         "to": 1662447255000,
         "offset": 0
     }
-    with open(os.path.join('test_data', 'command_readable_output/identity_command_readable_output.md'), 'r') as f:
+    with open(os.path.join('test_data', 'command_readable_output/identity_command_readable_output.md')) as f:
         readable_output = f.read()
     results_without_traffic = get_identities_list_command(client, args)
     args['traffic_type'] = "dns"
@@ -186,7 +185,7 @@ def test_get_file_list_command(mocker, raw_response, expected):
         "to": 1662447255000,
         "offset": 0
     }
-    with open(os.path.join('test_data', 'command_readable_output/file_command_readable_output.md'), 'r') as f:
+    with open(os.path.join('test_data', 'command_readable_output/file_command_readable_output.md')) as f:
         readable_output = f.read()
     command_results = get_file_list_command(client, args)
 
@@ -219,7 +218,7 @@ def test_get_threat_list_command(mocker, raw_response, expected):
         "to": 1662447255000,
         "offset": 0
     }
-    with open(os.path.join('test_data', 'command_readable_output/threat_command_readable_output.md'), 'r') as f:
+    with open(os.path.join('test_data', 'command_readable_output/threat_command_readable_output.md')) as f:
         readable_output = f.read()
     command_results = get_threat_list_command(client, args)
 
@@ -252,7 +251,7 @@ def test_get_event_types_list_command(mocker, raw_response, expected):
         "to": 1662447255000,
         "offset": 0
     }
-    with open(os.path.join('test_data', 'command_readable_output/event_command_readable_output.md'), 'r') as f:
+    with open(os.path.join('test_data', 'command_readable_output/event_command_readable_output.md')) as f:
         readable_output = f.read()
     command_results = get_event_types_list_command(client, args)
 
@@ -285,7 +284,7 @@ def test_get_activity_list_command(mocker, raw_response, expected):
         "to": 1662447255000,
         "offset": 0
     }
-    with open(os.path.join('test_data', 'command_readable_output/activity_list_command_readable_output.md'), 'r') as f:
+    with open(os.path.join('test_data', 'command_readable_output/activity_list_command_readable_output.md')) as f:
         readable_output = f.read()
     command_results = get_activity_list_command(client, args)
 
@@ -326,7 +325,7 @@ def test_get_activity_by_dns_traffic_type_command(mocker, raw_response,
         "offset": 0,
         "traffic_type": "dns"
     }
-    with open(os.path.join('test_data', 'command_readable_output/dns_get_activity_command_readable_output.md'), 'r') as f:
+    with open(os.path.join('test_data', 'command_readable_output/dns_get_activity_command_readable_output.md')) as f:
         readable_output = f.read()
     command_results = get_activity_by_traffic_type_command(client, args)
 
@@ -347,7 +346,7 @@ def test_get_activity_by_dns_traffic_type_command(mocker, raw_response,
         get_activity_by_traffic_type_command(client, args)
     assert e.value.args[0] == ('Invalid optional parameter is selected for traffic type dns.\nSupported optional '
                                'parameters for dns traffic type are: traffic_type, limit, from, to, offset,'
-                               ' domains, ip, verdict, threats, threat_types, identity_types, page, page_size.')
+                               ' domains, ip, verdict, threats, threat_types, identity_types, page, page_size, categories.')
 
 
 @pytest.mark.parametrize('raw_response, expected', [(ACTIVITY_DNS_LIST_RESPONSE, ACTIVITY_DNS_LIST_RESPONSE)])
@@ -374,7 +373,7 @@ def test_get_activity_proxy_by_traffic_type(mocker, raw_response, expected):
         "offset": 0,
         "traffic_type": "proxy"
     }
-    with open(os.path.join('test_data', 'command_readable_output/proxy_get_activity_command_readable_output.md'), 'r') as f:
+    with open(os.path.join('test_data', 'command_readable_output/proxy_get_activity_command_readable_output.md')) as f:
         readable_output = f.read()
     command_results = get_activity_by_traffic_type_command(client, args)
 
@@ -396,7 +395,7 @@ def test_get_activity_proxy_by_traffic_type(mocker, raw_response, expected):
     assert e.value.args[0] == ('Invalid optional parameter is selected for traffic type proxy.\nSupported optional '
                                'parameters for proxy traffic type are: traffic_type, limit, from, to, offset, domains,'
                                ' ip, verdict, threats, threat_types, urls, ports, identity_types, file_name,'
-                               ' amp_disposition, page, page_size.')
+                               ' amp_disposition, page, page_size, categories.')
 
 
 @pytest.mark.parametrize('raw_response, expected', [(ACTIVITY_DNS_LIST_RESPONSE, ACTIVITY_DNS_LIST_RESPONSE)])
@@ -423,7 +422,7 @@ def test_get_activity_ip_by_traffic_type(mocker, raw_response, expected):
         "offset": 0,
         "traffic_type": "ip"
     }
-    with open(os.path.join('test_data', 'command_readable_output/ip_get_activity_command_readable_output.md'), 'r') as f:
+    with open(os.path.join('test_data', 'command_readable_output/ip_get_activity_command_readable_output.md')) as f:
         readable_output = f.read()
     command_results = get_activity_by_traffic_type_command(client, args)
 
@@ -444,7 +443,7 @@ def test_get_activity_ip_by_traffic_type(mocker, raw_response, expected):
         get_activity_by_traffic_type_command(client, args)
     assert e.value.args[0] == ('Invalid optional parameter is selected for traffic type ip.\nSupported optional'
                                ' parameters for ip traffic type are: traffic_type, limit, from, to, offset, ip, ports,'
-                               ' identity_types, verdict, page, page_size.')
+                               ' identity_types, verdict, page, page_size, categories.')
 
 
 @pytest.mark.parametrize('raw_response, expected', [(ACTIVITY_FIREWALL_LIST_RESPONSE, ACTIVITY_FIREWALL_LIST_RESPONSE)])
@@ -471,7 +470,7 @@ def test_get_activity_firewall_by_traffic_type(mocker, raw_response, expected):
         "offset": 0,
         "traffic_type": "firewall"
     }
-    with open(os.path.join('test_data', 'command_readable_output/firewall_get_activity_command_readable_output.md'), 'r') as f:
+    with open(os.path.join('test_data', 'command_readable_output/firewall_get_activity_command_readable_output.md')) as f:
         readable_output = f.read()
     command_results = get_activity_by_traffic_type_command(client, args)
 
@@ -519,7 +518,7 @@ def test_get_activity_amp_by_traffic_type(mocker, raw_response, expected):
         "offset": 0,
         "traffic_type": "amp"
     }
-    with open(os.path.join('test_data', 'command_readable_output/amp_get_activity_command_readable_output.md'), 'r') as f:
+    with open(os.path.join('test_data', 'command_readable_output/amp_get_activity_command_readable_output.md')) as f:
         readable_output = f.read()
     command_results = get_activity_by_traffic_type_command(client, args)
 
@@ -567,7 +566,7 @@ def test_get_activity_intrusion_by_traffic_type(mocker, raw_response, expected):
         "offset": 0,
         "traffic_type": "intrusion"
     }
-    with open(os.path.join('test_data', 'command_readable_output/intrusion_get_activity_command_readable_output.md'), 'r') as f:
+    with open(os.path.join('test_data', 'command_readable_output/intrusion_get_activity_command_readable_output.md')) as f:
         readable_output = f.read()
     command_results = get_activity_by_traffic_type_command(client, args)
 
@@ -614,7 +613,7 @@ def test_get_summary_list_command(mocker, raw_response, expected):
         "to": 1662447255000,
         "offset": 0
     }
-    with open(os.path.join('test_data', 'command_readable_output/summary_list_command_readable_output.md'), 'r') as f:
+    with open(os.path.join('test_data', 'command_readable_output/summary_list_command_readable_output.md')) as f:
         readable_output = f.read()
     command_results = get_summary_list_command(client, args)
 
@@ -649,7 +648,7 @@ def test_get_category_summary_list(mocker, raw_response, expected):
         "offset": 0,
         "summary_type": "category"
     }
-    with open(os.path.join('test_data', 'command_readable_output/category_summary_list_command_readable_output.md'), 'r') as f:
+    with open(os.path.join('test_data', 'command_readable_output/category_summary_list_command_readable_output.md')) as f:
         readable_output = f.read()
     command_results = get_summary_list_command(client, args)
 
@@ -665,7 +664,7 @@ def test_get_category_summary_list(mocker, raw_response, expected):
     assert e.value.args[0] == ('Invalid optional parameter is selected for summary type category.\nSupported '
                                'optional parameters for category summary type are: summary_type, limit, from, to,'
                                ' offset, domains, urls, ip, identity_types, verdict, file_name, threats, threat_types,'
-                               ' amp_disposition, page, page_size.')
+                               ' amp_disposition, page, page_size, categories.')
 
 
 @pytest.mark.parametrize('raw_response, expected', [(DESTINATION_SUMMARY_LIST_RESPONSE,
@@ -693,7 +692,7 @@ def test_get_destination_summary_list(mocker, raw_response, expected):
         "offset": 0,
         "summary_type": "destination"
     }
-    with open(os.path.join('test_data', 'command_readable_output/destination_summary_list_command_readable_output.md'), 'r') as f:
+    with open(os.path.join('test_data', 'command_readable_output/destination_summary_list_command_readable_output.md')) as f:
         readable_output = f.read()
     command_results = get_summary_list_command(client, args)
 
@@ -709,7 +708,7 @@ def test_get_destination_summary_list(mocker, raw_response, expected):
     assert e.value.args[0] == ('Invalid optional parameter is selected for summary type destination.\nSupported'
                                ' optional parameters for destination summary type are: summary_type, limit, from,'
                                ' to, offset, domains, urls, ip, identity_types, verdict, file_name, threats,'
-                               ' threat_types, amp_disposition, page, page_size.')
+                               ' threat_types, amp_disposition, page, page_size, categories.')
 
 
 @pytest.mark.parametrize('raw_response, expected', [(DESTINATION_SUMMARY_LIST_RESPONSE,
@@ -738,7 +737,7 @@ def test_get_intrusion_rule_summary_list(mocker, raw_response, expected):
         "summary_type": "intrusion_rule"
     }
     with open(os.path.join('test_data',
-                           'command_readable_output/intrusion_rule_summary_list_command_readable_output.md'), 'r') as f:
+                           'command_readable_output/intrusion_rule_summary_list_command_readable_output.md')) as f:
         readable_output = f.read()
     command_results = get_summary_list_command(client, args)
 
@@ -1023,7 +1022,8 @@ def test_create_cisco_umbrella_args():
         'verdict': None,
         'threats': None,
         'signatures': None,
-        'sha256': None
+        'sha256': None,
+        'categories': []
     }
     result = create_cisco_umbrella_args(50, 1, args)
     assert result == expected_output

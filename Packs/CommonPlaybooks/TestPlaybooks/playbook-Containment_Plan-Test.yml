@@ -56,7 +56,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": 710
+          "y": 890
         }
       }
     note: false
@@ -93,7 +93,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -1050
+          "y": -870
         }
       }
     note: false
@@ -132,7 +132,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -1390
+          "y": -1210
         }
       }
     note: false
@@ -157,7 +157,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "150"
+      - "186"
     scriptarguments:
       key:
         simple: Hash
@@ -206,7 +206,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -10
+          "y": 170
         }
       }
     note: false
@@ -243,7 +243,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -190
+          "y": -10
         }
       }
     note: false
@@ -282,7 +282,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": 175
+          "y": 355
         }
       }
     note: false
@@ -332,7 +332,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": 360
+          "y": 540
         }
       }
     note: false
@@ -367,7 +367,7 @@ tasks:
       {
         "position": {
           "x": 310,
-          "y": 540
+          "y": 720
         }
       }
     note: false
@@ -603,7 +603,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -560
+          "y": -380
         }
       }
     note: false
@@ -640,7 +640,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -1220
+          "y": -1040
         }
       }
     note: false
@@ -700,7 +700,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -740,7 +742,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -999,7 +1003,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -890
+          "y": -710
         }
       }
     note: false
@@ -1036,7 +1040,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -730
+          "y": -550
         }
       }
     note: false
@@ -1073,7 +1077,43 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -385
+          "y": -205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "186":
+    id: "186"
+    taskid: af8cc56d-d7b3-4805-8f2c-66ff1d31b61b
+    type: regular
+    task:
+      id: af8cc56d-d7b3-4805-8f2c-66ff1d31b61b
+      version: -1
+      name: Remove hash from blocklist
+      description: Removes requested files from block list.
+      script: '|||core-remove-blocklist-files'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "150"
+    scriptarguments:
+      hash_list:
+        simple: 724e1e4079191f086c3a2bcc15133b4309ce5125dbb31c5443262599ca992601
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": -1400
         }
       }
     note: false
@@ -1090,7 +1130,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4485,
+        "height": 4665,
         "width": 650,
         "x": 60,
         "y": -3710

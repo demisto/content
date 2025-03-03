@@ -1,4 +1,7 @@
 category: Network Security
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: netskope_api_v2
   version: -1
@@ -8,45 +11,64 @@ configuration:
   name: url
   type: 0
   required: true
-- defaultvalue: 'false'
+  section: Connect
+- defaultvalue: "false"
   display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-- defaultvalue: 'false'
+  section: Connect
+- defaultvalue: "false"
   display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-- additionalinfo: "Netskope API access token (make sure to generate token for the required endpoints)."
-  displaypassword: API token
+  section: Connect
+- displaypassword: API token
   name: credentials
+  defaultvalue: ""
   required: true
   hiddenusername: true
   type: 9
-  display: ''
+  section: Connect
 - additionalinfo: First alert created date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago".
   defaultvalue: 3 days
   display: First fetch timestamp
   name: first_fetch
   type: 0
   required: false
+  section: Collect
 - additionalinfo: Maximum number of incidents per fetch. Default is 50. The maximum is 100.
-  defaultvalue: '50'
+  defaultvalue: "50"
   display: Maximum incidents per fetch
   name: max_fetch
   type: 0
   required: false
-- display: Maximum events as incidents per fetch. Max value is 200.
+  section: Collect
+- display: Maximum Netskope events per fetch. Max value is 200.
   name: max_events_fetch
-  defaultvalue: '50'
+  defaultvalue: "50"
   required: false
   type: 0
+  section: Collect
+- display: Maximum Netskope DLP incidents per fetch. Max value is 200.
+  name: max_dlp_incidents_fetch
+  defaultvalue: "50"
+  required: false
+  type: 0
+  section: Collect
 - additionalinfo: Fetch events as incidents, in addition to the alerts.
   display: Fetch Events
   name: fetch_events
   required: false
   type: 8
+  section: Collect
+- additionalinfo: Fetch Netskope DLP incidents as incidents, in addition to the alerts.
+  display: Fetch DLP incidents
+  name: fetch_dlp_incidents
+  required: false
+  type: 8
+  section: Collect
 - additionalinfo: The event types to fetch as incidents.
   display: Event types to fetch.
   name: event_types
@@ -58,42 +80,269 @@ configuration:
   - network
   required: false
   type: 16
-- additionalinfo: 'Free text query to filter the fetched alerts. For more information, visit Netskope documentation (https://docs.netskope.com/en/get-alerts-data.html).'
+  section: Collect
+- additionalinfo: "Free text query to filter the fetched alerts. For more information, visit Netskope documentation (https://docs.netskope.com/en/get-alerts-data.html)."
   display: Alerts Query
   name: alerts_query
   required: false
   type: 0
-- additionalinfo: 'Free text query to filter the fetched events (if configured). For more information, visit Netskope documentation (https://docs.netskope.com/en/get-alerts-data.html).'
+  section: Collect
+- additionalinfo: "Free text query to filter the fetched events (if configured). For more information, visit Netskope documentation (https://docs.netskope.com/en/get-alerts-data.html)."
   display: Events Query
   name: events_query
   type: 0
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Collect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
-- defaultvalue: '1'
+  section: Collect
+- additionalinfo: The user email for update incident in Netskope.
+  display: User Email
+  name: user_email
+  required: false
+  type: 0
+  section: Collect
+- defaultvalue: "1"
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   required: false
   type: 19
+  section: Collect
+- name: mirror_direction
+  display: Incident Mirroring Direction
+  required: false
+  type: 15
+  defaultvalue: None
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming and Outgoing
+  section: Collect
+- name: close_incident
+  display: Close Mirrored XSOAR Incident
+  required: false
+  type: 8
+  defaultvalue: "false"
+  section: Collect
+- name: close_netskope_incident
+  display: Close Mirrored Netskope Incident
+  required: false
+  type: 8
+  defaultvalue: "false"
+  section: Collect
 description: Netskope API v2 provides a powerful interface for managing and monitoring Netskope deployments. It enables users to retrieve alerts and events, manage URL lists, and control clients. With Netskope API v2, organizations can proactively respond to security threats, enforce web access policies, and efficiently administer their Netskope environment.
 display: Netskope (API v2)
 name: netskope_api_v2
 script:
   commands:
+  - name: netskope-incident-dlp-list
+    description: Fetch DLP incidents by update time. The maximum recommended time range should be no more from 3 days.
+    arguments:
+    - name: start_time
+      description: Restrict incidents to those that have updated dates greater than the provided date string (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). Default is ‘1 hour ago’.
+      required: false
+      defaultValue: "1 hour ago"
+    - name: end_time
+      description: Restrict incidents to those that have updated dates less than or equal to the provided date string (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). Default is ‘now’.
+      required: false
+      defaultValue: "now"
+    outputs:
+    - contextPath: Netskope.Incident._id
+      description: Unique identifier for the incident.
+      type: String
+    - contextPath: Netskope.Incident.access_method
+      description: Method used to access the system or service in the incident.
+      type: String
+    - contextPath: Netskope.Incident.acting_user
+      description: User responsible for the action in the incident.
+      type: String
+    - contextPath: Netskope.Incident.activity
+      description: Type of activity that triggered the incident.
+      type: String
+    - contextPath: Netskope.Incident.app
+      description: Application involved in the incident.
+      type: String
+    - contextPath: Netskope.Incident.app_session_id
+      description: Session ID for the application involved in the incident.
+      type: Number
+    - contextPath: Netskope.Incident.assignee
+      description: User assigned to handle the incident.
+      type: String
+    - contextPath: Netskope.Incident.connection_id
+      description: Connection ID related to the incident.
+      type: Number
+    - contextPath: Netskope.Incident.dlp_incident_id
+      description: Data Loss Prevention (DLP) incident ID.
+      type: Number
+    - contextPath: Netskope.Incident.dlp_match_info
+      description: Detailed information about DLP matches related to the incident.
+      type: Unknown
+    - contextPath: Netskope.Incident.dlp_match_info.dlp_action
+      description: DLP action taken in response to the incident.
+      type: String
+    - contextPath: Netskope.Incident.dlp_match_info.dlp_forensic_id
+      description: Forensic ID related to the DLP match.
+      type: Number
+    - contextPath: Netskope.Incident.dlp_match_info.dlp_policy
+      description: DLP policy that triggered the incident.
+      type: String
+    - contextPath: Netskope.Incident.dlp_match_info.dlp_profile_name
+      description: Name of the DLP profile associated with the incident.
+      type: String
+    - contextPath: Netskope.Incident.dlp_match_info.dlp_rules
+      description: Rules associated with the DLP match.
+      type: Unknown
+    - contextPath: Netskope.Incident.dlp_match_info.dlp_rules.dlp_incident_rule_count
+      description: Number of rules triggered in the DLP incident.
+      type: Number
+    - contextPath: Netskope.Incident.dlp_match_info.dlp_rules.dlp_match_type
+      description: Type of DLP match.
+      type: String
+    - contextPath: Netskope.Incident.dlp_match_info.dlp_rules.dlp_rule_name
+      description: Name of the DLP rule triggered.
+      type: String
+    - contextPath: Netskope.Incident.dlp_match_info.dlp_rules.dlp_rule_severity
+      description: Severity of the DLP rule triggered.
+      type: String
+    - contextPath: Netskope.Incident.dlp_parent_id
+      description: Parent ID for related DLP incidents.
+      type: Number
+    - contextPath: Netskope.Incident.dst_location
+      description: Destination location related to the incident.
+      type: String
+    - contextPath: Netskope.Incident.file_lang
+      description: Language of the file involved in the incident.
+      type: String
+    - contextPath: Netskope.Incident.file_size
+      description: Size of the file involved in the incident.
+      type: Number
+    - contextPath: Netskope.Incident.file_type
+      description: Type of file involved in the incident.
+      type: String
+    - contextPath: Netskope.Incident.from_user
+      description: Sender or source user in the incident.
+      type: String
+    - contextPath: Netskope.Incident.instance_id
+      description: Instance ID related to the incident.
+      type: String
+    - contextPath: Netskope.Incident.md5
+      description: MD5 hash of the file involved in the incident.
+      type: String
+    - contextPath: Netskope.Incident.object
+      description: Object involved in the incident.
+      type: String
+    - contextPath: Netskope.Incident.object_id
+      description: Unique identifier for the object involved in the incident.
+      type: String
+    - contextPath: Netskope.Incident.object_type
+      description: Type of object involved in the incident.
+      type: String
+    - contextPath: Netskope.Incident.severity
+      description: Severity level of the incident.
+      type: String
+    - contextPath: Netskope.Incident.site
+      description: Site associated with the incident.
+      type: String
+    - contextPath: Netskope.Incident.src_location
+      description: Source location related to the incident.
+      type: String
+    - contextPath: Netskope.Incident.status
+      description: Current status of the incident.
+      type: String
+    - contextPath: Netskope.Incident.timestamp
+      description: Timestamp when the incident occurred.
+      type: Number
+    - contextPath: Netskope.Incident.title
+      description: Title or name of the incident.
+      type: String
+    - contextPath: Netskope.Incident.true_obj_category
+      description: Actual category of the object involved in the incident.
+      type: String
+    - contextPath: Netskope.Incident.true_obj_type
+      description: Actual type of the object involved in the incident.
+      type: String
+    - contextPath: Netskope.Incident.url
+      description: URL involved in the incident.
+      type: String
+    - contextPath: Netskope.Incident.user
+      description: User involved in the incident.
+      type: String
+    - contextPath: Netskope.Incident.owner_pdl
+      description: Owner's primary distribution list (PDL).
+      type: String
+    - contextPath: Netskope.Incident.classification
+      description: Classification of the incident.
+      type: String
+    - contextPath: Netskope.Incident.to_user
+      description: Recipient or target user in the incident.
+      type: String
+    - contextPath: Netskope.Incident.cc
+      description: CC'ed users in the incident communication.
+      type: String
+    - contextPath: Netskope.Incident.owner
+      description: Owner of the incident.
+      type: String
+    - contextPath: Netskope.Incident.destination_site
+      description: Destination site associated with the incident.
+      type: String
+    - contextPath: Netskope.Incident.user_id
+      description: Unique identifier for the user involved in the incident.
+      type: String
+    - contextPath: Netskope.Incident.instance
+      description: Instance related to the incident.
+      type: String
+    - contextPath: Netskope.Incident.channel
+      description: Communication channel used in the incident.
+      type: String
+    - contextPath: Netskope.Incident.bcc
+      description: BCC'ed users in the incident communication.
+      type: String
+    - contextPath: Netskope.Incident.inline_dlp_match_info
+      description: Inline DLP match information related to the incident.
+      type: Unknown
+    - contextPath: Netskope.Incident.exposure
+      description: Level of exposure in the incident.
+      type: String
+    - contextPath: Netskope.Incident.file_path
+      description: File path of the file involved in the incident.
+      type: String
+    - contextPath: Netskope.Incident.original_file_snapshot_id
+      description: Original snapshot ID of the file involved in the incident.
+      type: String
+    - contextPath: Netskope.Incident.destination_app
+      description: Destination application involved in the incident.
+      type: String
+    - contextPath: Netskope.Incident.latest_incident_id
+      description: Latest incident ID related to the incident.
+      type: Number
+    - contextPath: Netskope.Incident.dlp_file
+      description: DLP file involved in the incident.
+      type: String
+    - contextPath: Netskope.Incident.zip_file_id
+      description: ID of the ZIP file involved in the incident.
+      type: String
+    - contextPath: Netskope.Incident.referer
+      description: Referer URL involved in the incident.
+      type: String
+    - contextPath: Netskope.Incident.destination_instance_id
+      description: Destination instance ID related to the incident.
+      type: String
   - arguments:
-    - description: "Restrict events to those that have dates greater than the provided date string (for example \"YYYY-MM-DDThh:mm\", \"1 min ago\", \"2 weeks ago\"). Note that if this argument is provided, you must also provide the ‘end_time’ argument. "
+    - description: 'Restrict events to those that have dates greater than the provided date string (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). Note that if this argument is provided, you must also provide the ‘end_time’ argument. '
       name: start_time
-    - description: "Restrict events to those that have dates less than or equal to the provided date string (for example \"YYYY-MM-DDThh:mm\", \"1 min ago\", \"2 weeks ago\").  Note that if this argument is provided, you must also provide the ‘start_time’ argument. If start_time argument is provided and this argument is not - the default value will be set for now."
+    - description: 'Restrict events to those that have dates less than or equal to the provided date string (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago").  Note that if this argument is provided, you must also provide the ‘start_time’ argument. If start_time argument is provided and this argument is not - the default value will be set for now.'
       name: end_time
-    - description: "Restrict events to those that were inserted to the system after the provided date string (for example \"YYYY-MM-DDThh:mm\", \"1 min ago\", \"2 weeks ago\").  Note that if this argument is provided, you must also provide the ‘insertion_end_time’ argument. "
+    - description: 'Restrict events to those that were inserted to the system after the provided date string (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago").  Note that if this argument is provided, you must also provide the ‘insertion_end_time’ argument. '
       name: insertion_start_time
-    - description: "Restrict events to those that were inserted to the system before the provided date string (for example \"YYYY-MM-DDThh:mm\", \"1 min ago\", \"2 weeks ago\"). Note that if this argument is provided, you must also provide the ‘insertion_start_time’ argument. If insertion_start_time argument is provided and this argument is not - the default value will be set for now."
+    - description: 'Restrict events to those that were inserted to the system before the provided date string (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). Note that if this argument is provided, you must also provide the ‘insertion_start_time’ argument. If insertion_start_time argument is provided and this argument is not - the default value will be set for now.'
       name: insertion_end_time
     - description: 'Free query by which to filter the alerts. For example, "alert_name like test". For more information, visit Netskope documentation: https://docs.netskope.com/en/get-alerts-data.html.'
       name: query
@@ -117,11 +366,11 @@ script:
       description: Whether to retrieve acknowledged alerts or not.
       name: retrieve_acknowledged
       predefined:
-      - 'True'
-      - 'False'
-    - description: 'Page number of paginated results. Minimum value: 1.'
+      - "True"
+      - "False"
+    - description: "Page number of paginated results. Minimum value: 1."
       name: page
-    - defaultValue: '50'
+    - defaultValue: "50"
       description: The maximum number of records to retrieve.
       name: limit
     description: Get alerts generated by Netskope. You may choose what alerts to receive with the alert_type parameter. You must provide start_time and end_time, or insertion_start_time and insertion_end_time. (Note that if end_time or insertion_end_time aren't provided. the date time would be set as now.) You cannot provide a combination of the options mentioned above.
@@ -185,7 +434,7 @@ script:
       description: A numeric value representing the source epoch.
       type: Number
     - contextPath: Netskope.Alert.access_method
-      description: Cloud app traffic can be steered to the Netskope cloud using different deployment methods such as Client (Netskope Client), Secure Forwarder etc. Administrators can also upload firewall and/or proxy logs for log analytics. This field shows the actual access method that triggered the event. For log uploads this shows the actual log type such as PAN, Websense, etc.
+      description: Cloud app traffic can be steered to the Netskope cloud using different deployment methods such as Client (Netskope Client), Secure Forwarder, etc. Administrators can also upload firewall and/or proxy logs for log analytics. This field shows the actual access method that triggered the event. For log uploads, this shows the actual log type such as PAN, Websense, etc.
       type: String
     - contextPath: Netskope.Alert.acked
       description: Whether the user acknowledged the alert or not.
@@ -251,22 +500,22 @@ script:
       description: Application’s two-letter country code as determined by Maxmind or IP2Location Geodatabase.
       type: String
     - contextPath: Netskope.Alert.dst_latitude
-      description: Latitude of the application as determined by Maxmind or IP2Location Geodatabase.
+      description: Latitude of the application as determined by MaxMind or IP2Location Geolocation database.
       type: Number
     - contextPath: Netskope.Alert.dst_location
-      description: Application’s city as determined by maxmind or IP2Location Geodatabase.
+      description: Application’s city as determined by MaxMind or IP2Location Geolocation database.
       type: String
     - contextPath: Netskope.Alert.dst_longitude
-      description: Longitude of the application as determined by Maxmind or IP2Location Geodatabase.
+      description: Longitude of the application as determined by MaxMind or IP2Location Geolocation database.
       type: Number
     - contextPath: Netskope.Alert.dst_region
-      description: Application’s state or region as determined by Maxmind or IP2Location Geodatabase.
+      description: Application’s state or region as determined by MaxMind or IP2Location Geolocation database.
       type: String
     - contextPath: Netskope.Alert.dst_timezone
       description: Destination timezone.
       type: String
     - contextPath: Netskope.Alert.dst_zipcode
-      description: Application’s zip code as determined by Maxmind or IP2Location Geodatabase.
+      description: Application’s zip code as determined by MaxMind or IP2Location Geolocation database.
       type: String
     - contextPath: Netskope.Alert.dstip
       description: IP address where the destination app is hosted.
@@ -338,19 +587,19 @@ script:
       description: For traffic_type = CloudApp, site = app, and for traffic_type = Web, it will be the second-level domain name + top-level domain name. For example, in “www.cnn.com”, it is “cnn.com”.
       type: String
     - contextPath: Netskope.Alert.src_country
-      description: User’s country’s two-letter country code as determined by Maxmind or IP2Location Geodatabase.
+      description: User’s country’s two-letter country code as determined by MaxMind or IP2Location Geolocation database.
       type: String
     - contextPath: Netskope.Alert.src_latitude
-      description: Latitude of the user as determined by Maxmind or IP2Location Geodatabase.
+      description: Latitude of the user as determined by MaxMind or IP2Location Geolocation database.
       type: Number
     - contextPath: Netskope.Alert.src_location
-      description: User’s city as determined by Maxmind or IP2Location Geodatabase.
+      description: User’s city as determined by MaxMind or IP2Location Geolocation database.
       type: String
     - contextPath: Netskope.Alert.src_longitude
-      description: Longitude of the user as determined by Maxmind or IP2Location Geodatabase.
+      description: Longitude of the user as determined by MaxMind or IP2Location Geolocation database.
       type: Number
     - contextPath: Netskope.Alert.src_region
-      description: Source state or region as determined by Maxmind or IP2Location Geodatabase.
+      description: Source state or region as determined by MaxMind or IP2Location Geolocation database.
       type: String
     - contextPath: Netskope.Alert.src_time
       description: A timestamp associated with the source or event.
@@ -359,7 +608,7 @@ script:
       description: Source timezone. Shows the long-format timezone designation.
       type: String
     - contextPath: Netskope.Alert.src_zipcode
-      description: Source zip code as determined by Maxmind or IP2Location Geodatabase.
+      description: Source zip code as determined by MaxMind or IP2Location Geolocation database.
       type: String
     - contextPath: Netskope.Alert.srcip
       description: IP address of the source/user.
@@ -467,17 +716,17 @@ script:
       required: true
     - description: 'Free query to filter the events. For example, "app eq Dropbox". For more information, visit Netskope documentation: https://docs.netskope.com/en/get-events-data.html'
       name: query
-    - description: "Restrict events to those that have dates greater than the provided date string (for example \"YYYY-MM-DDThh:mm\", \"1 min ago\", \"2 weeks ago\"). Note that if this argument is provided, you must also provide the ‘end_time’ argument."
+    - description: 'Restrict events to those that have dates greater than the provided date string (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). Note that if this argument is provided, you must also provide the ‘end_time’ argument.'
       name: start_time
-    - description: "Restrict events to those that have dates less than or equal to the provided date string (for example \"YYYY-MM-DDThh:mm\", \"1 min ago\", \"2 weeks ago\"). Note that if this argument is provided, you must also provide the ‘start_time’ argument. If start_time argument is provided and this argument is not - the default value will be set for now."
+    - description: 'Restrict events to those that have dates less than or equal to the provided date string (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). Note that if this argument is provided, you must also provide the ‘start_time’ argument. If start_time argument is provided and this argument is not - the default value will be set for now.'
       name: end_time
-    - description: "Restrict events to those that were inserted to the system after the provided date string (for example \"YYYY-MM-DDThh:mm\", \"1 min ago\", \"2 weeks ago\"). Note that if this argument is provided, you must also provide the ‘insertion_end_time’ argument."
+    - description: 'Restrict events to those that were inserted to the system after the provided date string (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). Note that if this argument is provided, you must also provide the ‘insertion_end_time’ argument.'
       name: insertion_start_time
-    - description: "Restrict events to those that were inserted to the system before the provided date string (for example \"YYYY-MM-DDThh:mm\", \"1 min ago\", \"2 weeks ago\"). Note that if this argument is provided, you must also provide the ‘insertion_start_time’ argument. If insertion_start_time argument is provided and this argument is not - the default value will be set for now."
+    - description: 'Restrict events to those that were inserted to the system before the provided date string (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). Note that if this argument is provided, you must also provide the ‘insertion_start_time’ argument. If insertion_start_time argument is provided and this argument is not - the default value will be set for now.'
       name: insertion_end_time
-    - description: 'Page number of paginated results. Minimum value: 1.'
+    - description: "Page number of paginated results. Minimum value: 1."
       name: page
-    - defaultValue: '50'
+    - defaultValue: "50"
       description: The maximum number of records to retrieve.
       name: limit
     description: Get events extracted from SaaS traffic. You may choose what events to receive with the event_type parameter. You must provide start_time and end_time, or insertion_start_time and insertion_end_time. (Note that if end_time or insertion_end_time aren't provided, the date time would be set as now.) You cannot provide a combination of the options mentioned above.
@@ -751,7 +1000,7 @@ script:
     - description: The updated URL list name.
       name: name
       required: true
-    - description: The updated URL list items (For Exact - Enter URLs like  *.example.com, or IP addresses, separated by new line. For Regex - Enter URLs like ^client[0-9]\\.google\\.com , ^app\\.slack\\.com/.*/netskope, or ^google.com, separated by new line).
+    - description: The updated URL list items (For Exact - Enter URLs like  *.example.com, or IP addresses, separated by a new line. For Regex - Enter URLs like ^client[0-9]\\.google\\.com , ^app\\.slack\\.com/.*/netskope, or ^google.com, separated by a new line).
       isArray: true
       name: urls
       required: true
@@ -763,19 +1012,19 @@ script:
       - regex
       required: true
     - auto: PREDEFINED
-      defaultValue: 'false'
+      defaultValue: "false"
       description: Whether to deploy URL list changes or not.
       name: deploy
       predefined:
-      - 'True'
-      - 'False'
+      - "True"
+      - "False"
     - auto: PREDEFINED
-      defaultValue: 'False'
+      defaultValue: "False"
       description: Whether to overwrite the URL list or not.
       name: is_overwrite
       predefined:
-      - 'True'
-      - 'False'
+      - "True"
+      - "False"
     description: Update the URL list with the values provided. Note that this command overrides the list.
     name: netskope-url-list-update
     outputs:
@@ -810,7 +1059,7 @@ script:
     - description: The unique name for the URL list.
       name: name
       required: true
-    - description: The URL list items (For Exact - Enter URLs like  *.example.com, or IP addresses, separated by new line. For Regex - Enter URLs like ^client[0-9]\\.google\\.com , ^app\\.slack\\.com/.*/netskope, or ^google.com, separated by new line).
+    - description: The URL list items (For Exact - Enter URLs like  *.example.com, or IP addresses, separated by a new line. For Regex - Enter URLs like ^client[0-9]\\.google\\.com , ^app\\.slack\\.com/.*/netskope, or ^google.com, separated by a new line).
       isArray: true
       name: urls
       required: true
@@ -822,12 +1071,12 @@ script:
       - regex
       required: true
     - auto: PREDEFINED
-      defaultValue: 'false'
+      defaultValue: "false"
       description: Whether to deploy URL list changes or not.
       name: deploy
       predefined:
-      - 'True'
-      - 'False'
+      - "True"
+      - "False"
     description: Create a new URL list.
     name: netskope-url-list-create
     outputs:
@@ -867,17 +1116,17 @@ script:
       predefined:
       - applied
       - pending
-    - description: 'Comma-separated data values to return in response call (for example: name, id, data, modify_by, modify_time, modify_type, pending). Defaults to all values.'
+    - description: "Comma-separated data values to return in response call (for example: name, id, data, modify_by, modify_time, modify_type, pending). Defaults to all values."
       isArray: true
       name: field
     - description: Whether to retrieve all results or not.
       name: all_results
-      defaultValue: 'false'
+      defaultValue: "false"
       auto: PREDEFINED
       predefined:
-      - 'True'
-      - 'False'
-    - defaultValue: '50'
+      - "True"
+      - "False"
+    - defaultValue: "50"
       description: The maximum number of records to retrieve.
       name: limit
     description: Get all URL lists or a specific URL list by specifying the list ID.
@@ -909,12 +1158,12 @@ script:
       name: url_list_id
       required: true
     - auto: PREDEFINED
-      defaultValue: 'false'
+      defaultValue: "false"
       description: Whether to deploy URL list changes or not.
       name: deploy
       predefined:
-      - 'True'
-      - 'False'
+      - "True"
+      - "False"
     description: Delete a URL list by the list ID.
     name: netskope-url-list-delete
     outputs:
@@ -925,11 +1174,17 @@ script:
       description: Netskope URL list name.
       type: String
   - arguments:
-    - description: 'Filter the Netskope user by ''key eq value'' template. For example: userName eq "someUserName" OR externalId eq "User-Ext_id".'
+    - description: 'Filter the Netskope user by ''key eq value'' template. Filter by the given predefined values. For example: "userName eq someUserName" OR "externalId eq User-Ext_id".'
       name: filter
-    - description: 'Page number of paginated results. Minimum value: 1.'
+      auto: PREDEFINED
+      predefined:
+      - 'active'
+      - 'emails.value'
+      - 'externalId'
+      - 'userName'
+    - description: "Page number of paginated results. Minimum value: 1."
       name: page
-    - defaultValue: '50'
+    - defaultValue: "50"
       description: The maximum number of records to retrieve.
       name: limit
     description: Get information about Netskope SCIM users. The command provides a list of users who have been imported into the Netskope tenant through SCIM integration. Users imported through other methods, such as manual CSV import or manual creation, will not be included in the returned results.
@@ -940,6 +1195,11 @@ script:
       type: Number
     - contextPath: Netskope.Client.name
       description: Netskope client name.
+    - contextPath: Netskope.Client.given_name
+      description: Netskope client first_name of the SCIM User.
+      type: String
+    - contextPath: Netskope.Client.family_name
+      description: Netskope client last_name of the SCIM User..
       type: String
     - contextPath: Netskope.Client.userName
       description: Netskope client username.
@@ -957,7 +1217,7 @@ script:
     - description: The URL list ID to update (use netskope-url-list-list command to get URL list ID).
       name: url_list_id
       required: true
-    - description: The updated URL list items (For Exact - Enter URLs like  *.example.com, or IP addresses, separated by new line. For Regex - Enter URLs like ^client[0-9]\\.google\\.com , ^app\\.slack\\.com/.*/netskope, or ^google.com, separated by new line).
+    - description: The updated URL list items (For Exact - Enter URLs like  *.example.com, or IP addresses, separated by a new line. For Regex - Enter URLs like ^client[0-9]\\.google\\.com , ^app\\.slack\\.com/.*/netskope, or ^google.com, separated by a new line).
       isArray: true
       name: urls
       required: true
@@ -969,12 +1229,12 @@ script:
       - regex
       required: true
     - auto: PREDEFINED
-      defaultValue: 'false'
+      defaultValue: "false"
       description: Whether to deploy URL list changes or not.
       name: deploy
       predefined:
-      - 'True'
-      - 'False'
+      - "True"
+      - "False"
     description: Update the URL list with the values provided. Note that this command appends the list.
     name: netskope-url-list-add
     outputs:
@@ -1005,12 +1265,35 @@ script:
     - contextPath: Netskope.URLList.pending
       description: Netskope URL list pending.
       type: Number
-  dockerimage: demisto/python3:3.10.14.92207
+  - arguments: []
+    description: Returns the list of fields for an incident type.
+    name: get-mapping-fields
+  - arguments: []
+    description: Updates the remote incident or detection with local incident or detection changes. This method is only used for debugging purposes and will not update the current incident or detection.
+    name: update-remote-system
+  - arguments:
+    - description: The ticket ID.
+      name: id
+      required: true
+    - description: Retrieves entries that were created after lastUpdate.
+      name: lastUpdate
+      required: true
+    description: Gets remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes.
+    name: get-remote-data
+  - arguments:
+    - description: A date string in local time representing the last time the incident was updated. The incident is only returned if it was modified after the last update time.
+      name: lastUpdate
+    description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available in Cortex XSOAR from version 6.1.
+    name: get-modified-remote-data
+  dockerimage: demisto/python3:3.11.10.116949
   isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   runonce: false
-  script: ''
+  script: ""
   subtype: python3
   type: python
 fromversion: 6.9.0
 tests:
-- No tests (auto formatted)
+- Netskope_V2_Test

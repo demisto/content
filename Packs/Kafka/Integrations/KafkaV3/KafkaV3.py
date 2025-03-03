@@ -1,10 +1,14 @@
 import demistomock as demisto
 from CommonServerPython import *
+from confluent_kafka.serialization import SerializationContext, MessageField
+from confluent_kafka.schema_registry.avro import AvroSerializer
+from confluent_kafka.schema_registry import SchemaRegistryClient
 from confluent_kafka import Consumer, TopicPartition, Producer, KafkaException, TIMESTAMP_NOT_AVAILABLE, Message
-from typing import Tuple, Union, Dict, Callable
+from collections.abc import Callable
 from io import StringIO
 
 ''' IMPORTS '''
+import json
 import tempfile
 import urllib3
 import traceback
@@ -20,18 +24,21 @@ SUPPORTED_GENERAL_OFFSETS = ['smallest', 'earliest', 'beginning', 'largest', 'la
 
 class KConsumer(Consumer):
     """Empty inheritance class for C-typed class in order to make mocking work."""
-    pass
 
 
 class KProducer(Producer):
     """Empty inheritance class for C-typed class in order to make mocking work."""
-    pass
+
+
+class KSchemaRegistryClient(SchemaRegistryClient):
+    """Empty inheritance class for C-typed class in order to make mocking work."""
 
 
 class KafkaCommunicator:
     """Client class to interact with Kafka."""
-    conf_producer: Optional[Dict[str, Any]] = None
-    conf_consumer: Optional[Dict[str, Any]] = None
+    conf_producer: Optional[dict[str, Any]] = None
+    conf_consumer: Optional[dict[str, Any]] = None
+    conf_schema_registry: Optional[dict[str, Any]] = None
     ca_path: Optional[str] = None
     client_cert_path: Optional[str] = None
     client_key_path: Optional[str] = None
@@ -40,14 +47,20 @@ class KafkaCommunicator:
     SESSION_TIMEOUT: int = 10000
     REQUESTS_TIMEOUT: float = 10.0
     POLL_TIMEOUT: float = 1.0
+    POLL_TIMEOUT_STOP_UPON_TIMEOUT = 10.0
+    # which caused test playbook failures in builds.
     MAX_POLLS_FOR_LOG: int = 100
 
-    def __init__(self, brokers: str, offset: str = 'earliest', group_id: str = 'xsoar_group',
+    def __init__(self, brokers: str, use_ssl: bool, plain_password: Optional[str] = None, plain_username: Optional[str] = None,
+                 use_sasl: bool = False, offset: str = 'earliest', group_id: str = 'xsoar_group',
                  message_max_bytes: Optional[int] = None,
                  ca_cert: Optional[str] = None,
                  client_cert: Optional[str] = None, client_cert_key: Optional[str] = None,
                  ssl_password: Optional[str] = None, trust_any_cert: bool = False,
-                 kafka_logger: Optional[logging.Logger] = None):
+                 kafka_logger: Optional[logging.Logger] = None,
+                 schema_registry_url: Optional[str] = None,
+                 schema_registry_username: Optional[str] = None,
+                 schema_registry_password: Optional[str] = None):
         """Set configuration dicts for consumer and producer.
 
         Args:
@@ -59,26 +72,30 @@ class KafkaCommunicator:
             client_cert: The contents of the client certificate.
             client_cert_key: The contents of the client certificate's key
             ssl_password: The password with which the client certificate is protected by.
+            schema_registry_url: The URL of the schema registry.
+            schema_registry_username: The username for the schema registry.
+            schema_registry_password: The password for the schema registry.
         """
-        self.conf_producer = {'bootstrap.servers': brokers}
+
+        # Set producer conf dict
+        self.conf_producer = {}
+        self.update_client_dict(self.conf_producer, trust_any_cert, use_ssl, ca_cert, client_cert,
+                                client_cert_key, ssl_password, use_sasl, plain_username, plain_password, brokers)
 
         if offset not in SUPPORTED_GENERAL_OFFSETS:
             raise DemistoException(f'General offset {offset} not found in supported offsets: '
                                    f'{SUPPORTED_GENERAL_OFFSETS}')
 
-        self.conf_consumer = {'bootstrap.servers': brokers,
-                              'session.timeout.ms': self.SESSION_TIMEOUT,
+        # Set consumer conf dict
+        self.conf_consumer = {'session.timeout.ms': self.SESSION_TIMEOUT,
                               'auto.offset.reset': offset,
                               'group.id': group_id,
                               'enable.auto.commit': False}
 
-        self.kafka_logger = kafka_logger
+        self.update_client_dict(self.conf_consumer, trust_any_cert, use_ssl, ca_cert, client_cert,
+                                client_cert_key, ssl_password, use_sasl, plain_username, plain_password, brokers)
 
-        if trust_any_cert:
-            self.conf_consumer.update({'ssl.endpoint.identification.algorithm': 'none',
-                                       'enable.ssl.certificate.verification': False})
-            self.conf_producer.update({'ssl.endpoint.identification.algorithm': 'none',
-                                       'enable.ssl.certificate.verification': False})
+        self.kafka_logger = kafka_logger
 
         if message_max_bytes:
             self.conf_consumer.update({'message.max.bytes': int(message_max_bytes)})
@@ -86,41 +103,92 @@ class KafkaCommunicator:
         demisto.debug(f"The consumer configuration is \n{self.conf_consumer}\n")
         demisto.debug(f"The producer configuration is \n{self.conf_producer}\n")
 
-        if ca_cert:
-            with tempfile.NamedTemporaryFile(mode="w", delete=False) as ca_descriptor:
-                self.ca_path = ca_descriptor.name
-                ca_descriptor.write(ca_cert)
-            self.conf_producer.update({'ssl.ca.location': self.ca_path})
-            self.conf_consumer.update({'ssl.ca.location': self.ca_path})
-        if client_cert:
-            with tempfile.NamedTemporaryFile(mode="w", delete=False) as client_cert_descriptor:
-                self.client_cert_path = client_cert_descriptor.name
-                client_cert_descriptor.write(client_cert)
-            self.conf_producer.update({'ssl.certificate.location': self.client_cert_path,
-                                       'security.protocol': 'ssl'})
-            self.conf_consumer.update({'ssl.certificate.location': self.client_cert_path,
-                                       'security.protocol': 'ssl'})
-        if client_cert_key:
-            with tempfile.NamedTemporaryFile(mode="w", delete=False) as client_key_descriptor:
-                self.client_key_path = client_key_descriptor.name
-                client_key_descriptor.write(client_cert_key)
-            self.conf_producer.update({'ssl.key.location': self.client_key_path})
-            self.conf_consumer.update({'ssl.key.location': self.client_key_path})
-        if ssl_password:
-            self.conf_producer.update({'ssl.key.password': ssl_password})
-            self.conf_consumer.update({'ssl.key.password': ssl_password})
+        # Set schema registry conf dict
+        if schema_registry_url:
+            self.conf_schema_registry = {
+                'url': schema_registry_url,
+            }
+            if schema_registry_username and schema_registry_password:
+                self.conf_schema_registry['basic.auth.user.info'] = f'{schema_registry_username}:{schema_registry_password}'
+
+            demisto.debug(f"The schema registry configuration is  \n{self.conf_schema_registry}\n")
+
+    def update_client_dict(self, client_dict, trust_any_cert, use_ssl, ca_cert, client_cert, client_cert_key, ssl_password,
+                           use_sasl, plain_username, plain_password, brokers):
+        """
+        Updates the conf_producer or conf_consumer configuration based on the specified authentication method.
+        It assumes that all required parameters have been validated by the validate_params function.
+
+        Args:
+            client_dict (dict): The configuration dictionary to be updated.
+            This should be either the producer's or consumer's conf_dict.
+        """
+
+        client_dict.update({'bootstrap.servers': brokers})
+
+        if use_ssl and not use_sasl:
+            if self.ca_path:
+                client_dict.update({'ssl.ca.location': self.ca_path, 'ssl.certificate.location': self.client_cert_path,
+                                    'ssl.key.location': self.client_key_path, 'security.protocol': 'ssl'})
+            else:
+                # temporary creating ca certification file
+                with tempfile.NamedTemporaryFile(mode="w", delete=False) as ca_descriptor:
+                    self.ca_path = ca_descriptor.name
+                    ca_descriptor.write(ca_cert)
+                client_dict.update({'ssl.ca.location': self.ca_path})
+
+                # temporary creating client certification file
+                with tempfile.NamedTemporaryFile(mode="w", delete=False) as client_cert_descriptor:
+                    self.client_cert_path = client_cert_descriptor.name
+                    client_cert_descriptor.write(client_cert)
+                client_dict.update({'ssl.certificate.location': self.client_cert_path})
+
+                # temporary creating client certification's key file
+                with tempfile.NamedTemporaryFile(mode="w", delete=False) as client_key_descriptor:
+                    self.client_key_path = client_key_descriptor.name
+                    client_key_descriptor.write(client_cert_key)
+                client_dict.update({'ssl.key.location': self.client_key_path,
+                                    'security.protocol': 'ssl'})
+
+            if ssl_password:
+                client_dict.update({'ssl.key.password': ssl_password})
+
+        # SASL with SSL
+        elif use_sasl:
+            client_dict.update({'security.protocol': 'SASL_SSL',
+                                'sasl.mechanism': 'PLAIN',
+                                'sasl.username': plain_username,
+                                'sasl.password': plain_password})
+
+            if trust_any_cert:
+                client_dict.update({'ssl.endpoint.identification.algorithm': 'none',
+                                    'enable.ssl.certificate.verification': False})
+            else:  # ca_cert
+                if self.ca_path:
+                    client_dict.update({'ssl.ca.location': self.ca_path})
+                else:
+                    with tempfile.NamedTemporaryFile(mode="w", delete=False) as ca_descriptor:
+                        self.ca_path = ca_descriptor.name
+                        ca_descriptor.write(ca_cert)
+                    client_dict.update({'ssl.ca.location': self.ca_path})
+
+                if ssl_password:
+                    client_dict.update({'ssl.key.password': ssl_password})
 
     def get_kafka_consumer(self) -> KConsumer:
         if self.kafka_logger:
             return KConsumer(self.conf_consumer, logger=self.kafka_logger)
-        else:
-            return KConsumer(self.conf_consumer)
+        return KConsumer(self.conf_consumer)
 
     def get_kafka_producer(self) -> KProducer:
         if self.kafka_logger:
             return KProducer(self.conf_producer, logger=self.kafka_logger)
-        else:
-            return KProducer(self.conf_producer)
+        return KProducer(self.conf_producer)
+
+    def get_kafka_schema_registry(self) -> Optional[KSchemaRegistryClient]:
+        if self.conf_schema_registry:
+            return KSchemaRegistryClient(self.conf_schema_registry)
+        return None
 
     def update_conf_for_fetch(self, message_max_bytes: Optional[int] = None):
         """Update consumer configurations for fetching messages
@@ -142,6 +210,7 @@ class KafkaCommunicator:
         error_msg = ''
         consumer: Optional[KConsumer] = None
         producer: Optional[KProducer] = None
+        schema_registry: Optional[KSchemaRegistryClient] = None
 
         try:
             consumer = self.get_kafka_consumer()
@@ -166,7 +235,6 @@ class KafkaCommunicator:
 
         try:
             producer = self.get_kafka_producer()
-
             producer_topics = producer.list_topics(timeout=self.REQUESTS_TIMEOUT)
             producer_topics.topics
 
@@ -186,6 +254,14 @@ class KafkaCommunicator:
                 if error_msg:
                     raise DemistoException(error_msg)
 
+        try:
+            schema_registry = self.get_kafka_schema_registry()
+            if schema_registry:
+                schema_registry.get_subjects()
+
+        except Exception as e:
+            raise DemistoException(f'Error connecting to kafka schema registry: {str(e)}\n{traceback.format_exc()}')
+
         return 'ok'
 
     @staticmethod
@@ -198,7 +274,7 @@ class KafkaCommunicator:
             return_results(f'Message was successfully produced to '
                            f'topic \'{msg.topic()}\', partition {msg.partition()}')
 
-    def get_topics(self, consumer: bool = False) -> dict:
+    def get_topics(self, consumer: bool = True) -> dict:
         """Get Kafka topics
 
         Args:
@@ -213,7 +289,7 @@ class KafkaCommunicator:
         cluster_metadata = client.list_topics(timeout=self.REQUESTS_TIMEOUT)
         return cluster_metadata.topics
 
-    def get_partition_offsets(self, topic: str, partition: int) -> Tuple[int, int]:
+    def get_partition_offsets(self, topic: str, partition: int) -> tuple[int, int]:
         """Get earliest and latest offsets for the specified partition in the specified topic.
 
         Return (earliest offset, latest offset)
@@ -222,26 +298,68 @@ class KafkaCommunicator:
         partition = TopicPartition(topic=topic, partition=partition)
         return kafka_consumer.get_watermark_offsets(partition=partition, timeout=self.REQUESTS_TIMEOUT)
 
-    def produce(self, topic: str, value: str, partition: Optional[int]) -> None:
+    def produce(
+        self,
+        topic: str,
+        value: str,
+        value_schema_type: Optional[str],
+        value_schema_str: Optional[str],
+        value_schema_subject_name: Optional[str],
+        partition: int
+    ) -> None:
         """Produce in to kafka
 
         Args:
             topic: The topic to produce to
-            value: The message/value to write
+            value: The message/object to write
+            value_schema_type: The schema type of the value
+            value_schema_str: The schema str of the value
+            value_schema_subject_name: The schema subject name of the value
             partition: The partition to produce to.
 
         The delivery_report is called after production.
         """
         kafka_producer = self.get_kafka_producer()
-        if partition is not None:
-            kafka_producer.produce(topic=topic, value=value, partition=partition,
-                                   on_delivery=self.delivery_report)
-        else:
-            kafka_producer.produce(topic=topic, value=value,
-                                   on_delivery=self.delivery_report)
+        serialized_value = value
+
+        if value_schema_type:
+            kafka_schema_registry_client = self.get_kafka_schema_registry()
+            if not kafka_schema_registry_client:
+                raise DemistoException(
+                    "Kafka Schema Registry client is not configured. Please configure one to use schema validation.")
+            if not value_schema_str and not value_schema_subject_name:
+                raise DemistoException("Schema is not provided. Please provide one.")
+            if value_schema_str and value_schema_subject_name:
+                raise DemistoException(
+                    "Both value_schema_str and value_schema_subject_name are provided. Please provide only one.")
+
+            resolved_schema_str = value_schema_str
+            # Retrieve schema from schema registry
+            if value_schema_subject_name:
+                registered_schema = kafka_schema_registry_client.get_latest_version(subject_name=value_schema_subject_name)
+                if registered_schema.schema.schema_type != value_schema_type:
+                    raise DemistoException(
+                        f"Unsupported schema type '{registered_schema.schema.schema_type}'. "
+                        f"Expected '{value_schema_type}'."
+                    )
+                resolved_schema_str = registered_schema.schema.schema_str
+
+            if value_schema_type == 'AVRO':
+                avro_serializer = AvroSerializer(
+                    schema_str=resolved_schema_str,
+                    schema_registry_client=kafka_schema_registry_client
+                )
+                serialized_value = avro_serializer(json.loads(value), SerializationContext(topic, MessageField.VALUE))
+
+        kafka_producer.produce(
+            topic=topic,
+            value=serialized_value,
+            partition=partition,
+            on_delivery=self.delivery_report
+        )
         kafka_producer.flush()
 
-    def consume(self, topic: str, partition: int = -1, offset: str = '0') -> Message:
+    def consume(self, poll_timeout: float, topic: str, partition: int = -1, offset: str = '0') -> Message:
         """Consume a message from kafka
 
         Args:
@@ -253,12 +371,12 @@ class KafkaCommunicator:
         """
         kafka_consumer = self.get_kafka_consumer()
         kafka_consumer.assign(self.get_topic_partitions(topic, partition, offset, True))
-        polled_msg = kafka_consumer.poll(self.POLL_TIMEOUT)
-        demisto.debug(f"polled {polled_msg}")
+        polled_msg = kafka_consumer.poll(poll_timeout)
+        demisto.debug(f"polled {polled_msg} with {poll_timeout=}")
         kafka_consumer.close()
         return polled_msg
 
-    def get_offset_for_partition(self, topic: str, partition: int, offset: Union[int, str]) -> int:
+    def get_offset_for_partition(self, topic: str, partition: int, offset: int | str) -> int:
         """Get the numerical offset from a partition of a topic
 
         Args:
@@ -282,8 +400,8 @@ class KafkaCommunicator:
             return number_offset
 
     @logger
-    def get_topic_partitions(self, topic: str, partition: Union[int, list],
-                             offset: Union[str, int], consumer: bool = False) -> list:
+    def get_topic_partitions(self, topic: str, partition: int | list,
+                             offset: str | int, consumer: bool = False) -> list:
         """Get relevant TopicPartiton structures to specify for the consumer.
 
         Args:
@@ -332,6 +450,62 @@ class KafkaCommunicator:
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def validate_params(
+    use_ssl,
+    use_sasl,
+    trust_any_cert,
+    plain_username,
+    plain_password,
+    brokers,
+    ca_cert,
+    client_cert,
+    client_cert_key
+):
+    """
+        The function validates parameters for SSL and SASL_SSL authentication methods and raises an error if any invalid
+        configurations are detected.
+
+        For SSL authentication, it checks if use_ssl is True and requires ca_cert, client_cert, and client_cert_key parameters.
+
+        For SASL_SSL authentication, it checks if use_sasl is True and requires plain_username, plain_password
+
+        The brokers parameter is mandatory for both authentication methods.
+    """
+
+    # Check if brokers are provided
+    if not brokers:
+        raise DemistoException('Please specify a CSV list of Kafka brokers to connect to.')
+
+    # Helper function to check for missing parameters
+
+    def check_missing_params(params, missing):
+        for param, param_name in params:
+            if not param:
+                missing.append(param_name)
+
+    missing: List[str] = []
+
+    # Check SSL requirements
+    if use_ssl:
+        ssl_params = [(ca_cert, 'CA certificate of Kafka server (.cer)'),
+                      (client_cert, 'Client certificate (.cer)'),
+                      (client_cert_key, 'Client certificate key (.key)')]
+        check_missing_params(ssl_params, missing)
+
+    # Check SASL_PLAIN requirements
+    if use_sasl:
+        sasl_params = [(plain_username, 'SASL PLAIN Username'),
+                       (plain_password, 'SASL PLAIN Password')]
+        if not trust_any_cert:
+            sasl_params.append((ca_cert, 'CA certificate of Kafka server (.cer)'))
+
+        check_missing_params(sasl_params, missing)
+
+    if missing:
+        missing_items = ', '.join(missing)
+        raise DemistoException(f"Missing required parameters: {missing_items}. Please provide them.")
 
 
 def capture_logs(func: Callable):
@@ -395,7 +569,7 @@ def create_incident(message: Message, topic: str) -> dict:
         'Message': message_value.decode('utf-8')
     }
     incident = {
-        'name': 'Kafka {} partition:{} offset:{}'.format(topic, message.partition(), message.offset()),
+        'name': f'Kafka {topic} partition:{message.partition()} offset:{message.offset()}',
         'details': message_value.decode('utf-8'),
         'rawJSON': json.dumps(raw)
     }
@@ -438,7 +612,7 @@ def print_topics(kafka: KafkaCommunicator, demisto_args: dict) -> Union[CommandR
         kafka: initialized KafkaCommunicator object to preform actions with.
         demisto_args: The demisto command arguments.
 
-    Return CommandResults withe the detailed topics, 'No topics found.' if no topics were found.
+    Return CommandResults with the detailed topics, 'No topics found.' if no topics were found.
     """
     include_offsets = argToBoolean(demisto_args.get('include_offsets', 'true'))
     kafka_topics = kafka.get_topics().values()
@@ -488,22 +662,34 @@ def produce_message(kafka: KafkaCommunicator, demisto_args: dict) -> None:
     """
     topic = demisto_args.get('topic')
     value = demisto_args.get('value')
+    value_schema_type = demisto_args.get('value_schema_type')
+    value_schema_str = demisto_args.get('value_schema_str')
+    value_schema_subject_name = demisto_args.get('value_schema_subject_name')
     partition_arg = demisto_args.get('partitioning_key')
 
-    partition_str = str(partition_arg)
-    if partition_str.isdigit():
-        partition: Optional[int] = int(partition_str)
-    else:
-        partition = None
+    partition = -1
+    if partition_arg is not None and str(partition_arg).isdigit():
+        partition = int(partition_arg)
 
-    kafka.produce(
-        value=str(value),
-        topic=str(topic),
-        partition=partition
-    )
+    try:
+        kafka.produce(
+            value=str(value),
+            topic=str(topic),
+            value_schema_type=value_schema_type,
+            value_schema_str=value_schema_str,
+            value_schema_subject_name=value_schema_subject_name,
+            partition=partition
+        )
+    except Exception as e:
+        if 'Topic authorization failed' in str(e):
+            raise DemistoException(f"Error: {str(e)}\n"
+                                   "Check if you have permission to produce messages."
+                                   "Your access might be restricted to consumer-only.")
+        else:
+            raise DemistoException(e)
 
 
-def consume_message(kafka: KafkaCommunicator, demisto_args: dict) -> Union[CommandResults, str]:
+def consume_message(kafka: KafkaCommunicator, demisto_args: dict) -> CommandResults | str:
     """Consume one message from topic
 
     Args:
@@ -516,11 +702,14 @@ def consume_message(kafka: KafkaCommunicator, demisto_args: dict) -> Union[Comma
     partition = int(demisto_args.get('partition', -1))
     offset = demisto_args.get('offset', '0')
 
-    message = kafka.consume(topic=topic, partition=partition, offset=offset)
+    message = kafka.consume(float(demisto_args.get('poll_timeout') or kafka.POLL_TIMEOUT),
+                            topic=topic, partition=partition, offset=offset)
     if not message:
         return 'No message was consumed.'
     else:
         message_value = message.value()
+        if 'Group authorization failed' in message_value.decode('utf-8'):
+            raise DemistoException(f'{message_value} Make sure you configured the right Consumer group ID.')
         readable_output = tableToMarkdown(f'Message consumed from topic {topic}',
                                           [{'Offset': message.offset(), 'Message': message_value.decode("utf-8")}])
         content = {
@@ -556,7 +745,7 @@ def fetch_partitions(kafka: KafkaCommunicator, demisto_args: dict) -> CommandRes
         partitions = [partition.id for partition in partition_objects]
 
         readable_output = tableToMarkdown(
-            name='Available partitions for topic \'{}\''.format(topic),
+            name=f'Available partitions for topic \'{topic}\'',
             t=partitions,
             headers='Partitions'
         )
@@ -591,7 +780,7 @@ def check_params(kafka: KafkaCommunicator, topic: str, partitions: Optional[list
     checkable_offset = False
     numerical_offset = 0
     topics = kafka.get_topics(consumer=consumer)
-    if topic not in topics.keys():
+    if topic not in topics:
         raise DemistoException(f"Did not find topic {topic} in kafka topics.")
 
     if offset and str(offset).lower() not in SUPPORTED_GENERAL_OFFSETS:
@@ -620,7 +809,7 @@ def check_params(kafka: KafkaCommunicator, topic: str, partitions: Optional[list
 
 
 def get_topic_partition_if_relevant(kafka: KafkaCommunicator, topic: str, partition: str,
-                                    specific_offset: Union[str, int]) -> list:
+                                    specific_offset: str | int) -> list:
     """Return the TopicPartition if topic, partition and specific_offset are valid otherwise return []
 
     Args:
@@ -646,7 +835,7 @@ def get_topic_partition_if_relevant(kafka: KafkaCommunicator, topic: str, partit
     return []
 
 
-def get_fetch_topic_partitions(kafka: KafkaCommunicator, topic: str, offset: Union[str, int],
+def get_fetch_topic_partitions(kafka: KafkaCommunicator, topic: str, offset: str | int,
                                last_fetched_offsets: dict) -> List[TopicPartition]:
     """Get topic partitions for fetching incidents without a specified partitions.
 
@@ -669,7 +858,7 @@ def get_fetch_topic_partitions(kafka: KafkaCommunicator, topic: str, offset: Uni
     topic_partitions_in_system = []
 
     demisto.debug("Going over last fetched offsets")
-    for partition in last_fetched_offsets.keys():
+    for partition in last_fetched_offsets:
         specific_offset = last_fetched_offsets.get(partition, offset)
         topic_partitions_in_system += get_topic_partition_if_relevant(kafka, topic, partition, specific_offset)
 
@@ -696,7 +885,8 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
     max_messages = int(handle_empty(demisto_params.get('max_fetch', 50), 50))
     last_fetched_offsets = demisto.getLastRun().get('last_fetched_offsets', {})
     last_topic = demisto.getLastRun().get('last_topic', '')
-
+    stop_consuming_upon_timeout = argToBoolean(demisto_params.get('stop_consuming_upon_timeout', False))
+    poll_timeout = kafka.POLL_TIMEOUT_STOP_UPON_TIMEOUT if stop_consuming_upon_timeout else kafka.POLL_TIMEOUT
     demisto.debug(f"Starting fetch incidents with:\n last_topic: {last_topic}, "
                   f"last_fetched_offsets: {last_fetched_offsets}, "
                   f"topic: {topic}, partitions: {partitions}, offset: {offset}, "
@@ -735,13 +925,21 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
             kafka_consumer.assign(topic_partitions)
 
             demisto.debug("Beginning to poll messages from kafka")
-
+            num_polled_msg = 0
             for _ in range(max_messages):
-                polled_msg = kafka_consumer.poll(kafka.POLL_TIMEOUT)
+                # Initial message consumption may take up to
+                # `session.timeout.ms` for the consumer group to
+                # rebalance and start consuming
+                polled_msg = kafka_consumer.poll(poll_timeout)
                 if polled_msg:
-                    demisto.debug("Received a message from Kafka.")
+                    num_polled_msg += 1
+                    demisto.debug(f"Received a message {num_polled_msg}# from Kafka.")
                     incidents.append(create_incident(message=polled_msg, topic=topic))
                     last_fetched_offsets[f'{polled_msg.partition()}'] = polled_msg.offset()
+                elif stop_consuming_upon_timeout and (not polled_msg):
+                    demisto.debug(f"Didn't get a message after {poll_timeout} seconds"
+                                  f", stop_consuming_upon_timeout is true, break the loop. {num_polled_msg=}")
+                    break
 
     finally:
         if kafka_consumer:
@@ -762,6 +960,7 @@ def commands_manager(kafka_kwargs: dict, demisto_params: dict, demisto_args: dic
                      demisto_command: str, kafka_logger: Optional[logging.Logger] = None,
                      log_stream: Optional[StringIO] = None) -> None:
     """Start command function according to demisto command."""
+
     kafka_kwargs['kafka_logger'] = kafka_logger
     kafka = KafkaCommunicator(**kafka_kwargs)
 
@@ -801,18 +1000,40 @@ def main():  # pragma: no cover
 
     # Should we use SSL
     use_ssl = demisto_params.get('use_ssl', False)
+    # Should we use SASL (with SSL and PLAIN)
+    use_sasl = demisto_params.get('use_sasl', False)
 
-    if use_ssl:
-        # Add Certificates
-        ca_cert = demisto_params.get('ca_cert', None)
-        client_cert = demisto_params.get('client_cert', None)
-        client_cert_key = demisto_params.get('client_cert_key', None)
-        ssl_password = demisto_params.get('additional_password', None)
-        kafka_kwargs = {'brokers': brokers, 'ca_cert': ca_cert, 'client_cert': client_cert,
-                        'client_cert_key': client_cert_key, 'ssl_password': ssl_password, 'offset': offset,
-                        'trust_any_cert': trust_any_cert, 'group_id': group_id}
-    else:
-        kafka_kwargs = {'brokers': brokers, 'offset': offset, 'trust_any_cert': trust_any_cert, 'group_id': group_id}
+    ca_cert = demisto_params.get('ca_cert', None)
+    client_cert = demisto_params.get('client_cert', None)
+    client_cert_key = demisto_params.get('client_cert_key', None)
+    ssl_password = demisto_params.get('additional_password', None)
+    plain_username = demisto_params.get('credentials', {}).get('identifier')
+    plain_password = demisto_params.get('credentials', {}).get('password')
+    schema_registry_url = demisto_params.get('schema_registry_url', None)
+    schema_registry_username = demisto_params.get('schema_registry_credentials', {}).get('identifier', None)
+    schema_registry_password = demisto_params.get('schema_registry_credentials', {}).get('password', None)
+    validate_params(
+        use_ssl=use_ssl,
+        use_sasl=use_sasl,
+        trust_any_cert=trust_any_cert,
+        plain_username=plain_username,
+        plain_password=plain_password,
+        brokers=brokers,
+        ca_cert=ca_cert,
+        client_cert=client_cert,
+        client_cert_key=client_cert_key
+    )
+
+    kafka_kwargs = {'use_ssl': use_ssl, 'brokers': brokers, 'ca_cert': ca_cert, 'offset': offset,
+                    'use_sasl': use_sasl, 'group_id': group_id,
+                    'trust_any_cert': trust_any_cert,
+                    'client_cert': client_cert, 'client_cert_key': client_cert_key,
+                    'plain_username': plain_username, 'plain_password': plain_password,
+                    'schema_registry_url': schema_registry_url,
+                    'schema_registry_username': schema_registry_username,
+                    'schema_registry_password': schema_registry_password}
+    if ssl_password:
+        kafka_kwargs['ssl_password'] = ssl_password
 
     try:
         commands_manager(kafka_kwargs, demisto_params, demisto_args, demisto_command)

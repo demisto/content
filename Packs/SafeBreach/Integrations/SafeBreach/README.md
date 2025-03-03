@@ -1,26 +1,22 @@
 For enterprises using SafeBreach and XSOAR, integrating this package streamlines operations by allowing you to operate SafeBreach through XSOAR, making SafeBreach an integral part of the enterprise workflows. This integration includes commands for managing tests, insight indicators, simulators and deployments, users, API keys, integration issues, and more.
 This integration was integrated and tested with version 2024Q1.4 of Safebreach.
 
-## Configure Safebreach on Cortex XSOAR
+## Configure Safebreach in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Safebreach.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL | This is base URL for your instance. | True |
-    | API Key | This is API key for your instance, this can be created in Safe Breach User                      Administration -&amp;gt; API keys, it must be saved as there is no way to view it again. | True |
-    | Password |  | True |
-    | Account ID | This is account ID of account with which we want to get data from safebreach | True |
-    | Verify SSL Certificate | This Field is useful for checking if the certificate of SSL for HTTPS is valid or not | False |
-    | Use system proxy settings | This Field is useful for asking integration to use default system proxy settings. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | This is base URL for your instance. | True |
+| API Key | This is API key for your instance, this can be created in Safe Breach User                 Administration -&amp;gt; API keys, it must be saved as there is no way to view it again. | True |
+| Account ID | This is account ID of account with which we want to get data from safebreach | True |
+| Verify SSL Certificate | This Field is useful for checking if the certificate of SSL for HTTPS is valid or not | False |
+| Use system proxy settings | This Field is useful for asking integration to use default system proxy settings. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### safebreach-approve-simulator

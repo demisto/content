@@ -458,6 +458,18 @@ tasks:
           root: existingAllowRule
           accessor: destinationAddressPrefix
           transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: existingAllowRule.destinationAddressPrefixes
+                iscontext: true
+              raw: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
           - operator: concat
             args:
               prefix: {}
@@ -582,7 +594,16 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: ${inputs.AzureVMPrivateIP}
+                        simple: inputs.AzureVMPrivateIP
+                      iscontext: true
+                  - operator: containsGeneral
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.destinationAddressPrefixes
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.AzureVMPrivateIP
                       iscontext: true
                 transformers:
                 - operator: getField
@@ -616,7 +637,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: remediation-allow-port
+                        simple: remediation-deny-port
                 - - operator: containsGeneral
                     left:
                       value:
@@ -642,7 +663,16 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: ${inputs.AzureVMPrivateIP}
+                        simple: inputs.AzureVMPrivateIP
+                      iscontext: true
+                  - operator: notContainsGeneral
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.destinationAddressPrefixes
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.AzureVMPrivateIP
                       iscontext: true
             iscontext: true
     continueonerrortype: ""
@@ -806,6 +836,18 @@ tasks:
           root: existingDenyRule
           accessor: destinationAddressPrefix
           transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: existingAllowRule.destinationAddressPrefixes
+                iscontext: true
+              raw: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
           - operator: concat
             args:
               prefix: {}
@@ -930,7 +972,16 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: ${inputs.AzureVMPrivateIP}
+                        simple: inputs.AzureVMPrivateIP
+                      iscontext: true
+                  - operator: containsGeneral
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.destinationAddressPrefixes
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.AzureVMPrivateIP
                       iscontext: true
                 transformers:
                 - operator: getField
@@ -990,7 +1041,16 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: ${inputs.AzureVMPrivateIP}
+                        simple: inputs.AzureVMPrivateIP
+                      iscontext: true
+                  - operator: notContainsGeneral
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.destinationAddressPrefixes
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.AzureVMPrivateIP
                       iscontext: true
             iscontext: true
     continueonerrortype: ""

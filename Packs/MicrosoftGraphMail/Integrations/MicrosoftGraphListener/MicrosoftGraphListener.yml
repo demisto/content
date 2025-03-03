@@ -1,4 +1,4 @@
-category: Cloud Services
+category: Email
 sectionOrder:
 - Connect
 - Collect
@@ -112,7 +112,7 @@ configuration:
   required: false
   type: 8
   section: Collect
-- display: Email address from which to fetch incidents (e.g., "example@demisto.com")
+- display: Email address from which to fetch incidents (e.g., "example@mail.com")
   name: mailbox_to_fetch
   required: true
   type: 0
@@ -184,6 +184,12 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- display: Use legacy attachment name
+  name: legacy_name
+  section: Collect
+  type: 8
+  advanced: true
+  defaultvalue: 'false'
 description: Microsoft Graph grants Cortex XSOAR authorized access to a user's Microsoft Outlook mail data in a personal account or organization account.
 display: Microsoft Graph Mail Single User
 name: Microsoft Graph Mail Single User
@@ -376,6 +382,8 @@ script:
       required: true
     - description: The contents (body) of the email.
       name: body
+    - description: The content in html format (htmlBody) of the email.
+      name: htmlBody
     - auto: PREDEFINED
       description: 'The body type of the email. Can be: "text", or "HTML".'
       name: body_type
@@ -922,7 +930,7 @@ script:
       required: true
     description: Delete a specific email rule by ID for a user's mailbox using Microsoft Graph API.
     name: msgraph-mail-delete-rule
-  dockerimage: demisto/crypto:1.0.0.89294
+  dockerimage: demisto/crypto:1.0.0.114611
   isfetch: true
   script: ''
   type: python

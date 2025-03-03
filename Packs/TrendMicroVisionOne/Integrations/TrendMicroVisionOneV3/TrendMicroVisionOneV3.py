@@ -6,24 +6,28 @@ from CommonServerUserPython import *  # noqa: F401
 """IMPORTS"""
 
 import json
-import urllib3
-from datetime import datetime, timezone, timedelta
+from datetime import UTC, datetime, timedelta
 from typing import Any, TypeVar
+
 import pytmv1
-from pytmv1 import (
+import urllib3
+from pytmv1 import (  # noqa: E402
     TiAlert,
     SaeAlert,
     ObjectType,
     ResultCode,
+    AlertStatus,
     ObjectRequest,
+    EmailActivity,
     AccountRequest,
     EndpointRequest,
     ExceptionObject,
     SuspiciousObject,
+    EndpointActivity,
     CollectFileRequest,
     CollectFileTaskResp,
     CustomScriptRequest,
-    InvestigationStatus,
+    InvestigationResult,
     EmailMessageIdRequest,
     EmailMessageUIdRequest,
     SuspiciousObjectRequest,
@@ -46,6 +50,7 @@ MEDIUM = "medium"
 NAME = "name"
 PATH = "path"
 IF_MATCH = "if_match"
+INV_RESULT = "inv_result"
 FALSE = "false"
 TRUE = "true"
 POLL = "poll"
@@ -75,6 +80,10 @@ SUCCEEDED = "succeeded"
 SCAN_ACTION = "scan_action"
 RISK_LEVEL = "risk_level"
 EXPIRY_DAYS = "expiry_days"
+DETECTED_END = "detected_end"
+DETECTED_START = "detected_start"
+INGESTED_END = "ingested_end"
+INGESTED_START = "ingested_start"
 TASKID = "task_id"
 REPORT_ID = "report_id"
 OBJECT_TYPE = "object_type"
@@ -92,6 +101,9 @@ FILE_PATH = "file_path"
 FILE_URL = "file_url"
 FILE_NAME = "filename"
 FILE_TYPE = "filetype"
+FETCH_ALL = "fetch_all"
+FETCH_MAX_COUNT = "fetch_max_count"
+DEFAULT_MAX_FETCH = 5000
 SCRIPT_ID = "script_id"
 DOCUMENT_PASSWORD = "document_password"
 ARCHIVE_PASSWORD = "archive_password"
@@ -170,6 +182,7 @@ TABLE_UPDATE_CUSTOM_SCRIPT = "Update custom script "
 TABLE_DELETE_CUSTOM_SCRIPT = "Delete custom script "
 TABLE_GET_CUSTOM_SCRIPT_LIST = "Get custom script list "
 TABLE_DOWNLOAD_CUSTOM_SCRIPT = "Download custom script "
+TABLE_GET_OBSERVED_ATTACK_TECHNIQUES = "Get Observed Attack Techniques "
 # COMMAND NAMES
 ENABLE_USER_ACCOUNT_COMMAND = "trendmicro-visionone-enable-user-account"
 DISABLE_USER_ACCOUNT_COMMAND = "trendmicro-visionone-disable-user-account"
@@ -229,6 +242,9 @@ UPDATE_CUSTOM_SCRIPT_COMMAND = "trendmicro-visionone-update-custom-script"
 DELETE_CUSTOM_SCRIPT_COMMAND = "trendmicro-visionone-delete-custom-script"
 DOWNLOAD_CUSTOM_SCRIPT_COMMAND = "trendmicro-visionone-download-custom-script"
 GET_CUSTOM_SCRIPT_LIST_COMMAND = "trendmicro-visionone-get-custom-script-list"
+GET_OBSERVED_ATTACK_TECHNIQUES_COMMAND = (
+    "trendmicro-visionone-get-observed-attack-techniques"
+)
 FETCH_INCIDENTS = "fetch-incidents"
 TEST_MODULE = "test-module"
 
@@ -271,6 +287,7 @@ table_name = {
     SANDBOX_SUBMISSION_POLLING_COMMAND: TABLE_SANDBOX_SUBMISSION_POLLING,
     GET_ENDPOINT_ACTIVITY_DATA_COMMAND: TABLE_GET_ENDPOINT_ACTIVITY_DATA,
     GET_EMAIL_ACTIVITY_DATA_COUNT_COMMAND: TABLE_GET_EMAIL_ACTIVITY_DATA_COUNT,
+    GET_OBSERVED_ATTACK_TECHNIQUES_COMMAND: TABLE_GET_OBSERVED_ATTACK_TECHNIQUES,
     DOWNLOAD_INVESTIGATION_PACKAGE_COMMAND: TABLE_DOWNLOAD_INVESTIGATION_PACKAGE,
     DOWNLOAD_SUSPICIOUS_OBJECT_LIST_COMMAND: TABLE_DOWNLOAD_SUSPICIOUS_OBJECT_LIST,
     GET_ENDPOINT_ACTIVITY_DATA_COUNT_COMMAND: TABLE_GET_ENDPOINT_ACTIVITY_DATA_COUNT,
@@ -469,8 +486,8 @@ def get_workbench_histories(v1_client: pytmv1.Client, start, end) -> list:
     if not check_datetime_aware(end):
         end = end.astimezone()
     # Date time format before formatting -> 2020-06-15T10:00:00.000Z
-    start = start.astimezone(timezone.utc)
-    end = end.astimezone(timezone.utc)
+    start = start.astimezone(UTC)
+    end = end.astimezone(UTC)
     start = start.isoformat(timespec="milliseconds").replace("+00:00", "Z")
     end = end.isoformat(timespec="milliseconds").replace("+00:00", "Z")
     # Format start and end to remove decimal values so that the request
@@ -887,32 +904,52 @@ def get_endpoint_activity_data(
     top = args.get(TOP, EMPTY_STRING)
     select = args.get(SELECT, EMPTY_STRING).split(",")
     query_op = args.get(QUERY_OP, EMPTY_STRING)
+    fetch_all = args.get(FETCH_ALL, FALSE)
+    fetch_max_count = int(args.get(FETCH_MAX_COUNT, DEFAULT_MAX_FETCH))
     # Choose QueryOp Enum based on user choice
     if query_op.lower() == "or":
         query_op = pytmv1.QueryOp.OR
     elif query_op.lower() == "and":
         query_op = pytmv1.QueryOp.AND
     # list to contain endpoint activity data
+    new_endpoint_activity: list[EndpointActivity] = []
+    # Output to be sent to war room
     message: list[Any] = []
     # Get the activity count
     count_obj = get_endpoint_activity_data_count(v1_client, args)
     activity_count = int(count_obj.outputs.get("endpoint_activity_count", EMPTY_STRING))  # type: ignore
-    # If activity count is greater than 5k, throw error else return response
-    if activity_count > 5000:
-        return_error("Please refine search, this query returns more than 5K results.")
-    # Make rest call
-    resp = v1_client.endpoint.list_activity(
-        start_time=start,
-        end_time=end,
-        top=top,
-        select=select,
-        op=query_op,
-        **fields,
-    )
-    resp_obj: pytmv1.ListEndpointActivityResp = unwrap(resp.response)
-    # Parse endpoint activity data to message list and send to war room
-    for activity in resp_obj.items:
-        message.append(activity.model_dump())
+    if fetch_all == TRUE:
+        if activity_count > fetch_max_count and fetch_max_count != 0:
+            return_error(
+                f"Please refine search, this query returns more than {fetch_max_count} results."
+            )
+        # Make rest call
+        resp = v1_client.endpoint.consume_activity(
+            lambda activity: new_endpoint_activity.append(activity),
+            start_time=start,
+            end_time=end,
+            top=top,
+            select=select,
+            op=query_op,
+            **fields,
+        )
+        # Parse endpoint activity data to message list and send to war room
+        for activity in new_endpoint_activity:
+            message.append(activity.model_dump())
+    else:
+        # Make rest call
+        resp = v1_client.endpoint.list_activity(  # type: ignore[assignment]
+            start_time=start,
+            end_time=end,
+            top=top,
+            select=select,
+            op=query_op,
+            **fields,
+        )
+        resp_obj: pytmv1.ListEndpointActivityResp = unwrap(resp.response)  # type: ignore[assignment]
+        # Parse endpoint activity data to message list and send to war room
+        for activity in resp_obj.items:
+            message.append(activity.model_dump())
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -999,31 +1036,52 @@ def get_email_activity_data(
     top = args.get(TOP, EMPTY_STRING)
     select = args.get(SELECT, EMPTY_STRING).split(",")
     query_op = args.get(QUERY_OP, EMPTY_STRING)
+    fetch_all = args.get(FETCH_ALL, FALSE)
+    fetch_max_count = int(args.get(FETCH_MAX_COUNT, DEFAULT_MAX_FETCH))
     # Choose QueryOp Enum based on user choice
     if query_op.lower() == "or":
         query_op = pytmv1.QueryOp.OR
     elif query_op.lower() == "and":
         query_op = pytmv1.QueryOp.AND
     # list to populate email activity data
+    new_email_activity: list[EmailActivity] = []
+    # Output to be sent to war room
     message: list[Any] = []
     # Get the activity count
     count_obj = get_email_activity_data_count(v1_client, args)
     activity_count = int(count_obj.outputs.get("email_activity_count", EMPTY_STRING))  # type: ignore
-    # If activity count is greater than 5k, throw error else return response
-    if activity_count > 5000:
-        return_error("Please refine search, this query returns more than 5K results.")
-    # Make rest call
-    resp = v1_client.email.list_activity(
-        start_time=start,
-        end_time=end,
-        top=top,
-        select=select,
-        op=query_op,
-        **fields,
-    )
-    resp_obj: pytmv1.ListEmailActivityResp = unwrap(resp.response)
-    for activity in resp_obj.items:
-        message.append(activity.model_dump())
+    # Check if user would like to fetch all activity
+    if fetch_all == TRUE:
+        if activity_count > fetch_max_count and fetch_max_count != 0:
+            return_error(
+                f"Please refine search, this query returns more than {fetch_max_count} results."
+            )
+        # Make rest call
+        resp = v1_client.email.consume_activity(
+            lambda activity: new_email_activity.append(activity),
+            start_time=start,
+            end_time=end,
+            top=top,
+            select=select,
+            op=query_op,
+            **fields,
+        )
+        # Parse endpoint activity data to message list and send to war room
+        for activity in new_email_activity:
+            message.append(activity.model_dump())
+    else:
+        # Make rest call
+        resp = v1_client.email.list_activity(  # type: ignore[assignment]
+            start_time=start,
+            end_time=end,
+            top=top,
+            select=select,
+            op=query_op,
+            **fields,
+        )
+        resp_obj: pytmv1.ListEmailActivityResp = unwrap(resp.response)  # type: ignore[assignment]
+        for activity in resp_obj.items:
+            message.append(activity.model_dump())
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -1170,7 +1228,7 @@ def fetch_incidents(v1_client: pytmv1.Client):
     This function executes to get all workbench alerts by using
     startDateTime, endDateTime and sends the result to war room.
     """
-    end = datetime.now(timezone.utc)
+    end = datetime.now(UTC)
     days = int(demisto.params().get("first_fetch", ""))
 
     last_run = demisto.getLastRun()
@@ -1968,7 +2026,7 @@ def download_analysis_report(
 
     # Create name for pdf report file to be downloaded
     name = "Trend_Micro_Sandbox_Analysis_Report"
-    file_name = f"{name}_{datetime.now(timezone.utc).replace(microsecond=0).strftime('%Y-%m-%d:%H:%M:%S')}.pdf"
+    file_name = f"{name}_{datetime.now(UTC).replace(microsecond=0).strftime('%Y-%m-%d:%H:%M:%S')}.pdf"
 
     # Make rest call
     resp = v1_client.sandbox.download_analysis_result(
@@ -2028,7 +2086,7 @@ def download_investigation_package(
 
     # Create name for zip package to be downloaded
     name = "Sandbox_Investigation_Package"
-    file_name = f"{name}_{datetime.now(timezone.utc).replace(microsecond=0).strftime('%Y-%m-%d:%H:%M:%S')}.zip"
+    file_name = f"{name}_{datetime.now(UTC).replace(microsecond=0).strftime('%Y-%m-%d:%H:%M:%S')}.zip"
 
     # Make rest call
     resp = v1_client.sandbox.download_investigation_package(
@@ -2128,7 +2186,7 @@ def submit_file_to_sandbox(
     """
     # Required Params
     file_url = args.get(FILE_URL, EMPTY_STRING)
-    file_name = args.get(FILE_NAME, EMPTY_STRING)
+    file_name = args.get("file_name", EMPTY_STRING)
     # Optional Params
     document_pass = args.get(DOCUMENT_PASSWORD, EMPTY_STRING)
     archive_pass = args.get(ARCHIVE_PASSWORD, EMPTY_STRING)
@@ -2371,14 +2429,17 @@ def update_status(
     workbench_id = args.get(WORKBENCH_ID, EMPTY_STRING)
     status = args.get(STATUS, EMPTY_STRING)
     if_match = args.get(IF_MATCH, EMPTY_STRING)
+    inv_res = args.get(INV_RESULT, EMPTY_STRING)
     message: dict[str, Any] = {}
-    # Choose Status Enum
-    sts = status.upper()
     # Assign enum status
-    status = InvestigationStatus[sts]
+    sts = AlertStatus[status.upper()]
+    inv_result = InvestigationResult[inv_res.upper()]
     # Make rest call
     resp = v1_client.alert.update_status(
-        alert_id=workbench_id, status=status, if_match=if_match
+        alert_id=workbench_id,
+        status=sts,
+        etag=if_match,
+        inv_result=inv_result,
     )
     # Check if an error occurred during rest call
     if _is_pytmv1_error(resp.result_code):
@@ -2703,6 +2764,84 @@ def delete_custom_script(
     )
 
 
+def get_observed_attack_techniques(
+    v1_client: pytmv1.Client, args: dict[str, Any]
+) -> str | CommandResults:
+    """
+    Displays a list of Observed Attack Techniques events that match the specified criteria
+    :type client: ``Client``
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
+    :type args: ``dict``
+    :param args: args object to fetch the argument data.
+    :return: sends data to demisto war room.
+    :rtype: ``dict`
+    """
+    # Required params
+    fields = json.loads(args.get(FIELDS, EMPTY_STRING))
+    # Optional params
+    top = args.get(TOP, EMPTY_STRING)
+    query_op = args.get(QUERY_OP, EMPTY_STRING)
+    detected_end_time = args.get(DETECTED_END, EMPTY_STRING)
+    ingested_end_time = args.get(INGESTED_END, EMPTY_STRING)
+    detected_start_time = args.get(DETECTED_START, EMPTY_STRING)
+    ingested_start_time = args.get(INGESTED_START, EMPTY_STRING)
+    # Choose QueryOp Enum based on user choice
+    if query_op.lower() == "or":
+        query_op = pytmv1.QueryOp.OR
+    else:
+        query_op = pytmv1.QueryOp.AND
+    # Make rest call
+    resp = v1_client.oat.list(
+        detected_start_date_time=detected_start_time,
+        detected_end_date_time=detected_end_time,
+        ingested_start_date_time=ingested_start_time,
+        ingested_end_date_time=ingested_end_time,
+        top=top,
+        op=query_op,
+        **fields,
+    )
+    # Check if an error occurred during rest call
+    if _is_pytmv1_error(resp.result_code):
+        err: pytmv1.Error = unwrap(resp.error)
+        raise Exception(f"{err.message}", str(err))
+    resp_type: pytmv1.ListOatsResp = unwrap(resp.response)
+    if resp_type.total_count > 50:
+        raise Exception(
+            "Please refine search, this query returns more than 50 results."
+        )
+
+    # Add results to message to be sent to the War Room
+    message: list[dict[str, Any]] = []
+    for item in resp_type.items:
+        _detail = item.detail.model_dump()
+        _filters = [item.model_dump() for item in item.filters]
+        _endpoint = item.endpoint.model_dump() if item.endpoint is not None else ""
+        message.append(
+            {
+                "id": item.uuid,
+                "source": item.source,
+                "detail": _detail,
+                "filters": _filters,
+                "endpoint": _endpoint,
+                "entity_name": item.entity_name,
+                "entity_type": item.entity_type,
+                "detected_date_time": item.detected_date_time,
+                "ingested_date_time": item.ingested_date_time,
+            }
+        )
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            table_name[GET_OBSERVED_ATTACK_TECHNIQUES_COMMAND],
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        ),
+        outputs_prefix="VisionOne.Get_Observed_Attack_Techniques",
+        outputs_key_field="id",
+        outputs=message,
+    )
+
+
 def main():  # pragma: no cover
     try:
         """GLOBAL VARS"""
@@ -2847,6 +2986,9 @@ def main():  # pragma: no cover
                     return_results(cmd_res)
             else:
                 return_results(status_check(v1_client, args))
+
+        elif command == GET_OBSERVED_ATTACK_TECHNIQUES_COMMAND:
+            return_results(get_observed_attack_techniques(v1_client, args))
 
         else:
             demisto.error(f"{command} command is not implemented.")

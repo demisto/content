@@ -16,7 +16,7 @@ class Client:
             self._verify = verify
         self._base_url = server_url
         self._proxy = proxy
-        self._headers = headers if headers else dict()
+        self._headers = headers if headers else {}
         self._client_cert = client_cert
         self._client_key = client_key
 
@@ -2550,7 +2550,7 @@ def swarm_init_command(client, args):
     response = client.swarm_init_request(listenaddr, advertiseaddr, datapathaddr,
                                          datapathport, defaultaddrpool, forcenewcluster,
                                          subnetsize, spec)
-    if type(response) == str:
+    if type(response) is str:
         response = {
             "Node ID": response
         }
@@ -2607,7 +2607,7 @@ def swarm_leave_command(client, args):
 
     response = client.swarm_leave_request(force)
 
-    if type(response) == dict:
+    if type(response) is dict:
         command_results = CommandResults(
             outputs_prefix='Docker',
             outputs_key_field='',

@@ -458,10 +458,10 @@ script:
       description: The server type.
       type: Number
     - contextPath: DBotScore.Indicator
-      description: The indicator of the DBotScore.
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
-      description: The indicator type of the DBotScore.
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
@@ -2410,7 +2410,7 @@ script:
       description: Parsed Whois data.
     - contextPath: Domain.WhoisRecords
       description: Full Whois record.
-  dockerimage: demisto/vendors-sdk:1.0.0.92984
+  dockerimage: demisto/vendors-sdk:1.0.0.115493
   runonce: false
   script: '-'
   type: python

@@ -1,0 +1,71 @@
+[MODEL:dataset="google_scc_raw"]
+
+        // Finding 
+alter finding_category = finding -> category,
+        finding_class = finding -> findingClass,
+        finding_description = finding -> description,
+        finding_severity = finding -> severity,
+        finding_state = if(finding -> state = "ACTIVE", false, true),
+        finding_parent_display_name = finding -> parentDisplayName
+
+| alter f_sp = finding->sourceProperties{}
+
+        // Source Properties
+| alter tmp_exposed_service = finding -> sourceProperties.ExposedService,
+        tmp_recommendation = finding -> sourceProperties.Recommendation,
+        tmp_exception_instruction = finding -> sourceProperties.ExceptionInstructions,
+        tmp_vulnerable = finding -> sourceProperties.VulnerableNetworkInterfaceNames{},
+        tmp_open_ports = finding -> sourceProperties.OpenPorts{},
+        tmp_extract_roles = regextract(f_sp,"Has(\w+Roles\":\s?true)")
+
+| alter tmp_remove_chars = split(replace(arraystring(tmp_extract_roles , ","),"\"", ""), ",")
+| alter tmp_remove_has = arraycreate(replace(arraystring(tmp_remove_chars,",") , "Has", ""))
+
+
+|alter finding_sp_description = to_string(object_create("Exposed Service", tmp_exposed_service , "Recommendation", tmp_recommendation , "Exception Instructions", tmp_exception_instruction )),
+       finding_sp_resource_path = json_extract_scalar_array(finding,  "$.sourceProperties.ResourcePath"),
+       finding_sp_command_line = arraystring(finding -> sourceProperties.gcloud_remediation[], ","),
+       finding_sp_scanner_name = finding -> sourceProperties.ScannerName,
+
+       // Defining Open Ports and Vulnerable Network Interface Names as risks
+       finding_sp_risks = arraycreate(object_create("Open Ports", replex(tmp_open_ports, "[{}\\\"\[\]]", ""), "Vulnerable Network Interface Names", replex(tmp_vulnerable, "[{}\\\"\[\]]", "")))
+
+
+        // Resource
+| alter tmp_project_id = arrayindex(regextract(resource -> project, "projects\/(.*)"),0),
+        tmp_parent_id = arrayindex(regextract(resource -> parent, "projects\/(.*)"),0)
+
+| alter resource_cloud_provider = resource -> cloudProvider,
+        resource_location = resource -> location,
+        resource_project_id = tmp_project_id,
+        resource_project_name = resource -> projectDisplayName,
+        resource_service = resource -> service,
+        resource_parent_id = tmp_parent_id ,
+        resource_display_name = resource -> displayName,
+        resource_type = resource -> type,
+        resource_resource_path_string = resource -> resourcePathString
+
+
+// XDM Mapping
+| alter xdm.event.original_event_type = finding_category ,
+        xdm.event.type = finding_class ,
+        xdm.event.description = finding_description,
+        xdm.alert.severity = finding_severity ,
+        xdm.event.is_completed = finding_state ,
+        xdm.alert.description = finding_sp_description ,
+        xdm.target.cloud.provider = resource_cloud_provider ,
+        xdm.target.cloud.zone = resource_location ,
+        xdm.target.resource.sub_type= resource_service,
+        xdm.target.cloud.project_hierarchy = finding_sp_resource_path ,
+        xdm.target.process.command_line = finding_sp_command_line ,
+        xdm.observer.name = finding_sp_scanner_name ,
+        xdm.observer.product = finding_parent_display_name ,
+        xdm.target.cloud.project_id = resource_project_id ,
+        xdm.target.cloud.project = resource_project_name ,
+        xdm.target.host.hostname = resource_project_name ,
+        xdm.target.resource.parent_id = resource_parent_id,
+        xdm.target.resource.name = resource_display_name ,
+        xdm.target.resource.type = resource_type ,
+        xdm.target.file.path = resource_resource_path_string,
+        xdm.target.user.groups = tmp_remove_chars,
+        xdm.alert.risks = finding_sp_risks;

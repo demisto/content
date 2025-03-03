@@ -18,38 +18,6 @@ configuration:
   section: Connect
   required: false
   defaultvalue: 'Cortex XDR - Lite'
-- defaultvalue: 'false'
-  display: Remove legacy incident fields
-  name: dont_format_sublists
-  type: 8
-  section: Collect
-  required: false
-  additionalinfo: Unchecked for backwards compatibility, recommended to check. This will remove duplicated incident fields under file_artifacts, network_artifacts, and alerts (like client_id, clientid.)
-- display: Incident Mirroring Direction
-  name: mirror_direction
-  required: false
-  type: 15
-  section: Collect
-  defaultvalue: None
-  options:
-  - None
-  - Incoming
-  - Outgoing
-  - Both
-- display: Custom close-reason mapping (XSOAR -> XDR mirrored incident. Overwrites default close-reason mapping defined by Cortex XSOAR)
-  section: Collect
-  additionalinfo: 'Define how to close the mirrored incidents from Cortex XSOAR into Cortex XDR with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {Cortex XSOAR close reason}={Cortex XDR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: "Resolved=Other,Duplicate=Other". Refer to integration documentation for possible close-reasons - `XDR Incident Mirroring`.'
-  name: custom_xsoar_to_xdr_close_reason_mapping
-  defaultvalue: ''
-  type: 0
-  required: false
-- display: Custom close-reason mapping (XDR -> XSOAR mirrored incident. Overwrites default close-reason mapping defined by Cortex XSOAR)
-  section: Collect
-  additionalinfo: 'Define how to close the mirrored incidents from Cortex XDR into Cortex XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {Cortex XDR close reason}={Cortex XSOAR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: “Known Issue=Resolved, Duplicate Incident=Other". Refer to integration documentation for possible close-reasons - `XDR Incident Mirroring`.'
-  name: custom_xdr_to_xsoar_close_reason_mapping
-  defaultvalue: ''
-  type: 0
-  required: false
 - name: url
   type: 0
   display: 'Server URL (copy URL from XDR)'
@@ -69,6 +37,64 @@ configuration:
   required: false
   displaypassword: API Key
   hiddenusername: true
+- defaultvalue: 'false'
+  display: Remove legacy incident fields
+  name: dont_format_sublists
+  type: 8
+  section: Collect
+  required: false
+  additionalinfo: Not selected for backwards compatibility. Recommended to select. This will remove duplicated incident fields under file_artifacts, network_artifacts, and alerts (like client_id, clientid.)
+- display: Incident Mirroring Direction
+  name: mirror_direction
+  required: false
+  type: 15
+  section: Collect
+  defaultvalue: None
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Both
+- additionalinfo: When selected, closing the Cortex XDR incident is mirrored in Cortex XSOAR.
+  defaultvalue: 'true'
+  display: Close Mirrored XSOAR Incident
+  name: close_xsoar_incident
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+- additionalinfo: "When selected, closing the Cortex XSOAR incident is mirrored in Cortex XDR. Notice: If not selected, but 'Close all related alerts in XDR' is selected, the incident will automatically be closed in Cortex XDR."
+  defaultvalue: 'true'
+  display: Close Mirrored Cortex XDR Incident
+  name: close_xdr_incident
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+- defaultvalue: '1'
+  display: XDR mirroring delay in minutes
+  name: xdr_delay
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
+  additionalinfo: "In the event of a delay in mirroring incoming changes from XDR, use the xdr_delay parameter to extend the look-back period. However, be aware that this may result in increased latency when updating incidents."
+- display: Custom close-reason mapping (XSOAR -> XDR mirrored incident. Overwrites default close-reason mapping defined by Cortex XSOAR)
+  section: Collect
+  advanced: true
+  additionalinfo: 'Define how to close the mirrored incidents from Cortex XSOAR into Cortex XDR with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {Cortex XSOAR close reason}={Cortex XDR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: "Resolved=Other,Duplicate=Other". Refer to ../README.md for possible close-reasons - `XDR Incident Mirroring`.'
+  name: custom_xsoar_to_xdr_close_reason_mapping
+  defaultvalue: ''
+  type: 0
+  required: false
+- display: Custom close-reason mapping (XDR -> XSOAR mirrored incident. Overwrites default close-reason mapping defined by Cortex XSOAR)
+  section: Collect
+  advanced: true
+  additionalinfo: 'Define how to close the mirrored incidents from Cortex XDR into Cortex XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {Cortex XDR close reason}={Cortex XSOAR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: “Known Issue=Resolved, Duplicate Incident=Other". Refer to ../README.md for possible close-reasons - `XDR Incident Mirroring`.'
+  name: custom_xdr_to_xsoar_close_reason_mapping
+  defaultvalue: ''
+  type: 0
+  required: false
 - display: API Key ID
   name: apikey_id
   type: 4
@@ -135,7 +161,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- additionalinfo: 'Whether the XDR tenant Mode is prevent only'
+- additionalinfo: 'Whether the XDR tenant mode is prevent only'
   display: Prevent Only Mode
   name: prevent_only
   type: 8
@@ -166,6 +192,14 @@ configuration:
   section: Collect
   defaultvalue: 'true'
   advanced: true
+- additionalinfo: "Whether to fetch only the essential alert fields in order to minimize the incident's information. Possible values: null_values to remove all null values from alerts data, or any other field of an alert."
+  display: Minimize Alert Information
+  name: excluded_alert_fields
+  required: false
+  type: 16
+  section: Collect
+  advanced: true
+  defaultvalue: 'null_values'
 - display: Close all related alerts in XDR
   name: close_alerts_in_xdr
   required: false
@@ -179,11 +213,11 @@ name: Cortex XDR - IR
 script:
   commands:
   - arguments:
-    - description: A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved.
+    - description: A date in the format 2019-12-31T23:59:00 in UTC. Only incidents that were created on or before the specified date/time will be retrieved.
       name: lte_creation_time
-    - description: A date in the format 2019-12-31T23:59:00. Only incidents that were created on or after the specified date/time will be retrieved.
+    - description: A date in the format 2019-12-31T23:59:00 in UTC. Only incidents that were created on or after the specified date/time will be retrieved.
       name: gte_creation_time
-    - description: Filters returned incidents that were created on or before the specified date/time, in the format 2019-12-31T23:59:00.
+    - description: Filters returned incidents that were modified on or before the specified date/time, in the format 2019-12-31T23:59:00.
       name: lte_modification_time
     - description: Filters returned incidents that were modified on or after the specified date/time, in the format 2019-12-31T23:59:00.
       name: gte_modification_time
@@ -207,7 +241,7 @@ script:
       - asc
       - desc
     - defaultValue: '0'
-      description: Page number (for pagination). The default is 0 (the first page).
+      description: Page number (for pagination). 0 is the first page.
       name: page
     - defaultValue: '100'
       description: Maximum number of incidents to return per page. The default and maximum is 100.
@@ -215,7 +249,7 @@ script:
     - description: 'Filters only incidents in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto.'
       name: status
     - auto: PREDEFINED
-      description: 'Whether the incident is starred (Boolean value: true or false).'
+      description: 'Whether the incident is starred.'
       name: starred
       predefined:
       - 'true'
@@ -274,7 +308,7 @@ script:
         Current status of the incident. Valid values are: "new","under_investigation","resolved_known_issue","resolved_duplicate_incident","resolved_false_positive","resolved_true_positive","resolved_security_testing" or "resolved_other".
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.description
-      description: Dynamic calculated description of the incident.
+      description: Description of the incident.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.resolve_comment
       description: Comments entered by the user when the incident was resolved.
@@ -302,7 +336,7 @@ script:
       description: Return data only if the incident was changed since the last time it was mirrored into Cortex XSOAR.  This flag should be used only from within a Cortex XDR incident.
       name: return_only_updated_incident
     - defaultValue: 'False'
-      description: "Excluding Network Artifacts and File Artifacts from incident data."
+      description: "Whether to exclude Network Artifacts and File Artifacts from incident data."
       name: excluding_artifacts
     description: Returns additional data for the specified incident, for example, related alerts, file artifacts, network artifacts, and so on.
     name: xdr-get-incident-extra-data
@@ -328,7 +362,7 @@ script:
       description: 'Calculated severity of the incident. Valid values are: "low","medium","high".'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.description
-      description: Dynamic calculated description of the incident.
+      description: Description of the incident.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.assigned_user_mail
       description: Email address of the assigned user.
@@ -361,7 +395,7 @@ script:
       description: Comments entered by the user when the incident was resolved.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.manual_severity
-      description: Incident severity assigned by the user. This does not affect the calculated severity of low, medium, or high.
+      description: 'Incident severity assigned by the user. This does not affect the calculated severity. Can be "low", "medium", "high".'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.manual_description
       description: Incident description provided by the user.
@@ -370,25 +404,25 @@ script:
       description: A link to the incident view on Cortex XDR.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.starred
-      description: Incident starred.
+      description: Whether the incident is starred.
       type: Boolean
     - contextPath: PaloAltoNetworksXDR.Incident.wildfire_hits.mitre_techniques_ids_and_names
-      description: Incident Mitre techniques IDs and names.
+      description: Incident MITRE techniques IDs and names.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.wildfire_hits.mitre_tactics_ids_and_names
-      description: Incident Mitre tactics ids and names.
+      description: Incident MITRE tactics IDs and names.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.alert_id
       description: Unique ID for each alert.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.detection_timestamp
-      description: Date and time that the alert occurred.
+      description: Date and time the alert occurred.
       type: Date
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.source
-      description: Source of the alert. The product/vendor this alert came from.
+      description: The product/vendor from which this alert came.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.severity
-      description: 'Severity of the alert.Valid values are: "low","medium","high""".'
+      description: 'Severity of the alert. Valid values are: "low","medium","high".'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.name
       description: Calculated name of the alert.
@@ -397,13 +431,13 @@ script:
       description: Category of the alert, for example, Spyware Detected via Anti-Spyware profile.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.description
-      description: Textual description of the alert.
+      description: Description of the alert.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.host_ip_list
-      description: Host IP involved in the alert.
+      description: Host IP address involved in the alert.
       type: Unknown
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.host_name
-      description: Host name involved in the alert.
+      description: Hostname involved in the alert.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.user_name
       description: User name involved with the alert.
@@ -451,7 +485,7 @@ script:
       description: Command line.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_process_image_sha256
-      description: Image SHA256.
+      description: Image SHA256 hash.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_process_signature_status
       description: 'Signature status. Valid values are: "Signed" "Invalid Signature" "Unsigned" "Revoked" "Signature Fail" "N/A" "Weak Hash".'
@@ -463,10 +497,10 @@ script:
       description: File path.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_file_md5
-      description: File MD5.
+      description: MD5 hash of the file.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_file_sha256
-      description: File SHA256.
+      description: SHA256 hash of the file.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_registry_data
       description: Registry data.
@@ -475,13 +509,13 @@ script:
       description: Registry full key.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_local_ip
-      description: Local IP.
+      description: Local IP address.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_local_port
       description: Local port.
       type: Number
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_remote_ip
-      description: Remote IP.
+      description: Remote IP address.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_remote_port
       description: Remote port.
@@ -490,13 +524,13 @@ script:
       description: External hostname.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.fw_app_id
-      description: Firewall app id.
+      description: Firewall app ID.
       type: Unknown
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.is_whitelisted
-      description: 'Is the alert on allow list. Valid values are: "Yes" "No".'
+      description: 'Whether the alert is on the allow list. Valid values are: "Yes" "No".'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.starred
-      description: Alert starred.
+      description: Whether the alert is starred.
       type: Boolean
     - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.type
       description: Network artifact type.
@@ -508,7 +542,7 @@ script:
       description: Number of alerts related to the artifact.
       type: number
     - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.network_remote_ip
-      description: The remote IP related to the artifact.
+      description: The remote IP address related to the artifact.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.is_manual
       description: Whether the artifact was created by the user (manually).
@@ -571,7 +605,7 @@ script:
       description: The SHA256 hash of the file.
       type: String
     - contextPath: File.Name
-      description: The full file name (including file extension).
+      description: The full file name (including the file extension).
       type: String
     - contextPath: Process.Name
       description: The name of the process.
@@ -611,7 +645,7 @@ script:
       name: incident_id
       required: true
     - auto: PREDEFINED
-      description: Severity to assign to the incident (LOW, MEDIUM, or HIGH).
+      description: Severity to assign to the incident.
       name: manual_severity
       predefined:
       - HIGH
@@ -622,7 +656,7 @@ script:
     - description: Full name of the user assigned to the incident. To supply a new value in this field, you must also provide a value for the 'assigned_user_mail' argument.
       name: assigned_user_pretty_name
     - auto: PREDEFINED
-      description: 'Status of the incident. Valid values are: NEW, UNDER_INVESTIGATION, RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE, RESOLVED_TRUE_POSITIVE, RESOLVED_SECURITY_TESTING, RESOLVED_OTHER.'
+      description: 'Status of the incident.'
       name: status
       predefined:
       - NEW
@@ -640,6 +674,7 @@ script:
       name: unassign_user
       predefined:
       - 'true'
+      - 'false'
     - description: Add a comment to the incident.
       name: add_comment
     - auto: PREDEFINED
@@ -652,44 +687,41 @@ script:
     description: Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
     name: xdr-update-incident
   - arguments:
-    - description: String value that defines the product.
+    - description: Product name.
       name: product
       required: true
-    - description: String value that defines the vendor.
+    - description: Vendor name.
       name: vendor
       required: true
-    - description: String value for the source IP address.
+    - description: Source IP address.
       name: local_ip
-    - description: Integer value for the source port.
+    - description: Source port.
       name: local_port
       required: true
     - description: |-
-        String value of the destination IP
-        address.
+        Destination IP address.
       name: remote_ip
       required: true
     - description: |-
-        Integer value for the destination
-        port.
+        Destination port.
       name: remote_port
       required: true
-    - description: Integer value representing the time the alert occurred in milliseconds, or a string value in date format 2019-10-23T10:00:00. If not set, the event time will be defined as now.
+    - description: The time the alert occurred in milliseconds, or a date in the format 2019-10-23T10:00:00. If not set, the event time will be defined as now.
       name: event_timestamp
     - auto: PREDEFINED
       defaultValue: Medium
       description: |-
-        String value of alert severity. Valid values are:
-        Informational, Low, Medium or High.
+        The alert severity. 
       name: severity
       predefined:
       - Informational
       - Low
       - Medium
       - High
-    - description: String defining the alert name.
+    - description: The alert name.
       name: alert_name
       required: true
-    - description: String defining the alert description.
+    - description: The alert description.
       name: alert_description
     description: |-
       Uploads an alert from external alert sources in Cortex XDR format. Cortex XDR displays alerts that are parsed
@@ -704,14 +736,14 @@ script:
     description: Upload alerts in CEF format from external alert sources. After you map CEF alert fields to Cortex XDR fields, Cortex XDR displays the alerts in related incidents and views. You can send 600 requests per minute. Each request can contain a maximum of 60 alerts.
     name: xdr-insert-cef-alerts
   - arguments:
-    - description: Allows linking the response action to the incident that triggered it.
+    - description: The incident ID. Allows linking the response action to the incident that triggered it.
       name: incident_id
-    - description: The endpoint ID (string) to isolate. You can retrieve the string from the xdr-get-endpoints command.
+    - description: The endpoint ID to isolate. You can retrieve the string from the xdr-get-endpoints command.
       name: endpoint_id
       required: true
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Whether to suppress an error when trying to isolate a disconnected endpoint. When sets to false, an error will be returned.
+      description: Whether to suppress an error when trying to isolate a disconnected endpoint. When set to false, an error will be returned.
       name: suppress_disconnected_endpoint_error
       predefined:
       - 'true'
@@ -720,7 +752,7 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    - description: For polling use.
+    - description: The action IDs for polling use.
       isArray: true
       name: action_id
       deprecated: true
@@ -733,14 +765,14 @@ script:
       type: String
     polling: true
   - arguments:
-    - description: Allows linking the response action to the incident that triggered it.
+    - description: The incident ID. Allows linking the response action to the incident that triggered it.
       name: incident_id
-    - description: The endpoint ID (string) to isolate. You can retrieve the string from the xdr-get-endpoints command.
+    - description: The endpoint ID to isolate. You can retrieve the string from the xdr-get-endpoints command.
       name: endpoint_id
       required: true
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Whether to suppress an error when trying to isolate a disconnected endpoint. When sets to false, an error will be returned.
+      description: Whether to suppress an error when trying to isolate a disconnected endpoint. When set to false, an error will be returned.
       name: suppress_disconnected_endpoint_error
       predefined:
       - 'true'
@@ -754,13 +786,13 @@ script:
       description: The endpoint ID.
       type: String
   - arguments:
-    - description: Allows linking the response action to the incident that triggered it.
+    - description: The incident ID. Allows linking the response action to the incident that triggered it.
       name: incident_id
-    - description: The endpoint ID (string) for which to reverse the isolation. You can retrieve it from the xdr-get-endpoints command.
+    - description: The endpoint ID for which to reverse the isolation. You can retrieve it from the xdr-get-endpoints command.
       name: endpoint_id
       required: true
     - description: |-
-        Whether to suppress an error when trying to unisolate a disconnected endpoint. When sets to false, an error will be returned.
+        Whether to suppress an error when trying to unisolate a disconnected endpoint. When set to false, an error will be returned.
       name: suppress_disconnected_endpoint_error
       auto: PREDEFINED
       defaultValue: 'false'
@@ -773,7 +805,7 @@ script:
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
     - description: |-
-        For polling use.
+        The action IDs for polling use.
       isArray: true
       name: action_id
       deprecated: true
@@ -794,14 +826,14 @@ script:
       description: Isolates the specified endpoint.
       type: String
     arguments:
-    - description: Allows linking the response action to the incident that triggered it.
+    - description: The incident ID. Allows linking the response action to the incident that triggered it.
       name: incident_id
-    - description: The endpoint ID (string) for which to reverse the isolation. You can retrieve it from the xdr-get-endpoints command.
+    - description: The endpoint ID for which to reverse the isolation. You can retrieve it from the xdr-get-endpoints command.
       name: endpoint_id
       required: true
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Whether to suppress an error when trying to unisolate a disconnected endpoint. When sets to false, an error will be returned.
+      description: Whether to suppress an error when trying to unisolate a disconnected endpoint. When set to false, an error will be returned.
       name: suppress_disconnected_endpoint_error
       predefined:
       - 'true'
@@ -833,7 +865,7 @@ script:
         Example: group_name1,group_name2.
       isArray: true
       name: group_name
-    - description: 'The endpoint platform. Valid values are\: "windows", "linux", "macos", or "android". '
+    - description: 'The endpoint platform.'
       isArray: true
       name: platform
       auto: PREDEFINED
@@ -860,21 +892,21 @@ script:
       name: hostname
       isArray: true
     - description: |-
-        All the agents that were first seen after {first_seen_gte}.
+        Include agents that were first seen on and after this date.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
         "2019-10-21T23:45:00" (date).
       name: first_seen_gte
     - description: |-
-        All the agents that were first seen before {first_seen_lte}.
+        Include agents that were first seen on and before this date.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
         "2019-10-21T23:45:00" (date).
       name: first_seen_lte
     - description: |-
-        All the agents that were last seen before {last_seen_gte}.
+        Include agents that were last seen on and after this date.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
@@ -888,28 +920,42 @@ script:
         "2019-10-21T23:45:00" (date).
       name: last_seen_lte
     - defaultValue: '0'
-      description: Page number (for pagination). The default is 0 (the first page).
+      description: Page number (for pagination). 0 is the first page.
       name: page
     - description: Maximum number of endpoints to return per page. The default and maximum is 30.
       name: limit
       defaultValue: '30'
     - auto: PREDEFINED
-      description: Specifies whether to sort endpoints by the first time or last time they were seen. Can be "first_seen" or "last_seen".
+      description: Specifies whether to sort endpoints by the first time or last time they were seen.
       name: sort_by
       predefined:
       - first_seen
       - last_seen
     - name: sort_order
-      description: The order by which to sort results. Can be "asc" (ascending) or "desc" ( descending). Default set to asc.
+      description: The order by which to sort results. Can be "asc" (ascending) or "desc" (descending).
       auto: PREDEFINED
       defaultValue: asc
       predefined:
       - asc
       - desc
     - name: username
-      description: The usernames to query for, accepts a single user, or comma-separated list of usernames.
+      description: The usernames to query for. Accepts a single user, or comma-separated list of usernames.
       isArray: true
-    description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether to return all endpoints. If true, will override the 'limit' and 'page' arguments.
+      name: all_results
+      predefined:
+      - "false"
+      - "true"
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether to return timestamp or date string values.
+      name: convert_timestamp_to_datestring
+      predefined:
+      - "false"
+      - "true"
+    description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set. (Start by counting from 0).
     name: xdr-get-endpoints
     outputs:
     - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_id
@@ -925,7 +971,7 @@ script:
       description: The status of the endpoint.
       type: String
     - contextPath: PaloAltoNetworksXDR.Endpoint.os_type
-      description: The endpoint OS type.
+      description: The endpoint operating type.
       type: String
     - contextPath: PaloAltoNetworksXDR.Endpoint.ip
       description: A list of IP addresses.
@@ -937,13 +983,13 @@ script:
       description: The endpoint domain.
       type: String
     - contextPath: PaloAltoNetworksXDR.Endpoint.alias
-      description: The endpoint's aliases.
+      description: The endpoint aliases.
       type: String
     - contextPath: PaloAltoNetworksXDR.Endpoint.first_seen
-      description: First seen date/time in Epoch (milliseconds).
+      description: First seen date/time in epoch (milliseconds).
       type: Unknown
     - contextPath: PaloAltoNetworksXDR.Endpoint.last_seen
-      description: Last seen date/time in Epoch (milliseconds).
+      description: Last seen date/time in epoch (milliseconds).
       type: Date
     - contextPath: PaloAltoNetworksXDR.Endpoint.content_version
       description: Content version.
@@ -955,7 +1001,7 @@ script:
       description: Active directory.
       type: String
     - contextPath: PaloAltoNetworksXDR.Endpoint.install_date
-      description: Install date in Epoch (milliseconds).
+      description: Install date in epoch (milliseconds).
       type: Date
     - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_version
       description: Endpoint version.
@@ -982,7 +1028,7 @@ script:
       description: The domain of the endpoint.
       type: String
     - contextPath: Endpoint.OS
-      description: The endpoint's operation system.
+      description: The endpoint's operating system.
       type: String
     - contextPath: Account.Username
       description: The username in the relevant system.
@@ -1049,28 +1095,28 @@ script:
       isArray: true
       name: hostname
     - description: |-
-        All the agents that were first seen after {first_seen_gte} to use as a filter.
+        Include agents that were first seen on and after this date.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
         "2019-10-21T23:45:00" (date).
       name: first_seen_gte
     - description: |-
-        All the agents that were first seen before {first_seen_lte} to use as a filter.
+        Include agents that were first seen on and before this date.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
         "2019-10-21T23:45:00" (date).
       name: first_seen_lte
     - description: |-
-        All the agents that were last seen after {last_seen_gte} to use as a filter.
+        Include agents that were last seen on and after this date.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
         "2019-10-21T23:45:00" (date).
       name: last_seen_gte
     - description: |-
-        All the agents that were last seen before {last_seen_lte} to use as a filter.
+        Include agents that were last seen on and before this date.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
@@ -1112,11 +1158,11 @@ script:
       type: Unknown
     arguments: []
   - arguments:
-    - description: A string representing the name of the installation package.
+    - description: The name of the installation package.
       name: name
       required: true
     - auto: PREDEFINED
-      description: "String, valid values are:\n• windows \n• linux\n• macos \n• android."
+      description: "The platform type."
       name: platform
       predefined:
       - windows
@@ -1126,15 +1172,15 @@ script:
       required: true
     - auto: PREDEFINED
       description: |-
-        A string representing the type of package to create.
-        standalone - An installation for a new agent
+        The type of package to create.
+        standalone - An installation for a new agent.
         upgrade - An upgrade of an agent from ESM.
       name: package_type
       predefined:
       - standalone
       - upgrade
       required: true
-    - description: agent_version returned from xdr-get-distribution-versions. Not required for Android platform.
+    - description: Agent version returned from xdr-get-distribution-versions. Not required for an Android platform.
       name: agent_version
       required: true
     - description: Information about the package.
@@ -1149,18 +1195,18 @@ script:
       description: The name of the installation package.
       type: String
     - contextPath: PaloAltoNetworksXDR.Distribution.platform
-      description: The installation OS.
+      description: The installation operating system.
       type: String
     - contextPath: PaloAltoNetworksXDR.Distribution.agent_version
       description: Agent version.
       type: String
     - contextPath: PaloAltoNetworksXDR.Distribution.description
-      description: Information about the package.
+      description: Description of the package.
       type: String
   - arguments:
     - description: |-
         The ID of the installation package.
-        Copy the distribution_id from the "id" field on Endpoints > Agent Installation page.
+        Copy the distribution ID from the "id" field on the Endpoints > Agent Installation page.
       name: distribution_id
       required: true
     - auto: PREDEFINED
@@ -1184,6 +1230,13 @@ script:
       - x86
       - x64
       required: true
+    - name: download_package
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Supported only for package_type x64 or x86. Whether to actually download the installation package file.
+      defaultValue: "false"
     description: Gets the distribution URL for downloading the installation package.
     name: xdr-get-distribution-url
     outputs:
@@ -1205,10 +1258,10 @@ script:
       description: Distribution ID.
       type: String
     - contextPath: PaloAltoNetworksXDR.Distribution.status
-      description: The status of installation package.
+      description: The status of the installation package.
       type: String
   - arguments:
-    - description: User’s email address.
+    - description: "User's email address."
       name: email
     - description: The audit log type.
       name: type
@@ -1260,13 +1313,13 @@ script:
         "2019-10-21T23:45:00" (date).
       name: timestamp_lte
     - defaultValue: '0'
-      description: Page number (for pagination). The default is 0 (the first page).
+      description: Page number (for pagination). 0 is the first page.
       name: page
     - defaultValue: '30'
       description: Maximum number of audit logs to return per page. The default and maximum is 30.
       name: limit
     - auto: PREDEFINED
-      description: Specifies the field by which to sort the results. By default the sort is defined as creation-time and DESC. Can be "type", "sub_type", "result", or "timestamp".
+      description: Specifies the field by which to sort the results. By default the sort is defined as creation-time and DESC.
       name: sort_by
       predefined:
       - type
@@ -1275,7 +1328,7 @@ script:
       - timestamp
     - auto: PREDEFINED
       defaultValue: desc
-      description: The sort order. Can be "asc" (ascending) or "desc" (descending). Default set to "desc".
+      description: The sort order. Can be "asc" (ascending) or "desc" (descending).
       name: sort_order
       predefined:
       - asc
@@ -1299,7 +1352,7 @@ script:
       description: Audit asset names.
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_HOSTNAME
-      description: Host name.
+      description: Hostname.
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_RESULT
       description: Audit result.
@@ -1329,7 +1382,7 @@ script:
     - description: A comma-separated list of endpoint names.
       isArray: true
       name: endpoint_names
-    - description: The report type. Can be "Installation", "Policy", "Action", "Agent Service", "Agent Modules", or "Agent Status".
+    - description: The report type.
       isArray: true
       name: type
       auto: PREDEFINED
@@ -1385,7 +1438,7 @@ script:
       - Success
       - Fail
     - description: |-
-        Return logs that their timestamp is greater than 'log_time_after'.
+        Return logs for which the timestamp is greater than 'log_time_after'.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
@@ -1400,13 +1453,13 @@ script:
         "2019-10-21T23:45:00" (date).
       name: timestamp_lte
     - defaultValue: '0'
-      description: Page number (for pagination). The default is 0 (the first page).
+      description: Page number (for pagination). 0 is the first page.
       name: page
     - defaultValue: '30'
       description: The maximum number of reports to return. Default and maximum is 30.
       name: limit
     - auto: PREDEFINED
-      description: The field by which to sort results. Can be "type", "category", "trapsversion", "timestamp", or "domain").
+      description: The field by which to sort results.
       name: sort_by
       predefined:
       - type
@@ -1416,7 +1469,7 @@ script:
       - domain
     - auto: PREDEFINED
       defaultValue: asc
-      description: The sort order. Can be "asc" (ascending) or "desc" (descending). Default is "asc".
+      description: The sort order. Can be "asc" (ascending) or "desc" (descending).
       name: sort_order
       predefined:
       - asc
@@ -1437,10 +1490,10 @@ script:
       description: Traps version.
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditAgentReports.RECEIVEDTIME
-      description: Received time in Epoch time.
+      description: Received time in epoch time.
       type: Date
     - contextPath: PaloAltoNetworksXDR.AuditAgentReports.TIMESTAMP
-      description: Timestamp in Epoch time.
+      description: Timestamp in epoch time.
       type: Date
     - contextPath: PaloAltoNetworksXDR.AuditAgentReports.CATEGORY
       description: Report category (e.g., Audit).
@@ -1458,7 +1511,7 @@ script:
       description: Report reason.
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditAgentReports.DESCRIPTION
-      description: Agent report description.
+      description: Description of the agent report.
       type: String
     - contextPath: Endpoint.ID
       description: The unique ID within the tool retrieving the endpoint.
@@ -1472,13 +1525,13 @@ script:
   - arguments:
     - description: Links the response action to the triggered incident.
       name: incident_id
-    - description: String that represents a list of hashed files you want to block list. Must be a valid SHA256 hash.
+    - description: String that represents a list of hashed files you want to add to the block list. Must be a valid SHA256 hash.
       isArray: true
       name: hash_list
       required: true
     - description: String that represents additional information regarding the action.
       name: comment
-    - description: Choose either regular response or detailed response. Default value = false, regular response.
+    - description: Whether to retrieve a regular response or detailed response. False = regular response. True = detailed response.
       name: detailed_response
       auto: PREDEFINED
       defaultValue: 'false'
@@ -1489,10 +1542,10 @@ script:
     name: xdr-blocklist-files
     outputs:
     - contextPath: PaloAltoNetworksXDR.blocklist.added_hashes
-      description: Number of file hashes added to block list.
+      description: Number of file hashes added to the block list.
       type: Number
     - contextPath: PaloAltoNetworksXDR.blocklist.excluded_hashes
-      description: Number of file hashes excluded from block list.
+      description: Number of file hashes excluded from the block list.
       type: Number
   - arguments:
     - description: Allows linking the response action to the incident that triggered it.
@@ -1504,7 +1557,7 @@ script:
     - description: String that represents additional information regarding the action.
       name: comment
     deprecated: true
-    description: Deprecated, use `xdr-blocklist-files` instead.
+    description: Deprecated. Use `xdr-blocklist-files` instead.
     name: xdr-blacklist-files
   - arguments:
     - description: Links the response action to the triggered incident.
@@ -1517,19 +1570,19 @@ script:
       name: comment
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Choose either regular response or detailed response. Default value = false, regular response.
+      description: Whether to retrieve a regular response or detailed response. False = regular response. True = detailed response.
       name: detailed_response
       predefined:
       - 'true'
       - 'false'
-    description: Adds requested files to allow list if they are not already on block list or allow list.
+    description: Adds requested files to the allow list if they are not already on the block list or allow list.
     name: xdr-allowlist-files
     outputs:
     - contextPath: PaloAltoNetworksXDR.allowlist.added_hashes
-      description: Number of added file hashes to allowlist.
+      description: Number of added file hashes to allow list.
       type: Number
     - contextPath: PaloAltoNetworksXDR.allowlist.excluded_hashes
-      description: Number of excluded file hashes from allowlist.
+      description: Number of excluded file hashes from allow list.
       type: Number
   - arguments:
     - description: Allows linking the response action to the incident that triggered it.
@@ -1541,7 +1594,7 @@ script:
     - description: String that represents additional information regarding the action.
       name: comment
     deprecated: true
-    description: Deprecated, use `xdr-allowlist-files` instead.
+    description: Deprecated. Use `xdr-allowlist-files` instead.
     name: xdr-whitelist-files
   - arguments:
     - description: Allows linking the response action to the incident that triggered it.
@@ -1553,20 +1606,48 @@ script:
     - description: String that represents the path of the file you want to quarantine.
       name: file_path
       required: true
-    - description: String that represents the file’s hash. Must be a valid SHA256 hash.
+    - description: String that represents the file's hash. Must be a valid SHA256 hash.
       name: file_hash
       required: true
     - description: Interval in seconds between each poll.
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    - description: For polling use.
+    - description: The action IDs for polling use.
       isArray: true
       name: action_id
       deprecated: true
     description: Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
     name: xdr-file-quarantine
     polling: true
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
   - deprecated: true
     description: Deprecated. Use `xdr-file-quarantine` instead.
     name: xdr-quarantine-files
@@ -1580,11 +1661,11 @@ script:
     - description: String that represents the path of the file you want to quarantine.
       name: file_path
       required: true
-    - description: String that represents the file’s hash. Must be a valid SHA256 hash.
+    - description: String that represents the file's hash. Must be a valid SHA256 hash.
       name: file_hash
       required: true
   - arguments:
-    - description: String the represents the endpoint ID.
+    - description: String that represents the endpoint ID.
       name: endpoint_id
       required: true
     - description: String that represents the file hash. Must be a valid SHA256 hash.
@@ -1598,29 +1679,57 @@ script:
   - arguments:
     - description: Allows linking the response action to the incident that triggered it.
       name: incident_id
-    - description: String that represents the file in hash. Must be a valid SHA256 hash.
+    - description: The hash code of the file. Must be a valid SHA256 hash.
       name: file_hash
       required: true
-    - description: String that represents the endpoint ID. If you do not enter a specific endpoint ID, the request will run restore on all endpoints which relate to the quarantined file you defined.
+    - description: String that represents the endpoint ID. If you do not enter a specific endpoint ID, the request will run restore on all endpoints that relate to the quarantined file you defined.
       name: endpoint_id
     - description: Interval in seconds between each poll.
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    - description: For polling use.
+    - description: The action IDs for polling use.
       isArray: true
       name: action_id
       deprecated: true
     description: Restores a quarantined file on requested endpoints.
     name: xdr-file-restore
     polling: true
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
   - arguments:
     - description: Allows to link the response action to the incident that triggered it.
       name: incident_id
-    - description: String that represents the file in hash. Must be a valid SHA256 hash.
+    - description: The hash code of the file. Must be a valid SHA256 hash.
       name: file_hash
       required: true
-    - description: String that represents the endpoint ID. If you do not enter a specific endpoint ID, the request will run restore on all endpoints which relate to the quarantined file you defined.
+    - description: The endpoint ID. If you do not enter a specific endpoint ID, the request will run restore on all endpoints that relate to the quarantined file you defined.
       name: endpoint_id
     deprecated: true
     description: Deprecated. Use `xdr-file-restore` instead.
@@ -1634,13 +1743,13 @@ script:
     - description: Name of the distribution list.
       isArray: true
       name: dist_name
-    - description: GTE first seen timestamp in milliseconds.
+    - description: Greater than or equal to first seen timestamp in milliseconds.
       name: gte_first_seen
-    - description: GET last seen timestamp in milliseconds.
+    - description: Greater than or equal to last seen timestamp in milliseconds.
       name: gte_last_seen
-    - description: LTE first seen timestamp in milliseconds.
+    - description: Less than or equal to first seen timestamp in milliseconds.
       name: lte_first_seen
-    - description: LTE last seen timestamp in milliseconds.
+    - description: Less than or equal to last seen timestamp in milliseconds.
       name: lte_last_seen
     - description: List of IP addresses.
       isArray: true
@@ -1661,7 +1770,7 @@ script:
       isArray: true
       name: alias
     - auto: PREDEFINED
-      description: Whether an endpoint has been isolated. Can be "isolated" or "unisolated".
+      description: Whether an endpoint has been isolated.
       name: isolate
       predefined:
       - isolated
@@ -1676,7 +1785,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: For polling use.
+    - description: The action IDs for polling use.
       isArray: true
       name: action_id
       deprecated: true
@@ -1684,7 +1793,7 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    description: 'Runs a scan on a selected endpoint. To scan all endpoints, run this command with argument all=true. Note: scanning all the endpoints may cause performance issues and latency.'
+    description: 'Runs a scan on a selected endpoint. To scan all endpoints, run this command with argument all=true. Note: Scanning all the endpoints may cause performance issues and latency.'
     execution: true
     name: xdr-endpoint-scan-execute
     outputs:
@@ -1694,6 +1803,33 @@ script:
     - contextPath: PaloAltoNetworksXDR.endpointScan.aborted
       description: Was the scan aborted?
       type: Boolean
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
     polling: true
   - arguments:
     - description: Allows linking the response action to the incident that triggered it.
@@ -1704,13 +1840,13 @@ script:
     - description: Name of the distribution list.
       isArray: true
       name: dist_name
-    - description: GTE first seen timestamp in milliseconds.
+    - description: Greater than or equal to first seen timestamp in milliseconds.
       name: gte_first_seen
-    - description: GTE last seen timestamp in milliseconds.
+    - description: Greater than or equal to last seen timestamp in milliseconds.
       name: gte_last_seen
-    - description: LTE first seen timestamp in milliseconds.
+    - description: Less than or equal to first seen timestamp in milliseconds.
       name: lte_first_seen
-    - description: LTE last seen timestamp in milliseconds.
+    - description: Less than or equal to last seen timestamp in milliseconds.
       name: lte_last_seen
     - description: List of IP addresses.
       isArray: true
@@ -1731,7 +1867,7 @@ script:
       isArray: true
       name: alias
     - auto: PREDEFINED
-      description: Whether an endpoint has been isolated. Can be "isolated" or "unisolated".
+      description: Whether an endpoint has been isolated.
       name: isolate
       predefined:
       - isolated
@@ -1741,7 +1877,7 @@ script:
       name: hostname
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: 'Whether to scan all of the endpoints. Note: scanning all of the endpoints may cause performance issues and latency.'
+      description: 'Whether to scan all of the endpoints. Note: Scanning all of the endpoints may cause performance issues and latency.'
       name: all
       predefined:
       - 'true'
@@ -1766,13 +1902,13 @@ script:
     - description: Name of the distribution list.
       isArray: true
       name: dist_name
-    - description: GTE first seen timestamp in milliseconds.
+    - description: Greater than or equal to first seen timestamp in milliseconds.
       name: gte_first_seen
-    - description: GTE last seen timestamp in milliseconds.
+    - description: Greater than or equal to last seen timestamp in milliseconds.
       name: gte_last_seen
-    - description: LTE first seen timestamp in milliseconds.
+    - description: Less than or equal to first seen timestamp in milliseconds.
       name: lte_first_seen
-    - description: LTE last seen timestamp in milliseconds.
+    - description: Less than or equal to last seen timestamp in milliseconds.
       name: lte_last_seen
     - description: List of IP addresses.
       isArray: true
@@ -1792,7 +1928,7 @@ script:
     - description: Endpoint alias name.
       isArray: true
       name: alias
-    - description: Whether an endpoint has been isolated. Can be "isolated" or "unisolated".
+    - description: Whether an endpoint has been isolated.
       name: isolate
       auto: PREDEFINED
       predefined:
@@ -1803,7 +1939,7 @@ script:
       name: hostname
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: 'Whether to scan all of the endpoints. Note: scanning all of the endpoints may cause performance issues and latency.'
+      description: 'Whether to scan all of the endpoints. Note: Scanning all of the endpoints may cause performance issues and latency.'
       name: all
       predefined:
       - 'true'
@@ -1818,7 +1954,7 @@ script:
     - contextPath: PaloAltoNetworksXDR.endpointScan.aborted
       description: Was the scan aborted?
       type: Boolean
-  - description: "Gets mapping fields from remote incident. Note: This method will not update the current incident, it's here for debugging purposes."
+  - description: "Gets mapping fields from remote incident. Note: This method will not update the current incident. It's here for debugging purposes."
     name: get-mapping-fields
     arguments: []
   - arguments:
@@ -1828,10 +1964,10 @@ script:
     - defaultValue: '0'
       description: UTC timestamp in seconds. The incident is only updated if it was modified after the last update time.
       name: lastUpdate
-    description: "Gets remote data from a remote incident. Note: This method will not update the current incident, it's here for debugging purposes."
+    description: "Gets remote data from a remote incident. Note: This method will not update the current incident. It's here for debugging purposes."
     name: get-remote-data
   - arguments:
-    - description: Date string representing the local time.The incident is only returned if it was modified after the last update time.
+    - description: "Date string representing the local date time in the ISO 8601 format (for example: 2019-10-23T10:00:00). The incident is only returned if it was modified after the last update time."
       name: lastUpdate
     description: 'Gets the list of incidents that were modified since the last update. Note: This method is here for debugging purposes. get-modified-remote-data is used as part of a Mirroring feature, which is available since version 6.1.'
     name: get-modified-remote-data
@@ -1935,7 +2071,7 @@ script:
     - description: A comma-separated list of endpoint IDs. You can retrieve the endpoint IDs from the xdr-get-endpoints command.
       isArray: true
       name: endpoint_ids
-    - description: 'Type of violation. Possible values are: "cd-rom", "disk drive", "floppy disk", and "portable device".'
+    - description: 'Type of violation.'
       name: type
       auto: PREDEFINED
       predefined:
@@ -1987,7 +2123,7 @@ script:
       description: Type of the operating system.
       type: string
     - contextPath: PaloAltoNetworksXDR.EndpointViolations.violations.hostname
-      description: Host name of the violation.
+      description: Hostname of the violation.
       type: string
     - contextPath: PaloAltoNetworksXDR.EndpointViolations.violations.username
       description: Username of the violation.
@@ -2045,7 +2181,7 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    - description: For polling use.
+    - description: The action IDs for polling use.
       isArray: true
       name: action_id
       deprecated: true
@@ -2064,6 +2200,33 @@ script:
     - contextPath: PaloAltoNetworksXDR.RetrievedFiles.status
       description: The action status. Added only when the operation is unsuccessful.
       type: string
+    - contextPath: PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
     polling: true
   - arguments:
     - description: Allows linking the response action to the incident that triggered it.
@@ -2092,7 +2255,7 @@ script:
       description: ID of the action to retrieve files from selected endpoints.
       type: string
   - arguments:
-    - description: Action ID retrieved from the xdr-retrieve-files command.
+    - description: Action IDs retrieved from the xdr-retrieve-files command.
       isArray: true
       name: action_id
       required: true
@@ -2146,7 +2309,7 @@ script:
       description: Script name.
       type: string
     - contextPath: PaloAltoNetworksXDR.ScriptMetadata.description
-      description: Script description.
+      description: Description of the script.
       type: string
     - contextPath: PaloAltoNetworksXDR.ScriptMetadata.modification_date
       description: Timestamp of when the script was last modified.
@@ -2167,7 +2330,7 @@ script:
       description: Whether the script can be executed on a Mac operating system.
       type: boolean
     - contextPath: PaloAltoNetworksXDR.ScriptMetadata.entry_point
-      description: Name of the entry point selected for the script. An empty string indicates  the script defined as just run.
+      description: Name of the entry point selected for the script. An empty string indicates the script was defined as just run.
       type: string
     - contextPath: PaloAltoNetworksXDR.ScriptMetadata.script_input
       description: Name and type for the specified entry point.
@@ -2195,7 +2358,7 @@ script:
       description: Unique identifier of the script.
       type: string
   - arguments:
-    - description: The action ID of the selected request. After performing an action, you will receive an action ID.
+    - description: The action IDs of the selected request. After performing an action, you will receive an action ID.
       isArray: true
       name: action_id
       required: true
@@ -2228,8 +2391,9 @@ script:
     - defaultValue: '600'
       description: The timeout in seconds for this execution.
       name: timeout
-    description: This command will soon be deprecated; prefer xdr-script-run instead. Initiates a new endpoint script execution action using a script from the script library.
+    description: Deprecated. Run xdr-script-run instead.
     name: xdr-run-script
+    deprecated: true
     outputs:
     - contextPath: PaloAltoNetworksXDR.ScriptRun.action_id
       description: ID of the action initiated.
@@ -2257,12 +2421,12 @@ script:
     - description: Polling timeout in seconds.
       name: polling_timeout_in_seconds
       defaultValue: '600'
-    - description: action ID for polling.
+    - description: The action ID for polling use.
       name: action_id
       deprecated: true
     - name: hide_polling_output
       deprecated: true
-      description: whether to hide the polling result (automatically filled by polling).
+      description: Whether to hide the polling result (automatically filled by polling).
     description: Initiates a new endpoint script execution action using a script from the script library and returns the results.
     name: xdr-script-run
     polling: true
@@ -2277,10 +2441,10 @@ script:
       description: Endpoint IP address.
       type: String
     - contextPath: PaloAltoNetworksXDR.ScriptResult.results.endpoint_name
-      description: Number of successfully retrieved files.
+      description: Name of successfully retrieved files.
       type: String
     - contextPath: PaloAltoNetworksXDR.ScriptResult.results.failed_files
-      description: Number of files failed to retrieve.
+      description: Number of files failed to be retrieved.
       type: Number
     - contextPath: PaloAltoNetworksXDR.ScriptResult.results.endpoint_status
       description: Endpoint status.
@@ -2309,14 +2473,14 @@ script:
     - description: A comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command.
       name: endpoint_ids
       required: true
-    - description: Section of a script you want to initiate on an endpoint (e.g., print("7")).
+    - description: Section of a script to initiate on an endpoint (e.g., print("7")).
       name: snippet_code
       required: true
     - description: Interval in seconds between each poll.
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    - description: For polling use.
+    - description: Action IDs for polling use.
       isArray: true
       name: action_id
       deprecated: true
@@ -2329,6 +2493,33 @@ script:
     - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
     polling: true
   - arguments:
     - description: Allows linking the response action to the incident that triggered it.
@@ -2363,37 +2554,37 @@ script:
       description: General status of the action, considering the status of all the endpoints.
       type: String
     - contextPath: PaloAltoNetworksXDR.ScriptStatus.error_message
-      description: Error message regarding permissions for running APIs or the action doesn’t exist.
+      description: Error message regarding permissions for running APIs or the action doesn't exist.
       type: String
     - contextPath: PaloAltoNetworksXDR.ScriptStatus.endpoints_timeout
-      description: Number of endpoints in "timeout" status.
+      description: Number of endpoints in the "timeout" status.
       type: Number
     - contextPath: PaloAltoNetworksXDR.ScriptStatus.action_id
       description: ID of the action initiated.
       type: Number
     - contextPath: PaloAltoNetworksXDR.ScriptStatus.endpoints_pending_abort
-      description: Number of endpoints in "pending abort" status.
+      description: Number of endpoints in the "pending abort" status.
       type: Number
     - contextPath: PaloAltoNetworksXDR.ScriptStatus.endpoints_pending
-      description: Number of endpoints in "pending" status.
+      description: Number of endpoints in the "pending" status.
       type: Number
     - contextPath: PaloAltoNetworksXDR.ScriptStatus.endpoints_in_progress
-      description: Number of endpoints in "in progress" status.
+      description: Number of endpoints in the "in progress" status.
       type: Number
     - contextPath: PaloAltoNetworksXDR.ScriptStatus.endpoints_failed
-      description: Number of endpoints in "failed" status.
+      description: Number of endpoints in the "failed" status.
       type: Number
     - contextPath: PaloAltoNetworksXDR.ScriptStatus.endpoints_expired
-      description: Number of endpoints in "expired" status.
+      description: Number of endpoints in the "expired" status.
       type: Number
     - contextPath: PaloAltoNetworksXDR.ScriptStatus.endpoints_completed_successfully
-      description: Number of endpoints in "completed successfully" status.
+      description: Number of endpoints in the "completed successfully" status.
       type: Number
     - contextPath: PaloAltoNetworksXDR.ScriptStatus.endpoints_canceled
-      description: Number of endpoints in "canceled" status.
+      description: Number of endpoints in the "canceled" status.
       type: Number
     - contextPath: PaloAltoNetworksXDR.ScriptStatus.endpoints_aborted
-      description: Number of endpoints in "aborted" status.
+      description: Number of endpoints in the "aborted" status.
       type: Number
   - arguments:
     - description: Action IDs retrieved from the xdr-run-script command.
@@ -2413,10 +2604,10 @@ script:
       description: Endpoint IP address.
       type: String
     - contextPath: PaloAltoNetworksXDR.ScriptResult.results.endpoint_name
-      description: Number of successfully retrieved files.
+      description: Name of successfully retrieved files.
       type: String
     - contextPath: PaloAltoNetworksXDR.ScriptResult.results.failed_files
-      description: Number of files failed to retrieve.
+      description: Number of files failed to be retrieved.
       type: Number
     - contextPath: PaloAltoNetworksXDR.ScriptResult.results.endpoint_status
       description: Endpoint status.
@@ -2440,7 +2631,7 @@ script:
       description: Timestamp in which the retrieved files will be deleted from the server.
       type: Date
   - arguments:
-    - description: Action ID retrieved from the xdr-run-script command.
+    - description: Action IDs retrieved from the xdr-run-script command.
       isArray: true
       name: action_id
       required: true
@@ -2490,9 +2681,20 @@ script:
     - description: A comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command.
       name: endpoint_ids
       required: true
-    - description: A comma-separated list of shell commands to execute.
+    - description: A comma-separated list of shell commands to execute. Set the `is_raw_command` argument to `true` to prevent splitting by commas. (Useful when using `||`, `&&`, `;` separators for controlling the flow of multiple commands).
       name: commands
       required: true
+    - description: Whether to pass the command as-is. When false, the command is split by commas and sent as a list of commands, that are run independently.
+      name: is_raw_command
+      type: Boolean
+      required: false
+    - description: Type of shell command.
+      auto: PREDEFINED
+      name: command_type
+      predefined:
+      - 'powershell'
+      - 'native'
+      required: false
     - defaultValue: '600'
       description: The timeout in seconds for this execution.
       name: timeout
@@ -2500,7 +2702,7 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    - description: For polling use.
+    - description: The action IDs for polling use.
       isArray: true
       name: action_id
       deprecated: true
@@ -2514,6 +2716,33 @@ script:
     - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
   - arguments:
     - description: Allows linking the response action to the incident that triggered it.
       name: incident_id
@@ -2554,7 +2783,7 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    - description: For polling use.
+    - description: The action IDs for polling use.
       isArray: true
       name: action_id
       deprecated: true
@@ -2568,6 +2797,33 @@ script:
     - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
   - arguments:
     - description: Allows linking the response action to the incident that triggered it.
       name: incident_id
@@ -2610,11 +2866,11 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    - description: For polling use.
+    - description: The action IDs for polling use.
       isArray: true
       name: action_id
       deprecated: true
-    description: Initiates a new endpoint script execution to check if file exists.
+    description: Initiates a new endpoint script execution to check if the file exists.
     name: xdr-file-exist-script-execute
     polling: true
     outputs:
@@ -2624,6 +2880,33 @@ script:
     - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
   - arguments:
     - description: Allows linking the response action to the incident that triggered it.
       name: incident_id
@@ -2666,7 +2949,7 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    - description: For polling use.
+    - description: The action IDs for polling use.
       isArray: true
       name: action_id
       deprecated: true
@@ -2680,6 +2963,33 @@ script:
     - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
   - arguments:
     - description: Allows linking the response action to the incident that triggered it.
       name: incident_id
@@ -2712,7 +3022,7 @@ script:
       description: The endpoint IP address.
       isArray: true
       name: ip
-    - description: The endpoint host name.
+    - description: The endpoint hostname.
       isArray: true
       name: hostname
     description: Returns information about an endpoint.
@@ -2743,12 +3053,12 @@ script:
       description: The integration name of the endpoint vendor.
       type: String
   - arguments:
-    - description: 'A comma-separated list of enpoint statuses to filter. Valid values are: connected, disconnected, lost, uninstalled, windows, linux, macos, android, isolated, unisolated.'
+    - description: 'A comma-separated list of endpoint statuses to filter. Valid values are: connected, disconnected, lost, uninstalled, windows, linux, macos, android, isolated, unisolated.'
       name: status
       required: true
       isArray: true
     - description: |-
-        All the agents that were last seen before {last_seen_gte}. Supported
+        All the agents that were last seen after {last_seen_gte}. Supported
                 values: 1579039377301 (time in milliseconds) "3 days" (relative date) "2019-10-21T23:45:00"
                 (date).
       name: last_seen_gte
@@ -2778,6 +3088,13 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - description: Whether to return events_from_decider context output as a dictionary (the raw API response) or as a list (improved for playbook automation) - relevant only when filter_alert_fields is set to False.
+      name: events_from_decider_format
+      auto: PREDEFINED
+      defaultValue: 'dict'
+      predefined:
+      - 'list'
+      - 'dict'
     description: Returns information about each alert ID.
     name: xdr-get-cloud-original-alerts
     outputs:
@@ -2842,7 +3159,7 @@ script:
       description: Status of whether the operation has succeed or failed, if provided.
       type: String
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.operation_status_orig
-      description: The operation status code as it appears in the log, including lookup from code number to code name.
+      description: The operation status code as it appears in the log, including the lookup from the code number to code name.
       type: String
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.operation_status_orig_code
       description: The operation status code as it appears in the log.
@@ -2854,7 +3171,7 @@ script:
       description: The normalized type of the service that emitted the log row.
       type: String
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.resource_type_orig
-      description: The type of the service that omitted the log as provided by the cloud provider.
+      description: The type of the service that emitted the log as provided by the cloud provider.
       type: String
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.resource_sub_type
       description: The sub-type respective to the resource_type field, normalized across all cloud providers.
@@ -2919,7 +3236,7 @@ script:
       - low
       - medium
       - high
-    - description: "a custom filter, when using this argument, other filter arguments are not relevant. example: \n`{\n                \"OR\": [\n                    {\n                        \"SEARCH_FIELD\": \"actor_process_command_line\",\n                        \"SEARCH_TYPE\": \"EQ\",\n                        \"SEARCH_VALUE\": \"path_to_file\"\n                    }\n                ]\n            }`."
+    - description: "A custom filter. When using this argument, other filter arguments are not relevant. example: \n`{\n                \"OR\": [\n                    {\n                        \"SEARCH_FIELD\": \"actor_process_command_line\",\n                        \"SEARCH_TYPE\": \"EQ\",\n                        \"SEARCH_VALUE\": \"path_to_file\"\n                    }\n                ]\n            }`."
       name: custom_filter
     - auto: PREDEFINED
       description: Account type.
@@ -2939,7 +3256,7 @@ script:
     - description: A unique identifier per agent.
       isArray: true
       name: agent_id
-    - description: The host name to connect to. In case of a proxy connection, this value will differ from action_remote_ip.
+    - description: The hostname to connect to. In case of a proxy connection, this value will differ from action_remote_ip.
       isArray: true
       name: action_external_hostname
     - description: A string identifying the user rule.
@@ -2984,10 +3301,10 @@ script:
     - description: The command line of the process created.
       isArray: true
       name: action_process_image_command_line
-    - description: SHA256 of the binary file.
+    - description: SHA256 hash of the binary file.
       isArray: true
       name: actor_process_image_sha256
-    - description: SHA256 of the binary file.
+    - description: SHA256 hash of the binary file.
       isArray: true
       name: causality_actor_process_image_sha256
     - description: SHA256 of the binary file.
@@ -3002,7 +3319,7 @@ script:
     - description: The key data of the registry.
       isArray: true
       name: action_registry_key_data
-    - description: The host IP.
+    - description: The host IP address.
       isArray: true
       name: host_ip
     - description: The local IP address for the connection.
@@ -3058,15 +3375,15 @@ script:
     - description: The remote port for the connection.
       isArray: true
       name: action_remote_port
-    - description: The hostname we connect to. In case of a proxy connection, this value will differ from action_remote_ip.
+    - description: The hostname connected to. In case of a proxy connection, this value will differ from action_remote_ip.
       isArray: true
       name: dst_action_external_hostname
     - defaultValue: source_insert_ts
-      description: The field by which we sort the results.
+      description: The field by which to sort the results.
       isArray: true
       name: sort_field
     - auto: PREDEFINED
-      description: The order in which we sort the results.
+      description: The order in which to sort the results.
       name: sort_order
       predefined:
       - DESC
@@ -3079,9 +3396,9 @@ script:
       description: The last page from which we bring the alerts.
       isArray: true
       name: limit
-    - description: Relevant when "time_frame" argument is "custom". Supports Epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss.000Z).
+    - description: Relevant when "time_frame" argument is "custom". Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss.000Z).
       name: start_time
-    - description: Relevant when "time_frame" argument is "custom". Supports Epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss.000Z).
+    - description: Relevant when "time_frame" argument is "custom". Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss.000Z).
       name: end_time
     - auto: PREDEFINED
       description: Whether the alert is starred or not.
@@ -3163,10 +3480,10 @@ script:
       description: The alert description.
       type: String
     - contextPath: PaloAltoNetworksXDR.Alert.agent_ip_addresses
-      description: The host IP.
+      description: The host IP address.
       type: String
     - contextPath: PaloAltoNetworksXDR.Alert.agent_hostname
-      description: The host name.
+      description: The hostname.
       type: String
     - contextPath: PaloAltoNetworksXDR.Alert.mitre_tactic_id_and_name
       description: The MITRE attack tactic.
@@ -3180,7 +3497,7 @@ script:
   - arguments:
     - description: Links the response action to the incident that triggered it.
       name: incident_id
-    - description: String that represents a list of hashed files you want to add to the allow list. Must be a valid SHA256 hash.
+    - description: String that represents a list of hashed files to add to the allow list. Must be a valid SHA256 hash.
       isArray: true
       name: hash_list
       required: true
@@ -3195,17 +3512,17 @@ script:
   - arguments:
     - description: Links the response action to the incident that triggered it.
       name: incident_id
-    - description: String that represents a list of hashed files you want to add to the allow list. Must be a valid SHA256 hash.
+    - description: String that represents a list of hashed files to add to the allow list. Must be a valid SHA256 hash.
       isArray: true
       name: hash_list
       required: true
     - description: String that represents additional information regarding the action.
       name: comment
-    description: Removes requested files from block list.
+    description: Removes requested files from the block list.
     name: xdr-remove-blocklist-files
     outputs:
     - contextPath: PaloAltoNetworksXDR.blocklist.removed_hashes
-      description: Removed fileHash from blocklist.
+      description: Removed file hash from block list.
       type: Number
   - arguments:
     - description: The alert ID's from where to retrieve the contributing events.
@@ -3264,7 +3581,7 @@ script:
       description: String value that defines the new field.
       type: String
   - arguments:
-    - description: List of endpoint IDs. Supports comma separated list.
+    - description: A comma-separated list of endpoint IDs.
       isArray: true
       name: endpoint_ids
       required: true
@@ -3274,7 +3591,7 @@ script:
     description: Adds a tag to specified endpoint_ids.
     name: xdr-endpoint-tag-add
   - arguments:
-    - description: List of endpoint IDs. Supports comma-separated list.
+    - description: A comma-separated list of endpoint IDs.
       isArray: true
       required: true
       name: endpoint_ids
@@ -3289,7 +3606,7 @@ script:
       description: Expiration time pro per endpoint.
       type: Date
     - contextPath: PaloAltoNetworksXDR.TenantInformation.purchased_pro_per_endpoint.agents
-      description: Number of endpoints agent purchased.
+      description: Number of endpoint agents purchased.
       type: Number
     - contextPath: PaloAltoNetworksXDR.TenantInformation.data_enabled_pro_per_endpoint
       description: Enabled data per pro endpoint.
@@ -3322,7 +3639,7 @@ script:
       description: Whether the compute unit is a trial.
       type: Boolean
     - contextPath: PaloAltoNetworksXDR.TenantInformation.host_insights_expiration
-      description: Host iInsight expiration time.
+      description: Host insight expiration date.
       type: Date
     - contextPath: PaloAltoNetworksXDR.TenantInformation.enabled_host_insights
       description: Number of host insights enabled.
@@ -3331,7 +3648,7 @@ script:
       description: Number of purchased host insights.
       type: Number
     - contextPath: PaloAltoNetworksXDR.TenantInformation.forensics_expiration
-      description: Forensic expiration time.
+      description: Forensic expiration date.
       type: Date
     - contextPath: PaloAltoNetworksXDR.TenantInformation.purchased_forensics
       description: Number of forensics purchased.
@@ -3373,7 +3690,7 @@ script:
       name: user_id
     - description: Limit the number of users that will appear in the list. (Use limit when no specific host is requested.)
       name: limit
-      defaultValue: 50
+      defaultValue: '10'
     name: xdr-list-risky-users
     description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
     outputs:
@@ -3402,11 +3719,11 @@ script:
       description: The score.
       type: Number
   - arguments:
-    - description: The name of the host.
+    - description: The host name of a specific host.
       name: host_id
     - description: Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(Use limit when no specific host is requested.)
       name: limit
-      defaultValue: 50
+      defaultValue: '10'
     name: xdr-list-risky-hosts
     description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
     outputs:
@@ -3435,7 +3752,7 @@ script:
       description: The score.
       type: Number
   - arguments:
-    - description: A comma-separated list of one or more user group names for which you want the associated users.
+    - description: A comma-separated list of one or more user group names for the associated users.
       name: group_names
       isArray: true
       required: true
@@ -3464,7 +3781,7 @@ script:
       description: Type of user group.
       type: String
   - arguments:
-    - description: A comma-separated list of one or more role names in your environment for which you want detailed information.
+    - description: A comma-separated list of one or more role names in your environment for which to retrieve detailed information.
       name: role_names
       required: true
     name: xdr-list-roles
@@ -3499,13 +3816,13 @@ script:
       name: user_emails
       required: true
       isArray: true
-    - description: Name of the role you want to add a user to.
+    - description: Name of the role to add a user to.
       name: role_name
       required: true
     name: xdr-set-user-role
     description: Add one or more users to a role.
   - arguments:
-    - description: A comma-separate list of one or more user emails of users you want to remove from a role.
+    - description: A comma-separate list of one or more user emails of users to remove from a role.
       name: user_emails
       required: true
       isArray: true
@@ -3547,7 +3864,7 @@ script:
       Update one or more alerts with the provided arguments.
       Required license: Cortex XDR Prevent, Cortex XDR Pro per Endpoint, or Cortex XDR Pro per GB.
     name: xdr-update-alert
-  dockerimage: demisto/python3:3.10.14.96411
+  dockerimage: demisto/python3:3.11.10.116949
   isfetch: true
   isfetch:xpanse: false
   script: ''

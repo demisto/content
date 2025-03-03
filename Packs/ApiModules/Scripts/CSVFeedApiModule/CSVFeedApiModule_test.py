@@ -1,3 +1,4 @@
+
 import requests_mock
 from CSVFeedApiModule import *
 import pytest
@@ -238,11 +239,11 @@ class TestTagsParam:
                 feedTags=[]
             )
             _, _, indicators = get_indicators_command(client, args)
-            assert [] == indicators[0]['fields']['tags']
+            assert indicators[0]['fields']['tags'] == []
 
 
 def util_load_json(path):
-    with open(path, 'r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -321,6 +322,56 @@ def test_get_indicators_with_relations():
         indicators = fetch_indicators_command(client, default_indicator_type=itype, auto_detect=False,
                                               limit=35, create_relationships=True)
         assert indicators == expected_res
+
+
+def test_fetch_indicators_with_enrichment_excluded(requests_mock):
+    """
+    Given:
+    - Raw json of the csv row extracted
+
+    When:
+    - Fetching indicators from csv rows
+    - enrichment_excluded param is set to True
+
+    Then:
+    - Validate the returned list of indicators have enrichment exclusion set.
+    """
+
+    feed_url_to_config = {
+        'https://ipstack.com': {
+            'fieldnames': ['value', 'a'],
+            'indicator_type': 'IP',
+            'relationship_entity_b_type': 'IP',
+            'relationship_name': 'resolved-from',
+            'mapping': {
+                'AAA': 'a',
+                'relationship_entity_b': ('a', r'.*used\s+by\s(.*?)\s', None),
+            }
+        }
+    }
+    expected_res = ([{'value': 'test.com', 'type': 'IP',
+                      'rawJSON': {'value': 'test.com', 'a': 'Domain used by Test c&c',
+                                  None: ['2021-04-22 06:03',
+                                         'https://test.com/manual/test-iplist.txt'],
+                                  'type': 'IP'},
+                      'fields': {'AAA': 'Domain used by Test c&c', 'relationship_entity_b': 'Test',
+                                 'tags': []},
+                      'relationships': [],
+                      'enrichmentExcluded': True,
+                      }],
+                    True)
+
+    ip_ranges = 'test.com,Domain used by Test c&c,2021-04-22 06:03,https://test.com/manual/test-iplist.txt'
+
+    itype = 'IP'
+    requests_mock.get('https://ipstack.com', content=ip_ranges.encode('utf8'))
+    client = Client(
+        url="https://ipstack.com",
+        feed_url_to_config=feed_url_to_config
+    )
+    indicators = fetch_indicators_command(client, default_indicator_type=itype, auto_detect=False,
+                                          limit=35, create_relationships=False, enrichment_excluded=True)
+    assert indicators == expected_res
 
 
 def test_get_indicators_without_relations():
@@ -536,3 +587,35 @@ def test_build_iterator__with_and_without_passed_time_threshold(mocker, has_pass
     client.build_iterator()
     assert mock_session.call_args[0][0].headers.get('If-None-Match') == expected_result.get('If-None-Match')
     assert mock_session.call_args[0][0].headers.get('If-Modified-Since') == expected_result.get('If-Modified-Since')
+
+
+def test_get_indicators_command(mocker):
+    """
+            Given: params with tlp_color set to RED and enrichmentExcluded set to False
+            When: Calling get_indicators_command
+            Then: validate enrichment_excluded is set to True
+    """
+    from CSVFeedApiModule import get_indicators_command
+    client_mock = mocker.Mock()
+    args = {
+        'indicator_type': 'IP',
+        'limit': '50'
+    }
+    tags = ['tag1', 'tag2']
+    tlp_color_red_params = {
+        'tlp_color': 'RED',
+        'enrichmentExcluded': False
+    }
+    mocker.patch.object(demisto, 'params', return_value=tlp_color_red_params)
+    mocker.patch('CSVFeedApiModule.is_xsiam_or_xsoar_saas', return_value=True)
+    fetch_mock = mocker.patch('CSVFeedApiModule.fetch_indicators_command', return_value=([], None))
+    get_indicators_command(client_mock, args, tags)
+
+    fetch_mock.assert_called_with(
+        client_mock,
+        'IP',
+        None,
+        50,
+        False,
+        True  # This verifies that enrichment_excluded is set to True
+    )

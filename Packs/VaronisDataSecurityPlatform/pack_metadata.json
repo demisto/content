@@ -2,7 +2,7 @@
     "name": "Varonis Data Security Platform",
     "description": "Streamline alerts, events and related forensic information from Varonis Data Security Platform",
     "support": "partner",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.4",
     "author": "Varonis",
     "url": "https://www.varonis.com/support",
     "email": "",

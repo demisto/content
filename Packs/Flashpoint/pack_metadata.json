@@ -2,10 +2,10 @@
     "name": "Flashpoint",
     "description": "Use the Flashpoint integration to reduce business risk.",
     "support": "partner",
-    "currentVersion": "1.3.17",
+    "currentVersion": "2.0.4",
     "author": "Flashpoint",
-    "url": "",
-    "email": "demisto_support@flashpoint-intel.com",
+    "url": "https://flashpoint.my.site.com/helpcenter/s/",
+    "email": "support@flashpoint-intel.com",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
         "Data Enrichment & Threat Intelligence"

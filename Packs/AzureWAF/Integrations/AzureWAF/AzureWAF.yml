@@ -23,7 +23,7 @@ configuration:
   type: 0
   additionalinfo: Default resource group name can be overridden using resource_group_name argument in commands.
   section: Connect
-- additionalinfo: Type of authentication - can be Authorization Code Flow (recommended), Device Code Flow, or Azure Managed Identities.
+- additionalinfo: Type of authentication - can be Authorization Code Flow (recommended), Device Code Flow, Azure Managed Identities or Client Credentials Flow.
   display: Authentication Type
   name: auth_type
   required: true
@@ -32,15 +32,16 @@ configuration:
   - Authorization Code
   - Device Code
   - Azure Managed Identities
+  - Client Credentials
   type: 15
   section: Connect
-- display: Tenant ID (for authorization code mode)
+- display: Tenant ID
   name: tenant_id
   type: 0
   section: Connect
   required: false
-- display: Client Secret (for authorization code mode)
-  displaypassword: Client Secret (for authorization code mode)
+- display: Client Secret
+  displaypassword: Client Secret
   hiddenusername: true
   name: credentials
   type: 9
@@ -514,7 +515,7 @@ script:
     - contextPath: AzureWAF.ResourceGroup.tags
       description: Resource group tags.
       type: String
-  dockerimage: demisto/crypto:1.0.0.96042
+  dockerimage: demisto/crypto:1.0.0.117163
   runonce: false
   script: '-'
   subtype: python3

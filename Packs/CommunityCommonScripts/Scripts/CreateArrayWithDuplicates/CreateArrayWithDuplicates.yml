@@ -8,19 +8,20 @@ args:
   name: separator
 - description: The key to place result array in context, by default will be "array".
   name: contextKey
-comment: |-
-  Will create an array object in context from a given string input , allowing for duplicate values to be retained
+comment: 'Will create an array object in context from a given string input , allowing for duplicate values to be retained
+
 
   Output is to ContextKey.array as JSON does not permit duplicate key names
 
-  e.g., ContextKey.array.value1, ContextKey.array.value2, ContextKey.array.value3, etc.
+
+  e.g., ContextKey.array.value1, ContextKey.array.value2, ContextKey.array.value3, etc.'
 commonfields:
   id: CreateArrayWithDuplicates
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-dockerimage: demisto/python3:3.10.12.63474
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 name: CreateArrayWithDuplicates
 runas: DBotWeakRole

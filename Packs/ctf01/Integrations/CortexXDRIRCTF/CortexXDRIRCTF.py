@@ -183,10 +183,12 @@ class Client(CoreClient):
 
         return filtered_incidents
 
-    def get_incidents(self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
-                      lte_creation_time=None, gte_creation_time=None, status=None, starred=None,
-                      starred_incidents_fetch_window=None, sort_by_modification_time=None, sort_by_creation_time=None,
-                      page_number=0, limit=1000, gte_creation_time_milliseconds=0):
+    def get_incidents(  # type: ignore[override]
+        self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
+        lte_creation_time=None, gte_creation_time=None, status=None, starred=None,
+        starred_incidents_fetch_window=None, sort_by_modification_time=None, sort_by_creation_time=None,
+        page_number=0, limit=1000, gte_creation_time_milliseconds=0
+    ):
         """
         Filters and returns incidents
 
@@ -793,8 +795,7 @@ def get_modified_remote_data_command(client, args):
     demisto.debug(f'Performing get-modified-remote-data command. Last update is: {last_update}')
 
     last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})  # convert to utc format
-    if last_update_utc:
-        last_update_without_ms = last_update_utc.isoformat().split('.')[0]
+    last_update_without_ms = last_update_utc.isoformat().split('.')[0] if last_update_utc else ""
 
     raw_incidents = client.get_incidents(gte_modification_time=last_update_without_ms, limit=100)
 

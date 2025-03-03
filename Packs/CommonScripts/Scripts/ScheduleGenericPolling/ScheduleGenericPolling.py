@@ -79,8 +79,9 @@ def get_command_string(ids, pollingCommand, pollingCommandArgName, playbookId, d
               pendingIds="{}" interval="{}" timeout="{}" tag="{}" additionalPollingCommandArgNames="{}" \
               additionalPollingCommandArgValues="{}"'''.format(ids.replace('"', r'\"'), pollingCommand,
                                                                pollingCommandArgName, playbookId,
-                                                               dt.replace('"', r'\"'), interval, timeout,
-                                                               tag, args_names, args_values)
+                                                               dt.replace('"', r'\"'), interval, timeout, tag,
+                                                               args_names.replace('"', r'\"'),
+                                                               args_values.replace('"', r'\"'),)
     if extract_mode:
         command_string += f" auto-extract={extract_mode} extractMode={extract_mode}"
 
@@ -105,10 +106,8 @@ def main():  # pragma: no cover
     if interval <= 0 or timeout <= 0:
         return_error("Interval and timeout must be positive numbers")
 
-    args_names = args.get('additionalPollingCommandArgNames').strip() \
-        if args.get('additionalPollingCommandArgNames') else None
-    args_values = args.get('additionalPollingCommandArgValues').strip() \
-        if args.get('additionalPollingCommandArgValues') else None
+    args_names = (args.get('additionalPollingCommandArgNames', '') or '').strip()
+    args_values = (args.get('additionalPollingCommandArgValues', '') or '').strip()
 
     # Verify correct dt path (does not verify condition!)
     if not demisto.dt(demisto.context(), dt):

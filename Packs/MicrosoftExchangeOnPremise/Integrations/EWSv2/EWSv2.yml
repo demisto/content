@@ -78,7 +78,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- display: 'Exchange Server Version (On-Premise only. Supported versions: 2007, 2010, 2010_SP2, 2013 2016, and 2019)'
+- display: 'Exchange Server Version (On-Premise only. Supported versions: 2007, 2010, 2010_SP2, 2013, 2013_SP1, 2016, and 2019)'
   name: defaultServerVersion
   type: 0
   section: Connect
@@ -114,6 +114,18 @@ configuration:
   name: separate_process
   type: 8
   section: Connect
+  advanced: true
+  required: false
+- display: Use legacy attachment name
+  name: legacy_name
+  section: Collect
+  type: 8
+  advanced: true
+  defaultvalue: 'false'
+- display: Skip unparsable emails during fetch incidents
+  name: skip_unparsable_emails
+  section: Collect
+  type: 8
   advanced: true
   required: false
 description: Exchange Web Services and Office 365 (mail).
@@ -239,8 +251,8 @@ script:
     - description: The mailbox IDs to search. If empty, all mailboxes are searched.
       isArray: true
       name: mailbox-search-scope
-    - defaultValue: '250'
-      description: Maximum number of results to return.
+    - defaultValue: '100'
+      description: Maximum number of results to return. Default is 100. This maximum limit can vary based on the EWS server configuration, but a safe recommendation for this argument's upper value is 1000.
       name: limit
     - description: CSV list or array of email addresses.
       isArray: true
@@ -312,7 +324,7 @@ script:
       required: true
     - description: The mailbox on which to run the command.
       name: target-mailbox
-    description: Delete items from mailbox.
+    description: Delete items from mailbox. This command requires eDiscovery permissions to the Exchange Server. For more information, see the EWSv2 integration documentation.
     name: ews-delete-items
     outputs:
     - contextPath: EWS.Items.itemId
@@ -866,85 +878,6 @@ script:
     - contextPath: EWS.Folders.unreadCount
       description: Number of unread emails in the folder.
       type: number
-  - arguments:
-    - default: true
-      description: Query to use to find emails.
-      name: query
-      required: true
-    deprecated: true
-    description: This command is deprecated. Use the o365-sc-start-search command from Security And Compliance V2 instead. Starts a compliance search.
-    name: ews-o365-start-compliance-search
-    outputs:
-    - contextPath: EWS.ComplianceSearch.Name
-      description: The name of the compliance search.
-      type: string
-    - contextPath: EWS.ComplianceSearch.Status
-      description: The status of the compliance search.
-      type: string
-  - arguments:
-    - default: true
-      description: The name of the compliance search.
-      name: search-name
-      required: true
-    - auto: PREDEFINED
-      defaultValue: 'False'
-      description: Whether to return only mailboxes which contain the email. Default is "False".
-      name: show-only-recipients
-      predefined:
-      - 'True'
-      - 'False'
-    deprecated: true
-    description: This command is deprecated. Use the o365-sc-get-search command Security And Compliance V2 instead. Returns the status and results of a compliance search.
-    name: ews-o365-get-compliance-search
-    outputs:
-    - contextPath: EWS.ComplianceSearch.Status
-      description: The status of the compliance search.
-      type: Unknown
-    - contextPath: EWS.ComplianceSearch.Results.Location
-      description: The mailbox.
-      type: String
-    - contextPath: EWS.ComplianceSearch.Results.Item Count
-      description: The number of emails found in the mailbox.
-      type: Number
-    - contextPath: EWS.ComplianceSearch.Results.Total Size
-      description: Total number of emails in the mailbox.
-      type: Number
-  - arguments:
-    - default: true
-      description: The name of the compliance search.
-      name: search-name
-      required: true
-    deprecated: true
-    description: This command is deprecated. Use the o365-sc-new-search-action command from Security And Compliance V2. Purges the results found in the compliance search.
-    name: ews-o365-purge-compliance-search-results
-    outputs:
-    - contextPath: EWS.ComplianceSearch.Status
-      description: The status of the compliance search.
-      type: string
-  - arguments:
-    - default: true
-      description: The name of the compliance search.
-      name: search-name
-      required: true
-    deprecated: true
-    description: This command is deprecated. Use the o365-sc-remove-search command from Security And Compliance V2. Removes the compliance search.
-    name: ews-o365-remove-compliance-search
-    outputs:
-    - contextPath: EWS.ComplianceSearch.Status
-      description: The status of the compliance search.
-      type: string
-  - arguments:
-    - default: true
-      description: The name of the compliance search.
-      name: search-name
-      required: true
-    deprecated: true
-    description: This command is deprecated. Use the o365-sc-get-search-action command from Security And Compliance V2 instead .Checks the status of the purge operation on the compliance search.
-    name: ews-o365-get-compliance-search-purge-status
-    outputs:
-    - contextPath: EWS.ComplianceSearch.Status
-      description: The status of the compliance search.
-      type: Unknown
   - description: Returns the auto-discovery information. Can be used to manually configure the Exchange Server.
     name: ews-get-autodiscovery-config
   - arguments:
@@ -1065,6 +998,13 @@ script:
       name: raw_message
     - description: The email address from which to send mail.
       name: from
+    - description: Whether to handle inline images in the HTML body. When set to 'True', inline images will be extracted from the HTML body and will be attached to the email as an inline attachment object.
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      defaultValue: 'True'
+      name: handle_inline_image
     description: Sends an email using EWS.
     name: send-mail
   - arguments:
@@ -1074,10 +1014,13 @@ script:
     - name: to
       required: true
       description: A CSV list of email addresses for the 'to' field.
+      isArray: true
     - name: cc
       description: A CSV list of email addresses for the 'cc' field.
+      isArray: true
     - name: bcc
       description: A CSV list of email addresses for the 'bcc' field.
+      isArray: true
     - name: subject
       description: Subject for the email to be sent.
     - name: body
@@ -1103,7 +1046,7 @@ script:
       name: from
     description: Replies to an email using EWS.
     name: reply-mail
-  dockerimage: demisto/py-ews:5.0.3.92093
+  dockerimage: demisto/py-ews:5.5.0.118073
   isfetch: true
   runonce: false
   script: '-'

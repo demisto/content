@@ -1,0 +1,31 @@
+commonfields:
+  id: sigma-button-convert
+  version: -1
+name: sigma-button-convert
+script: ''
+type: python
+tags:
+- indicator-action-button
+enabled: true
+args:
+- name: SIEM
+  description: The 3rd party application language the Sigma rule will be converted to.
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - Splunk
+  - XQL
+  - Sentinel_One
+  - Qradar
+  - Microsoft_Defender
+  - Carbon_Black
+  - Elastic
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/pysigma:1.0.0.110641
+runas: DBotWeakRole
+engineinfo: {}
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

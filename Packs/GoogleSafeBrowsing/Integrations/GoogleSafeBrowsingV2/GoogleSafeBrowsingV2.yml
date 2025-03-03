@@ -59,7 +59,7 @@ script:
   commands:
   - arguments:
     - default: true
-      description: url
+      description: url.
       isArray: true
       name: url
       required: true
@@ -67,28 +67,28 @@ script:
     name: url
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The Indicator
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The Indicator Type
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: The DBot score vendor
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The DBot score
+      description: The actual score.
       type: number
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
     - contextPath: URL.Malicious.Vendor
-      description: For malicious URLs, the vendor that made the decision
+      description: For malicious URLs, the vendor that made the decision.
       type: string
     - contextPath: URL.Malicious.Description
-      description: For malicious URLs, the reason that the vendor made the decision
+      description: For malicious URLs, the reason that the vendor made the decision.
       type: string
     - contextPath: URL.Data
-      description: URL name
+      description: URL name.
       type: string
     - contextPath: GoogleSafeBrowsing.URL.threatType
       description: The URL threat type.
@@ -102,7 +102,7 @@ script:
     - contextPath: GoogleSafeBrowsing.URL.threatEntryType
       description: The URL threat entry type.
       type: string
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: '-'
   subtype: python3

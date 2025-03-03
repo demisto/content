@@ -258,20 +258,20 @@ script:
       description: For malicious files, the full description.
       type: String
     - contextPath: DBotScore.Indicator
-      description: The value assigned by DBot for the indicator.
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
-      description: The type assigned by DBot for the indicator.
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Score
-      description: The score assigned by DBot for the indicator.
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: String
   - arguments:
     - default: true
-      description: Synapse storm query (i.e. "inet:ipv4=1.2.3.4")
+      description: Synapse storm query (i.e. "inet:ipv4=1.2.3.4").
       name: query
       required: true
     - defaultValue: '100'
@@ -284,13 +284,13 @@ script:
       description: Timestamp when the node was first created in the Synapse Cortex.
       type: String
     - contextPath: Synapse.Nodes.form
-      description: 'The type of node (i.e. "inet:ipv4" for an IP address).'
+      description: The type of node (i.e. "inet:ipv4" for an IP address).
       type: String
     - contextPath: Synapse.Nodes.tags
       description: The tags associated with the resulting node.
       type: String
     - contextPath: Synapse.Nodes.valu
-      description: 'The node primary value (i.e. "1.2.3.4" for an IP).'
+      description: The node primary value (i.e. "1.2.3.4" for an IP).
       type: String
   - description: Lists current users in Synapse Cortex.
     name: synapse-list-users
@@ -397,7 +397,7 @@ script:
       description: The rules applied to the Synapse user.
       type: String
   - arguments:
-    - description: Type/Form query (i.e. "inet:ipv4" or "inet"fqdn")
+    - description: Type/Form query (i.e. "inet:ipv4" or "inet"fqdn").
       name: query
       required: true
     description: Query the Synapse data model and return details for given type or form (i.e. "inet:ipv4" for an IPv4 IP address).
@@ -421,9 +421,11 @@ script:
     - contextPath: Synapse.Model.Valu
       description: The given value of the Synapse object type.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.31193
+  dockerimage: demisto/py3-tools:1.0.0.117220
   runonce: false
   script: '-'
   subtype: python3
   type: python
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

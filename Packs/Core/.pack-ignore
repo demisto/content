@@ -1,14 +1,42 @@
-[file:CoreIOCs.yml]
-ignore=IN124
-
 [file:CortexCoreIR.yml]
-ignore=IN124,IN139
+ignore=IN139
+
+[file:playbook-A_mail_forwarding_rule_was_configured_in_Google_Workspace.yml]
+ignore=PB106
 
 [file:README.md]
-ignore=RM104
+ignore=RM104,RM106
 
 [file:1_3_23.md]
 ignore=RN115,RN113
+
+[file:playbook-XCloud_Cryptomining_-_Set_Verdict.yml]
+ignore=BA101
+
+[file:playbook-XCloud_Cryptomining.yml]
+ignore=BA101
+
+# See CIAC-7711, CIAC-11954
+[file:playbook-Suspicious_Hidden_User_Created.yml]
+ignore=GR103
+
+# See CIAC-7711, CIAC-11954
+[file:playbook-Excessive_User_Account_Lockouts.yml]
+ignore=GR103
+
+# GR103 is temporary, see CIAC-11705
+[file:layoutscontainer-Default.json]
+ignore=GR103,LO107
+
+[file:layoutscontainer-Default_XDR_Alert.json]
+ignore=LO107
+
+[file:layoutscontainer-Identity_Analytics_Alerts.json]
+ignore=LO107
+
+# GR103 is temporary, see CIAC-11954
+[file:playbook-Scheduled_task_created_with_HTTP_or_FTP_reference.yml]
+ignore=GR103
 
 [known_words]
 xsiam
@@ -17,9 +45,3 @@ xdrir
 NGFW
 HTTPS
 SMTP
-
-[file:playbook-XCloud_Cryptomining_-_Set_Verdict.yml]
-ignore=BA101
-
-[file:playbook-XCloud_Cryptomining.yml]
-ignore=BA101

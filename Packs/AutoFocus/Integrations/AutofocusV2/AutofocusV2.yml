@@ -1011,6 +1011,11 @@ script:
       isArray: true
       name: url
       required: true
+    - description: A char to separate between the url's. 
+      isArray: true
+      name: separator
+      required: false
+      defaultValue: ','
     description: Checks the reputation of a URL in AutoFocus.
     name: url
     outputs:
@@ -1356,7 +1361,7 @@ script:
       description: The domain name.
       type: String
     polling: true
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.11.10.116949
   runonce: false
   script: '-'
   subtype: python3

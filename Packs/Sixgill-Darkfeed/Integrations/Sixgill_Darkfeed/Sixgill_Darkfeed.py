@@ -6,7 +6,8 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 
-from typing import Dict, List, Set, Any, Callable, Optional, Union
+from typing import Any
+from collections.abc import Callable
 from collections import OrderedDict
 import traceback
 import requests
@@ -60,7 +61,7 @@ def strip_http(url):
 
 
 def url_to_rfc3986(url):
-    if url.startswith('http://') or url.startswith('https://') or url.startswith('ftp://') or url.startswith('sftp://'):
+    if url.startswith(('http://', 'https://', 'ftp://', 'sftp://')):
         return url
     else:
         return f'https://{url}'
@@ -100,20 +101,21 @@ def extract_external_reference_field(stix2obj, source_name, field_to_extract):
     for reference in stix2obj.get("external_reference", []):
         if reference.get("source_name") == source_name:
             return reference.get(field_to_extract, None)
+    return None
 
 
 def post_id_to_full_url(post_id):
     return f'https://portal.cybersixgill.com/#/search?q=_id:{post_id}'
 
 
-def to_demisto_indicator(value, indicators_name, stix2obj, tags: list = [], tlp_color: Optional[str] = None):
+def to_demisto_indicator(value, indicators_name, stix2obj, tags: list = [], tlp_color: str | None = None):
     indicator = {
         "value": value,
         "type": indicators_name,
         "rawJSON": stix2obj,
         "fields": {
             "actor": stix2obj.get("sixgill_actor"),
-            "tags": list((set(stix2obj.get("labels")).union(set(tags)))),
+            "tags": list(set(stix2obj.get("labels")).union(set(tags))),
             "firstseenbysource": stix2obj.get("created"),
             "description": get_description(stix2obj),
             "sixgillactor": stix2obj.get("sixgill_actor"),
@@ -168,7 +170,7 @@ def get_limit(str_limit, default_limit):
         return default_limit
 
 
-def filter_confidence(confidence: Union[int, str], indicator_obj: Dict) -> bool:
+def filter_confidence(confidence: int | str, indicator_obj: dict) -> bool:
     """
         Predicate function to filter records based on confidence score.
     """
@@ -178,11 +180,11 @@ def filter_confidence(confidence: Union[int, str], indicator_obj: Dict) -> bool:
     return sixgill_confidence >= int(confidence) if sixgill_confidence else False
 
 
-def stix2_to_demisto_indicator(stix2obj: Dict[str, Any], log, tags: list = [], tlp_color: Optional[str] = None):
+def stix2_to_demisto_indicator(stix2obj: dict[str, Any], log, tags: list = [], tlp_color: str | None = None):
     indicators = []
     pattern = stix2obj.get("pattern", "")
     sixgill_feedid = stix2obj.get("sixgill_feedid", "")
-    hashes: Dict[str, Any] = {"md5": None, "sha1": None, "sha256": None, "sha512": None, "ssdeep": None}
+    hashes: dict[str, Any] = {"md5": None, "sha1": None, "sha256": None, "sha512": None, "ssdeep": None}
 
     for match in stix_regex_parser.findall(pattern):
         try:
@@ -194,9 +196,8 @@ def stix2_to_demisto_indicator(stix2obj: Dict[str, Any], log, tags: list = [], t
                 demisto_indicator = to_demisto_indicator(value, indicators_name, stix2obj, tags, tlp_color)
 
                 if demisto_indicator.get("type") == FeedIndicatorType.File and \
-                        HASH_MAPPING.get(sub_type.lower()) in hashes.keys():
-                    if HASH_MAPPING.get(sub_type.lower()):
-                        hashes[HASH_MAPPING[sub_type.lower()]] = value
+                        HASH_MAPPING.get(sub_type.lower()) in hashes and HASH_MAPPING.get(sub_type.lower()):
+                    hashes[HASH_MAPPING[sub_type.lower()]] = value
                 indicators.append(demisto_indicator)
 
         except Exception as e:
@@ -215,7 +216,7 @@ def stix2_to_demisto_indicator(stix2obj: Dict[str, Any], log, tags: list = [], t
     return indicators
 
 
-demisto_mapping: Dict[str, Dict[str, Any]] = {
+demisto_mapping: dict[str, dict[str, Any]] = {
     'darkfeed_001': {'name': FeedIndicatorType.Domain, 'pipeline': [strip_http, clean_url]},
     'darkfeed_002': {'name': FeedIndicatorType.File, 'pipeline': []},
     'darkfeed_003': {'name': FeedIndicatorType.Domain, 'pipeline': [strip_http, clean_url]},
@@ -297,10 +298,10 @@ def get_indicators_command(client: SixgillFeedClient, args):
 
 
 def fetch_indicators_command(client: SixgillFeedClient, limit: int = 0, get_indicators_mode: bool = False,
-                             tags: list = [], tlp_color: Optional[str] = None, confidence: Optional[int] = None):
+                             tags: list = [], tlp_color: str | None = None, confidence: int | None = None):
     bundle = client.get_bundle()
-    indicators_to_create: List = []
-    indicator_values_set: Set = set()
+    indicators_to_create: list = []
+    indicator_values_set: set = set()
     confidence = confidence or 'all'
 
     for stix_indicator in filter(partial(filter_confidence, confidence), bundle.get("objects")):
@@ -339,7 +340,7 @@ def main():
     demisto.info(f'Command being called is {command}')
     tags = argToList(demisto.params().get('feedTags', []))
     tlp_color = demisto.params().get('tlp_color')
-    commands: Dict[str, Callable] = {
+    commands: dict[str, Callable] = {
         'test-module': test_module_command,
         'sixgill-get-indicators': get_indicators_command
     }

@@ -5,9 +5,9 @@ args:
 commonfields:
   id: DisplayTaggedWarroomEntries
   version: -1
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
-comment: "Display warroom entries in a dynamic section which are tagged with 'report'"
+comment: Display warroom entries in a dynamic section which are tagged with 'report'
 name: DisplayTaggedWarroomEntries
 runas: DBotWeakRole
 script: ''

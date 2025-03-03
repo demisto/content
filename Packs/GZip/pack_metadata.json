@@ -2,7 +2,7 @@
     "name": "GZip",
     "description": "Use this pack to zip and unzip files with GZip.",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.2",
     "author": "Sharat Patil",
     "url": "",
     "email": "",

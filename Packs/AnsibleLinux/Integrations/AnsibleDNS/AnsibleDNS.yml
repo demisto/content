@@ -97,7 +97,7 @@ script:
     - contextPath: DNS.Nsupdate.dns_rc_str
       description: dnspython return code (string representation)
       type: string
-  dockerimage: demisto/ansible-runner:1.0.0.89756
+  dockerimage: demisto/ansible-runner:1.0.0.2024530
   script: ''
   subtype: python3
   type: python

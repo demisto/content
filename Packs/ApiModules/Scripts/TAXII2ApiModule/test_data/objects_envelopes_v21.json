@@ -172,7 +172,9 @@
           "report--2791a5e0-d65a-43c0-936e-c15a6b7ba9d1",
           "report--40aaefc2-3fe9-423b-a6eb-55abf11639b7",
           "report--2f5734bf-4127-4997-9288-e9c5530aa737",
-          "report--ffe94621-b007-4115-ad49-fb7c8a26b66a"
+          "report--ffe94621-b007-4115-ad49-fb7c8a26b66a",
+          "malware--481d22d7-6dd8-4e37-a543-dd21cc1707c4",
+          "indicator--545928d9-bfe8-4320-bb98-751f38139892"
         ],
         "published": "2020-07-30T16:55:21.569Z",
         "type": "report"

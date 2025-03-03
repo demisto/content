@@ -2,48 +2,55 @@ The Microsoft Management Activity API integration enables you to subscribe or un
 
 This integration was integrated and tested with version 1.0 of Microsoft Management Activity API (O365 Azure Events).
 
-## Grant Cortex XSOAR Authorization in Microsoft Management Activity API
-To allow Cortex XSOAR access to the Microsoft Management Activity API you will be required to give authorization to access it.
+# Authentication
 
-1. To grant authorization, click [HERE](https://oproxy.demisto.ninja/ms-management-api).
-2. After you click the link, click the **Start Authorization Process** button.
-3. When prompted, accept the Microsoft authorization request for the required permissions.
-You will get an ID, Token, and Key, which you need to enter in the corresponding fields when configuring an integration instance.
+There are two application authentication methods available:
+
+ * [Cortex XSOAR Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#cortex-xsoar-application)
+ * [Self-Deployed Application - Authorization Code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authorization-code-flow)
+
+ **Note** - The credentials (created by the Cortex XSOAR application) are valid for a single instance only.
+
+## Self-Deployed Azure App
+1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft documentation](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
+2. Make sure the following permissions are granted for the app registration:
+    - `User.Read ` of type `Delegated`
+    - `ActivityFeed.Read` of type `Delegated`
+    - `ActivityFeed.Read` of type `Application`
+    - `ActivityFeed.ReadDlp` of type `Delegated`
+    - `ActivityFeed.ReadDlp` of type `Application`
+    - `ServiceHealth.Read` of type `Delegated`
+    - `ServiceHealth.Read` of type `Application`
+
+## Configure Microsoft Management Activity API (O365 Azure Events) in Cortex
 
 
-## Configure Microsoft Management Activity API (O365 Azure Events) on Cortex XSOAR
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Base URL | The host URL. | False |
+| Application ID or Client ID | The app registration ID. | False |
+| Key or Client Secret | The app registration secret. | False |
+| Token or Tenant ID | The tenant ID. | False |
+| Certificate Thumbprint | Used for certificate authentication as it appears in the "Certificates & secrets" page of the app. | False |
+| Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
+| Use a self-deployed Azure application | Whether to use a selp-deployed application. | False |
+| Application redirect URI (for self-deployed mode) | The app registration redirect URI. | False |
+| The authentication code you got for the service | For instructions on how to receive it, see the Help tab. | False |
+| Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
+| Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
+| Trust any certificate (not secure) | Whether to trust any certificate. If set to True, is not secure. | False |
+| Use system proxy settings | Whether to use system proxy settings. | False |
+| First fetch time range | &lt;number&gt; &lt;time unit&gt;, for example 1 hour, 30 minutes. | False |
+| Timeout | The default timeout (in seconds) for API calls. Default is 15 seconds. | False |
+| Content types to fetch | The content types to fetch. | False |
+| Fetch incidents | Whether to fetch incidents. | False |
+| Incident type | The incident type to apply. | False |
+| Record types to fetch | A comma-separated list of the record types you want to fetch. Content records with a record type that is not specified will not be fetched. If this field is left empty, all record types will be fetched. | False |
+| Workloads to fetch | A comma-separated list of the workloads you want to fetch. Content records with a workload that is not specified will not be fetched. If this field is left empty, all workloads will be fetched. | False |
+| Operations to fetch | A comma-separated list of the operations you want to fetch. Content records with an operation that is not specified will not be fetched. If this field is left empty, all operations will be fetched. | False |
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Microsoft Management Activity API (O365 Azure Events).
-3. Click **Add instance** to create and configure a new integration instance.
-
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Base URL | The host URL. | False |
-    | Application ID or Client ID | The app registration ID. | False |
-    | Key or Client Secret | The app registration secret. | False |
-    | Token or Tenant ID | The tenant ID. | False |
-    | Certificate Thumbprint | Used for certificate authentication as it appears in the "Certificates & secrets" page of the app. | False |
-    | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
-    | Use a self-deployed Azure application | Whether to use a selp-deployed application. | False |
-    | Application redirect URI (for self-deployed mode) | The app registration redirect URI. | False |
-    | The authentication code you got for the service | For instructions on how to receive it, see the Help tab. | False |
-    | Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
-    | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
-    | Trust any certificate (not secure) | Whether to trust any certificate. If set to True, is not secure. | False |
-    | Use system proxy settings | Whether to use system proxy settings. | False |
-    | First fetch time range | &lt;number&gt; &lt;time unit&gt;, for example 1 hour, 30 minutes. | False |
-    | Timeout | The default timeout (in seconds) for API calls. Default is 15 seconds. | False |
-    | Content types to fetch | The content types to fetch. | False |
-    | Fetch incidents | Whether to fetch incidents. | False |
-    | Incident type | The incident type to apply. | False |
-    | Record types to fetch | A comma-separated list of the record types you want to fetch. Content records with a record type that is not specified will not be fetched. If this field is left empty, all record types will be fetched. | False |
-    | Workloads to fetch | A comma-separated list of the workloads you want to fetch. Content records with a workload that is not specified will not be fetched. If this field is left empty, all workloads will be fetched. | False |
-    | Operations to fetch | A comma-separated list of the operations you want to fetch. Content records with an operation that is not specified will not be fetched. If this field is left empty, all operations will be fetched. | False |
-
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ms-management-activity-start-subscription
 ***
@@ -310,3 +317,12 @@ There is no context output for this command.
 ## Additional Information
 - Record types to fetch from should be set with numerical values from the [Microsoft documentation](https://docs.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-schema#auditlogrecordtype). For example, in order to fetch events of type **MailSubmission**, the value **29** should be set.
 - Note that the API only supports start times up to 7 days in the past when fetching. If the last fetch timestamp exceeds this limit, the integration automatically fetches data from 7 days ago.
+-  The credentials are valid for a single instance only.
+
+## Troubleshooting
+
+In case of a **hash verification** error:
+1. Use the Oproxy flow to generate a new pair of credentials. This is crucial as it ensures that any issues related to authentication can be mitigated with fresh credentials.
+2. Execute the command ***!ms-management-activity-auth-reset***. This command resets the authentication mechanism, allowing for the new credentials to be accepted.
+3. Insert the newly created credentials into the original instance where the error occurred. Make sure the credentials are entered correctly to avoid further errors.
+4. After updating the credentials, test the integration.

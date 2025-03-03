@@ -1,0 +1,12 @@
+{"data": {
+    "assignTag": {
+        "success": true,
+        "asset": {
+          "id": "QXBwbGljYXRpb25UeXBlOjI2NjI4",
+          "tags": [
+            "API TEST"
+          ]
+        }
+      }
+    }
+}

@@ -1,5 +1,8 @@
 category: Endpoint
 defaultEnabled: true
+sectionOrder:
+  - Connect
+  - Collect
 commonfields:
   id: Cortex Core - IR
   version: -1
@@ -8,21 +11,25 @@ configuration:
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: Server URL (copy URL from Core - click ? to see more info.)
   name: url
   type: 0
   hidden: true
   required: false
+  section: Connect  
 - display: API Key ID
   name: apikey_id
   type: 4
   hidden: true
   required: false
+  section: Connect
 - display: API Key
   name: apikey
   type: 4
   hidden: true
   required: false
+  section: Connect
 - display: API Key ID
   name: credentials
   defaultvalue: ""
@@ -36,6 +43,7 @@ configuration:
   name: timeout
   type: 0
   required: false
+  section: Connect  
 description: The Cortex Core IR integration uses the Cortex API for detection and response, by natively integrating network, endpoint, and cloud data to stop sophisticated attacks.
 display: Investigation & Response
 name: Cortex Core - IR
@@ -320,6 +328,20 @@ script:
     - name: username
       description: The usernames to query for, accepts a single user, or comma-separated list of usernames.
       isArray: true
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether to return all endpoints. If true, will override the 'limit' and 'page' arguments.
+      name: all_results
+      predefined:
+      - "false"
+      - "true"
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether to return timestamp or date string values.
+      name: convert_timestamp_to_datestring
+      predefined:
+      - "false"
+      - "true"
     description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
     name: core-get-endpoints
     outputs:
@@ -591,6 +613,13 @@ script:
       - x86
       - x64
       required: true
+    - name: download_package
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Supported only for package_type x64 or x86. Whether to actually download the installation package file.
+      defaultValue: "false"
     description: Gets the distribution URL for downloading the installation package.
     name: core-get-distribution-url
     outputs:
@@ -950,6 +979,34 @@ script:
     description: Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
     name: core-quarantine-files
     polling: true
+    outputs:
+    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
   - arguments:
     - description: String that represents the endpoint ID.
       name: endpoint_id
@@ -981,6 +1038,34 @@ script:
     description: Restores a quarantined file on requested endpoints.
     name: core-restore-file
     polling: true
+    outputs:
+    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
   - arguments:
     - description: Links the response action to the triggered incident.
       name: incident_id
@@ -1051,6 +1136,33 @@ script:
     - contextPath: Core.endpointScan.aborted
       description: Was the scan aborted.
       type: Boolean
+    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
   - arguments:
     - description: Links the response action to the incident that triggered it.
       name: incident_id
@@ -1333,6 +1445,33 @@ script:
     - contextPath: Core.RetrievedFiles.action_id
       description: ID of the action to retrieve files from selected endpoints.
       type: string
+    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
   - arguments:
     - description: Action ID retrieved from the core-retrieve-files command.
       isArray: true
@@ -1456,6 +1595,33 @@ script:
     - contextPath: Core.GetActionStatus.action_id
       description: The specified action ID.
       type: number
+    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
   - arguments:
     - description: Links the response action to the incident that triggered it.
       name: incident_id
@@ -1470,8 +1636,9 @@ script:
     - defaultValue: '600'
       description: The timeout in seconds for this execution.
       name: timeout
-    description: Initiates a new endpoint script execution action using a script from the script library.
+    description: Deprecated. Use core-script-run instead.
     name: core-run-script
+    deprecated: true
     outputs:
     - contextPath: Core.ScriptRun.action_id
       description: ID of the action initiated.
@@ -1506,6 +1673,33 @@ script:
     - contextPath: Core.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
   - arguments:
     - description: Action IDs retrieved from the core-run-script command.
       isArray: true
@@ -1651,9 +1845,20 @@ script:
     - description: Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command.
       name: endpoint_ids
       required: true
-    - description: Comma-separated list of shell commands to execute.
+    - description: Comma-separated list of shell commands to execute. Set the `is_raw_command` argument to `true` to prevent splitting by commas. (Useful when using `||`, `&&`, `;` separators for controlling the flow of multiple commands).
       name: commands
       required: true
+    - description: Whether to pass the command as-is. When false, the command is split by commas and sent as a list of commands, that are run independently.
+      name: is_raw_command
+      type: Boolean
+      required: false
+    - description: Type of shell command.
+      auto: PREDEFINED
+      name: command_type
+      predefined:
+      - 'powershell'
+      - 'native'
+      required: false
     - defaultValue: '600'
       description: The timeout in seconds for this execution.
       name: timeout
@@ -1675,6 +1880,33 @@ script:
     - contextPath: Core.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
   - arguments:
     - description: Links the response action to the incident that triggered it.
       name: incident_id
@@ -1707,6 +1939,33 @@ script:
     - contextPath: Core.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
   - arguments:
     - description: Links the response action to the incident that triggered it.
       name: incident_id
@@ -1739,6 +1998,33 @@ script:
     - contextPath: Core.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
   - arguments:
     - description: Links the response action to the incident that triggered it.
       name: incident_id
@@ -1771,6 +2057,33 @@ script:
     - contextPath: Core.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
   - arguments:
     - description: The endpoint ID.
       isArray: true
@@ -1965,7 +2278,6 @@ script:
     - contextPath: Core.exclusion.ALERT_WHITELIST_MIGRATED_FROM_ANALYTICS
       description: ''
       type: Number
-
   - arguments:
     - description: A comma-separated list of alert IDs.
       isArray: true
@@ -1976,8 +2288,15 @@ script:
       auto: PREDEFINED
       defaultValue: 'true'
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
+    - description: Whether to return events_from_decider context output as a dictionary (the raw API response) or as a list (improved for playbook automation) - relevant only when filter_alert_fields is set to False.
+      name: events_from_decider_format
+      auto: PREDEFINED
+      defaultValue: 'dict'
+      predefined:
+      - 'list'
+      - 'dict'
     description: Returns information about each alert ID.
     name: core-get-cloud-original-alerts
     outputs:
@@ -2848,7 +3167,7 @@ script:
       name: user_id
     - description: Limit the number of users that will appear in the list. (limit should be used when no specific host is requested).
       name: limit
-      defaultValue: 50
+      defaultValue: 10
     name: core-list-risky-users
     description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
     outputs:
@@ -2877,12 +3196,11 @@ script:
       description: The score.
       type: Number
   - arguments:
-    - description: >
-        Unique ID of a specific host.
+    - description: The host name of a specific host.
       name: host_id
     - description: Limit the number of hosts that will appear in the list. (Use limit when no specific host is requested).
       name: limit
-      defaultValue: 50
+      defaultValue: 10
     name: core-list-risky-hosts
     description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
     outputs:
@@ -2939,11 +3257,268 @@ script:
     - contextPath: Core.UserGroup.source
       description: Type of user group.
       type: String
+  - arguments:
+    - description: Allows linking the response action to the incident that triggered it.
+      name: incident_id
+    - description: A comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command.
+      name: endpoint_ids
+      required: true
+    - description: Unique identifier of the script. Can be retrieved by running the core-get-scripts command.
+      name: script_uid
+      required: true
+    - description: Dictionary containing the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}.
+      name: parameters
+    - defaultValue: '600'
+      description: The timeout in seconds for this execution.
+      name: timeout
+    - description: Interval in seconds between each poll.
+      defaultValue: '10'
+      name: polling_interval_in_seconds
+    - description: Polling timeout in seconds.
+      name: polling_timeout_in_seconds
+      defaultValue: '600'
+    - description: The action ID for polling use.
+      name: action_id
+      hidden: true
+    - name: hide_polling_output
+      hidden: true
+      description: Whether to hide the polling result (automatically filled by polling).
+    - name: is_core
+      hidden: true
+      description: Is the command being called from a core pack.
+      defaultValue: true
+    description: Initiates a new endpoint script execution action using a script from the script library and returns the results.
+    name: core-script-run
+    polling: true
+    outputs:
+    - contextPath: Core.ScriptResult.action_id
+      description: ID of the action initiated.
+      type: Number
+    - contextPath: Core.ScriptResult.results.retrieved_files
+      description: Number of successfully retrieved files.
+      type: Number
+    - contextPath: Core.ScriptResult.results.endpoint_ip_address
+      description: Endpoint IP address.
+      type: String
+    - contextPath: Core.ScriptResult.results.endpoint_name
+      description: Name of successfully retrieved files.
+      type: String
+    - contextPath: Core.ScriptResult.results.failed_files
+      description: Number of files failed to be retrieved.
+      type: Number
+    - contextPath: Core.ScriptResult.results.endpoint_status
+      description: Endpoint status.
+      type: String
+    - contextPath: Core.ScriptResult.results.domain
+      description: Domain to which the endpoint belongs.
+      type: String
+    - contextPath: Core.ScriptResult.results.endpoint_id
+      description: Endpoint ID.
+      type: String
+    - contextPath: Core.ScriptResult.results.execution_status
+      description: Execution status of this endpoint.
+      type: String
+    - contextPath: Core.ScriptResult.results.return_value
+      description: Value returned by the script in case the type is not a dictionary.
+      type: String
+    - contextPath: Core.ScriptResult.results.standard_output
+      description: The STDOUT and the STDERR logged by the script during the execution.
+      type: String
+    - contextPath: Core.ScriptResult.results.retention_date
+      description: Timestamp in which the retrieved files will be deleted from the server.
+      type: Date
+  - arguments:
+    - description: The agent ID.
+      name: agent_id
+      isArray: false
+      required: true
+    - description: The instance ID.
+      name: instance_id
+      isArray: true
+      required: true
+    - description: The process name.
+      name: process_name
+      isArray: false
+      required: false
+    - description: The incident ID.
+      name: incident_id
+      isArray: false
+      required: false
+    - description: The action ID. For polling use.
+      isArray: true
+      name: action_id
+      deprecated: true
+    - description: Interval in seconds between each poll.
+      name: interval_in_seconds
+    - description: Polling timeout in seconds.
+      name: timeout_in_seconds
+    name: core-terminate-process
+    description: Terminate a process by its instance ID. Available only for XSIAM 2.4 and above.
+    polling: true
+    outputs:
+    - contextPath: Core.TerminateProcess.action_id
+      description: The action ID.
+      type: String
+    - contextPath: Core.GetActionStatus
+      description: The action status command results.
+      type: Unknown
+    - contextPath: Core.GetActionStatus.endpoint_id
+      description: Endpoint ID.
+      type: string
+    - contextPath: Core.GetActionStatus.status
+      description: The status of the specific endpoint ID.
+      type: string
+    - contextPath: Core.GetActionStatus.action_id
+      description: The specified action ID.
+      type: number
+    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
+  - arguments:
+    - description: The agent ID.
+      name: agent_id
+      isArray: false
+      required: true
+    - description: The causality ID.
+      name: causality_id
+      isArray: true
+      required: true
+    - description: The process name.
+      name: process_name
+      isArray: false
+      required: false
+    - description: The incident ID.
+      name: incident_id
+      isArray: false
+      required: false
+    - description: The action ID. For polling use.
+      isArray: true
+      name: action_id
+      deprecated: true
+    - description: Interval in seconds between each poll.
+      name: interval_in_seconds
+    - description: Polling timeout in seconds.
+      name: timeout_in_seconds
+    name: core-terminate-causality
+    description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4 and above.
+    polling: true
+    outputs:
+    - contextPath: Core.TerminateCausality.action_id
+      description: The action id.
+      type: String
+    - contextPath: Core.GetActionStatus
+      description: The action status command results.
+      type: Unknown
+    - contextPath: Core.GetActionStatus.endpoint_id
+      description: Endpoint ID.
+      type: string
+    - contextPath: Core.GetActionStatus.status
+      description: The status of the specific endpoint ID.
+      type: string
+    - contextPath: Core.GetActionStatus.action_id
+      description: The specified action ID.
+      type: number
+    - contextPath: Core.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
+  - arguments:
+    - description: Asset unique identifier.
+      name: asset_id
+      required: true
+    name: core-get-asset-details
+    description: Get asset information.
+    outputs:
+    - contextPath: Core.CoreAsset
+      description: Asset additional information.
+    - contextPath: Core.CoreAsset.xdm__asset__provider
+      description: The cloud provider or source responsible for the asset.
+    - contextPath: Core.CoreAsset.xdm__asset__realm
+      description: The realm or logical grouping of the asset.
+    - contextPath: Core.CoreAsset.xdm__asset__last_observed
+      description: The timestamp of when the asset was last observed, in ISO 8601 format.
+    - contextPath: Core.CoreAsset.xdm__asset__type__id
+      description: The unique identifier for the asset type.
+    - contextPath: Core.CoreAsset.xdm__asset__first_observed
+      description: The timestamp of when the asset was first observed, in ISO 8601 format.
+    - contextPath: Core.CoreAsset.asset_hierarchy
+      description: The hierarchy or structure representing the asset.
+    - contextPath: Core.CoreAsset.xdm__asset__type__category
+      description: The category type of the asset.
+    - contextPath: Core.CoreAsset.xdm__cloud__region
+      description: The cloud region where the asset resides.
+    - contextPath: Core.CoreAsset.xdm__asset__module_unstructured_fields
+      description: The unstructured fields or metadata associated with the asset module.
+    - contextPath: Core.CoreAsset.xdm__asset__source
+      description: The originating source of the asset's information.
+    - contextPath: Core.CoreAsset.xdm__asset__id
+      description: A unique identifier for the asset.
+    - contextPath: Core.CoreAsset.xdm__asset__type__class
+      description: The classification or type class of the asset.
+    - contextPath: Core.CoreAsset.xdm__asset__type__name
+      description: The specific name of the asset type.
+    - contextPath: Core.CoreAsset.xdm__asset__strong_id
+      description: The strong or immutable identifier for the asset.
+    - contextPath: Core.CoreAsset.xdm__asset__name
+      description: The name of the asset.
+    - contextPath: Core.CoreAsset.xdm__asset__raw_fields
+      description: The raw fields or unprocessed data related to the asset.
+    - contextPath: Core.CoreAsset.xdm__asset__normalized_fields
+      description: The normalized fields associated with the asset.
+    - contextPath: Core.CoreAsset.all_sources
+      description: A list of all sources providing information about the asset.
   runonce: false
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/google-cloud-storage:1.0.0.96060
+  dockerimage: demisto/google-cloud-storage:1.0.0.117186
 tests:
 - No tests
 fromversion: 6.2.0

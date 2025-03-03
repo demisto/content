@@ -84,7 +84,6 @@ configuration:
   - never
   - interval
   - indicatorType
-  - suddenDeath
   required: false
 - name: feedExpirationInterval
   defaultvalue: "20160"
@@ -145,7 +144,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/cyjax:1.0.0.87362
+  dockerimage: demisto/cyjax:1.0.0.117170
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)

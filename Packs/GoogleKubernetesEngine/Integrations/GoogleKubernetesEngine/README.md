@@ -19,7 +19,7 @@ Command, argument, and output desctiptions were taken from the Google documentat
 
 1. Select or create a Cloud Platform project:
 
-   <img src="https://github.com/demisto/content/raw/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/create-project-1.png" alt="create-project"  />
+   <img src="../../doc_files/create-project-1.png" alt="create-project"  />
 
    > The value in the `ID` column (marked in green) will be used from this point on as the `project id`.
 
@@ -27,33 +27,33 @@ Command, argument, and output desctiptions were taken from the Google documentat
 
    1. Under the main menu, select `APIs & Services` -> 'Libary':
 
-      <img src="https://github.com/demisto/content/raw/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/enable-gke-api-menu.png" alt="Menu"  />
+      <img src="../../doc_files/enable-gke-api-menu.png" alt="Menu"  />
 
    2. Search for `Kubernetes Engine API`:
 
-      <img src="https://github.com/demisto/content/raw/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/enable-gke-api-search.png" alt="Search"  />
+      <img src="../../doc_files/enable-gke-api-search.png" alt="Search"  />
 
    3. Click `Enable`:
 
-      <img src="https://github.com/demisto/content/raw/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/enable-gke-api-enable-1.png" alt="enable-1"  />
+      <img src="../../doc_files/enable-gke-api-enable-1.png" alt="enable-1"  />
 
    4. Select the project and click 'OPEN':
 
-      <img src="https://github.com/demisto/content/raw/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/enable-gke-api-enable-2.png" alt="enable-2" />
+      <img src="../../doc_files/enable-gke-api-enable-2.png" alt="enable-2" />
 
 3. Create a service account with correct restricted permissions:
 
    1. Under the main menu, select `IAM & Admin` -> `Service Accounts`:
 
-      <img src="https://github.com/demisto/content/raw/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/service-acount-menu.png" alt="menu"  />
+      <img src="../../doc_files/service-acount-menu.png" alt="menu"  />
 
    2. In the top bar, select `CREATE SERVICE ACCOUNT`:
 
-      <img src="https://github.com/demisto/content/raw/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/service-account-create-1.png" alt="create-1"  />
+      <img src="../../doc_files/service-account-create-1.png" alt="create-1"  />
 
    3. In step number 2, under role, select `Kubernetes Engine Admin`:
 
-      <img src="https://github.com/demisto/content/raw/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/service-account-create-2.png" alt="create-2"  />
+      <img src="../../doc_files/service-account-create-2.png" alt="create-2"  />
 
    4. Under the main menu, select `IAM & Admin` -> `Service Accounts` and open the account you just created.
 
@@ -61,13 +61,13 @@ Command, argument, and output desctiptions were taken from the Google documentat
 
       1. On the Service account details page, under Keys, click ADD KEY and select Create new key:
 
-         <img src="https://github.com/demisto/content/raw/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/service-account-create-3.png" alt="create-3"  />
+         <img src="../../doc_files/service-account-create-3.png" alt="create-3"  />
 
       
 
       2. Under Key type, select `JSON` and click `CREATE`. Save the credentials in a secure location. You will need the generated `credentials.json` file when you configure the instance in Cortex XSOAR:
 
-         <img src="https://github.com/demisto/content/raw/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/service-account-create-4.png" alt="create-3"  />
+         <img src="../../doc_files/service-account-create-4.png" alt="create-3"  />
 
 ## Configure GoogleKubernetesEngine on Cortex XSOAR
 

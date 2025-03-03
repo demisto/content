@@ -1,4 +1,6 @@
-The Generic Webhook integration is used to create incidents on event triggers. The trigger can be any query posted to the integration.
+The Generic Webhook integration is used to create incidents on event triggers. The trigger can be any query posted to the integration. 
+
+The Generic Webhook integration is a long-running integration. For more information about long-running integrations, see the [Cortex XSOAR 8 Cloud](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Forward-Requests-to-Long-Running-Integrations), [Cortex XSOAR 8 On-prem](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Integration-commands-in-the-CLI) or [Cortex XSIAM](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Forward-Requests-to-Long-Running-Integrations) documentation.
 
 ## Configure Generic Webhook on Cortex XSOAR
 
@@ -11,8 +13,8 @@ The Generic Webhook integration is used to create incidents on event triggers. T
 | Listen Port | Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. <br>Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use.                           | True |
 | username | Username (see [Security](#security) for more details) |  (For Cortex XSOAR 6.x) False <br> (For Cortex XSOAR 8 and Cortex XSIAM)  Optional for engines, otherwise mandatory. Using the `_header:` feature without using an engine will not work.  |
 | password | Password (see [Security](#security) for more details) |  (For Cortex XSOAR 6.x) False <br> (For Cortex XSOAR 8 and Cortex XSIAM)  Optional for engines, otherwise mandatory. Using the `_header:` feature without using an engine will not work.  |
-| certificate | (For Cortex XSOAR 6.x) For use with HTTPS - the certificate that the service should use.  <br> (For Cortex XSOAR 8 and Cortex XSIAM) Custom certificates are not supported. | False |
-| Private Key | (For Cortex XSOAR 6.x) For use with HTTPS - the private key that the service should use.  <br> (For Cortex XSOAR 8 and Cortex XSIAM) When using an engine, configure a private API key. Not supported on the Cortex XSOAR​​ or Cortex XSIAM server. | False |
+| certificate | For use with HTTPS - the certificate that the service should use. <br> Supported for Cortex XSOAR On-prem (6.x or 8) or when using an engine. Cortex XSOAR 8 Cloud tenants and Cortex XSIAM tenants do not support custom certificates.  | False |
+| Private Key | For use with HTTPS - the private key that the service should use.  <br> Supported for Cortex XSOAR On-prem (6.x or 8) or when using an engine. Cortex XSOAR 8 Cloud tenants and Cortex XSIAM tenants do not support private keys.  | False |
 | incidentType | Incident type | False |
 | store_samples | Store sample events for mapping (Because this is a push-based integration, it cannot fetch sample events in the mapping wizard). | False |
 
@@ -21,16 +23,33 @@ The Generic Webhook integration is used to create incidents on event triggers. T
      1. Navigate to  **Settings > About > Troubleshooting**.
      2. In the **Server Configuration** section, verify that the value for the ***instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add *instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>* and set the value to *true*. See the following [reference article](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
 
-You can now trigger the webhook URL:
+## Set up Authentication
+The Generic Webhook integration running on a Cortex XSOAR 8 Cloud tenant or Cortex XSIAM tenant requires basic authentication. Running on an engine does not require basic authentication, but it is recommended.
+For Cortex XSOAR On-prem (6.x or 8) or when running on an engine, you can set up authentication using custom certificates. For more information about setting up custom certificates for Cortex XSOAR 8 On-prem, see [HTTPS with a signed certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/HTTPS-with-a-signed-certificate).  
 
-- For Cortex XSOAR 6.x: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`. For example, `https://my.demisto.live/instance/execute/webhook`. Note that the string `instance` does not refer to the name of your XSOAR instance, but rather is part of the URL.
-- For Cortex XSOAR 8: `<ext-<CORTEX-XSOAR-URL>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`. For example, `https://ext-mytenant.crtx.us.paloaltonetworks.com/xsoar/instance/execute/my_instance_01`. Note that the string `instance` does not refer to the name of your XSOAR instance, but rather is part of the URL.
+## Trigger the Webhook URL 
+**Note:**  
+For Cortex XSOAR 8 On-prem, you need to add the `ext-` FQDN DNS record to map the Cortex XSOAR DNS name to the external IP address.  
+For example, `ext-xsoar.mycompany.com`.
 
-If you're not invoking the integration via the server HTTPS endpoint, then you should trigger the webhook URL as follows: `<CORTEX-XSOAR-URL>:<LISTEN_PORT>/`. For example, `https://my.demisto.live:8000/`.
+For Cortex XSOAR 8 On-prem, Cortex XSOAR Cloud, or Cortex XSIAM, trigger the webhook as follows:  
+`<ext-<CORTEX-XSOAR-URL>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`  
+For example, `https://ext-mytenant.crtx.us.paloaltonetworks.com/xsoar/instance/execute/my_instance_01`.  
+Note that the string `instance` does not refer to the name of your Cortex XSOAR instance, but rather is part of the URL.
 
-The examples below assume you invoke the integration via the server HTTPS endpoint. In case you don't, replace the URL in the examples as suggested above.
+For Cortex XSOAR 6.x, trigger the webhook as follows:  
+`<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`  
+For example, `https://my.xsoar.live/instance/execute/webhook`.  
+Note that the string `instance` does not refer to the name of your Cortex XSOAR instance, but rather is part of the URL.  
 
-**Note**: The ***Listen Port*** needs to be available, which means it has to be unique for each integration instance. It cannot be used by other long-running integrations.
+If you're not invoking the integration via the server HTTPS endpoint, trigger the webhook URL as follows:  
+`<CORTEX-XSOAR-URL>:<LISTEN_PORT>/`  
+For example, `https://my.xsoar.live:8000/`
+
+The following examples assume you invoke the integration via the server HTTPS endpoint. If you don't, replace the URL in the examples as suggested above.
+
+**Note**:  
+The ***Listen Port*** needs to be available, which means it has to be unique for each integration instance. It cannot be used by other long-running integrations.
 
 ## Usage
 
@@ -45,17 +64,17 @@ The Generic Webhook integration accepts POST HTTP queries, with the following op
 
 For example, the following triggers the webhook using cURL:
 
-`curl -POST https://my.demisto.live/instance/execute/webhook -H "Authorization: token" -H "Content-Type: application/json" -d '{"name":"incident created via generic webhook","rawJson":{"some_field":"some_value"}}'`
+`curl -POST https://my.xsoar.live/instance/execute/webhook -H "Authorization: token" -H "Content-Type: application/json" -d '{"name":"incident created via generic webhook","rawJson":{"some_field":"some_value"}}'`
 
 The request payload does not have to contain the fields mentioned above, and may include anything:
 
-`curl -POST https://my.demisto.live/instance/execute/webhook -H "Authorization: token" -H "Content-Type: application/json" -d '{"string_field":"string_field_value","array_field":["item1","item2"]}'`
+`curl -POST https://my.xsoar.live/instance/execute/webhook -H "Authorization: token" -H "Content-Type: application/json" -d '{"string_field":"string_field_value","array_field":["item1","item2"]}'`
 
 Multiple inicidents can be created in one request by sending an array as the request body:
 
-`curl -POST https://my.demisto.live/instance/execute/webhook -H "Authorization: token" -H "Content-Type: application/json" -d '[{"name":"incident1","rawJson":{"some_field":"some_value"}}, {"name":"incident2","rawJson":{"some_field":"some_value"}}]'`
+`curl -POST https://my.xsoar.live/instance/execute/webhook -H "Authorization: token" -H "Content-Type: application/json" -d '[{"name":"incident1","rawJson":{"some_field":"some_value"}}, {"name":"incident2","rawJson":{"some_field":"some_value"}}]'`
 
-The payload could then be mapped in the [Cortex XSOAR mapping wizard](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Create-a-Mapper):
+The payload could then be mapped in the [Mapping wizard (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Create-a-Mapper) or [Mapping wizard (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-an-incident-mapper) or [Mapping wizard (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-an-incident-mapper):
 
 - Note that the *Store sample events for mapping* parameter needs to be set.
 

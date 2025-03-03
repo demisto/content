@@ -22,8 +22,6 @@ args:
 - defaultValue: emailbody
   description: The name of the field that contains the email body.
   name: emailBody
-  predefined:
-  - ''
 - defaultValue: emailbodyhtml
   description: The name of the field that contains the HTML version of the email body.
   name: emailBodyHTML
@@ -128,8 +126,7 @@ tags:
 - phishing
 timeout: '0'
 type: python
-dockerimage: demisto/sklearn:1.0.0.87502
+dockerimage: demisto/sklearn:1.0.0.2013408
 tests:
-- No tests (auto formatted)
-runonce: true
+- Detect & Manage Phishing Campaigns - Test
 fromversion: 5.0.0

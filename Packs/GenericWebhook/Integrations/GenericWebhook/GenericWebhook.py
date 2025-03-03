@@ -143,16 +143,26 @@ def fetch_samples() -> None:
     demisto.incidents(sample_events)
 
 
+def test_module(params: dict):
+    """
+    Assigns a temporary port for longRunningPort and returns 'ok'.
+    """
+    if not params.get('longRunningPort'):
+        params['longRunningPort'] = '1111'
+    return_results('ok')
+
+
 def main() -> None:
+    params = demisto.params()
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
+        if demisto.command() == 'test-module':
+            return test_module(params)
         try:
-            port = int(demisto.params().get('longRunningPort'))
+            port = int(params.get('longRunningPort'))
         except ValueError as e:
             raise ValueError(f'Invalid listen port - {e}')
-        if demisto.command() == 'test-module':
-            return_results('ok')
-        elif demisto.command() == 'fetch-incidents':
+        if demisto.command() == 'fetch-incidents':
             fetch_samples()
         elif demisto.command() == 'long-running-execution':
             while True:
@@ -191,7 +201,7 @@ def main() -> None:
                         'fmt': '%(levelprefix)s %(client_addr)s - "%(request_line)s" %(status_code)s "%(user_agent)s"'
                     }
                     setup_credentials()
-                    uvicorn.run(app, host='0.0.0.0', port=port, log_config=log_config, **ssl_args)
+                    uvicorn.run(app, host='0.0.0.0', port=port, log_config=log_config, **ssl_args)  # type: ignore[arg-type]
                 except Exception as e:
                     demisto.error(f'An error occurred in the long running loop: {str(e)} - {format_exc()}')
                     demisto.updateModuleHealth(f'An error occurred: {str(e)}')

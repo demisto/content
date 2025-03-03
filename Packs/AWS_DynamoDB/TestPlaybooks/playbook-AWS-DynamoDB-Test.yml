@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f6686eab-b015-41b4-8918-9dd85edb8c6a
+    taskid: 6865c0ac-b20c-40f1-850e-e009bf64bebb
     type: start
     task:
-      id: f6686eab-b015-41b4-8918-9dd85edb8c6a
+      id: 6865c0ac-b20c-40f1-850e-e009bf64bebb
       version: -1
       name: ""
       iscommand: false
@@ -17,10 +17,11 @@ tasks:
       '#none#':
       - "15"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 50
         }
       }
@@ -29,12 +30,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 4e4decb4-71f4-41b8-8017-079c0368019f
+    taskid: 12a03b9b-e975-45ae-8652-dab9dc2af8dd
     type: regular
     task:
-      id: 4e4decb4-71f4-41b8-8017-079c0368019f
+      id: 12a03b9b-e975-45ae-8652-dab9dc2af8dd
       version: -1
       name: aws-dynamodb-list-tables
       description: Returns an array of table names associated with the current account
@@ -47,18 +50,12 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
-    scriptarguments:
-      exclusive_start_table_name: {}
-      raw_json: {}
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 370
         }
       }
@@ -67,12 +64,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: f0380550-6f2c-48e3-886e-ea4a47c675d5
+    taskid: 6a9ecac9-1639-47ed-8180-f164ed93f6cb
     type: regular
     task:
-      id: f0380550-6f2c-48e3-886e-ea4a47c675d5
+      id: 6a9ecac9-1639-47ed-8180-f164ed93f6cb
       version: -1
       name: aws-dynamodb-list-backups
       description: List backups associated with an AWS account. To list backups for
@@ -89,20 +88,13 @@ tasks:
     nexttasks:
       '#none#':
       - "4"
-    scriptarguments:
-      backup_type: {}
-      exclusive_start_backup_arn: {}
-      raw_json: {}
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
-      table_name: {}
+      - "21"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 720
         }
       }
@@ -111,12 +103,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: da60b1c9-b3ad-4819-8800-5c734eeeabb5
+    taskid: 4c6521cd-f3e7-4f6c-8217-8f654f200e61
     type: regular
     task:
-      id: da60b1c9-b3ad-4819-8800-5c734eeeabb5
+      id: 4c6521cd-f3e7-4f6c-8217-8f654f200e61
       version: -1
       name: aws-dynamodb-describe-table
       description: 'Returns information about the table, including the current status
@@ -134,18 +128,14 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      raw_json: {}
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
       table_name:
         simple: Music
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 545
         }
       }
@@ -154,12 +144,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 9b83cc41-11cf-4852-88c3-d603a51b6f5f
+    taskid: bd2c78b0-0fed-4895-8060-01b775e18d1e
     type: regular
     task:
-      id: 9b83cc41-11cf-4852-88c3-d603a51b6f5f
+      id: bd2c78b0-0fed-4895-8060-01b775e18d1e
       version: -1
       name: aws-dynamodb-describe-backup
       description: Describes an existing backup of a table. You can call DescribeBackup
@@ -173,18 +165,14 @@ tasks:
       - "8"
     scriptarguments:
       backup_arn:
-        simple: arn:aws:dynamodb:eu-central-1:123456789012:table/Music/backup/01618149183237-23ebc580
-      raw_json: {}
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
+        simple: ${AWS-DynamoDB.BackupSummaries.[0].BackupArn}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 895
+          "y": 1245
         }
       }
     note: false
@@ -192,12 +180,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: f8905f9f-d4ce-4fc5-8c80-184cc66e9163
+    taskid: 2edd989a-bf83-4473-8613-5f4076107e88
     type: regular
     task:
-      id: f8905f9f-d4ce-4fc5-8c80-184cc66e9163
+      id: 2edd989a-bf83-4473-8613-5f4076107e88
       version: -1
       name: aws-dynamodb-get-item
       description: The GetItem operation returns a set of attributes for the item
@@ -215,27 +205,17 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      attributes_to_get:
-        simple: '"Artist = :Acme Band"'
-      consistent_read: {}
-      expression_attribute_names: {}
       key:
         simple: '{"Artist": {"S":"No One You Know"},"SongTitle": {"S":"Call Me Today"}}'
-      projection_expression: {}
-      raw_json: {}
-      region: {}
-      return_consumed_capacity: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
       table_name:
         simple: Music
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 1420
+          "y": 1770
         }
       }
     note: false
@@ -243,12 +223,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 563731b3-be30-4841-8f76-4921ade883ec
+    taskid: ef0964f7-80ef-40d3-8b65-b0d4b8fcd005
     type: regular
     task:
-      id: 563731b3-be30-4841-8f76-4921ade883ec
+      id: ef0964f7-80ef-40d3-8b65-b0d4b8fcd005
       version: -1
       name: aws-dynamodb-scan
       description: The Scan operation returns one or more items and item attributes
@@ -280,31 +262,15 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      attributes_to_get: {}
-      conditional_operator: {}
-      consistent_read: {}
-      exclusive_start_key: {}
-      expression_attribute_names: {}
-      expression_attribute_values: {}
-      filter_expression: {}
-      index_name: {}
-      projection_expression: {}
-      raw_json: {}
-      region: {}
-      return_consumed_capacity: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
-      scan_filter: {}
-      select: {}
       table_name:
         simple: Music
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 1070
+          "y": 1420
         }
       }
     note: false
@@ -312,12 +278,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 50928a8c-d13c-428e-8d96-1b3db52c2e88
+    taskid: eaab264b-a5e9-460e-893a-a8e9895ee125
     type: regular
     task:
-      id: 50928a8c-d13c-428e-8d96-1b3db52c2e88
+      id: eaab264b-a5e9-460e-893a-a8e9895ee125
       version: -1
       name: aws-dynamodb-query
       description: The Query operation finds items based on primary key values. You
@@ -365,16 +333,6 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      attributes_to_get:
-        simple: '"{\":name\":{\"S\":\"Acme Band\"}}"'
-      conditional_operator: {}
-      consistent_read: {}
-      exclusive_start_key: {}
-      expression_attribute_names: {}
-      expression_attribute_values: {}
-      filter_expression: {}
-      index_name: {}
-      key_condition_expression: {}
       key_conditions:
         simple: |-
           {
@@ -386,24 +344,15 @@ tasks:
                       "ComparisonOperator":"BETWEEN",
                       "AttributeValueList": [ {"S": "A"}, {"S": "M"} ]
                   }}
-      projection_expression: {}
-      query_filter: {}
-      raw_json: {}
-      region: {}
-      return_consumed_capacity: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
-      scan_index_forward: {}
-      select: {}
       table_name:
         simple: Music
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 1245
+          "y": 1595
         }
       }
     note: false
@@ -411,12 +360,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 610f4e8c-9d8f-4313-8588-541fc3f6e0d6
+    taskid: f5a5da10-e4c0-4e55-8aae-91d92121e341
     type: regular
     task:
-      id: 610f4e8c-9d8f-4313-8588-541fc3f6e0d6
+      id: f5a5da10-e4c0-4e55-8aae-91d92121e341
       version: -1
       name: aws-dynamodb-tag-resource
       description: Associate a set of tags with an Amazon DynamoDB resource. You can
@@ -430,26 +381,21 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - "24"
     scriptarguments:
-      raw_json: {}
-      region: {}
       resource_arn:
-        simple: arn:aws:dynamodb:eu-central-1:123456789012:table/Music
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
+        simple: ${TableArn}
       tag_key:
         simple: test
       tag_value:
         simple: test
-      tags: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 1595
+          "y": 1945
         }
       }
     note: false
@@ -457,12 +403,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: f12f94a7-d991-436d-8794-c89e2e988311
+    taskid: 35cbf4de-7e15-4db4-80a6-0be5d2a11932
     type: regular
     task:
-      id: f12f94a7-d991-436d-8794-c89e2e988311
+      id: 35cbf4de-7e15-4db4-80a6-0be5d2a11932
       version: -1
       name: aws-dynamodb-untag-resource
       description: Removes the association of tags from an Amazon DynamoDB resource.
@@ -475,23 +423,19 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+      - "25"
     scriptarguments:
-      raw_json: {}
-      region: {}
       resource_arn:
-        simple: arn:aws:dynamodb:eu-central-1:123456789012:table/Music
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
+        simple: ${TableArn}
       tag_keys:
         simple: test
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 2295
+          "y": 2820
         }
       }
     note: false
@@ -499,12 +443,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 0766003b-e850-41ca-8e5d-ea3ef96fdf7d
+    taskid: 46434f1a-77fa-40e2-8b9c-ad4bd6ea3bbc
     type: regular
     task:
-      id: 0766003b-e850-41ca-8e5d-ea3ef96fdf7d
+      id: 46434f1a-77fa-40e2-8b9c-ad4bd6ea3bbc
       version: -1
       name: aws-dynamodb-list-tags-of-resource
       description: List all tags on an Amazon DynamoDB resource. You can call ListTagsOfResource
@@ -518,20 +464,15 @@ tasks:
       '#none#':
       - "13"
     scriptarguments:
-      next_token: {}
-      raw_json: {}
-      region: {}
       resource_arn:
-        simple: arn:aws:dynamodb:eu-central-1:123456789012:table/Music
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
+        simple: ${TableArn}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 1770
+          "y": 2295
         }
       }
     note: false
@@ -539,12 +480,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: cbe957f1-c788-41b2-8154-4dd0d3b7d1a1
+    taskid: 90b32a2a-8881-4115-8a63-1e27ebf80257
     type: condition
     task:
-      id: cbe957f1-c788-41b2-8154-4dd0d3b7d1a1
+      id: 90b32a2a-8881-4115-8a63-1e27ebf80257
       version: -1
       name: 'Check if the tag was added to resource '
       type: condition
@@ -569,11 +512,12 @@ tasks:
           right:
             value:
               simple: test
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 1945
+          "y": 2470
         }
       }
     note: false
@@ -581,12 +525,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: b8b69cc9-06a7-4709-898b-10ecc530cfcc
+    taskid: 81f5e7ba-2ad4-4f2a-843b-f03cf44a5c31
     type: condition
     task:
-      id: b8b69cc9-06a7-4709-898b-10ecc530cfcc
+      id: 81f5e7ba-2ad4-4f2a-843b-f03cf44a5c31
       version: -1
       name: 'Check if the tag was removed from the resource '
       type: condition
@@ -608,11 +554,14 @@ tasks:
                 root: AWS-DynamoDB
                 accessor: Tags
             iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 2645
+          "y": 3345
         }
       }
     note: false
@@ -620,12 +569,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 5dd217e1-3380-466f-81e2-2b9c5a98f41a
+    taskid: 57f200a4-a0fd-4b63-8ec8-7b5f509d6930
     type: regular
     task:
-      id: 5dd217e1-3380-466f-81e2-2b9c5a98f41a
+      id: 57f200a4-a0fd-4b63-8ec8-7b5f509d6930
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -639,15 +590,12 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 195
         }
       }
@@ -656,12 +604,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 8df899d8-a64f-44fb-8f04-94c840dc0249
+    taskid: c10e36b1-cce0-4c86-81e3-485c10ee8fea
     type: regular
     task:
-      id: 8df899d8-a64f-44fb-8f04-94c840dc0249
+      id: c10e36b1-cce0-4c86-81e3-485c10ee8fea
       version: -1
       name: aws-dynamodb-list-tags-of-resource
       description: List all tags on an Amazon DynamoDB resource. You can call ListTagsOfResource
@@ -675,20 +625,15 @@ tasks:
       '#none#':
       - "14"
     scriptarguments:
-      next_token: {}
-      raw_json: {}
-      region: {}
       resource_arn:
-        simple: arn:aws:dynamodb:eu-central-1:123456789012:table/Music
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
+        simple: ${TableArn}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 2470
+          "y": 3170
         }
       }
     note: false
@@ -696,12 +641,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: b5f2c9a1-e1dd-40c8-8b8a-b250672ce22a
+    taskid: 53d52232-271b-4d96-8e37-cbb09fa70190
     type: regular
     task:
-      id: b5f2c9a1-e1dd-40c8-8b8a-b250672ce22a
+      id: 53d52232-271b-4d96-8e37-cbb09fa70190
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -715,16 +662,15 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
+      keysToKeep:
+        simple: TableArn
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 2120
+          "y": 2645
         }
       }
     note: false
@@ -732,23 +678,26 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: efe07c84-764c-4d48-80dc-e8493edd06ab
+    taskid: 177f31ed-9942-484e-86c3-54a1e6b610c6
     type: title
     task:
-      id: efe07c84-764c-4d48-80dc-e8493edd06ab
+      id: 177f31ed-9942-484e-86c3-54a1e6b610c6
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2835
+          "x": 480,
+          "y": 3535
         }
       }
     note: false
@@ -756,12 +705,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 0b27898e-e11d-4a71-84df-37917e1c9052
+    taskid: d2c5c287-fe6d-4a51-817e-3cf68ef379ea
     type: regular
     task:
-      id: 0b27898e-e11d-4a71-84df-37917e1c9052
+      id: d2c5c287-fe6d-4a51-817e-3cf68ef379ea
       version: -1
       name: Print Error
       description: Prints an error entry with a given message
@@ -773,11 +724,12 @@ tasks:
       message:
         simple: The tag was not removed from the resource
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2820
+          "x": 50,
+          "y": 3520
         }
       }
     note: false
@@ -785,12 +737,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: af8ac6e0-2b32-4385-8205-60309b25603c
+    taskid: 3a2ec873-07c0-4dab-87fd-ab5908732d08
     type: regular
     task:
-      id: af8ac6e0-2b32-4385-8205-60309b25603c
+      id: 3a2ec873-07c0-4dab-87fd-ab5908732d08
       version: -1
       name: Print Error
       description: Prints an error entry with a given message
@@ -802,10 +756,159 @@ tasks:
       message:
         simple: The tag was not added to the resource
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 695,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: e70912cd-910e-4c46-8948-028e1ebfb1b4
+    type: regular
+    task:
+      id: e70912cd-910e-4c46-8948-028e1ebfb1b4
+      version: -1
+      name: Save resourceARN
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      key:
+        simple: TableArn
+      value:
+        simple: ${AWS-DynamoDB.BackupSummaries.[12].TableArn}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: c068d715-f8de-44d7-822f-9d8d24eeb4e6
+    type: condition
+    task:
+      id: c068d715-f8de-44d7-822f-9d8d24eeb4e6
+      version: -1
+      name: Verify the desired resource ARN
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: endWith
+          left:
+            value:
+              simple: ${TableArn}
+            iscontext: true
+          right:
+            value:
+              simple: c
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 79a33209-6d22-44c1-82c2-fbb2d59c0fbd
+    type: regular
+    task:
+      id: 79a33209-6d22-44c1-82c2-fbb2d59c0fbd
+      version: -1
+      name: Print Error
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: In the TPB, we rely on a resource ARN (which most of the times is
+          number 12) which ends with 'c' but got another.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 1e1bd75b-1824-4a7c-81dc-57c06b3244ef
+    type: regular
+    task:
+      id: 1e1bd75b-1824-4a7c-81dc-57c06b3244ef
+      version: -1
+      name: sleep
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
           "y": 2120
         }
       }
@@ -814,13 +917,50 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 77a86692-ae6d-4193-89e0-38eb69c216f7
+    type: regular
+    task:
+      id: 77a86692-ae6d-4193-89e0-38eb69c216f7
+      version: -1
+      name: sleep
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2865,
-        "width": 1025,
+        "height": 3565,
+        "width": 1240,
         "x": 50,
         "y": 50
       }
@@ -828,4 +968,5 @@ view: |-
   }
 inputs: []
 outputs: []
+dirtyInputs: true
 fromversion: 5.0.0

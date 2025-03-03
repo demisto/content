@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Hurukai - Get Artifact Logs](./doc_files/Hurukai_-_Get_Artifact_Logs.png)
+![Hurukai - Get Artifact Logs](../doc_files/Hurukai_-_Get_Artifact_Logs.png)

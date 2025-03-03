@@ -1,7 +1,7 @@
 import urllib.parse
 import urllib3
 from json import JSONDecodeError
-from typing import Tuple, Pattern
+from re import Pattern
 
 from CommonServerPython import *
 
@@ -1357,6 +1357,7 @@ def general_context_from_event(alert: Dict):
 
 def oneFromList(list_of_args, args):
     checker = 0
+    result = None
     for arg in list_of_args:
         if args.get(arg):
             checker += 1
@@ -1365,7 +1366,7 @@ def oneFromList(list_of_args, args):
     return result if checker == 1 else False
 
 
-def organize_search_body_host(client: Client, arg: Tuple, body: Dict):
+def organize_search_body_host(client: Client, arg: tuple, body: Dict):
     if arg[0] == "hostsNames":
         hostsNames = arg[1].split(",")
         agentsIds = []
@@ -1383,8 +1384,13 @@ def organize_search_body_host(client: Client, arg: Tuple, body: Dict):
         body["hosts"] = agentsIds
 
     elif arg[0] == "hostSetName":
-        hostSet = {"_id": client.get_host_set_information_request({"name": arg[1]}, None)["data"]["entries"][0]["_id"]}
-        body["host_set"] = hostSet
+        result = client.get_host_set_information_request({"name": arg[1]}, None)
+        entries = result.get("data", {}).get("entries", [])
+        if entries:
+            host_set = {"_id": entries[0].get("_id")}
+            body["host_set"] = host_set
+        else:
+            raise DemistoException("hostSetName is not valid.")
 
     elif arg[0] == "hostSet":
         hostSet = {"_id": int(arg[1])}
@@ -1393,7 +1399,7 @@ def organize_search_body_host(client: Client, arg: Tuple, body: Dict):
     return body
 
 
-def organize_search_body_query(argForQuery: Tuple, args: Dict):
+def organize_search_body_query(argForQuery: tuple, args: Dict):
     query = []
     if argForQuery[0] == "fieldSearchName":
         if not args.get("fieldSearchOperator") or not args.get("fieldSearchValue"):
@@ -1664,7 +1670,7 @@ def query_fetch(reported_at=None, first_fetch: str = None):
 
 def parse_alert_to_incident(alert: Dict, pattern: Pattern) -> Dict:
     event_type = alert.get('event_type')
-    event_type = 'NewEvent' if not event_type else event_type
+    event_type = event_type if event_type else "NewEvent"
     event_values = alert.get('event_values', {})
     event_indicators_map = {
         'fileWriteEvent': 'fileWriteEvent/fileName',
@@ -1673,14 +1679,14 @@ def parse_alert_to_incident(alert: Dict, pattern: Pattern) -> Dict:
         'regKeyEvent': 'regKeyEvent/valueName'
     }
     event_indicator = event_indicators_map.get(event_type)
-    event_indicator = 'No Indicator' if not event_indicator else event_indicator
+    event_indicator = event_indicator if event_indicator else "No Indicator"
 
     indicator = ''
     if isinstance(event_values, dict):
         indicator = event_values.get(event_indicator, '')
 
-    incident_name = u'{event_type_parsed}: {indicator}'.format(
-        event_type_parsed=pattern.sub("\g<1> \g<2>", event_type).title(),
+    incident_name = '{event_type_parsed}: {indicator}'.format(
+        event_type_parsed=pattern.sub(r"\g<1> \g<2>", event_type).title(),
         indicator=indicator
     )
 
@@ -1699,6 +1705,7 @@ def run_commands_without_polling(client: Client, args: Dict[str, Any]):
         return data_acquisition_command(client, args)[0]
     if args.get('cmd') == 'fireeye-hx-file-acquisition':
         return file_acquisition_command(client, args)[0]
+    return None
 
 
 ''' COMMAND FUNCTIONS '''
@@ -2125,6 +2132,9 @@ def create_static_host_set_command(client: Client, args: Dict[str, Any]) -> Comm
             data['_revision'] = date.strftime("%m/%d/%Y, %H:%M:%S.%f")
             host_set_id = data.get('_id')
             message = f'Static Host Set {host_set_name} with id {host_set_id} was created successfully.'
+        else:
+            message = ''
+            demisto.debug(f"No data -> {message=}")
     except Exception as e:
         response = {}
         if '409' in str(e):
@@ -2204,6 +2214,9 @@ def create_dynamic_host_set_command(client: Client, args: Dict[str, Any]) -> Com
             data['_revision'] = date.strftime("%m/%d/%Y, %H:%M:%S.%f")
             host_set_id = data.get('_id')
             message = f'Dynamic Host Set {host_set_name} with id {host_set_id} was created successfully.'
+        else:
+            message = ''
+            demisto.debug(f"No data -> {message=}")
     except Exception as e:
         response = {}
         if '409' in str(e):
@@ -2243,6 +2256,9 @@ def update_dynamic_host_set_command(client: Client, args: Dict[str, Any]) -> Com
             date = datetime.strptime(data['_revision'][:-6], '%Y%m%d%H%M%S%f')
             data['_revision'] = date.strftime("%m/%d/%Y, %H:%M:%S.%f")
             message = f'Dynamic Host Set {host_set_name} was updated successfully.'
+        else:
+            message = ''
+            demisto.debug(f"No data -> {message=}")
     except Exception as e:
         response = {}
         if '409' in str(e):
@@ -2267,7 +2283,7 @@ ACQUISITION
 """
 
 
-def data_acquisition_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandResults, bool, str]:
+def data_acquisition_command(client: Client, args: Dict[str, Any]) -> tuple[CommandResults, bool, str]:
     if 'acquisition_id' not in args:
         acquisition_info = get_data_acquisition(client, args)
         acquisition_id = acquisition_info.get('_id')
@@ -2325,7 +2341,7 @@ def delete_data_acquisition_command(client: Client, args: Dict[str, Any]) -> Com
     )
 
 
-def file_acquisition_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandResults, bool, str]:
+def file_acquisition_command(client: Client, args: Dict[str, Any]) -> tuple[CommandResults, bool, str]:
     if "acquisition_id" not in args:
         if not args.get('hostName') and not args.get('agentId'):
             raise ValueError('Please provide either agentId or hostName')
@@ -2422,7 +2438,7 @@ def get_data_acquisition_command(client: Client, args: Dict[str, Any]) -> List[C
             outputs_key_field="_id",
             outputs=acquisition_info,
             readable_output=f"{message}\nacquisition ID: {acquisition_id}"
-        ), fileResult('{}_agent_{}_data.mans'.format(acquisition_id, agent_id), data)]
+        ), fileResult(f'{acquisition_id}_agent_{agent_id}_data.mans', data)]
 
     # else return message for states in [ NEW, ERROR, QUEUED, RUNNING, FAILED ]
     state = acquisition_info.get('state')
@@ -2563,8 +2579,8 @@ def get_alert_command(client: Client, args: Dict[str, Any]) -> List[CommandResul
     )
 
     event_type = alert.get('event_type')
-    event_type = 'NewEvent' if not event_type else event_type
-    event_type = re.sub("([a-z])([A-Z])", "\g<1> \g<2>", event_type).title()
+    event_type = event_type if event_type else "NewEvent"
+    event_type = re.sub("([a-z])([A-Z])", r"\g<1> \g<2>", event_type).title()
     event_table = tableToMarkdown(
         name=event_type,
         t=alert.get('event_values')
@@ -2854,8 +2870,9 @@ SEARCHES
 """
 
 
-def start_search_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandResults, bool, str]:
+def start_search_command(client: Client, args: Dict[str, Any]) -> tuple[CommandResults, bool, str]:
     if 'searchId' not in args:
+        demisto.debug("searchId is not in the args, starting a new search")
         list_of_args = ["agentsIds", "hostsNames", "hostSet", "hostSetName"]
         arg = oneFromList(list_of_args=list_of_args, args=args)
         if arg is False:
@@ -2875,24 +2892,29 @@ def start_search_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandR
 
         # this function organize the query of the request body, and returns list of queries
         body["query"] = organize_search_body_query(arg_for_query, args)
-        body["exhaustive"] = False if args.get("exhaustive") == "false" else True
+        body["exhaustive"] = args.get("exhaustive") != "false"
 
         try:
             search_id = client.search_request(body)["data"]["_id"]
+            demisto.debug(f"got the following search id: {search_id}")
         except Exception as e:
             raise ValueError(e)
 
-    if not args.get("limit"):
-        args['limit'] = 1000
-
+    limit = int(args.get('limit', 1000))
     search_id = str(args.get('searchId')) if args.get('searchId') else str(search_id)
     searchInfo = client.get_search_by_id_request(search_id)["data"]
     matched = searchInfo.get('stats', {}).get('search_state', {}).get('MATCHED', 0)
     pending = searchInfo.get('stats', {}).get('search_state', {}).get('PENDING', 0)
-
-    if searchInfo.get("state") != "STOPPED" and matched < int(args.get('limit', '')) and pending != 0:
+    running_state = searchInfo.get('stats', {}).get('running_state', {})
+    new_run = True
+    for _state, count in running_state.items():
+        if count != 0:
+            new_run = False
+            break
+    if searchInfo.get("state") != "STOPPED" and ((matched < int(limit) and pending != 0) or new_run):
+        demisto.debug(f"search is not ready yet, running state is: {running_state}")
         return CommandResults(readable_output=f"Search started,\nSearch ID: {search_id}"), False, search_id
-
+    demisto.debug("search is ready")
     return CommandResults(readable_output=f"Search started,\nSearch ID: {search_id}"), True, search_id
 
 
@@ -2992,17 +3014,20 @@ def search_stop_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 def search_result_get_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     if not args.get("searchId"):
         raise ValueError("Search Id is must be")
-
+    demisto.debug(f"in get search results command with search id: {args.get('searchId')}")
     searches_ids = argToList(str(args.get("searchId")))
+    limit = args.get('limit')
     results: List[List[Dict]] = []
     for search_id in searches_ids:
         result = client.search_result_get_request(search_id)["data"]["entries"]
+        demisto.debug(f"result is: {result}")
         if result:
             results.append(result)
 
     commandsResults: List = []
     for result in results:
-        for entry in result:
+        entries_amount = min(int(limit), len(result)) if limit else len(result)
+        for entry in result[:entries_amount]:
             Title = f"Host Id {entry.get('host', {}).get('_id')}\nHost Name {entry.get('host', {}).get('hostname')}"
             for_table = []
             for res in entry.get("results", []):
@@ -3120,9 +3145,10 @@ def fetch_incidents(client: Client, args: Dict[str, Any]) -> List:
 def run_polling_command(client, args, cmd, post_func, get_func, t):
     ScheduledCommand.raise_error_if_not_supported()
     interval_in_secs = int(args.get('interval_in_seconds', 60))
+    type_id = TABLE_POLLING_COMMANDS[t]['type']
     _, is_ready, item_id = post_func(client, args)
     if not is_ready:
-        type_id = TABLE_POLLING_COMMANDS[t]['type']
+        demisto.debug("still not ready")
         readable_output = f"{TABLE_POLLING_COMMANDS[t]['message']}{item_id}" if type_id not in args else None
         if not args.get(type_id):
             args[type_id] = item_id
@@ -3134,6 +3160,8 @@ def run_polling_command(client, args, cmd, post_func, get_func, t):
         # result with scheduled_command only - no update to the war room
         return CommandResults(readable_output=readable_output, scheduled_command=scheduled_command)
 
+    if type_id not in args:
+        args[type_id] = item_id
     return get_func(client, args)
 
 

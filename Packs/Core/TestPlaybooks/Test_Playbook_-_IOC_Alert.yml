@@ -1,0 +1,539 @@
+id: Test Playbook - IOC Alert
+version: -1
+name: Test Playbook - IOC Alert
+description: |-
+  This playbook tests the ‘IOC Alert' playbook which is part of the ‘Core’ pack.
+
+  The following tests are conducted in the playbook:
+  1-Verify that the parent incident fields have been populated.
+  2- Ensure that the context data is correctly extracted.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9193802e-ca8d-4d1d-8fb6-ac843c6409e0
+    type: start
+    task:
+      id: 9193802e-ca8d-4d1d-8fb6-ac843c6409e0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 97297dba-2ed4-45c7-8f88-63bd12b62ea8
+    type: regular
+    task:
+      id: 97297dba-2ed4-45c7-8f88-63bd12b62ea8
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "308"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: c3d897d5-026b-4763-8611-ec681594c84c
+    type: regular
+    task:
+      id: c3d897d5-026b-4763-8611-ec681594c84c
+      version: -1
+      name: Set Alert Fields
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setAlert
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "307"
+    scriptarguments:
+      details:
+        simple: DC1 uploaded 376.6MB to the external host f3322.net over 3 sessions in the last 24 hours. During that time, DC1 downloaded 434.7KB from the same external host. In the past 30 days, the host uploaded data via HTTPS protocol to this external host an average of 0 bytes a day. Similar events of data upload to this external host, was seen from other endpoints in the network 0 times in the last 30 days
+      ignore-outputs:
+        simple: "false"
+      name:
+        simple: '''IOC Alert'' Test Playbook'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 350e14ec-8eae-4ea7-8ce7-ce5890e6c63e
+    type: title
+    task:
+      id: 350e14ec-8eae-4ea7-8ce7-ce5890e6c63e
+      version: -1
+      name: Start Tests
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+      - "310"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 4931b845-286f-4a29-8c88-8f36d375bd3e
+    type: title
+    task:
+      id: 4931b845-286f-4a29-8c88-8f36d375bd3e
+      version: -1
+      name: Check Context Data
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "70"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: a87d5dd0-7b2f-40db-8fd1-3f2e611d8f76
+    type: condition
+    task:
+      id: a87d5dd0-7b2f-40db-8fd1-3f2e611d8f76
+      version: -1
+      name: Verify Extracted Indicators
+      description: Verify that the ‘ExtractedIndicators’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "71"
+      "yes":
+      - "306"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ExtractedIndicators
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: cee5c66c-f442-4deb-8200-de2684e4d81e
+    type: regular
+    task:
+      id: cee5c66c-f442-4deb-8200-de2684e4d81e
+      version: -1
+      name: Verify Context Error - Extracted Indicators
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'ExtractedIndicators' context key was not extracted properly. One of the following may be the cause:
+          1- The 'extractIndicators' script failed to execute in the 'Extract IOC' task.
+          2- The 'text' input configuration was changed for the 'extractIndicators' automation used in the 'Extract IOC' task.
+          3- The 'extractIndicators' automation outputs have been modified and no longer contain the 'ExtractedIndicators' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 1445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "306":
+    id: "306"
+    taskid: 277d4cdf-d375-490e-8974-bce285c77675
+    type: title
+    task:
+      id: 277d4cdf-d375-490e-8974-bce285c77675
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "307":
+    id: "307"
+    taskid: 6dca2d8d-dbc9-4f8d-82a4-3dce2773532c
+    type: playbook
+    task:
+      id: 6dca2d8d-dbc9-4f8d-82a4-3dce2773532c
+      version: -1
+      name: IOC Alert
+      description: "IOCs provide the ability to alert on known malicious objects on endpoints across the organization. \n\n**Analysis Actions:**\nThe playbook will use several enrichment sources to determine the IOC verdict. Additionally, will use the Analytics module to run a prevalence check for the IOC.\n\n**Response Actions:**\nThe playbook's first response action is a containment plan that is based on the playbook input. In that phase, the playbook will execute endpoint isolation\n\n**Investigative Actions:**\nWhen the playbook executes, it checks for additional abnormal activity using the Endpoint Investigation Plan playbook that can indicate the endpoint might be compromised.\n\n**Remediation Actions:**\nIn case results are found within the investigation phase, the playbook will execute remediation actions that include containment and eradication.\n\nThis phase will execute the following containment actions:\n\n* File quarantine\n* Endpoint isolation\n\nAnd the following eradication actions:\n\n* Manual process termination\n* Manual file deletion"
+      playbookName: IOC Alert
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      AutoContainment:
+        simple: "True"
+      AutoEradication:
+        simple: "True"
+      AutoRestoreEndpoint:
+        simple: "False"
+      BlockIndicatorsAutomatically:
+        simple: "False"
+      CommentToAdd:
+        simple: '${alert.name}. Alert ID: ${alert.id}'
+      FileRemediation:
+        simple: Quarantine
+      PreHostContainment:
+        simple: "False"
+      ShouldCloseAutomatically:
+        simple: "False"
+      ShouldHandleFPautomatically:
+        simple: "False"
+      ShouldOpenTicket:
+        simple: "False"
+      ZendeskSubject:
+        simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+      addCommentPerEndpoint:
+        simple: "False"
+      description:
+        simple: ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url}
+      serviceNowShortDescription:
+        simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "308":
+    id: "308"
+    taskid: 76bbbed3-71a6-4c35-81d5-582b311dfa92
+    type: regular
+    task:
+      id: 76bbbed3-71a6-4c35-81d5-582b311dfa92
+      version: -1
+      name: Set 'foundIncidents' to context
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "307"
+    scriptarguments:
+      append:
+        simple: "true"
+      ignore-outputs:
+        simple: "false"
+      key:
+        simple: foundIncidents
+      value:
+        simple: '''IOC Alert'' Test Playbook'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "310":
+    id: "310"
+    taskid: 61dacdc9-30cc-4657-879c-317a9a75bfba
+    type: title
+    task:
+      id: 61dacdc9-30cc-4657-879c-317a9a75bfba
+      version: -1
+      name: Check Parent Incident Fields
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "311"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "311":
+    id: "311"
+    taskid: c2665084-634e-460a-87a3-94eefbf1b585
+    type: condition
+    task:
+      id: c2665084-634e-460a-87a3-94eefbf1b585
+      version: -1
+      name: Verify Manual Severity
+      description: Verify that the ‘manual_severity’ parent incident field was populated correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "312"
+      "yes":
+      - "306"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: parentIncidentFields.manual_severity
+            iscontext: true
+          right:
+            value:
+              simple: High
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "312":
+    id: "312"
+    taskid: 1bfb3810-4529-4033-8b51-3ab8d2392124
+    type: regular
+    task:
+      id: 1bfb3810-4529-4033-8b51-3ab8d2392124
+      version: -1
+      name: Verify Parent Incident Field Error - Manual Severity
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The ‘manual_severity’ parent incident field was populated correctly. One of the following may be the cause:
+          1- The 'setParentIncidentFields' script failed to execute in the 'Set Alert Severity to High' task.
+          2- The 'manual_severity' input configuration was changed for the 'setParentIncidentFields' automation used in the 'Set Alert Severity to High' task.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "311_306_yes": 0.11,
+      "70_306_yes": 0.17
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1240,
+        "width": 1180,
+        "x": 50,
+        "y": 300
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.6.0
+marketplaces:
+- marketplacev2

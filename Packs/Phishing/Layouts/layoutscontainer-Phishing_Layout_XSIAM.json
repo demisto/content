@@ -447,7 +447,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Email \u0026 URL Screenshots",
+                        "name": "Email & URL Screenshots",
                         "query": {
                             "categories": [
                                 "tags"
@@ -547,7 +547,7 @@
                                         "simple": "true"
                                     },
                                     "search_name": {
-                                        "simple": "Search \u0026 Delete Executed from XSIAM alert layout."
+                                        "simple": "Search & Delete Executed from XSIAM alert layout."
                                     }
                                 },
                                 "buttonClass": null,
@@ -896,6 +896,12 @@
                 "id": "workPlan",
                 "name": "Work Plan",
                 "type": "workPlan"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas",
+                "hidden": false
             }
         ]
     },

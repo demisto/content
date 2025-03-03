@@ -3,8 +3,9 @@ from CommonServerPython import *  # noqa: F401
 from ReversingLabs.SDK.tiscale import TitaniumScale
 
 import json
+# pragma: no cover
 
-VERSION = "v1.1.0"
+VERSION = "v1.2.0"
 USER_AGENT = f"ReversingLabs XSOAR TitaniumScale {VERSION}"
 HOST = demisto.params().get('host')
 TOKEN = demisto.params().get('token')
@@ -23,6 +24,8 @@ HTTPS_PROXY_PASSWORD = demisto.params().get("https_credentials", {}).get("passwo
 
 
 def format_proxy(addr, username=None, password=None):
+    protocol = ""
+    proxy_name = ""
     if addr.startswith("http://"):
         protocol = addr[:7]
         proxy_name = addr[7:]
@@ -114,14 +117,23 @@ def parse_upload_report_and_return_results(response_json):
     return command_result
 
 
-def upload_file(tiscale):
+def upload_file(tiscale: TitaniumScale):
     """
     Upload a file and return task url
     """
     try:
         file_entry = demisto.getFilePath(demisto.getArg('entryId'))
+        custom_token = demisto.getArg("custom_token")
+        user_data = demisto.getArg("user_data")
+        custom_data = demisto.getArg("custom_data")
+
         with open(file_entry['path'], 'rb') as file:
-            response_json = tiscale.upload_sample_from_file(file_source=file).json()
+            response_json = tiscale.upload_sample_from_file(
+                file_source=file,
+                custom_token=custom_token,
+                user_data=user_data,
+                custom_data=custom_data
+            ).json()
     except Exception as e:
         return_error(str(e))
 
@@ -206,10 +218,13 @@ def parse_report_and_return_results(title, response_json):
 
             else:
                 return_error("Scan result does not contain classifications")
+                return None
         else:
             return_error("Report does not contain scan results")
+            return None
     else:
         return_error("Response does not contain report")
+        return None
 
 
 def get_report(tiscale):
@@ -234,15 +249,23 @@ def get_report(tiscale):
     return [command_result, file_result]
 
 
-def upload_file_and_get_results(tiscale):
+def upload_file_and_get_results(tiscale: TitaniumScale):
     """
     Upload a file and get report
     """
-
     try:
         file_entry = demisto.getFilePath(demisto.getArg('entryId'))
+        custom_token = demisto.getArg("custom_token")
+        user_data = demisto.getArg("user_data")
+        custom_data = demisto.getArg("custom_data")
+
         with open(file_entry['path'], 'rb') as f:
-            response_json = tiscale.upload_sample_and_get_results(file_source=f).json()
+            response_json = tiscale.upload_sample_and_get_results(
+                file_source=f,
+                custom_token=custom_token,
+                user_data=user_data,
+                custom_data=custom_data
+            ).json()
     except Exception as e:
         return_error(str(e))
 
@@ -254,6 +277,120 @@ def upload_file_and_get_results(tiscale):
                              file_type=EntryType.ENTRY_INFO_FILE)
 
     return [command_result, file_result]
+
+
+def list_processing_tasks_command(tiscale: TitaniumScale):
+    age = demisto.getArg("age")
+    if age:
+        age = int(age)
+    custom_token = demisto.getArg("custom_token")
+
+    try:
+        resp = tiscale.list_processing_tasks(age=age, custom_token=custom_token)
+    except Exception as e:
+        if hasattr(e, "response_object"):
+            return_error(e.response_object.text)    # type: ignore[attr-defined]
+        else:
+            raise
+
+    results = list_processing_tasks_output(resp_json=resp.json())
+    return results
+
+
+def list_processing_tasks_output(resp_json):
+    task_table = tableToMarkdown("Processing tasks", resp_json)
+
+    markdown = f"""## ReversingLabs TitaniumScale List processing tasks\n {task_table}"""
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"list_processing_tasks": resp_json},
+        readable_output=markdown
+    )
+
+    return results
+
+
+def get_processing_task_info_command(tiscale: TitaniumScale):
+    task_id = int(demisto.getArg("task_id"))
+
+    try:
+        resp = tiscale.get_processing_task_info(task_id=task_id, full=False)
+    except Exception as e:
+        if hasattr(e, "response_object"):
+            return_error(e.response_object.text)    # type: ignore[attr-defined]
+        else:
+            raise
+
+    command_result = parse_report_and_return_results(title="## ReversingLabs TitaniumScale get processing task info\n",
+                                                     response_json=resp.json())
+
+    file_result = fileResult('Full report in JSON', json.dumps(resp.json(), indent=4),
+                             file_type=EntryType.ENTRY_INFO_FILE)
+
+    return [command_result, file_result]
+
+
+def delete_processing_task_command(tiscale: TitaniumScale):
+    task_id = int(demisto.getArg("task_id"))
+
+    try:
+        tiscale.delete_processing_task(task_id=task_id)
+    except Exception as e:
+        if hasattr(e, "response_object"):
+            return_error(e.response_object.text)    # type: ignore[attr-defined]
+        else:
+            raise
+
+    results = CommandResults(
+        readable_output=f"""## ReversingLabs TitaniumScale delete processing task\n Task {task_id} deleted successfully."""
+    )
+
+    return results
+
+
+def delete_multiple_tasks_command(tiscale: TitaniumScale):
+    age = int(demisto.getArg("age"))
+
+    try:
+        tiscale.delete_multiple_tasks(age=age)
+    except Exception as e:
+        if hasattr(e, "response_object"):
+            return_error(e.response_object.text)    # type: ignore[attr-defined]
+        else:
+            raise
+
+    results = CommandResults(
+        readable_output=f"## ReversingLabs TitaniumScale delete multiple tasks\n Tasks "
+                        f"of age {age} seconds or less deleted successfully."
+    )
+
+    return results
+
+
+def get_yara_id_command(tiscale: TitaniumScale):
+    try:
+        resp = tiscale.get_yara_id()
+    except Exception as e:
+        if hasattr(e, "response_object"):
+            return_error(e.response_object.text)    # type: ignore[attr-defined]
+        else:
+            raise
+
+    results = get_yara_id_output(resp_json=resp.json())
+    return results
+
+
+def get_yara_id_output(resp_json):
+    markdown = f"""## ReversingLabs TitaniumScale YARA ruleset ID\n **ID**: {resp_json.get("id")}"""
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"yara_id": resp_json},
+        readable_output=markdown
+    )
+
+    return results
 
 
 def main():
@@ -290,6 +427,16 @@ def main():
             return_results(upload_file(tiscale))
         elif demisto.command() == 'reversinglabs-titaniumscale-get-results':
             return_results(get_report(tiscale))
+        elif demisto.command() == 'reversinglabs-titaniumscale-list-processing-tasks':
+            return_results(list_processing_tasks_command(tiscale))
+        elif demisto.command() == 'reversinglabs-titaniumscale-get-processing-task-info':
+            return_results(get_processing_task_info_command(tiscale))
+        elif demisto.command() == 'reversinglabs-titaniumscale-delete-processing-task':
+            return_results(delete_processing_task_command(tiscale))
+        elif demisto.command() == 'reversinglabs-titaniumscale-delete-multiple-tasks':
+            return_results(delete_multiple_tasks_command(tiscale))
+        elif demisto.command() == 'reversinglabs-titaniumscale-get-yara-id':
+            return_results(get_yara_id_command(tiscale))
         else:
             return_error(f'Command [{demisto.command()}] not implemented')
     except Exception as e:

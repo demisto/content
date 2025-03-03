@@ -3,12 +3,12 @@
     "description": "Amazon Web Services Identity and Access Management (IAM)",
     "support": "xsoar",
     "author": "Cortex XSOAR",
-    "currentVersion": "1.1.61",
+    "currentVersion": "1.1.68",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "Cloud Services"
+        "Cloud Service Provider"
     ],
     "tags": [],
     "useCases": [],

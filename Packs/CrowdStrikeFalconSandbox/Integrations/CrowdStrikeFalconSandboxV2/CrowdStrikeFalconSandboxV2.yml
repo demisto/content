@@ -45,7 +45,7 @@ script:
   script: "-"
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.11.10.116949
   commands:
   - name: cs-falcon-sandbox-scan
     polling: true
@@ -2249,7 +2249,7 @@ script:
       description: The reason the vendor decided the file was malicious.
       type: string
     - contextPath: DBotScore.Indicator
-      description: The tested indicator.
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
       description: The indicator type.

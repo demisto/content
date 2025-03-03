@@ -46,7 +46,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -308,7 +310,7 @@ tasks:
       key:
         simple: severity_high_int
       value:
-        simple: "3"
+        simple: "3.0"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -675,7 +677,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "18"
+      - "21"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -714,14 +716,139 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 2930
+          "y": 3590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 2007147e-b9e3-41f2-8396-f1d8ace83ee1
+    type: regular
+    task:
+      id: 2007147e-b9e3-41f2-8396-f1d8ace83ee1
+      version: -1
+      name: Map a float str to string
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      key:
+        simple: map_result_float_string_critical
+      value:
+        complex:
+          root: ${list_severity}
+          transformers:
+          - operator: MapRangeValues
+            args:
+              map_from:
+                value:
+                  simple: 0.0,0.1-3.9,4.0-6.9,7.0-8.9,9.0-10.0
+              map_to:
+                value:
+                  simple: Informational,Low,Medium,High,Critical
+              sep: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 8351a8ca-0884-40b7-8408-2b7ce30e346d
+    type: regular
+    task:
+      id: 8351a8ca-0884-40b7-8408-2b7ce30e346d
+      version: -1
+      name: Set list_severity
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      key:
+        simple: list_severity
+      value:
+        simple: "9.1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 2d58be16-d71b-47ac-8d9d-f452d01851ac
+    type: condition
+    task:
+      id: 2d58be16-d71b-47ac-8d9d-f452d01851ac
+      version: -1
+      name: Verify Critical
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${map_result_float_string_critical}
+            iscontext: true
+          right:
+            value:
+              simple: Critical
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3370
         }
       }
     note: false
@@ -736,7 +863,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2945,
+        "height": 3605,
         "width": 380,
         "x": 450,
         "y": 50

@@ -1,14 +1,14 @@
 {
     "name": "Microsoft Graph Calendar",
     "description": "Microsoft Graph Calendar enables you to create and manage different calendars and events\n  according to your requirements.",
-    "currentVersion": "1.1.22",
+    "currentVersion": "1.1.28",
     "support": "xsoar",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-01-08T13:16:53Z",
     "categories": [
-        "Cloud Services"
+        "Cloud Service Provider"
     ],
     "tags": [],
     "useCases": [],

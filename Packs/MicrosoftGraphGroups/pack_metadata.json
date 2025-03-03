@@ -2,13 +2,13 @@
     "name": "Microsoft Graph Groups",
     "description": "Microsoft Graph Groups enables you to create and manage different types of groups and group functionality according to your requirements.",
     "support": "xsoar",
-    "currentVersion": "1.1.46",
+    "currentVersion": "1.1.52",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-04-20T11:24:15Z",
     "categories": [
-        "Authentication & Identity Management"
+        "Identity and Access Management"
     ],
     "tags": [],
     "useCases": [],

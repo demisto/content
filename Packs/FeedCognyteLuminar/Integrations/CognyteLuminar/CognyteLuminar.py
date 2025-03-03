@@ -37,7 +37,7 @@ def enrich_incident_items(parent, childrens, feed_tags, tlp_color):
     for children in childrens:
         tags = [LEAKED_RECORD, f'Incident: {parent.get("name")}', f'Credentials:{children.get("credential")}']
         if feed_tags:
-            tags.extend([ft for ft in feed_tags])
+            tags.extend(list(feed_tags))
 
         additional_field = {
             'tags': tags,
@@ -86,7 +86,7 @@ def enrich_malware_items(parent, childrens, feed_tags, tlp_color):
         pattern = children.get("pattern")
         for match in stix_regex_parser.findall(pattern):
             stix_type, stix_property, value = match
-            if stix_type in LUMINAR_TO_XSOAR_TYPES.keys():
+            if stix_type in LUMINAR_TO_XSOAR_TYPES:
                 indicator_type = LUMINAR_TO_XSOAR_TYPES[stix_type]
                 if indicator_type == FeedIndicatorType.File and not str(stix_property).__contains__("hashes"):
                     indicator_type = None
@@ -105,7 +105,7 @@ def enrich_malware_items(parent, childrens, feed_tags, tlp_color):
                 entity_b=parent["name"],
                 entity_b_type=ThreatIntel.ObjectsNames.MALWARE,
             )
-            tags = [it for it in children["indicator_types"]]
+            tags = list(children["indicator_types"])
             all_tags.update(tags)
 
             tags.append("Malware Family: " + parent["name"])
@@ -113,7 +113,7 @@ def enrich_malware_items(parent, childrens, feed_tags, tlp_color):
             indicator_type_str = ",".join(children["indicator_types"])
             tags.append(f"Malware Type: {malware_types_str}")
             if feed_tags:
-                tags.extend([ft for ft in feed_tags])
+                tags.extend(list(feed_tags))
 
             indicator = {
                 'value': value,
@@ -212,12 +212,12 @@ class Client(BaseClient):
             if is_fetch_command:
                 last_run = self.get_last_run()
                 if last_run:
-                    params = dict(timestamp=int(last_run), limit=self.limit)
+                    params = {"timestamp": int(last_run), "limit": self.limit}
                 else:
-                    params = dict(limit=self.limit, offset=self.offset)
+                    params = {"limit": self.limit, "offset": self.offset}
                     self.offset += self.limit
             else:
-                params = dict(limit=self.limit, offset=self.offset)
+                params = {"limit": self.limit, "offset": self.offset}
                 self.offset += self.limit
             req_url = f"{self._base_url}/stix"
             req_headers = {"Authorization": "Bearer %s" % access_token}
@@ -288,7 +288,7 @@ class Client(BaseClient):
                     pattern = lum_indicator["pattern"]
                     for match in stix_regex_parser.findall(pattern):
                         stix_type, stix_property, value = match
-                        if stix_type in LUMINAR_TO_XSOAR_TYPES.keys():
+                        if stix_type in LUMINAR_TO_XSOAR_TYPES:
                             indicator_type = LUMINAR_TO_XSOAR_TYPES[stix_type]
                             if indicator_type == FeedIndicatorType.File and \
                                     not str(stix_property).__contains__("hashes"):
@@ -300,6 +300,9 @@ class Client(BaseClient):
                             'Malware Family': lum_indicator["name"],
                             'rawJSON': dict(lum_indicator)
                         }
+                    else:
+                        indicator = {}
+                        demisto.debug(f"{indicator_type=} -> {indicator=}")
                     luminar_indicators_list.append(indicator)
         return luminar_indicators_list
 
@@ -320,10 +323,7 @@ class Client(BaseClient):
 
             if luminar_leaked_records:
                 for luminar_leaked_record in luminar_leaked_records[0]:
-                    if "credential" in luminar_leaked_record:
-                        credentials = luminar_leaked_record["credential"]
-                    else:
-                        credentials = ""
+                    credentials = luminar_leaked_record.get("credential", "")
                     indicator = {
                         'Indicator Type': FeedIndicatorType.Account,
                         'Indicator Value': luminar_leaked_record["account_login"],

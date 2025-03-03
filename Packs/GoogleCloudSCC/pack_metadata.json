@@ -2,17 +2,23 @@
     "name": "Google Cloud SCC",
     "description": "This pack leverages the features of Google Cloud Security to provide an organization-wide framework for detection and response.",
     "support": "partner",
-    "currentVersion": "2.1.22",
+    "currentVersion": "2.1.25",
     "author": "GoogleCloudSCC",
     "url": "https://cloud.google.com/security-command-center",
     "email": "",
     "created": "2020-12-17T10:49:54Z",
     "categories": [
-        "Cloud Services"
+        "Cloud Service Provider"
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Google",
+        "Security Command Center",
+        "Command Center",
+        "Security Center",
+        "SCC"
+    ],
     "githubUser": [],
     "marketplaces": [
         "xsoar",

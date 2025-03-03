@@ -1,5 +1,8 @@
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 import botocore.exceptions
 from datetime import datetime, date
 
@@ -69,12 +72,11 @@ def create_login_profile(args, client):  # pragma: no cover
         'Password': args.get('password')
     }
     if args.get('passwordResetRequired'):
-        kwargs.update({'PasswordResetRequired': True if args.get(
-            'passwordResetRequired') == 'True' else False})
+        kwargs.update({'PasswordResetRequired': args.get('passwordResetRequired') == 'True'})
 
     response = client.create_login_profile(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results("Login Profile Was Created For user {0} ".format(args.get('userName')))
+        demisto.results("Login Profile Was Created For user {} ".format(args.get('userName')))
 
 
 def get_user(args, client):  # pragma: no cover
@@ -130,23 +132,23 @@ def update_user(args, client):  # pragma: no cover
     response = client.update_user(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results(
-            "Changed UserName {0} To: {1}".format(args.get('oldUserName'), args.get('newUserName')))
+            "Changed UserName {} To: {}".format(args.get('oldUserName'), args.get('newUserName')))
 
 
 def delete_user(args, client):  # pragma: no cover
     response = client.delete_user(UserName=args.get('userName'))
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results('The User {0} has been deleted'.format(args.get('userName')))
+        demisto.results('The User {} has been deleted'.format(args.get('userName')))
 
 
 def update_login_profile(args, client):  # pragma: no cover
     response = client.update_login_profile(
         Password=args.get('newPassword'),
         UserName=args.get('userName'),
-        PasswordResetRequired=True if args.get('passwordResetRequired') == 'True' else False
+        PasswordResetRequired=args.get('passwordResetRequired') == 'True'
     )
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results("The user {0} Password was changed".format(args.get('userName')))
+        demisto.results("The user {} Password was changed".format(args.get('userName')))
 
 
 def create_group(args, client):  # pragma: no cover
@@ -209,9 +211,9 @@ def add_user_to_group(args, client):  # pragma: no cover
         UserName=args.get('userName')
     )
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results("The user {0} was added to the IAM group: {1}".format(args.get('userName'),
-                                                                              args.get(
-                                                                                  'groupName')))
+        demisto.results("The user {} was added to the IAM group: {}".format(args.get('userName'),
+                                                                            args.get(
+            'groupName')))
 
 
 def create_access_key(args, client):  # pragma: no cover
@@ -243,8 +245,8 @@ def update_access_key(args, client):  # pragma: no cover
     response = client.update_access_key(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results(
-            "Access Key with ID {0} was set to status: {1}".format(args.get('accessKeyId'),
-                                                                   args.get('status')))
+            "Access Key with ID {} was set to status: {}".format(args.get('accessKeyId'),
+                                                                 args.get('status')))
 
 
 def list_access_key_for_user(args, client):  # pragma: no cover
@@ -267,7 +269,7 @@ def list_policies(args, client):  # pragma: no cover
     data = []
     response = client.list_policies(
         Scope=args.get('scope'),
-        OnlyAttached=True if args.get('onlyAttached') == 'True' else False
+        OnlyAttached=args.get('onlyAttached') == 'True'
     )
     for policy in response['Policies']:
         data.append({
@@ -308,6 +310,7 @@ def list_roles(args, client):  # pragma: no cover
 
 
 def attach_policy(args, client):  # pragma: no cover
+    response = {}
     if args.get('type') == 'User':
         response = client.attach_user_policy(
             UserName=args.get('entityName'),
@@ -326,10 +329,11 @@ def attach_policy(args, client):  # pragma: no cover
 
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results(
-            "Policy was attached to {0}: {1} ".format(args.get('type'), args.get('entityName')))
+            "Policy was attached to {}: {} ".format(args.get('type'), args.get('entityName')))
 
 
 def detach_policy(args, client):  # pragma: no cover
+    response = {}
     if args.get('type') == 'User':
         response = client.detach_user_policy(
             UserName=args.get('entityName'),
@@ -347,19 +351,19 @@ def detach_policy(args, client):  # pragma: no cover
         )
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results(
-            "Policy was detached from {0}: {1} ".format(args.get('type'), args.get('entityName')))
+            "Policy was detached from {}: {} ".format(args.get('type'), args.get('entityName')))
 
 
 def delete_login_profile(args, client):  # pragma: no cover
     response = client.delete_login_profile(UserName=args.get('userName'))
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results("The user {0} login profile has been deleted".format(args.get('userName')))
+        demisto.results("The user {} login profile has been deleted".format(args.get('userName')))
 
 
 def delete_group(args, client):  # pragma: no cover
     response = client.delete_group(GroupName=args.get('groupName'))
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results("The Group {0} has been deleted".format(args.get('groupName')))
+        demisto.results("The Group {} has been deleted".format(args.get('groupName')))
 
 
 def remove_user_from_group(args, client):  # pragma: no cover
@@ -369,8 +373,8 @@ def remove_user_from_group(args, client):  # pragma: no cover
     )
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results(
-            "The User {0} has been removed from the group {1}".format(args.get('userName'),
-                                                                      args.get('groupName')))
+            "The User {} has been removed from the group {}".format(args.get('userName'),
+                                                                    args.get('groupName')))
 
 
 def delete_access_key(args, client):  # pragma: no cover
@@ -383,6 +387,56 @@ def delete_access_key(args, client):  # pragma: no cover
     response = client.delete_access_key(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results("The Access Key was deleted")
+
+
+def list_mfa_devices(args, client):
+    user_name = args.get('userName', "")
+    marker = args.get('marker', None)
+    limit, is_manual, page_size = get_limit(args)
+
+    kwargs = {
+        'UserName': user_name,
+        'MaxItems': limit
+    }
+    if marker:
+        kwargs.update({'Marker': marker})
+    response = client.list_mfa_devices(**kwargs)
+
+    mfa_devices = response['MFADevices']
+    data = []
+
+    for mfa_device in mfa_devices:
+        data.append({
+            'UserName': mfa_device['UserName'],
+            'SerialNumber': mfa_device['SerialNumber'],
+            'EnableDate': datetime.strftime(mfa_device['EnableDate'], '%Y-%m-%d %H:%M:%S'),
+        })
+    if is_manual and page_size and len(data) > page_size:
+        data = data[-1 * page_size:]
+    human_readable = tableToMarkdown('AWS IAM Users MFA Devices', data)
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_key_field="UserName",
+        outputs_prefix="AWS.IAM.MFADevices",
+        outputs={"Devices": data, "Marker": response["Marker"]},
+    )
+
+
+def deactivate_mfa_device(args, client):
+    response = client.deactivate_mfa_device(
+        UserName=args['userName'],
+        SerialNumber=args['serialNumber']
+    )
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        demisto.results('The User {} mfa device has been deactivated'.format(args.get('userName')))
+
+
+def delete_virtual_mfa_device(args, client):
+    response = client.delete_virtual_mfa_device(
+        SerialNumber=args['serialNumber']
+    )
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        demisto.results('The User {} mfa device has been deleted'.format(args.get('serialNumber')))
 
 
 def create_instance_profile(args, client):  # pragma: no cover
@@ -409,7 +463,7 @@ def delete_instance_profile(args, client):  # pragma: no cover
     response = client.delete_instance_profile(InstanceProfileName=args.get('instanceProfileName'))
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results(
-            "The InstanceProfile: {0} was deleted".format(args.get('instanceProfileName')))
+            "The InstanceProfile: {} was deleted".format(args.get('instanceProfileName')))
 
 
 def list_instance_profiles(args, client):  # pragma: no cover
@@ -441,8 +495,8 @@ def add_role_to_instance_profile(args, client):  # pragma: no cover
     response = client.add_role_to_instance_profile(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results(
-            "The Role: {0} was added to the Instance Profile: {1}".format(args.get('roleName'),
-                                                                          args.get('instanceProfileName'))
+            "The Role: {} was added to the Instance Profile: {}".format(args.get('roleName'),
+                                                                        args.get('instanceProfileName'))
         )
 
 
@@ -455,9 +509,9 @@ def remove_role_from_instance_profile(args, client):  # pragma: no cover
     response = client.remove_role_from_instance_profile(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results(
-            "The Role: {0} was removed from the Instance Profile: {1}".format(args.get('roleName'),
-                                                                              args.get(
-                                                                                  'instanceProfileName')))
+            "The Role: {} was removed from the Instance Profile: {}".format(args.get('roleName'),
+                                                                            args.get(
+                'instanceProfileName')))
 
 
 def list_instance_profiles_for_role(args, client):  # pragma: no cover
@@ -523,7 +577,7 @@ def delete_role(args, client):  # pragma: no cover
     response = client.delete_role(RoleName=args.get('roleName'))
 
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results("The Role: {0} was deleted".format(args.get('roleName')))
+        demisto.results("The Role: {} was deleted".format(args.get('roleName')))
 
 
 def create_role(args, client):  # pragma: no cover
@@ -583,7 +637,7 @@ def delete_policy(args, client):  # pragma: no cover
     response = client.delete_policy(PolicyArn=args.get('policyArn'))
 
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results("The Policy: {0} was deleted".format(args.get('policyArn')))
+        demisto.results("The Policy: {} was deleted".format(args.get('policyArn')))
 
 
 def create_policy_version(args, client):  # pragma: no cover
@@ -592,7 +646,7 @@ def create_policy_version(args, client):  # pragma: no cover
         'PolicyDocument': json.dumps(json.loads(args.get('policyDocument')))
     }
     if args.get('setAsDefault') is not None:
-        kwargs.update({'SetAsDefault': True if args.get('setAsDefault') == 'True' else False})
+        kwargs.update({'SetAsDefault': args.get('setAsDefault') == 'True'})
 
     response = client.create_policy_version(**kwargs)
     policy = response['PolicyVersion']
@@ -661,7 +715,7 @@ def set_default_policy_version(args, client):  # pragma: no cover
     }
     response = client.set_default_policy_version(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results("The Default Policy Version was set to {0}".format(args.get('versionId')))
+        demisto.results("The Default Policy Version was set to {}".format(args.get('versionId')))
 
 
 def create_account_alias(args, client):  # pragma: no cover
@@ -700,24 +754,24 @@ def update_account_password_policy(args, client):  # pragma: no cover
     if args.get('minimumPasswordLength'):
         kwargs.update({'MinimumPasswordLength': int(args.get('minimumPasswordLength'))})
     if args.get('requireSymbols'):
-        kwargs.update({'RequireSymbols': True if args.get('requireSymbols') == 'True' else False})
+        kwargs.update({'RequireSymbols': args.get('requireSymbols') == 'True'})
     if args.get('requireNumbers'):
-        kwargs.update({'RequireNumbers': True if args.get('requireNumbers') == 'True' else False})
+        kwargs.update({'RequireNumbers': args.get('requireNumbers') == 'True'})
     if args.get('requireUppercaseCharacters'):
         kwargs.update(
-            {'RequireUppercaseCharacters': True if args.get('requireUppercaseCharacters') == 'True' else False})
+            {'RequireUppercaseCharacters': args.get('requireUppercaseCharacters') == 'True'})
     if args.get('requireLowercaseCharacters'):
         kwargs.update(
-            {'RequireLowercaseCharacters': True if args.get('requireLowercaseCharacters') == 'True' else False})
+            {'RequireLowercaseCharacters': args.get('requireLowercaseCharacters') == 'True'})
     if args.get('allowUsersToChangePassword'):
         kwargs.update(
-            {'AllowUsersToChangePassword': True if args.get('allowUsersToChangePassword') == 'True' else False})
+            {'AllowUsersToChangePassword': args.get('allowUsersToChangePassword') == 'True'})
     if args.get('maxPasswordAge'):
         kwargs.update({'MaxPasswordAge': int(args.get('maxPasswordAge'))})
     if args.get('passwordReusePrevention'):
         kwargs.update({'PasswordReusePrevention': int(args.get('passwordReusePrevention'))})
     if args.get('hardExpiry'):
-        kwargs.update({'HardExpiry': True if args.get('hardExpiry') == 'True' else False})
+        kwargs.update({'HardExpiry': args.get('hardExpiry') == 'True'})
     response = client.update_account_password_policy(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results("The Account Password Policy was updated")
@@ -798,9 +852,9 @@ def list_user_policies(args, client):
     if policy_data:
         ec = {'AWS.IAM.UserPolicies(val.PolicyName && val.UserName && val.PolicyName === obj.PolicyName && '
               'val.UserName === obj.UserName)': policy_data,
-              'AWS.IAM.Users(val.UserName === \'{}\').InlinePoliciesMarker'.format(user_name): marker}
+              f'AWS.IAM.Users(val.UserName === \'{user_name}\').InlinePoliciesMarker': marker}
 
-    human_readable = tableToMarkdown('AWS IAM Policies for user {}'.format(user_name),
+    human_readable = tableToMarkdown(f'AWS IAM Policies for user {user_name}',
                                      headers=["PolicyNames"],
                                      headerTransform=pascalToSpace,
                                      t=data)
@@ -836,9 +890,9 @@ def list_attached_user_policies(args, client):
     if policy_data:
         ec = {'AWS.IAM.AttachedUserPolicies(val.PolicyArn && val.UserName && val.PolicyArn === obj.PolicyArn && '
               'val.UserName === obj.UserName)': policy_data,
-              'AWS.IAM.Users(val.UserName === \'{}\').AttachedPoliciesMarker'.format(user_name): marker}
+              f'AWS.IAM.Users(val.UserName === \'{user_name}\').AttachedPoliciesMarker': marker}
 
-    human_readable = tableToMarkdown('AWS IAM Attached Policies for user {}'.format(user_name),
+    human_readable = tableToMarkdown(f'AWS IAM Attached Policies for user {user_name}',
                                      headers=['PolicyName', 'PolicyArn'],
                                      headerTransform=pascalToSpace,
                                      t=data)
@@ -875,9 +929,9 @@ def list_attached_group_policies(args, client):
     if policy_data:
         ec = {'AWS.IAM.AttachedGroupPolicies(val.PolicyArn && val.GroupName && val.PolicyArn === obj.PolicyArn && '
               'val.GroupName === obj.GroupName)': policy_data,
-              'AWS.IAM.Groups(val.GroupName === \'{}\').AttachedPoliciesMarker'.format(group_name): marker}
+              f'AWS.IAM.Groups(val.GroupName === \'{group_name}\').AttachedPoliciesMarker': marker}
 
-    human_readable = tableToMarkdown('AWS IAM Attached Policies for group {}'.format(group_name),
+    human_readable = tableToMarkdown(f'AWS IAM Attached Policies for group {group_name}',
                                      headers=['PolicyName', 'PolicyArn'],
                                      headerTransform=pascalToSpace,
                                      t=data)
@@ -905,7 +959,7 @@ def get_user_login_profile(args, client):
 
         ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName)': data}
 
-        human_readable = tableToMarkdown('AWS IAM Login Profile for user {}'.format(user_name),
+        human_readable = tableToMarkdown(f'AWS IAM Login Profile for user {user_name}',
                                          t=data.get('LoginProfile'),
                                          headers=['CreateDate', 'PasswordResetRequired'],
                                          removeNull=True,
@@ -915,7 +969,7 @@ def get_user_login_profile(args, client):
         return_outputs(human_readable, ec, response)
     except botocore.exceptions.ClientError as error:
         if error.response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 404:
-            return_outputs(tableToMarkdown('AWS IAM Login Profile for user {}'.format(user_name), t={}))
+            return_outputs(tableToMarkdown(f'AWS IAM Login Profile for user {user_name}', t={}))
         else:
             raise error
 
@@ -1274,7 +1328,7 @@ def main():     # pragma: no cover
     )
 
     try:
-        LOG('Command being called is {command}'.format(command=command))
+        LOG(f'Command being called is {command}')
         if command == 'test-module':
             test_function(client)
         elif command == 'aws-iam-create-user':
@@ -1321,6 +1375,12 @@ def main():     # pragma: no cover
             remove_user_from_group(args, client)
         elif command == 'aws-iam-delete-access-key':
             delete_access_key(args, client)
+        elif command == 'aws-iam-list-mfa-devices':
+            list_mfa_devices(args, client)
+        elif command == 'aws-iam-deactivate-mfa-devices':
+            deactivate_mfa_device(args, client)
+        elif command == 'aws-iam-delete-mfa-devices':
+            delete_virtual_mfa_device(args, client)
         elif command == 'aws-iam-create-instance-profile':
             create_instance_profile(args, client)
         elif command == 'aws-iam-delete-instance-profile':

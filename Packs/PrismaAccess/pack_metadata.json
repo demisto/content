@@ -2,13 +2,13 @@
     "name": "Palo Alto Networks - Strata Cloud Manager",
     "description": "Integrate with Palo Alto Networks Prisma SASE to query activity and take actions.",
     "support": "xsoar",
-    "currentVersion": "2.1.7",
+    "currentVersion": "2.1.14",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-04-16T22:51:04Z",
     "categories": [
-        "Cloud Services"
+        "Cloud Security"
     ],
     "tags": [
         "Palo Alto Networks Products"

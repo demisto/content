@@ -18,13 +18,15 @@ from GetIncidentsApiModule import *  # noqa: E402
 warnings.simplefilter("ignore")
 warnings.filterwarnings('ignore', category=UserWarning)
 
-FIELD_SKIP_REASON_DOESNT_EXIST = "The '{field}' field does not exist in incident"
-FIELD_SKIP_REASON_FALSY_VALUE = "The '{field}' field has a falsy value in current incident: '{val}'"
-FIELD_SKIP_REASON_INVALID_TYPE = "Expected type of the '{field}' field is: {valid}, actual type is: {type}"
-FIELD_SKIP_REASON_TOO_SHORT = "Value of the '{field}' field in incident: '{val}' has length of {len}"
-FIELD_SKIP_REASON_LIST_OF_FALSY_VALS = "Value of '{field}' field in incident: '{val}' is a list with only falsy values"
 
 INCIDENT_ALIAS = 'alert' if is_xsiam() else 'incident'
+
+FIELD_SKIP_REASON_DOESNT_EXIST = f"The '{{field}}' field does not exist in {INCIDENT_ALIAS}"
+FIELD_SKIP_REASON_FALSY_VALUE = f"The '{{field}}' field has a falsy value in current {INCIDENT_ALIAS}: '{{val}}'"
+FIELD_SKIP_REASON_INVALID_TYPE = "Expected type of the '{field}' field is: {valid}, actual type is: {type}"
+FIELD_SKIP_REASON_TOO_SHORT = f"Value of the '{{field}}' field in {INCIDENT_ALIAS}: '{{val}}' has length of {{len}}"
+FIELD_SKIP_REASON_LIST_OF_FALSY_VALS = (
+    f"Value of '{{field}}' field in {INCIDENT_ALIAS}: '{{val}}' is a list with only falsy values")
 MESSAGE_NO_FIELDS_USED = "- No field are used to find similarity. Reasons:\n{}"
 
 MESSAGE_NO_INCIDENT_FETCHED = f"- 0 {INCIDENT_ALIAS}s fetched with these exact match for the given dates."

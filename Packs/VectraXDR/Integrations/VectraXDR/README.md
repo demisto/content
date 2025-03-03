@@ -77,6 +77,8 @@ To fetch Vectra XDR Entity follow the next steps:
 * Any tags removed from the Vectra entity will not be removed in the XSOAR incident, as XSOAR doesn't allow the removal of the tags field via the backend. However, tags removed from the XSOAR incident UI will be removed from the Vectra entity.
 * New notes from the XSOAR incident will be created as notes in the Vectra entity. Updates to existing notes in the XSOAR incident will not be reflected in the Vectra entity.
 * New notes from the Vectra entity will be created as notes in the XSOAR incident. Updates to existing notes in the Vectra entity will create new notes in the XSOAR incident.
+* If a closed XSOAR incident is tied to a specific entity and new detections for that entity arise or existing detections become active again, the incident will be automatically reopened.
+* When a XSOAR incident is closed but there are still active detections on the Vectra side, and the entity is subsequently updated, the corresponding XSOAR incident for that entity will be reopened.
 * The mirroring settings apply only for incidents that are fetched after applying the settings.
 * The mirroring is strictly tied to Incident type "Vectra XDR Entity" & Incoming mapper "Vectra XDR  - Incoming Mapper" If you want to change or use your custom incident type/mapper then make sure changes related to these are present.
 * If you want to use the mirror mechanism and you're using custom mappers, then the incoming mapper must contain the following fields: dbotMirrorDirection, dbotMirrorId, dbotMirrorInstance, and dbotMirrorTags.
@@ -121,7 +123,7 @@ To fetch Vectra XDR Entity follow the next steps:
 
 ### Receive Notification on an Incident Fetch Error
 
-The administrator and Cortex XSOAR users on the recipient's list receive a notification when an integration experiences an incident fetch error. Cortex XSOAR users can select their notification method, such as email, from their user preferences. Refer to [this XSOAR documentation](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Receive-Notification-on-an-Incident-Fetch-Error) for more information.
+The administrator and Cortex XSOAR users on the recipient's list receive a notification when an integration experiences an incident fetch error. Cortex XSOAR users can select their notification method, such as email, from their user preferences. Refer to [Cortex XSOAR 6.13 documentation](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Receive-Notification-on-an-Incident-Fetch-Error) or [Cortex XSOAR 8 Cloud documentation](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Receive-notifications-on-an-incident-fetch-error) or [Cortex XSOAR 8.7 On-prem documentation](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Receive-notifications-on-an-incident-fetch-error) for more information.
 
 The following are tips for handling issues with mirroring incidents between Vectra XDR and Cortex XSOAR.
 

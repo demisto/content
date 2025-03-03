@@ -1,0 +1,93 @@
+args:
+  - name: user_principal_name
+    required: true
+    description: The owner email to set as the user principal name. If a user associated with this email exists in Microsoft Sentinel, their full name and details will be displayed and mirrored in the remote system. If no such user exists, only the email will be displayed and mirrored, with all other details remaining null.
+  - name: incident_id
+    required: false
+    description: The ID of the remote incident to update. Relevant only when the script is called directly from the War Room.
+commonfields:
+  id: MicrosoftSentinelSetOwner
+  version: -1
+comment: This script can be run from the War Room or used by a layout to set the Owner field in Microsoft Sentinel.
+name: MicrosoftSentinelSetOwner
+outputs:
+  - contextPath: AzureSentinel.Incident.ID
+    description: The incident ID.
+    type: String
+  - contextPath: AzureSentinel.Incident.Title
+    description: The incident's title.
+    type: String
+  - contextPath: AzureSentinel.Incident.Description
+    description: Description of the incident.
+    type: String
+  - contextPath: AzureSentinel.Incident.Severity
+    description: The incident severity.
+    type: String
+  - contextPath: AzureSentinel.Incident.Status
+    description: The incident status.
+    type: String
+  - contextPath: AzureSentinel.Incident.AssigneeName
+    description: The name of the incident assignee.
+    type: String
+  - contextPath: AzureSentinel.Incident.AssigneeEmail
+    description: The email address of the incident assignee.
+    type: String
+  - contextPath: AzureSentinel.Incident.AssigneeObjectID
+    description: The object ID of the incident assignee.
+    type: string
+  - contextPath: AzureSentinel.Incident.AssigneeUPN
+    description: The user principal name of the incident assignee.
+    type: string
+  - contextPath: AzureSentinel.Incident.Label.Name
+    description: The name of the incident label.
+    type: String
+  - contextPath: AzureSentinel.Incident.Label.Type
+    description: The incident label type.
+    type: String
+  - contextPath: AzureSentinel.Incident.FirstActivityTimeUTC
+    description: The date and time of the incident's first activity.
+    type: Date
+  - contextPath: AzureSentinel.Incident.LastActivityTimeUTC
+    description: The date and time of the incident's last activity.
+    type: Date
+  - contextPath: AzureSentinel.Incident.LastModifiedTimeUTC
+    description: The date and time the incident was last modified.
+    type: Date
+  - contextPath: AzureSentinel.Incident.CreatedTimeUTC
+    description: The date and time the incident was created.
+    type: Date
+  - contextPath: AzureSentinel.Incident.IncidentNumber
+    description: The incident number.
+    type: Number
+  - contextPath: AzureSentinel.Incident.AlertsCount
+    description: The number of alerts in the incident.
+    type: Number
+  - contextPath: AzureSentinel.Incident.BookmarkCount
+    description: The number of bookmarks in the incident.
+    type: Number
+  - contextPath: AzureSentinel.Incident.CommentCount
+    description: The number of comments in the incident.
+    type: Number
+  - contextPath: AzureSentinel.Incident.AlertProductNames
+    description: The alert product names of the incident.
+    type: String
+  - contextPath: AzureSentinel.Incident.Tactics
+    description: The incident's tactics.
+    type: String
+  - contextPath: AzureSentinel.Incident.FirstActivityTimeGenerated
+    description: The incident's generated first activity time.
+    type: Date
+  - contextPath: AzureSentinel.Incident.LastActivityTimeGenerated
+    description: The incident's generated last activity time.
+    type: Date
+  - contextPath: AzureSentinel.Incident.Etag
+    description: The Etag of the incident.
+    type: String
+script: "-"
+tags:
+  - dynamic-section
+timeout: "0"
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.11.10.115887
+fromversion: 5.5.0

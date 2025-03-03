@@ -7,10 +7,12 @@ configuration:
   name: public_key
   required: true
   type: 12
+  additionalinfo: Sender public key required for signing emails.
 - display: Private Key
   name: private_key
   required: true
   type: 14
+  additionalinfo: Sender private key required for decrypting and signing emails.
 description: Use the S/MIME (Secure Multipurpose Internet Mail Extensions) integration to send and receive secure MIME data.
 display: SMIME Messaging
 name: SMIME Messaging
@@ -26,7 +28,9 @@ script:
       predefined:
       - 'false'
       - 'true'
-    description: Retrieves items from the service.
+    description: |-
+      Deprecated. Use smime-sign-and-encrypt instead.
+      Retrieves items from the service.
     name: smime-sign-email
     outputs:
     - contextPath: SMIME.Signed.Message
@@ -35,11 +39,14 @@ script:
     - contextPath: SMIME.Signed.Headers
       description: The S/MIME signing headers.
       type: String
+    deprecated: true
   - arguments:
     - description: The message body to encrypt.
       name: message
       required: true
-    description: Encrypts an email message with S/MIME protocol by using a public RSA certificate.
+    description: |-
+      Deprecated. Use smime-sign-and-encrypt instead.
+      Encrypts an email message with S/MIME protocol by using a public RSA certificate.
     name: smime-encrypt-email-body
     outputs:
     - contextPath: SMIME.Encrypted.Message
@@ -48,18 +55,45 @@ script:
     - contextPath: SMIME.Encrypted.Headers
       description: The encryption headers.
       type: String
+    deprecated: true
   - arguments:
-    - description: The signed email with .p7 extension.
+    - description: Entity ID of the file with a .p7 extension containing the signed message.
       name: signed_message
       required: true
-    description: Verifies the signature.
+    - description: Sender's public key to verify.
+      name: public_key
+      defaultValue: instancePublicKey
+    - auto: PREDEFINED
+      description: Whether to get the full raw output of the email.
+      name: raw_output
+      predefined:
+      - 'false'
+      - 'true'
+    - description: A comma-separated list of tags to be included in the War Room output.
+      name: tag
+    description: |-
+      Verifies the signature.
+
+      Warning: This function does not check the CA chain. Ensure the certificate chain is validated separately to avoid security risks.
     name: smime-verify-sign
+    outputs:
+    - contextPath: SMIME.Verified.Message
+      description: The decoded signed message.
+      type: String
   - arguments:
-    - description: The encrypted message with .p7 extension.
+    - description: Entity ID of the file with a .p7 extension containing the encrypted email.
       name: encrypt_message
       required: true
     - description: The encoding code to use when decode the message body, e.g 'ISO-8859-2''.
       name: encoding
+    - auto: PREDEFINED
+      description: Whether to get the full raw output of the email.
+      name: raw_output
+      predefined:
+      - 'false'
+      - 'true'
+    - description: A comma-separated list of tags to be included in the War Room output.
+      name: tag
     description: Decrypts the message body.
     name: smime-decrypt-email-body
     outputs:
@@ -70,17 +104,66 @@ script:
     - description: The message body to encrypt and sign.
       name: message
       required: true
+    - description: |-
+        JSON dict of recipients and their public keys
+        Format: {"recipient@email":"cert", "other@email":"cert"}
+        Use "instancePublicKey" in the cert field to use the instance certificate.
+      name: recipients
+    - description: |-
+        JSON dict of cc recipients and their public keys
+        Format: {"cc@email":"cert", "othercc@email":"cert"}
+        Use "instancePublicKey" in the cert field to use the instance certificate.
+      name: cc
+    - description: |-
+        JSON dict of bcc recipients and their public keys
+        Format: {"bcc@email":"cert", "otherbcc@email":"cert"}
+        Use "instancePublicKey" in the cert field to use the instance certificate.
+      name: bcc
+    - description: List of War Room entry IDs of files to attach to the mail.
+      name: attachment_entry_id
+      isArray: true
+    - auto: PREDEFINED
+      description: Whether the mail should be signed.
+      name: signed
+      defaultValue: 'true'
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Whether the mail should be encrypted.
+      name: encrypted
+      defaultValue: 'true'
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Sender email address.
+      name: sender
+    - description: Email subject.
+      name: subject
+    - auto: PREDEFINED
+      description: Whether to create a file with the encrypted/signed content.
+      name: 'create_file_p7'
+      predefined:
+      - 'false'
+      - 'true'
     description: Encrypts and signs an email message with S/MIME protocol by using a public RSA certificate.
     name: smime-sign-and-encrypt
     outputs:
     - contextPath: SMIME.SignedAndEncrypted.Message
       description: The raw message to send.
       type: String
-  dockerimage: demisto/m2crypto:1.0.0.79505
+    - contextPath: SMIME.SignedAndEncrypted.RecipientIds
+      description: Address of the recipient.
+      type: String
+    - contextPath: SMIME.SignedAndEncrypted.FileName
+      description: Name of the file output if create_file_p7 is used.
+      type: String
+  dockerimage: demisto/m2crypto:1.0.0.117200
   runonce: false
   script: '-'
   type: python
   subtype: python3
 tests:
 - EWS V2 Send Mail Test 3
+- SMIME_Messaging-Test
 fromversion: 5.0.0

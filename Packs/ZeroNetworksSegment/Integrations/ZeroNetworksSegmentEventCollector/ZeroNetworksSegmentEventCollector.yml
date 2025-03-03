@@ -1,0 +1,97 @@
+category: Network Security
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: ZeroNetworksSegmentEventCollector
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+  defaultvalue: "https://portal.zeronetworks.com"
+  section: Connect
+- displaypassword: API Key
+  additionalinfo: The API key to use for connection.
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+  section: Connect
+- display: Event Types To Fetch
+  section: Collect
+  name: event_types_to_fetch
+  type: 16
+  required: false
+  additionalinfo: 'Event types to fetch. Default is Audit.'
+  defaultvalue: Audit
+  options:
+  - Audit
+  - Network Activities
+- defaultvalue: '[{"id":"dstRiskLevel","includeValues":["2"]}]'
+  display: Network Activity Filters
+  additionalinfo: "To create Network Activity Filters:\n 1. Sign in to the Zero Networks platform.\n 2. Go to Activities page.\n 3. Under Network tab, apply the required filters.\n 4. Copy the filters from the URL.\n Use filters to reduce amount of events."
+  name: network_activity_filters
+  type: 0
+  required: false
+  section: Collect
+- additionalinfo: Maximum number of audit events per fetch. The default value is 10000.
+  defaultvalue: '10000'
+  display: Maximum audit events to fetch
+  name: max_fetch_audit
+  type: 0
+  required: false
+  section: Collect
+- additionalinfo: Maximum number of network activities events per fetch. The default value is 2000.
+  defaultvalue: '2000'
+  display: Maximum network activities events to fetch
+  name: max_fetch_network
+  type: 0
+  required: false
+  section: Collect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: Integrates with Zero Networks Segment API to fetch and process audit and network events.
+display: Zero Networks Segment
+name: ZeroNetworksSegmentEventCollector
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: "If true, the command will create events, otherwise it will only display them. Warning: Using this argument may lead to duplicate events."
+      isArray: false
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+      hidden: true
+    - default: false
+      description: Date from which to get events.
+      name: from_date
+      required: false
+    - description: Maximum audit events to fetch.
+      name: max_fetch_audit
+    - description: Maximum network activities events to fetch.
+      name: max_fetch_network
+    description: Gets events from Zero Networks Segment.
+    name: zero-networks-segment-get-events
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.11.10.116949
+  isfetchevents: true
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
+marketplaces:
+- marketplacev2

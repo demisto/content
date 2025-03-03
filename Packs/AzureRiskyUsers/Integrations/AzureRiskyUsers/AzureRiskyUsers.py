@@ -96,9 +96,13 @@ class Client:
         else:  # Device Code Flow
             return 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
 
-    def risky_users_list_request(self, limit: int = None, risk_state: str | None = None,
+    def risky_users_list_request(self, limit: int = None,
+                                 risk_state: str | None = None,
                                  risk_level: str | None = None,
-                                 skip_token: str | None = None) -> dict:
+                                 skip_token: str | None = None,
+                                 order_by: str | None = None,
+                                 update_before: str | None = None,
+                                 updated_after: str | None = None) -> dict:
         """
         List risky users.
 
@@ -106,6 +110,9 @@ class Client:
             risk_state (str): Risk State to retrieve.
             risk_level (str): Specify to get only results with the same Risk Level.
             limit (int): Limit of results to retrieve.
+            order_by (str): Order results by this attribute.
+            update_before (str): Filter events by updated before.
+            updated_after (str): Filter events by updated after.
             skip_token (str): Skip token.
 
         Returns:
@@ -115,7 +122,10 @@ class Client:
             return self.ms_client.http_request(method='GET', full_url=skip_token)
 
         params = remove_empty_elements({'$top': limit,
-                                        '$filter': build_query_filter(risk_state, risk_level)})
+                                        '$orderby': order_by,
+                                        '$filter': build_query_filter(risk_state=risk_state, risk_level=risk_level,
+                                                                      updated_date_time_after=updated_after,
+                                                                      updated_date_time_before=update_before)})
         return self.ms_client.http_request(method='GET',
                                            url_suffix="identityProtection/riskyUsers",
                                            params=params)
@@ -154,8 +164,10 @@ class Client:
         params = remove_empty_elements({'$top': limit,
                                         '$skiptoken': skip_token,
                                         '$orderby': order_by,
-                                        '$filter': build_query_filter(risk_state, risk_level, detected_date_time_before,
-                                                                      detected_date_time_after)})
+                                        '$filter': build_query_filter(risk_state=risk_state,
+                                                                      risk_level=risk_level,
+                                                                      detected_date_time_before=detected_date_time_before,
+                                                                      detected_date_time_after=detected_date_time_after)})
 
         return self.ms_client.http_request(method='GET',
                                            url_suffix="/identityProtection/riskDetections",
@@ -189,9 +201,11 @@ def update_query(query: str, filter_name: str, filter_value: str | None, filter_
         return filter_str
 
 
-def build_query_filter(risk_state: str | None, risk_level: str | None,
-                       detected_date_time_before: str | None = None,
-                       detected_date_time_after: str | None = None) -> str | None:
+def build_query_filter(risk_state=None, risk_level=None,
+                       detected_date_time_before=None,
+                       detected_date_time_after=None,
+                       updated_date_time_before=None,
+                       updated_date_time_after=None) -> str | None:
     """
     Build query filter for API call, in order to get filtered results.
     API query syntax reference: https://docs.microsoft.com/en-us/graph/query-parameters.
@@ -201,6 +215,8 @@ def build_query_filter(risk_state: str | None, risk_level: str | None,
         risk_level (str): Wanted risk level for filter.
         detected_date_time_before (str): Filter events by created before.
         detected_date_time_after (str): Filter events by created after.
+        updated_date_time_before (str): Filter events by updated before.
+        updated_date_time_after (str): Filter events by updated after.
 
     Returns:
         str: Query filter string for API call.
@@ -210,6 +226,8 @@ def build_query_filter(risk_state: str | None, risk_level: str | None,
     query = update_query(query, 'riskLevel', risk_level, 'eq')
     query = update_query(query, 'detectedDateTime', detected_date_time_before, 'le')
     query = update_query(query, 'detectedDateTime', detected_date_time_after, 'ge')
+    query = update_query(query, 'riskLastUpdatedDateTime', updated_date_time_before, 'le')
+    query = update_query(query, 'riskLastUpdatedDateTime', updated_date_time_after, 'ge')
     return query
 
 
@@ -280,19 +298,45 @@ def risky_users_list_command(client: Client, args: dict[str, str]) -> List[Comma
     limit = arg_to_number(args.get('limit')) or 50
     risk_state = args.get('risk_state')
     risk_level = args.get('risk_level')
+    order_by = args.get('order_by', 'riskLastUpdatedDateTime desc')
+
+    if args.get('updated_before'):
+        fmt_updated_before = dateparser.parse(str(args.get('updated_before')), settings={'TIMEZONE': 'UTC'})
+        if fmt_updated_before is not None:
+            updated_before = datetime.strftime(fmt_updated_before, '%Y-%m-%dT%H:%M:%S.%f') + '0Z'
+        else:
+            updated_before = None
+            demisto.debug(f"{fmt_updated_before=} -> {updated_before}")
+    else:
+        updated_before = None
+
+    if args.get('updated_after'):
+        fmt_updated_after = dateparser.parse(str(args.get('updated_after')), settings={'TIMEZONE': 'UTC'})
+        if fmt_updated_after is not None:
+            updated_after = datetime.strftime(fmt_updated_after, '%Y-%m-%dT%H:%M:%S.%f') + '0Z'
+        else:
+            updated_after = None
+            demisto.debug(f"{fmt_updated_after=} -> {updated_after=}")
+    else:
+        updated_after = None
+
     page_size = arg_to_number(args.get('page_size'))
     if page_size and (page_size < 1 or page_size > 500):
         raise DemistoException("Page size must be between 1 and 500.")
 
     if next_token:
         # the page_size already defined the in the token.
-        raw_response = client.risky_users_list_request(skip_token=next_token)
+        raw_response = client.risky_users_list_request(skip_token=next_token, order_by=order_by, update_before=updated_before,
+                                                       updated_after=updated_after)
     elif page_size:
-        raw_response = client.risky_users_list_request(risk_state=risk_state, risk_level=risk_level, limit=page_size)
+        raw_response = client.risky_users_list_request(risk_state=risk_state, risk_level=risk_level, limit=page_size,
+                                                       order_by=order_by, update_before=updated_before,
+                                                       updated_after=updated_after)
     else:  # there is only a limit
         top = MAX_ITEMS_PER_REQUEST if limit >= MAX_ITEMS_PER_REQUEST else limit
-        raw_response = client.risky_users_list_request(risk_state=risk_state,
-                                                       risk_level=risk_level, limit=top)
+        raw_response = client.risky_users_list_request(risk_state=risk_state, risk_level=risk_level, limit=top,
+                                                       order_by=order_by, update_before=updated_before,
+                                                       updated_after=updated_after)
         raw_response = do_pagination(client, raw_response, limit)
 
     list_users = raw_response.get('value') or []

@@ -2,14 +2,14 @@ args:
 - name: value
   required: true
   description: Value to strip accent marks from
-comment: |-
+comment:  |-
   Strip accent marks (diacritics) from a given string.
   For example: "Niño שָׁלוֹם Montréal اَلسَّلَامُ عَلَيْكُمْ‎"
   Will return: "Nino שלום Montreal السلام عليكم"
 commonfields:
   id: StripAccentMarksFromString
   version: -1
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 name: StripAccentMarksFromString
 runas: DBotWeakRole

@@ -1173,7 +1173,7 @@ script:
       required: true
     description: Updates an IAM Identity Center group for your AWS account.
     name: aws-iam-identitycenter-update-group
-  dockerimage: demisto/boto3py3:1.0.0.94100
+  dockerimage: demisto/boto3py3:1.0.0.115129
   runonce: false
   script: ''
   subtype: python3

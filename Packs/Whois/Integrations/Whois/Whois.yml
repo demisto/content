@@ -28,6 +28,13 @@ configuration:
   advanced: true
   required: false
   hidden: false
+- additionalinfo: Get the Legacy output of context data for 'whois' and 'domain' commands.
+  display: Use legacy context
+  name: old-version
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -102,134 +109,587 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: string
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
     - contextPath: Domain.Name
       description: The domain name.
       type: string
-    - contextPath: Domain.Whois.Name
-      description: The domain name.
-      type: string
-    - contextPath: Domain.Whois.DomainStatus
+    - contextPath: Domain.DomainStatus
       description: The domain status.
       type: string
-    - contextPath: Domain.Whois.DNSSec
+    - contextPath: Domain.Dnssec
       description: The domain name system security extension (DNSSEC).
       type: string
-    - contextPath: Domain.Whois.NameServers
+    - contextPath: Domain.NameServers
       description: The name servers.
       type: string
-    - contextPath: Domain.Whois.CreationDate
-      description: The date that the domain was created (UTC).
+    - contextPath: Domain.Country
+      description: The domain country.
+      type: string
+    - contextPath: Domain.State
+      description: The domain state.
+      type: string
+    - contextPath: Domain.City
+      description: The domain city.
+      type: string
+    - contextPath: Domain.CreationDate
+      description: The date that the domain was created (UTC). 
       type: date
-    - contextPath: Domain.Whois.UpdatedDate
+    - contextPath: Domain.UpdatedDate
       description: The date that the domain was last updated (UTC).
       type: date
-    - contextPath: Domain.Whois.ExpirationDate
+    - contextPath: Domain.ExpirationDate
       description: The date that the domain expires (UTC).
       type: date
-    - contextPath: Domain.Whois.Registrar.Name
+    - contextPath: Domain.Registrar.Name
       description: The name of the registrar.
       type: string
-    - contextPath: Domain.Whois.Emails
-      description: The abuse emails.
+    - contextPath: Domain.Registrar.Address
+      description: The address of the registrar.
       type: string
-    - contextPath: Domain.Whois.Registrar.AbuseEmail
+    - contextPath: Domain.Registrar.Email
+      description: The email of the registrar.
+      type: string
+    - contextPath: Domain.Registrar.Id
+      description: The ID of the registrar.
+      type: string
+    - contextPath: Domain.Registrar.Phone
+      description: The phone of the registrar.
+      type: string
+    - contextPath: Domain.Registrar.Url
+      description: The URL of the registrar.
+      type: string
+    - contextPath: Domain.Registrar.AbuseEmail
       description: The email address of the contact for reporting abuse.
       type: string
-    - contextPath: Domain.Whois.Registrant.name
-      description: The name of the registrant.
+    - contextPath: Domain.Emails
+      description: The abuse emails.
       type: string
-    - contextPath: Domain.Whois.Registrant.email
-      description: The email address of the registrant.
+    - contextPath: Domain.Address
+      description: The abuse address.
       type: string
-    - contextPath: Domain.Whois.Raw
-      description: The raw output.
+    - contextPath: Domain.Organization
+      description: The organization domain name.
       type: string
-    - contextPath: Domain.Whois.Administrator.country
-      description: The country of the domain administrator.
+    - contextPath: Domain.WhoisServer
+      description: The whois server name.
       type: string
-    - contextPath: Domain.Whois.Administrator.name
-      description: The name of domain administrator.
-      type: string
-    - contextPath: Domain.Whois.Administrator.state
-      description: The state of domain administrator.
-      type: string
-    - contextPath: Domain.Whois.Administrator.email
-      description: The email address of the domain administrator.
-      type: string
-    - contextPath: Domain.Whois.Administrator.organization
-      description: The organization of the domain administrator.
-      type: string
-    - contextPath: Domain.Whois.Administrator.postalcode
-      description: The postal code of the domain administrator.
-      type: string
-    - contextPath: Domain.Whois.Administrator.street
-      description: The street of the domain admin.
-      type: string
-    - contextPath: Domain.Whois.Administrator.phone
-      description: The phone number of the domain administrator.
-      type: string
-    - contextPath: Domain.Whois.Administrator.city
-      description: The city of the domain administrator.
-      type: string
-    - contextPath: Domain.Whois.TechAdmin.country
-      description: The country of tech administrator.
-      type: string
-    - contextPath: Domain.Whois.TechAdmin.name
-      description: The name of tech administrator.
-      type: string
-    - contextPath: Domain.Whois.TechAdmin.state
-      description: The state of tech administrator.
-      type: string
-    - contextPath: Domain.Whois.TechAdmin.email
-      description: The email address of the tech administrator.
-      type: string
-    - contextPath: Domain.Whois.TechAdmin.organization
-      description: The organization of the tech administrator.
-      type: string
-    - contextPath: Domain.Whois.TechAdmin.postalcode
-      description: The postal code of the tech administrator.
-      type: string
-    - contextPath: Domain.Whois.TechAdmin.street
-      description: The street of the tech administrator.
-      type: string
-    - contextPath: Domain.Whois.TechAdmin.phone
+    - contextPath: Domain.Phone
       description: The phone number of the tech administrator.
       type: string
-    - contextPath: Domain.Whois.TechAdmin.city
-      description: The city of the tech administrator.
+    - contextPath: Domain.Admin
+      description: Administrator information.
+      type: object
+    - contextPath: Domain.Admin.Address
+      description: The address of the administrator.
       type: string
-    - contextPath: Domain.Whois.Registrant.country
+    - contextPath: Domain.Admin.ApplicationPurpose
+      description: The application purpose of the administrator.
+      type: string
+    - contextPath: Domain.Admin.C
+      description: The C field of the administrator.
+      type: string
+    - contextPath: Domain.Admin.City
+      description: The city of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Country
+      description: The country of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Email
+      description: The email address of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Fax
+      description: The fax number of the administrator.
+      type: string
+    - contextPath: Domain.Admin.FaxExt
+      description: The fax extension of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Id
+      description: The ID of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Name
+      description: The name of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Org
+      description: The organization name of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Phone
+      description: The phone number of the administrator.
+      type: string
+    - contextPath: Domain.Admin.PhoneExt
+      description: The phone extension of the administrator.
+      type: string
+    - contextPath: Domain.Admin.PostalCode
+      description: The postal code of the administrator.
+      type: string
+    - contextPath: Domain.Admin.State
+      description: The state of the administrator.
+      type: string
+    - contextPath: Domain.Admin.StateProvince
+      description: The state or province of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Street
+      description: The street of the administrator.
+      type: string
+    - contextPath: Domain.Registrant.Name
+      description: The name of the registrant.
+      type: string
+    - contextPath: Domain.Registrant.Email
+      description: The email address of the registrant.
+      type: string
+    - contextPath: Domain.Registrant.Country
       description: The country of the registrant.
       type: string
-    - contextPath: Domain.Whois.Registrant.state
+    - contextPath: Domain.Registrant.State
       description: The state of the registrant.
       type: string
-    - contextPath: Domain.Whois.Registrant.organization
+    - contextPath: Domain.Registrant.Org
       description: The organization of the registrant.
       type: string
-    - contextPath: Domain.Whois.Registrant.postalcode
+    - contextPath: Domain.Registrant.Organization
+      description: The organization of the registrant.
+      type: string
+    - contextPath: Domain.Registrant.PostalCode
       description: The postal code of the registrant.
       type: string
-    - contextPath: Domain.Whois.Registrant.street
+    - contextPath: Domain.Registrant.Street
       description: The street of the registrant.
       type: string
-    - contextPath: Domain.Whois.Registrant.phone
+    - contextPath: Domain.Registrant.Phone
       description: The phone number of the registrant.
       type: string
-    - contextPath: Domain.Whois.Registrant.city
+    - contextPath: Domain.Registrant.City
       description: The city of the registrant.
       type: string
-    - contextPath: Domain.Whois.ID
+    - contextPath: Domain.Registrant.Address
+      description: The address of the registrant.
+      type: string
+    - contextPath: Domain.Registrant.ContactName
+      description: The contact name of the registrant.
+      type: string
+    - contextPath: Domain.Registrant.Fax
+      description: The fax of the registrant.
+      type: string
+    - contextPath: Domain.Registrant.Id
+      description: The ID of the registrant.
+      type: string
+    - contextPath: Domain.Registrant.Number
+      description: The number of the registrant.
+      type: string
+    - contextPath: Domain.Registrant.StateProvince
+      description: The state province of the registrant.
+      type: string
+    - contextPath: Domain.Raw
+      description: The raw output from python-whois lib.
+      type: string
+    - contextPath: Domain.Administrator
+      description: The country of the domain administrator.
+      type: string
+    - contextPath: Domain.Tech.Name
+      description: The name of the tech contact.
+      type: string
+    - contextPath: Domain.Tech.Address
+      description: The address of the tech contact.
+      type: string
+    - contextPath: Domain.Tech.City
+      description: The city of the tech contact.
+      type: string
+    - contextPath: Domain.Tech.Country
+      description: The country of the tech contact.
+      type: string
+    - contextPath: Domain.Tech.Email
+      description: The email address of the tech contact.
+      type: string
+    - contextPath: Domain.Tech.Fax
+      description: The fax number of the tech contact.
+      type: string
+    - contextPath: Domain.Tech.ID
+      description: The ID of the tech contact.
+      type: string
+    - contextPath: Domain.Tech.Org
+      description: The organization of the tech contact.
+      type: string
+    - contextPath: Domain.Tech.Organization
+      description: The organization of the tech contact.
+      type: string
+    - contextPath: Domain.Tech.Phone
+      description: The phone number of the tech contact.
+      type: string
+    - contextPath: Domain.Tech.PostalCode
+      description: The postal code of the tech contact.
+      type: string
+    - contextPath: Domain.Tech.State
+      description: The state of the tech contact.
+      type: string
+    - contextPath: Domain.Tech.StateProvince
+      description: The state/province of the tech contact.
+      type: string
+    - contextPath: Domain.Tech.Street
+      description: The street of the tech contact.
+      type: string
+    - contextPath: Domain.ID
       description: The ID of the domain.
       type: string
+    - contextPath: Domain.WHOIS.Name
+      description: The domain name.
+      type: string
+    - contextPath: Domain.WHOIS.DomainStatus
+      description: The domain status.
+      type: string
+    - contextPath: Domain.WHOIS.Dnssec
+      description: The domain name system security extension (DNSSEC).
+      type: string
+    - contextPath: Domain.WHOIS.NameServers
+      description: The name servers.
+      type: string
+    - contextPath: Domain.WHOIS.Country
+      description: The domain country.
+      type: string
+    - contextPath: Domain.WHOIS.State
+      description: The domain state.
+      type: string
+    - contextPath: Domain.WHOIS.City
+      description: The domain city.
+      type: string
+    - contextPath: Domain.WHOIS.CreationDate
+      description: The date that the domain was created (UTC). 
+      type: date
+    - contextPath: Domain.WHOIS.UpdatedDate
+      description: The date that the domain was last updated (UTC).
+      type: date
+    - contextPath: Domain.WHOIS.ExpirationDate
+      description: The date that the domain expires (UTC).
+      type: date
+    - contextPath: Domain.WHOIS.Registrar.Name
+      description: The name of the registrar.
+      type: string
+    - contextPath: Domain.WHOIS.Registrar.Address
+      description: The address of the registrar.
+      type: string
+    - contextPath: Domain.WHOIS.Registrar.Email
+      description: The email of the registrar.
+      type: string
+    - contextPath: Domain.WHOIS.Registrar.Id
+      description: The ID of the registrar.
+      type: string
+    - contextPath: Domain.WHOIS.Registrar.Phone
+      description: The phone of the registrar.
+      type: string
+    - contextPath: Domain.WHOIS.Registrar.Url
+      description: The URL of the registrar.
+      type: string
+    - contextPath: Domain.WHOIS.Registrar.AbuseEmail
+      description: The email address of the contact for reporting abuse.
+      type: string
+    - contextPath: Domain.WHOIS.Emails
+      description: The abuse emails.
+      type: string
+    - contextPath: Domain.WHOIS.Address
+      description: The abuse address.
+      type: string
+    - contextPath: Domain.WHOIS.Organization
+      description: The organization domain name.
+      type: string
+    - contextPath: Domain.WHOIS.WhoisServer
+      description: The whois server name.
+      type: string
+    - contextPath: Domain.WHOIS.Phone
+      description: The phone number of the tech administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin
+      description: Administrator information.
+      type: object
+    - contextPath: Domain.WHOIS.Admin.Address
+      description: The address of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.ApplicationPurpose
+      description: The application purpose of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.C
+      description: The C field of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.City
+      description: The city of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Country
+      description: The country of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Email
+      description: The email address of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Fax
+      description: The fax number of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.FaxExt
+      description: The fax extension of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Id
+      description: The ID of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Name
+      description: The name of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Org
+      description: The organization of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Org
+      description: The organization name of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Phone
+      description: The phone number of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.PhoneExt
+      description: The phone extension of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.PostalCode
+      description: The postal code of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.State
+      description: The state of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.StateProvince
+      description: The state or province of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Street
+      description: The street of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Registrant.Name
+      description: The name of the registrant.
+      type: string
+    - contextPath: Domain.WHOIS.Registrant.Email
+      description: The email address of the registrant.
+      type: string
+    - contextPath: Domain.WHOIS.Registrant.Country
+      description: The country of the registrant.
+      type: string
+    - contextPath: Domain.WHOIS.Registrant.State
+      description: The state of the registrant.
+      type: string
+    - contextPath: Domain.WHOIS.Registrant.Org
+      description: The organization of the registrant.
+      type: string
+    - contextPath: Domain.WHOIS.Registrant.PostalCode
+      description: The postal code of the registrant.
+      type: string
+    - contextPath: Domain.WHOIS.Registrant.Street
+      description: The street of the registrant.
+      type: string
+    - contextPath: Domain.WHOIS.Registrant.Phone
+      description: The phone number of the registrant.
+      type: string
+    - contextPath: Domain.WHOIS.Registrant.City
+      description: The city of the registrant.
+      type: string
+    - contextPath: Domain.WHOIS.Registrant.Address
+      description: The address of the registrant.
+      type: string
+    - contextPath: Domain.WHOIS.Registrant.ContactName
+      description: The contact name of the registrant.
+      type: string
+    - contextPath: Domain.WHOIS.Registrant.Fax
+      description: The fax of the registrant.
+      type: string
+    - contextPath: Domain.WHOIS.Registrant.Id
+      description: The ID of the registrant.
+      type: string
+    - contextPath: Domain.WHOIS.Registrant.Number
+      description: The number of the registrant.
+      type: string
+    - contextPath: Domain.WHOIS.Registrant.StateProvince
+      description: The state province of the registrant.
+      type: string
+    - contextPath: Domain.WHOIS.Raw
+      description: The raw output from python-whois lib.
+      type: string
+    - contextPath: Domain.WHOIS.Administrator
+      description: The country of the domain administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Tech.Name
+      description: The name of the tech contact.
+      type: string
+    - contextPath: Domain.WHOIS.Tech.Address
+      description: The address of the tech contact.
+      type: string
+    - contextPath: Domain.WHOIS.Tech.City
+      description: The city of the tech contact.
+      type: string
+    - contextPath: Domain.WHOIS.Tech.Country
+      description: The country of the tech contact.
+      type: string
+    - contextPath: Domain.WHOIS.Tech.Email
+      description: The email address of the tech contact.
+      type: string
+    - contextPath: Domain.WHOIS.Tech.Fax
+      description: The fax number of the tech contact.
+      type: string
+    - contextPath: Domain.WHOIS.Tech.ID
+      description: The ID of the tech contact.
+      type: string
+    - contextPath: Domain.WHOIS.Tech.Org
+      description: The organization of the tech contact.
+      type: string
+    - contextPath: Domain.WHOIS.Tech.Phone
+      description: The phone number of the tech contact.
+      type: string
+    - contextPath: Domain.WHOIS.Tech.PostalCode
+      description: The postal code of the tech contact.
+      type: string
+    - contextPath: Domain.WHOIS.Tech.State
+      description: The state of the tech contact.
+      type: string
+    - contextPath: Domain.WHOIS.Tech.StateProvince
+      description: The state/province of the tech contact.
+      type: string
+    - contextPath: Domain.WHOIS.Tech.Street
+      description: The street of the tech contact.
+      type: string
+    - contextPath: Domain.WHOIS.ID
+      description: The ID of the domain.
+      type: string
+    - contextPath: Domain.FeedRelatedIndicators.Type
+      description: Indicators that are associated with the domain.
+      type: String
+    - contextPath: Domain.FeedRelatedIndicators.Value
+      description: The type of the indicators that are associated with the domain.
+      type: String
+    - contextPath: Domain.WHOIS.FeedRelatedIndicators.Type
+      description: Indicators that are associated with the domain.
+      type: String
+    - contextPath: Domain.WHOIS.FeedRelatedIndicators.Value
+      description: The type of the indicators that are associated with the domain.
+      type: String
+    - contextPath: Domain.FeedRelatedIndicators.type
+      description: (Legacy output) Indicators that are associated with the domain.
+      type: String
+    - contextPath: Domain.FeedRelatedIndicators.value
+      description: (Legacy output) The type of the indicators that are associated with the domain.
+      type: String
+    - contextPath: Domain.Whois.Name
+      description: (Legacy output) The domain name.
+      type: string
+    - contextPath: Domain.Whois.DomainStatus
+      description: (Legacy output) The domain status.
+      type: string
+    - contextPath: Domain.Whois.DNSSec
+      description: (Legacy output) The domain name system security extension (DNSSEC).
+      type: string
+    - contextPath: Domain.Whois.NameServers
+      description: (Legacy output) The name servers.
+      type: string
+    - contextPath: Domain.Whois.CreationDate
+      description: (Legacy output) The date that the domain was created (UTC). 
+      type: date
+    - contextPath: Domain.Whois.UpdatedDate
+      description: (Legacy output)The date that the domain was last updated (UTC).
+      type: date
+    - contextPath: Domain.Whois.ExpirationDate
+      description: (Legacy output)The date that the domain expires (UTC).
+      type: date
+    - contextPath: Domain.Whois.Registrar.Name
+      description: (Legacy output)The name of the registrar.
+      type: string
+    - contextPath: Domain.Whois.Emails
+      description: (Legacy output)The abuse emails.
+      type: string
+    - contextPath: Domain.Whois.Registrar.AbuseEmail
+      description: (Legacy output) The email address of the contact for reporting abuse.
+      type: string
+    - contextPath: Domain.Whois.Registrant.name
+      description: (Legacy output) The name of the registrant.
+      type: string
+    - contextPath: Domain.Whois.Registrant.email
+      description: (Legacy output) The email address of the registrant.
+      type: string
+    - contextPath: Domain.Whois.Raw
+      description: (Legacy output) The raw output.
+      type: string
+    - contextPath: Domain.Whois.Administrator.country
+      description: (Legacy output) The country of the domain administrator.
+      type: string
+    - contextPath: Domain.Whois.Administrator.name
+      description: (Legacy output) The name of the domain administrator.
+      type: string
+    - contextPath: Domain.Whois.Administrator.state
+      description: (Legacy output) The state of the domain administrator.
+      type: string
+    - contextPath: Domain.Whois.Administrator.email
+      description: (Legacy output) The email address of the domain administrator.
+      type: string
+    - contextPath: Domain.Whois.Administrator.organization
+      description: (Legacy output) The organization of the domain administrator.
+      type: string
+    - contextPath: Domain.Whois.Administrator.postalcode
+      description: (Legacy output) The postal code of the domain administrator.
+      type: string
+    - contextPath: Domain.Whois.Administrator.street
+      description: (Legacy output) The street of the domain administrator.
+      type: string
+    - contextPath: Domain.Whois.Administrator.phone
+      description: (Legacy output) The phone number of the domain administrator.
+      type: string
+    - contextPath: Domain.Whois.Administrator.city
+      description: (Legacy output) The city of the domain administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.country
+      description: (Legacy output) The country of the tech administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.name
+      description: (Legacy output) The name of the tech administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.state
+      description: (Legacy output) The state of the tech administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.email
+      description: (Legacy output) The email address of the tech administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.organization
+      description: (Legacy output) The organization of the tech administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.postalcode
+      description: (Legacy output) The postal code of the tech administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.street
+      description: (Legacy output) The street of the tech administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.phone
+      description: (Legacy output) The phone number of the tech administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.city
+      description: (Legacy output) The city of the tech administrator.
+      type: string
+    - contextPath: Domain.Whois.Registrant.country
+      description: (Legacy output) The country of the registrant.
+      type: string
+    - contextPath: Domain.Whois.Registrant.state
+      description: (Legacy output) The state of the registrant.
+      type: string
+    - contextPath: Domain.Whois.Registrant.organization
+      description: (Legacy output) The organization of the registrant.
+      type: string
+    - contextPath: Domain.Whois.Registrant.postalcode
+      description: (Legacy output) The postal code of the registrant.
+      type: string
+    - contextPath: Domain.Whois.Registrant.street
+      description: (Legacy output) The street of the registrant.
+      type: string
+    - contextPath: Domain.Whois.Registrant.phone
+      description: (Legacy output) The phone number of the registrant.
+      type: string
+    - contextPath: Domain.Whois.Registrant.city
+      description: (Legacy output) The city of the registrant.
+      type: string
+    - contextPath: Domain.Whois.ID
+      description: (Legacy output) The ID of the domain.
+      type: string
     - contextPath: Domain.Whois.QueryStatus
-      description: The result of the command ("Success" or "Failed").
+      description: (Legacy output) The result of the command ("Success" or "Failed").
       type: string
     - contextPath: Domain.Whois.QueryValue
-      description: The query requested by the user.
+      description: (Legacy output) The query requested by the user.
       type: string
     - contextPath: Domain.Whois.QueryResult
-      description: Whether the query found a matching result.
+      description: (Legacy output) Whether the query found a matching result.
       type: Boolean
   - arguments:
     - default: true
@@ -255,204 +715,612 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: string
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
     - contextPath: Domain.Name
       description: The domain name.
       type: string
-    - contextPath: Domain.Whois.Name
-      description: The domain name.
-      type: string
-    - contextPath: Domain.Whois.DomainStatus
-      description: The domain status.
-      type: string
-    - contextPath: Domain.Whois.DNSSec
-      description: The domain name system security extension (DNSSEC).
-      type: string
-    - contextPath: Domain.Whois.NameServers
-      description: The name servers.
-      type: string
-    - contextPath: Domain.Whois.CreationDate
-      description: The date that the domain was created (UTC).
-      type: date
-    - contextPath: Domain.Whois.UpdatedDate
-      description: The date that the domain was last updated (UTC).
-      type: date
-    - contextPath: Domain.Whois.ExpirationDate
-      description: The date that the domain expires (UTC).
-      type: date
-    - contextPath: Domain.Whois.Registrar.Name
-      description: The name of the registrar.
-      type: string
-    - contextPath: Domain.Whois.Emails
-      description: The abuse emails.
-      type: string
-    - contextPath: Domain.Whois.Registrar.AbuseEmail
-      description: The email address of the contact for reporting abuse.
-      type: string
-    - contextPath: Domain.Whois.Registrant.name
-      description: The name of the registrant.
-      type: string
-    - contextPath: Domain.Whois.Registrant.email
-      description: The email address of the registrant.
-      type: string
-    - contextPath: Domain.Whois.Raw
-      description: The raw output.
-      type: string
-    - contextPath: Domain.Whois.Administrator.country
-      description: The country of the domain administrator.
-      type: string
-    - contextPath: Domain.Whois.Administrator.name
-      description: The name of domain administrator.
-      type: string
-    - contextPath: Domain.Whois.Administrator.state
-      description: The state of domain administrator.
-      type: string
-    - contextPath: Domain.Whois.Administrator.email
-      description: The email address of the domain administrator.
-      type: string
-    - contextPath: Domain.Whois.Administrator.organization
-      description: The organization of the domain administrator.
-      type: string
-    - contextPath: Domain.Whois.Administrator.postalcode
-      description: The postal code of the domain administrator.
-      type: string
-    - contextPath: Domain.Whois.Administrator.street
-      description: The street of the domain admin.
-      type: string
-    - contextPath: Domain.Whois.Administrator.phone
-      description: The phone number of the domain administrator.
-      type: string
-    - contextPath: Domain.Whois.Administrator.city
-      description: The city of the domain administrator.
-      type: string
-    - contextPath: Domain.Whois.TechAdmin.country
-      description: The country of tech administrator.
-      type: string
-    - contextPath: Domain.Whois.TechAdmin.name
-      description: The name of tech administrator.
-      type: string
-    - contextPath: Domain.Whois.TechAdmin.state
-      description: The state of tech administrator.
-      type: string
-    - contextPath: Domain.Whois.TechAdmin.email
-      description: The email address of the tech administrator.
-      type: string
-    - contextPath: Domain.Whois.TechAdmin.organization
-      description: The organization of the tech administrator.
-      type: string
-    - contextPath: Domain.Whois.TechAdmin.postalcode
-      description: The postal code of the tech administrator.
-      type: string
-    - contextPath: Domain.Whois.TechAdmin.street
-      description: The street of the tech administrator.
-      type: string
-    - contextPath: Domain.Whois.TechAdmin.phone
-      description: The phone number of the tech administrator.
-      type: string
-    - contextPath: Domain.Whois.TechAdmin.city
-      description: The city of the tech administrator.
-      type: string
-    - contextPath: Domain.Whois.Registrant.country
-      description: The country of the registrant.
-      type: string
-    - contextPath: Domain.Whois.Registrant.state
-      description: The state of the registrant.
-      type: string
-    - contextPath: Domain.Whois.Registrant.organization
-      description: The organization of the registrant.
-      type: string
-    - contextPath: Domain.Whois.Registrant.postalcode
-      description: The postal code of the registrant.
-      type: string
-    - contextPath: Domain.Whois.Registrant.street
-      description: The street of the registrant.
-      type: string
-    - contextPath: Domain.Whois.Registrant.phone
-      description: The phone number of the registrant.
-      type: string
-    - contextPath: Domain.Whois.Registrant.city
-      description: The city of the registrant.
-      type: string
-    - contextPath: Domain.Whois.ID
-      description: The ID of the domain.
-      type: string
-    - contextPath: Domain.Whois.QueryStatus
-      description: The result of the command ("Success" or "Failed").
-      type: string
-    - contextPath: Domain.Whois.QueryResult
-      description: Whether the query found a matching result.
-      type: Boolean
-    - contextPath: Domain.Admin.Country
-      description: The country of the domain administrator.
-      type: String
-    - contextPath: Domain.Admin.Name
-      description: The name of domain administrator.
-      type: String
-    - contextPath: Domain.Admin.State
-      description: The state of domain administrator.
-      type: String
-    - contextPath: Domain.Admin.country
-      description: The country of the domain administrator.
-      type: String
-    - contextPath: Domain.Admin.name
-      description: The name of domain administrator.
-      type: String
-    - contextPath: Domain.Admin.state
-      description: The state of domain administrator.
-      type: String
-    - contextPath: Domain.CreationDate
-      description: The date that the domain was created (UTC).
-      type: Date
     - contextPath: Domain.DomainStatus
       description: The domain status.
       type: String
     - contextPath: Domain.ExpirationDate
       description: The date that the domain expires (UTC).
       type: Date
-    - contextPath: Domain.FeedRelatedIndicators.type
-      description: Indicators that are associated with the Domain.
-      type: String
-    - contextPath: Domain.FeedRelatedIndicators.value
-      description: The type of the indicators that are associated with the Domain.
-      type: String
-    - contextPath: Domain.Name
-      description: The domain name.
-      type: String
     - contextPath: Domain.NameServers
       description: The name servers.
       type: String
     - contextPath: Domain.Organization
       description: The organization name.
       type: String
-    - contextPath: Domain.Registrant.Country
-      description: The country of the registrant.
-      type: String
-    - contextPath: Domain.Registrant.Organization
-      description: The organization of the registrant.
-      type: String
-    - contextPath: Domain.Registrant.State
-      description: The state of the registrant.
-      type: String
-    - contextPath: Domain.Registrant.country
-      description: The country of the registrant.
-      type: String
-    - contextPath: Domain.Registrant.organization
-      description: The organization of the registrant.
-      type: String
-    - contextPath: Domain.Registrant.state
-      description: The state of the registrant.
-      type: String
-    - contextPath: Domain.Registrar.Name
-      description: The name of the registrar.
-      type: String
-    - contextPath: Domain.Tech.Country
-      description: The country of tech administrator.
-      type: String
-    - contextPath: Domain.Tech.Organization
-      description: The organization of the tech administrator.
-      type: String
+    - contextPath: Domain.ID
+      description: The ID of the domain.
+      type: string
     - contextPath: Domain.UpdatedDate
       description: The date that the domain was last updated (UTC).
       type: Date
+    - contextPath: Domain.Dnssec
+      description: The domain name system security extension (DNSSEC).
+      type: string
+    - contextPath: Domain.Country
+      description: The domain country.
+      type: string
+    - contextPath: Domain.State
+      description: The domain state.
+      type: string
+    - contextPath: Domain.City
+      description: The domain city.
+      type: string
+    - contextPath: Domain.CreationDate
+      description: The date that the domain was created (UTC). 
+      type: date
+    - contextPath: Domain.Registrar.Name
+      description: The name of the registrar.
+      type: string
+    - contextPath: Domain.Registrar.Address
+      description: The address of the registrar.
+      type: string
+    - contextPath: Domain.Registrar.Email
+      description: The email of the registrar.
+      type: string
+    - contextPath: Domain.Registrar.Id
+      description: The ID of the registrar.
+      type: string
+    - contextPath: Domain.Registrar.Phone
+      description: The phone number of the registrar.
+      type: string
+    - contextPath: Domain.Registrar.Url
+      description: The URL of the registrar.
+      type: string
+    - contextPath: Domain.Registrar.AbuseEmail
+      description: The email address of the contact for reporting abuse.
+      type: string
+    - contextPath: Domain.Emails
+      description: The abuse emails.
+      type: string
+    - contextPath: Domain.Address
+      description: The abuse address.
+      type: string
+    - contextPath: Domain.WhoisServer
+      description: The whois server name.
+      type: string
+    - contextPath: Domain.Phone
+      description: The phone number of the tech administrator.
+      type: string
+    - contextPath: Domain.Admin
+      description: Administrator information.
+      type: object
+    - contextPath: Domain.Admin.Address
+      description: The address of the administrator.
+      type: string
+    - contextPath: Domain.Admin.ApplicationPurpose
+      description: The application purpose of the administrator.
+      type: string
+    - contextPath: Domain.Admin.C
+      description: The C field of the administrator.
+      type: string
+    - contextPath: Domain.Admin.City
+      description: The city of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Country
+      description: The country of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Email
+      description: The email address of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Fax
+      description: The fax number of the administrator.
+      type: string
+    - contextPath: Domain.Admin.FaxExt
+      description: The fax extension of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Id
+      description: The ID of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Name
+      description: The name of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Org
+      description: The organization of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Phone
+      description: The phone number of the administrator.
+      type: string
+    - contextPath: Domain.Admin.PhoneExt
+      description: The phone extension of the administrator.
+      type: string
+    - contextPath: Domain.Admin.PostalCode
+      description: The postal code of the administrator.
+      type: string
+    - contextPath: Domain.Admin.State
+      description: The state of the administrator.
+      type: string
+    - contextPath: Domain.Admin.StateProvince
+      description: The state or province of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Street
+      description: The street of the administrator.
+      type: string
+    - contextPath: Domain.Registrant.Name
+      description: The name of the registrant.
+      type: string
+    - contextPath: Domain.Registrant.Email
+      description: The email address of the registrant.
+      type: string
+    - contextPath: Domain.Registrant.Country
+      description: The country of the registrant.
+      type: string
+    - contextPath: Domain.Registrant.State
+      description: The state of the registrant.
+      type: string
+    - contextPath: Domain.Registrant.Org
+      description: The organization of the registrant.
+      type: string
+    - contextPath: Domain.Registrant.Organization
+      description: The organization of the registrant.
+      type: string
+    - contextPath: Domain.Registrant.PostalCode
+      description: The postal code of the registrant.
+      type: string
+    - contextPath: Domain.Registrant.Street
+      description: The street of the registrant.
+      type: string
+    - contextPath: Domain.Registrant.Phone
+      description: The phone number of the registrant.
+      type: string
+    - contextPath: Domain.Registrant.City
+      description: The city of the registrant.
+      type: string
+    - contextPath: Domain.Registrant.Address
+      description: The address of the registrant.
+      type: string
+    - contextPath: Domain.Registrant.ContactName
+      description: The contact name of the registrant.
+      type: string
+    - contextPath: Domain.Registrant.Fax
+      description: The fax of the registrant.
+      type: string
+    - contextPath: Domain.Registrant.Id
+      description: The ID of the registrant.
+      type: string
+    - contextPath: Domain.Registrant.Number
+      description: The number of the registrant.
+      type: string
+    - contextPath: Domain.Registrant.StateProvince
+      description: The state province of the registrant.
+      type: string
+    - contextPath: Domain.Raw
+      description: The raw output from python-whois lib.
+      type: string
+    - contextPath: Domain.Administrator
+      description: The country of the domain administrator.
+      type: string
+    - contextPath: Domain.Tech.Name
+      description: The name of the tech contact.
+      type: string
+    - contextPath: Domain.Tech.Address
+      description: The address of the tech contact.
+      type: string
+    - contextPath: Domain.Tech.City
+      description: The city of the tech contact.
+      type: string
+    - contextPath: Domain.Tech.Country
+      description: The country of the tech contact.
+      type: string
+    - contextPath: Domain.Tech.Email
+      description: The email address of the tech contact.
+      type: string
+    - contextPath: Domain.Tech.Fax
+      description: The fax number of the tech contact.
+      type: string
+    - contextPath: Domain.Tech.ID
+      description: The ID of the tech contact.
+      type: string
+    - contextPath: Domain.Tech.Org
+      description: The organization of the tech contact.
+      type: string
+    - contextPath: Domain.Tech.Organization
+      description: The organization of the tech contact.
+      type: string
+    - contextPath: Domain.Tech.Phone
+      description: The phone number of the tech contact.
+      type: string
+    - contextPath: Domain.Tech.PostalCode
+      description: The postal code of the tech contact.
+      type: string
+    - contextPath: Domain.Tech.State
+      description: The state of the tech contact.
+      type: string
+    - contextPath: Domain.Tech.StateProvince
+      description: The state/province of the tech contact.
+      type: string
+    - contextPath: Domain.Tech.Street
+      description: The street of the tech contact.
+      type: string
+    - contextPath: Domain.FeedRelatedIndicators.Type
+      description: Indicators that are associated with the domain.
+      type: String
+    - contextPath: Domain.FeedRelatedIndicators.Value
+      description: The type of the indicators that are associated with the domain.
+      type: String
+    - contextPath: Domain.WHOIS.FeedRelatedIndicators.Type
+      description: Indicators that are associated with the domain.
+      type: String
+    - contextPath: Domain.WHOIS.FeedRelatedIndicators.Value
+      description: The type of the indicators that are associated with the domain.
+      type: String
+    - contextPath: Domain.WHOIS.Name
+      description: The domain name.
+      type: string
+    - contextPath: Domain.WHOIS.ID
+      description: The ID of the domain.
+      type: string
+    - contextPath: Domain.WHOIS.DomainStatus
+      description: The domain status.
+      type: string
+    - contextPath: Domain.WHOIS.Dnssec
+      description: The domain name system security extension (DNSSEC).
+      type: string
+    - contextPath: Domain.WHOIS.NameServers
+      description: The name servers.
+      type: string
+    - contextPath: Domain.WHOIS.Country
+      description: The domain country.
+      type: string
+    - contextPath: Domain.WHOIS.State
+      description: The domain state.
+      type: string
+    - contextPath: Domain.WHOIS.City
+      description: The domain city.
+      type: string
+    - contextPath: Domain.WHOIS.CreationDate
+      description: The date that the domain was created (UTC). 
+      type: date
+    - contextPath: Domain.WHOIS.UpdatedDate
+      description: The date that the domain was last updated (UTC).
+      type: date
+    - contextPath: Domain.WHOIS.ExpirationDate
+      description: The date that the domain expires (UTC).
+      type: date
+    - contextPath: Domain.WHOIS.Registrar.Name
+      description: The name of the registrar.
+      type: string
+    - contextPath: Domain.WHOIS.Registrar.Address
+      description: The address of the registrar.
+      type: string
+    - contextPath: Domain.WHOIS.Registrar.Email
+      description: The email of the registrar.
+      type: string
+    - contextPath: Domain.WHOIS.Registrar.Id
+      description: The ID of the registrar.
+      type: string
+    - contextPath: Domain.WHOIS.Registrar.Phone
+      description: The phone number of the registrar.
+      type: string
+    - contextPath: Domain.WHOIS.Registrar.Url
+      description: The URL of the registrar.
+      type: string
+    - contextPath: Domain.WHOIS.Registrar.AbuseEmail
+      description: The email address of the contact for reporting abuse.
+      type: string
+    - contextPath: Domain.WHOIS.Emails
+      description: The abuse emails.
+      type: string
+    - contextPath: Domain.WHOIS.Address
+      description: The abuse address.
+      type: string
+    - contextPath: Domain.WHOIS.Organization
+      description: The organization domain name.
+      type: string
+    - contextPath: Domain.WHOIS.WhoisServer
+      description: The whois server name.
+      type: string
+    - contextPath: Domain.WHOIS.Phone
+      description: The phone number of the tech administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin
+      description: Administrator information.
+      type: object
+    - contextPath: Domain.WHOIS.Admin.Address
+      description: The address of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.ApplicationPurpose
+      description: The application purpose of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.C
+      description: The C field of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.City
+      description: The city of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Country
+      description: The country of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Email
+      description: The email address of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Fax
+      description: The fax number of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.FaxExt
+      description: The fax extension of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Id
+      description: The ID of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Name
+      description: The name of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Org
+      description: The organization of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Org
+      description: The organization name of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Phone
+      description: The phone number of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.PhoneExt
+      description: The phone extension of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.PostalCode
+      description: The postal code of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.State
+      description: The state of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.StateProvince
+      description: The state or province of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Street
+      description: The street of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Registrant.Name
+      description: The name of the registrant.
+      type: string
+    - contextPath: Domain.WHOIS.Registrant.Email
+      description: The email address of the registrant.
+      type: string
+    - contextPath: Domain.WHOIS.Registrant.Country
+      description: The country of the registrant.
+      type: string
+    - contextPath: Domain.WHOIS.Registrant.State
+      description: The state of the registrant.
+      type: string
+    - contextPath: Domain.WHOIS.Registrant.Org
+      description: The organization of the registrant.
+      type: string
+    - contextPath: Domain.WHOIS.Registrant.PostalCode
+      description: The postal code of the registrant.
+      type: string
+    - contextPath: Domain.WHOIS.Registrant.Street
+      description: The street of the registrant.
+      type: string
+    - contextPath: Domain.WHOIS.Registrant.Phone
+      description: The phone number of the registrant.
+      type: string
+    - contextPath: Domain.WHOIS.Registrant.City
+      description: The city of the registrant.
+      type: string
+    - contextPath: Domain.WHOIS.Registrant.Address
+      description: The address of the registrant.
+      type: string
+    - contextPath: Domain.WHOIS.Registrant.ContactName
+      description: The contact name of the registrant.
+      type: string
+    - contextPath: Domain.WHOIS.Registrant.Fax
+      description: The fax of the registrant.
+      type: string
+    - contextPath: Domain.WHOIS.Registrant.Id
+      description: The ID of the registrant.
+      type: string
+    - contextPath: Domain.WHOIS.Registrant.Number
+      description: The number of the registrant.
+      type: string
+    - contextPath: Domain.WHOIS.Registrant.StateProvince
+      description: The state province of the registrant.
+      type: string
+    - contextPath: Domain.WHOIS.Raw
+      description: The raw output from python-whois lib.
+      type: string
+    - contextPath: Domain.WHOIS.Administrator
+      description: The country of the domain administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Tech.Name
+      description: The name of the tech contact.
+      type: string
+    - contextPath: Domain.WHOIS.Tech.Address
+      description: The address of the tech contact.
+      type: string
+    - contextPath: Domain.WHOIS.Tech.City
+      description: The city of the tech contact.
+      type: string
+    - contextPath: Domain.WHOIS.Tech.Country
+      description: The country of the tech contact.
+      type: string
+    - contextPath: Domain.WHOIS.Tech.Email
+      description: The email address of the tech contact.
+      type: string
+    - contextPath: Domain.WHOIS.Tech.Fax
+      description: The fax number of the tech contact.
+      type: string
+    - contextPath: Domain.WHOIS.Tech.ID
+      description: The ID of the tech contact.
+      type: string
+    - contextPath: Domain.WHOIS.Tech.Org
+      description: The organization of the tech contact.
+      type: string
+    - contextPath: Domain.WHOIS.Tech.Phone
+      description: The phone number of the tech contact.
+      type: string
+    - contextPath: Domain.WHOIS.Tech.PostalCode
+      description: The postal code of the tech contact.
+      type: string
+    - contextPath: Domain.WHOIS.Tech.State
+      description: The state of the tech contact.
+      type: string
+    - contextPath: Domain.WHOIS.Tech.StateProvince
+      description: The state/province of the tech contact.
+      type: string
+    - contextPath: Domain.WHOIS.Tech.Street
+      description: The street of the tech contact.
+      type: string
+    - contextPath: Domain.Whois.Name
+      description: (Legacy output) The domain name.
+      type: string
+    - contextPath: Domain.Whois.DomainStatus
+      description: (Legacy output) The domain status.
+      type: string
+    - contextPath: Domain.Whois.DNSSec
+      description: (Legacy output) The domain name system security extension (DNSSEC).
+      type: string
+    - contextPath: Domain.Whois.NameServers
+      description: (Legacy output) The name servers.
+      type: string
+    - contextPath: Domain.Whois.CreationDate
+      description: (Legacy output) The date that the domain was created (UTC).
+      type: date
+    - contextPath: Domain.Whois.UpdatedDate
+      description: (Legacy output) The date that the domain was last updated (UTC).
+      type: date
+    - contextPath: Domain.Whois.ExpirationDate
+      description: (Legacy output) The date that the domain expires (UTC).
+      type: date
+    - contextPath: Domain.Whois.Registrar.Name
+      description: (Legacy output) The name of the registrar.
+      type: string
+    - contextPath: Domain.Whois.Emails
+      description: (Legacy output) The abuse emails.
+      type: string
+    - contextPath: Domain.Whois.Registrar.AbuseEmail
+      description: (Legacy output) The email address of the contact for reporting abuse.
+      type: string
+    - contextPath: Domain.Whois.Registrant.name
+      description: (Legacy output) The name of the registrant.
+      type: string
+    - contextPath: Domain.Whois.Registrant.email
+      description: (Legacy output) The email address of the registrant.
+      type: string
+    - contextPath: Domain.Whois.Raw
+      description: (Legacy output) The raw output.
+      type: string
+    - contextPath: Domain.Whois.Administrator.country
+      description: (Legacy output) The country of the domain administrator.
+      type: string
+    - contextPath: Domain.Whois.Administrator.name
+      description: (Legacy output) The name of domain administrator.
+      type: string
+    - contextPath: Domain.Whois.Administrator.state
+      description: (Legacy output) The state of domain administrator.
+      type: string
+    - contextPath: Domain.Whois.Administrator.email
+      description: (Legacy output) The email address of the domain administrator.
+      type: string
+    - contextPath: Domain.Whois.Administrator.organization
+      description: (Legacy output) The organization of the domain administrator.
+      type: string
+    - contextPath: Domain.Whois.Administrator.postalcode
+      description: (Legacy output) The postal code of the domain administrator.
+      type: string
+    - contextPath: Domain.Whois.Administrator.street
+      description: (Legacy output) The street of the domain administrator.
+      type: string
+    - contextPath: Domain.Whois.Administrator.phone
+      description: (Legacy output) The phone number of the domain administrator.
+      type: string
+    - contextPath: Domain.Whois.Administrator.city
+      description: (Legacy output) The city of the domain administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.country
+      description: (Legacy output) The country of the tech administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.name
+      description: (Legacy output) The name of the tech administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.state
+      description: (Legacy output) The state of the tech administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.email
+      description: (Legacy output) The email address of the tech administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.organization
+      description: (Legacy output) The organization of the tech administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.postalcode
+      description: (Legacy output) The postal code of the tech administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.street
+      description: (Legacy output) The street of the tech administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.phone
+      description: (Legacy output) The phone number of the tech administrator.
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.city
+      description: (Legacy output) The city of the tech administrator.
+      type: string
+    - contextPath: Domain.Whois.Registrant.country
+      description: (Legacy output) The country of the registrant.
+      type: string
+    - contextPath: Domain.Whois.Registrant.state
+      description: (Legacy output) The state of the registrant.
+      type: string
+    - contextPath: Domain.Whois.Registrant.organization
+      description: (Legacy output) The organization of the registrant.
+      type: string
+    - contextPath: Domain.Whois.Registrant.postalcode
+      description: (Legacy output) The postal code of the registrant.
+      type: string
+    - contextPath: Domain.Whois.Registrant.street
+      description: (Legacy output) The street of the registrant.
+      type: string
+    - contextPath: Domain.Whois.Registrant.phone
+      description: (Legacy output) The phone number of the registrant.
+      type: string
+    - contextPath: Domain.Whois.Registrant.city
+      description: (Legacy output) The city of the registrant.
+      type: string
+    - contextPath: Domain.Whois.ID
+      description: (Legacy output) The ID of the domain.
+      type: string
+    - contextPath: Domain.Whois.QueryStatus
+      description: (Legacy output) The result of the command ("Success" or "Failed").
+      type: string
+    - contextPath: Domain.Whois.QueryResult
+      description: (Legacy output) Whether the query found a matching result.
+      type: Boolean
+    - contextPath: Domain.Admin.Country
+      description: (Legacy output) The country of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Name
+      description: (Legacy output) The name of domain administrator.
+      type: String
+    - contextPath: Domain.Admin.State
+      description: (Legacy output) The state of domain administrator.
+      type: String
+    - contextPath: Domain.Admin.country
+      description: (Legacy output) The country of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.name
+      description: (Legacy output) The name of domain administrator.
+      type: String
+    - contextPath: Domain.Admin.state
+      description: (Legacy output) The state of domain administrator.
+      type: String
+    - contextPath: Domain.Registrant.country
+      description: (Legacy output) The country of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.organization
+      description: (Legacy output) The organization of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.state
+      description: (Legacy output) The state of the registrant.
+      type: String
+    - contextPath: Domain.FeedRelatedIndicators.type
+      description: (Legacy output) Indicators that are associated with the domain.
+      type: String
+    - contextPath: Domain.FeedRelatedIndicators.value
+      description: (Legacy output) The type of the indicators that are associated with the domain.
+      type: String
   - arguments:
     - default: true
       description: The IP to enrich.
@@ -582,12 +1450,13 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-  dockerimage: demisto/ippysocks-py3:1.0.0.93435
+  dockerimage: demisto/ippysocks-py3:1.0.0.2033325
   runonce: false
   script: '-'
   subtype: python3
   type: python
 tests:
 - whois_test
+- Whois A new layout implemented with python-whois service
 fromversion: 5.0.0
 defaultEnabled: false

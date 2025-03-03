@@ -1,0 +1,213 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Github Feed
+  version: -1
+configuration:
+- defaultvalue: 'true'
+  display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+  section: Collect
+- defaultvalue: https://api.github.com
+  display: Base URL
+  name: url
+  type: 0
+  additionalinfo: The URL to the GitHub API.
+  section: Connect
+  required: true
+- displaypassword: API Token
+  name: api_token
+  type: 9
+  hiddenusername: true
+  section: Connect
+  required: false
+- display: Incremental Feed
+  defaultvalue: 'true'
+  hidden: true
+  name: feedIncremental
+  section: Connect
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- defaultvalue: ""
+  display: Owner
+  name: owner
+  type: 0
+  additionalinfo: Username of the repository owner
+  section: Connect
+  required: true
+- defaultvalue: ""
+  display: Repository / Path to fetch
+  name: repo
+  type: 0
+  additionalinfo: The name of the repository.
+  section: Connect
+  required: true
+- defaultvalue: ""
+  display: Feed type
+  name: feedType
+  options:
+  - YARA
+  - STIX
+  - IOCs
+  type: 15
+  additionalinfo: |
+    Predefined list of indicator types:
+    - YARA: Parses YARA rules from the feed. The "Yara" pack is required for this type.
+    - STIX: Parses STIX data from the feed.
+    - IOCs: Parses Indicators of Compromise (IOCs) using regex patterns.
+  section: Collect
+  required: true
+- display: Branch name
+  name: branch_head
+  type: 0
+  required: true
+  defaultvalue: main
+  additionalinfo: The name of the main branch to which to compare.
+  section: Connect
+- display: Files extensions to fetch
+  name: extensions_to_fetch
+  type: 16
+  required: true
+  defaultvalue: txt,yar,json
+  options:
+  - txt
+  - yar
+  - json
+  additionalinfo: The extension of the file names to target.
+  section: Collect
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: F - Reliability cannot be judged
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+  section: Collect
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
+  section: Collect
+- display: First fetch time
+  additionalinfo: First commit date of first published indicators to bring. e.g., "1 min ago","2 weeks ago","3 months ago".
+  name: fetch_since
+  type: 0
+  defaultvalue: '90 days ago'
+  required: false
+  section: Collect
+- display: Feed Fetch Interval
+  name: feedFetchInterval
+  type: 19
+  defaultvalue: '240'
+  required: false
+  section: Collect
+  advanced: true
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  defaultvalue: 'true'
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+  section: Collect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- display: ''
+  name: feedExpirationPolicy
+  type: 17
+  required: false
+  options:
+  - never
+  - interval
+  - indicatorType
+  section: Collect
+  advanced: true
+- display: ''
+  name: feedExpirationInterval
+  type: 1
+  required: false
+  section: Collect
+  advanced: true
+- display: Tags
+  name: feedTags
+  type: 0
+  additionalinfo: Supports CSV values.
+  required: false
+  section: Collect
+  advanced: true
+- display: Enrichment Excluded
+  name: enrichmentExcluded
+  type: 8
+  required: false
+  defaultvalue: 'false'
+  additionalinfo: Select this option to exclude the fetched indicators from the enrichment process.
+  hidden:
+  - xsoar_on_prem
+  section: Collect
+- name: feedReputation
+  display: Indicator Reputation
+  type: 18
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  additionalinfo: Indicators from this integration instance will be marked with this reputation
+  section: Collect
+display: Github Feed
+name: Github Feed
+script:
+  commands:
+  - arguments:
+    - defaultValue: '7 days'
+      description: 'The start date from which to fetch indicators. Accepts date strings like "7 days ago", "2 weeks ago", etc.'
+      name: since
+    - description: 'The end date until which to fetch indicators. Accepts date strings like "now", "2023-05-19", etc.'
+      name: until
+    - defaultValue: '50'
+      description: The maximum number of results to return.
+      name: limit
+    description: Gets indicators from the feed within a specified date range and up to a maximum limit..
+    name: github-get-indicators
+  dockerimage: demisto/taxii2:1.0.0.117320
+  feed: true
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.8.0
+description: This is the Feed GitHub integration for getting started with your feed integration.
+marketplaces:
+- xsoar
+- marketplacev2
+tests:
+- No tests (auto formatted)
+sectionOrder:
+- Connect
+- Collect

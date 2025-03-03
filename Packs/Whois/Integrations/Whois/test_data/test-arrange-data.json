@@ -1,0 +1,186 @@
+{
+    "raw": {
+        "google": {
+            "domain_name": [
+                "GOOGLE.COM",
+                "google.com"
+            ],
+            "registrar": "MarkMonitor, Inc.",
+            "whois_server": "whois.markmonitor.com",
+            "referral_url": "",
+            "updated_date": [
+                "(2019, 9, 9, 15, 39, 4)",
+                "(2019, 9, 9, 15, 39, 4, )"
+            ],
+            "creation_date": [
+                "(1997, 9, 15, 4, 0)",
+                "(1997, 9, 15, 7, 0, )"
+            ],
+            "expiration_date": [
+                "(2028, 9, 14, 4, 0)",
+                "(2028, 9, 13, 7, 0, )"
+            ],
+            "name_servers": [
+                "NS1.GOOGLE.COM",
+                "NS2.GOOGLE.COM",
+                "NS3.GOOGLE.COM",
+                "NS4.GOOGLE.COM",
+                "ns2.google.com",
+                "ns3.google.com",
+                "ns1.google.com",
+                "ns4.google.com"
+            ],
+            "status": [
+                "clientDeleteProhibited https://icann.org/test-example",
+                "clientTransferProhibited https://icann.org/epp#test-example"
+            ],
+            "emails": [
+                "test-example@markmonitor.com",
+                "testabuseexample@markmonitor.com"
+            ],
+            "dnssec": "unsigned",
+            "name": "",
+            "org": "Google LLC",
+            "address": "",
+            "city": "",
+            "state": "CA",
+            "registrant_postal_code": "",
+            "country": "US"
+        },
+        "microsoft": {
+            "domain_name": [
+                "microsoft.com",
+                "microsoft.com"
+            ],
+            "registrar": "MarkMonitor, Inc.",
+            "whois_server": "whois.markmonitor.com",
+            "referral_url": "",
+            "updated_date": [
+                "(2023, 8, 18, 16, 15, 54)",
+                "(2023, 8, 18, 16, 15, 54)"
+            ],
+            "creation_date": [
+                "(1991, 5, 2, 4, 0)",
+                "(1991, 5, 2, 4, 0)"
+            ],
+            "expiration_date": [
+                "(2025, 5, 3, 4, 0)",
+                "(2025, 5, 3, 0, 0)"
+            ],
+            "name_servers": [
+                "NS1-39.AZURE-DNS.COM",
+                "NS2-39.AZURE-DNS.NET",
+                "NS3-39.AZURE-DNS.ORG",
+                "NS4-39.AZURE-DNS.INFO",
+                "ns1-39.azure-dns.com",
+                "ns3-39.azure-dns.org",
+                "ns2-39.azure-dns.net",
+                "ns4-39.azure-dns.info"
+            ],
+            "status": [
+                "clientDeleteProhibited https://icann.org/epp#test-example",
+                "clientTransferProhibited https://icann.org/epp#test-example"
+            ],
+            "emails": [
+                "test-example@markmonitor.com",
+                "test-example@domains.microsoft",
+                "abuse-test-example@microsoft.com",
+                "testexampleabuse@markmonitor.com"
+            ],
+            "dnssec": "unsigned",
+            "name": "Domain Administrator",
+            "org": "Microsoft Corporation",
+            "address": "One Microsoft Way,",
+            "city": "Redmond",
+            "state": "WA",
+            "registrant_postal_code": "98052",
+            "country": "US"
+        },
+        "apple": {
+            "domain_name": [
+                "APPLE.COM",
+                "apple.com"
+            ],
+            "registrar": "NOM-IQ Ltd dba Com Laude",
+            "whois_server": "whois.comlaude.com",
+            "referral_url": "",
+            "updated_date": [
+                "(2023, 8, 28, 18, 33, 11)",
+                "(2024, 5, 3, 9, 53, 59)"
+            ],
+            "creation_date": "(1987, 2, 19, 5, 0)",
+            "expiration_date": [
+                "(2025, 2, 20, 5, 0)",
+                "(2025, 2, 20, 0, 0)"
+            ],
+            "name_servers": [
+                "A.NS.APPLE.COM",
+                "B.NS.APPLE.COM",
+                "C.NS.APPLE.COM",
+                "D.NS.APPLE.COM",
+                "a.ns.apple.com",
+                "b.ns.apple.com",
+                "c.ns.apple.com",
+                "d.ns.apple.com"
+            ],
+            "status": [
+                "clientDeleteProhibited https://icann.org/epp#test-example",
+                "clientTransferProhibited https://icann.org/epp#test-example",
+                "clientUpdateProhibited https://icann.org/epp#test-example",
+                "serverDeleteProhibited https://icann.org/epp#test-example"
+            ],
+            "emails": [
+                "abuse@comlaude.com",
+                "test-example.com-Registrant@anonymised.email",
+                "test-example.com-Admin@anonymised.email",
+                "test-example.com-Tech@anonymised.email"
+            ],
+            "dnssec": [
+                "unsigned",
+                "Unsigned"
+            ],
+            "name": "REDACTED FOR PRIVACY",
+            "org": "Apple Inc.",
+            "address": "REDACTED FOR PRIVACY",
+            "city": "REDACTED FOR PRIVACY",
+            "state": "CA",
+            "registrant_postal_code": "REDACTED FOR PRIVACY",
+            "country": "US"
+        },
+        "jp": {
+            "domain_name": "",
+            "registrant_org": "NHK (Japan Broadcasting Corporation)",
+            "creation_date": "[接続年月日]                    2013/09/04",
+            "expiration_date": "",
+            "name_servers": "",
+            "updated_date": "2024/04/01 01:03:25 (JST)",
+            "status": "Connected (2025/03/31)"
+        },
+        "ansa": {
+            "domain_name": "ansa.it",
+            "creation_date": "(1996, 1, 29, 0, 0)",
+            "updated_date": "(2024, 3, 19, 0, 54, 46)",
+            "expiration_date": "(2025, 3, 3, 0, 0)",
+            "status": "ok",
+            "name_servers": "ns8.colt.net\n  ns.ansa.it\n  ns3.ansa.it\n  ns2.ansa.it",
+            "registrant_organization": "ANSA Agenzia Nazionale Stampa Associata Soc. Coop.",
+            "registrant_address": "Via della Dtaria 94",
+            "admin_address": "Via della Dtaria 94",
+            "admin_organization": "Angelo Marrara",
+            "admin_name": "Angelo Marrara",
+            "tech_address": "None",
+            "tech_organization": "hidden",
+            "tech_name": "hidden",
+            "registrar_address": "None",
+            "registrar": "InterNetX GmbH",
+            "registrar_name": "INTERNETXGMBH-REG"
+        }
+    },
+    "res": {
+        "google": {"Name": "google.com", "NameServers": ["ns1.google.com", "ns2.google.com", "ns3.google.com", "ns4.google.com"], "CreationDate": "1997", "ExpirationDate": "2028", "UpdatedDate": "2019, 9, 9", "Registrar": {"Name": "MarkMonitor, Inc.", "AbuseEmail": "testabuseexample@markmonitor.com"}, "FeedRelatedIndicators": [{"Type": "email", "Value": "test-example@markmonitor.com"}], "DomainName": ["GOOGLE.COM", "google.com"], "WhoisServer": "whois.markmonitor.com", "Emails": ["test-example@markmonitor.com"], "Dnssec": "unsigned", "State": "CA", "Country": "US", "Organization": "Google LLC", "DomainStatus": ["clientDeleteProhibited https://icann.org/test-example", "clientTransferProhibited https://icann.org/epp#test-example"], "WHOIS": {"Raw": {"domain_name": "['GOOGLE.COM', 'google.com']", "registrar": "MarkMonitor, Inc.", "whois_server": "whois.markmonitor.com", "referral_url": "", "updated_date": "['(2019, 9, 9, 15, 39, 4)', '(2019, 9, 9, 15, 39, 4, )']", "creation_date": "['(1997, 9, 15, 4, 0)', '(1997, 9, 15, 7, 0, )']", "expiration_date": "['(2028, 9, 14, 4, 0)', '(2028, 9, 13, 7, 0, )']", "name_servers": "['NS1.GOOGLE.COM', 'NS2.GOOGLE.COM', 'NS3.GOOGLE.COM', 'NS4.GOOGLE.COM', 'ns2.google.com', 'ns3.google.com', 'ns1.google.com', 'ns4.google.com']", "status": "['clientDeleteProhibited https://icann.org/test-example', 'clientTransferProhibited https://icann.org/epp#test-example']", "emails": "['test-example@markmonitor.com', 'testabuseexample@markmonitor.com']", "dnssec": "unsigned", "name": "", "org": "Google LLC", "address": "", "city": "", "state": "CA", "registrant_postal_code": "", "country": "US"}, "Name": "google.com", "NameServers": ["ns1.google.com", "ns2.google.com", "ns3.google.com", "ns4.google.com"], "CreationDate": "1997", "ExpirationDate": "2028", "UpdatedDate": "2019, 9, 9", "Registrar": {"Name": "MarkMonitor, Inc.", "AbuseEmail": "testabuseexample@markmonitor.com"}, "FeedRelatedIndicators": [{"Type": "email", "Value": "test-example@markmonitor.com"}], "DomainName": ["GOOGLE.COM", "google.com"], "WhoisServer": "whois.markmonitor.com", "Emails": ["test-example@markmonitor.com"], "Dnssec": "unsigned", "State": "CA", "Country": "US", "Organization": "Google LLC", "DomainStatus": ["clientDeleteProhibited https://icann.org/test-example", "clientTransferProhibited https://icann.org/epp#test-example"]}},
+        "microsoft": {"Name": "microsoft.com", "NameServers": ["ns1-39.azure-dns.com", "ns2-39.azure-dns.net", "ns3-39.azure-dns.org", "ns4-39.azure-dns.info"], "CreationDate": "1991", "ExpirationDate": "2025", "UpdatedDate": "2023, 8", "Registrant": {"PostalCode": "98052"}, "Registrar": {"Name": "MarkMonitor, Inc.", "AbuseEmail": ["abuse-test-example@microsoft.com", "testexampleabuse@markmonitor.com"]}, "FeedRelatedIndicators": [{"Type": "email", "Value": "test-example@markmonitor.com"}, {"Type": "email", "Value": "test-example@domains.microsoft"}], "DomainName": ["microsoft.com", "microsoft.com"], "WhoisServer": "whois.markmonitor.com", "Emails": ["test-example@markmonitor.com", "test-example@domains.microsoft"], "Dnssec": "unsigned", "Address": "One Microsoft Way,", "City": "Redmond", "State": "WA", "Country": "US", "Organization": "Microsoft Corporation", "DomainStatus": ["clientDeleteProhibited https://icann.org/epp#test-example", "clientTransferProhibited https://icann.org/epp#test-example"], "WHOIS": {"Raw": {"domain_name": "['microsoft.com', 'microsoft.com']", "registrar": "MarkMonitor, Inc.", "whois_server": "whois.markmonitor.com", "referral_url": "", "updated_date": "['(2023, 8, 18, 16, 15, 54)', '(2023, 8, 18, 16, 15, 54)']", "creation_date": "['(1991, 5, 2, 4, 0)', '(1991, 5, 2, 4, 0)']", "expiration_date": "['(2025, 5, 3, 4, 0)', '(2025, 5, 3, 0, 0)']", "name_servers": "['NS1-39.AZURE-DNS.COM', 'NS2-39.AZURE-DNS.NET', 'NS3-39.AZURE-DNS.ORG', 'NS4-39.AZURE-DNS.INFO', 'ns1-39.azure-dns.com', 'ns3-39.azure-dns.org', 'ns2-39.azure-dns.net', 'ns4-39.azure-dns.info']", "status": "['clientDeleteProhibited https://icann.org/epp#test-example', 'clientTransferProhibited https://icann.org/epp#test-example']", "emails": "['test-example@markmonitor.com', 'test-example@domains.microsoft', 'abuse-test-example@microsoft.com', 'testexampleabuse@markmonitor.com']", "dnssec": "unsigned", "name": "Domain Administrator", "org": "Microsoft Corporation", "address": "One Microsoft Way,", "city": "Redmond", "state": "WA", "registrant_postal_code": "98052", "country": "US"}, "Name": "microsoft.com", "NameServers": ["ns1-39.azure-dns.com", "ns2-39.azure-dns.net", "ns3-39.azure-dns.org", "ns4-39.azure-dns.info"], "CreationDate": "1991", "ExpirationDate": "2025", "UpdatedDate": "2023, 8", "Registrant": {"PostalCode": "98052"}, "Registrar": {"Name": "MarkMonitor, Inc.", "AbuseEmail": ["abuse-test-example@microsoft.com", "testexampleabuse@markmonitor.com"]}, "FeedRelatedIndicators": [{"Type": "email", "Value": "test-example@markmonitor.com"}, {"Type": "email", "Value": "test-example@domains.microsoft"}], "DomainName": ["microsoft.com", "microsoft.com"], "WhoisServer": "whois.markmonitor.com", "Emails": ["test-example@markmonitor.com", "test-example@domains.microsoft"], "Dnssec": "unsigned", "Address": "One Microsoft Way,", "City": "Redmond", "State": "WA", "Country": "US", "Organization": "Microsoft Corporation", "DomainStatus": ["clientDeleteProhibited https://icann.org/epp#test-example", "clientTransferProhibited https://icann.org/epp#test-example"]}},
+        "apple": {"Name": "apple.com", "NameServers": ["a.ns.apple.com", "b.ns.apple.com", "c.ns.apple.com", "d.ns.apple.com"], "CreationDate": "1987", "ExpirationDate": "2025", "UpdatedDate": "2023, 8, 28", "Registrant": {"PostalCode": "REDACTED FOR PRIVACY"}, "Registrar": {"Name": "NOM-IQ Ltd dba Com Laude", "AbuseEmail": "abuse@comlaude.com"}, "FeedRelatedIndicators": [{"Type": "email", "Value": "test-example.com-Registrant@anonymised.email"}, {"Type": "email", "Value": "test-example.com-Admin@anonymised.email"}, {"Type": "email", "Value": "test-example.com-Tech@anonymised.email"}], "DomainName": ["APPLE.COM", "apple.com"], "WhoisServer": "whois.comlaude.com", "Emails": ["test-example.com-Registrant@anonymised.email", "test-example.com-Admin@anonymised.email", "test-example.com-Tech@anonymised.email"], "Dnssec": ["unsigned", "Unsigned"], "Address": "REDACTED FOR PRIVACY", "City": "REDACTED FOR PRIVACY", "State": "CA", "Country": "US", "Organization": "Apple Inc.", "DomainStatus": ["clientDeleteProhibited https://icann.org/epp#test-example", "clientTransferProhibited https://icann.org/epp#test-example", "clientUpdateProhibited https://icann.org/epp#test-example", "serverDeleteProhibited https://icann.org/epp#test-example"], "WHOIS": {"Raw": {"domain_name": "['APPLE.COM', 'apple.com']", "registrar": "NOM-IQ Ltd dba Com Laude", "whois_server": "whois.comlaude.com", "referral_url": "", "updated_date": "['(2023, 8, 28, 18, 33, 11)', '(2024, 5, 3, 9, 53, 59)']", "creation_date": "(1987, 2, 19, 5, 0)", "expiration_date": "['(2025, 2, 20, 5, 0)', '(2025, 2, 20, 0, 0)']", "name_servers": "['A.NS.APPLE.COM', 'B.NS.APPLE.COM', 'C.NS.APPLE.COM', 'D.NS.APPLE.COM', 'a.ns.apple.com', 'b.ns.apple.com', 'c.ns.apple.com', 'd.ns.apple.com']", "status": "['clientDeleteProhibited https://icann.org/epp#test-example', 'clientTransferProhibited https://icann.org/epp#test-example', 'clientUpdateProhibited https://icann.org/epp#test-example', 'serverDeleteProhibited https://icann.org/epp#test-example']", "emails": "['abuse@comlaude.com', 'test-example.com-Registrant@anonymised.email', 'test-example.com-Admin@anonymised.email', 'test-example.com-Tech@anonymised.email']", "dnssec": "['unsigned', 'Unsigned']", "name": "REDACTED FOR PRIVACY", "org": "Apple Inc.", "address": "REDACTED FOR PRIVACY", "city": "REDACTED FOR PRIVACY", "state": "CA", "registrant_postal_code": "REDACTED FOR PRIVACY", "country": "US"}, "Name": "apple.com", "NameServers": ["a.ns.apple.com", "b.ns.apple.com", "c.ns.apple.com", "d.ns.apple.com"], "CreationDate": "1987", "ExpirationDate": "2025", "UpdatedDate": "2023, 8, 28", "Registrant": {"PostalCode": "REDACTED FOR PRIVACY"}, "Registrar": {"Name": "NOM-IQ Ltd dba Com Laude", "AbuseEmail": "abuse@comlaude.com"}, "FeedRelatedIndicators": [{"Type": "email", "Value": "test-example.com-Registrant@anonymised.email"}, {"Type": "email", "Value": "test-example.com-Admin@anonymised.email"}, {"Type": "email", "Value": "test-example.com-Tech@anonymised.email"}], "DomainName": ["APPLE.COM", "apple.com"], "WhoisServer": "whois.comlaude.com", "Emails": ["test-example.com-Registrant@anonymised.email", "test-example.com-Admin@anonymised.email", "test-example.com-Tech@anonymised.email"], "Dnssec": ["unsigned", "Unsigned"], "Address": "REDACTED FOR PRIVACY", "City": "REDACTED FOR PRIVACY", "State": "CA", "Country": "US", "Organization": "Apple Inc.", "DomainStatus": ["clientDeleteProhibited https://icann.org/epp#test-example", "clientTransferProhibited https://icann.org/epp#test-example", "clientUpdateProhibited https://icann.org/epp#test-example", "serverDeleteProhibited https://icann.org/epp#test-example"]}},
+        "jp": {"Name": "nhk.or.jp", "CreationDate": "2013/09/04", "UpdatedDate": "01-04-2024", "Registrant": {"Org": "NHK (Japan Broadcasting Corporation)"}, "DomainStatus": "Connected (2025/03/31)", "WHOIS": {"Raw": {"domain_name": "", "registrant_org": "NHK (Japan Broadcasting Corporation)", "creation_date": "[\u63a5\u7d9a\u5e74\u6708\u65e5]                    2013/09/04", "expiration_date": "", "name_servers": "", "updated_date": "2024/04/01 01:03:25 (JST)", "status": "Connected (2025/03/31)"}, "Name": "nhk.or.jp", "CreationDate": "2013/09/04", "UpdatedDate": "01-04-2024", "Registrant": {"Org": "NHK (Japan Broadcasting Corporation)"}, "DomainStatus": "Connected (2025/03/31)"}},
+        "ansa": {"Name": "ansa.it", "NameServers": ["ns8.colt.net", "  ns.ansa.it", "  ns3.ansa.it", "  ns2.ansa.it"], "CreationDate": "1996", "ExpirationDate": "2025", "UpdatedDate": "2024", "Admin": {"Address": "Via della Dtaria 94", "Organization": "Angelo Marrara", "Name": "Angelo Marrara"}, "Registrant": {"Organization": "ANSA Agenzia Nazionale Stampa Associata Soc. Coop.", "Address": "Via della Dtaria 94"}, "Registrar": {"Address": "None", "Name": "INTERNETXGMBH-REG"}, "Tech": {"Address": "None", "Organization": "hidden", "Name": "hidden"}, "DomainName": "ansa.it", "DomainStatus": "ok", "WHOIS": {"Raw": {"domain_name": "ansa.it", "creation_date": "(1996, 1, 29, 0, 0)", "updated_date": "(2024, 3, 19, 0, 54, 46)", "expiration_date": "(2025, 3, 3, 0, 0)", "status": "ok", "name_servers": "ns8.colt.net\n  ns.ansa.it\n  ns3.ansa.it\n  ns2.ansa.it", "registrant_organization": "ANSA Agenzia Nazionale Stampa Associata Soc. Coop.", "registrant_address": "Via della Dtaria 94", "admin_address": "Via della Dtaria 94", "admin_organization": "Angelo Marrara", "admin_name": "Angelo Marrara", "tech_address": "None", "tech_organization": "hidden", "tech_name": "hidden", "registrar_address": "None", "registrar": "InterNetX GmbH", "registrar_name": "INTERNETXGMBH-REG"}, "Name": "ansa.it", "NameServers": ["ns8.colt.net", "  ns.ansa.it", "  ns3.ansa.it", "  ns2.ansa.it"], "CreationDate": "1996", "ExpirationDate": "2025", "UpdatedDate": "2024", "Admin": {"Address": "Via della Dtaria 94", "Organization": "Angelo Marrara", "Name": "Angelo Marrara"}, "Registrant": {"Organization": "ANSA Agenzia Nazionale Stampa Associata Soc. Coop.", "Address": "Via della Dtaria 94"}, "Registrar": {"Address": "None", "Name": "INTERNETXGMBH-REG"}, "Tech": {"Address": "None", "Organization": "hidden", "Name": "hidden"}, "DomainName": "ansa.it", "DomainStatus": "ok"}}
+    }
+}

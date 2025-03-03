@@ -2,21 +2,17 @@ This is the Cohesity Helios Event Collector integration for XSIAM.
 
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
-## Configure Cohesity Helios Event Collector on Cortex XSOAR
+## Configure Cohesity Helios Event Collector in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cohesity Helios Event Collector.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g. https://helios.cohesity.com) |  | True |
-    | API Key | The API Key to use for connection | False |
-    | The maximum number of events per type. Default is 50000. | The collector pulls both Audit Logs and Alerts. This parameter sets the the maximum fetch number limit for each type. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g. https://helios.cohesity.com) |  | True |
+| API Key | The API Key to use for connection | False |
+| The maximum number of events per type. Default is 50000. | The collector pulls both Audit Logs and Alerts. This parameter sets the the maximum fetch number limit for each type. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 

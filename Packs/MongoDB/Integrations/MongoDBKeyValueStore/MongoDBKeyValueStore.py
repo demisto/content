@@ -22,8 +22,10 @@ if INSECURE and not USE_SSL:
     raise DemistoException('"Trust any certificate (not secure)" must be ticked with "Use TLS/SSL secured connection"')
 if not INSECURE and not USE_SSL:
     # Connect to MongoDB - Need to add credentials and lock down MongoDB (add auth)
-    CLIENT = MongoClient(URI, username=USERNAME, password=PASSWORD, authSource=DATABASE, authMechanism='SCRAM-SHA-1',
-                         ssl=USE_SSL, socketTimeoutMS=TIMEOUT)
+    CLIENT = MongoClient(  # type: ignore[var-annotated]
+        URI, username=USERNAME, password=PASSWORD,
+        authSource=DATABASE, authMechanism='SCRAM-SHA-1',
+        ssl=USE_SSL, socketTimeoutMS=TIMEOUT)
 else:
     CLIENT = MongoClient(URI, username=USERNAME, password=PASSWORD, authSource=DATABASE, authMechanism='SCRAM-SHA-1',
                          ssl=USE_SSL, tlsAllowInvalidCertificates=INSECURE, socketTimeoutMS=TIMEOUT)
@@ -115,12 +117,12 @@ def get_key_value_command():
     # Search Collection for incident_id and key
     search = incident + '.key'
     result = COLLECTION.find_one({search: key}, {'_id': False})
-    value = result[incident].get('value')
+    value = result[incident].get('value')  # type: ignore[index]
     contents = {
         'Incident': incident,
         'Key': key,
         'Value': value,
-        'Modified': result.get(incident).get('modified')
+        'Modified': result.get(incident).get('modified')  # type: ignore[union-attr]
     }
     human_readable = tableToMarkdown('The key and value that is stored for the incident', contents)
     ec = {'MongoDB.Entry(val.Key === obj.Key)': contents}

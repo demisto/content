@@ -1,0 +1,23 @@
+comment: 'Get the count of custom, OOTB and deprecated playbooks.'
+commonfields:
+  id: getPlaybooksCount
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.11.10.115186
+enabled: true
+engineinfo: {}
+name: getPlaybooksCount
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- statusreview
+- widget
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

@@ -37,7 +37,7 @@ This integration was integrated and tested with versions 8.xx, 9.xx, and 10.xx o
 
 ## Known Limitations
 * Maximum commit queue length is 3. Running numerous Panorama commands simultaneously might cause errors.
-* After you run `panorama-create-` commands and the object is not committed, the `panorama-edit` commands or `panorama-get` commands might not run correctly.
+* After running `panorama-create-` commands and the object is not committed, the `panorama-edit` commands or `panorama-get` commands might not run correctly.
 * URL Filtering `request change` of a URL is not available via the API. Instead, you need to use the https://urlfiltering.paloaltonetworks.com website.
 * If you do not specify a vsys (Firewall instances) or a device group (Panorama instances), you will only be able to execute the following commands.
    * [pan-os-get-url-category](#pan-os-get-url-category)
@@ -48,7 +48,11 @@ This integration was integrated and tested with versions 8.xx, 9.xx, and 10.xx o
    * [pan-os-query-logs](#pan-os-query-logs)
    * [pan-os-check-logs-status](#pan-os-check-logs-status)
    * [pan-os-get-logs](#pan-os-get-logs)
+   * [pan-os-get-master-key-details](#pan-os-get-master-key-details)
+   * [pan-os-create-master-key](#pan-os-create-master-key)
+   * [pan-os-update-master-key](#pan-os-update-master-key)
 * The target argument is supported only in operational type commands. Meaning, you cannot use it with commit, logs, or PCAP commands.
+* Creating or updating the encryption master key of Palo Alto Networks Firewall or Panorama invalidates the current API key and requires obtaining a new one. All subsequent commands will raise an "Invalid Credential" error until a new API key is obtained and the integration instance is updated accordingly.
 
 ## Fetch Incidents
 The Panorama integration now supports fetch incidents.
@@ -1187,37 +1191,37 @@ Returns service details for the supplied service name.
 
 
 ### pan-os-create-service
+
 ***
 Creates a service.
-
 
 #### Base Command
 
 `pan-os-create-service`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Name for the new service. | Required | 
-| protocol | Protocol for the new service. | Required | 
-| destination_port | Destination port  for the new service. | Required | 
-| source_port | Source port  for the new service. | Optional | 
-| description | Description for the new service. | Optional | 
+| name | The name for the new service. | Required | 
+| protocol | The protocol for the new service. Possible values are: tcp, udp, sctp. | Required | 
+| destination_port | The destination port  for the new service. | Required | 
+| source_port | The source port for the new service. | Optional | 
+| description | The description for the new service. | Optional | 
 | device-group | The device group for which to return addresses (Panorama instances). | Optional | 
-| tags | Tags for the new service. | Optional | 
-
+| tags | The tags for the new service. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Services.Name | string | Service name. | 
-| Panorama.Services.Protocol | string | Service protocol. | 
-| Panorama.Services.Description | string | Service description. | 
-| Panorama.Services.DestinationPort | string | Service destination port. | 
-| Panorama.Services.SourcePort | string | Service source port. | 
-| Panorama.Services.DeviceGroup | string | Device group for the service \(Panorama instances\). | 
-| Panorama.Services.Tags | String | Service tags. | 
+| Panorama.Services.Name | string | The service name. | 
+| Panorama.Services.Protocol | string | The service protocol. | 
+| Panorama.Services.Description | string | The service description. | 
+| Panorama.Services.DestinationPort | string | The service destination port. | 
+| Panorama.Services.SourcePort | string | The service source port. | 
+| Panorama.Services.DeviceGroup | string | The device group for the service \(Panorama instances\). | 
+| Panorama.Services.Tags | String | The service tags. | 
 
 
 #### Command Example
@@ -2375,40 +2379,44 @@ Creates a policy rule.
 >Rule configured successfully.
 
 ### pan-os-custom-block-rule
+
 ***
 Creates a custom block policy rule.
-
 
 #### Base Command
 
 `pan-os-custom-block-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| rulename | Name of the custom block policy rule to create. | Optional | 
-| object_type | Object type to block in the policy rule. Can be "ip", "address-group", "edl", or "custom-url-category". | Required | 
+| rulename | The name of the custom block policy rule to create. | Optional | 
+| object_type | The object type to block in the policy rule. Possible values are: ip, address-group, application, url-category, edl. | Required | 
 | object_value | A comma-separated list of object values for the object_type argument. | Required | 
-| direction | Direction to block. Can be "to", "from", or "both". Default is "both". This argument is not applicable to the "custom-url-category" object_type. | Optional | 
-| pre_post | Pre rule or Post rule (Panorama instances). | Optional | 
+| direction | The direction to block. This argument is not applicable for the "custom-url-category" object_type. Possible values are: to, from, both. Default is both. | Optional | 
+| pre_post | The pre-rule or post-rule (Panorama instances). Possible values are: pre-rulebase, post-rulebase. | Optional | 
 | target | Specifies a target firewall for the rule (Panorama instances). | Optional | 
-| log_forwarding | Log forwarding profile. | Optional | 
+| log_forwarding | The log forwarding profile. | Optional | 
 | device-group | The device group for which to return addresses for the rule (Panorama instances). | Optional | 
-| tags | Tags for which to use for the custom block policy rule. | Optional | 
-| where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "before" or "after", you need to supply the "dst" argument. | Optional | 
-| dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "before" or "after" in the "where" argument. | Optional |
+| tags | The tags to use for the custom block policy rule. | Optional | 
+| where | Where to move the rule. If you specify "before" or "after", you need to supply the "dst" argument. Possible values are: before, after, top, bottom. Default is bottom. | Optional | 
+| dst | The destination rule relative to the rule that you are moving. This field is only relevant if you specify "before" or "after" in the "where" argument. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.SecurityRule.Name | string | Rule name. | 
-| Panorama.SecurityRule.Object | string | Blocked object. | 
-| Panorama.SecurityRule.Direction | string | Direction blocked. | 
-| Panorama.SecurityRule.Target | string | Target firewall \(Panorama instances\) | 
-| Panorama.SecurityRule.LogForwarding | string | Log forwarding profile \(Panorama instances\). | 
-| Panorama.SecurityRule.DeviceGroup | string | Device group for the rule \(Panorama instances\). | 
-| Panorama.SecurityRule.Tags | String | Rule tags. | 
+| Panorama.SecurityRule.Name | string | The rule name. | 
+| Panorama.SecurityRule.Object | string | The blocked object. | 
+| Panorama.SecurityRule.Direction | string | The direction blocked. | 
+| Panorama.SecurityRule.Target | string | The target firewall \(Panorama instances\). | 
+| Panorama.SecurityRule.LogForwarding | string | The log forwarding profile \(Panorama instances\). | 
+| Panorama.SecurityRule.DeviceGroup | string | The device group for the rule \(Panorama instances\). | 
+| Panorama.SecurityRule.Tags | String | The rule tags. | 
+| Panorama.SecurityRules.ProfileSetting | String | The profile setting group. | 
+
+
 
 
 #### Command Example
@@ -2503,6 +2511,11 @@ Edits a policy rule.
 | Panorama.SecurityRule.Application | string | Application for the rule. | 
 | Panorama.SecurityRule.Target | string | Target firewall \(Panorama instances\). | 
 | Panorama.SecurityRule.DeviceGroup | string | Device group for the rule \(Panorama instances\). | 
+| Panorama.SecurityRule.Category | string | The category of the rule. |
+| Panorama.SecurityRule.LogForwarding | string | The log forwarding of the rule. |
+| Panorama.SecurityRule.ProfileSetting | string | The profile setting of the rule. |
+| Panorama.SecurityRule.SourceUser | string | The source user of the rule. |
+| Panorama.SecurityRule.AuditComment | string | The audit comment of the rule. |
 | Panorama.SecurityRule.Tags | String | Tags for the rule. | 
 | Panorama.SecurityRules.ProfileSetting | String | Profile setting group. |
 
@@ -3033,6 +3046,9 @@ Deprecated. Retrieves traffic log query data by job id.
 | Panorama.TrafficLogs.Logs.Action | string | Action of the traffic log. |
 | Panorama.TrafficLogs.Logs.ActionSource | string | Action source of the traffic log. |
 | Panorama.TrafficLogs.Logs.Application | string | Application of the traffic log. |
+| Panorama.TrafficLogs.Logs.Bytes | string | The total log bytes. |
+| Panorama.TrafficLogs.Logs.BytesReceived | string | The log bytes received. |
+| Panorama.TrafficLogs.Logs.BytesSent | string | The log bytes sent. |
 | Panorama.TrafficLogs.Logs.Category | string | Category of the traffic log. |
 | Panorama.TrafficLogs.Logs.DeviceName | string | Device name of the traffic log. |
 | Panorama.TrafficLogs.Logs.Destination | string | Destination of the traffic log. |
@@ -3086,6 +3102,7 @@ Returns a list of predefined Security Rules. (When passing a query, all other ar
 | Panorama.SecurityRule.LogForwardingProfile | String | The log forwarding profile applied to the security rule. | 
 | Panorama.SecurityRule.NegateSource | String | Indicates whether the source is negated in the security rule. | 
 | Panorama.SecurityRule.SecurityProfileGroup | String | The security profile group assigned to the security rule. | 
+| Panorama.SecurityRule.SecurityProfile | Unknown | The security profile settings applied to the security rule. |
 | Panorama.SecurityRule.SecurityProfile.url-filtering | String | The security profile setting for url-filtering in the security rule. |
 | Panorama.SecurityRule.SecurityProfile.data-filtering | String | The security profile setting for data-filtering in the security rule. |
 | Panorama.SecurityRule.SecurityProfile.file-blocking | String | The security profile setting for file-blocking in the security rule. |
@@ -4055,7 +4072,9 @@ Checks the PAN-OS software version from the repository.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.LatestVersions | unknown | Latest software versions. | 
 
 #### Command Example
 ```!pan-os-check-latest-panos-software```
@@ -4310,19 +4329,20 @@ There are no input arguments for this command.
 >| I9805928  | NFR Support | NFR Support | 007DEMISTO1t | no | Never | November 25, 2019 |
 
 ### pan-os-get-security-profiles
+
 ***
 Gets information for the specified security profile.
-
 
 #### Base Command
 
 `pan-os-get-security-profiles`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-|-------------------| --- | --- |
-| security_profile  | The security profile for which to get information. Can be "data-filtering", "file-blocking", "spyware", "url-filtering", "virus", "vulnerability", or "wildfire-analysis". | Optional | 
-| device-group      | The device group for which to return security profiles. | Optional |
+| --- | --- | --- |
+| security_profile | The security profile for which to get information. Possible values are: data-filtering, file-blocking, spyware, url-filtering, virus, vulnerability, wildfire-analysis. | Optional | 
+| device-group | The device group for which to return security profiles. | Optional | 
 
 #### Context Output
 
@@ -4330,45 +4350,45 @@ Gets information for the specified security profile.
 | --- | --- | --- |
 | Panorama.Spyware.Name | String | The profile name. | 
 | Panorama.Spyware.Rules.Action | String | The rule action. | 
-| Panorama.Spyware.Rules.Cateogry | String | The category for which to apply the rule. | 
+| Panorama.Spyware.Rules.Category | String | The category for which to apply the rule. | 
 | Panorama.Spyware.Rules.Name | String | The rule name. | 
 | Panorama.Spyware.Rules.Packet-capture | String | Whether packet capture is enabled. | 
 | Panorama.Spyware.Rules.Severity | String | The rule severity. | 
-| Panorama.Spyware.Rules.Threat-name | String | The threat name for which to apply the rule. | 
+| Panorama.Spyware.Rules.Threat-name | String | The threat name to apply for the rule. | 
 | Panorama.URLFilter.Name | String | The profile name. | 
 | Panorama.URLFilter.Rules.Category.Action | String | The rule action to apply to the category. | 
 | Panorama.URLFilter.Rules.Category.Name | String | The category name. | 
 | Panorama.WildFire.Name | String | The WildFire profile name. | 
 | Panorama.WildFire.Rules.Analysis | String | The rule analysis. | 
-| Panorama.WildFire.Rules.Application | String | The application for which to apply the rule. | 
-| Panorama.WildFire.Rules.File-type | String | The file type for which to apply the rule. | 
+| Panorama.WildFire.Rules.Application | String | The application to apply for the rule. | 
+| Panorama.WildFire.Rules.File-type | String | The file type to apply for the rule. | 
 | Panorama.WildFire.Rules.Name | String | The rule name. | 
 | Panorama.Vulnerability.Name | String | The vulnerability profile name. | 
-| Panorama.Vulnerability.Rules.Vendor-id | String | The vendor ID for which to apply the rule. | 
+| Panorama.Vulnerability.Rules.Vendor-id | String | The vendor ID to apply for the rule. | 
 | Panorama.Vulnerability.Rules.Packet-capture | String | Whether packet capture is enabled. | 
 | Panorama.Vulnerability.Rules.Host | String | The rule host. | 
 | Panorama.Vulnerability.Rules.Name | String | The rule name. | 
-| Panorama.Vulnerability.Rules.Category | String | The category for which to apply the rule. | 
-| Panorama.Vulnerability.Rules.CVE | String | The CVE for which to apply the rule. | 
+| Panorama.Vulnerability.Rules.Category | String | The category to apply for the rule. | 
+| Panorama.Vulnerability.Rules.CVE | String | The CVE to apply for the rule. | 
 | Panorama.Vulnerability.Rules.Action | String | The rule action. | 
 | Panorama.Vulnerability.Rules.Severity | String | The rule severity. | 
-| Panorama.Vulnerability.Rules.Threat-name | String | The threat for which to apply the rule. | 
-| Panorama.Antivirus.Name | String | The Antivirus profile name. | 
+| Panorama.Vulnerability.Rules.Threat-name | String | The threat to apply for the rule. | 
+| Panorama.Antivirus.Name | String | The antivirus profile name. | 
 | Panorama.Antivirus.Rules.Action | String | The rule action. | 
 | Panorama.Antivirus.Rules.Name | String | The rule name. | 
 | Panorama.Antivirus.Rules.WildFire-action | String | The WildFire action. | 
 | Panorama.FileBlocking.Name | String | The file blocking profile name. | 
 | Panorama.FileBlocking.Rules.Action | String | The rule action. | 
-| Panorama.FileBlocking.Rules.Application | String | The application for which to apply the rule. | 
-| Panorama.FileBlocking.Rules.File-type | String | The file type to apply the rule. | 
+| Panorama.FileBlocking.Rules.Application | String | The application to apply for the rule. | 
+| Panorama.FileBlocking.Rules.File-type | String | The file type to apply for the rule. | 
 | Panorama.FileBlocking.Rules.Name | String | The rule name. | 
 | Panorama.DataFiltering.Name | String | The data filtering profile name. | 
 | Panorama.DataFiltering.Rules.Alert-threshold | String | The alert threshold. | 
-| Panorama.DataFiltering.Rules.Application | String | The application to apply the rule. | 
+| Panorama.DataFiltering.Rules.Application | String | The application to apply for the rule. | 
 | Panorama.DataFiltering.Rules.Block-threshold | String | The block threshold. | 
 | Panorama.DataFiltering.Rules.Data-object | String | The data object. | 
 | Panorama.DataFiltering.Rules.Direction | String | The rule direction. | 
-| Panorama.DataFiltering.Rules.File-type | String | The file type for which to apply the rule. | 
+| Panorama.DataFiltering.Rules.File-type | String | The file type to apply for the rule. | 
 | Panorama.DataFiltering.Rules.Log-severity | String | The log severity. | 
 | Panorama.DataFiltering.Rules.Name | String | The rule name. | 
 
@@ -6185,7 +6205,7 @@ Get all the jobs from the devices in the environment, or a single job when ID is
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PANOS.JobStatus.hostid | String | Host ID. | 
-| PANOS.JobStatus.id | String | ID of job. | 
+| PANOS.JobStatus.id | Number | ID of job. | 
 | PANOS.JobStatus.type | String | Job type. | 
 | PANOS.JobStatus.tfin | String | Time finished. | 
 | PANOS.JobStatus.status | String | Status of the job. | 
@@ -6196,6 +6216,7 @@ Get all the jobs from the devices in the environment, or a single job when ID is
 | PANOS.JobStatus.description | String | The job description. | 
 | PANOS.JobStatus.positionInQ | String | The position of the job in the current job queue. | 
 | PANOS.JobStatus.progress | String | The numerical progress of the job. | 
+| PANOS.JobStatus.warnings | String | The warnings of the job. | 
 
 #### Command example
 ```!pan-os-platform-get-jobs```
@@ -6207,7 +6228,7 @@ Get all the jobs from the devices in the environment, or a single job when ID is
             {
                 "description": null,
                 "hostid": "11111111111111",
-                "id": 6,
+                "id": 1,
                 "positionInQ": "0",
                 "progress": "01:02:18",
                 "result": "OK",
@@ -6216,12 +6237,13 @@ Get all the jobs from the devices in the environment, or a single job when ID is
                 "tenq": "2022/03/30 01:02:04",
                 "tfin": "01:02:18",
                 "type": "Downld",
-                "user": null
+                "user": null,
+                "warnings": null
             },
             {
                 "description": null,
-                "hostid": "192.168.1.145",
-                "id": 394,
+                "hostid": "22222222222222",
+                "id": 2,
                 "positionInQ": "0",
                 "progress": "100",
                 "result": "OK",
@@ -6230,7 +6252,8 @@ Get all the jobs from the devices in the environment, or a single job when ID is
                 "tenq": "2022/03/15 14:16:32",
                 "tfin": "14:16:33",
                 "type": "BuildXMLCache",
-                "user": null
+                "user": null,
+                "warnings": null
             }
         ]
     }
@@ -6240,37 +6263,10 @@ Get all the jobs from the devices in the environment, or a single job when ID is
 #### Human Readable Output
 
 >### PAN-OS Job Status
->|hostid|id|positionInQ|progress|result|status|stoppable|tenq|tfin|type|user|
->|---|---|---|---|---|---|---|---|---|---|---|
->| 11111111111111 | 6 | 0 | 01:02:18 | OK | FIN | no | 2022/03/30 01:02:04 | 01:02:18 | Downld |  |
->| 11111111111111 | 5 | 0 | 01:02:15 | OK | FIN | no | 2022/03/23 01:02:04 | 01:02:15 | Downld |  |
->| 11111111111111 | 4 | 0 | 02:10:09 | OK | FIN | no | 2022/03/18 02:06:36 | 02:10:09 | IoT | Auto update agent |
->| 11111111111111 | 3 | 0 | 02:06:35 | OK | FIN | no | 2022/03/18 02:06:34 | 02:06:35 | Downld |  |
->| 11111111111111 | 2 | 0 | 01:02:15 | OK | FIN | no | 2022/03/16 01:02:04 | 01:02:15 | Downld |  |
->| 11111111111111 | 1 | 0 | 100 | OK | FIN | no | 2022/03/15 14:17:16 | 14:18:17 | AutoCom |  |
->| 192.168.1.145 | 430 | 0 | 100 | OK | DeployFin | no | 2022/03/30 01:47:46 | 01:47:47 | RefreshLic |  |
->| 192.168.1.145 | 428 | 0 | 01:02:17 | OK | FIN | no | 2022/03/30 01:02:03 | 01:02:17 | Downld |  |
->| 192.168.1.145 | 427 | 0 | 100 | OK | DeployFin | no | 2022/03/29 01:56:45 | 01:56:46 | RefreshLic |  |
->| 192.168.1.145 | 425 | 0 | 100 | OK | DeployFin | no | 2022/03/28 01:18:44 | 01:18:45 | RefreshLic |  |
->| 192.168.1.145 | 423 | 0 | 100 | OK | DeployFin | no | 2022/03/27 01:31:43 | 01:31:44 | RefreshLic |  |
->| 192.168.1.145 | 421 | 0 | 100 | OK | DeployFin | no | 2022/03/26 01:16:42 | 01:16:43 | RefreshLic |  |
->| 192.168.1.145 | 419 | 0 | 100 | OK | DeployFin | no | 2022/03/25 01:27:41 | 01:27:43 | RefreshLic |  |
->| 192.168.1.145 | 417 | 0 | 100 | OK | DeployFin | no | 2022/03/24 01:22:40 | 01:22:41 | RefreshLic |  |
->| 192.168.1.145 | 415 | 0 | 100 | OK | DeployFin | no | 2022/03/23 01:37:39 | 01:37:40 | RefreshLic |  |
->| 192.168.1.145 | 413 | 0 | 01:02:18 | OK | FIN | no | 2022/03/23 01:02:03 | 01:02:18 | Downld |  |
->| 192.168.1.145 | 412 | 0 | 100 | OK | DeployFin | no | 2022/03/22 01:04:38 | 01:04:39 | RefreshLic |  |
->| 192.168.1.145 | 410 | 0 | 100 | OK | DeployFin | no | 2022/03/21 01:38:37 | 01:38:38 | RefreshLic |  |
->| 192.168.1.145 | 408 | 0 | 100 | OK | DeployFin | no | 2022/03/20 01:36:36 | 01:36:37 | RefreshLic |  |
->| 192.168.1.145 | 406 | 0 | 100 | OK | DeployFin | no | 2022/03/19 01:59:35 | 01:59:37 | RefreshLic |  |
->| 192.168.1.145 | 404 | 0 | 02:08:02 | OK | FIN | no | 2022/03/18 02:06:32 | 02:08:02 | IoT | Auto update agent |
->| 192.168.1.145 | 403 | 0 | 02:06:31 | OK | FIN | no | 2022/03/18 02:06:30 | 02:06:31 | Downld |  |
->| 192.168.1.145 | 402 | 0 | 100 | OK | DeployFin | no | 2022/03/18 01:51:34 | 01:51:35 | RefreshLic |  |
->| 192.168.1.145 | 400 | 0 | 100 | OK | DeployFin | no | 2022/03/17 01:54:33 | 01:54:34 | RefreshLic |  |
->| 192.168.1.145 | 398 | 0 | 100 | OK | DeployFin | no | 2022/03/16 01:05:32 | 01:05:33 | RefreshLic |  |
->| 192.168.1.145 | 396 | 0 | 01:02:18 | OK | FIN | no | 2022/03/16 01:02:03 | 01:02:18 | Downld |  |
->| 192.168.1.145 | 395 | 0 | 100 | OK | FIN | no | 2022/03/15 14:17:02 | 14:17:14 | AutoCom |  |
->| 192.168.1.145 | 394 | 0 | 100 | OK | FIN | no | 2022/03/15 14:16:32 | 14:16:33 | BuildXMLCache |  |
-
+>|hostid|id|positionInQ|progress|result|status|stoppable|tenq|tfin|type|user|warnings|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 11111111111111 | 1 | 0 | 100 | OK | FIN | no | 2022/03/15 14:17:16 | 14:18:17 | Downld |  |  |
+>| 22222222222222 | 2 | 0 | 01:02:15 | OK | FIN | no | 2022/03/16 01:02:04 | 01:02:15 | BuildXMLCache |  |  |
 
 ### pan-os-platform-download-software
 ***
@@ -7540,29 +7536,32 @@ Searches and returns a reference for the given object type and name. If no name 
 
 
 ### pan-os-platform-get-device-state
-***
-Get the device state from the provided device. Note: This will attempt to connect directly to the provided target to get the device state. If the IP address as reported in 'show system info' is unreachable, this command will fail.
 
+***
+Get the device state from the provided device. Note; This will attempt to connect directly to the provided target to get the device state. If the IP address as reported in "show system info" is unreachable, this command will fail.
 
 #### Base Command
 
 `pan-os-platform-get-device-state`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | String by which to filter to only show specific hostnames or serial numbers. | Required | 
-
+| target | Serial number of the device from which to fetch the device state. | Required | 
+| filename | Name of the file for the state file to be saved. Default will use the hostname as the filename. | Optional | 
+| ip_address | The IP Address of a Panorama managed firewall. Default will use Panorama-supplied IP Address. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | String | Filename | 
-| InfoFile.EntryID | String | Entry ID | 
-| InfoFile.Size | String | Size of file | 
-| InfoFile.Type | String | Type of file | 
-| InfoFile.Info | String | Basic information of file | 
+| InfoFile.Name | String | Filename. | 
+| InfoFile.EntryID | String | Entry ID. | 
+| InfoFile.Size | String | Size of the file. | 
+| InfoFile.Type | String | Type of the file. | 
+| InfoFile.Info | String | Basic information of the file. | 
+
 ### pan-os-push-to-template
 ***
 Pushes the given PAN-OS template to the given devices or all devices that belong to the template.
@@ -8022,24 +8021,24 @@ There is no context output for this command.
 
 >Nat rule test was edited successfully.
 ### pan-os-list-virtual-routers
-***
-Returns a list of virtual routers of either Panorama/firewall instance.
 
+***
+Returns a list of virtual routers of either a Panorama/firewall instance.
 
 #### Base Command
 
 `pan-os-list-virtual-routers`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | virtual_router | The name of the virtual router to retrieve. If not mentioned, will bring all the virtual routers. | Optional | 
 | template | The template that the virtual router is part of. Use only for Panorama instances. | Optional | 
-| show_uncommitted | Whether to show the un-committed virtual routers or not. can be true or false. Default is false. | Optional | 
+| show_uncommitted | Whether to show the un-committed virtual routers or not. Possible values are: true, false. Default is false. | Optional | 
 | limit | The maximum number of virtual routers to retrieve. Will be used by default if the page argument was not provided. Default is 50. | Optional | 
-| page_size | The size of nat-rules to return. Default is 50. | Optional | 
+| page_size | The size of virtual-routers to return. Default is 50. | Optional | 
 | page | The page at which to start listing virtual-routers. Must be a positive number. | Optional | 
-
 
 #### Context Output
 
@@ -8054,6 +8053,8 @@ Returns a list of virtual routers of either Panorama/firewall instance.
 | Panorama.VirtualRouter.RedistributionProfile | Unknown | The redistribution profile\(s\) that the virtual router uses. | 
 | Panorama.VirtualRouter.Multicast | Unknown | Information about the multicast of the virtual router. | 
 | Panorama.VirtualRouter.StaticRoute | Unknown | The static routes\(s\) that the virtual router uses. | 
+| Panorama.VirtualRouter.ECMP | Unknown | The ECMP defined for the virtual router. | 
+
 
 #### Command example
 ```!pan-os-list-virtual-routers show_uncommitted=true```
@@ -8265,10 +8266,20 @@ Returns a list of redistribution-profiles of a specific virtual-router of either
 | template | The template that the redistribution profiles and virtual-router are part of. Use only for Panorama instances. | Optional | 
 | limit | The maximum number of redistribution-profiles to retrieve. Default is 50. | Optional | 
 
-
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.RedistributionProfile.Name | String | The name of the profile. | 
+| Panorama.RedistributionProfile.Priority | String | The priority of the profile. | 
+| Panorama.RedistributionProfile.Action | String | The action of the profile. | 
+| Panorama.RedistributionProfile.FilterInterface | Unknown | The filter interface\(s\). | 
+| Panorama.RedistributionProfile.FilterType | Unknown | The filter type\(s\). | 
+| Panorama.RedistributionProfile.FilterDestination | Unknown | The filter destination\(s\). | 
+| Panorama.RedistributionProfile.FilterNextHop | Unknown | The filter next hop. | 
+| Panorama.RedistributionProfile.BGP | Unknown | The BGP of the profile. | 
+| Panorama.RedistributionProfile.OSPF | Unknown | The OSPF of the profile. | 
+
 #### Command example
 ```!pan-os-list-redistribution-profiles virtual_router=test```
 #### Context Example
@@ -8841,7 +8852,7 @@ Returns a list of tags from Panorama.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | include_shared_tags | Whether to include shared tags in the list. Possible values are: Yes, No. Default is No. | Optional | 
-| device_group | The device group that the tags are part of. | Optional | 
+| device-group | The device group that the tags are part of. | Optional | 
 
 #### Context Output
 
@@ -8851,6 +8862,7 @@ Returns a list of tags from Panorama.
 | Panorama.Tag.color | String | The color of the tag. | 
 | Panorama.Tag.comment | String | The comment in the tag. | 
 | Panorama.Tag.disable-override | String | Whether overriding the tag is disabled. | 
+| Panorama.Tag.location | String | The tag's device group location. | 
 
 #### Command example
 ```!pan-os-list-tag include_shared_tags=No```
@@ -9191,9 +9203,18 @@ Gets the audit comment of a rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rule_name | The rule name to apply. | Required | 
-| rule_type | The rule type. Possible values are: Security Rule, NAT Rule, PBF Rule. | Optional | 
-| pre_post | Pre rule or Post rule (Panorama instances). | Optional | 
-| device_group | The device group that the tag will be part of. | Optional | 
+| rule_type | The rule type. Possible values are: Security Rule, NAT Rule, PBF Rule. | Required | 
+| pre_post | The pre-rule or post-rule (Panorama instances only). Possible values are: Pre, Post. | Optional | 
+| device-group | The device group that the rule is part of. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.AuditComment.comment | String | The audit comment of the rule. | 
+| Panorama.AuditComment.rule_name | String | The rule name. | 
+| Panorama.AuditComment.rule_type | String | The rule type. | 
+
 
 #### Command example
 ```!pan-os-get-audit-comment rule_name="test" rule_type="Security Rule" pre_post=Post```
@@ -9219,3 +9240,258 @@ Gets the audit comment of a rule.
 >|Comment|Rule Name|Rule Type|
 >|---|---|---|
 >| some comment | test | Security Rule |
+### pan-os-add-profile-exception
+
+***
+Add an exception to a Vulnerability Protection profile or Anti Spyware profile.
+
+#### Base Command
+
+`pan-os-add-profile-exception`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| profile_name | The profile name. | Required | 
+| threat | The requested threat name/CVE/ID to add. | Required | 
+| profile_type | The profile type. Possible values are: Vulnerability Protection Profile, Anti Spyware Profile. | Optional | 
+| action | The action type of the exception. Default value is 'default'. Possible values are: Alert, Allow, Block IP, Drop, Reset Both, Reset Client, Reset Server. | Optional | 
+| packet_capture | To configure the firewall to take a packet capture when it detects a threat. Possible values are: Disable, Single Packet, Extended Capture. | Optional | 
+| exempt_ip | An IP address. Configure an exempt IP address to enforce a threat exception only when the associated session has either a matching source or destination IP address; for all other sessions, the threat is enforced based on the default signature action. | Optional | 
+| device_group | Device group. This will override any configured device group or vsys. | Optional | 
+| ip_track_by | Specify whether to Track By and block the IP address using the IP source or the IP source and destination. If action = Block IP , this argument is mandatory. Possible values are: Source, Source And Destination. | Optional | 
+| ip_duration_sec | Specify the time period (in seconds) after which to trigger the action. If action = Block IP , this argument is mandatory. | Optional | 
+
+#### Command example
+```!pan-os-add-profile-exception profile_name="test1" threat="10002" action="Drop"```
+
+#### Context Output
+
+There is no context output for this command.
+### pan-os-list-profile-exception
+
+***
+List the exceptions in a Vulnerability Protection profile or Anti Spyware profile.
+
+#### Base Command
+
+`pan-os-list-profile-exception`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| profile_name | The profile name. | Required | 
+| profile_type | The profile type. Possible values are: Vulnerability Protection Profile, Anti Spyware Profile. | Optional | 
+
+#### Command example
+```!pan-os-list-profile-exception profile_name="test1" profile_type="Vulnerability Protection Profile"```
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.Vulnerability.Name | String | The profile name. | 
+| Panorama.Vulnerability.Exception.name | String | The exception name. | 
+| Panorama.Vulnerability.Exception.id | String | The exception ID. | 
+| Panorama.Vulnerability.Exception.CVE | String | The exception CVE if exist. | 
+| Panorama.Vulnerability.Exception.action | String | The exception action. | 
+| Panorama.Vulnerability.Exception.exempt-id | String | The exception exempt ID. | 
+| Panorama.Vulnerability.Exception.packet-capture | String | The exception packet capture. | 
+| Panorama.Spyware.Name | String | The profile name. | 
+| Panorama.Spyware.Exception.name | String | The exception name. | 
+| Panorama.Spyware.Exception.id | String | The exception ID. | 
+| Panorama.Spyware.Exception.CVE | String | The exception CVE if exist. | 
+| Panorama.Spyware.Exception.action | String | The exception action. | 
+| Panorama.Spyware.Exception.exempt-id | String | The exception exempt ID. | 
+| Panorama.Spyware.Exception.packet-capture | String | The exception packet capture. | 
+
+### pan-os-delete-profile-exception
+
+***
+Delete an exception to a Vulnerability Protection profile or Anti Spyware profile.
+
+#### Base Command
+
+`pan-os-delete-profile-exception`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| profile_name | The profile name. | Required | 
+| threat | The requested threat name/CVE/ID to delete. | Required | 
+| profile_type | The profile type. Possible values are: Vulnerability Protection Profile, Anti Spyware Profile. | Optional | 
+
+#### Command example
+```!pan-os-delete-profile-exception profile_name="test2" threat="10005" profile_type="Vulnerability Protection Profile"```
+
+#### Context Output
+
+There is no context output for this command.
+### pan-os-edit-profile-exception
+
+***
+Edit an exception to a Vulnerability Protection profile or Anti Spyware profile.
+
+#### Base Command
+
+`pan-os-edit-profile-exception`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| profile_name | The profile name. | Required | 
+| threat | The requested threat name/CVE/ID to edit. | Required | 
+| profile_type | The profile type. Possible values are: Vulnerability Protection Profile, Anti Spyware Profile. | Optional | 
+| action | The action type of the exception. Default value is 'default'. Possible values are: Alert, Allow, Block IP, Drop, Reset Both, Reset Client, Reset Server. | Optional | 
+| packet_capture | To configure the firewall to take a packet capture when it detects a threat. Possible values are: Disable, Single Packet, Extended Capture. | Optional | 
+| exempt_ip | An IP address. Configure an exempt IP address to enforce a threat exception only when the associated session has either a matching source or destination IP address; for all other sessions, the threat is enforced based on the default signature action. | Optional | 
+| device_group | Device group. This will override any configured device group or vsys. | Optional | 
+| ip_track_by | Specify whether to Track By and block the IP address using the IP source or the IP source and destination. If action = Block IP , this argument is mandatory. Possible values are: Source, Source And Destination. | Optional | 
+| ip_duration_sec | Specify the time period (in seconds) after which to trigger the action. If action = Block IP , this argument is mandatory. | Optional | 
+
+#### Command example
+```!pan-os-edit-profile-exception profile_name="test1" threat="10002" action="Drop"```
+
+#### Context Output
+
+There is no context output for this command.
+
+### pan-os-create-master-key
+
+***
+Create a default master key that encrypts all the private keys and passwords in the configuration.
+
+**This command is harmful because it invalidates the current API key and requires re-configuration of the integration instance.**
+
+#### Base Command
+
+`pan-os-create-master-key`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| master_key | The encryption master key. Must be exactly 16 characters. | Required |
+| lifetime_in_hours | The lifetime of the key in hours. | Required |
+| reminder_in_hours | The time to be notified of the key's expiration in hours. | Required |
+
+#### Limitations
+
+* All changes to the configuration of the Palo Alto firewall or Panorama need to be committed before running this command. This can be done using using the [pan-os-commit](#pan-os-commit) and [pan-os-push-status](#pan-os-push-status) commands.
+
+* The command invalidates the current API key and requires obtaining a new one using the instructions in [the PAN-OS and Panorama API usage guide](https://docs.paloaltonetworks.com/pan-os/11-1/pan-os-panorama-api/pan-os-api-authentication/get-your-api-key). All subsequent commands will raise an "Invalid Credential" error until a new API key is obtained and the integration instance is updated accordingly.
+
+#### Command example
+```!pan-os-create-master-key master_key="MyFakeMasterKey1" lifetime_in_hours=2160 reminder_in_hours=1992```
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Human Readable Output
+
+>Master key changed successfully. All key material has been re-encrypted with new master key and committed via jobid 1234.
+>
+>⚠️ The current API key is no longer valid! (by design). Generate a new API key and update it in the integration instance configuration to keep using the integration.
+
+### pan-os-update-master-key
+
+***
+Update the default master key that encrypts all the private keys and passwords in the configuration. 
+
+**This command is harmful because it invalidates the current API key and requires re-configuration of the integration instance.**
+
+#### Base Command
+
+`pan-os-update-master-key`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| current_master_key | The current encryption master key. | Required |
+| new_master_key | The new encryption master key. Must be exactly 16 characters. | Required |
+| lifetime_in_hours | The lifetime of the key in hours. | Required |
+| reminder_in_hours | The time to be notified of the key's expiration in hours. | Required |
+
+#### Limitations
+
+* All changes to the configuration of the Palo Alto firewall or Panorama need to be committed before running this command. This can be done using using the [pan-os-commit](#pan-os-commit) and [pan-os-push-status](#pan-os-push-status) commands.
+
+* The command invalidates the current API key and requires obtaining a new one using the instructions in [the PAN-OS and Panorama API usage guide](https://docs.paloaltonetworks.com/pan-os/11-1/pan-os-panorama-api/pan-os-api-authentication/get-your-api-key). All subsequent commands will raise an "Invalid Credential" error until a new API key is obtained and the integration instance is updated accordingly.
+
+#### Command example
+```!pan-os-update-master-key current_master_key="MyFakeMasterKey1" new_master_key="MyFakeMasterKey2" lifetime_in_hours=2160 reminder_in_hours=1992```
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Human Readable Output
+
+>Master key changed successfully. All key material has been re-encrypted with new master key and committed via jobid 2468.
+>
+>⚠️ The current API key is no longer valid! (by design). Generate a new API key and update it in the integration instance configuration to keep using the integration.
+
+### pan-os-get-master-key-details
+
+***
+Show the details of the default master key that encrypts all the private keys and passwords in the configuration.
+
+#### Base Command
+
+`pan-os-get-master-key-details`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Command example
+```!pan-os-get-master-key-details```
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.MasterKey.auto-renew-mkey | String | Whether the master key will be automatically renewed on expiry. |
+| Panorama.MasterKey.expire-at | String | The date and time when the key is set to expire. |
+| Panorama.MasterKey.hours-to-expiry | String | The number of hours remaining before the key expires. |
+| Panorama.MasterKey.hours-to-reminder | String | The number of hours remaining before being notified that the key is set to expire. |
+| Panorama.MasterKey.minutes-to-expiry | String | The number of minutes remaining before the key expires. |
+| Panorama.MasterKey.minutes-to-reminder | String | The number of minutes remaining before being notified that the key is set to expire. |
+| Panorama.MasterKey.on-hsm | String | Whether the master key is encrypted using a key stored on a Hardware Security Module (HSM). |
+| Panorama.MasterKey.remind-at | String | The date and time when to be notified that the key is set to expire. |
+| Panorama.MasterKey.seconds-to-expiry | String | The number of seconds remaining before the key expires. |
+| Panorama.MasterKey.seconds-to-reminder | String | The number of seconds remaining before being notified that the key is set to expire. |
+
+#### Context Example
+
+```json
+{
+    "Panorama": {
+        "MasterKey": {
+            "auto-renew-mkey": "0",
+            "expire-at": "2025/02/18 04:26:05",
+            "hours-to-expiry": "2138",
+            "hours-to-reminder": "1992",
+            "minutes-to-expiry": "128288",
+            "minutes-to-reminder": "119520",
+            "on-hsm": "no",
+            "remind-at": "2024/11/27 04:26:05",
+            "seconds-to-expiry": "7697336",
+            "seconds-to-reminder": "7171200"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Master Key Details
+>| Auto-renew master key | Encrypted on HSM | Remind at | Expire at |
+>| --- | --- | --- | --- |
+>| 0 | no | 2024/11/27 04:26:05 | 2025/02/18 04:26:05 |

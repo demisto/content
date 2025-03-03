@@ -1,39 +1,35 @@
-Flashpoint Feed Integration allows importing indicators of compromise that occur in the context of an event on the Flashpoint platform which contains finished intelligence reports data, data from illicit forums, marketplaces, chat services, blogs, paste sites, technical data, card shops, and vulnerabilities. The indicators of compromise are ingested as indicators on the Cortex XSOAR and displayed in the War Room using a command.
+Deprecated. Use Flashpoint Ignite Feed instead.
 This integration was integrated and tested with version 4.0.0 of FlashpointFeed
 
 ## Fetch Indicators
 Fetching the Flashpoint indicators. The indicators that are created or updated after the provided first fetch time interval will be fetched in the ascending order. 
 
-## Configure FlashpointFeed on Cortex XSOAR
+## Configure FlashpointFeed in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for FlashpointFeed.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL | Server URL to connect to Flashpoint. | True |
-    | API Key |  | True |
-    | Types of the indicators to fetch | Supports multiple values such as url, domain, ip-src. Supports comma separated values. If not specified, it fetches all the indicators. See all available types: https://www.circl.lu/doc/misp/categories-and-types/#types. | False |
-    | First fetch time interval | Backfill indicators by providing date or relative timestamp.  \(Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc\) | False |
-    | Fetch indicators |  | False |
-    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
-    | Source Reliability | Reliability of the source providing the intelligence data | True |
-    | feedExpirationPolicy | | False |
-    | feedExpirationInterval | | False |
-    | Feed Fetch Interval |  | False |
-    | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-    | Tags | Supports CSV values. | False |
-    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
-    | feedIncremental | To indicate to the Cortex XSOAR server that a feed is incremental. Generally feeds that fetch based on a time range. For example, a daily feed which provides new indicators for the last day or a feed which is immutable and provides indicators from a search date onwards. | False |
-    | Create relationships | Create relationships between indicators as part of Enrichment. | False |
-    | Default Indicator Mapping | When selected, all the incoming indicators will map to the Flashpoint Indicator. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | Server URL to connect to Flashpoint. | True |
+| API Key |  | True |
+| Types of the indicators to fetch | Supports multiple values such as url, domain, ip-src. Supports comma separated values. If not specified, it fetches all the indicators. See all available types: https://www.circl.lu/doc/misp/categories-and-types/#types. | False |
+| First fetch time interval | Backfill indicators by providing date or relative timestamp.  \(Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc\) | False |
+| Fetch indicators |  | False |
+| Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
+| Source Reliability | Reliability of the source providing the intelligence data | True |
+| feedExpirationPolicy | | False |
+| feedExpirationInterval | | False |
+| Feed Fetch Interval |  | False |
+| Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
+| Tags | Supports CSV values. | False |
+| Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
+| feedIncremental | To indicate to the Cortex XSOAR server that a feed is incremental. Generally feeds that fetch based on a time range. For example, a daily feed which provides new indicators for the last day or a feed which is immutable and provides indicators from a search date onwards. | False |
+| Create relationships | Create relationships between indicators as part of Enrichment. | False |
+| Default Indicator Mapping | When selected, all the incoming indicators will map to the Flashpoint Indicator. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### flashpoint-get-indicators

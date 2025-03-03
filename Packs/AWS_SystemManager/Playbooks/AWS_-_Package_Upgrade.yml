@@ -1,0 +1,549 @@
+description: This playbook upgrades supported packages on an AWS EC2 instance using AWS Systems manager.
+id: AWS - Package Upgrade
+inputSections:
+- description: Generic group for inputs.
+  inputs:
+  - ASM Rule ID
+  - Instance ID
+  - Region
+  - Assume Role
+  - Account ID
+  name: General (Inputs group)
+inputs:
+- description: ASM rule ID.
+  key: ASM Rule ID
+  playbookInputQuery:
+  required: true
+  value:
+    simple: ${alert.asmattacksurfaceruleid}
+- description: Instance ID of the EC2.
+  key: Instance ID
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: AWS region of the EC2 instance.
+  key: Region
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: AWS role to be assumed.
+  key: Assume Role
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: AWS account ID.
+  key: Account ID
+  playbookInputQuery:
+  required: false
+  value: {}
+name: AWS - Package Upgrade
+outputSections:
+- description: Generic group for outputs.
+  name: General (Outputs group)
+  outputs:
+  - remediatedFlag
+outputs:
+- contextPath: remediatedFlag
+  description: Whether package is upgraded.
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6ff3e273-643f-4981-8d73-7131697d49d6
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 6ff3e273-643f-4981-8d73-7131697d49d6
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.ASM Rule ID
+          operator: isExists
+          right:
+            value: {}
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: AWS - System Manager
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Instance ID
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Region
+          operator: isExists
+      label: "yes"
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if the AWS - Systems Manager integration instance is configured and input values are defined.
+      id: c9829402-26c5-4efb-8e0f-077ce690d1a4
+      iscommand: false
+      name: Is AWS - Systems Manager enabled and are input values defined?
+      type: condition
+      version: -1
+    taskid: c9829402-26c5-4efb-8e0f-077ce690d1a4
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 250
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 379598ad-1166-488f-8856-b513aaca3431
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 379598ad-1166-488f-8856-b513aaca3431
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -120,
+          "y": 2200
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Ids:
+        simple: ${awspackageupgrade.run_command_id}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: command_id
+      PollingCommandName:
+        simple: aws-ssm-command-list
+      Timeout:
+        simple: "30"
+      dt:
+        simple: AWS.SSM.Command(val.Status !== 'Success').CommandId
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: 8b226c89-b40d-424e-8d9f-950fa69c0ee1
+      iscommand: false
+      name: GenericPolling
+      playbookId: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 8b226c89-b40d-424e-8d9f-950fa69c0ee1
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1290
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      command_id:
+        simple: ${awspackageupgrade.run_command_id}
+      roleArn:
+        simple: ${inputs.Assume Role}
+      roleSessionName:
+        simple: AWS-SSM-Command
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: AWS - System Manager
+      description: Lists the commands requested by users of the Amazon Web Services account.
+      id: c45424b5-c696-4708-8f17-e906c08d0296
+      iscommand: true
+      name: Get status of command
+      script: AWS - System Manager|||aws-ssm-command-list
+      type: regular
+      version: -1
+    taskid: c45424b5-c696-4708-8f17-e906c08d0296
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1480
+        }
+      }
+  "7":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.ASM Rule ID
+          operator: inList
+          right:
+            value:
+              simple: InsecureOpenSSH
+      label: "yes"
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Does the provided ASM Rule ID exist in the list?
+      id: a9465063-4c61-481c-8c57-242007a24466
+      iscommand: false
+      name: Does this ASM Rule ID support AWS EC2 Patching?
+      type: condition
+      version: -1
+    taskid: a9465063-4c61-481c-8c57-242007a24466
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 510
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${awspackageupgrade.run_command_flag}
+          operator: isTrue
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if the package upgrade command run is initiated via AWS SSM.
+      id: 802dfb1f-c0fa-4ad4-88f2-f36c3d480814
+      iscommand: false
+      name: AWS SSM Command Run Initiated?
+      type: condition
+      version: -1
+    taskid: 802dfb1f-c0fa-4ad4-88f2-f36c3d480814
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1010
+        }
+      }
+  "9":
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: remediatedFlag
+      stringify:
+        simple: "false"
+      value:
+        simple: "true"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 8664fefc-0f3c-482c-8a10-784b03e9eeb3
+      iscommand: false
+      name: Set remediatedFlag to true
+      script: Set
+      type: regular
+      version: -1
+    taskid: 8664fefc-0f3c-482c-8a10-784b03e9eeb3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1970
+        }
+      }
+  "10":
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: remediatedFlag
+      stringify:
+        simple: "false"
+      value:
+        simple: "false"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 24eb5eec-b581-45f8-8de7-841612349784
+      iscommand: false
+      name: Set remediatedFlag to false
+      script: Set
+      type: regular
+      version: -1
+    taskid: 24eb5eec-b581-45f8-8de7-841612349784
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -120,
+          "y": 1970
+        }
+      }
+  "11":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: AWS.SSM.Command.Status
+          operator: isEqualString
+          right:
+            value:
+              simple: Success
+      label: "yes"
+    continueonerrortype: ""
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Was the command run successful?
+      id: b43b0cce-00a6-461d-8d6b-96c5d467c1af
+      iscommand: false
+      name: AWS Package Upgrade success?
+      type: condition
+      version: -1
+    taskid: b43b0cce-00a6-461d-8d6b-96c5d467c1af
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1670
+        }
+      }
+  "12":
+    continueonerrortype: ""
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      account_id:
+        simple: ${inputs.Account ID}
+      asm_rule_id:
+        simple: ${inputs.ASM Rule ID}
+      assume_role:
+        simple: ${inputs.Assume Role}
+      instance_id:
+        simple: ${inputs.Instance ID}
+      region:
+        simple: ${inputs.Region}
+      version:
+        simple: ${inputs.Version}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This is an AWS script that upgrades a package on the AWS EC2 instance using AWS Systems manager.
+      id: 5f029ce5-bc0d-4555-800c-47be2c8ea935
+      iscommand: false
+      name: 'AWS Package Upgrade '
+      script: AWSPackageUpgrade
+      type: regular
+      version: -1
+    taskid: 5f029ce5-bc0d-4555-800c-47be2c8ea935
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 800
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2215,
+        "width": 950,
+        "x": -120,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

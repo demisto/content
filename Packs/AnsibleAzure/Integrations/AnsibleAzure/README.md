@@ -11,23 +11,19 @@ After stepping through the guide you will have:
 * Your Secret key, generated when you created the application. You cannot show the key after creation. If you lost the key, you must create a new one in the “Configure” page of your application.
 * And finally, a tenant ID. It’s a UUID (e.g. ABCDEFGH-1234-ABCD-1234-ABCDEFGHIJKL) pointing to the AD containing your application. You will find it in the URL from within the Azure portal, or in the “view endpoints” of any given URL.
 
-## Configure Ansible Azure on Cortex XSOAR
+## Configure Ansible Azure in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Ansible Azure.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Subscription ID | Your Azure subscription Id. | True |
-    | Access Secret | Azure client secret | True |
-    | Client ID | Azure client ID | True |
-    | Tenant ID | Azure tenant ID | True |
-    | Azure Cloud Environment | For cloud environments other than the US public cloud, the environment name \(as defined by Azure Python SDK, eg, \`AzureChinaCloud\`, \`AzureUSGovernment\`\), or a metadata discovery endpoint URL \(required for Azure Stack\). | True |
-    | Certificate Validation Mode | Controls the certificate validation behavior for Azure endpoints. By default, all modules will validate the server certificate, but when an HTTPS proxy is in use, or against Azure Stack, it may be necessary to disable this behavior by passing \`ignore\`. | True |
-    | API Profile | Selects an API profile to use when communicating with Azure services. Default value of \`latest\` is appropriate for public clouds; future values will allow use with Azure Stack. | True |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Subscription ID | Your Azure subscription Id. | True |
+| Access Secret | Azure client secret | True |
+| Client ID | Azure client ID | True |
+| Tenant ID | Azure tenant ID | True |
+| Azure Cloud Environment | For cloud environments other than the US public cloud, the environment name \(as defined by Azure Python SDK, eg, \`AzureChinaCloud\`, \`AzureUSGovernment\`\), or a metadata discovery endpoint URL \(required for Azure Stack\). | True |
+| Certificate Validation Mode | Controls the certificate validation behavior for Azure endpoints. By default, all modules will validate the server certificate, but when an HTTPS proxy is in use, or against Azure Stack, it may be necessary to disable this behavior by passing \`ignore\`. | True |
+| API Profile | Selects an API profile to use when communicating with Azure services. Default value of \`latest\` is appropriate for public clouds; future values will allow use with Azure Stack. | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 # Idempotence
 The action commands in this integration are idempotent. This means that the result of performing it once is exactly the same as the result of performing it repeatedly without any intervening actions.
@@ -47,7 +43,7 @@ Some commands may require structured input arguments such as `lists` or `diction
 
 Other more advanced data manipulation tools such as [Ansible](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html)/[Jinja2 filters](https://jinja.palletsprojects.com/en/3.0.x/templates/#builtin-filters) can also be used in-line. For example to get a [random number](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html#random-number-filter) between 0 and 60 you can use `{{ 60 | random }}`.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### azure-rm-autoscale
 ***
@@ -3538,14 +3534,15 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 ### azure-rm-webapp
+
 ***
 Manage Web App instances
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_webapp_module.html
-
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_webapp_module.html
 
 #### Base Command
 
 `azure-rm-webapp`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3553,12 +3550,12 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 | resource_group | Name of the resource group to which the resource belongs. | Required | 
 | name | Unique name of the app to create or update. To create or update a deployment slot, use the {slot} parameter. | Required | 
 | location | Resource location. If not set, location from the resource group will be used as default. | Optional | 
-| plan | App service plan. Required for creation.<br/>Can be name of existing app service plan in same resource group as web app.<br/>Can be the resource ID of an existing app service plan. For example /subscriptions/&lt;subs_id&gt;/resourceGroups/&lt;resource_group&gt;/providers/Microsoft.Web/serverFarms/&lt;plan_name&gt;.<br/>Can be a dict containing five parameters, defined below.<br/>`name`, name of app service plan.<br/>`resource_group`, resource group of the app service plan.<br/>`sku`, SKU of app service plan, allowed values listed on `https://azure.microsoft.com/en-us/pricing/details/app-service/linux/`.<br/>`is_linux`, whether or not the app service plan is Linux. defaults to `False`.<br/>`number_of_workers`, number of workers for app service plan. | Optional | 
-| frameworks | Set of run time framework settings. Each setting is a dictionary.<br/>See `https://docs.microsoft.com/en-us/azure/app-service/app-service-web-overview` for more info. | Optional | 
+| plan | App service plan. Required for creation. Can be name of existing app service plan in same resource group as web app. Can be the resource ID of an existing app service plan. For example /subscriptions/&lt;subs_id&gt;/resourceGroups/&lt;resource_group&gt;/providers/Microsoft.Web/serverFarms/&lt;plan_name&gt;. Can be a dict containing five parameters, defined below. `name`, name of app service plan. `resource_group`, resource group of the app service plan. `sku`, SKU of app service plan, allowed values listed on `https://azure.microsoft.com/en-us/pricing/details/app-service/linux/`. `is_linux`, whether or not the app service plan is Linux. defaults to `False`. `number_of_workers`, number of workers for app service plan. | Optional | 
+| frameworks | Set of run time framework settings. Each setting is a dictionary. See `https://docs.microsoft.com/en-us/azure/app-service/app-service-web-overview` for more info. | Optional | 
 | container_settings | Web app container settings. | Optional | 
-| scm_type | Repository type of deployment source, for example `LocalGit`, `GitHub`.<br/>List of supported values maintained at `https://docs.microsoft.com/en-us/rest/api/appservice/webapps/createorupdate#scmtype`. | Optional | 
+| scm_type | Repository type of deployment source, for example `LocalGit`, `GitHub`. List of supported values maintained at `https://docs.microsoft.com/en-us/rest/api/appservice/webapps/createorupdate#scmtype`. | Optional | 
 | deployment_source | Deployment source for git. | Optional | 
-| startup_file | The web's startup file.<br/>Used only for Linux web apps. | Optional | 
+| startup_file | The web's startup file. Used only for Linux web apps. | Optional | 
 | client_affinity_enabled | Whether or not to send session affinity cookies, which route client requests in the same session to the same instance. Possible values are: Yes, No. Default is Yes. | Optional | 
 | https_only | Configures web site to accept only https requests. | Optional | 
 | dns_registration | Whether or not the web app hostname is registered with DNS on creation. Set to `false` to register. | Optional | 
@@ -3567,11 +3564,10 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 | app_settings | Configure web app application settings. Suboptions are in key value pair format. | Optional | 
 | purge_app_settings | Purge any existing application settings. Replace web app application settings with app_settings. | Optional | 
 | app_state | Start/Stop/Restart the web app. Possible values are: started, stopped, restarted. Default is started. | Optional | 
-| state | State of the Web App.<br/>Use `present` to create or update a Web App and `absent` to delete it. Possible values are: absent, present. Default is present. | Optional | 
+| state | State of the Web App. Use `present` to create or update a Web App and `absent` to delete it. Possible values are: absent, present. Default is present. | Optional | 
 | subscription_id | Your Azure subscription Id. | Optional | 
-| tags | Dictionary of string:string pairs to assign as metadata to the object.<br/>Metadata tags on the object will be updated with any provided values.<br/>To remove tags set append_tags option to false. | Optional | 
-| append_tags | Use to control if tags field is canonical or just appends to existing tags.<br/>When canonical, any tags not found in the tags parameter will be removed from the object's metadata. Possible values are: Yes, No. Default is Yes. | Optional | 
-
+| tags | Dictionary of string:string pairs to assign as metadata to the object. Metadata tags on the object will be updated with any provided values. To remove tags set append_tags option to false. | Optional | 
+| append_tags | Use to control if tags field is canonical or just appends to existing tags. When canonical, any tags not found in the tags parameter will be removed from the object's metadata. Possible values are: Yes, No. Default is Yes. | Optional | 
 
 #### Context Output
 
@@ -3579,6 +3575,28 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 | --- | --- | --- |
 | Azure.AzureRmWebapp.azure_webapp | string | ID of current web app. | 
 
+#### Command example
+```!azure-rm-webapp name=test resource_group=resource_group plan="{{{'name': 'testing', 'resource_group': 'resource_group', 'sku': 'mySkuName', 'is_linux': 'true', 'number_of_workers': '1'}}}"```
+#### Context Example
+```json
+{
+    "Azure": {
+        "AzureRmWebapp": [
+            {
+                "changed": true,
+                "id": "ID",
+                "status": "CHANGED"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>#  CHANGED 
+>  * changed: True
+>  * id: ID
 
 
 ### azure-rm-webapp-info
@@ -6127,7 +6145,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 ### Troubleshooting
 The Ansible-Runner container is not suitable for running as a non-root user.
-Therefore, the Ansible integrations will fail if you follow the instructions in the Cortex XSOAR [Docker Hardening Guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Docker-Hardening-Guide). 
+Therefore, the Ansible integrations will fail if you follow the instructions in [Docker hardening guide (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Docker-Hardening-Guide) or [Docker hardening guide (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Docker-hardening-guide) or [Docker hardening guide (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Docker-hardening-guide).
 
 The `docker.run.internal.asuser` server configuration causes the software that is run inside of the Docker containers utilized by Cortex XSOAR to run as a non-root user account inside the container.
 
@@ -6137,4 +6155,4 @@ This is a limitation of the Ansible-Runner software itself https://github.com/an
 
 A workaround is to use the `docker.run.internal.asuser.ignore` server setting and to configure Cortex XSOAR to ignore the Ansible container image by setting the value of `demisto/ansible-runner` and afterwards running /reset_containers to reload any containers that might be running to ensure they receive the configuration.
 
-See step 2 of this [guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Run-Docker-with-Non-Root-Internal-Users) for complete instructions.
+See step 2 of this [Docker hardening guide (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Run-Docker-with-Non-Root-Internal-Users). For Cortex XSOAR 8 Cloud see step 3 in *Run Docker with non-root internal users* of this [Docker hardening guide (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Docker-hardening-guide). For Cortex XSOAR 8.7 On-prem see step 3 in *Run Docker with non-root internal users* of this [Docker hardening guide (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Docker-hardening-guide) for complete instructions.

@@ -1,0 +1,57 @@
+{
+    "Domain(val.Name && val.Name == obj.Name)": [
+        {
+            "Name": "dummy.com",
+            "Malicious": {
+                "Vendor": "Ignite",
+                "Description": "Found in malicious indicators dataset"
+            },
+            "Relationships": [
+                {
+                    "Relationship": "indicator-of",
+                    "EntityA": "dummy.com",
+                    "EntityAType": "Domain",
+                    "EntityB": "T1001",
+                    "EntityBType": "Attack Pattern"
+                }
+            ]
+        }
+    ],
+    "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+        {
+            "Indicator": "dummy.com",
+            "Type": "domain",
+            "Vendor": "Ignite",
+            "Score": 3,
+            "Reliability": "B - Usually reliable"
+        }
+    ],
+    "Ignite.Domain.Event(val.Fpid && val.Fpid == obj.Fpid)": [
+        {
+            "Domain": "dummy.com",
+            "Category": "Network activity",
+            "Fpid": "0000000000000000000001",
+            "Href": "https://api.flashpoint.io/technical-intelligence/v1/attribute/0000000000000000000001",
+            "Timestamp": "1627526875",
+            "Type": "domain",
+            "Uuid": "00000000-0000-0000-0000-000000000001",
+            "EventDetails": {
+                "Tags": [
+                    "actor:APT",
+                    "actor:Lazarus",
+                    "event:observation",
+                    "source:osint"
+                ],
+                "attack_ids": [
+                    "T1001"
+                ],
+                "event_uuid": "00000000-0000-0000-0000-000000000001",
+                "fpid": "0000000000000000000001",
+                "href": "https://api.flashpoint.io/technical-intelligence/v1/event/0000000000000000000001",
+                "info": "Observation: APT Lazarus Reported IOCs [2021-07-28 21:10:34]",
+                "timestamp": "1627527286"
+            },
+            "Comment": ""
+        }
+    ]
+}

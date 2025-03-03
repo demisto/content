@@ -2,7 +2,7 @@
     "name": "AWS Enrichment and Remediation",
     "description": "Playbooks using multiple AWS content packs for enrichment and remediation purposes",
     "support": "xsoar",
-    "currentVersion": "1.1.17",
+    "currentVersion": "1.1.21",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -33,12 +33,17 @@
         "AWS-S3": {
             "mandatory": true,
             "display_name": "AWS - S3"
+        },
+        "AWS_SystemManager": {
+            "mandatory": true,
+            "display_name": "AWS Systems Manager"
         }
     },
     "displayedImages": [
         "AWS-IAM",
         "CommonScripts",
         "AWS-EC2",
-        "AWS-S3"
+        "AWS-S3",
+        "AWS_SystemManager"
     ]
 }

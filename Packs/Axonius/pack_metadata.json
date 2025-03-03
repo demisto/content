@@ -2,7 +2,7 @@
     "name": "Axonius",
     "description": "Enrichment for devices and users in your environment.",
     "support": "partner",
-    "currentVersion": "1.2.2",
+    "currentVersion": "1.2.6",
     "author": "Axonius",
     "url": "https://docs.axonius.com",
     "email": "support@axonius.com",
@@ -15,7 +15,8 @@
     "keywords": [],
     "githubUser": [
         "bryce-ax",
-        "nate-axonius"
+        "nate-axonius",
+        "sahar-hagbi1"
     ],
     "certification": "certified",
     "marketplaces": [

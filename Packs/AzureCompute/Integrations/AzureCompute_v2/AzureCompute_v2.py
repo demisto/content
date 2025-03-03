@@ -647,6 +647,7 @@ def get_vm_command(client: MsGraphClient, args: dict, params: dict):
     provisioning_state = properties.get('provisioningState')
     location = response.get('location')
     user_data = properties.get('userData')
+    tags = response.get('tags')
     network_interfaces = properties.get('networkProfile', {}).get('networkInterfaces')
     statuses = properties.get('instanceView', {}).get('statuses', [])
     power_state = None
@@ -666,7 +667,8 @@ def get_vm_command(client: MsGraphClient, args: dict, params: dict):
         'PowerState': power_state,
         'ResourceGroup': resource_group,
         'NetworkInterfaces': network_interfaces,
-        'UserData': user_data
+        'UserData': user_data,
+        'Tags': tags
     }
 
     title = f'Properties of VM "{vm_name}"'

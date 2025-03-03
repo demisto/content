@@ -2,7 +2,7 @@
     "name": "GreyNoise",
     "description": "GreyNoise is a threat intelligence service that collects and analyzes Internet-wide scan and attack traffic. With this integration, users can contextualize existing alerts, filter false-positives, identify compromised devices, and track emerging threats. The full integration code can be found here: https://github.com/demisto/content/tree/master/Packs/GreyNoise",
     "support": "partner",
-    "currentVersion": "1.3.11",
+    "currentVersion": "1.4.3",
     "author": "GreyNoise",
     "url": "https://greynoise.io",
     "email": "support@greynoise.io",

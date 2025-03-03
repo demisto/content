@@ -17,6 +17,7 @@ TERADATA = "Teradata"
 ORACLE = "Oracle"
 POSTGRES_SQL = "PostgreSQL"
 MY_SQL = "MySQL"
+TRINO = "Trino"
 MS_ODBC_DRIVER = "Microsoft SQL Server - MS ODBC Driver"
 MICROSOFT_SQL_SERVER = "Microsoft SQL Server"
 FETCH_DEFAULT_LIMIT = '50'
@@ -86,6 +87,8 @@ class Client:
             connect_parameters_dict.setdefault('autocommit', 'True')
             if not verify_certificate:
                 connect_parameters_dict['TrustServerCertificate'] = 'yes'
+        elif dialect == TRINO:
+            connect_parameters_dict['verify'] = str(verify_certificate).lower()
         return connect_parameters_dict
 
     @staticmethod
@@ -101,6 +104,8 @@ class Client:
             module = "postgresql"
         elif dialect == ORACLE:
             module = "oracle"
+        elif dialect == TRINO:
+            module = "trino"
         elif dialect in {MICROSOFT_SQL_SERVER, MS_ODBC_DRIVER}:
             module = "mssql+pyodbc"
         else:
@@ -143,22 +148,24 @@ class Client:
                    host=self.host,
                    port=arg_to_number(self.port),
                    database=self.dbname,
-                   query=self.connect_parameters)
+                   query=self.connect_parameters)  # type: ignore[arg-type]
 
     def _create_engine_and_connect(self) -> sqlalchemy.engine.base.Connection:
         """
         Creating and engine according to the instance preferences and connecting
         :return: a connection object that will be used in order to execute SQL queries
         """
-        ssl_connection = {}
+        ssl_connection: dict = {}
         module = self._convert_dialect_to_module(self.dialect)
         db_url = self._generate_db_url(module)
 
         if self.ssl_connect:
             if self.dialect == POSTGRES_SQL:
                 ssl_connection = {'sslmode': 'require'}
+            elif self.dialect == TRINO:
+                ssl_connection = {'http_scheme': 'https'}
             else:
-                ssl_connection = {'ssl': {'ssl-mode': 'preferred'}}  # type: ignore[dict-item]
+                ssl_connection = {'ssl': {'ssl-mode': 'preferred'}}
 
         if self.use_pool:
             if 'expiringdict' not in sys.modules:
@@ -194,9 +201,9 @@ class Client:
         :return: results of query, table headers
         """
         if type(bind_vars) is dict:
-            sql_query = text(sql_query)
+            sql_query = text(sql_query)  # type: ignore[assignment]
 
-        result = self.connection.execute(sql_query, bind_vars)
+        result = self.connection.execute(sql_query, bind_vars)  # type: ignore[call-overload]
 
         # for MSSQL autocommit is True, so no need to commit again here
         if self.dialect not in {MICROSOFT_SQL_SERVER, MS_ODBC_DRIVER}:
@@ -216,6 +223,27 @@ class Client:
             else:
                 headers = list(results[0].keys() or '')
         return results, headers
+
+    def create_api_metrics(self, status_type: str) -> None:
+        """Reports an API Execution metric to XSOAR server. Does not return anything.
+
+        Args:
+            status_type (str): The type of error/status. Can be 'general_error', 'connection_error' or 'success'.
+        """
+
+        execution_metrics = ExecutionMetrics()
+        if not execution_metrics.is_supported() or demisto.command() in ['test-module', 'fetch-incidents']:
+            return
+
+        if status_type == "general_error":
+            execution_metrics.general_error += 1
+        elif status_type == "connection_error":
+            execution_metrics.connection_error += 1
+        elif status_type == "success":
+            execution_metrics.success += 1
+        else:
+            return
+        return_results(execution_metrics.metrics)
 
 
 def generate_default_port_by_dialect(dialect: str) -> str | None:
@@ -402,6 +430,7 @@ def sql_query_execute(client: Client, args: dict, *_) -> tuple[str, dict[str, An
             "InstanceName": f"{client.dialect}_{client.dbname}",
         }
         entry_context: dict = {'GenericSQL(val.Query && val.Query === obj.Query)': {'GenericSQL': context}}
+        client.create_api_metrics(status_type="success")
         return human_readable, entry_context, table
 
     except Exception as err:
@@ -410,6 +439,7 @@ def sql_query_execute(client: Client, args: dict, *_) -> tuple[str, dict[str, An
         if str(err) == "This result object does not return rows. It has been closed automatically.":
             human_readable = "Command executed"
             return human_readable, {}, []
+        client.create_api_metrics(status_type="general_error")
         raise err
 
 
@@ -653,6 +683,7 @@ def main():
         }
         if command in commands:
             return_outputs(*commands[command](client, demisto.args(), command))
+
         elif command == 'fetch-incidents':
             incidents, last_run = fetch_incidents(client, params)
             demisto.setLastRun(last_run)
@@ -661,6 +692,7 @@ def main():
             raise NotImplementedError(f'{command} is not an existing Generic SQL command')
     except Exception as err:
         if 'certificate verify failed' in str(err):
+            client.create_api_metrics(status_type="connection_error")
             return_error("Unexpected error: certificate verify failed, unable to get local issuer certificate. "
                          "Try selecting 'Trust any certificate' checkbox in the integration configuration.")
         else:

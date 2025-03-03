@@ -2,7 +2,7 @@
     "name": "MISP Feed",
     "description": "Indicators feed from MISP",
     "support": "xsoar",
-    "currentVersion": "1.0.32",
+    "currentVersion": "1.0.39",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

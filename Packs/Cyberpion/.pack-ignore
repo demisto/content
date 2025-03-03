@@ -1,0 +1,6 @@
+# GR103 is temporary, see CIAC-11656
+[file:classifier-Cyberpion_-_Mapper.json]
+ignore=GR103
+
+[file:layoutscontainer-Cyberpion_-_Action_Item.json]
+ignore=GR103

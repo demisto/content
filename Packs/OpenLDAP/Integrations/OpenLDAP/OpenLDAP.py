@@ -4,13 +4,91 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 import ssl
-from ldap3 import Server, Connection, Tls, BASE, AUTO_BIND_TLS_BEFORE_BIND, AUTO_BIND_NO_TLS, ALL_ATTRIBUTES
+from ldap3 import Server, Connection, Tls, BASE, AUTO_BIND_TLS_BEFORE_BIND, AUTO_BIND_NO_TLS, ALL_ATTRIBUTES, SUBTREE, \
+    ALL_OPERATIONAL_ATTRIBUTES
 from ldap3.utils.dn import parse_dn
 from ldap3.core.exceptions import LDAPBindError, LDAPInvalidDnError, LDAPSocketOpenError, LDAPInvalidPortError, \
     LDAPSocketReceiveError, LDAPStartTLSError
-from typing import Tuple, List
+
+'''CONSTANTS'''
+
+MAX_PAGE_SIZE = 2000
 
 ''' LDAP Authentication CLIENT '''
+
+
+def listArgToLdapFilterSyntax(arg: str, prefix: str) -> str:
+    """
+    Converts a list argument to an LDAP filter syntax.
+    Args:
+        arg (str): The argument to convert.
+        prefix (str): The prefix to use in the filter syntax.
+    Returns:
+        str: The LDAP filter syntax.
+    """
+    arg_list = argToList(arg)
+    joined_list = ''.join([f'({prefix}={item})' for item in arg_list])
+    if len(arg_list) > 1:
+        return f'(&{joined_list})'
+    return joined_list if arg_list else ''
+
+
+def create_entries_search_filter(args: dict) -> str:
+    """
+    Creates the search filter according to the user's selection. Merges all the search filters into one filter.
+    Args:
+        args (dict): The command arguments.
+    Returns:
+        str: The search filter.
+    """
+    cn_filter = listArgToLdapFilterSyntax(args.get('cn', ''), 'cn')
+    description_filter = listArgToLdapFilterSyntax(args.get('description', ''), 'description')
+    object_class = listArgToLdapFilterSyntax(args.get('object_class', ''), 'objectClass')
+    uid = listArgToLdapFilterSyntax(args.get('uid', ''), 'uid')
+    search_filter = args.get('search_filter', '')
+    if not any([cn_filter, description_filter, object_class, uid, search_filter]):
+        return '(objectClass=*)'
+    return f'(|{cn_filter}{description_filter}{object_class}{uid}{search_filter})'
+
+
+def get_search_attributes(attributes: str) -> Optional[list[str] | str]:
+    """
+    Returns the search attributes according to the user's selection.
+    Args:
+        attributes (str): The attributes to search for.
+    Returns:
+        list[str] | str: The search attributes.
+    """
+    if attributes == 'all':
+        return [ALL_ATTRIBUTES, ALL_OPERATIONAL_ATTRIBUTES]
+    return {
+        'none': None,
+        'all_user_attributes': ALL_ATTRIBUTES,
+        'all_operational_attributes': ALL_OPERATIONAL_ATTRIBUTES
+
+    }.get(attributes, argToList(attributes))
+
+
+def entries_paged_search(connection: Connection, search_params: dict, page: int, page_size: int) -> list[dict]:
+    """
+    preforms search on the ldap server with the given page and page size parameters.
+    Args:
+        connection (Connection): Connection object
+        search_params (dict): search parameters
+        page (int): page number
+        page_size (int): page size
+    Returns:
+        list[dict]: search results
+    """
+    if page == 1:
+        return connection.search(**search_params, paged_size=page_size)
+
+    results_to_skip = page_size * (page - 1)
+    connection.search(**search_params, paged_size=results_to_skip)
+    # After the first search you must send back the cookie you get with each response in each subsequent search.
+    # https://ldap3.readthedocs.io/en/latest/searches.html#simple-paged-search
+    cookie = connection.result['controls']['1.2.840.113556.1.4.319']['value']['cookie']
+    return connection.search(**search_params, paged_size=page_size, paged_cookie=cookie)
 
 
 class LdapClient:
@@ -191,7 +269,7 @@ class LdapClient:
                                    f'Error: str({e})')
 
     @staticmethod
-    def _parse_ldap_group_entries(ldap_group_entries: List[dict], groups_identifier_attribute: str) -> List[dict]:
+    def _parse_ldap_group_entries(ldap_group_entries: list[dict], groups_identifier_attribute: str) -> list[dict]:
         """
             Returns parsed ldap groups entries.
         """
@@ -201,12 +279,12 @@ class LdapClient:
                 for ldap_group in ldap_group_entries]
 
     @staticmethod
-    def _parse_ldap_group_entries_and_referrals(ldap_group_entries: List[dict]) -> Tuple[List[str], List[dict]]:
+    def _parse_ldap_group_entries_and_referrals(ldap_group_entries: list[dict]) -> tuple[list[str], list[dict]]:
         """
             Returns parsed ldap groups entries and referrals.
         """
-        referrals: List[str] = []
-        entries: List[dict] = []
+        referrals: list[str] = []
+        entries: list[dict] = []
 
         for ldap_group in ldap_group_entries:
             if ldap_group_type := ldap_group.get('type'):
@@ -222,15 +300,15 @@ class LdapClient:
                          })
         return referrals, entries
 
-    def _parse_and_authenticate_ldap_group_entries_and_referrals(self, ldap_group_entries: List[dict],
-                                                                 password: str) -> Tuple[List[str], List[dict]]:
+    def _parse_and_authenticate_ldap_group_entries_and_referrals(self, ldap_group_entries: list[dict],
+                                                                 password: str) -> tuple[list[str], list[dict]]:
         """
             Returns parsed ldap groups entries and referrals.
             Authenticate - performs simple bind operation on the ldap server with the given user and password.
         """
 
-        referrals: List[str] = []
-        entries: List[dict] = []
+        referrals: list[str] = []
+        entries: list[dict] = []
 
         for entry in ldap_group_entries:
             if entry_type := entry.get('type'):
@@ -254,7 +332,7 @@ class LdapClient:
         return referrals, entries
 
     @staticmethod
-    def _parse_ldap_users_groups_entries(ldap_group_entries: List[dict]) -> List[Optional[Any]]:
+    def _parse_ldap_users_groups_entries(ldap_group_entries: list[dict]) -> list[Optional[Any]]:
         """
             Returns parsed user's group entries.
         """
@@ -283,7 +361,7 @@ class LdapClient:
         }
 
     @staticmethod
-    def _is_valid_dn(dn: str, user_identifier_attribute: str) -> Tuple[bool, str]:
+    def _is_valid_dn(dn: str, user_identifier_attribute: str) -> tuple[bool, str]:
         """
             Validates whether given input is valid ldap DN. Returns flag indicator and user's identifier value from DN
             (if exists).
@@ -351,7 +429,7 @@ class LdapClient:
         return formatted_attributes
 
     def _get_ldap_groups_entries_and_referrals_ad(self, ldap_conn: Connection,
-                                                  search_filter: str) -> Tuple[List[str], List[dict]]:
+                                                  search_filter: str) -> tuple[list[str], list[dict]]:
         """
             Returns parsed ldap groups entries and referrals.
         """
@@ -414,18 +492,45 @@ class LdapClient:
                 }
 
     @staticmethod
-    def _get_ad_username(username: str) -> str:
+    def _get_ad_username(logon_name: str) -> str:
         """
-            Gets a user logon name (the username that is used for log in to XSOAR)
+            Gets a User logon name (the username that is used for log in to XSOAR)
             and returns the Active Directory username.
         """
-        x_username = username
-        if '\\' in username:
-            x_username = username.split('\\')[1]
-        elif '@' in username:
-            x_username = username.split('@')[0]
+        ad_username = logon_name
+        if '\\' in logon_name:
+            ad_username = logon_name.split('\\')[1]
+        elif '@' in logon_name:
+            ad_username = logon_name.split('@')[0]
 
-        return x_username
+        return ad_username
+
+    @staticmethod
+    def _has_wildcards_in_user_logon(logon_name: str):
+        """
+            Gets a User logon name (the username that is used for log in to XSOAR) and checks if it includes wildcards.
+            Raises exception if wildcards are found in the logon name.
+
+            Background:
+                LDAP servers support the use of wildcards primarily through the '*' and the '?' symbols for searching entries in
+                the directory.
+                Since the authentication process relies on exact username for login, the login attempt will be denied if the
+                user logon name includes wildcards.
+
+            Note:
+                Wildcards are illegal characters for active directory logon names, however they are valid characters
+                for OpenLdap usernames.
+                Since we believe usernames include '*' or '?' symbols are rare, we fail the authentication when a user logon name
+                includes one of them.
+        """
+        err_msg = f"Wildcards were detected in the user logon name - Input Username: '{logon_name}'."\
+            f" Wildcards are not permitted for user authentication."
+
+        wildcards = ['*', '?']
+        for wildcard in wildcards:
+            if wildcard in logon_name:
+                demisto.debug(f"LDAP Authentication - User login attempt failed - {err_msg}")
+                raise Exception(f"LDAP Authentication - Authentication failed - {err_msg}")
 
     def _get_auto_bind_value(self) -> str:
         """
@@ -479,7 +584,7 @@ class LdapClient:
             raise Exception(f"LDAP Authentication - authentication connection failed,"
                             f" server type is: {self._ldap_server_vendor}")
 
-    def search_user_data(self, username: str, attributes: List, search_user_by_dn: bool = False) -> Tuple:
+    def search_user_data(self, username: str, attributes: list, search_user_by_dn: bool = False) -> tuple:
         """
              Returns data for given ldap user.
              Raises error if the user is not found in the ldap server.
@@ -489,7 +594,7 @@ class LdapClient:
             demisto.info(f'LDAP Connection Details: {ldap_conn}')
 
             if search_user_by_dn:
-                search_filter = f'(&(objectClass={self.USER_OBJECT_CLASS})' +\
+                search_filter = f'(&(objectClass={self.USER_OBJECT_CLASS})' + \
                                 self._get_formatted_custom_attributes() + ')'
                 ldap_conn.search(search_base=username, search_filter=search_filter, size_limit=1,
                                  attributes=attributes, search_scope=BASE)
@@ -569,6 +674,7 @@ class LdapClient:
         user_data = self.get_user_data(username=username, search_user_by_dn=search_user_by_dn, pull_name=pull_name,
                                        pull_mail=pull_mail, pull_phone=pull_phone, mail_attribute=mail_attribute,
                                        name_attribute=name_attribute, phone_attribute=phone_attribute)
+
         self.authenticate_ldap_user(user_data['dn'], password)
         user_groups = self.get_user_groups(user_identifier)
 
@@ -587,7 +693,7 @@ class LdapClient:
         """
             Implements authenticate and roles command for Active Directory.
         """
-        xsoar_username = self._get_ad_username(username)
+        ad_username = self._get_ad_username(username)
         auto_bind = self._get_auto_bind_value()
 
         with Connection(self._ldap_server, self._username, self._password, auto_bind=auto_bind) as ldap_conn:
@@ -601,7 +707,7 @@ class LdapClient:
             if pull_phone:
                 attributes.append(phone_attribute)
 
-            search_filter = f'(|(sAMAccountName={xsoar_username})(userPrincipalName={username}))'
+            search_filter = f'(|(sAMAccountName={ad_username})(userPrincipalName={username}))'
             ldap_conn_entries = ldap_conn.extend.standard.paged_search(search_base=self._base_dn,
                                                                        search_filter=search_filter,
                                                                        attributes=attributes,
@@ -627,6 +733,8 @@ class LdapClient:
         """
             Implements authenticate and roles command.
         """
+        self._has_wildcards_in_user_logon(username)  # fail login attempt when wildcards are used
+
         if self._ldap_server_vendor == self.ACTIVE_DIRECTORY:
             return self.authenticate_and_roles_active_directory(username=username, password=password,
                                                                 pull_name=pull_name, pull_mail=pull_mail,
@@ -639,11 +747,51 @@ class LdapClient:
                                                         mail_attribute=mail_attribute, name_attribute=name_attribute,
                                                         phone_attribute=phone_attribute)
 
+    def entries_search_command(self, args: dict[str, Any]) -> CommandResults:
+        """
+        Implements entries search command.
+        """
+
+        search_params = {'search_base': args.get('search_base', self._base_dn),
+                         'search_scope': args.get('search_scope', SUBTREE),
+                         'search_filter': create_entries_search_filter(args),
+                         'attributes': get_search_attributes(args.get('attributes', 'all')),
+                         }
+
+        auto_bind = self._get_auto_bind_value()
+        with Connection(self._ldap_server, self._username, self._password, auto_bind=auto_bind) as ldap_conn:
+            if page := arg_to_number(args.get('page')):
+                page_size = int(args.get('page_size', 50))
+                if page_size > MAX_PAGE_SIZE:
+                    raise Exception('The page size must be less than or equal to 2000')
+            else:
+                page = 1
+                page_size = int(args.get('limit', 50))
+            entries_paged_search(connection=ldap_conn,
+                                 search_params=search_params,
+                                 page=page,
+                                 page_size=page_size)
+
+            outputs = [
+                {**json.loads(entry.entry_to_json()).get('attributes', {}), 'dn': json.loads(entry.entry_to_json()).get('dn')}
+                for entry in ldap_conn.entries
+            ]
+            total = len(outputs)
+
+        return CommandResults(
+            outputs_prefix='LDAP.Search',
+            outputs=outputs,
+            raw_response=outputs,
+            readable_output=tableToMarkdown(f'LDAP Entries Search Results - {total} Found', outputs),
+        )
+
     def ad_authenticate(self, username: str, password: str) -> str:
         """
             Search for the user in the ldap server.
             Performs simple bind operation on ldap server.
         """
+        self._has_wildcards_in_user_logon(username)  # fail authentication when wildcards are used
+
         if self._ldap_server_vendor == self.OPENLDAP:
             # If the given username is not a full DN, search for it in the ldap server and find it's full DN
             search_user_by_dn, _ = LdapClient._is_valid_dn(username, self.USER_IDENTIFIER_ATTRIBUTE)
@@ -660,7 +808,7 @@ class LdapClient:
         self._get_formatted_custom_attributes()
 
         if build_number != LdapClient.DEV_BUILD_NUMBER \
-                and LdapClient.SUPPORTED_BUILD_NUMBER > int(build_number):
+                and int(build_number) < LdapClient.SUPPORTED_BUILD_NUMBER:
             raise Exception(f'LDAP Authentication integration is supported from build number:'
                             f' {LdapClient.SUPPORTED_BUILD_NUMBER}')
 
@@ -713,6 +861,9 @@ def main():  # pragma: no coverage
                                                          phone_attribute=phone_attribute)
             demisto.info(f'ad-authenticate-and-roles command - entry results: {entry_result}')
             return_results(entry_result)
+        elif command == 'ad-entries-search':
+            return_results(client.entries_search_command(args))
+
         else:
             raise NotImplementedError(f'Command {command} is not implemented')
 
@@ -721,7 +872,7 @@ def main():  # pragma: no coverage
         msg = str(e)
         if isinstance(e, LDAPBindError):
             msg = f'LDAP Authentication - authentication connection failed. Additional details: {msg}'
-        elif isinstance(e, (LDAPSocketOpenError, LDAPSocketReceiveError, LDAPStartTLSError)):
+        elif isinstance(e, LDAPSocketOpenError | LDAPSocketReceiveError | LDAPStartTLSError):
             msg = f'LDAP Authentication - Failed to connect to LDAP server. Additional details: {msg}'
             if not params.get('insecure', False):
                 msg += ' Try using: "Trust any certificate" option.\n'

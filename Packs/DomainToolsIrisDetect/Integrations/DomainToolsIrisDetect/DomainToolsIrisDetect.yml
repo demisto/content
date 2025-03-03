@@ -104,7 +104,7 @@ script:
   commands:
   - arguments:
     - description: |-
-        List of Iris Detect domain IDs to escalate. The domain ID can be 
+        List of Iris Detect domain IDs to escalate. The domain ID can be
         found using 'domaintools-iris-detect-get-new-domains' command.
       isArray: true
       name: watchlist_domain_ids
@@ -132,8 +132,8 @@ script:
       type: String
   - arguments:
     - description: |-
-        List of Iris Detect domain IDs to escalate. The domain ID can be 
-        found using 'domaintools-iris-detect-get-new-domains, 
+        List of Iris Detect domain IDs to escalate. The domain ID can be
+        found using 'domaintools-iris-detect-get-new-domains,
         domaintools-iris-detect-get-watched-domains' commands.
       isArray: true
       name: watchlist_domain_ids
@@ -161,7 +161,7 @@ script:
       type: String
   - arguments:
     - description: |-
-        List of Iris Detect domain IDs to escalate. The domain ID can be 
+        List of Iris Detect domain IDs to escalate. The domain ID can be
         found using 'domaintools-iris-detect-get-new-domains' command.
       isArray: true
       name: watchlist_domain_ids
@@ -192,7 +192,7 @@ script:
       type: String
   - arguments:
     - description: |-
-        List of Iris Detect domain IDs to escalate. The domain ID can be 
+        List of Iris Detect domain IDs to escalate. The domain ID can be
         found using 'domaintools-iris-detect-get-new-domains, domaintools-iris-detect-get-watched-domains' command.
       isArray: true
       name: watchlist_domain_ids
@@ -282,8 +282,8 @@ script:
     - description: Filter domains by when they were discovered. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.
       name: discovered_since
     - description: |-
-        Monitor ID is used when requesting domains for a specific monitor. 
-        The monitor ID can be found using the 
+        Monitor ID is used when requesting domains for a specific monitor.
+        The monitor ID can be found using the
         'domaintools-iris-detect-get-monitors-list' command.
       name: monitor_id
     - auto: PREDEFINED
@@ -436,8 +436,8 @@ script:
       - blocked
       - google_safe
     - description: |-
-        Monitor ID is used when requesting domains for a specific monitor. 
-        The monitor ID can be found using the 
+        Monitor ID is used when requesting domains for a specific monitor.
+        The monitor ID can be found using the
         'domaintools-iris-detect-get-monitors-list' command.
       name: monitor_id
     - auto: PREDEFINED
@@ -597,8 +597,8 @@ script:
       - 70-99
       - 100-100
     - description: |-
-        Monitor ID is used when requesting domains for a specific monitor. 
-        The monitor ID can be found using the 
+        Monitor ID is used when requesting domains for a specific monitor.
+        The monitor ID can be found using the
         'domaintools-iris-detect-get-monitors-list' command.
       name: monitor_id
     - auto: PREDEFINED
@@ -749,8 +749,8 @@ script:
       - 70-99
       - 100-100
     - description: |-
-        Monitor ID is used when requesting domains for a specific monitor. 
-        The monitor ID can be found using the 
+        Monitor ID is used when requesting domains for a specific monitor.
+        The monitor ID can be found using the
         'domaintools-iris-detect-get-monitors-list' command.
       name: monitor_id
     - auto: PREDEFINED
@@ -892,8 +892,8 @@ script:
       type: String
   - arguments:
     - description: |-
-        Monitor ID is used when requesting domains for a specific monitor. 
-        The monitor ID can be found using the 
+        Monitor ID is used when requesting domains for a specific monitor.
+        The monitor ID can be found using the
         'domaintools-iris-detect-get-monitors-list' command.
       name: monitor_id
     - auto: PREDEFINED
@@ -1044,7 +1044,7 @@ script:
       type: String
   - description: This command will reset your fetch history.
     name: domaintools-iris-detect-reset-fetch-indicators
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
   script: '-'

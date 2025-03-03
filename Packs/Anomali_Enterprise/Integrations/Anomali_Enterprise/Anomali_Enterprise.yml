@@ -162,7 +162,7 @@ script:
       description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: The actual DBot score.
+      description: The actual score.
       type: Number
     - contextPath: Domain.Name
       description: The domain name. For example, "google.com".
@@ -173,7 +173,7 @@ script:
     - contextPath: Domain.Malicious.Description
       description: A description of the malicious domain.
       type: String
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: '-'
   subtype: python3

@@ -31,9 +31,10 @@ configuration:
 - display: First fetch time interval
   name: after
   type: 0
-  defaultvalue: 3 days
+  defaultvalue: 1 minute
   section: Collect
   required: false
+  hidden: true
 - display: The event types to include.
   additionalinfo: web - returns web (non-Git) events, git - returns Git events, all - returns both web and Git events.
   name: include
@@ -73,7 +74,7 @@ script:
       required: true
     description: Manual command to fetch events and display them.
     name: github-get-events
-  dockerimage: demisto/fastapi:1.0.0.88462
+  dockerimage: demisto/py3-tools:1.0.0.114656
   isfetchevents: true
   subtype: python3
 marketplaces:

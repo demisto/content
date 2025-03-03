@@ -2,7 +2,7 @@
     "name": "Attivo Botsink",
     "description": "Network-based Threat Deception for Post-Compromise Threat Detection.",
     "support": "partner",
-    "currentVersion": "1.0.15",
+    "currentVersion": "1.0.16",
     "author": "Attivo Networks",
     "url": "https://www.attivonetworks.com",
     "email": "support@attivonetworks.com",

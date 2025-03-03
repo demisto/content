@@ -26,6 +26,13 @@ args:
   predefined:
   - 'False'
   - 'True'
+- description: The protocol to use when calling the URLs. This argument effects the calls sent by the model only and has no effect on the rasterize or whois commands.
+  defaultValue: 'HTTP'
+  name: defaultRequestProtocol
+  auto: PREDEFINED
+  predefined:
+  - 'HTTP'
+  - 'HTTPS'
 - auto: PREDEFINED
   description: Whether to enter debug mode.
   defaultValue: 'False'
@@ -85,7 +92,7 @@ tags:
 - ml
 timeout: 480ns
 type: python
-dockerimage: demisto/mlurlphishing:1.0.0.90588
+dockerimage: demisto/mlurlphishing:1.0.0.115323
 runas: DBotRole
 tests:
 - DBotPredictURLPhishing_test

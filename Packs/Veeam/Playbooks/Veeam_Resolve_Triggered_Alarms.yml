@@ -1,0 +1,270 @@
+contentitemexportablefields:
+  contentitemfields: {}
+id: 'Veeam - Resolve Triggered Alarms'
+inputs:
+- description: ""
+  key: TriggeredAlarmId
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: eventid
+      root: incident
+- description: ""
+  key: Instance
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: sourceInstance
+      root: incident
+name: Veeam - Resolve Triggered Alarms
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fa704890-3340-4540-870c-043ecbff3297
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: fa704890-3340-4540-870c-043ecbff3297
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 20
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      comment:
+        complex:
+          root: incident.owner
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: 'Resolved by Cortex XSOAR user: '
+              suffix: {}
+            operator: concat
+      resolveType:
+        simple: Resolve
+      triggeredAlarmIds:
+        complex:
+          root: inputs.TriggeredAlarmId
+          transformers:
+          - operator: StringToArray
+      using:
+        complex:
+          root: inputs.Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Veeam ONE REST API
+      description: Resolve Triggered Alarms
+      id: e6ed3e4d-4201-403b-864f-747d436b8dec
+      iscommand: true
+      name: Resolve Triggered Alarms
+      script: Veeam ONE REST API|||veeam-vone-resolve-triggered-alarms
+      type: regular
+      version: -1
+    taskid: e6ed3e4d-4201-403b-864f-747d436b8dec
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 440
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      comment:
+        complex:
+          root: incident.owner
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: 'Acknowledged by Cortex XSOAR user: '
+              suffix: {}
+            operator: concat
+      resolveType:
+        simple: Acknowledge
+      triggeredAlarmIds:
+        complex:
+          root: inputs.TriggeredAlarmId
+          transformers:
+          - operator: StringToArray
+      using:
+        complex:
+          root: inputs.Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Veeam ONE REST API
+      description: Resolve Triggered Alarms
+      id: 4ce1da8e-b4a8-4853-8623-00f75e704e6c
+      iscommand: true
+      name: Resolve Triggered Alarms
+      script: Veeam ONE REST API|||veeam-vone-resolve-triggered-alarms
+      type: regular
+      version: -1
+    taskid: 4ce1da8e-b4a8-4853-8623-00f75e704e6c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 440
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      Acknowledge:
+      - "2"
+      Resolve:
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Select Alarm Resolution Type
+      id: 6b80abd1-dd5a-47cd-8c7e-4adf6d7f1a6e
+      iscommand: false
+      name: Select Alarm Resolution Type
+      type: condition
+      version: -1
+    taskid: 6b80abd1-dd5a-47cd-8c7e-4adf6d7f1a6e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Close the current incident
+      id: f6be8439-8230-48f8-8eb5-f9e17164082a
+      iscommand: true
+      name: Close Investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: f6be8439-8230-48f8-8eb5-f9e17164082a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 710
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f7e520e8-51b0-4837-85f6-e54bed2c7582
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: f7e520e8-51b0-4837-85f6-e54bed2c7582
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 890
+        }
+      }
+version: -1
+fromversion: 6.10.0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 935,
+        "width": 960,
+        "x": 150,
+        "y": 20
+      }
+    }
+  }
+description: 'Resolves Veeam ONE triggered alarms.'
+tests:
+- No tests (auto formatted)

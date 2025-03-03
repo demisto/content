@@ -11,11 +11,12 @@ configuration:
   type: 0
   required: true
   additionalinfo: This is base URL for your instance.
-- display: API Key
-  name: credentials
+- name: credentials
   type: 9
   required: true
   additionalinfo: This is API key for your instance, this can be created in Safe Breach User                 Administration -> API keys, it must be saved as there is no way to view it again.
+  displaypassword: API Key
+  hiddenusername: true
 - display: Account ID
   name: account_id
   type: 1
@@ -2038,7 +2039,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.88772
+  dockerimage: demisto/python3:3.11.10.116949
   feed: false
   isfetch: false
   runonce: false

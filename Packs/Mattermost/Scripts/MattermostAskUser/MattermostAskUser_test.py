@@ -20,7 +20,7 @@ def test_MattermostAskUser_with_error(mocker):
         main()
     results = results_mock.call_args[0][0]
     assert results == execute_command_res
-    assert pytest_wrapped_e.type == SystemExit
+    assert pytest_wrapped_e.type is SystemExit
     assert pytest_wrapped_e.value.code == 0
 
 
@@ -36,11 +36,10 @@ def test_MattermostAskUser(mocker):
     from MattermostAskUser import main
     mocker.patch.object(demisto, 'args', return_value={'message': 'message', 'persistent': 'persistent',
                                                        'replyEntriesTag': 'replyEntriesTag',
-                                                       'option1': {'no'}, 'option2': {'yes'},
-                                                       'task': 'none', 'user': {'emai'}})
+                                                       'task': '1', 'user': {'email'}, 'lifetime': 'test'})
     execute_command_add_entitlement_res = [{'Type': EntryType.NOTE, 'Contents': 'some-guid'}]
     execute_command_send_notification_res = [{'Type': EntryType.NOTE, 'HumanReadable':
-                                                                      'Message sent to Slack successfully.'
+                                                                      'Message sent to Mattermost successfully.'
                                                                       ' \nThread ID is: 1660645689.649679'}]
     execute_mock = mocker.patch.object(demisto, 'executeCommand', side_effect=[execute_command_add_entitlement_res,
                                                                                execute_command_send_notification_res])

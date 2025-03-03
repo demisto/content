@@ -1,0 +1,6 @@
+[INGEST:vendor="proofpoint", product="email_security", target_dataset="proofpoint_email_security_raw" , no_hit=keep]
+ filter event_type = "audit"
+| alter tmp_get_xml_keys = rtrim(arraystring(arraymap(regextract(replex(arraystring(audit -> tags[],","),"\.","_"),"name\":\s*\"(.*?)\","),concat("(?P", "<"+"@element"+">", "[^|]+)?\|")),""),"\|")
+| alter tmp_get_xml_values = ltrim(rtrim(replex(replex(replex(arraystring(regextract(replex(arraystring(audit -> tags[],","),"value\":\s*\"\"","value\":\"null\""),"value\":\s*\"(.*?)?\"\}"),"|"),"\<[^>|]+",""),"><","null"),"([<|>]?\|?[<|>])","|"),"|"),"|")
+| alter parsed_fields = if(tmp_get_xml_values = null or tmp_get_xml_values ~= "^\s*$", null, regexcapture(tmp_get_xml_values, tmp_get_xml_keys))
+| fields -tmp_*;

@@ -20,7 +20,7 @@ def load_mock_response(file_name: str) -> str:
         str: Mock file content.
     """
     file_path = os.path.join("test_data", file_name)
-    with open(file_path, mode="r", encoding="utf-8") as mock_file:
+    with open(file_path, encoding="utf-8") as mock_file:
         return json.loads(mock_file.read())
 
 
@@ -555,7 +555,8 @@ def test_protected_hostname_member_create_command(
     requests_mock.get(url=url, json=json_response_get, status_code=200)
     result = protected_hostname_member_create_command(mock_client, args)
     assert result.outputs_prefix == "FortiwebVM.ProtectedHostnameMember"
-    assert isinstance(result.outputs, dict) and result.outputs["id"] == expected_value
+    assert isinstance(result.outputs, dict)
+    assert result.outputs["id"] == expected_value
 
 
 @pytest.mark.parametrize(
@@ -1731,7 +1732,8 @@ def test_ip_list_member_create_command(
 
     result = ip_list_member_create_command(mock_client, args)
     assert result.outputs_prefix == "FortiwebVM.IpListMember"
-    assert isinstance(result.outputs, dict) and result.outputs["id"] == expected_value
+    assert isinstance(result.outputs, dict)
+    assert result.outputs["id"] == expected_value
 
 
 @pytest.mark.parametrize(
@@ -2262,7 +2264,8 @@ def test_http_content_routing_member_add_command(
     }
     result = http_content_routing_member_add_command(mock_client, args)
     assert result.outputs_prefix == "FortiwebVM.HttpContentRoutingMember"
-    assert isinstance(result.outputs, dict) and expected_value == result.outputs["id"]
+    assert isinstance(result.outputs, dict)
+    assert expected_value == result.outputs["id"]
 
 
 @pytest.mark.parametrize(
@@ -3208,7 +3211,7 @@ def test_geo_ip_member_add_command(
     requests_mock.post(url=post_url, json=post_json_response)
     result = geo_ip_member_add_command(mock_client, args)
     assert OutputTitle.GEO_IP_MEMBER_ADD.value in str(result.readable_output)
-    assert "FortiwebVM.GeoIpMember" == result.outputs_prefix
+    assert result.outputs_prefix == "FortiwebVM.GeoIpMember"
     if isinstance(result.outputs, list):
         assert len(result.outputs) == expected_value
 
@@ -6865,7 +6868,7 @@ def test_dependencies_commands(
     assert result.outputs_prefix == outputs_prefix
     assert isinstance(result.outputs, list)
     assert isinstance(result.outputs[0], dict)
-    assert 'id' in result.outputs[0].keys()
+    assert 'id' in result.outputs[0]
 
 
 @pytest.mark.parametrize(

@@ -97,7 +97,7 @@ configuration:
   display: ''
   type: 1
   required: false
-description: This is the RST Threat Feed integration for interacting with API
+description: This is the RST Threat Feed integration for interacting with API.
 display: RST Cloud - Threat Feed API
 name: RST Cloud - Threat Feed API
 script:
@@ -115,13 +115,13 @@ script:
     name: ip
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
-      description: The indicator type
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
@@ -133,7 +133,7 @@ script:
       description: Country of origin.
       type: String
     - contextPath: IP.Tags
-      description: The associated tags
+      description: The associated tags.
       type: String
     - contextPath: IP.Malicious.Vendor
       description: The vendor reporting the IP address as malicious.
@@ -142,19 +142,19 @@ script:
       description: A description explaining why the IP address was reported as malicious.
       type: String
     - contextPath: IP.Malicious.Score
-      description: The score calculated for the indicator by the vendor
+      description: The score calculated for the indicator by the vendor.
       type: String
     - contextPath: RST.IP.Address
       description: The actual IP address.
       type: String
     - contextPath: RST.IP.Geo.Country
-      description: The country name
+      description: The country name.
       type: String
     - contextPath: RST.IP.Geo.Region
-      description: The geo region name
+      description: The geo region name.
       type: String
     - contextPath: RST.IP.Geo.City
-      description: The city name
+      description: The city name.
       type: String
     - contextPath: RST.IP.ASN
       description: The autonomous system name for the IP address.
@@ -172,43 +172,43 @@ script:
       description: The number of domain names for the IP address.
       type: String
     - contextPath: RST.IP.FirstSeen
-      description: First Seen
+      description: First Seen.
       type: Date
     - contextPath: RST.IP.LastSeen
-      description: Last Seen
+      description: Last Seen.
       type: Date
     - contextPath: RST.IP.Tags
-      description: The associated tags
+      description: The associated tags.
       type: String
     - contextPath: RST.IP.Threat
-      description: The associated Malware Family or threat name
+      description: The associated Malware Family or threat name.
       type: String
     - contextPath: RST.IP.Score
-      description: The total score
+      description: The total score.
       type: Number
     - contextPath: RST.IP.UUID
-      description: The unique ID for the indicator
+      description: The unique ID for the indicator.
       type: String
     - contextPath: RST.IP.RSTReference
-      description: The link to the raw JSON indicator
+      description: The link to the raw JSON indicator.
       type: String
     - contextPath: RST.IP.Related
-      description: The associated domains
+      description: The associated domains.
       type: String
     - contextPath: RST.IP.FalsePositive
-      description: true if it is likely a False Positive
+      description: true if it is likely a False Positive.
       type: String
     - contextPath: RST.IP.FalsePositiveDesc
-      description: Description why we think it may be a False Positive
+      description: Description why we think it may be a False Positive.
       type: String
     - contextPath: RST.IP.CVE
-      description: Related CVE (vulnerabilities)
+      description: Related CVE (vulnerabilities).
       type: String
     - contextPath: RST.IP.Industry
-      description: Related Industry
+      description: Related Industry.
       type: String
     - contextPath: RST.IP.Report
-      description: Collected from
+      description: Collected from.
       type: String
   - arguments:
     - default: true
@@ -238,7 +238,7 @@ script:
       description: The domain name.
       type: String
     - contextPath: Domain.Tags
-      description: The associated tags
+      description: The associated tags.
       type: String
     - contextPath: Domain.Malicious.Vendor
       description: The vendor reporting the domain as malicious.
@@ -247,13 +247,13 @@ script:
       description: A description explaining why the domain was reported as malicious.
       type: String
     - contextPath: Domain.Malicious.Score
-      description: The score calculated for the indicator by the vendor
+      description: The score calculated for the indicator by the vendor.
       type: String
     - contextPath: RST.Domain.Name
       description: The domain name.
       type: String
     - contextPath: RST.Domain.WhoisAge
-      description: Days since creation
+      description: Days since creation.
       type: Number
     - contextPath: RST.Domain.WhoisDomainCreationDate
       description: Creation date. Format is ISO8601.
@@ -265,253 +265,253 @@ script:
       description: Expiration date. Format is ISO8601.
       type: Date
     - contextPath: RST.Domain.WhoisRegistrar
-      description: Domain Registrar
+      description: Domain Registrar.
       type: String
     - contextPath: RST.Domain.WhoisRegistrant
-      description: Domain Registrant
+      description: Domain Registrant.
       type: String
     - contextPath: RST.Domain.FirstSeen
-      description: First Seen
+      description: First Seen.
       type: Date
     - contextPath: RST.Domain.LastSeen
-      description: Last Seen
+      description: Last Seen.
       type: Date
     - contextPath: RST.Domain.Tags
-      description: The associated tags
+      description: The associated tags.
       type: String
     - contextPath: RST.Domain.Threat
-      description: The associated Malware Family or threat name
+      description: The associated Malware Family or threat name.
       type: String
     - contextPath: RST.Domain.Score
-      description: The total score
+      description: The total score.
       type: Number
     - contextPath: RST.Domain.UUID
-      description: The unique ID for the indicator
+      description: The unique ID for the indicator.
       type: String
     - contextPath: RST.Domain.RSTReference
-      description: The link to the raw JSON indicator
+      description: The link to the raw JSON indicator.
       type: String
     - contextPath: RST.Domain.Related
-      description: The associated IP addresses
+      description: The associated IP addresses.
       type: String
     - contextPath: RST.Domain.FalsePositive
-      description: true if it is likely a False Positive
+      description: true if it is likely a False Positive.
       type: String
     - contextPath: RST.Domain.FalsePositiveDesc
-      description: Description why we think it may be a False Positive
+      description: Description why we think it may be a False Positive.
       type: String
     - contextPath: RST.Domain.CVE
-      description: Related CVE (vulnerabilities)
+      description: Related CVE (vulnerabilities).
       type: String
     - contextPath: RST.Domain.Industry
-      description: Related Industry
+      description: Related Industry.
       type: String
     - contextPath: RST.Domain.Report
-      description: Collected from
+      description: Collected from.
       type: String
   - arguments:
     - default: true
-      description: List of URLs
+      description: List of URLs.
       isArray: true
       name: url
       required: true
     - defaultValue: '30'
-      description: If the URL has reputation above the threshold then the domain defined as malicious. If threshold not set, then threshold from instance configuration is used
+      description: If the URL has reputation above the threshold then the domain defined as malicious. If threshold not set, then threshold from instance configuration is used.
       name: threshold
     description: Returns URL information and reputation.
     name: url
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
-      description: The indicator type
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: URL.Data
-      description: The URL
+      description: The URL.
       type: String
     - contextPath: URL.Tags
-      description: The associated tags
+      description: The associated tags.
       type: String
     - contextPath: URL.Malicious.Vendor
-      description: The vendor reporting the URL as malicious
+      description: The vendor reporting the URL as malicious.
       type: String
     - contextPath: URL.Malicious.Description
-      description: A description explaining why the URL was reported as malicious
+      description: A description explaining why the URL was reported as malicious.
       type: String
     - contextPath: URL.Malicious.Score
-      description: The score calculated for the URL indicator by the vendor
+      description: The score calculated for the URL indicator by the vendor.
       type: String
     - contextPath: RST.URL.Data
-      description: The URL
+      description: The URL.
       type: String
     - contextPath: RST.URL.Status
-      description: Last HTTP status code
+      description: Last HTTP status code.
       type: String
     - contextPath: RST.URL.FirstSeen
-      description: First Seen
+      description: First Seen.
       type: Date
     - contextPath: RST.URL.LastSeen
-      description: Last Seen
+      description: Last Seen.
       type: Date
     - contextPath: RST.URL.Tags
-      description: The associated tags
+      description: The associated tags.
       type: String
     - contextPath: RST.URL.Threat
-      description: The associated Malware Family or threat name
+      description: The associated Malware Family or threat name.
       type: String
     - contextPath: RST.URL.Score
-      description: The total score
+      description: The total score.
       type: Number
     - contextPath: RST.URL.UUID
-      description: The unique ID for the indicator
+      description: The unique ID for the indicator.
       type: String
     - contextPath: RST.URL.Description
-      description: The associated Description provided by the vendor
+      description: The associated Description provided by the vendor.
       type: String
     - contextPath: RST.URL.FalsePositive
-      description: true if it is likely a False Positive
+      description: true if it is likely a False Positive.
       type: String
     - contextPath: RST.URL.FalsePositiveDesc
-      description: Description why we think it may be a False Positive
+      description: Description why we think it may be a False Positive.
       type: String
     - contextPath: RST.URL.Parsed
-      description: Parsed URL components
+      description: Parsed URL components.
       type: String
     - contextPath: RST.URL.CVE
-      description: Related CVE (vulnerabilities)
+      description: Related CVE (vulnerabilities).
       type: String
     - contextPath: RST.URL.Industry
-      description: Related Industry
+      description: Related Industry.
       type: String
     - contextPath: RST.URL.Report
-      description: Collected from
+      description: Collected from.
       type: String
   - arguments:
     - default: true
       required: true
-      description: List of File Hashes
+      description: List of File Hashes.
       isArray: true
       name: file
     - defaultValue: "10"
-      description: If the Hash has reputation above the threshold then the domain defined as malicious. If threshold not set, then threshold from instance configuration is used
+      description: If the Hash has reputation above the threshold then the domain defined as malicious. If threshold not set, then threshold from instance configuration is used.
       name: threshold
     name: file
     description: Returns File information and reputation.
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
-      description: The indicator type
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: File.Tags
-      description: The associated tags
+      description: The associated tags.
       type: String
     - contextPath: File.Malicious.Vendor
-      description: The vendor reporting the File as malicious
+      description: The vendor reporting the File as malicious.
       type: String
     - contextPath: File.Malicious.Description
-      description: A description explaining why the File was reported as malicious
+      description: A description explaining why the File was reported as malicious.
       type: String
     - contextPath: File.Malicious.Score
-      description: The score calculated for the File indicator by the vendor
+      description: The score calculated for the File indicator by the vendor.
       type: String
     - contextPath: File.Name
-      description: The file name
+      description: The file name.
       type: string
     - contextPath: File.MD5
-      description: MD5 hash of the file
+      description: MD5 hash of the file.
       type: string
     - contextPath: File.SHA1
-      description: SHA1 hash of the file
+      description: SHA1 hash of the file.
       type: string
     - contextPath: File.SHA256
-      description: SHA256 hash of the file
+      description: SHA256 hash of the file.
       type: string
     - contextPath: RST.File.Name
-      description: The file name
+      description: The file name.
       type: string
     - contextPath: RST.File.MD5
-      description: MD5 hash of the file
+      description: MD5 hash of the file.
       type: string
     - contextPath: RST.File.SHA1
-      description: SHA1 hash of the file
+      description: SHA1 hash of the file.
       type: string
     - contextPath: RST.File.SHA256
-      description: SHA256 hash of the file
+      description: SHA256 hash of the file.
       type: string
     - contextPath: RST.File.FirstSeen
-      description: First Seen
+      description: First Seen.
       type: Date
     - contextPath: RST.File.LastSeen
-      description: Last Seen
+      description: Last Seen.
       type: Date
     - contextPath: RST.File.Tags
-      description: The associated tags
+      description: The associated tags.
       type: String
     - contextPath: RST.File.Threat
-      description: The associated Malware Family or threat name
+      description: The associated Malware Family or threat name.
       type: String
     - contextPath: RST.File.Score
-      description: The total score
+      description: The total score.
       type: Number
     - contextPath: RST.File.UUID
-      description: The unique ID for the indicator
+      description: The unique ID for the indicator.
       type: String
     - contextPath: RST.File.Description
-      description: The associated Description provided by the vendor
+      description: The associated Description provided by the vendor.
       type: String
     - contextPath: RST.File.FalsePositive
-      description: true if it is likely a False Positive
+      description: true if it is likely a False Positive.
       type: String
     - contextPath: RST.File.FalsePositiveDesc
-      description: Description why we think it may be a False Positive
+      description: Description why we think it may be a False Positive.
       type: String
     - contextPath: RST.File.CVE
-      description: Related CVE (vulnerabilities)
+      description: Related CVE (vulnerabilities).
       type: String
     - contextPath: RST.File.Industry
-      description: Related Industry
+      description: Related Industry.
       type: String
     - contextPath: RST.File.Report
-      description: Collected from
+      description: Collected from.
       type: String
   - arguments:
     - default: true
-      description: List of IOCs (URLs, domains or IPs)
+      description: List of IOCs (URLs, domains or IPs).
       isArray: true
       name: ioc
       required: true
-    - description: Any context to pass to RST Cloud
+    - description: Any context to pass to RST Cloud.
       isArray: true
       name: description
     description: Submits an indicator to RST Threat Feed.
     name: rst-submit-new
   - arguments:
     - default: true
-      description: List of IOCs (URLs, domains or IPs)
+      description: List of IOCs (URLs, domains or IPs).
       isArray: true
       name: ioc
       required: true
-    - description: Any context to pass to RST Cloud
+    - description: Any context to pass to RST Cloud.
       isArray: true
       name: description
     description: Submits a potential False Positive to RST Threat Feed.
     name: rst-submit-fp
-  dockerimage: demisto/python3:3.10.14.90585
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: '-'
   subtype: python3

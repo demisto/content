@@ -6,16 +6,40 @@
 	"version": -1,
 	"defaultIncidentType": "CrowdStrike Falcon Incident",
 	"keyTypeMap": {
+        "CS Command And Scripting": "Crowdstrike Command And Scripting",
 		"detection": "CrowdStrike Falcon Detection",
 		"incident": "CrowdStrike Falcon Incident",
 		"IDP detection": "CrowdStrike Falcon IDP Detection",
 		"iom_configurations": "CrowdStrike Falcon IOM Event",
 		"ioa_events": "CrowdStrike Falcon IOA Event",
-        "MOBILE detection": "CrowdStrike Falcon Mobile Detection"
+        "MOBILE detection": "CrowdStrike Falcon Mobile Detection",
+        "On-Demand Scans detection": "CrowdStrike Falcon On-Demand Scans Detection",
+        "OFP detection": "CrowdStrike Falcon OFP Detection"
 	},
 	"transformer": {
-		"complex": null,
-		"simple": "incident_type"
+        "complex": {
+			"filters": [],
+			"root": ".",
+			"transformers": [
+				{
+					"args": {
+						"conditions": {
+							"isContext": false,
+							"value": {
+								"simple": "[{\n    \"condition\": \"#{incident_type} == 'detection' and 'T1059' in #{technique_id}\",\n    \"return\": \"CS Command And Scripting\"\n  },\n{\n\"default\": #{incident_type}\n}\n]"
+							}
+						},
+						"flags": {
+							"isContext": false
+						}
+					},
+					"operator": "If-Elif"
+				}
+			]
+		}
 	},
-	"fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

@@ -1,6 +1,9 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
+
 
 from OktaApiModule import *  # noqa: E402
 
@@ -174,19 +177,22 @@ class Client(OktaClient):
             json_data=body
         )
 
-    def set_temp_password(self, user_id):
-        uri = f'/api/v1/users/{user_id}/lifecycle/expire_password'
-
+    def revoke_session(self, user_id):
+        uri = f'/api/v1/users/{user_id}/lifecycle/expire_password_with_temp_password'
+        params = {"revokeSessions": 'true'}
         return self.http_request(
             method="POST",
             url_suffix=uri,
+            params=params
         )
 
-    def expire_password(self, user_id):
+    def expire_password(self, user_id, args):
         uri = f'/api/v1/users/{user_id}/lifecycle/expire_password'
+        params = {"tempPassword": args.get('temporary_password', 'false')}
         return self.http_request(
             method="POST",
-            url_suffix=uri
+            url_suffix=uri,
+            params=params
         )
 
     def add_user_to_group(self, user_id, group_id):
@@ -768,7 +774,7 @@ def get_user_factors_command(client, args):
 
     raw_response = client.get_user_factors(user_id)
     if not raw_response or len(raw_response) == 0:
-        raise Exception('No Factors found')
+        return 'No Factors found'
 
     factors = client.get_readable_factors(raw_response)
     context = createContext(factors, removeNull=True)
@@ -814,7 +820,9 @@ def set_password_command(client, args):
     readable_output = f"{args.get('username')} password was last changed on {raw_response.get('passwordChanged')}"
 
     if argToBoolean(args.get('temporary_password', False)):
-        client.set_temp_password(user_id)
+        expire_password_response = client.expire_password(user_id, args)
+        expire_password_readable_output = tableToMarkdown('Okta Temporary Password', expire_password_response, removeNull=True)
+        readable_output = f"{readable_output}\n{expire_password_readable_output}"
 
     return (
         readable_output,
@@ -825,15 +833,20 @@ def set_password_command(client, args):
 
 def expire_password_command(client, args):
     user_id = client.get_user_id(args.get('username'))
+    hide_password = argToBoolean(args.get('hide_password', False))
+    revoke_session = argToBoolean(args.get('revoke_session', False))
 
     if not (args.get('username') or user_id):
         raise Exception("You must supply either 'Username' or 'userId")
-
-    raw_response = client.expire_password(user_id)
+    if revoke_session is True:
+        raw_response = client.revoke_session(user_id)
+    else:
+        raw_response = client.expire_password(user_id, args)
+    if 'tempPassword' in raw_response and hide_password:
+        raw_response['tempPassword'] = (
+            'Output removed by user. hide_password argument set to True'
+        )
     user_context = client.get_users_context(raw_response)
-
-    if argToBoolean(args.get('temporary_password', True)):
-        client.set_temp_password(user_id)
 
     readable_output = tableToMarkdown('Okta Expired Password', raw_response, removeNull=True)
     outputs = {
@@ -1227,19 +1240,41 @@ def list_zones_command(client, args):
     )
 
 
-def apply_zone_updates(zoneObject, zoneName, gatewayIPs, proxyIPs):
+def apply_zone_updates(zoneObject, zoneName, gatewayIPs, proxyIPs, updateType="OVERRIDE"):
     # If user provided a new zone name - set it
     if zoneName:
         zoneObject["name"] = zoneName
 
-    # Set IPs in CIDR mode. Single IPs will be added as /32.
+    gateways = []
+    proxies = []
+    existing_gateways: list = zoneObject.get('gateways')
+    existing_proxies: list = zoneObject.get('proxies')
+
     if gatewayIPs:
-        CIDRs = [f"{ip}/32" if '/' not in ip else f'{ip}' for ip in gatewayIPs]
-        zoneObject["gateways"] = [{"type": "CIDR", "value": cidr} for cidr in CIDRs]
+        for ip in gatewayIPs:
+            if '-' in ip:  # Check for IP range notation
+                gateways.append({"type": "RANGE", "value": ip})
+            else:  # If not a range, treat it as a single IP
+                cidr_value = f"{ip}/32" if '/' not in ip else f'{ip}'
+                gateways.append({"type": "CIDR", "value": cidr_value})
+
+        if existing_gateways is not None and updateType == "APPEND":
+            zoneObject["gateways"] = existing_gateways + gateways
+        else:
+            zoneObject["gateways"] = gateways
 
     if proxyIPs:
-        CIDRs = [f"{ip}/32" if '/' not in ip else f'{ip}' for ip in proxyIPs]
-        zoneObject["proxies"] = [{"type": "CIDR", "value": cidr} for cidr in CIDRs]
+        for ip in proxyIPs:
+            if '-' in ip:  # Check for IP range notation
+                proxies.append({"type": "RANGE", "value": ip})
+            else:  # If not a range, treat it as a single IP
+                cidr_value = f"{ip}/32" if '/' not in ip else f'{ip}'
+                proxies.append({"type": "CIDR", "value": cidr_value})
+
+        if existing_proxies is not None and updateType == "APPEND":
+            zoneObject["proxies"] = existing_proxies + proxies
+        else:
+            zoneObject["proxies"] = proxies
 
     return zoneObject
 
@@ -1284,12 +1319,13 @@ def update_zone_command(client, args):
             'Nothing to update'
         )
     zoneID = args.get('zoneID', '')
+    updateType = args.get('updateType')
     zoneObject = client.get_zone(zoneID)
     if zoneID == zoneObject.get('id'):
         zoneName = args.get('zoneName', '')
         gatewayIPs = argToList(args.get('gatewayIPs', ''))
         proxyIPs = argToList(args.get('proxyIPs', ''))
-        zoneObject = apply_zone_updates(zoneObject, zoneName, gatewayIPs, proxyIPs)
+        zoneObject = apply_zone_updates(zoneObject, zoneName, gatewayIPs, proxyIPs, updateType)
 
         raw_response = client.update_zone(zoneObject)
         if not raw_response:
@@ -1436,6 +1472,7 @@ def main():
             scopes=OAUTH_TOKEN_SCOPES,
             private_key=params.get('private_key'),
             jwt_algorithm=JWTAlgorithm(params['jwt_algorithm']) if params.get('jwt_algorithm') else None,
+            key_id=params.get('key_id', None),
         )
 
         if command in commands:

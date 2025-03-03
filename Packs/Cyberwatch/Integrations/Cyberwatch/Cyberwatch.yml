@@ -1,0 +1,418 @@
+category: Vulnerability Management
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: Cyberwatch
+  version: -1
+configuration:
+- display: Master scanner URL (e.g. https://192.168.0.1)
+  name: master_scanner_url
+  required: true
+  type: 0
+  section: Connect
+  additionalinfo: The Cyberwatch master scanner URL.
+- display: API Access key
+  name: api_access_key
+  type: 0
+  section: Connect
+  additionalinfo: See the Cyberwatch documentation for instructions to generate the API access and secret keys.
+  required: true
+- display: API Secret key
+  name: api_secret_key
+  type: 4
+  section: Connect
+  additionalinfo: See the Cyberwatch documentation for instructions to generate the API access and secret keys.
+  required: true
+- display: Trust any certificate (not secure)
+  name: unsecure
+  type: 8
+  section: Connect
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+description: Get Assets, CVEs, and Security Issues data from Cyberwatch Vulnerability and Compliance Manager.
+display: Cyberwatch
+name: Cyberwatch
+script:
+  commands:
+  - arguments:
+    - name: exploit_code_maturity[]
+      auto: PREDEFINED
+      required: false
+      isArray: true
+      description: 'Filter CVE announcements with exploit_code_maturity. Available values: undefined, unproven, proof_of_concept, functional, high.'
+      predefined:
+      - undefined
+      - unproven
+      - proof_of_concept
+      - functional
+      - high
+    - name: access_vector[]
+      auto: PREDEFINED
+      required: false
+      isArray: true
+      description: 'Filter CVE announcements with access_vector. Available values: access_vector_physical, access_vector_local, access_vector_adjacent, access_vector_network.'
+      predefined:
+      - access_vector_physical
+      - access_vector_local
+      - access_vector_adjacent
+      - access_vector_network
+    - name: active
+      auto: PREDEFINED
+      required: false
+      isArray: false
+      description: Filter CVE announcements that are active or not (true or false).
+      predefined:
+      - 'true'
+      - 'false'
+    - name: level
+      auto: PREDEFINED
+      required: false
+      isArray: false
+      description: 'Filter CVE announcements based on their level. Available values: level_unknown, level_none, level_low, level_medium, level_high, level_critical.'
+      predefined:
+      - level_unknown
+      - level_none
+      - level_low
+      - level_medium
+      - level_high
+      - level_critical
+    - name: ignored
+      auto: PREDEFINED
+      required: false
+      isArray: false
+      description: Filter CVE announcements that are ignored or not  (true or false).
+      predefined:
+      - 'true'
+      - 'false'
+    - name: prioritized
+      auto: PREDEFINED
+      required: false
+      isArray: false
+      description: Filter CVE announcements that are prioritized or not (true or false).
+      predefined:
+      - 'true'
+      - 'false'
+    - name: technology_product
+      required: false
+      isArray: false
+      description: Filter CVE announcements with technology_product (CPE product field).
+    - name: technology_vendor
+      required: false
+      isArray: false
+      description: Filter CVE announcements with technology_vendor (CPE vendor field).
+    - name: groups[]
+      required: false
+      isArray: true
+      description: Filter CVE announcements with a list of groups. Multiple groups can be provided with comma, e.g. groups[]=GroupA,GroupB.
+    - name: page
+      required: false
+      isArray: false
+      description: Get a specific CVE announcements page. If not specified, get all CVEs.
+    - name: per_page
+      defaultValue: 500
+      required: false
+      isArray: false
+      description: Specify the number of CVE per page. Default value 500.
+    - name: hard_limit
+      defaultValue: 2000
+      required: false
+      isArray: false
+      description: Specify the maximum number of results. This is useful to avoid memory issues on Cortex. Default value is 2000.
+    description: Get a list of CVEs from Cyberwatch (up to hard_limit results, default 2000).
+    name: cyberwatch-list-cves
+    outputs:
+    - contextPath: Cyberwatch.CVE.cve_code
+      description: CVE reference.
+      type: string
+    - contextPath: Cyberwatch.CVE.score
+      description: CVE score.
+      type: number
+    - contextPath: Cyberwatch.CVE.exploitable
+      description: CVE exploitability.
+      type: boolean
+    - contextPath: Cyberwatch.CVE.epss
+      description: CVE EPSS.
+      type: number
+    - contextPath: Cyberwatch.CVE.published
+      description: CVE publication date.
+      type: date
+    - contextPath: Cyberwatch.CVE.last_modified
+      description: CVE last modification date.
+      type: date
+  - arguments:
+    - name: cve_code
+      required: true
+      isArray: false
+      description: The CVE number to fetch.
+    description: Get all details for a CVE from Cyberwatch.
+    name: cyberwatch-fetch-cve
+    outputs:
+    - contextPath: Cyberwatch.CVE.cve_code
+      description: CVE reference.
+      type: string
+    - contextPath: Cyberwatch.CVE.score
+      description: CVE score.
+      type: number
+    - contextPath: Cyberwatch.CVE.exploitable
+      description: CVE exploitability.
+      type: boolean
+    - contextPath: Cyberwatch.CVE.epss
+      description: CVE EPSS.
+      type: number
+    - contextPath: Cyberwatch.CVE.published
+      description: CVE publication date.
+      type: date
+    - contextPath: Cyberwatch.CVE.last_modified
+      description: CVE last modification date.
+      type: date
+  - arguments:
+    - name: environment_id
+      required: false
+      isArray: false
+      description: Filter assets by environment (criticality) ID.
+    - name: reboot_required
+      auto: PREDEFINED
+      required: false
+      isArray: false
+      description: Filter assets that require a reboot (true or false).
+      predefined:
+      - 'true'
+      - 'false'
+    - name: os
+      required: false
+      isArray: false
+      description: Filter assets by OS (must use keys as mentioned on <URL_SCANNER>/cbw_assets/os).
+    - name: group_id
+      required: false
+      isArray: false
+      description: Filter assets by group ID.
+    - name: hostname
+      required: false
+      isArray: false
+      description: Filter assets by hostname.
+    - name: address
+      required: false
+      isArray: false
+      description: Filter assets by IP address.
+    - name: category
+      auto: PREDEFINED
+      required: false
+      isArray: false
+      description: 'Filter assets by category. Available values : no_category, server, desktop, hypervisor, network_device, network_target_or_website, docker_image, industrial_device, cloud, mobile.'
+      predefined:
+      - no_category
+      - server
+      - desktop
+      - hypervisor
+      - network_device
+      - network_target_or_website
+      - docker_image
+      - industrial_device
+      - cloud
+      - mobile
+    - name: communication_failed
+      auto: PREDEFINED
+      required: false
+      isArray: false
+      description: Filter assets with communication failed (true or false).
+      predefined:
+      - 'true'
+      - 'false'
+    - name: page
+      required: false
+      isArray: false
+      description: Get a specific asset page. If not specified, get all assets.
+    - name: per_page
+      defaultValue: 500
+      required: false
+      isArray: false
+      description: Specify the number of assets per page. Default value 500.
+    description: Get a list of assets scanned by Cyberwatch.
+    name: cyberwatch-list-assets
+    outputs:
+    - contextPath: Cyberwatch.Asset.id
+      description: Asset ID.
+      type: number
+    - contextPath: Cyberwatch.Asset.hostname
+      description: Asset hostname.
+      type: string
+    - contextPath: Cyberwatch.Asset.description
+      description: Asset description.
+      type: string
+    - contextPath: Cyberwatch.Asset.created_at
+      description: Asset creation date.
+      type: date
+    - contextPath: Cyberwatch.Asset.last_communication
+      description: Asset last communication date.
+      type: date
+    - contextPath: Cyberwatch.Asset.analyzed_at
+      description: Asset last analysis date.
+      type: date
+    - contextPath: Cyberwatch.Asset.cve_announcements_count
+      description: Number of active CVEs on the asset.
+      type: number
+    - contextPath: Cyberwatch.Asset.updates_count
+      description: Number of recommended security updates on the asset.
+      type: number
+    - contextPath: Cyberwatch.Asset.prioritized_cve_announcements_count
+      description: Number of prioritized CVEs on the asset.
+      type: number
+    - contextPath: Cyberwatch.Asset.reboot_required
+      description: Asset reboot requirement.
+      type: boolean
+  - arguments:
+    - name: id
+      required: true
+      isArray: false
+      description: The asset ID to fetch.
+    description: Get security details for an asset scanned by Cyberwatch.
+    name: cyberwatch-fetch-asset
+    outputs:
+    - contextPath: Cyberwatch.Asset.id
+      description: Asset ID.
+      type: number
+    - contextPath: Cyberwatch.Asset.hostname
+      description: Asset hostname.
+      type: string
+    - contextPath: Cyberwatch.Asset.description
+      description: Asset description.
+      type: string
+    - contextPath: Cyberwatch.Asset.created_at
+      description: Asset creation date.
+      type: date
+    - contextPath: Cyberwatch.Asset.last_communication
+      description: Asset last communication date.
+      type: date
+    - contextPath: Cyberwatch.Asset.analyzed_at
+      description: Asset last analysis date.
+      type: date
+    - contextPath: Cyberwatch.Asset.cve_announcements_count
+      description: Number of active CVEs on the asset.
+      type: number
+    - contextPath: Cyberwatch.Asset.prioritized_cve_announcements_count
+      description: Number of prioritized CVEs on the asset.
+      type: number
+    - contextPath: Cyberwatch.Asset.reboot_required
+      description: Asset reboot requirement.
+      type: boolean
+  - arguments:
+    - name: id
+      required: true
+      isArray: false
+      description: The asset ID to fetch with all details.
+    description: Get all details for an asset scanned by Cyberwatch, including packages, ports, services, metadata.
+    name: cyberwatch-fetch-asset-fulldetails
+    outputs:
+    - contextPath: Cyberwatch.Asset.id
+      description: Asset ID.
+      type: number
+    - contextPath: Cyberwatch.Asset.hostname
+      description: Asset hostname.
+      type: string
+    - contextPath: Cyberwatch.Asset.description
+      description: Asset description.
+      type: string
+    - contextPath: Cyberwatch.Asset.created_at
+      description: Asset creation date.
+      type: date
+    - contextPath: Cyberwatch.Asset.last_communication
+      description: Asset last communication date.
+      type: date
+    - contextPath: Cyberwatch.Asset.analyzed_at
+      description: Asset last analysis date.
+      type: date
+    - contextPath: Cyberwatch.Asset.cve_announcements_count
+      description: Number of active CVEs on the asset.
+      type: number
+    - contextPath: Cyberwatch.Asset.prioritized_cve_announcements_count
+      description: Number of prioritized CVEs on the asset.
+      type: number
+    - contextPath: Cyberwatch.Asset.reboot_required
+      description: Asset reboot requirement.
+      type: boolean
+  - arguments:
+    - name: level
+      auto: PREDEFINED
+      required: false
+      isArray: false
+      description: 'Filter Security Issues based on their level. Available values: level_info, level_low, level_medium, level_high, level_critical.'
+      predefined:
+      - level_info
+      - level_low
+      - level_medium
+      - level_high
+      - level_critical
+    - name: sid
+      required: false
+      isArray: false
+      description: Filter Security Issues by Security Issue reference / sid.
+    - name: page
+      required: false
+      isArray: false
+      description: Get a specific Security Issues page. If not specified, get all Security Issues.
+    - name: per_page
+      defaultValue: 500
+      required: false
+      isArray: false
+      description: Specify the number of Security Issues per page. Default value 500.
+    description: Get a list of Security issues from Cyberwatch.
+    name: cyberwatch-list-securityissues
+    outputs:
+    - contextPath: Cyberwatch.SecurityIssue.id
+      description: Security Issue ID.
+      type: number
+    - contextPath: Cyberwatch.SecurityIssue.title
+      description: Security Issue title.
+      type: string
+    - contextPath: Cyberwatch.SecurityIssue.description
+      description: Security Issue description.
+      type: string
+    - contextPath: Cyberwatch.SecurityIssue.level
+      description: Security Issue level.
+      type: string
+    - contextPath: Cyberwatch.SecurityIssue.sid
+      description: Security Issue SID.
+      type: string
+    - contextPath: Cyberwatch.SecurityIssue.editable
+      description: Security Issue editability.
+      type: boolean
+  - arguments:
+    - name: id
+      required: true
+      isArray: false
+      description: The Security Issue ID to fetch.
+    description: Get all details for a Security issue from Cyberwatch.
+    name: cyberwatch-fetch-securityissue
+    outputs:
+    - contextPath: Cyberwatch.SecurityIssue.id
+      description: Security Issue ID.
+      type: number
+    - contextPath: Cyberwatch.SecurityIssue.title
+      description: Security Issue title.
+      type: string
+    - contextPath: Cyberwatch.SecurityIssue.description
+      description: Security Issue description.
+      type: string
+    - contextPath: Cyberwatch.SecurityIssue.level
+      description: Security Issue level.
+      type: string
+    - contextPath: Cyberwatch.SecurityIssue.sid
+      description: Security Issue SID.
+      type: string
+    - contextPath: Cyberwatch.SecurityIssue.editable
+      description: Security Issue editability.
+      type: boolean
+  isfetch: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.11.10.115186
+tests:
+- No test - no instance
+fromversion: 6.10.0

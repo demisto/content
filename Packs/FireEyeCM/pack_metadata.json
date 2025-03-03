@@ -2,7 +2,7 @@
     "name": "FireEye Central Management",
     "description": "FireEye Central Management (CM Series) is the FireEye threat intelligence hub. It services the FireEye ecosystem, ensuring that FireEye products share the latest intelligence and correlate across attack vectors to detect and prevent cyber attacks",
     "support": "xsoar",
-    "currentVersion": "1.1.23",
+    "currentVersion": "1.1.25",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

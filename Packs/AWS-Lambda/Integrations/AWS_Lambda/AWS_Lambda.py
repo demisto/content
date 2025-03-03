@@ -94,7 +94,7 @@ def parse_tag_field(tags_str):
     for f in tags_str.split(';'):
         match = regex.match(f)
         if match is None:
-            demisto.debug('could not parse field: %s' % (f,))
+            demisto.debug(f'could not parse field: {f}')
             continue
 
         tags.append({
@@ -262,7 +262,7 @@ def list_aliases(args, aws_client):
     try:
         raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
     except ValueError as e:
-        return_error('Could not decode/encode the raw response - {err_msg}'.format(err_msg=e))
+        return_error(f'Could not decode/encode the raw response - {e}')
     ec = {'AWS.Lambda.Aliases(val.AliasArn === obj.AliasArn)': raw}
     human_readable = tableToMarkdown('AWS Lambda Aliases', data)
     return_outputs(human_readable, ec)
@@ -289,6 +289,7 @@ def invoke(args, aws_client):
     data = ({
         'FunctionName': args.get('functionName'),
         'Region': obj['_user_provided_options']['region_name'],
+        'RequestPayload': args.get('payload'),
     })
     if 'LogResult' in response:
         data.update({'LogResult': base64.b64decode(response['LogResult']).decode("utf-8")})  # type:ignore
@@ -299,9 +300,13 @@ def invoke(args, aws_client):
     if 'FunctionError' in response:
         data.update({'FunctionError': response['FunctionError']})
 
-    ec = {'AWS.Lambda.InvokedFunctions(val.FunctionName === obj.FunctionName)': data}
     human_readable = tableToMarkdown('AWS Lambda Invoked Functions', data)
-    return_outputs(human_readable, ec)
+    return CommandResults(
+        outputs=data,
+        readable_output=human_readable,
+        outputs_prefix="AWS.Lambda.InvokedFunctions",
+        outputs_key_field=["FunctionName", "RequestPayload"]
+    )
 
 
 def remove_permission(args, aws_client):
@@ -342,7 +347,7 @@ def get_account_settings(args, aws_client):
     try:
         raw = json.loads(json.dumps(response, cls=DatetimeEncoder))
     except ValueError as e:
-        return_error('Could not decode/encode the raw response - {err_msg}'.format(err_msg=e))
+        return_error(f'Could not decode/encode the raw response - {e}')
     if raw:
         raw.update({'Region': obj['_user_provided_options']['region_name']})
 
@@ -766,7 +771,7 @@ def main():
             case 'aws-lambda-list-aliases':
                 list_aliases(args, aws_client)
             case 'aws-lambda-invoke':
-                invoke(args, aws_client)
+                return_results(invoke(args, aws_client))
             case 'aws-lambda-remove-permission':
                 remove_permission(args, aws_client)
             case 'aws-lambda-get-account-settings':

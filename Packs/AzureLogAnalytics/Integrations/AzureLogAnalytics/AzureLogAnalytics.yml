@@ -3,88 +3,112 @@ commonfields:
   id: Azure Log Analytics
   version: -1
 configuration:
+- additionalinfo: When selecting the Custom option, the Server URL parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
+  display: Azure Cloud
+  name: azure_cloud
+  type: 15
+  required: false
+  defaultvalue: Worldwide
+  options:
+  - Worldwide
+  - US GCC
+  - US GCC-High
+  - DoD
+  - Germany
+  - China
+  - Custom
+  section: Connect
+  advanced: true
+- name: server_url
+  type: 0
+  required: false
+  section: Connect
+  display: Server URL
+  advanced: true
+  hidden: false
+  additionalinfo: Use this option when required to customize the URL to the Azure management endpoint. More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
 - additionalinfo: Received from the authorization process or from the self-deployed configuration process (find the tenant ID in your app overview page in the Azure portal)
   display: Token / Tenant ID
   name: refresh_token
-  hidden: true
   type: 4
   required: false
-- displaypassword: Token / Tenant ID
-  name: credentials_refresh_token
-  hiddenusername: true
+  hidden: true
+- name: credentials_refresh_token
   type: 9
   required: false
+  displaypassword: Token / Tenant ID
+  hiddenusername: true
   section: Connect
-- additionalinfo: Received from the authorization process or from the self-deployed configuration process.
-  display: ID / Client ID
+- displaypassword: Key / Client Secret
   name: credentials
   type: 9
+  additionalinfo: Received from the authorization process or from the self-deployed configuration process.
   required: false
-  displaypassword: Key / Client Secret
   section: Connect
+  display: ID / Client ID
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
-  hidden: true
   type: 4
   required: false
-- displaypassword: Certificate Thumbprint
+  hidden: true
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   name: credentials_certificate_thumbprint
-  hiddenusername: true
   type: 9
-  additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   required: false
   section: Connect
+  displaypassword: Certificate Thumbprint
+  hiddenusername: true
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
   type: 14
   required: false
   section: Connect
-- additionalinfo: Check when authenticating using the Authorization Code flow.
-  display: Use a self-deployed Azure application - Authorization Code flow
+- display: Use a self-deployed Azure application - Authorization Code flow
   name: self_deployed
   type: 8
   required: false
   section: Connect
+  additionalinfo: Check when authenticating using the Authorization Code flow.
 - additionalinfo: Check when authenticating using the Client Credentials flow.
   display: Use a self-deployed Azure application - Client Credentials Flow
   name: client_credentials
   type: 8
   required: false
   section: Connect
-- display: Application redirect URI (for self-deployed mode)
-  name: redirect_uri
+- name: redirect_uri
   type: 0
   required: false
   section: Connect
+  display: Application redirect URI (for self-deployed mode)
 - additionalinfo: Get the Authorization code from steps 3-5 in the self deployed authorization process.
   display: Authorization code
   name: auth_code
   type: 4
-  hidden: true
   required: false
-- displaypassword: Authorization code
+  hidden: true
+- additionalinfo: Get the Authorization code from steps 3-5 in the self deployed authorization process.
+  displaypassword: Authorization code
   name: credentials_auth_code
   hiddenusername: true
   type: 9
-  additionalinfo: Get the Authorization code from steps 3-5 in the self deployed authorization process.
   required: false
   section: Connect
-- additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
-  display: Use Azure Managed Identities
+- display: Use Azure Managed Identities
   name: use_managed_identities
-  type: 8
   required: false
+  type: 8
+  additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   section: Connect
   advanced: true
-- additionalinfo: The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM.
-  displaypassword: Azure Managed Identities Client ID
-  name: managed_identities_client_id
-  hiddenusername: true
-  type: 9
+- name: managed_identities_client_id
   required: false
+  type: 9
+  additionalinfo: The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM.
   section: Connect
+  displaypassword: Azure Managed Identities Client ID
+  hiddenusername: true
   advanced: true
 - display: Default Subscription ID
   name: subscriptionID
@@ -100,16 +124,16 @@ configuration:
   section: Connect
 - display: Default Workspace Name
   name: workspaceName
-  required: true
   type: 0
-  additionalinfo: The parameter can be saved as 000-000 and added as an argument to each command.
+  required: true
   section: Connect
+  additionalinfo: The parameter can be saved as 000-000 and added as an argument to each command.
 - display: Default Workspace ID (the UUID of the workspace, e.g. 123e4567-e89b-12d3-a456-426614174000)
   name: workspaceID
-  required: true
   type: 0
-  additionalinfo: The parameter can be saved as 000-000 and added as an argument to each command, but Test button will fail.
+  required: true
   section: Connect
+  additionalinfo: The parameter can be saved as 000-000 and added as an argument to each command, but Test button will fail.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -683,7 +707,7 @@ script:
       name: workspace_name
     description: Delete a Log Analytics workspace table. We recommend you delete the search job when you're done querying the table. This reduces workspace clutter and extra charges for data retention.
     name: azure-log-analytics-delete-search-job
-  dockerimage: demisto/crypto:1.0.0.96042
+  dockerimage: demisto/crypto:1.0.0.117163
   runonce: false
   script: '-'
   subtype: python3

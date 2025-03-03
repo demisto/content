@@ -200,8 +200,8 @@ def test_convert_kusto_response_to_dict():
     kusto_format_response = KustoResponseDataSetV1(mock_response)
     dict_kusto = convert_kusto_response_to_dict(kusto_format_response, page=1, limit=1)
     assert len(dict_kusto) == 1
-    assert type(dict_kusto[0]['StartTime']) == str
-    assert type(dict_kusto[0]['EndTime']) == str
+    assert type(dict_kusto[0]['StartTime']) is str
+    assert type(dict_kusto[0]['EndTime']) is str
 
 
 def test_format_header_for_list_commands():
@@ -264,7 +264,7 @@ def test_validate_list_command_arguments():
 
 @pytest.mark.parametrize('auth_type, expected_results', [
     ('Device Code', "Please enable the integration and run `!azure-data-explorer-auth-start`"),
-    ('Authorization Code', "When using user auth flow configuration,")])
+    ('Authorization Code', "When using user auth flow configuration, ")])
 def test_test_module_command(mocker, auth_type, expected_results):
     """
         Given:

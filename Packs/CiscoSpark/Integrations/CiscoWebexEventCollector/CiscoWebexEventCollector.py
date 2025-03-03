@@ -22,6 +22,18 @@ DEFAULT_MAX_FETCH = 200
 ''' HELPER FUNCTIONS '''
 
 
+def remove_integration_context_for_user(user: str):
+    """
+    Remove integration context for a user.
+    Used when running the oath-start command to avoid using the deprecated access token saved in the context data.
+    Args:
+        user: The user to remove the integration context for.
+    """
+    integration_context = get_integration_context()
+    integration_context[user] = {}
+    set_integration_context(integration_context)
+
+
 def date_time_to_iso_format(date_time: datetime) -> str:
     """
     Gets a datetime object and returns s string represents a datetime is ISO format.
@@ -113,7 +125,7 @@ class Client(BaseClient):
             client_secret=self.client_secret,
             redirect_uri=self.redirect_uri,
         )
-        return self._http_request(method='POST', url_suffix='access_token', headers=headers, params=params)
+        return self._http_request(method='POST', url_suffix='access_token', headers=headers, data=params)
 
     def save_tokens_to_integration_context(self, result: dict):
         """
@@ -185,8 +197,7 @@ class Client(BaseClient):
 
 class AdminClient(Client):
     def __init__(self, url: str, verify: bool, proxy: bool, client_id: str, client_secret: str, redirect_uri: str,
-                 scope: str | None,
-                 org_id: str):
+                 scope: str | None, org_id: str):
         super().__init__(url, verify, proxy, client_id, client_secret, redirect_uri, scope, user='admin')
         self.org_id = org_id
         self._headers = {
@@ -458,8 +469,9 @@ def main() -> None:  # pragma: no cover
     max_fetch = arg_to_number(params.get('max_fetch', DEFAULT_MAX_FETCH)) or DEFAULT_MAX_FETCH
     if not 0 < max_fetch <= 2000:
         max_fetch = DEFAULT_MAX_FETCH
+    user = args.get('user')
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f'Command being called is {command}')
 
     try:
         admin_client = AdminClient(
@@ -483,21 +495,22 @@ def main() -> None:  # pragma: no cover
             scope=SCOPE.get('compliance_officer'),
         )
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             test_module()
 
-        elif demisto.command() == 'cisco-webex-oauth-start':
-            client = admin_client if args.get('user') == 'admin' else compliance_officer_client
+        elif command == 'cisco-webex-oauth-start':
+            remove_integration_context_for_user(user)
+            client = admin_client if user == 'admin' else compliance_officer_client
             result = oauth_start(client)
             return_results(result)
 
-        elif demisto.command() == 'cisco-webex-oauth-complete':
-            client = admin_client if args.get('user') == 'admin' else compliance_officer_client
+        elif command == 'cisco-webex-oauth-complete':
+            client = admin_client if user == 'admin' else compliance_officer_client
             result = oauth_complete(client, args)
             return_results(result)
 
-        elif demisto.command() == 'cisco-webex-oauth-test':
-            client = admin_client if args.get('user') == 'admin' else compliance_officer_client
+        elif command == 'cisco-webex-oauth-test':
+            client = admin_client if user == 'admin' else compliance_officer_client
             result = oauth_test(client)
             return_results(result)
 
@@ -533,7 +546,7 @@ def main() -> None:  # pragma: no cover
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''

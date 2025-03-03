@@ -133,7 +133,7 @@ class TestParseCSV:
         result = self.get_demisto_results()
 
         ips_result = result.get('EntryContext', {}).get('IP', [])
-        if ips_result and '1.1.1.1' != ips_result[0].get('Address'):
+        if ips_result and ips_result[0].get('Address') != '1.1.1.1':
             result['EntryContext']['IP'].reverse()
 
         domains_result = result.get('EntryContext', {}).get('Domain', [])

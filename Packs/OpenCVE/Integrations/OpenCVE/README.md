@@ -1,24 +1,20 @@
 Ingests CVEs from an instance of OpenCVE.
 
-## Configure OpenCVE on Cortex XSOAR
+## Configure OpenCVE in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for OpenCVE.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL |  | True |
-    | Username |  | True |
-    | Password |  | True |
-    | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    | Trust any certificate (not secure) |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL |  | True |
+| Username |  | True |
+| Password |  | True |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
+| Trust any certificate (not secure) |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### opencve-latest
@@ -47,7 +43,7 @@ Returns the latest updated CVEs from your reports.
 | CVE.Modified | Date | The date that the CVE was last modified. | 
 | CVE.Description | String | The description of the CVE. | 
 | DBotScore.Indicator | String | The indicator value. | 
-| DBotScore.Score | Number | The indicator score. | 
+| DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor reporting the score of the indicator. | 
 
@@ -75,10 +71,10 @@ Returns CVE information by CVE ID.
 | CVE.Published | Date | The date the CVE was published. | 
 | CVE.Modified | Date | The date that the CVE was last modified. | 
 | CVE.Description | String | The description of the CVE. | 
-| DBotScore.Indicator | String | The indicator value. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Score | Number | The indicator score. | 
 | DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor reporting the score of the indicator. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
 
 ### opencve-get-my-vendors
 

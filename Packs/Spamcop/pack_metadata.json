@@ -2,7 +2,7 @@
     "name": "Spamcop",
     "description": "SpamCop is an email spam reporting service, integration allow checking the reputation of an IP address",
     "support": "community",
-    "currentVersion": "1.0.7",
+    "currentVersion": "1.0.10",
     "author": "Harri Ruuttila",
     "url": "",
     "email": "harri@ruuttila.com",

@@ -1,0 +1,31 @@
+{
+    "id": "incident_recordedfutureidentitydumpname",
+    "version": -1,
+    "modified": "2024-04-16T17:05:17.637377603Z",
+    "name": "Recorded Future Identity Dump Name",
+    "ownerOnly": false,
+    "cliName": "recordedfutureidentitydumpname",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Recorded Future Identity Exposure"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

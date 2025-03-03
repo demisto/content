@@ -2,7 +2,7 @@
     "name": "Proofpoint Threat Response",
     "description": "Use the Proofpoint Threat Response integration to orchestrate and automate incident response.",
     "support": "xsoar",
-    "currentVersion": "2.0.16",
+    "currentVersion": "2.0.23",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

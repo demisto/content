@@ -41,7 +41,7 @@ configuration:
   section: Connect
   advanced: true
 description: Use this integration to fetch security incidents from Forcepoint DLP as Cortex XSIAM events.
-display: Forcepoint DLP (Beta) Event Collector
+display: Forcepoint DLP Event Collector (Beta)
 name: Forcepoint DLP Event Collector
 beta: true
 script:
@@ -72,7 +72,7 @@ script:
       required: true
     description: Gets security events from Forcepoint DLP.
     name: forcepoint-dlp-get-events
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.11.10.115186
   isfetchevents: true
   runonce: false
   script: ''

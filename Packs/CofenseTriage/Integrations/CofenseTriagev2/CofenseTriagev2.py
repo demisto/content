@@ -299,7 +299,7 @@ class TriageReporters:
 
     def reporters(self):
         return [
-            TriageReporter(self.triage_instance, response["id"])  # TODO causes unnecessary extra request---we can just pass in `response`, which has all the fields already # noqa: 501
+            TriageReporter(self.triage_instance, response["id"])  # TODO causes unnecessary extra request---we can just pass in `response`, which has all the fields already # noqa: E501
             for response in self.fetch_reporters()
         ]
 
@@ -438,10 +438,10 @@ def search_reports_command(triage_instance) -> None:
     file_hash = demisto.getArg('file_hash')  # type: str
     reported_at = parse_date_range(demisto.args().get('reported_at', '7 days'))[
         0
-    ].replace(tzinfo=timezone.utc)
+    ].replace(tzinfo=timezone.utc)  # noqa: UP017
     created_at = parse_date_range(demisto.args().get('created_at', '7 days'))[
         0
-    ].replace(tzinfo=timezone.utc)
+    ].replace(tzinfo=timezone.utc)  # noqa: UP017
     try:
         max_matches = int(demisto.getArg('max_matches'))  # type: int
     except ValueError:
@@ -536,7 +536,7 @@ def search_reports(
 def search_inbox_reports_command(triage_instance) -> None:
     reported_at = parse_date_range(demisto.args().get("reported_at", "7 days"))[
         0
-    ].replace(tzinfo=timezone.utc)
+    ].replace(tzinfo=timezone.utc)  # noqa: UP017
 
     try:
         reporters_clause = build_reporters_clause(triage_instance)

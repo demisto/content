@@ -2,7 +2,7 @@
     "name": "FortiSIEM",
     "description": "Search and update events of FortiSIEM and manage resource lists.",
     "support": "xsoar",
-    "currentVersion": "2.0.35",
+    "currentVersion": "2.0.40",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

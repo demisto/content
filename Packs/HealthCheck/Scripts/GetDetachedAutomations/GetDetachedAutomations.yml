@@ -1,0 +1,23 @@
+comment: Get the list of detached automations.
+commonfields:
+  id: getDetachedAutomations
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.11.10.115186
+enabled: true
+engineinfo: {}
+name: getDetachedAutomations
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- statusreview
+- widget
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

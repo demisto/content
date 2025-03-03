@@ -13,7 +13,7 @@ description: |-
   * Sophos
   * Forcepoint
   * Checkpoint
-  * Netcraft
+  * Netcraft.
 starttaskid: "0"
 tasks:
   "0":
@@ -296,6 +296,9 @@ tasks:
       device-group:
         complex:
           root: inputs.device-group
+      type:
+        complex:
+          root: inputs.type
     separatecontext: true
     loop:
       iscommand: false
@@ -814,7 +817,8 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: Administrator,Analyst
+        simple: Analyst
+        simple:marketplacev2: Investigator
       subject:
         simple: 'User Verification - Block URLs (Inc #${incident.id})'
       body:
@@ -1411,7 +1415,7 @@ inputs:
     For prisma SASE usage - Specify the scope for a newly created security rule to be applied.
     Remember, this input will only be used when there is no input to the CategoryName.
     Default: Shared
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)

@@ -1,7 +1,7 @@
 # Barracuda Cloudgen Firewall
 This pack includes Cortex XSIAM content. 
 ## Configuration on Server Side
-You need to configure Check Point to forward Syslog messages in CEF format.
+You need to configure Barracuda Cloudgen Firewall to forward Syslog messages.
 
 1. Go to **CONFIGURATION** > **Full Configuration** > **Box** > **Infrastructure Services** > **Syslog Streaming**.
 2.  Click **Lock**.

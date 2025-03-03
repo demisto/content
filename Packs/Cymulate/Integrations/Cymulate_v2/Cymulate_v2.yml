@@ -356,13 +356,13 @@ script:
       description: Assessment categories.
       type: String
   - arguments:
-    - description: Browsing address
+    - description: Browsing address.
       name: browsing_address
     - description: Browsing Agent profile name to run the assessment with.
       name: browsing_address_profile_name
     - description: Agent email address.
       name: mail_address
-    - description: EDR address
+    - description: EDR address.
       name: edr_address
     - description: EDR Agent profile name to run the assessment with.
       name: edr_address_profile_name
@@ -567,7 +567,7 @@ script:
     name: cymulate-simulations-list
     outputs:
     - contextPath: Cymulate.Simulations.Attack_Type
-      description: Attack payload
+      description: Attack payload.
       type: String
     - contextPath: Cymulate.Simulations.Classification
       description: Attack classification.
@@ -585,22 +585,22 @@ script:
       description: Attack name.
       type: String
     - contextPath: Cymulate.Simulations.Status
-      description: Attack status
+      description: Attack status.
       type: String
     - contextPath: Cymulate.Simulations.PrevStatus
-      description: Attack Previous status
+      description: Attack Previous status.
       type: String
     - contextPath: Cymulate.Simulations.Risk
       description: Attack risk level.
       type: String
     - contextPath: Cymulate.Simulations.Source
-      description: Attack Source
+      description: Attack Source.
       type: String
     - contextPath: Cymulate.Simulations.User
       description: User committed the attack ot was attacked.
       type: String
     - contextPath: Cymulate.Simulations.Attack_Vector
-      description: Attack vector
+      description: Attack vector.
       type: String
     - contextPath: Cymulate.Simulations.Source_Email_Address
       description: Source email address.
@@ -621,7 +621,7 @@ script:
       description: Mitigation details.
       type: String
     - contextPath: Cymulate.Simulations.Description
-      description: Attack description
+      description: Attack description.
       type: String
     - contextPath: Cymulate.Simulations.Id
       description: Attack ID.
@@ -653,7 +653,7 @@ script:
       description: Attack ID.
       type: String
     - contextPath: Cymulate.Simulations.Timestamp
-      description: Attack timestamp
+      description: Attack timestamp.
       type: String
     - contextPath: Cymulate.Simulations.Agent
       description: Agent connected to the attack.
@@ -661,7 +661,7 @@ script:
     - contextPath: Cymulate.Simulations.Template
       description: Attack template.
       type: String
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
   script: '-'

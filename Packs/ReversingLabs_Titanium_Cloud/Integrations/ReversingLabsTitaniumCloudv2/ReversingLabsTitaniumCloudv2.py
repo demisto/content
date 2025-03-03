@@ -1,10 +1,13 @@
 from copy import deepcopy
+
+from requests import Response
+
 from CommonServerPython import *
 from ReversingLabs.SDK.ticloud import FileReputation, AVScanners, FileAnalysis, RHA1FunctionalSimilarity, \
     RHA1Analytics, URIStatistics, URIIndex, AdvancedSearch, ExpressionSearch, FileDownload, FileUpload, \
     URLThreatIntelligence, AnalyzeURL, DynamicAnalysis, CertificateAnalytics, YARAHunting, YARARetroHunting, \
     ReanalyzeFile, ImpHashSimilarity, DomainThreatIntelligence, IPThreatIntelligence, NetworkReputation, \
-    NetworkReputationUserOverride
+    NetworkReputationUserOverride, CustomerUsage
 from ReversingLabs.SDK.helper import NotFoundError
 
 
@@ -28,6 +31,8 @@ HTTPS_PROXY_PASSWORD = demisto.params().get("https_credentials", {}).get("passwo
 
 
 def format_proxy(addr, username=None, password=None):
+    protocol = ''
+    proxy_name = ''
     if addr.startswith("http://"):
         protocol = addr[:7]
         proxy_name = addr[7:]
@@ -1214,6 +1219,8 @@ def certificate_analytics_output(response_json, thumbprint):
 
 
 def yara_ruleset_command():
+    response = Response()
+    output_key = ''
     yara = YARAHunting(
         host=TICLOUD_URL,
         username=USERNAME,
@@ -1348,6 +1355,8 @@ def yara_matches_feed_output(response_json, time_value):
 
 
 def yara_retro_actions_command():
+    response = Response()
+    output_key = ''
     retro = YARARetroHunting(
         host=TICLOUD_URL,
         username=USERNAME,
@@ -2426,6 +2435,117 @@ def network_reputation_overrides_list_output(response):
     return results
 
 
+def create_customer_usage_obj():
+    cu = CustomerUsage(
+        host=TICLOUD_URL,
+        username=USERNAME,
+        password=PASSWORD,
+        user_agent=USER_AGENT,
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
+    )
+
+    return cu
+
+
+def customer_usage_data_command():
+    cu = create_customer_usage_obj()
+
+    data_type = demisto.getArg("data_type")
+    from_time = demisto.getArg("from")
+    to_time = demisto.getArg("to")
+    single_time_unit = demisto.getArg("single_time_unit")
+    whole_company = argToBoolean(demisto.getArg("whole_company"))
+
+    if data_type == "DAILY USAGE":
+        response = cu.daily_usage(
+            single_date=single_time_unit,
+            from_date=from_time,
+            to_date=to_time,
+            whole_company=whole_company
+        )
+
+    elif data_type == "MONTHLY USAGE":
+        response = cu.monthly_usage(
+            single_month=single_time_unit,
+            from_month=from_time,
+            to_month=to_time,
+            whole_company=whole_company
+        )
+
+    elif data_type == "DATE RANGE USAGE":
+        response = cu.date_range_usage(
+            whole_company=whole_company
+        )
+
+    elif data_type == "QUOTA LIMITS":
+        response = cu.quota_limits(
+            whole_company=whole_company
+        )
+
+    else:
+        raise Exception("Unknown data type request. Precisely one of the following values needs to be set as data_type: "
+                        "DAILY USAGE, MONTHLY USAGE, DATE RANGE USAGE, QUOTA LIMITS")
+
+    response_json = response.json()
+    results = customer_usage_data_output(
+        data_type=data_type,
+        whole_company=whole_company,
+        response_json=response_json
+    )
+    return_results(results)
+
+
+def customer_usage_data_output(data_type, whole_company, response_json):
+    markdown = f"## ReversingLabs {data_type} data for {USERNAME} \n Results for the whole company: {whole_company}"
+
+    if "usage_reports" in response_json.get("rl"):
+        data_to_use = response_json.get("rl").get("usage_reports")
+
+    else:
+        data_to_use = response_json.get("rl")
+
+    if data_to_use:
+        usage_table = tableToMarkdown("Usage data", data_to_use)
+        markdown = f"{markdown} \n {usage_table}"
+
+    else:
+        markdown = f"{markdown} \n There were no results."
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"customer_usage_data": response_json},
+        readable_output=markdown
+    )
+
+    return results
+
+
+def customer_usage_yara_command():
+    cu = create_customer_usage_obj()
+
+    response = cu.active_yara_rulesets()
+    response_json = response.json()
+
+    results = customer_usage_yara_output(response_json=response_json)
+    return_results(results)
+
+
+def customer_usage_yara_output(response_json):
+    markdown = f"## ReversingLabs active YARA rulesets for {USERNAME}"
+
+    response_table = tableToMarkdown("Results", response_json.get("rl"))
+    markdown = f"{markdown} \n {response_table}"
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"customer_usage_yara": response_json},
+        readable_output=markdown
+    )
+
+    return results
+
+
 def main():
     command = demisto.command()
 
@@ -2548,6 +2668,12 @@ def main():
 
     elif command == "reversinglabs-titaniumcloud-network-reputation-overrides-list":
         network_reputation_overrides_list_command()
+
+    elif command == "reversinglabs-titaniumcloud-customer-usage-data":
+        customer_usage_data_command()
+
+    elif command == "reversinglabs-titaniumcloud-customer-usage-yara":
+        customer_usage_yara_command()
 
     else:
         return_error(f"Command {command} does not exist")

@@ -1,0 +1,26 @@
+{
+    "Accounts": {
+        "id": 36,
+        "last_created_events": [
+            "Accounts_1",
+            "Accounts_36"
+        ],
+        "last_timestamp": "2022-07-03T23:34:07+00:00"
+    },
+    "Hosts": {
+        "id": 472,
+        "last_created_events": [
+            "Hosts_1",
+            "Hosts_472"
+        ],
+        "last_timestamp": "2022-07-09T14:13:58+00:00"
+    },
+    "Detections": {
+        "id": 14,
+        "last_created_events": [
+            "Detections_1",
+            "Detections_14"
+        ],
+        "last_timestamp": "2022-07-09T13:45:53+00:00"
+    }
+}

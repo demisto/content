@@ -289,7 +289,7 @@ def ltm_get_node_by_address_command(client, args):
                 outputs=node,
             )
     return_error(f'No nodes found matching the address: {ip_address}')
-    return
+    return None
 
 
 def ltm_get_pools_by_node_command(client, args) -> CommandResults:

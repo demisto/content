@@ -69,6 +69,12 @@ configuration:
   section: Collect
   additionalinfo: A maximum of 200 emails per fetch (even if a higher number is configured). The default is 50.
   required: false
+- display: Use legacy attachment name
+  name: legacy_name
+  section: Collect
+  type: 8
+  advanced: true
+  defaultvalue: 'false'
 description: Gmail API and user management (This integration replaces the Gmail functionality in the GoogleApps API and G Suite integration).
 display: Gmail
 name: Gmail
@@ -1287,6 +1293,8 @@ script:
       required: true
     - description: The email address of the sender.
       name: from
+    - description: The sender Name that appears on the receiver side.
+      name: senderDisplayName
     - description: The content (body) of the email to be sent in plain text.
       name: body
     - description: The subject for the email to be sent.
@@ -1727,7 +1735,7 @@ script:
     - contextPath: Gmail.ForwardingAddress.verificationStatus
       description: Indicates whether this address has been verified and is usable for forwarding.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.89766
+  dockerimage: demisto/google-api-py3:1.0.0.116623
   isfetch: true
   runonce: false
   script: '-'

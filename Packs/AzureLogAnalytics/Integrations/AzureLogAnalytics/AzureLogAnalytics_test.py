@@ -1,22 +1,25 @@
 import json
 from collections.abc import Callable
-import pytest
 from pathlib import Path
-from pytest_mock import MockerFixture
-from requests_mock import MockerCore
-from CommonServerPython import CommandResults, ScheduledCommand, DemistoException
+
+import pytest
 from AzureLogAnalytics import (
     Client,
-    execute_query_command,
-    list_saved_searches_command,
-    tags_arg_to_request_format,
-    get_saved_search_by_id_command,
     create_or_update_saved_search_command,
     delete_saved_search_command,
-    run_search_job_command,
+    delete_search_job_command,
+    execute_query_command,
+    get_saved_search_by_id_command,
     get_search_job_command,
-    delete_search_job_command
+    list_saved_searches_command,
+    run_search_job_command,
+    tags_arg_to_request_format,
 )
+from pytest_mock import MockerFixture
+from requests_mock import MockerCore
+
+from CommonServerPython import CommandResults, DemistoException, ScheduledCommand
+from MicrosoftApiModule import *  # noqa: E402
 
 
 def util_load_json(path: str) -> dict:
@@ -118,6 +121,7 @@ CLIENT = Client(
     proxy=False,
     certificate_thumbprint=None,
     private_key=None,
+    azure_cloud=AZURE_WORLDWIDE_CLOUD,
     client_credentials=False,
 )
 
@@ -259,8 +263,9 @@ def test_test_module_command_with_managed_identities(
     Then:
      - Ensure the output are as expected
     """
-    from AzureLogAnalytics import main, MANAGED_IDENTITIES_TOKEN_URL
     import AzureLogAnalytics
+    from AzureLogAnalytics import MANAGED_IDENTITIES_TOKEN_URL, main
+
     import demistomock as demisto
 
     mock_token = {"access_token": "test_token", "expires_in": "86400"}
@@ -297,9 +302,10 @@ def test_generate_login_url(mocker: MockerFixture) -> None:
         - Ensure the generated url are as expected.
     """
     # prepare
-    import demistomock as demisto
-    from AzureLogAnalytics import main
     import AzureLogAnalytics
+    from AzureLogAnalytics import main
+
+    import demistomock as demisto
 
     redirect_uri = "redirect_uri"
     tenant_id = "tenant_id"
@@ -311,7 +317,8 @@ def test_generate_login_url(mocker: MockerFixture) -> None:
         "credentials": {"identifier": client_id, "password": "client_secret"},
         "subscriptionID": "subscriptionID",
         "resourceGroupName": "resourceGroupName",
-        "workspaceName": "workspaceName"
+        "workspaceName": "workspaceName",
+        "server_url": None
     }
     mocker.patch.object(demisto, "params", return_value=mocked_params)
     mocker.patch.object(
@@ -517,3 +524,36 @@ def test_table_with_invalid_name(function: Callable, message: str) -> None:
     with pytest.raises(DemistoException, match=message):
         # in the run_search_job_command the args is the first argument instead of the second because it use the polling decorator
         function({'table_name': 'invalid'}, {'table_name': 'invalid'})
+
+
+@pytest.mark.parametrize("azure_cloud", [(AZURE_WORLDWIDE_CLOUD), (AZURE_US_GCC_CLOUD), (AZURE_US_GCC_HIGH_CLOUD)])
+def test_client_endpoints(azure_cloud) -> None:
+    """
+    Given:
+        - The instance is configured with the Azure Cloud parameter.
+    When:
+        - The client object is set.
+    Then:
+        - Validate the ms_client object (created in the scope of the
+          client object) is set with the correct set of  endpoints.
+    """
+    client = Client(
+        self_deployed=True,
+        refresh_token="refresh_token",
+        auth_and_token_url="auth_id",
+        redirect_uri="redirect_uri",
+        enc_key="enc_key",
+        auth_code="auth_code",
+        subscription_id=SUBSCRIPTION_ID,
+        resource_group_name=RESOURCE_GROUP_NAME,
+        workspace_name=WORKSPACE_NAME,
+        verify=False,
+        proxy=False,
+        certificate_thumbprint=None,
+        private_key=None,
+        azure_cloud=azure_cloud,
+        client_credentials=False,
+    )
+    assert client.ms_client.managed_identities_resource_uri == azure_cloud.endpoints.resource_manager
+    assert client.ms_client.azure_ad_endpoint == azure_cloud.endpoints.active_directory
+    assert client.azure_cloud.name == azure_cloud.name

@@ -1,0 +1,207 @@
+[
+    {
+      "content": "The Zombie Diary ...",
+      "cve_code": "CVE-2014-7552",
+      "last_modified": "2014-11-14T13:13:46.943Z",
+      "level": "level_medium",
+      "published": "2014-10-20T08:55:10.450Z",
+      "score": 5.4,
+      "score_v2": 5.4,
+      "score_v3": null,
+      "score_custom": null,
+      "epss": 0.00049,
+      "exploit_code_maturity": "unproven",
+      "note_custom": null,
+      "exploitable": false,
+      "technologies": [
+        {
+          "vendor": "129zou",
+          "product": "zombie_diary"
+        }
+      ],
+      "cvss": {
+        "id": 16778597,
+        "access_vector": "access_vector_adjacent_network",
+        "access_complexity": "access_complexity_medium",
+        "authentication": "authentication_none",
+        "confidentiality_impact": "confidentiality_impact_partial",
+        "integrity_impact": "integrity_impact_partial",
+        "availability_impact": "availability_impact_partial"
+      },
+      "cvss_v3": null,
+      "cvss_custom": null,
+      "cwe": {
+        "cwe_id": "CWE-310",
+        "capecs": [],
+        "attacks": []
+      }
+    },
+    {
+      "content": "The 9GAG - Funny pics and...",
+      "cve_code": "CVE-2014-5669",
+      "last_modified": "2014-09-10T23:33:44.000Z",
+      "level": "level_medium",
+      "published": "2014-09-08T23:55:36.977Z",
+      "score": 5.4,
+      "score_v2": 5.4,
+      "score_v3": null,
+      "score_custom": null,
+      "epss": 0.00049,
+      "exploit_code_maturity": "unproven",
+      "note_custom": null,
+      "exploitable": false,
+      "technologies": [
+        {
+          "vendor": "9gag",
+          "product": "9gag_-_funny_pics_and_videos"
+        }
+      ],
+      "cvss": {
+        "id": 16778597,
+        "access_vector": "access_vector_adjacent_network",
+        "access_complexity": "access_complexity_medium",
+        "authentication": "authentication_none",
+        "confidentiality_impact": "confidentiality_impact_partial",
+        "integrity_impact": "integrity_impact_partial",
+        "availability_impact": "availability_impact_partial"
+      },
+      "cvss_v3": null,
+      "cvss_custom": null,
+      "cwe": {
+        "cwe_id": "CWE-310",
+        "capecs": [],
+        "attacks": []
+      }
+    },
+    {
+      "content": "Multiple absolute path traversal vulnerabilities in National Instruments cwui.ocx, as used in National Instruments LabWindows/CVI 2012 SP1 and earlier, National Instruments LabVIEW 2012 SP1 and earlier, the Data Analysis component in ABB DataManager 1 through 6.3.6, and other products allow remote attackers to create and execute arbitrary files via a full pathname in an argument to the ExportStyle method in the (1) CWNumEdit, (2) CWGraph, (3) CWBoolean, (4) CWSlide, or (5) CWKnob ActiveX control, in conjunction with file content in the (a) Caption or (b) FormatString property value.",
+      "cve_code": "CVE-2013-5021",
+      "last_modified": "2023-11-07T01:16:25.783Z",
+      "level": "level_critical",
+      "published": "2013-08-06T18:55:05.287Z",
+      "score": 9.3,
+      "score_v2": 9.3,
+      "score_v3": null,
+      "score_custom": null,
+      "epss": 0.89796,
+      "exploit_code_maturity": "unproven",
+      "note_custom": null,
+      "exploitable": false,
+      "technologies": [
+        {
+          "vendor": "ni",
+          "product": "labview"
+        },
+        {
+          "vendor": "ni",
+          "product": "measurementstudio"
+        },
+        {
+          "vendor": "ni",
+          "product": "teststand"
+        },
+        {
+          "vendor": "ni",
+          "product": "labwindows"
+        },
+        {
+          "vendor": "abb",
+          "product": "datamanager"
+        }
+      ],
+      "cvss": {
+        "id": 16779942,
+        "access_vector": "access_vector_network",
+        "access_complexity": "access_complexity_medium",
+        "authentication": "authentication_none",
+        "confidentiality_impact": "confidentiality_impact_complete",
+        "integrity_impact": "integrity_impact_complete",
+        "availability_impact": "availability_impact_complete"
+      },
+      "cvss_v3": null,
+      "cvss_custom": null,
+      "cwe": {
+        "cwe_id": "CWE-22",
+        "capecs": [
+          "CAPEC-126"
+        ],
+        "attacks": [
+          "T1036"
+        ]
+      }
+    },
+    {
+      "content": "The ACC ...",
+      "cve_code": "CVE-2014-7387",
+      "last_modified": "2014-11-14T13:10:30.627Z",
+      "level": "level_medium",
+      "published": "2014-10-19T08:55:15.207Z",
+      "score": 5.4,
+      "score_v2": 5.4,
+      "score_v3": null,
+      "score_custom": null,
+      "epss": 0.00049,
+      "exploit_code_maturity": "unproven",
+      "note_custom": null,
+      "exploitable": false,
+      "technologies": [
+        {
+          "vendor": "accadvocacy",
+          "product": "acc_advocacy_action"
+        }
+      ],
+      "cvss": {
+        "id": 16778597,
+        "access_vector": "access_vector_adjacent_network",
+        "access_complexity": "access_complexity_medium",
+        "authentication": "authentication_none",
+        "confidentiality_impact": "confidentiality_impact_partial",
+        "integrity_impact": "integrity_impact_partial",
+        "availability_impact": "availability_impact_partial"
+      },
+      "cvss_v3": null,
+      "cvss_custom": null,
+      "cwe": {
+        "cwe_id": "CWE-310",
+        "capecs": [],
+        "attacks": []
+      }
+    },
+    {
+      "content": "pbs_mom in Terascale Open-Source Resource and Queue Manager (aka TORQUE Resource Manager) 2.5.x, 4.x, and earlier does not properly restrict access by unprivileged ports, which allows remote authenticated users to execute arbitrary jobs by submitting a command.",
+      "cve_code": "CVE-2013-4319",
+      "last_modified": "2013-10-15T14:05:34.140Z",
+      "level": "level_critical",
+      "published": "2013-10-11T20:55:40.067Z",
+      "score": 9,
+      "score_v2": 9,
+      "score_v3": null,
+      "score_custom": null,
+      "epss": 0.0026,
+      "exploit_code_maturity": "unproven",
+      "note_custom": null,
+      "exploitable": false,
+      "technologies": [
+        {
+          "vendor": "adaptivecomputing",
+          "product": "torque_resource_manager"
+        }
+      ],
+      "cvss": {
+        "id": 16779930,
+        "access_vector": "access_vector_network",
+        "access_complexity": "access_complexity_low",
+        "authentication": "authentication_single",
+        "confidentiality_impact": "confidentiality_impact_complete",
+        "integrity_impact": "integrity_impact_complete",
+        "availability_impact": "availability_impact_complete"
+      },
+      "cvss_v3": null,
+      "cvss_custom": null,
+      "cwe": {
+        "cwe_id": "CWE-264",
+        "capecs": [],
+        "attacks": []
+      }
+    }
+  ]

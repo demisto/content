@@ -2,13 +2,13 @@
     "name": "AWS - S3",
     "description": "Amazon Web Services Simple Storage Service (S3)",
     "support": "xsoar",
-    "currentVersion": "1.2.23",
+    "currentVersion": "1.2.29",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "Cloud Services"
+        "Cloud Service Provider"
     ],
     "tags": [],
     "useCases": [],

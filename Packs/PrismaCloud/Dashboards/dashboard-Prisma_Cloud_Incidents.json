@@ -44,7 +44,7 @@
 				"prevName": "Active Incidents - Line chart",
 				"dataType": "incidents",
 				"widgetType": "line",
-				"query": "-category:job sourceBrand:RedLock",
+				"query": "-category:job (sourceBrand:RedLock or sourceBrand:\"PrismaCloud v2\")",
 				"isPredefined": false,
 				"dateRange": {
 					"fromDate": "0001-01-01T00:00:00Z",
@@ -99,7 +99,7 @@
 				"prevName": "Active Incidents - Line chart",
 				"dataType": "incidents",
 				"widgetType": "bar",
-				"query": "-category:job sourceBrand:RedLock",
+				"query": "-category:job (sourceBrand:RedLock or sourceBrand:\"PrismaCloud v2\")",
 				"isPredefined": false,
 				"dateRange": {
 					"fromDate": "0001-01-01T00:00:00Z",
@@ -155,7 +155,7 @@
 				"prevName": "Active Incidents - Line chart",
 				"dataType": "incidents",
 				"widgetType": "pie",
-				"query": "-category:job sourceBrand:RedLock",
+				"query": "-category:job (sourceBrand:RedLock or sourceBrand:\"PrismaCloud v2\")",
 				"isPredefined": false,
 				"dateRange": {
 					"fromDate": "0001-01-01T00:00:00Z",
@@ -210,7 +210,7 @@
 				"prevName": "Active Incidents - Line chart",
 				"dataType": "incidents",
 				"widgetType": "column",
-				"query": "-category:job sourceBrand:RedLock",
+				"query": "-category:job (sourceBrand:RedLock or sourceBrand:\"PrismaCloud v2\")",
 				"isPredefined": false,
 				"dateRange": {
 					"fromDate": "0001-01-01T00:00:00Z",
@@ -266,7 +266,7 @@
 				"prevName": "Active Incidents - Line chart",
 				"dataType": "incidents",
 				"widgetType": "pie",
-				"query": "-category:job sourceBrand:RedLock",
+				"query": "-category:job (sourceBrand:RedLock or sourceBrand:\"PrismaCloud v2\")",
 				"isPredefined": false,
 				"dateRange": {
 					"fromDate": "0001-01-01T00:00:00Z",
@@ -321,7 +321,7 @@
 				"prevName": "Active Incidents - Line chart",
 				"dataType": "incidents",
 				"widgetType": "pie",
-				"query": "-category:job sourceBrand:RedLock",
+				"query": "-category:job (sourceBrand:RedLock or sourceBrand:\"PrismaCloud v2\")",
 				"isPredefined": false,
 				"dateRange": {
 					"fromDate": "0001-01-01T00:00:00Z",

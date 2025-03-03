@@ -104,7 +104,7 @@ script:
     name: vt-livehunt-get-indicators
   - description: 'This command will reset your fetch history.'
     name: vt-reset-fetch-indicators
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.11.10.115186
   feed: true
   runonce: false
   script: '-'

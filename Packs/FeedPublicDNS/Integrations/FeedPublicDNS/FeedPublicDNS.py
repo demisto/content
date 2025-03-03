@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
 
-from typing import Dict, List, Tuple, Any
+from typing import Any
 from netaddr import IPAddress
 import urllib3
 
@@ -24,7 +24,7 @@ class Client:
         self.Tags = [] if tags is None else tags
         self.Tlp_color = tlp_color
 
-    def build_iterator(self) -> List:
+    def build_iterator(self) -> list:
         """Retrieves all entries from the feed.
         Returns:
             A list of objects, containing the indicators.
@@ -54,7 +54,7 @@ class Client:
         return indicators
 
 
-def test_module(client: Client) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+def test_module(client: Client) -> tuple[str, dict[Any, Any], dict[Any, Any]]:
     """Builds the iterator to check that the feed is accessible.
     Args:
         client: Client object.
@@ -65,7 +65,7 @@ def test_module(client: Client) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
     return 'ok', {}, {}
 
 
-def fetch_indicators(client: Client, limit: int = -1) -> List[Dict]:
+def fetch_indicators(client: Client, limit: int = -1, enrichment_excluded: bool = False) -> list[dict]:
     """Retrieves indicators from the feed
     Args:
         client: Client object with request
@@ -90,8 +90,11 @@ def fetch_indicators(client: Client, limit: int = -1) -> List[Dict]:
             'value': item,
             'type': type_,
             'rawJSON': {'value': item, 'type': type_},
-            'fields': {'tags': client.Tags}
+            'fields': {'tags': client.Tags},
         }
+
+        if enrichment_excluded:
+            indicator_obj['enrichmentExcluded'] = enrichment_excluded
 
         if client.Tlp_color:
             indicator_obj['fields']['trafficlightprotocol'] = client.Tlp_color
@@ -101,7 +104,7 @@ def fetch_indicators(client: Client, limit: int = -1) -> List[Dict]:
     return indicators
 
 
-def get_indicators_command(client: Client) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+def get_indicators_command(client: Client) -> tuple[str, dict[Any, Any], dict[Any, Any]]:
     """Wrapper for retrieving indicators from the feed to the war-room.
     Args:
         client: Client object with request
@@ -110,36 +113,38 @@ def get_indicators_command(client: Client) -> Tuple[str, Dict[Any, Any], Dict[An
     """
 
     limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 10
-    indicators = fetch_indicators(client, limit)
+    enrichment_excluded = demisto.params().get('enrichmentExcluded', False)
+    indicators = fetch_indicators(client, limit, enrichment_excluded=enrichment_excluded)
     human_readable = tableToMarkdown(f'{INTEGRATION_NAME}:', indicators,
                                      headers=['value', 'type'], removeNull=True)
 
     return human_readable, {'Indicator': indicators}, {'raw_response': indicators}
 
 
-def fetch_indicators_command(client: Client) -> List[Dict]:
+def fetch_indicators_command(client: Client, enrichment_excluded: bool = False) -> list[dict]:
     """Wrapper for fetching indicators from the feed to the Indicators tab.
     Args:
         client: Client object with request
     Returns:
         Indicators.
     """
-    indicators = fetch_indicators(client)
+    indicators = fetch_indicators(client, enrichment_excluded=enrichment_excluded)
     return indicators
 
 
-def main():
+def main():  # pragma: no cover
     params = demisto.params()
     url = params.get('url', 'https://public-dns.info/nameservers-all.txt')
     tags = argToList(params.get('feedTags'))
     tlp_color = params.get('tlp_color')
     use_ssl = not params.get('insecure', False)
+    enrichment_excluded = params.get('enrichmentExcluded', False)
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
     try:
         client = Client(url, tags, tlp_color, use_ssl)
-        commands: Dict = {
+        commands: dict = {
             'test-module': test_module,
             'public-dns-get-indicators': get_indicators_command
         }
@@ -147,7 +152,7 @@ def main():
             return_outputs(*commands[command](client))
 
         elif command == 'fetch-indicators':
-            indicators = fetch_indicators_command(client)
+            indicators = fetch_indicators_command(client, enrichment_excluded=enrichment_excluded)
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
 

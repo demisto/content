@@ -1,8 +1,11 @@
 !wiz-get-resource resource_id="arn:aws:ec2:us-east-2:123456789098:instance/i-0g03j4h5gd123d456"
+!wiz-get-resource resource_name="i-0g03j4h5gd123d456"
+!wiz-get-resource resource_name="test_vm"
 
 !wiz-get-issue issue_id="12345678-1234-1234-1234-cc0a24716e0b"
 
-!wiz-get-issues issue_type="VIRTUAL_MACHINE"
+!wiz-get-issues entity_type="VIRTUAL_MACHINE"
+!wiz-get-issues issue_type="TOXIC_COMBINATION"
 !wiz-get-issues resource_id="arn:aws:ec2:us-east-2:123456789098:instance/i-0g03j4h5gd123d456"
 !wiz-get-issues resource_id="arn:aws:ec2:us-east-2:123456789098:instance/i-0g03j4h5gd123d456" severity=HIGH
 
@@ -18,8 +21,6 @@
 
 !wiz-get-issue-evidence issue_id="12345678-1234-1234-1234-cc0a24716e0b"
 
-!wiz-rescan-machine-disk vm_id="arn:aws:ec2:us-east-2:123456789098:instance/i-1234abcd123456789"
-
 !wiz-set-issue-due-date issue_id="12345678-1234-1234-1234-cc0a24716e0b" due_at="2022-01-20"
 
 !wiz-clear-issue-due-date issue_id="12345678-1234-1234-1234-cc0a24716e0b"
@@ -27,3 +28,6 @@
 !wiz-get-project-team project_name="project1"
 
 !wiz-resolve-issue issue_id="12345678-1234-1234-1234-cc0a24716e0b" resolution_note="won't fix this issue as this is low priority" resolution_reason="WONT_FIX"
+
+!wiz-copy-to-forensics-account resource_id="12345678-1234-1234-1234-cc0a24716e0b"
+!wiz-copy-to-forensics-account resource_id="arn:aws:ec2:us-east-1:123455563321:instance/i-05r662bfb9708a4e8"

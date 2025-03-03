@@ -1,11 +1,11 @@
 args:
-- description: count the categories of alerts in given incident
+- description: Count the categories of alerts in given incident.
   name: value
-comment: count the categories of alerts in given incident
+comment: Count the categories of alerts in given incident.
 commonfields:
   id: MS365DefenderCountIncidentCategories
   version: -1
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.12.8.1983910
 enabled: true
 name: MS365DefenderCountIncidentCategories
 runas: DBotWeakRole

@@ -20,14 +20,14 @@ configuration:
   name: max_fetch
   additionalinfo: Alerts and activity events.
   type: 0
-  defaultvalue: 5000
+  defaultvalue: 100000
   section: Collect
 - display: Maximum number of device events per fetch
   name: devices_max_fetch
   type: 0
   section: Collect
   additionalinfo: Devices events.
-  defaultvalue: 10000
+  defaultvalue: 50000
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -56,10 +56,18 @@ configuration:
   required: false
 - section: Collect
   advanced: true
+  display: Minutes to delay
+  additionalinfo: Number of minutes to delay when fetching events (to handle events creation delay in the Armis database). The default value is 10 minutes. A higher value can be configured in the event that some events are still not available within those ten minutes.
+  name: fetch_delay
+  defaultvalue: "10"
+  type: 0
+  required: false
+- section: Collect
+  advanced: true
   display: Device Fetch Interval
   additionalinfo: Time between fetch of devices (for example 12 hours, 60 minutes, etc.).
   name: deviceFetchInterval
-  defaultvalue: "24 hours"
+  defaultvalue: "4 hours"
   type: 0
   required: false
 description: Collects alerts, devices and activities from Armis resources.
@@ -99,7 +107,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.14.92207
+  dockerimage: demisto/python3:3.11.10.116949
 marketplaces:
 - marketplacev2
 fromversion: 6.10.0

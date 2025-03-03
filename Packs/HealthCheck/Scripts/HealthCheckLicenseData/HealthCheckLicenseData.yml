@@ -3,16 +3,16 @@ args:
   description: War room entryID of the file to read.
   name: entryID
   required: true
-comment: Read the license_data.log file extracted from the log bundle
+comment: Read the license_data.log file extracted from the log bundle.
 commonfields:
   id: HealthCheckLicenseData
   version: -1
-dockerimage: demisto/python3:3.10.8.37753
+dockerimage: demisto/python3:3.11.10.113941
 enabled: true
 name: HealthCheckLicenseData
 outputs:
 - contextPath: FileData
-  description: Data read from war room file
+  description: Data read from the War Room file.
 runas: DBotWeakRole
 script: ''
 scripttarget: 0

@@ -266,7 +266,7 @@ script:
       description: URL address.
       type: String
     - contextPath: PhishLabs.URL.CreatedAt
-      description: URL creation time, in PhishLabs
+      description: URL creation time, in PhishLabs.
       type: Date
     - contextPath: PhishLabs.URL.UpdatedAt
       description: URL update time, in PhishLabs.
@@ -293,7 +293,7 @@ script:
       description: Description of the malicious domain.
       type: String
     - contextPath: PhishLabs.Domain.Name
-      description: Domain name
+      description: Domain name.
       type: String
     - contextPath: PhishLabs.Domain.CreatedAt
       description: Domain creation time, in PhishLabs.
@@ -406,7 +406,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: number
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
   script: '-'

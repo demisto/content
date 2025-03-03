@@ -9,13 +9,19 @@ This pack is designed to quickly integrate with Vectra Detect platform to detect
 
 ## What does this pack do?
 
-* Mirrors incidents between Cortex XSOAR incidents and Vectra Detect Accounts, Hosts and Detections alerts.
-* Enriches incidents
-* Download detection PCAP
-* Push tags to Vectra Detect platform
-* Create/Update/Resolve Vectra assignments
-* Create XSIAM Events from Detections and Audits
-
+- Create XSIAM events from detections and audits.
+- Fetch accounts, hosts and detections from Vectra Detect.
+- Bi-Directional Mirroring for accounts and hosts.
+- List and Describe accounts, hosts, detections and users.
+- List, Describe, Create and Resolve assignment for account and host.
+- List, Describe and Create assignment outcomes.
+- List, Create, Update and Delete notes for account, host and detection.
+- List, Create and Remove tags for account, host and detection.
+- List, Assign and Unassign members in group.
+- Mark and Unmark detection as fixed.
+- Mark all detections as fixed for account and host. 
+- Get detection's PCAP file.
+- Cleanup all incidents in XSOAR by closing duplicate incidents from Vectra Detect.
 
 ## Configuration on Server Side
 

@@ -7,5 +7,6 @@ Proofpoint Email Protection is the industry-leading email gateway, which can be 
 This pack gathers and structures logs of the types listed below:
 1. Maillog
 2. Message
+3. Audit
 
 </~XSIAM>

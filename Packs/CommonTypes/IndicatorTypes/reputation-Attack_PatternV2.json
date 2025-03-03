@@ -1,0 +1,55 @@
+{
+    "contextPath": "AttackPattern(val.Value \u0026\u0026 val.value === obj.Value)",
+    "contextValue": "Value",
+    "details": "Attack Pattern",
+    "legacyNames": [
+        "STIX Attack Pattern"
+    ],
+    "disabled": false,
+    "expiration": 0,
+    "file": false,
+    "formatScript": "MITRENameByID_Formatter",
+    "id": "Attack Pattern",
+    "locked": false,
+    "manualMapping": {
+        "description": {
+            "simple": "AttackPattern.Description",
+            "complex": null
+        },
+        "firstseenbysource": {
+            "simple": "AttackPattern.FirstSeenBySource",
+            "complex": null
+        },
+        "killchainphases": {
+            "simple": "AttackPattern.KillChainPhases",
+            "complex": null
+        },
+        "mitreid": {
+            "simple": "AttackPattern.MITREID",
+            "complex": null
+        },
+        "operatingsystemrefs": {
+            "simple": "AttackPattern.OperatingSystemRefs",
+            "complex": null
+        },
+        "publications": {
+            "simple": "AttackPattern.Publications",
+            "complex": null
+        },
+        "stixid": {
+            "simple": "AttackPattern.STIXID",
+            "complex": null
+        },
+        "tags": {
+            "simple": "AttackPattern.Tags",
+            "complex": null
+        }
+    },
+    "mergeContext": false,
+    "regex": "\\bT\\d{4}(?:\\.\\d{3})?\\b",
+    "system": false,
+    "updateAfter": 0,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "layout": "STIX Attack Pattern"
+}

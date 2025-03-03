@@ -1,0 +1,9 @@
+[
+    {
+        "cidr": "secret",
+        "geo": {
+            "country_name": "China",
+            "country_code": "CN"
+        }
+    }
+]

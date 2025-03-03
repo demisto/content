@@ -89,7 +89,7 @@ script:
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the indicator score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: SixgillDarkfeed.IP.created
       description: The timestamp when the indicator was created.
@@ -173,7 +173,7 @@ script:
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the indicator score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: SixgillDarkfeed.Domain.created
       description: The timestamp when the indicator was created.
@@ -257,7 +257,7 @@ script:
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the indicator score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: SixgillDarkfeed.URL.created
       description: The timestamp when the indicator was created.
@@ -341,7 +341,7 @@ script:
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the indicator score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: SixgillDarkfeed.File.created
       description: The timestamp when the indicator was created.
@@ -550,9 +550,11 @@ script:
     - contextPath: SixgillDarkfeed.Postid.external_reference
       description: Link to the IOC on Virustotal and an abstraction of the number of detections; MITRE ATT&CK tactics and techniques.
       type: Unknown
-  dockerimage: demisto/sixgill:1.0.0.91415
+  dockerimage: demisto/sixgill:1.0.0.117239
   runonce: false
   script: '-'
   subtype: python3
   type: python
 fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

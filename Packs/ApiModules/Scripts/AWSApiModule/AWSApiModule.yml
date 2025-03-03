@@ -12,7 +12,7 @@ comment: AWS Client class, provides generic Infrastructure to all AWS integratio
 scripttarget: 0
 dependson: {}
 timeout: 0s
-dockerimage: demisto/boto3py3:1.0.0.52713
+dockerimage: demisto/boto3py3:1.0.0.110635
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)

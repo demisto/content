@@ -137,7 +137,7 @@ class Client:
             if last_modified:
                 self.headers['If-Modified-Since'] = last_modified
 
-        result = []
+        result: List[Dict] = []
         if not self.post_data:
             r = requests.get(
                 url=url,
@@ -163,7 +163,9 @@ class Client:
             if r.content:
                 demisto.debug(f'JSON: found content for {feed_name}')
                 data = r.json()
-                result = jmespath.search(expression=feed.get('extractor'), data=data)
+                result = jmespath.search(expression=feed.get('extractor'), data=data) or []
+                if not result:
+                    demisto.debug(f'No results found - retrieved data is: {data}')
 
         except ValueError as VE:
             raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {VE}')
@@ -197,7 +199,7 @@ def get_no_update_value(response: requests.Response, feed_name: str) -> bool:
     last_updated = current_time.strftime(DATE_FORMAT)
 
     if not etag and not last_modified:
-        demisto.debug('Last-Modified and Etag headers are not exists,'
+        demisto.debug('Last-Modified and Etag headers are not exists, '
                       'createIndicators will be executed with noUpdate=False.')
         return False
 
@@ -240,7 +242,7 @@ def test_module(client: Client, limit) -> str:  # pragma: no cover
 
 def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list, auto_detect: bool,
                              create_relationships: bool = False, limit: int = 0, remove_ports: bool = False,
-                             **kwargs) -> Tuple[List[dict], bool]:
+                             enrichment_excluded: bool = False, **kwargs) -> Tuple[List[dict], bool]:
     """
     Fetches the indicators from client.
     :param client: Client of a JSON Feed
@@ -296,7 +298,9 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
             indicators.extend(
                 handle_indicator_function(client, item, feed_config, service_name, indicator_type, indicator_field,
                                           use_prefix_flat, feedTags, auto_detect, mapping_function,
-                                          create_relationships, create_relationships_function, remove_ports))
+                                          create_relationships, create_relationships_function, remove_ports,
+                                          enrichment_excluded=enrichment_excluded,
+                                          ))
 
             if limit and len(indicators) >= limit:  # We have a limitation only when get-indicators command is
                 # called, and then we return for each service_name "limit" of indicators
@@ -320,8 +324,9 @@ def indicator_mapping(mapping: Dict, indicator: Dict, attributes: Dict):
 def handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name: str,
                      indicator_type: str, indicator_field: str, use_prefix_flat: bool,
                      feedTags: list, auto_detect: bool, mapping_function: Callable = indicator_mapping,
-                     create_relationships: bool = False, relationships_func: Callable = None,
-                     remove_ports: bool = False) -> List[dict]:
+                     create_relationships: bool = False, relationships_func: Callable | None = None,
+                     remove_ports: bool = False,
+                     enrichment_excluded: bool = False) -> List[dict]:
     indicator_list = []
     mapping = feed_config.get('mapping')
     take_value_from_flatten = False
@@ -366,6 +371,9 @@ def handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name
         indicator['value'] = indicator['value'].split(':')[0]
 
     indicator['rawJSON'] = item
+
+    if enrichment_excluded:
+        indicator['enrichmentExcluded'] = enrichment_excluded
 
     indicator_list.append(indicator)
 
@@ -436,6 +444,8 @@ def feed_main(params, feed_name, prefix):  # pragma: no cover
     auto_detect = params.get('auto_detect_type')
     feedTags = argToList(params.get('feedTags'))
     limit = int(demisto.args().get('limit', 10))
+    enrichment_excluded = (params.get('enrichmentExcluded', False)
+                           or (params.get('tlp_color') == 'RED' and is_xsiam_or_xsoar_saas()))
     command = demisto.command()
     if prefix and not prefix.endswith('-'):
         prefix += '-'
@@ -448,8 +458,14 @@ def feed_main(params, feed_name, prefix):  # pragma: no cover
         elif command == 'fetch-indicators':
             remove_ports = argToBoolean(params.get('remove_ports', False))
             create_relationships = params.get('create_relationships')
-            indicators, no_update = fetch_indicators_command(client, indicator_type, feedTags, auto_detect,
-                                                             create_relationships, remove_ports=remove_ports)
+            indicators, no_update = fetch_indicators_command(client,
+                                                             indicator_type,
+                                                             feedTags,
+                                                             auto_detect,
+                                                             create_relationships,
+                                                             remove_ports=remove_ports,
+                                                             enrichment_excluded=enrichment_excluded)
+            demisto.debug(f"Received {len(indicators)} indicators, no_update={no_update}")
 
             # check if the version is higher than 6.5.0 so we can use noUpdate parameter
             if is_demisto_version_ge('6.5.0'):
@@ -472,7 +488,9 @@ def feed_main(params, feed_name, prefix):  # pragma: no cover
             create_relationships = params.get('create_relationships')
             indicators, _ = fetch_indicators_command(client, indicator_type, feedTags, auto_detect,
                                                      create_relationships, limit, remove_ports)
+
             hr = tableToMarkdown('Indicators', indicators, headers=['value', 'type', 'rawJSON'])
+
             return_results(CommandResults(readable_output=hr, raw_response=indicators))
 
     except Exception as err:

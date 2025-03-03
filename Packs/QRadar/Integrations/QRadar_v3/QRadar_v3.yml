@@ -880,6 +880,18 @@ script:
     - name: range
       description: 'Range of events to return. (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49
+  - name: qradar-search-delete
+    description: Deletes the search from Qradar.
+    arguments:
+    - name: search_id
+      required: true
+      description: The identifier for an Ariel search.
+  - name: qradar-search-cancel
+    description: Cancels the search in QRadar.
+    arguments:
+    - name: search_id
+      required: true
+      description: The identifier for an Ariel search.
   - name: qradar-reference-sets-list
     description: Retrieves a list of reference sets.
     outputs:
@@ -1062,6 +1074,13 @@ script:
       isArray: true
     - name: task_id
       description: The ID of the task that is created to add or update the element in the reference set. The task ID can be used to poll the status of the task by using the 'qradar-tasks-get' command.
+    - name: quiet_mode
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: If true, does not output the updated reference set data. This argument helps avoid large outputs when the reference set is large.
     polling: true
   - name: qradar-reference-set-value-delete
     description: Removes a value from a reference set.
@@ -1180,6 +1199,13 @@ script:
       isArray: true
     - name: task_id
       description: The ID of the task that is created to add or update the element in the reference set. The task ID can be used to poll the status of the task by using the 'qradar-tasks-get' command.
+    - name: quiet_mode
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: If true, does not output the updated reference set data. This argument helps avoid large outputs when the reference set is large.
     polling: true
   - name: qradar-geolocations-for-ip
     description: Retrieves the MaxMind GeoIP data for the specified IP address.
@@ -3094,7 +3120,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.14.92207
+  dockerimage: demisto/python3:3.12.8.1983910
   isremotesyncin: true
   longRunning: true
   isFetchSamples: true

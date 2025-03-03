@@ -253,6 +253,7 @@ def test_config_search_command(mocker, prisma_cloud_v2_client):
                                                'sort': [{'direction': 'desc', 'field': 'insertTs'}],
                                                'timeRange': {'type': 'to_now', 'value': 'epoch'},
                                                'withResourceJson': 'true',
+                                               'heuristicSearch': 'true'
                                                })
 
 
@@ -529,6 +530,311 @@ def test_permission_list_command_with_next_token(mocker, prisma_cloud_v2_client)
     args = {'next_token': 'TOKEN', 'limit': '2'}
     permission_list_command(prisma_cloud_v2_client, args)
     http_request.assert_called_with('POST', 'api/v1/permission/page', json_data={'limit': 2, 'pageToken': 'TOKEN'})
+
+
+def test_access_key_create_command(mocker, prisma_cloud_v2_client):
+    """
+    Given: A mock PrismaCloudV2 client.
+    When: Running access_key_create_command to create an access key.
+    Then: Ensure access key created correctly.
+    """
+    from PrismaCloudV2 import access_key_create_command
+    args = {'name': 'key-name'}
+    mock_response = {'id': 'id', 'secretKey': 'secretKey'}
+    mocker.patch.object(Client, '_http_request', return_value=mock_response)
+    command_results = access_key_create_command(prisma_cloud_v2_client, args)
+    assert command_results.outputs == mock_response
+
+
+def test_get_access_keys_without_access_key_given(mocker, prisma_cloud_v2_client):
+    """
+    Given: A mock PrismaCloudV2 client.
+    When: Running get_access_keys in order to get the list of access keys.
+    Then: Ensure get_access_keys_list called once.
+    """
+    from PrismaCloudV2 import get_access_keys_command
+    args = {}
+    mocker.patch.object(Client, '_http_request', return_value='')
+    get_access_keys_list_mock = mocker.patch('PrismaCloudV2.get_access_keys_list', return_value={})
+    get_access_keys_command(prisma_cloud_v2_client, args)
+    get_access_keys_list_mock.assert_called_once_with(prisma_cloud_v2_client, args)
+
+
+def test_get_access_keys_with_access_key_given(mocker, prisma_cloud_v2_client):
+    """
+    Given: A mock PrismaCloudV2 client.
+    When: Running get_access_keys in order to get data of specific access key.
+    Then: Ensure get_access_key_by_id called once.
+    """
+    from PrismaCloudV2 import get_access_keys_command
+    args = {'access-key': 'test_key'}
+    mocker.patch.object(Client, '_http_request', return_value='')
+    get_access_key_by_id_mock = mocker.patch('PrismaCloudV2.get_access_key_by_id', return_value={})
+    get_access_keys_command(prisma_cloud_v2_client, args)
+    get_access_key_by_id_mock.assert_called_once_with(prisma_cloud_v2_client, args)
+
+
+def test_get_access_key_by_id(mocker, prisma_cloud_v2_client):
+    """
+    Given: A mock PrismaCloudV2 client.
+    When: Running get_access_key_by_id in order to get data of specific access key.
+    Then: Ensure function return data about the specific access key with the same access key name.
+    """
+    from PrismaCloudV2 import get_access_key_by_id
+    args = {'access-key': 'test_key'}
+    mock_response = {'id': 'id', 'name': 'test_key', 'expiresOn': 0}
+    mocker.patch.object(Client, '_http_request', return_value=mock_response)
+    command_results = get_access_key_by_id(prisma_cloud_v2_client, args)
+    assert command_results.raw_response == mock_response
+    assert command_results.outputs == mock_response
+    assert mock_response.get('name') == args.get('access-key')
+
+
+def test_get_access_keys_list(mocker, prisma_cloud_v2_client):
+    """
+    Given: A mock PrismaCloudV2 client.
+    When: Running get_access_keys_list in order to get the list of access keys.
+    Then:
+        - Ensure the function return list of access keys in the length of limit.
+        - Ensure the function parse unixtime to human-readable date format.
+        - Ensure readable_output contain all needed features,
+    """
+    from PrismaCloudV2 import get_access_keys_list
+    mock_response = [{
+        'id': 'id',
+        'name': 'test_key',
+        'createdBy': 'test_user',
+        'createdTs': '1722861078033',
+        'lastUsedTime': '1722861078033',
+        'status': 'active',
+        'expiresOn': 0,
+        'role': {'id': 'role_id', 'name': 'role_name'},
+        'roleType': 'roleType',
+        'username': 'username'
+    }]
+    mocker.patch.object(Client, '_http_request', return_value=mock_response)
+    args = {'limit': 1}
+    command_results = get_access_keys_list(prisma_cloud_v2_client, args)
+    assert command_results.raw_response == mock_response
+    assert command_results.outputs == mock_response
+    readable_output_features = ['Id', 'Name', 'Created By', 'Created Ts', 'Last Used Time', 'Status',
+                                'Expires On', 'Role Id', 'Role Name', 'Role Type', 'Username']
+    for feature in readable_output_features:
+        assert feature in command_results.readable_output
+    assert '2024-08-05T12:31:18Z' in command_results.readable_output
+
+
+def test_access_key_disable(mocker, prisma_cloud_v2_client):
+    """
+    Given: A mock PrismaCloudV2 client.
+    When: Running access_key_disable in order to disable access key.
+    Then: Ensure readable_output returns the correct response.
+    """
+    from PrismaCloudV2 import access_key_disable_command
+    args = {'access-key': 'test_key'}
+    mocker.patch.object(Client, '_http_request', return_value='')
+    command_results = access_key_disable_command(prisma_cloud_v2_client, args)
+    assert command_results.readable_output == 'Access key test_key was disabled successfully'
+
+
+def test_access_key_enable(mocker, prisma_cloud_v2_client):
+    """
+    Given: A mock PrismaCloudV2 client.
+    When: Running access_key_enable in order to enable access key.
+    Then: Ensure readable_output returns the correct response.
+    """
+    from PrismaCloudV2 import access_key_enable_command
+    args = {'access-key': 'test_key'}
+    mocker.patch.object(Client, '_http_request', return_value='')
+    command_results = access_key_enable_command(prisma_cloud_v2_client, args)
+    assert command_results.readable_output == 'Access key test_key was enabled successfully'
+
+
+def test_access_key_delete(mocker, prisma_cloud_v2_client):
+    """
+    Given: A mock PrismaCloudV2 client.
+    When: Running access_key_delete in order to delete access key.
+    Then: Ensure readable_output returns the correct response.
+    """
+    from PrismaCloudV2 import access_key_delete_command
+    args = {'access-key': 'test_key'}
+    mocker.patch.object(Client, '_http_request', return_value='')
+    command_results = access_key_delete_command(prisma_cloud_v2_client, args)
+    assert command_results.readable_output == 'Access key test_key was successfully deleted successfully'
+
+
+def test_get_asset(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - prisma-cloud-asset-get command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from PrismaCloudV2 import get_asset_command
+    http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request')
+    args = {'asset_id': 'rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25'}
+    get_asset_command(prisma_cloud_v2_client, args)
+    http_request.assert_called_with(
+        method="POST",
+        url_suffix="/uai/v1/asset",
+        json_data={
+            'assetId': 'rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25',
+            'type': 'asset',
+            'limit': 50,
+            'prismaCloudFindingsOnly': False
+        }
+    )
+
+
+def test_get_asset_generic(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - prisma-cloud-asset-generic-get command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from PrismaCloudV2 import get_asset_generic_command
+    http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request')
+    args = {'asset_id': 'rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25'}
+    get_asset_generic_command(prisma_cloud_v2_client, args)
+    http_request.assert_called_with(
+        method="POST",
+        url_suffix="/uai/v1/asset",
+        json_data={
+            'assetId': 'rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25',
+            'limit': 50,
+            'prismaCloudFindingsOnly': False
+        }
+    )
+
+
+def test_get_asset_findings(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - prisma-cloud-asset-findings-get command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from PrismaCloudV2 import get_asset_findings_command
+    http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request')
+    args = {'asset_id': 'rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25'}
+    get_asset_findings_command(prisma_cloud_v2_client, args)
+    http_request.assert_called_with(
+        method="POST",
+        url_suffix="/uai/v1/asset",
+        json_data={
+            'assetId': 'rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25',
+            'type': 'findings',
+            'limit': 50,
+            'prismaCloudFindingsOnly': False
+        }
+    )
+
+
+def test_get_asset_vulnerabilities(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - prisma-cloud-asset-vulnerabilities-get command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from PrismaCloudV2 import get_asset_vulnerabilities_command
+    http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request')
+    args = {'asset_id': 'rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25'}
+    get_asset_vulnerabilities_command(prisma_cloud_v2_client, args)
+    http_request.assert_called_with(
+        method="POST",
+        url_suffix="/uai/v1/asset",
+        json_data={
+            'assetId': 'rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25',
+            'type': 'vulnerabilities',
+            'limit': 50,
+            'prismaCloudFindingsOnly': False
+        }
+    )
+
+
+def test_get_asset_alerts(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - prisma-cloud-asset-alerts-get command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from PrismaCloudV2 import get_asset_alerts_command
+    http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request')
+    args = {'asset_id': 'rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25'}
+    get_asset_alerts_command(prisma_cloud_v2_client, args)
+    http_request.assert_called_with(
+        method="POST",
+        url_suffix="/uai/v1/asset",
+        json_data={
+            'assetId': 'rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25',
+            'type': 'alerts',
+            'limit': 50,
+            'prismaCloudFindingsOnly': False
+        }
+    )
+
+
+def test_get_asset_relationships(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - prisma-cloud-asset-relationships-get command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from PrismaCloudV2 import get_asset_relationships_command
+    http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request')
+    args = {'asset_id': 'rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25'}
+    get_asset_relationships_command(prisma_cloud_v2_client, args)
+    http_request.assert_called_with(
+        method="POST",
+        url_suffix="/uai/v1/asset",
+        json_data={
+            'assetId': 'rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25',
+            'type': 'relationships',
+            'limit': 50,
+            'prismaCloudFindingsOnly': False
+        }
+    )
+
+
+def test_get_asset_network(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - prisma-cloud-asset-network-get command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from PrismaCloudV2 import get_asset_network_command
+    http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request')
+    args = {'asset_id': 'rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25'}
+    get_asset_network_command(prisma_cloud_v2_client, args)
+    http_request.assert_called_with(
+        method="POST",
+        url_suffix="/uai/v1/asset",
+        json_data={
+            'assetId': 'rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25',
+            'type': 'network',
+            'limit': 50,
+            'prismaCloudFindingsOnly': False
+        }
+    )
 
 
 ''' HELPER FUNCTIONS TESTS '''
@@ -1561,3 +1867,286 @@ def test_remove_additional_resource_fields(prisma_cloud_v2_client):
     remove_additional_resource_fields(input_dict=input)
 
     assert input == expected
+
+
+labels_data = [
+    ([{'metadata': {'imageName': 'weaveworksdemos/front-end:0.3.12'}, 'label': 'Image Referencer'}],  # case one dict
+     ['Image Referencer']),  # expected
+    ([{'label': 'Breaking Change Fix'}, {'metadata': {'imageName': 'weaveworksdemos/front-end:0.3.12'},
+                                         'label': 'Image Referencer'}],  # case two dicts
+     ['Breaking Change Fix', 'Image Referencer']),  # expected
+    (['CustomPolicy'],  # case list
+     ['CustomPolicy']),  # expected
+    ([],  # case empty list
+     None)  # expected
+]
+
+
+@pytest.mark.parametrize('labels, expected', labels_data)
+def test_get_labels(labels, expected):
+    """
+        Given
+            list of labels as found in a raw response
+        When
+            Converting the labels from a code issue into a list of strings in get_labels function.
+        Then
+            Verify the list of labels.
+    """
+    from PrismaCloudV2 import get_labels
+    res = get_labels(labels)
+    assert res == expected
+
+
+valid_args = [
+    ({'license_type': 'OSI_APACHE', 'some_filter': 'value1', 'search_scopes': 'scope1', 'search_term': 'term1'}),
+    ({'license_type': 'OSI_APACHE', 'some_filter': 'value1', 'search_scopes': 'scope1', 'limit': 20, 'search_term': 'term1'}),
+    ({'page_size': 50, 'page': 50, 'some_filter': 'value1'})
+]
+
+invalid_args = [
+    ({'license_type': 'invalid_type', 'some_filter': 'value1'}, DemistoException,
+     'Invalid license type. For the list of valid license types go to- https://pan.dev/prisma-cloud/api/code/get-periodic-findings/#request'),
+    ({'search_scopes': 'scope1', 'search_term': 'term1', 'limit': 10}, DemistoException,
+     "At least one filtering argument is required, excluding `search_scopes`, `search_term`, and `limit`. For example, \
+    `fixable_only` or 'branch`"),
+    ({}, DemistoException,
+     "At least one filtering argument is required, excluding `search_scopes`, `search_term`, and `limit`. For example, \
+    `fixable_only` or 'branch`"),
+    ({'search_scopes': 'scope1', 'some_filter': 'value1'}, DemistoException,
+     'The `search_term` argument is required when specifying `search_scopes`.'),
+    ({'page': 40, 'some_filter': 'value1'}, DemistoException,
+     "Please provide both `page` and `page_size` arguments."),
+    ({'page_size': 50, 'some_filter': 'value1'}, DemistoException,
+     "Please provide both `page` and `page_size` arguments."),
+    ({'page_size': 1001, 'page': 40, 'some_filter': 'value1'}, DemistoException,
+     "`Page_size` argument can't be more than 1000.")
+]
+
+
+@pytest.mark.parametrize('given', valid_args)
+def test_valid_cases(given):
+    """
+    Given
+        Valid filtering arguments including license type
+    When
+        Running validate_code_issues_list_args function with these arguments
+    Then
+        The function should not raise any exceptions
+    """
+    from PrismaCloudV2 import validate_code_issues_list_args
+    validate_code_issues_list_args(given)
+
+
+@pytest.mark.parametrize('given, expected_exception, expected_message', invalid_args)
+def test_invalid_cases(given, expected_exception, expected_message):
+    """
+    Given
+        Invalid filtering arguments or missing required filters
+    When
+        Running validate_code_issues_list_args function with these arguments
+    Then
+        The function should raise the expected exception with the correct message
+    """
+    from PrismaCloudV2 import validate_code_issues_list_args
+    with pytest.raises(expected_exception) as exc_info:
+        validate_code_issues_list_args(given)
+    assert str(exc_info.value) == expected_message
+
+
+def test_code_issues_list_command__has_next(mocker, prisma_cloud_v2_client):
+    """
+    Given
+        has_next feild from api response.
+    When
+        Running code_issues_list_command function.
+    Then
+        The api is called in the right amount of times.
+    """
+    from PrismaCloudV2 import code_issues_list_command
+    m = mocker.patch.object(prisma_cloud_v2_client, '_http_request',
+                            side_effect=[{'data': [{'firstDetected': 'some_date', 'policy': 'policy1', 'severity': 'severity1',
+                                                    'labels': ['label1']}], 'hasNext': True},
+                                         {'data': [{'firstDetected': 'some_date', 'policy': 'policy1', 'severity': 'severity1',
+                                                    'labels': ['label1']}], 'hasNext': False}])
+    code_issues_list_command(prisma_cloud_v2_client, {'check_status': 'Passed'})
+    assert m.call_count == 2
+
+
+limit_reached_data = [
+    {
+        'data': [
+            {'repository': 'repo1', 'firstDetected': '2024-01-01', 'policy': 'policy1',
+             'severity': 'high', 'labels': [], 'repositorySource': 'source1'},
+            {'repository': 'repo2', 'firstDetected': '2024-01-02', 'policy': 'policy2',
+             'severity': 'medium', 'labels': [], 'repositorySource': 'source2'}
+        ],
+        'hasNext': True
+    },
+    {
+        'data': [
+            {'repository': 'repo3', 'firstDetected': '2024-01-03', 'policy': 'policy3',
+             'severity': 'low', 'labels': [], 'repositorySource': 'source3'},
+            {'repository': 'repo4', 'firstDetected': '2024-01-04', 'policy': 'policy4',
+             'severity': 'critical', 'labels': [], 'repositorySource': 'source4'}
+        ],
+        'hasNext': False
+    }
+]
+
+
+def test_code_issues_list_command_pagination_limit_reached(mocker, prisma_cloud_v2_client):
+    """
+    Given
+        A limit.
+    When
+        Running code_issues_list_command function and there are more issues then the given limit.
+    Then
+        The number of issues returned is not more then the limit.
+    """
+    from PrismaCloudV2 import code_issues_list_command
+    mocker.patch.object(prisma_cloud_v2_client, '_http_request', side_effect=limit_reached_data)
+    result = code_issues_list_command(prisma_cloud_v2_client, {'limit': 3, 'fixable_only': True})
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 3  # 3 results in total
+    assert 'repo1' in result.readable_output
+    assert 'repo2' in result.readable_output
+    assert 'repo3' in result.readable_output
+    assert 'repo4' not in result.readable_output  # This item should not be included
+
+
+lower_limit_data = {
+    'data': [
+        {'repository': 'repo1', 'firstDetected': '2024-01-01', 'policy': 'policy1',
+         'severity': 'high', 'labels': [], 'repositorySource': 'source1'}],
+    'hasNext': False
+}
+
+
+def test_code_issues_list_command_single_page_no_pagination(mocker, prisma_cloud_v2_client):
+    """
+    Given
+        A limit.
+    When
+        Running code_issues_list_command function and there are less issues then the given limit.
+    Then
+        The number of issues returned is exactly the number of issues that exist.
+    """
+    from PrismaCloudV2 import code_issues_list_command
+    m = mocker.patch.object(prisma_cloud_v2_client, '_http_request', return_value=lower_limit_data)
+    result = code_issues_list_command(prisma_cloud_v2_client, {'limit': 5, 'fixable_only': True})
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 1  # Only one result returned
+    assert 'repo1' in result.readable_output
+    assert m.call_count == 1
+    assert m.call_args.kwargs['json_data']['offset'] == 0
+
+
+code_issues_list_request_data = [
+    # Test case with some filters set and default values
+    (
+        {
+            'fixable_only': True,
+            'branch': 'main',
+            'check_status': 'open',
+            'severities': ['high', 'critical'],
+        },
+        {
+            'filters': {
+                'branch': 'main',
+                'checkStatus': 'open',
+                'fixableOnly': True,
+                'severities': ['high', 'critical']
+            },
+            'limit': 50,
+            'offset': 0
+        }
+    ),
+    # Test case with search filters and different limit/offset
+    (
+        {
+            'fixable_only': True,
+            'search_scopes': ['scope1', 'scope2'],
+            'search_term': 'vulnerability',
+            'limit': 10,
+            'offset': 5
+        },
+        {
+            'filters': {
+                'fixableOnly': True},
+            'search': {
+                'scopes': ['scope1', 'scope2'],
+                'term': 'vulnerability'
+            },
+            'limit': 10,
+            'offset': 5
+        }
+    ),
+    # Test case with multiple filter options
+    (
+        {
+            'git_users': ['user1', 'user2'],
+            'iac_categories': ['category1'],
+            'vulnerability_risk_factors': ['risk1', 'risk2'],
+        },
+        {
+            'filters': {
+                'gitUsers': ['user1', 'user2'],
+                'iacCategories': ['category1'],
+                'vulnerabilityRiskFactors': ['risk1', 'risk2']
+            },
+            'limit': 50,
+            'offset': 0
+        }
+    ),
+]
+
+
+@pytest.mark.parametrize("given_params, expected_body", code_issues_list_request_data)
+def test_code_issues_list_request(mocker, given_params, expected_body, prisma_cloud_v2_client):
+    """
+    Given
+        Arguments.
+    When
+        Running code_issues_list_request function with these arguments.
+    Then
+        The http request is called once with the right body.
+    """
+    from PrismaCloudV2 import code_issues_list_request_body
+    m = mocker.patch.object(prisma_cloud_v2_client, '_http_request')
+    body = code_issues_list_request_body(**given_params)
+    prisma_cloud_v2_client.code_issues_list_request(body)
+    m.assert_called_once_with(
+        'POST',
+        '/code/api/v2/code-issues/branch_scan',
+        json_data=expected_body
+    )
+
+
+user_pagination_data = [
+    # case `page` and `page_size` with limit arguments witch needs to be ignored
+    ({'fixable_only': True, 'page': 3, 'page_size': 1, 'limit': 50}, 1, 3),
+    ({'fixable_only': True, 'page': 3, 'page_size': 2}, 1, 6),  # case `page` and `page_size`
+]
+
+
+@pytest.mark.parametrize("args, expected_call_count, expected_offset", user_pagination_data)
+def test_code_issues_list_command__user_pagination(mocker, args, expected_call_count, expected_offset, prisma_cloud_v2_client):
+    """
+    Given
+        arguments with pagination arguments.
+    When
+        Running code_issues_list_command function.
+    Then
+        The api is called only once and the offset is set correctly.
+    """
+    from PrismaCloudV2 import code_issues_list_command
+    m = mocker.patch.object(prisma_cloud_v2_client, '_http_request',
+                            side_effect=[{'data': [{'firstDetected': 'some_date1', 'policy': 'policy1', 'severity': 'severity1',
+                                                    'labels': ['label1']},
+                                                   {'firstDetected': 'some_date2', 'policy': 'policy2', 'severity': 'severity2',
+                                                    'labels': ['label2']}], 'hasNext': True},
+                                         {'data': [{'firstDetected': 'some_date', 'policy': 'policy1', 'severity': 'severity1',
+                                                    'labels': ['label1']}], 'hasNext': False}])
+    code_issues_list_command(prisma_cloud_v2_client, args)
+    assert m.call_count == expected_call_count
+    assert m.call_args.kwargs['json_data']['offset'] == expected_offset

@@ -379,6 +379,9 @@ script:
     - contextPath: Zscaler.Category.URL
       description: The URL of the category.
       type: string
+    - contextPath: Zscaler.Category.RetainingParentCategoryURL
+      description: The URLs of the retaining parent category.
+      type: string
     - contextPath: Zscaler.Category.Description
       description: The description of the category.
       type: string
@@ -1935,7 +1938,7 @@ script:
     description: Deletes the IP destination groups for the specified group ID.
   script: ''
   subtype: python3
-  dockerimage: demisto/python3:3.10.14.92207
+  dockerimage: demisto/python3:3.11.10.115186
   type: python
 fromversion: 5.0.0
 tests:

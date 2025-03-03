@@ -1,9 +1,10 @@
+import uuid
 from freezegun import freeze_time
-import base64
 import demistomock as demisto
-import pytest
 from test_data import input_data
 import datetime
+import pytest
+from datetime import UTC
 
 MOCK_MAIL_NO_LABELS = {
     'internalDate': '1572251535000',
@@ -17,7 +18,7 @@ MOCK_MAIL_NO_LABELS = {
             {
                 'name': 'Received',
                 'value': 'from 1041831412594 named unknown by gmailapi.google.com with '
-                u'HTTPREST; Mon, 28 Oct 2019 04:32:15 -0400'
+                'HTTPREST; Mon, 28 Oct 2019 04:32:15 -0400'
             }, {
                 'name': 'Content-Type',
                 'value': 'mixed; boundary="===============4922146810840031257=="'
@@ -93,7 +94,7 @@ EXPECTED_GMAIL_CONTEXT = {
         {
             'Name': 'Received',
             'Value': 'from 1041831412594 named '
-                     u'unknown by gmailapi.google.com with HTTPREST; Mon, 28 Oct 2019 04:32:15 -0400'
+                     'unknown by gmailapi.google.com with HTTPREST; Mon, 28 Oct 2019 04:32:15 -0400'
         }, {
             'Name': 'Content-Type',
             'Value': 'mixed; boundary="===============4922146810840031257=="'
@@ -618,7 +619,7 @@ def test_no_date_mail():
     from email.utils import format_datetime
 
     from Gmail import get_email_context
-    expected_date = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=datetime.timezone.utc)
+    expected_date = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=UTC)
     context_gmail, _, _, occurred, is_valid = get_email_context(input_data.email_without_date, "some_mail")
     # check that the x-received date was usd
     assert occurred.timestamp() == expected_date.timestamp()
@@ -740,15 +741,15 @@ def test_last_run_after_fetch_incidents(mocker):
 
 
 EMAIL_NO_INTERNALDATE = input_data.email_without_date
-EXPECTED_OCCURRED_NO_INTERNALDATE = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=datetime.timezone.utc)
+EXPECTED_OCCURRED_NO_INTERNALDATE = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=UTC)
 EMAIL_INTERNALDATE_EARLY = input_data.email_with_early_internalDate
-EXPECTED_OCCURRED_INTERNALDATE_EARLY = datetime.datetime(2020, 12, 21, 20, 11, 40, tzinfo=datetime.timezone.utc)
+EXPECTED_OCCURRED_INTERNALDATE_EARLY = datetime.datetime(2020, 12, 21, 20, 11, 40, tzinfo=UTC)
 EMAIL_HEADER_EARLY = input_data.email_with_internalDate_header_early
-EXPECTED_OCCURRED_HEADER_EARLY = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=datetime.timezone.utc)
+EXPECTED_OCCURRED_HEADER_EARLY = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=UTC)
 EMAIL_NO_HEADER = input_data.email_no_header
-EXPECTED_OCCURRED_NO_HEADER = datetime.datetime(2020, 12, 21, 20, 11, 58, tzinfo=datetime.timezone.utc)
+EXPECTED_OCCURRED_NO_HEADER = datetime.datetime(2020, 12, 21, 20, 11, 58, tzinfo=UTC)
 EMAIL_NO_DATE = input_data.email_no_date
-EXPECTED_OCCURRED_NO_DATE = datetime.datetime(2020, 12, 22, 14, 13, 20, tzinfo=datetime.timezone.utc)
+EXPECTED_OCCURRED_NO_DATE = datetime.datetime(2020, 12, 22, 14, 13, 20, tzinfo=UTC)
 
 
 @pytest.mark.parametrize("email_data, expected_occurred, expected_occurred_is_valid",
@@ -838,7 +839,7 @@ def test_parse_date_isoformat_server():
     """
     from Gmail import parse_date_isoformat_server
     date = parse_date_isoformat_server('2017-10-24T14:13:20Z')
-    assert date == datetime.datetime(2017, 10, 24, 14, 13, 20, tzinfo=datetime.timezone.utc)
+    assert date == datetime.datetime(2017, 10, 24, 14, 13, 20, tzinfo=UTC)
     assert str(date) == '2017-10-24 14:13:20+00:00'
 
 
@@ -921,7 +922,7 @@ def test_filter_by_fields(
     assert filter_by_fields(full_mail, filter_fields) == expected_result
 
 
-def test_handle_html_image_with_new_line():
+def test_handle_html_image_with_new_line(mocker):
     """
     Given:
         - html body of a message with an attached base64 image.
@@ -930,8 +931,10 @@ def test_handle_html_image_with_new_line():
     Then:
         - Ensure attachments list contains correct data, name and cid fields.
     """
-    from Gmail import handle_html
-    # mocker.patch.object(demisto, "getFilePath", return_value={"path": "", "name": ""})
+    import Gmail
+    mocker.patch.object(demisto, "uniqueFile", return_value="1234567")
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "", "name": ""})
+    mocker.patch.object(uuid, "uuid4", return_value="111111111")
     htmlBody = """
 <html>
     <body>
@@ -939,24 +942,126 @@ def test_handle_html_image_with_new_line():
     </body>
 </html>"""
 
-    expected_attachments = [
-        {
-            "maintype": "image",
-            "subtype": "png",
-            "data": base64.b64decode("Aa=="),
-            "name": "image0.png",
-            "cid": "image0.png",
-        }
-    ]
-    expected_cleanBody = """
-<html>
-    <body>
-        <img
-\t\t\t\t\t  src="cid:image0.png"/>
-    </body>
-</html>"""
+    expected_attachments = [{'maintype': 'image',
+                             'subtype': 'png',
+                             'data': b'\x01',
+                             'name': 'image0.png',
+                             'cid': 'image0.png@11111111_11111111',
+                             'ID': 'image0.png@11111111_11111111'}]
+    expected_cleanBody = """\n<html>\n    <body>\n        <img\n\t\t\t\t\t  src="cid:image0.png@11111111_11111111"/>\n    </body>\n</html>"""  # noqa: E501
 
-    cleanBody, attachments = handle_html(htmlBody)
+    cleanBody, attachments = Gmail.handle_html(htmlBody)
 
     assert expected_cleanBody == cleanBody
     assert expected_attachments == attachments
+
+
+part_test1 = [{
+    'filename': 'image-1.png',
+    'headers': [{
+                'name': 'Content-ID', 'value': '<5678>'},
+                {'name': 'Content-Disposition', 'value': 'inline'}],
+    'body': {
+        'attachmentId': '1234'},
+    'mimeType': ''
+}]
+
+part_test2 = [{
+    'filename': 'image-1.png',
+    'headers': [{
+                'name': 'Content-ID', 'value': '5678'},
+                {'name': 'Content-Disposition', 'value': 'inline'}],
+    'body': {
+        'attachmentId': '1234'},
+    'mimeType': ''
+}]
+
+part_test3 = [{
+    'filename': 'image-1.png',
+    'headers': [{
+                'name': 'Content-ID', 'value': 'None'},
+                {'name': 'Content-Disposition', 'value': 'attachment'}],
+    'body': {
+        'attachmentId': '1234'},
+    'mimeType': ''
+}]
+
+
+@pytest.mark.parametrize(
+    "part, expected_result",
+    [
+        (part_test1, ('', '', [{'ID': '1234', 'Name': '5678-attachmentName-image-1.png'}])),
+        (part_test2, ('', '', [{'ID': '1234', 'Name': '5678-attachmentName-image-1.png'}])),
+        (part_test3, ('', '', [{'ID': '1234', 'Name': 'image-1.png'}])),
+    ],
+)
+def test_parse_mail_parts(part, expected_result):
+    """
+        Given:
+            - Part of message from gmail API response.
+        When:
+            - run parse_mail_parts function.
+        Then:
+            - Ensure attachment's name was correctly constructed and parsing was correctly done.
+    """
+    from Gmail import parse_mail_parts
+    result = parse_mail_parts(part)
+    assert result == expected_result
+
+
+@pytest.mark.parametrize(
+    "part, expected_result",
+    [
+        (part_test1, ('', '', [{'ID': '1234', 'Name': 'image-1.png'}])),
+        (part_test2, ('', '', [{'ID': '1234', 'Name': 'image-1.png'}])),
+        (part_test3, ('', '', [{'ID': '1234', 'Name': 'image-1.png'}])),
+    ],
+)
+def test_parse_mail_parts_use_legacy_name(monkeypatch, part, expected_result):
+    """
+    Given:
+        - Part of message from Gmail API response.
+    When:
+        - Run parse_mail_parts function LEGACY_NAME is true.
+    Then:
+        - Ensure attachment's name was correctly constructed and parsing was correctly done.
+    """
+    from Gmail import parse_mail_parts
+    monkeypatch.setattr('Gmail.LEGACY_NAME', True)
+    result = parse_mail_parts(part)
+    assert result == expected_result
+
+
+@pytest.mark.parametrize(
+    "display_name",
+    [
+        ("Sender Name"),
+        (None)
+    ]
+)
+def test_send_mail_sender_display_name(mocker, display_name):
+    """
+    Given:
+        - sender_display_name.
+    When:
+        - The send_mail function is called and the email message is constructed.
+    Then:
+        - Ensure that the encoded message contains the correct 'From' field with the sender_display_name.
+    """
+    import Gmail
+    from Gmail import send_mail
+    mocked_get_service = mocker.patch.object(Gmail, 'get_service')
+    mocked_get_service().users().messages().list().execute.return_value = {'id': 'mock_id'}
+    mock_b64encode = mocker.patch("base64.urlsafe_b64encode")
+    send_mail([], "sender@example.com", "", "", [], [], [], None, "", [],
+              [], [], [], None, [], [], None, display_name, None, None, False)
+
+    args, _ = mock_b64encode.call_args
+    encoded_bytes = args[0]  # This is the bytes before encoding
+    message_str = encoded_bytes.decode('utf-8')
+    if display_name:
+        expected_from_header = f"{display_name} <sender@example.com>"
+    else:
+        expected_from_header = "sender@example.com"
+
+    assert f"from: {expected_from_header}" in message_str

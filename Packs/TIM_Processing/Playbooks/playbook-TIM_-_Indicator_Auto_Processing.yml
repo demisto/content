@@ -773,7 +773,7 @@ inputs: []
 outputs:
 - contextPath: ProcessedIndicators
   description: The outputs of this playbook are tagged for manual review in the parent
-    playbook or tagged using approved black, approved white etc.
+    playbook or tagged using approved_block, approved_allow etc.
   type: string
 quiet: true
 marketplaces:

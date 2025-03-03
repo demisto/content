@@ -41,6 +41,7 @@ Use the AWS feed integration to fetch indicators from the feed.
     * __Skip Exclusion List__: When selected, the exclusion list is ignored for indicators from
     this feed. This means that if an indicator from this feed is on the exclusion
     list, the indicator might still be added to the system. 
+    * __Enrichment Excluded__: Select this option to exclude the fetched indicators from the enrichment process.
     * __Indicator reputation__: Indicators from this integration instance will be marked with this
     reputation.
     * __Trust any certificate (not secure)__

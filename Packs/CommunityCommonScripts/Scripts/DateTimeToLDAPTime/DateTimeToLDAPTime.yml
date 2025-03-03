@@ -1,0 +1,28 @@
+args:
+- default: true
+  description: Date/Time String.
+  name: value
+  required: true
+comment: Converts the given time to an LDAP timestamp.
+commonfields:
+  id: DateTimeToLDAPTime
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.11.10.115186
+enabled: true
+engineinfo: {}
+name: DateTimeToLDAPTime
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+- date
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

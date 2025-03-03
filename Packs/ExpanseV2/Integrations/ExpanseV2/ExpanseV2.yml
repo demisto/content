@@ -186,8 +186,10 @@ configuration:
   section: Collect
   advanced: true
   required: false
-description: The Xpanse integration for Cortex XSOAR leverages the Expander API to create incidents from Xpanse issues. It also leverages Xpanse's unparalleled view of the Internet to enrich IPs, domains and certificates using information from assets discovered by Xpanse Expander and risky flows detected by Xpanse Behavior.
-display: Cortex Xpanse Legacy
+description: Deprecated. Use Cortex Xpanse integration instead. >
+  The Xpanse integration for Cortex XSOAR leverages the Expander API to create incidents from Cortex Xpanse issues. It also leverages Cortex Xpanse's unparalleled view of the Internet to enrich IPs, domains and certificates using information from assets discovered by Cortex Xpanse Expander and risky flows detected by Cortex Xpanse Behavior.
+deprecated: true
+display: Cortex Xpanse Legacy (Deprecated)
 name: ExpanseV2
 script:
   commands:
@@ -5460,7 +5462,7 @@ script:
     - contextPath: Expanse.IPDomains.DomainList
       description: An array of domain objects. This is truncated at 50.
       type: Unknown
-  dockerimage: demisto/python3:3.10.14.92207
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   runonce: false
   script: '-'

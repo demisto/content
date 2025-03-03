@@ -129,7 +129,7 @@ tags:
 - ingestion
 timeout: "0"
 type: python
-dockerimage: demisto/readpdf:1.0.0.93363
+dockerimage: demisto/readpdf:1.0.0.2034953
 runas: DBotRole
 tests:
 - Extract Indicators From File - Generic v2 - Test

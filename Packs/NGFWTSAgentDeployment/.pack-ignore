@@ -2,3 +2,9 @@
 NGFW
 TS
 PANW
+
+[file:PANW_NGFW_TS_Agent_Deployment.yml]
+ignore=GR107
+
+[file:JOB_-_PANW_NGFW_TS_Agent_Cleanup.yml]
+ignore=GR107

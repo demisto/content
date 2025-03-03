@@ -3518,7 +3518,7 @@ MIRROR_COMMENTS_RESPONSE_FROM_XSOAR = {'result': [{
 
 MIRROR_ENTRIES = [
     {'Contents': '', 'ContentsFormat': 'text', 'type': 3, 'File': 'test.txt',
-     'FileID': '20eb1079-d6c3-47cf-81bf-95968f93f6d3'},
+     'FileID': '20eb1079-d6c3-47cf-81bf-95968f93f6d3', 'id': 'entry-id'},
     {'type': None, 'category': None, 'contents': 'This is a comment', 'contentsFormat': None,
      'tags': ['comments', 'work_notes'], 'note': True}]
 

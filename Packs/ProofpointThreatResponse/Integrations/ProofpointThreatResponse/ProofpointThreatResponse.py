@@ -443,7 +443,7 @@ def get_incidents_request(params):
         if incidents_list.status_code == 502 or incidents_list.status_code == 504:
             return_error('The operation failed. There is a possibility you are trying to get too many incidents.\n'
                          'You may consider adding a filter argument to the command.\n'
-                         'URL: {}, StatusCode: {}'.format(fullurl, incidents_list.status_code))
+                         f'URL: {fullurl}, StatusCode: {incidents_list.status_code}')
         else:
             return_error(f'The operation failed. URL: {fullurl}, StatusCode: {incidents_list.status_code}')
 
@@ -525,10 +525,13 @@ def get_incidents_batch_by_time_request(params):
         'created_before': created_before.isoformat().split('.')[0] + 'Z'
     }
 
+    if message_id := params.get('message_id'):  # used in search quarantine
+        request_params['message_id'] = message_id
+
     # while loop relevant for fetching old incidents
     while created_before < current_time and len(incidents_list) < fetch_limit:
         demisto.debug(
-            "Entered the batch loop , with fetch_limit {} and incidents list {} and incident length {} "
+            "PTR: Entered the batch loop , with fetch_limit {} and incidents list {} and incident length {} "
             "with created_after {} and created_before {}.".format(
                 str(fetch_limit), str([incident.get('id') for incident in incidents_list]), str(len(incidents_list)),
                 str(request_params['created_after']), str(request_params['created_before'])))
@@ -543,7 +546,7 @@ def get_incidents_batch_by_time_request(params):
         # updating params according to the new times
         request_params['created_after'] = created_after.isoformat().split('.')[0] + 'Z'
         request_params['created_before'] = created_before.isoformat().split('.')[0] + 'Z'
-        demisto.debug(f"End of the current batch loop with {str(len(incidents_list))} incidents")
+        demisto.debug(f"PTR: End of the current batch loop with {str(len(incidents_list))} incidents")
 
     # fetching the last batch when created_before is bigger then current time = fetching new incidents
     if len(incidents_list) < fetch_limit:
@@ -553,7 +556,7 @@ def get_incidents_batch_by_time_request(params):
         incidents_list.extend(new_incidents)
 
         demisto.debug(
-            "Finished the last batch, with fetch_limit {} and incidents list {} and incident length {}".format(
+            "PTR: Finished the last batch, with fetch_limit {} and incidents list {} and incident length {}".format(
                 str(fetch_limit), str([incident.get('id') for incident in incidents_list]), str(len(incidents_list))))
 
     incidents_list_limit = incidents_list[:fetch_limit]
@@ -606,7 +609,7 @@ def fetch_incidents_command():
                 (datetime.strptime(last_fetch_time, TIME_FORMAT) - timedelta(minutes=1)).isoformat().split('.')[0] + 'Z'
             last_fetched_id[state] = id
 
-    demisto.debug("End of current fetch function with last_fetch {} and last_fetched_id {}".format(str(last_fetch), str(
+    demisto.debug("PTR: End of current fetch function with last_fetch {} and last_fetched_id {}".format(str(last_fetch), str(
         last_fetched_id)))
 
     demisto.setLastRun({'last_fetch': last_fetch})
@@ -666,8 +669,8 @@ def add_comment_to_incident_command():
     )
 
     if incident_data.status_code < 200 or incident_data.status_code >= 300:
-        return_error('Add comment to incident command failed. URL: {}, '
-                     'StatusCode: {}'.format(fullurl, incident_data.status_code))
+        return_error(f'Add comment to incident command failed. URL: {fullurl}, '
+                     f'StatusCode: {incident_data.status_code}')
 
     incident_data = incident_data.json()
     human_readable = create_add_comment_human_readable(incident_data)
@@ -702,8 +705,8 @@ def add_user_to_incident_command():
     )
 
     if incident_data.status_code < 200 or incident_data.status_code >= 300:
-        return_error('Add comment to incident command failed. URL: {}, '
-                     'StatusCode: {}'.format(fullurl, incident_data.status_code))
+        return_error(f'Add comment to incident command failed. URL: {fullurl}, '
+                     f'StatusCode: {incident_data.status_code}')
 
     return_outputs(f'The user was added successfully to incident {incident_id}', {}, {})
 
@@ -757,8 +760,8 @@ def ingest_alert_command():
     )
 
     if alert_data.status_code < 200 or alert_data.status_code >= 300:
-        return_error('Failed to ingest the alert into TRAP. URL: {}, '
-                     'StatusCode: {}'.format(fullurl, alert_data.status_code))
+        return_error(f'Failed to ingest the alert into TRAP. URL: {fullurl}, '
+                     f'StatusCode: {alert_data.status_code}')
 
     return_outputs('The alert was successfully ingested to TRAP', {}, {})
 
@@ -785,27 +788,33 @@ def close_incident_command():
     )
 
     if incident_data.status_code < 200 or incident_data.status_code >= 300:
-        return_error('Incident closure failed. URL: {}, '
-                     'StatusCode: {}'.format(fullurl, incident_data.status_code))
+        return_error(f'Incident closure failed. URL: {fullurl}, '
+                     f'StatusCode: {incident_data.status_code}')
 
     return_outputs(f'The incident {incident_id} was successfully closed', {}, {})
 
 
 def search_quarantine():
-    arg_time = dateparser.parse(demisto.args().get('time'))
+    args = demisto.args()
+    arg_time = dateparser.parse(args.get('time'))
+    emailTAPtime = 0
     if isinstance(arg_time, datetime):
         emailTAPtime = int(arg_time.timestamp())
     else:
         return_error("Timestamp was bad")
 
     lstAlert = []
-    mid = demisto.args().get('message_id')
-    recipient = demisto.args().get('recipient')
+    mid = args.get('message_id')
+    recipient = args.get('recipient')
+    limit_quarantine_occurred_time = argToBoolean(args.get('limit_quarantine_occurred_time', 'True'))
+    quarantine_limit = arg_to_number(args.get('quarantine_limit', 120))
+    fetch_delta = arg_to_number(args.get('fetch_delta', 6))
 
     request_params = {
         'created_after': datetime.strftime(arg_time - get_time_delta('1 hour'), TIME_FORMAT),  # for safety
-        'fetch_delta': '6 hours',
-        'fetch_limit': '50'
+        'fetch_delta': f'{fetch_delta} hours',
+        'fetch_limit': '50',
+        'message_id': mid
     }
 
     incidents_list = get_incidents_batch_by_time_request(request_params)
@@ -816,12 +825,28 @@ def search_quarantine():
     # Collecting emails inside alert to find those with same recipient and messageId
     for incident in incidents_list:
         for alert in incident.get('events'):
+            demisto.debug(f'New alert being processed with Alertid = {alert.get("id")}')
             for email in alert.get('emails'):
-                if email.get('messageId') == mid and email.get('recipient').get('email') == recipient and email.get(
-                        'messageDeliveryTime', {}).get('millis'):
+                demisto.debug(f'New email being processed with messageid {email.get("messageId")}')
+                message_delivery_time = email.get('messageDeliveryTime', {})
+                demisto.debug(f'PTR: Got {message_delivery_time=} with type {type(message_delivery_time)}.')
+                if message_delivery_time and isinstance(message_delivery_time, dict):
+                    message_delivery_time = message_delivery_time.get('millis')
+                elif message_delivery_time and isinstance(message_delivery_time, str):
+                    message_delivery_time = dateparser.parse(message_delivery_time)
+                    if message_delivery_time:
+                        message_delivery_time = int(message_delivery_time.timestamp() * 1000)
+                    else:
+                        demisto.info(f'PTR: Could not parse time of incident {incident.get("id")}, got '
+                                     f'{message_delivery_time=}')
+                        continue
+
+                if email.get('messageId') == mid and email.get('recipient').get('email') == recipient and message_delivery_time:
                     found['mid'] = True
-                    emailTRAPtimestamp = int(email.get('messageDeliveryTime', {}).get('millis') / 1000)
+                    demisto.debug('PTR: Found the email, adding the alert')
+                    emailTRAPtimestamp = int(message_delivery_time / 1000)
                     if emailTAPtime == emailTRAPtimestamp:
+                        demisto.debug(f'PTR: Adding the alert with id {alert.get("id")}')
                         found['email'] = True
                         lstAlert.append({
                             'incidentid': incident.get('id'),
@@ -831,6 +856,13 @@ def search_quarantine():
                             'messageId': mid,
                             'quarantine_results': incident.get('quarantine_results')
                         })
+                    else:
+                        demisto.debug(f'PTR: Alert id {alert.get("id")} found but not added to lstAlert list as '
+                                      f'{emailTAPtime=} did not match {emailTRAPtimestamp=}')
+                else:
+                    demisto.debug(f'PTR: skipped message with ID {email.get("messageId")} and recipient'
+                                  f' {email.get("recipient").get("email")}. As it did not match {mid=} and'
+                                  f' recipient={email.get("recipient").get("email")}')
 
     quarantineFoundcpt = 0
 
@@ -843,8 +875,10 @@ def search_quarantine():
                 tsalert = dateparser.parse(alert.get("alerttime"))
                 if isinstance(tsquarantine, datetime) and isinstance(tsalert, datetime):
                     diff = (tsquarantine - tsalert).total_seconds()
-                    # we want to make sure quarantine starts 2 minuts after creating the alert.
-                    if 0 < diff < 120:
+                    # Append alerts if limit_quarantine_occurred_time=False
+                    # else checks diff is less then quarantine_limit
+                    if ((not limit_quarantine_occurred_time)
+                            or (quarantine_limit and 0 < diff < quarantine_limit)):
                         resQ.append({
                             'quarantine': quarantine,
                             'alert': {
@@ -858,12 +892,17 @@ def search_quarantine():
                         })
                     else:
                         quarantineFoundcpt += 1
+                        demisto.debug(
+                            f'PTR: Quarantine found for {quarantine.get("messageId")} but not returned as it did not meet filter'
+                            f' requirements.  limit_quarantine_occurred_time = {limit_quarantine_occurred_time} with type '
+                            f'{type(limit_quarantine_occurred_time)}. diff = {diff}, quarantine_limit = {quarantine_limit}')
                 else:
-                    demisto.debug(f"Failed to parse timestamp of incident: {alert=} {quarantine=}.")
+                    demisto.debug(f"PTR: Failed to parse timestamp of incident: {alert=} {quarantine=}.")
 
     if quarantineFoundcpt > 0:
         return CommandResults(
-            readable_output=f"{mid} Message ID matches to {quarantineFoundcpt} emails quarantined but time alert does not match")
+            readable_output=(f"{mid} Message ID matches to {quarantineFoundcpt} emails quarantined, but time between alert "
+                             f"received and the quarantine starting exceeded the quarantine_limit provided"))
     if not found['mid']:
         return CommandResults(readable_output=f"Message ID {mid} not found in TRAP incidents")
 
@@ -872,7 +911,7 @@ def search_quarantine():
         return CommandResults(
             readable_output=f"{midtxt} but timestamp between email delivery time and time given as argument doesn't match")
     elif not found['quarantine']:
-        demisto.debug("\n".join([json.dumps(alt, indent=4) for alt in lstAlert]))
+        demisto.debug("PTR: " + "\n".join([json.dumps(alt, indent=4) for alt in lstAlert]))
         return CommandResults(f"{midtxt} but not in the quarantine list meaning that email has not be quarantined.")
 
     return CommandResults(

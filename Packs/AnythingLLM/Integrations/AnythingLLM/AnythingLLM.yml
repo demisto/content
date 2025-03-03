@@ -1,0 +1,272 @@
+commonfields:
+  id: AnythingLLM
+  version: -1
+name: AnythingLLM
+display: AnythingLLM
+category: Utilities
+description: "Retrieval Augmented Generation (RAG) with LLM and Vector DB that can be local for full data privacy or cloud-based for greater functionality.\n\nAPIs are documented at:  <Anything LLM URL> /api/docs \n\nProduct documentation:   https://docs.useanything.com/"
+sectionOrder:
+- Connect
+- Collect
+configuration:
+- section: Connect
+  display: AnythingLLM URL (e.g., http://<url to local AnythingLLM>:3001) or https://<Anything LLM cloud url>
+  name: url
+  defaultvalue: http://localhost:3001
+  type: 0
+  required: true
+- section: Connect
+  display: AnythingLLM API Key
+  displaypassword: AnythingLLM API Key
+  name: apikey
+  type: 9
+  required: true
+  hiddenusername: true
+- section: Connect
+  display: Cloudflare Access Client Id
+  displaypassword: Cloudflare Access Client Secret
+  name: cf_auth
+  required: false
+  type: 9
+script:
+  script: ''
+  type: python
+  commands:
+  - name: anyllm-document-upload-file
+    arguments:
+    - name: fileentry
+      required: true
+      description: 'XSOAR file entry to upload - example: 181@24789.'
+    description: Uploads an XSOAR file entry to the custom-documents folder.
+  - name: anyllm-document-upload-link
+    arguments:
+    - name: link
+      required: true
+      description: 'Web link to upload - example:  https://unit42.paloaltonetworks.com/darkgate-malware-uses-excel-files".'
+    - name: title
+      required: true
+      description: Document title to use.
+    - name: description
+      required: true
+      description: Description of the content in the document.
+    - name: author
+      required: true
+      description: Who is the author of the document.
+    - name: source
+      required: true
+      description: What is the source of the document.
+    description: Uploads a web link to the custom-documents folder.
+  - name: anyllm-document-upload-text
+    arguments:
+    - name: text
+      required: true
+      description: Raw text content that is the document.
+    - name: title
+      required: true
+      description: Document title to use when uploading.
+    - name: description
+      description: Description of the  content in the document.
+    - name: author
+      description: Author of the document.
+    - name: source
+      description: Source of the document.
+    description: Upload text content as a document to the custom-documents folder.
+  - name: anyllm-workspace-new
+    arguments:
+    - name: workspace
+      required: true
+      description: Name of the workspace to create.
+    description: Creates a new workspace in AnythingLLM.
+  - name: anyllm-workspace-delete
+    arguments:
+    - name: workspace
+      required: true
+      description: Name of the workspace to delete.
+    description: Deletes an AnythingLLM workspace.
+  - name: anyllm-workspace-list
+    arguments: []
+    description: List all the workspaces in AnythingLLM.
+  - name: anyllm-workspace-get
+    arguments:
+    - name: workspace
+      required: true
+      description: Name of the workspace.
+    description: Get a specific workspace details.
+  - name: anyllm-workspace-settings
+    arguments:
+    - name: workspace
+      required: true
+      description: Name of the workspace.
+    - name: settings
+      required: true
+      description: JSON object for the settings.
+    description: 'Update workspace settings.  Anything LLM APIs are documented at:   <URL>/api/docs.'
+  - name: anyllm-workspace-add-embedding
+    arguments:
+    - name: workspace
+      required: true
+      description: Name of the workspace.
+    - name: folder
+      required: true
+      description: Folder name containing the document.
+    - name: document
+      required: true
+      description: Document name to add as an embedding.
+    description: Add a document to a workspace and create its vector embedding in the workspace.
+  - name: anyllm-workspace-delete-embedding
+    arguments:
+    - name: workspace
+      required: true
+      description: Name of the workspace.
+    - name: folder
+      required: true
+      description: Folder the document originated from.
+    - name: document
+      required: true
+      description: Name of the document to have its embedding deleted.
+    description: Delete a document embedding from the workspace.
+  - name: anyllm-document-createfolder
+    arguments:
+    - name: folder
+      required: true
+      description: Name of the folder to create.
+    description: Create a new document folder.
+  - name: anyllm-document-move
+    arguments:
+    - name: srcfolder
+      required: true
+      description: Name of the source folder.
+    - name: dstfolder
+      description: Name of the destination folder.
+    - name: document
+      description: Document name to move.
+    description: Move a document from a source folder to a destination folder.
+  - name: anyllm-document-delete
+    arguments:
+    - name: folder
+      required: true
+      description: Name of the folder.
+    - name: document
+      required: true
+      description: Name of the document to delete.
+    description: Delete a document.
+  - name: anyllm-workspace-chat
+    arguments:
+    - name: workspace
+      required: true
+      description: Name of the workspace.
+    - name: message
+      required: true
+      description: Message to send.
+    - name: mode
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - query
+      - chat
+      description: Mode to chat, query or chat.
+    - auto: PREDEFINED
+      default: true
+      defaultValue: dictionary
+      name: format
+      predefined:
+      - markdown
+      - dictionary
+      description: Markdown or dictionary format output.
+    description: Send a chat message to a workspace (default thread). Query mode is based on embedded documents in chat, whereas chat mode is more general.
+  - name: anyllm-workspace-stream-chat
+    arguments:
+    - name: workspace
+      required: true
+      description: Name of the workspace.
+    - name: message
+      required: true
+      description: Message to send.
+    - name: mode
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - query
+      - chat
+      description: Chat mode, query or chat.
+    description: Send a stream chat message to a workspace (default thread). Query mode is based on embedded documents in chat, whereas chat mode is more general.
+  - name: anyllm-document-list
+    arguments: []
+    description: List all document details.
+  - name: anyllm-document-get
+    arguments:
+    - name: folder
+      required: true
+      description: Folder containing the document.
+    - name: document
+      required: true
+      description: Document name.
+    description: Get a specific document details.
+  - name: anyllm-workspace-pin
+    arguments:
+    - name: workspace
+      required: true
+      description: Workspace name.
+    - name: folder
+      required: true
+      description: Folder the document originated from.
+    - name: document
+      required: true
+      description: Document name.
+    - name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: Set pin status to true or false.
+    description: Set the pinned status of a document embedding.
+  - arguments:
+    - description: Name of the workspace.
+      name: workspace
+      required: true
+    - description: Name of the new conversation thread.
+      name: thread
+      required: true
+    description: Create a new conversation thread.
+    name: anyllm-workspace-thread-new
+  - arguments:
+    - description: Name of the workspace.
+      name: workspace
+      required: true
+    - description: Name of the conversation thread.
+      name: thread
+      required: true
+    - description: Message to send.
+      name: message
+      required: true
+    - auto: PREDEFINED
+      description: Mode to chat, query or chat.
+      name: mode
+      predefined:
+      - query
+      - chat
+      required: true
+    description: Send a chat a message to a conversation thread.
+    name: anyllm-workspace-thread-chat
+  - arguments:
+    - description: Name of the workspace.
+      name: workspace
+    - description: Name of the thread.
+      name: thread
+    description: Delete a thread in a workspace.
+    name: anyllm-workspace-thread-delete
+  - arguments:
+    - description: Name of the workspace.
+      name: workspace
+      required: true
+    - description: Thread to delete.
+      name: thread
+    description: Get the conversation for a workspace thread.
+    name: anyllm-workspace-thread-chats
+  dockerimage: demisto/python3:3.12.8.1983910
+  runonce: false
+  subtype: python3
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

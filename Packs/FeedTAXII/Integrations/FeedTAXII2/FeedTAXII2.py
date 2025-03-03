@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 from typing import Any
+from urllib.parse import urlparse
 
 """ CONSTANT VARIABLES """
 
@@ -60,19 +61,26 @@ def filter_previously_fetched_indicators(indicators: list, last_run: dict) -> li
         last_run["latest_indicators"] = [{obj.get('rawJSON', {}).get("id"): obj.get('rawJSON', {}).get("modified")}
                                          if obj.get("value") != "$$DummyIndicator$$" else obj
                                          for obj in indicators]
+        demisto.debug("with first fetch, updated the latest_indicators")
         return indicators
     for indicator in indicators:
-        indicator_id = indicator.get("rawJSON", {}).get('id', "")
+        indicator_id = indicator.get("rawJSON", {}).get("id")
 
         # check if the indicator is stored in latest_indicators
         saved_indicator = list(filter(lambda ind: indicator_id in ind, last_indicators))
 
         # if the indicator is stored in latest_indicators -> check if it was modified
         if saved_indicator:
-            modified_date = saved_indicator[0].get(indicator_id)
+            saved_modified_date = saved_indicator[0].get(indicator_id)
+            new_modified_date = indicator.get('rawJSON', {}).get('modified')
 
+            # if indicator stored in saved indicators but does not have modified field -> add to new_indicators
+            if not saved_modified_date or not new_modified_date:
+                demisto.debug(f"saved indicator's modified value: {saved_modified_date}, "
+                              f"new indicator's modified value is: {new_modified_date}")
+                new_indicators.append(indicator)
             # the indicator is stored in latest_indicators, but got modified -> add to new_indicators
-            if indicator.get("rawJSON", {}).get("modified", "") > modified_date:
+            elif new_modified_date > saved_modified_date:
                 new_indicators.append(indicator)
             else:
                 skipped_indicators.append(indicator_id)
@@ -260,10 +268,25 @@ def reset_fetch_command(client):
     )
 
 
+def is_valid_taxii_url(url: Optional[str]):
+    """
+    Checks the correctness of the url.
+    :param url: str
+    :return: boolean whether the url valid or not.
+    """
+    if url and (parse_result := urlparse(url)):
+        path = parse_result.path
+        if path.endswith(("taxii", "taxii2", "taxii2/", "taxii/")):
+            return True
+    return False
+
+
 def main():  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     url = params.get("url")
+    if not is_valid_taxii_url(url):
+        demisto.debug("ERROR: Discovery Service URL is NOT VALID, The URL suffix should be taxii or taxii2.")
     collection_to_fetch = params.get("collection_to_fetch")
     credentials = params.get("credentials") or {}
     username = credentials.get("identifier")
@@ -287,6 +310,8 @@ def main():  # pragma: no cover
     objects_to_fetch = argToList(params.get('objects_to_fetch') or [])
     default_api_root = params.get('default_api_root')
     update_custom_fields = params.get('update_custom_fields') or False
+    enrichment_excluded = (argToBoolean(params.get('enrichmentExcluded', False))
+                           or (params.get('tlp_color') == 'RED' and is_xsiam_or_xsoar_saas()))
 
     demisto.info(f'{objects_to_fetch=}')
 
@@ -310,6 +335,7 @@ def main():  # pragma: no cover
             key=key,
             default_api_root=default_api_root,
             update_custom_fields=update_custom_fields,
+            enrichment_excluded=enrichment_excluded,
         )
         client.initialise()
         commands = {

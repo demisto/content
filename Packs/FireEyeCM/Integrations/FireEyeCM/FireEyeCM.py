@@ -256,7 +256,7 @@ def release_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandR
         md_ = f'{INTEGRATION_NAME} released emails successfully.'
     return CommandResults(
         readable_output=md_,
-        raw_response=raw_response
+        raw_response=""
     )
 
 
@@ -273,7 +273,7 @@ def delete_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandRe
 
     return CommandResults(
         readable_output=md_,
-        raw_response=raw_response
+        raw_response=""
     )
 
 
@@ -416,7 +416,7 @@ def main() -> None:
     # fetch params
     max_fetch = int(params.get('max_fetch', '50'))
     first_fetch = params.get('first_fetch', '3 days').strip()
-    info_level = params.get('info_level', 'concise')
+    info_level = params.get('info_level') or 'concise'
 
     command = demisto.command()
     args = demisto.args()

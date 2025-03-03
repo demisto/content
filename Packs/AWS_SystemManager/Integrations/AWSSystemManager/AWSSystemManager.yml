@@ -2385,10 +2385,11 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/boto3py3:1.0.0.89670
+  dockerimage: demisto/boto3py3:1.0.0.1865449
 fromversion: 6.9.0
 marketplaces:
 - xsoar
 - marketplacev2
+- xpanse
 tests:
 - No tests (auto formatted)

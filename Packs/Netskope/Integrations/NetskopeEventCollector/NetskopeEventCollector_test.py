@@ -1,7 +1,8 @@
 import json
 import re
 import time
-
+from unittest.mock import MagicMock
+import demistomock as demisto
 import dateparser
 import pytest
 from NetskopeEventCollector import ALL_SUPPORTED_EVENT_TYPES, RATE_LIMIT_REMAINING, RATE_LIMIT_RESET, Client
@@ -74,8 +75,9 @@ def test_get_all_events(requests_mock):
                     proxy=False, event_types_to_fetch=ALL_SUPPORTED_EVENT_TYPES)
     url_matcher = re.compile('https://netskope[.]example[.]com/events/dataexport/events')
     requests_mock.get(url_matcher, json=json_callback)
-    events, new_last_run = get_all_events(client, FIRST_LAST_RUN)
-    assert len(events) == 25
+    events = []
+    new_last_run = get_all_events(client, FIRST_LAST_RUN, all_event_types=events)
+    assert len(events) == 26
     assert events[0].get('event_id') == '1'
     assert events[0].get('_time') == '2023-05-22T10:30:16.000Z'
     assert all(new_last_run[event_type]['operation'] == 'next' for event_type in ALL_SUPPORTED_EVENT_TYPES)
@@ -94,9 +96,9 @@ def test_get_events_command(mocker):
     """
     from NetskopeEventCollector import get_events_command
     client = Client(BASE_URL, 'dummy_token', False, False, event_types_to_fetch=ALL_SUPPORTED_EVENT_TYPES)
-    mocker.patch('NetskopeEventCollector.get_all_events', return_value=[MOCK_ENTRY, {}])
+    mocker.patch('NetskopeEventCollector.get_all_events', return_value={})
     mocker.patch.object(time, "sleep")
-    results, events = get_events_command(client, args={}, last_run=FIRST_LAST_RUN)
+    results, events = get_events_command(client, args={}, last_run=FIRST_LAST_RUN, events=MOCK_ENTRY)
     assert 'Events List' in results.readable_output
     assert len(events) == 9
     assert results.outputs_prefix == 'Netskope.Event'
@@ -141,7 +143,8 @@ def test_honor_rate_limiting(mocker, headers, endpoint, expected_sleep):
       'alert': {'operation': 'next'},
       'page': {'operation': 'next'},
       'audit': {'operation': 'next'},
-      'network': {'operation': 'next'}}, 'next'),
+      'network': {'operation': 'next'},
+      'incident': {'operation': 'next'}}, 'next'),
 ])
 def test_setup_last_run(mocker, last_run_dict, expected_operation_value):
     """
@@ -161,13 +164,14 @@ def test_setup_last_run(mocker, last_run_dict, expected_operation_value):
     first_fetch = dateparser.parse('2023-01-01T10:00:00Z')
     mocker.patch.object(dateparser, "parse", return_value=first_fetch)
     last_run = setup_last_run(last_run_dict, ALL_SUPPORTED_EVENT_TYPES)
-    assert all(val.get('operation') == expected_operation_value for key, val in last_run.items())
+    assert all(val.get('operation') == expected_operation_value for _, val in last_run.items())
 
 
 @pytest.mark.parametrize('event_types_to_fetch_param, expected_value', [
     ('Application', ['application']),
     ('Alert, Page, Audit', ['alert', 'page', 'audit']),
-    (['Application', 'Audit', 'Network'], ['application', 'audit', 'network']),
+    (['Application', 'Audit', 'Network', 'Incident'], ['application', 'audit', 'network', 'incident']),
+    ('Incident', ['incident']),
     (None, ALL_SUPPORTED_EVENT_TYPES),
 ])
 def test_event_types_to_fetch_parameter_handling(event_types_to_fetch_param, expected_value):
@@ -253,3 +257,28 @@ def test_fix_last_run(last_run, supported_event_types, expected_result):
     from NetskopeEventCollector import remove_unsupported_event_types
     remove_unsupported_event_types(last_run, supported_event_types)
     assert last_run == expected_result
+
+
+def test_incident_endpoint(mocker):
+    """
+    Given:
+        - Netskope client set to fetch incident events.
+    When:
+        - Fetching events.
+    Then:
+        - Assert that the Netskope end point is called with the proper url and paras.
+    """
+    from datetime import datetime
+    from NetskopeEventCollector import handle_data_export_single_event_type
+    mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationInstance': 'test_instance'}})
+    mocker.patch('NetskopeEventCollector.is_execution_time_exceeded', return_value=False)
+    mocker.patch('NetskopeEventCollector.print_event_statistics_logs')
+    client = Client(BASE_URL, 'dummy_token', False, False, event_types_to_fetch=['incident'])
+    mock_response = MagicMock()
+    mock_response.json.return_value = {'result': EVENTS_RAW['result'], 'wait_time': 0}
+    request_mock = mocker.patch.object(Client, '_http_request', return_value=mock_response)
+    handle_data_export_single_event_type(client, 'incident', 'next', limit=50,
+                                         execution_start_time=datetime.now(), all_event_types=[])
+    kwargs = request_mock.call_args.kwargs
+    assert kwargs['url_suffix'] == 'events/dataexport/events/incident'
+    assert kwargs['params'] == {'index': 'xsoar_collector_test_instance_incident', 'operation': 'next'}

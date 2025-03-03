@@ -278,6 +278,7 @@ hr
 BEACONING
 backslashes
 Accountresourcekey
+TDT
 
 [file:SecuronixGetViolations.yml]
 ignore=BA124

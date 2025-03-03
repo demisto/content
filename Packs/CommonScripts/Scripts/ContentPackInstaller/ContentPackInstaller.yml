@@ -38,7 +38,10 @@ tags:
 - Content Management
 timeout: 600ns
 type: python
-dockerimage: demisto/xsoar-tools:1.0.0.83431
+dockerimage: demisto/xsoar-tools:1.0.0.1902141
+marketplaces:
+- xsoar
+- marketplacev2
 tests:
 - ContentPackInstaller_Test
 fromversion: 6.0.0

@@ -76,7 +76,7 @@ configuration:
   required: false
 - display: Maximum number of incidents per fetch
   name: max_fetch
-  defaultvalue: "100"
+  defaultvalue: '100'
   type: 0
   required: false
 - display: First fetch time
@@ -93,7 +93,7 @@ configuration:
   required: false
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
-  defaultvalue: "60"
+  defaultvalue: '60'
   type: 19
   required: false
 script:
@@ -153,7 +153,7 @@ script:
     - name: urls
       description: Provide a single or comma separated list of sites from which to perform the search on.
     description: Use the google search engine to search a query.
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   subtype: python3
 fromversion: 6.2.0

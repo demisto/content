@@ -1,31 +1,32 @@
 ## Collect Events from Vendor
 
-In order to use the collector, you can use one of the following options to collect events from the vendor:
- - [Broker VM](#broker-vm)
+In order to use the collector, use the [Broker VM](#broker-vm) option.
 
-In either option, you will need to configure the vendor and product for this specific collector.
 ### Broker VM
-You will need to use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).\
-You can configure the specific vendor and product for this instance.
-1. Navigate to **Settings** -> **Configuration** -> **Data Broker** -> **Broker VMs**. 
-2. Right-click, and select **Syslog Collector** -> **Configure**.
-3. When configuring the Syslog Collector, set:
-   - vendor as vendor<- Cisco
-   - product as product<- ASA
+You will need to use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
+
+1. Navigate to **Settings** &rarr; **Configuration** &rarr; **Data Broker** &rarr; **Broker VMs**. 
+2. Go to the **APPS** column under the **Brokers** tab and add the **Syslog** app for the relevant broker instance. If the Syslog app already exists, hover over it and click **Configure**.
+3. Click **Add New**.
+4. When configuring the Syslog Collector, set the following parameters:
+   | Parameter     | Value    
+   | :---          | :---                    
+   | `Vendor`      | Enter **Cisco**. 
+   | `Product`     | Enter **ASA**. 
 
 ### Configure Timestamp on Cisco ASA
-Supported date format is RFC 5424, an example: "2023-04-09T16:30:00Z" "2023-04-09T16:30:00+07:00"
+Supported date format is RFC 5424, for example: "2023-04-09T16:30:00Z", "2023-04-09T16:30:00+07:00".
 
 1. Access the Cisco ADSM.
-2. Go to Configuration -> logging -> Syslog setup.
+2. Go to Configuration &rarr; logging &rarr; Syslog setup.
 3. On Timestamp Format drildown click on the option "RFC 5424(yyyy-MM-ddTHH:mm:ssZ)".
 4. Click on the Apply button.
 
-Another supported date format is "Jul 08 09:14:35 UTC"
+Another supported date format is "Jul 08 09:14:35 UTC".
 
 **Note** : If a different timestamp format is used, time extraction and mapping will not be supported.
 
-![Server Screenshot](https://raw.githubusercontent.com/demisto/content/8a2f8a41f73e9d9f4e20693e3b99dc6b75336321/Packs/CiscoASA/docs_imgs/CiscoASDM_timestamp.png)
+![Server Screenshot](docs_imgs/CiscoASDM_timestamp.png)
 
 
 ### The supported events on Modeling rules:

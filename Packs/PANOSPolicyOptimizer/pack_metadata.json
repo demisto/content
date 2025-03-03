@@ -2,7 +2,7 @@
     "name": "PAN-OS Policy Optimizer (beta)",
     "description": "This integration introduces Policy Optimizer and DAG features that are not available through the regular PAN API",
     "support": "community",
-    "currentVersion": "1.1.25",
+    "currentVersion": "1.1.30",
     "author": "Maciej Drobniuch and Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

@@ -40,6 +40,11 @@ class AzureWAFClient:
                 'grant_type': DEVICE_CODE,
                 'resource': 'https://management.core.windows.net',
                 'scope': 'https://management.azure.com/user_impersonation offline_access user.read'
+            },
+            'Client Credentials': {
+                'grant_type': CLIENT_CREDENTIALS,
+                'resource': None,
+                'scope': 'https://management.azure.com/.default'
             }
         }
         # for dev environment use:
@@ -56,7 +61,8 @@ class AzureWAFClient:
             # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
             # flow and most of the same arguments should be set, as we're !not! using OProxy.
             auth_id=app_id,
-            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
+            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token' if 'Device Code' in
+                                                                                                       auth_type else None,
             grant_type=AUTH_TYPES_DICT.get(auth_type, {}).get('grant_type'),  # disable-secrets-detection
             base_url=base_url,
             verify=verify,
@@ -481,7 +487,7 @@ def resourcegroups_to_md(subscription_ids: list[dict]) -> str:
 def subscriptions_list_command(client: AzureWAFClient):
     subscriptions_res = client.subscriptions_list()
     subscriptions = subscriptions_res.get('value', []) if subscriptions_res else {}
-    return CommandResults(readable_output=subscriptions_to_md(subscriptions),
+    return CommandResults(readable_output=subscriptions_to_md(subscriptions),  # type: ignore[arg-type]
                           outputs=subscriptions,
                           outputs_key_field='subscriptionId', outputs_prefix='AzureWAF.Subscription',
                           raw_response=subscriptions)
@@ -522,6 +528,9 @@ def test_module(client, params):
 
     elif params.get('auth_type') == 'Azure Managed Identities':
         test_connection(client, params)
+        return 'ok'
+    elif params.get('auth_type') == 'Client Credentials':
+        client.ms_client.get_access_token()
         return 'ok'
     return None
 

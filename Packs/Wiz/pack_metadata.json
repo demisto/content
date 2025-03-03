@@ -2,13 +2,13 @@
     "name": "Wiz",
     "description": "Integrate with Wiz for bidirectional Issue management and fetching of resource information. \n",
     "support": "partner",
-    "currentVersion": "1.3.1",
+    "currentVersion": "1.3.4",
     "author": "Wiz Inc.",
     "url": "https://wiz.io/",
     "email": "support@wiz.io",
     "created": "2021-12-15T7:49:32Z",
     "categories": [
-        "Cloud Services"
+        "Cloud Security"
     ],
     "tags": [],
     "useCases": [],

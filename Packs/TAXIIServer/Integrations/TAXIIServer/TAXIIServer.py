@@ -5,7 +5,7 @@ from gevent.pywsgi import WSGIServer
 from urllib.parse import urlparse, ParseResult
 from tempfile import NamedTemporaryFile
 from base64 import b64decode
-from typing import Callable, List, Generator
+from collections.abc import Callable, Generator
 from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
 from multiprocessing import Process
 from werkzeug.datastructures import Headers
@@ -131,9 +131,9 @@ class TAXIIServer:
         Returns:
             The discovery response.
         """
-
+        demisto.debug(f"TS1: The request_headers are {request_headers.to_wsgi_list()}")
         if taxii_message.message_type != MSG_DISCOVERY_REQUEST:
-            raise ValueError('Invalid message, invalid Message Type')
+            raise ValueError(f'Invalid message, invalid Message Type is {taxii_message.message_type}')
 
         discovery_service_url = self.get_url(request_headers)
         discovery_response = DiscoveryResponse(
@@ -173,7 +173,7 @@ class TAXIIServer:
         url = self.get_url(request_headers)
 
         if taxii_message.message_type != MSG_COLLECTION_INFORMATION_REQUEST:
-            raise ValueError('Invalid message, invalid Message Type')
+            raise ValueError(f'Invalid message, invalid Message Type is {taxii_message.message_type}')
 
         collection_info_response = CollectionInformationResponse(
             generate_message_id(),
@@ -207,7 +207,7 @@ class TAXIIServer:
             The poll response.
         """
         if taxii_message.message_type != MSG_POLL_REQUEST:
-            raise ValueError('Invalid message, invalid Message Type')
+            raise ValueError(f'Invalid message, invalid Message Type is {taxii_message.message_type}')
 
         taxii_feeds = list(self.collections.keys())
         collection_name = taxii_message.collection_name
@@ -273,7 +273,7 @@ class TAXIIServer:
                     content_xml = content_block.to_xml().decode('utf-8')
                     yield f'{content_xml}\n'
                 except Exception as e:
-                    handle_long_running_error(f'Failed parsing indicator to STIX: {e}')
+                    handle_long_running_error(f"Failed to parse the indicator '{indicator.get('value', '')}' to STIX: {e}")
 
             # yield the closing tag
 
@@ -323,7 +323,7 @@ DEMISTO_LOGGER: Handler = Handler()
 ''' STIX MAPPING '''
 
 
-def create_stix_ip_observable(namespace: str, indicator: dict) -> List[Observable]:
+def create_stix_ip_observable(namespace: str, indicator: dict) -> list[Observable]:
     """
     Create STIX IP observable.
     Args:
@@ -372,7 +372,7 @@ def create_stix_ip_observable(namespace: str, indicator: dict) -> List[Observabl
     return observables
 
 
-def create_stix_email_observable(namespace: str, indicator: dict) -> List[Observable]:
+def create_stix_email_observable(namespace: str, indicator: dict) -> list[Observable]:
     """
     Create STIX Email observable.
     Args:
@@ -701,15 +701,12 @@ def get_port(params: dict = demisto.params()) -> int:
     """
     Gets port from the integration parameters.
     """
-    port_mapping: str = params.get('longRunningPort', '')
-    port: int
-    if port_mapping:
-        if ':' in port_mapping:
-            port = int(port_mapping.split(':')[1])
-        else:
-            port = int(port_mapping)
-    else:
-        raise ValueError('Please provide a Listen Port.')
+    if not params.get('longRunningPort'):
+        params['longRunningPort'] = '1111'
+    try:
+        port = int(params.get('longRunningPort', ''))
+    except ValueError as e:
+        raise ValueError(f'Invalid listen port - {e}')
 
     return port
 
@@ -767,7 +764,7 @@ def find_indicators_loop(indicator_query: str):
     Returns:
         Indicator query results from Demisto.
     """
-    iocs: List[dict] = []
+    iocs: list[dict] = []
     search_indicators = IndicatorsSearcher(query=indicator_query, size=PAGE_SIZE)
     for ioc_res in search_indicators:
         fetched_iocs = ioc_res.get('iocs') or []
@@ -807,6 +804,7 @@ def taxii_discovery_service() -> Response:
     """
 
     try:
+        demisto.debug(f"TS1: the taxii_discovery_service data {request.data!r}")
         discovery_response = SERVER.get_discovery_service(get_message_from_xml(request.data), request.headers)
     except Exception as e:
         error = f'Could not perform the discovery request: {str(e)}'
@@ -825,6 +823,7 @@ def taxii_collection_management_service() -> Response:
     """
 
     try:
+        demisto.debug(f"TS1: the taxii_collection_management_service data {request.data!r}")
         collection_response = SERVER.get_collections(get_message_from_xml(request.data), request.headers)
     except Exception as e:
         error = f'Could not perform the collection management request: {str(e)}'
@@ -845,6 +844,7 @@ def taxii_poll_service() -> Response:
     try:
         taxiicontent_type = request.headers['X-TAXII-Content-Type']
         if taxiicontent_type == 'urn:taxii.mitre.org:message:xml:1.1':
+            demisto.debug(f"TS1: the taxii_poll_service data {request.data!r}")
             taxii_message = get_message_from_xml(request.data)
         else:
             raise ValueError('Invalid message')
@@ -861,7 +861,7 @@ def taxii_poll_service() -> Response:
 
 def test_module(taxii_server: TAXIIServer):
     run_server(taxii_server, is_test=True)
-    return 'ok', {}, {}
+    return 'ok'
 
 
 def run_server(taxii_server: TAXIIServer, is_test=False):
@@ -869,9 +869,9 @@ def run_server(taxii_server: TAXIIServer, is_test=False):
     Start the taxii server.
     """
 
-    certificate_path = str()
-    private_key_path = str()
-    ssl_args = dict()
+    certificate_path = ''
+    private_key_path = ''
+    ssl_args = {}
 
     try:
 
@@ -921,10 +921,6 @@ def main():
     """
     params = demisto.params()
     command = demisto.command()
-    port = get_port(params)
-    collections = get_collections(params)
-    server_links = demisto.demistoUrls()
-    server_link_parts: ParseResult = urlparse(server_links.get('server'))
 
     certificate: str = params.get('certificate', '')
     private_key: str = params.get('key', '')
@@ -935,23 +931,30 @@ def main():
     elif certificate and private_key:
         http_server = False
 
-    global SERVER
-    scheme = 'http'
-    host_name = server_link_parts.hostname
-    if not http_server:
-        scheme = 'https'
-
-    service_address = params.get('service_address')
-    SERVER = TAXIIServer(scheme, str(host_name), port, collections,
-                         certificate, private_key, http_server, credentials, service_address)
-
     demisto.debug(f'Command being called is {command}')
-    commands = {
-        'test-module': test_module
-    }
-
+    commands: dict = {}
     try:
-        if command == 'long-running-execution':
+        port = get_port(params)
+        collections = get_collections(params)
+        server_links = demisto.demistoUrls()
+        server_link_parts: ParseResult = urlparse(server_links.get('server'))
+
+        global SERVER
+        scheme = 'http'
+        host_name = server_link_parts.hostname
+        if is_xsiam():
+            # Replace the 'xdr' with 'crtx' in the hostname of XSIAM tenants
+            # This substitution is related to this platform ticket: https://jira-dc.paloaltonetworks.com/browse/CIAC-12256.
+            host_name = str(server_link_parts.hostname).replace('.xdr', '.crtx', 1)
+        if not http_server:
+            scheme = 'https'
+
+        service_address = params.get('service_address')
+        SERVER = TAXIIServer(scheme, str(host_name), port, collections,
+                             certificate, private_key, http_server, credentials, service_address)
+        if command == 'test-module':
+            return_results(test_module(SERVER))
+        elif command == 'long-running-execution':
             run_server(SERVER)
         else:
             readable_output, outputs, raw_response = commands[command](SERVER)

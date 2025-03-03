@@ -2,7 +2,7 @@
     "name": "XSOAR Lab Updates",
     "description": "Manage Cortex XSOAR updates",
     "support": "community",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.4",
     "author": "XSOAR Lab",
     "url": "",
     "email": "",

@@ -2,7 +2,7 @@ import json
 
 
 def load_json_from_file(path):
-    with open(path, 'r') as _json_file:
+    with open(path) as _json_file:
         return json.load(_json_file)
 
 

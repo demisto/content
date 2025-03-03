@@ -1,0 +1,23 @@
+commonfields:
+  id: DownloadAndArchivePythonLibrary
+  version: -1
+name: DownloadAndArchivePythonLibrary
+script: ''
+type: python
+tags:
+- Utility
+- file
+comment: The script downloads a Python library using PIP, archives it, and returns the file to the war room.
+enabled: true
+args:
+- name: library_name
+  required: true
+  description: The Python library you wish to download and archive.
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/py3-tools:1.0.0.114656
+runas: DBotWeakRole
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

@@ -1225,10 +1225,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: bb00ca3d-82a5-4b82-8ce2-a5593eecb43b
+    taskid: 0ea2b397-c024-4c57-81d1-ccdf630043f6
     type: regular
     task:
-      id: bb00ca3d-82a5-4b82-8ce2-a5593eecb43b
+      id: 0ea2b397-c024-4c57-81d1-ccdf630043f6
       version: -1
       name: Set Number of Related Alerts
       description: |-
@@ -1236,7 +1236,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1268,7 +1270,7 @@ tasks:
     fieldMapping:
     - incidentfield: Number Of Found Related Alerts
       output:
-        simple: NumOfRelatedAlerts
+        simple: ${NumOfRelatedAlerts}
     - incidentfield: Alert Search Results
       output:
         complex:
@@ -1306,14 +1308,15 @@ tasks:
     - incidentfield: Failed Logon Events
       output:
         complex:
-          root: AzureFailLoginCount
+          root: NumOfOktaFailedLogon
           transformers:
           - operator: append
             args:
               item:
                 value:
-                  simple: NumOfOktaFailedLogon
+                  simple: AzureFailLoginCount
                 iscontext: true
+          - operator: SumList
     - incidentfield: Email
       output:
         complex:
@@ -1642,6 +1645,6 @@ outputSections:
   description: Generic group for outputs
 outputs: []
 tests:
-- No tests (auto formatted)
+- Test Playbook - Identity Analytics - Alert Handling
 marketplaces: ["marketplacev2"]
 fromversion: 6.10.0

@@ -30,3 +30,9 @@ ignore=IM111
 
 [file:classifier-IronDefense.json]
 ignore=BA101
+
+# GR103 is temporary, see CIAC-11656
+[file:layoutscontainer-IronDefense_Event_Notification.json]
+ignore=GR103
+[file:playbook-IronDefense_Test.yml]
+ignore=GR103

@@ -73,7 +73,7 @@ class Tokenizer:
         self.number_pattern = "NUMBER_PATTERN"
         self.url_pattern = "URL_PATTERN"
         self.email_pattern = "EMAIL_PATTERN"
-        self.reserved_tokens = set([self.number_pattern, self.url_pattern, self.email_pattern])
+        self.reserved_tokens = {self.number_pattern, self.url_pattern, self.email_pattern}
         self.clean_html = clean_html
         self.remove_new_lines = remove_new_lines
         self.hash_seed = hash_seed
@@ -104,7 +104,7 @@ class Tokenizer:
         while word_start < len(text) and text[word_start].isspace():
             word_start += 1
         for word in text.split():
-            for char_idx, char in enumerate(word):
+            for char_idx, _char in enumerate(word):
                 original_text_indices_to_words[word_start + char_idx] = word
             # find beginning of next word
             word_start += len(word)
@@ -141,7 +141,7 @@ class Tokenizer:
                 tokens_list += [chr for chr in self._unicode_chr_splitter(t) if chr and chr != ' ']
                 original_words_to_tokens = {c: t for c in tokens_list}
         else:
-            return_error('Unsupported tokenization method: when language is "Other" ({})'.format(tokenization_method))
+            return_error(f'Unsupported tokenization method: when language is "Other" ({tokenization_method})')
         return tokens_list, original_words_to_tokens
 
     def tokenize_text_spacy(self, text):
@@ -225,6 +225,7 @@ tokenizer = None
 
 def read_file(input_data, input_type):
     data = []  # type: ignore
+    file_path, file_content = '', ''
     if not input_data:
         return data
     if input_type.endswith("string"):
@@ -236,10 +237,10 @@ def read_file(input_data, input_type):
     else:
         res = demisto.getFilePath(input_data)
         if not res:
-            return_error("Entry {} not found".format(input_data))
+            return_error(f"Entry {input_data} not found")
         file_path = res['path']
         if input_type.startswith('json'):
-            with open(file_path, 'r') as f:
+            with open(file_path) as f:
                 file_content = f.read()
     if input_type.startswith('csv'):
         return pd.read_csv(file_path).fillna('').to_dict(orient='records')
@@ -249,6 +250,7 @@ def read_file(input_data, input_type):
         return pd.read_pickle(file_path, compression=None)
     else:
         return_error("Unsupported file type %s" % input_type)
+        return None
 
 
 def concat_text_fields(data, target_field, text_fields):
@@ -356,7 +358,7 @@ def remove_foreign_language(data, text_field, language):
     if dropped_count > 0:
         lang_counter = Counter(inc[LANGUAGE_KEY] for inc in data).most_common()
         description += "Dropped %d sample(s) that were detected as being in foreign languages. " % dropped_count
-        description += 'Found language counts: {}'.format(', '.join(['{}:{}'.format(lang, count) for lang, count
+        description += 'Found language counts: {}'.format(', '.join([f'{lang}:{count}' for lang, count
                                                                      in lang_counter]))
         description += "\n"
     return filtered_data, description
@@ -441,7 +443,7 @@ def main():
 
     # clean text
     if pre_process_type not in PRE_PROCESS_TYPES:
-        return_error('Pre-process type {} is not supported'.format(pre_process_type))
+        return_error(f'Pre-process type {pre_process_type} is not supported')
 
     # clean html and new lines
     data = clean_text_of_incidents_list(data, DBOT_TEXT_FIELD, remove_html_tags)
@@ -468,7 +470,7 @@ def main():
 
     if output_original_text_fields:
         for field in text_fields:
-            whitelist_fields += [x.strip() for x in field.split('|')]
+            whitelist_fields += [x.strip() for x in field.split('|')]  # type: ignore[operator]
     if whitelist_fields and len(whitelist_fields) > 0:
         whitelist_fields.append(DBOT_PROCESSED_TEXT_FIELD)
         data = whitelist_dict_fields(data, whitelist_fields)
@@ -477,6 +479,7 @@ def main():
     # output
     file_name = str(uuid.uuid4())
     output_format = demisto.args()['outputFormat']
+    data_encoded = None
     if output_format == 'pickle':
         data_encoded = pickle.dumps(data, protocol=2)
     elif output_format == 'json':

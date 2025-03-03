@@ -2,7 +2,7 @@
     "name": "Drift",
     "description": "Drift Pack containing integrations with the Drift API",
     "support": "community",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.5",
     "author": "Adriana Rose Diaz",
     "url": "https://devdocs.drift.com/docs/using-drift-apis",
     "email": "",

@@ -212,7 +212,7 @@ def test_fetch_events(requests_mock):
     """
     from CyberArkEPMEventCollector import create_last_run, fetch_events
     last_run = create_last_run(['id1', 'id2'], '2023-01-01T00:00:00Z')
-    events, next_run = fetch_events(mocked_client(requests_mock), last_run, 10)
+    events, next_run = fetch_events(mocked_client(requests_mock), last_run, 10, True)
 
     assert len(events) == 18
     assert next_run['id1'] == next_run['id2'] == {

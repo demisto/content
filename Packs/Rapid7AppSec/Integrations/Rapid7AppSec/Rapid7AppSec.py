@@ -2,7 +2,7 @@ import copy
 import re
 from collections.abc import Callable
 from dataclasses import dataclass
-from enum import Enum
+from enum import Enum, StrEnum
 from functools import partial
 from http import HTTPStatus
 from typing import Any
@@ -77,14 +77,14 @@ class PrefixToResponse(AddToOutput):
     id_key: str
 
 
-class RequestAction(str, Enum):
+class RequestAction(StrEnum):
     GET = "GET"
     PUT = "PUT"
     POST = "POST"
     DELETE = "DELETE"
 
 
-class ReadableOutputs(str, Enum):
+class ReadableOutputs(StrEnum):
     VULNERABILITY = "Vulnerability"
     SCAN = "Scan"
     SCAN_ACTION = "Scan action"
@@ -96,7 +96,7 @@ class ReadableOutputs(str, Enum):
     CHANGED = 'changed to "{0}"'
 
 
-class Headers(list, Enum):
+class Headers(list, Enum):  # type: ignore[misc]
     ATTACK = ["id", "module_id", "type", "class", "description"]
     VULNERABILITY = [
         "id",
@@ -141,7 +141,7 @@ class Headers(list, Enum):
     ]
 
 
-class UrlPrefix(str, Enum):
+class UrlPrefix(StrEnum):
     VULNERABILITY = "vulnerabilities"
     MODULE = "modules"
     SCAN = "scans"
@@ -152,7 +152,7 @@ class UrlPrefix(str, Enum):
     ENGINE = "engines"
 
 
-class OutputPrefix(str, Enum):
+class OutputPrefix(StrEnum):
     VULNERABILITY = "Vulnerability"
     VULNERABILITY_HISTORY = "VulnerabilityHistory"
     VULNERABILITY_COMMENT = "VulnerabilityComment"
@@ -170,7 +170,7 @@ class OutputPrefix(str, Enum):
     ENGINE = "Engine"
 
 
-class XsoarArgKey(str, Enum):
+class XsoarArgKey(StrEnum):
     VULNERABILITY = "vulnerability_id"
     SCAN = "scan_id"
     COMMENT = "comment_id"
@@ -931,7 +931,7 @@ def list_scan_command(client: Client, args: dict[str, Any]) -> CommandResults:
     )
 
 
-@ logger
+@logger
 def submit_scan_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Submit a scan.
@@ -978,7 +978,7 @@ def delete_scan_command(client: Client, args: dict[str, Any]) -> CommandResults:
     )
 
 
-@ logger
+@logger
 def list_scan_engine_events_command(
     client: Client, args: dict[str, Any]
 ) -> CommandResults:
@@ -1001,7 +1001,7 @@ def list_scan_engine_events_command(
     )
 
 
-@ logger
+@logger
 def list_scan_platform_events_command(
     client: Client, args: dict[str, Any]
 ) -> CommandResults:
@@ -1024,7 +1024,7 @@ def list_scan_platform_events_command(
     )
 
 
-@ logger
+@logger
 def get_scan_execution_detail_command(
     client: Client, args: dict[str, Any]
 ) -> CommandResults:
@@ -1046,7 +1046,7 @@ def get_scan_execution_detail_command(
     )
 
 
-@ logger
+@logger
 def get_scan_action_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get scan action.
@@ -1122,7 +1122,7 @@ def submit_scan_action_command(args: dict[str, Any], client: Client) -> PollResu
     )
 
 
-@ logger
+@logger
 def get_attack_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get attack.
@@ -1136,7 +1136,7 @@ def get_attack_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     return list_handler(
         obj_id=args.get(XsoarArgKey.ATTACK),
-        request_command=partial(client.get_attack, args.get(XsoarArgKey.MODULE)),
+        request_command=partial(client.get_attack, args.get(XsoarArgKey.MODULE)),  # type: ignore[arg-type]
         title="Attack metadata",
         headers=Headers.ATTACK.value,
         obj_type=OutputPrefix.ATTACK,
@@ -1145,7 +1145,7 @@ def get_attack_command(client: Client, args: dict[str, Any]) -> CommandResults:
     )
 
 
-@ logger
+@logger
 def get_attack_documentation_command(
     client: Client, args: dict[str, Any]
 ) -> CommandResults:
@@ -1162,7 +1162,7 @@ def get_attack_documentation_command(
     return list_handler(
         obj_id=args.get(XsoarArgKey.ATTACK),
         request_command=partial(
-            client.get_attack_documentation, args.get(XsoarArgKey.MODULE)),
+            client.get_attack_documentation, args.get(XsoarArgKey.MODULE)),  # type: ignore[arg-type]
         obj_type=OutputPrefix.ATTACK_DOCUMENTATION,
         use_flatten_dict=False,
         add_to_output=AddToOutput(
@@ -1172,7 +1172,7 @@ def get_attack_documentation_command(
     )
 
 
-@ logger
+@logger
 def list_scan_config_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     List scan configs.
@@ -1196,7 +1196,7 @@ def list_scan_config_command(client: Client, args: dict[str, Any]) -> CommandRes
     )
 
 
-@ logger
+@logger
 def list_app_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     List apps.
@@ -1219,7 +1219,7 @@ def list_app_command(client: Client, args: dict[str, Any]) -> CommandResults:
     )
 
 
-@ logger
+@logger
 def list_attack_template_command(
     client: Client, args: dict[str, Any]
 ) -> CommandResults:
@@ -1244,7 +1244,7 @@ def list_attack_template_command(
     )
 
 
-@ logger
+@logger
 def list_engine_group_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     List engine groups.
@@ -1266,7 +1266,7 @@ def list_engine_group_command(client: Client, args: dict[str, Any]) -> CommandRe
     )
 
 
-@ logger
+@logger
 def list_engine_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     List engines.
@@ -1288,7 +1288,7 @@ def list_engine_command(client: Client, args: dict[str, Any]) -> CommandResults:
     )
 
 
-@ logger
+@logger
 def list_module_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     List modules.
@@ -1307,7 +1307,7 @@ def list_module_command(client: Client, args: dict[str, Any]) -> CommandResults:
     )
 
 
-@ logger
+@logger
 def test_module(client: Client) -> str:
     """
     Tests API connectivity and authentication.
@@ -1333,7 +1333,7 @@ def test_module(client: Client) -> str:
 """ HELPER FUNCTIONS """
 
 
-@ logger
+@logger
 def list_handler(
     obj_id: str | None,
     obj_type: str,
@@ -1392,7 +1392,7 @@ def list_handler(
     )
 
 
-@ logger
+@logger
 def get_appsec_response(response: dict[str, Any] | list[dict[str, Any]]) -> dict[str, Any] | list[dict[str, Any]]:
     """
     Get the relevant data from the API response.
@@ -1411,7 +1411,7 @@ def get_appsec_response(response: dict[str, Any] | list[dict[str, Any]]) -> dict
         return [response]
 
 
-@ logger
+@logger
 def create_list_command_results(data: list,
                                 obj_type: str,
                                 response: dict[str, Any] | list[dict[str, Any]],
@@ -1463,7 +1463,7 @@ def create_list_command_results(data: list,
     )
 
 
-@ logger
+@logger
 def handle_list_request(request_command: Callable,
                         pagination: Pagination | None = None,
                         obj_id: str | None = None,) -> dict[str, Any] | list[dict[str, Any]]:
@@ -1496,7 +1496,7 @@ def handle_list_request(request_command: Callable,
     return request_command()
 
 
-@ logger
+@logger
 def handle_request_with_limit(request_command: Callable,
                               limit: int,
                               page_token: str | None = None) -> dict:
@@ -1531,7 +1531,7 @@ def handle_request_with_limit(request_command: Callable,
     return response | {"data": full_response}
 
 
-@ logger
+@logger
 def parse_list_response(data: list[dict[str, Any]],
                         use_flatten_dict: bool,
                         remove_html_tags: bool,
@@ -1560,7 +1560,7 @@ def parse_list_response(data: list[dict[str, Any]],
     return parsed_response
 
 
-@ logger
+@logger
 def create_list_readable_output(
         data: list[dict[str, Any]],
         obj_type: str,
@@ -1591,7 +1591,7 @@ def create_list_readable_output(
     )
 
 
-@ logger
+@logger
 def delete_handler(
     obj_id: str,
     readable_output: str,
@@ -1618,7 +1618,7 @@ def delete_handler(
     return CommandResults(readable_output=readable_output)
 
 
-@ logger
+@logger
 def flatten_dict(obj: dict | list, separator="_", prefix="") -> dict:
     """
     Flatten a dictionary. For example: {"a": {"b": "c"}, "d": "e"} will flatten to {"a_b": "c", "d": "e"}
@@ -1644,7 +1644,7 @@ def flatten_dict(obj: dict | list, separator="_", prefix="") -> dict:
     )
 
 
-@ logger
+@logger
 def generate_readable_output_message(
     object_type: str,
     action: str,
@@ -1668,7 +1668,7 @@ def generate_readable_output_message(
     )
 
 
-@ logger
+@logger
 def clean_html_tags(to_clean: dict[str, Any]) -> dict[str, Any]:
     """
     Clean HTML tags from AppSec response.
@@ -1689,7 +1689,7 @@ def clean_html_tags(to_clean: dict[str, Any]) -> dict[str, Any]:
         return to_clean
 
 
-@ logger
+@logger
 def generate_api_endpoint(url_prefix: str, obj_id: str | None) -> str:
     """
     Generate API endpoint for list request.
@@ -1704,7 +1704,7 @@ def generate_api_endpoint(url_prefix: str, obj_id: str | None) -> str:
     return urljoin(url_prefix, obj_id) if obj_id else url_prefix
 
 
-@ logger
+@logger
 def validate_submit_scan_action(action: str, scan_data: dict):
     """
     Validate the scan action. If the action is Stop or Cancel, we want to make sure that the status is one of

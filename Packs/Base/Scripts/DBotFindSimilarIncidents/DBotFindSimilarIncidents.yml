@@ -86,9 +86,28 @@ script: '-'
 subtype: python3
 timeout: '0'
 type: python
-dockerimage: demisto/ml:1.0.0.94241
+dockerimage: demisto/ml:1.0.0.1870375
 runas: DBotWeakRole
-runonce: true
 tests:
-- No tests (auto formatted)
+- DBotFindSimilarIncidents-test
 fromversion: 5.0.0
+outputs:
+- contextPath: DBotFindSimilarIncidents.isSimilarIncidentFound
+  description: Indicates whether similar incidents have been found.
+  type: boolean
+- contextPath: DBotFindSimilarIncidents.similarIncident.created
+  description: The creation date of the linked incident.
+  type: date
+- contextPath: DBotFindSimilarIncidents.similarIncident.id
+  description: The ID of the linked incident.
+  type: string
+- contextPath: DBotFindSimilarIncidents.similarIncident.name
+  description: The name of the linked incident.
+  type: string
+- contextPath: DBotFindSimilarIncidents.similarIncident.similarity incident
+  description: The similarity of the linked incident represented as a float in the range 0-1.
+  type: number
+- contextPath: DBotFindSimilarIncidents.similarIncident.details
+  description: The details of the linked incident.
+  type: string
+autoUpdateDockerImage: false

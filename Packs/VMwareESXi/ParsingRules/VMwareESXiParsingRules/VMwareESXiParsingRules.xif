@@ -1,7 +1,7 @@
 [INGEST:vendor="VMware", product="ESXi", target_dataset="VMware_ESXi_raw", no_hit=keep]
 filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}[Z\d\.]+"
 | alter 
-    tmp_timestamp_extract = arraystring(regextract(_raw_log, "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}[Z\d\.]+"), "")
+    tmp_timestamp_extract = arrayindex(regextract(_raw_log, "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}[Z\d\.]+"), 0)
 | alter 
     tmp_format_check = if(tmp_timestamp_extract ~= "\.", parse_timestamp("%Y-%m-%dT%H:%M:%E3SZ", tmp_timestamp_extract), parse_timestamp("%Y-%m-%dT%H:%M:%SZ", tmp_timestamp_extract))  
 | alter 

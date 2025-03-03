@@ -1,0 +1,92 @@
+{
+    "addresses": [
+        "redacted for privacy"
+    ],
+    "administrativeContactCity": "REDACTED FOR PRIVACY",
+    "administrativeContactCountry": "REDACTED FOR PRIVACY",
+    "administrativeContactEmail": "cnn.com-Admin@anonymised.email",
+    "administrativeContactFax": null,
+    "administrativeContactFaxExt": "REDACTED FOR PRIVACY",
+    "administrativeContactName": "REDACTED FOR PRIVACY",
+    "administrativeContactOrganization": "REDACTED FOR PRIVACY",
+    "administrativeContactPostalCode": "REDACTED FOR PRIVACY",
+    "administrativeContactState": "REDACTED FOR PRIVACY",
+    "administrativeContactStreet": [
+        "redacted for privacy"
+    ],
+    "administrativeContactTelephone": "",
+    "administrativeContactTelephoneExt": "REDACTED FOR PRIVACY",
+    "auditUpdatedDate": "2023-12-06 15:57:12 UTC",
+    "billingContactCity": "",
+    "billingContactCountry": "",
+    "billingContactEmail": "",
+    "billingContactFax": "",
+    "billingContactFaxExt": "",
+    "billingContactName": "",
+    "billingContactOrganization": "",
+    "billingContactPostalCode": "",
+    "billingContactState": "",
+    "billingContactStreet": [],
+    "billingContactTelephone": "",
+    "billingContactTelephoneExt": "",
+    "created": "1993-09-22",
+    "domainName": "cnn.com",
+    "emails": [
+        "test@test.com"
+    ],
+    "expires": "2027-09-21",
+    "hasRawText": true,
+    "nameServers": [
+        "example.com"
+    ],
+    "recordExpired": false,
+    "registrantCity": "REDACTED FOR PRIVACY",
+    "registrantCountry": "UNITED STATES",
+    "registrantEmail": "cnn.com-Registrant@anonymised.email",
+    "registrantFax": "",
+    "registrantFaxExt": "REDACTED FOR PRIVACY",
+    "registrantName": "REDACTED FOR PRIVACY",
+    "registrantOrganization": "Turner Broadcasting System, Inc.",
+    "registrantPostalCode": "REDACTED FOR PRIVACY",
+    "registrantState": "GA",
+    "registrantStreet": [
+        "redacted for privacy"
+    ],
+    "registrantTelephone": "",
+    "registrantTelephoneExt": "REDACTED FOR PRIVACY",
+    "registrarIANAID": "470",
+    "registrarName": "Nom-iq Ltd. dba COM LAUDE",
+    "status": [
+        "clientDeleteProhibited clientTransferProhibited clientUpdateProhibited serverDeleteProhibited serverTransferProhibited serverUpdateProhibited"
+    ],
+    "technicalContactCity": "REDACTED FOR PRIVACY",
+    "technicalContactCountry": "REDACTED FOR PRIVACY",
+    "technicalContactEmail": "test@test.com",
+    "technicalContactFax": "",
+    "technicalContactFaxExt": "REDACTED FOR PRIVACY",
+    "technicalContactName": "REDACTED FOR PRIVACY",
+    "technicalContactOrganization": "REDACTED FOR PRIVACY",
+    "technicalContactPostalCode": "REDACTED FOR PRIVACY",
+    "technicalContactState": "REDACTED FOR PRIVACY",
+    "technicalContactStreet": [
+        "redacted for privacy"
+    ],
+    "technicalContactTelephone": "",
+    "technicalContactTelephoneExt": "REDACTED FOR PRIVACY",
+    "timeOfLatestRealtimeCheck": null,
+    "timestamp": null,
+    "updated": "2023-12-01",
+    "whoisServers": null,
+    "zoneContactCity": "",
+    "zoneContactCountry": "",
+    "zoneContactEmail": "",
+    "zoneContactFax": "",
+    "zoneContactFaxExt": "",
+    "zoneContactName": "",
+    "zoneContactOrganization": "",
+    "zoneContactPostalCode": "",
+    "zoneContactState": "",
+    "zoneContactStreet": [],
+    "zoneContactTelephone": "",
+    "zoneContactTelephoneExt": ""
+}

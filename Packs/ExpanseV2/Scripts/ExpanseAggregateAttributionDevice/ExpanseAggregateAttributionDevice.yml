@@ -1,5 +1,7 @@
 name: ExpanseAggregateAttributionDevice
-comment: Aggregate entries from multiple sources into AttributionDevice.
+comment: Deprecated. No available replacement. >
+  Aggregate entries from multiple sources into AttributionDevice.
+deprecated: true
 commonfields:
   id: ExpanseAggregateAttributionDevice
   version: -1

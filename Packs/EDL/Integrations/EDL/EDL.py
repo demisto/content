@@ -837,7 +837,8 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> tuple[Un
                 formatted_indicators.write(new_line + domain)
                 new_line = '\n'
 
-        if ioc_type == FeedIndicatorType.CIDR and is_large_cidr(indicator, request_args.maximum_cidr_size):
+        if ioc_type in [FeedIndicatorType.CIDR, FeedIndicatorType.IPv6CIDR] and is_large_cidr(indicator,
+                                                                                              request_args.maximum_cidr_size):
             log_stats = log_indicator_line(raw_indicator=indicator_raw,
                                            indicator=indicator,
                                            action=IndicatorAction.DROPPED.value,
@@ -1361,7 +1362,6 @@ def test_module(_: dict, params: dict):
         2. Valid cache_refresh_rate
     """
     if not params.get('longRunningPort'):
-        # This is for the autogeneration port feature before port allocation.
         params['longRunningPort'] = '1111'
     get_params_port(params)
     on_demand = params.get('on_demand', None)

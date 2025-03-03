@@ -1,39 +1,35 @@
 Together, DomainTools and Cortex XSOAR automate and orchestrate the incident response process with essential domain profile, web crawl, SSL and infrastructure data. SOCs can create custom, automated workflows to trigger Indicator of Compromise (IoC) investigations, block threats based on connected infrastructure, and identify potentially malicious domains before weaponization. The DomainTools App for Cortex XSOAR is shipped with pre-built playbooks to enable automated enrichment, decision logic, ad-hoc investigations, and the ability to persist enriched intelligence.
 This integration was integrated and tested with version 1.0 of DomainTools Iris.
 
-## Configure DomainTools Iris on Cortex XSOAR
+## Configure DomainTools Iris in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for DomainTools Iris.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | DomainTools API URL | Change to https://api.domaintools.com in order to use DomainTool's https endpoint. | True |
-    | API Username |  | True |
-    | API Key |  | True |
-    | High-Risk Threshold |  | True |
-    | Young Domain Timeframe (within Days) |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Source Reliability | Reliability of the source providing the intelligence data. | False |
-    |  |  | False |
-    |  |  | False |
-    | Guided Pivot Threshold | When a small set of domains share an attribute \(e.g. registrar\), that can often be pivoted on in order to find other similar domains of interest. DomainTools tracks how many domains share each attribute and can highlight it for further investigation when the number of domains is beneath the set threshold. | True |
-    | Enabled on Monitoring Domains by Iris Search Hash |  | False |
-    | Domaintools Iris Investigate Search Hash | The DomainTools Iris Investigate Search hash | False |
-    | Enabled on Monitoring Domains by Iris Tags |  | False |
-    | Domaintools Iris Tags | The DomainTools Iris Tags \(Values should be a comma separated value. e.g. \(tag1,tag2\)\) | False |
-    | Maximum number of incidents to fetch | This is a required field by XSOAR and should be set to 2, one for each possible feed type iris search hash and iris tags. | False |
-    | Incident type |  |  |
-    | Fetch incidents |  |  |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | This is a required field by XSOAR and should be set to 2, one for each possible feed type iris search hash and iris tags. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| DomainTools API URL | Change to <https://api.domaintools.com> in order to use DomainTool's https endpoint. | True |
+| API Username |  | True |
+| API Key |  | True |
+| High-Risk Threshold |  | True |
+| Young Domain Timeframe (within Days) |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | False |
+|  |  | False |
+|  |  | False |
+| Guided Pivot Threshold | When a small set of domains share an attribute \(e.g. registrar\), that can often be pivoted on in order to find other similar domains of interest. DomainTools tracks how many domains share each attribute and can highlight it for further investigation when the number of domains is beneath the set threshold. | True |
+| Enabled on Monitoring Domains by Iris Search Hash |  | False |
+| Domaintools Iris Investigate Search Hash | The DomainTools Iris Investigate Search hash | False |
+| Enabled on Monitoring Domains by Iris Tags |  | False |
+| Domaintools Iris Tags | The DomainTools Iris Tags \(Values should be a comma separated value. e.g. \(tag1,tag2\)\) | False |
+| Maximum number of incidents to fetch | This is a required field by XSOAR and should be set to 2, one for each possible feed type iris search hash and iris tags. | False |
+| Incident type |  |  |
+| Fetch incidents |  |  |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | This is a required field by XSOAR and should be set to 2, one for each possible feed type iris search hash and iris tags. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### domain
@@ -164,7 +160,7 @@ Provides data enrichment for domains.
 | DomainTools.WebsiteTitle | Number | The website title. | 
 | DomainTools.FirstSeen | Number | The date the domain was first seen. | 
 | DomainTools.ServerType | Number | The server type. | 
-| DBotScore.Indicator | String | The indicator of the DBotScore. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type of the DBotScore. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Score | Number | The actual score. | 

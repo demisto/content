@@ -1,7 +1,7 @@
 import json
 import pytest
 
-from FeedTAXII import TAXIIClient, fetch_indicators_command
+from FeedTAXII import TAXIIClient, fetch_indicators_command, Taxii11
 
 """ helper functions """
 
@@ -16,7 +16,7 @@ def get_files_in_dir(mypath, only_with_ext=None):
 
 
 class TestStixDecode:
-    FILE_PATH = 'FeedTAXII_test/StixDecodeTest'
+    FILE_PATH = 'test_data/StixDecodeTest'
 
     def test_decode(self):
         """Test decode on all files"""
@@ -142,3 +142,95 @@ def test_tags_parameter(mocker, tags):
         mocker.patch.object(client, 'build_iterator', return_value=raw_indicators)
         res = fetch_indicators_command(client)
         assert tags == list(res[0]['fields'].keys())
+
+
+def test_client_headers():
+    """
+    Given:
+    - TAXII1 client
+    When:
+    - Getting the client headers
+    Then:
+    - Validate the headers contain the Accept header
+    """
+    client = Taxii11()
+    headers = client.headers()
+
+    assert headers['Accept'] == 'application/xml'
+    assert headers['X-TAXII-Content-Type'] == client.MESSAGE_BINDING
+    assert headers['X-TAXII-Accept'] == client.MESSAGE_BINDING
+    assert headers['X-TAXII-Services'] == client.SERVICES
+    assert headers['X-TAXII-Protocol'] == 'urn:taxii.mitre.org:protocol:http:1.0'
+
+    headers = client.headers(protocol='https')
+
+    assert headers['X-TAXII-Protocol'] == 'urn:taxii.mitre.org:protocol:https:1.0'
+
+
+def test_fetch_enrichment_excluded(mocker):
+    """
+    Given:
+    - A TAXII client with the enrichmentExcluded parameter set to True.
+    When:
+    - Calling the fetch_indicators command
+    Then:
+    - The indicators returned should have enrichmentExcluded set to True.
+    """
+    client = TAXIIClient(collection='a collection', enrichmentExcluded=True)
+    with open('test_data/raw_indicators.json') as f:
+        raw_indicators = json.load(f)
+        mocker.patch.object(client, 'build_iterator', return_value=raw_indicators)
+        res = fetch_indicators_command(client)
+        with open('test_data/indicators_results.json') as exp_f:
+            expected = json.load(exp_f)
+
+        for ind in expected:
+            ind['enrichmentExcluded'] = True
+
+        assert res == expected
+
+
+def test_client_enrichment_excluded_with_tlp_red(mocker):
+    """
+        Given: integration params with enrichment excluded set to False and tlp_color set to RED
+        When: creating client
+        Then: validate the enrichment_excluded is set to True
+    """
+    from FeedTAXII import TAXIIClient
+
+    mocker.patch('FeedTAXII.is_xsiam_or_xsoar_saas', return_value=True)
+
+    client = TAXIIClient(collection="test", enrichmentExcluded=False, tlp_color='RED')
+    assert client.enrichment_excluded is True
+
+
+def test_decoding_domain():
+    """
+        Given: domain indicator type without a protocol
+        When: decoding the indicator
+        Then: validate return of the indicator
+    """
+    from bs4 import BeautifulSoup
+    from FeedTAXII import DomainNameObject
+    xml = '<DomainName type="FQDN"><Value>www.a.com</Value></DomainName>'
+    soup = BeautifulSoup(xml, 'xml')
+    props = soup.find('DomainName')
+    indicator = DomainNameObject.decode(props)[0]
+    assert indicator.get('indicator') == 'www.a.com'
+    assert indicator.get('type') == 'Domain'
+
+
+def test_decoding_url():
+    """
+        Given: domain indicator type with a protocol
+        When: decoding the indicator
+        Then: validate return of the indicator
+    """
+    from bs4 import BeautifulSoup
+    from FeedTAXII import URIObject
+    xml = '<URI type="Domain Name"><Value>https://www.a.com</Value></URI>'
+    soup = BeautifulSoup(xml, 'xml')
+    props = soup.find('URI')
+    indicator = URIObject.decode(props)[0]
+    assert indicator.get('indicator') == 'www.a.com'
+    assert indicator.get('type') == 'Domain'

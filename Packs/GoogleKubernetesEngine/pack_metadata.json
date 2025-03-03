@@ -2,12 +2,12 @@
     "name": "Google Kubernetes Engine",
     "description": "Google Kubernetes Engine managing clusters and node-pools.",
     "support": "xsoar",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Cloud Services"
+        "Cloud Service Provider"
     ],
     "tags": [],
     "created": "2020-05-04T06:42:33Z",

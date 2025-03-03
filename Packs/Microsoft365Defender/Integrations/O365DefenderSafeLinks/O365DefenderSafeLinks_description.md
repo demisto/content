@@ -12,11 +12,10 @@ To use this integration, you need to add a new Azure App Registration in the Azu
 
         Office 365 Exchange Online -> Exchange.ManageAsApp - Application
 * To create, modify, and delete Safe Links policies, you need to be a member of the `Organization Management` or `Security Administrator` role groups.
-* To manage permissions in the Microsoft 365 Defender portal, go to `Permissions & roles` or https://security.microsoft.com/securitypermissions. You need to be a global administrator or a member of the Organization Management role group in the Microsoft 365 Defender portal. Specifically, the Role Management role allows users to view, create, and modify role groups in the Microsoft 365 Defender portal, and by default, that role is assigned only to the Organization Management role group.
-* See [Permissions in the Microsoft 365 Defender portal](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/permissions-microsoft-365-security-center?view=o365-worldwide) for more information.
+* To manage permissions in the Microsoft Defender XDR portal, go to `Permissions & roles` or https://security.microsoft.com/securitypermissions. You need to be a global administrator or a member of the Organization Management role group in the Microsoft Defender XDR portal. Specifically, the Role Management role allows users to view, create, and modify role groups in the Microsoft Defender XDR portal, and by default, that role is assigned only to the Organization Management role group.
+* See [Permissions in the Microsoft Defender XDR portal](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/permissions-microsoft-365-security-center?view=o365-worldwide) for more information.
 
 -------
 ##### Note
 If the credentials object is used, make sure to set the `certificate` value as the `username` property and not as the certificate field
-![](https://raw.githubusercontent.com/demisto/content/11209e3d0765c82470665ec787f3f68ba09c05bd/Packs/Microsoft365Defender/doc_files/credentials_example.png
-)
+![credentials_example](../../doc_files/credentials_example.png)

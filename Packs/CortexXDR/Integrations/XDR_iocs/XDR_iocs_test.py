@@ -1,3 +1,8 @@
+import tempfile
+from unittest.mock import patch
+
+from unittest.mock import MagicMock
+
 from XDR_iocs import *
 import pytest
 from freezegun import freeze_time
@@ -23,10 +28,11 @@ class TestGetHeaders:
         """
         params = {
             "apikey_id": "7",
-            "apikey": "t3PkfrEhaRAD9a3r6Lq5cVPyqdMqtLd8cOJlSWUtbslkbERUgb2BTkSNRtDr3C6CWAgYqxvyzwDFJ83BLBgu1V2cxQY7rsoo2ks2u3W2aBL2BlteF8C8u75lCVUrNbv1"    # noqa: E501
+            "apikey": "aaaaaaa"
+            # noqa: E501
         }
         headers = {
-            'Authorization': 'da94963b561e3c95899d843b1284cecf410606e9e809be528ec1cf03880c6e9e',
+            'Authorization': 'e9a63fb06148bd3a73ce93c8b44c083a147cafb0fe607e706abcac25759b3c43',  # it's a dummy Authorization
             'x-iocs-source': 'xsoar',
             'x-xdr-auth-id': '7',
             'x-xdr-nonce': '1111111111111111111111111111111111111111111111111111111111111111',
@@ -180,17 +186,6 @@ class TestCreateFile:
         ('File_iocs', 'File_iocs_to_keep_file')
     ]
 
-    @classmethod
-    def setup_method(cls):
-        # creates the file
-        with open(TestCreateFile.path, 'w') as _file:
-            _file.write('')
-
-    @classmethod
-    def teardown_method(cls):
-        # removes the file when done
-        os.remove(TestCreateFile.path)
-
     @staticmethod
     def get_file(path):
         with open(path) as _file:
@@ -221,8 +216,9 @@ class TestCreateFile:
                 - Verify sync file data.
         """
         mocker.patch.object(demisto, 'searchIndicators', return_value={"total": 0})
-        create_file_sync(TestCreateFile.path)
-        data = self.get_file(TestCreateFile.path)
+        with tempfile.NamedTemporaryFile(mode='w') as temp_file:
+            create_file_sync(temp_file.name)
+            data = self.get_file(temp_file.name)
         expected_data = ''
         assert data == expected_data, f'create_file_sync with no iocs\n\tcreates: {data}\n\tinstead: {expected_data}'
 
@@ -237,8 +233,9 @@ class TestCreateFile:
                 - Verify sync file data.
         """
         mocker.patch.object(demisto, 'searchIndicators', return_value=json.loads(self.get_file(f'test_data/{in_iocs}.json')))  # noqa: E501
-        create_file_sync(TestCreateFile.path)
-        data = self.get_file(TestCreateFile.path)
+        with tempfile.NamedTemporaryFile(mode='w') as temp_file:
+            create_file_sync(temp_file.name)
+            data = self.get_file(temp_file.name)
         expected_data = self.get_file(f'test_data/{out_iocs}.txt')
         assert data == expected_data, f'create_file_sync with {in_iocs} iocs\n\tcreates: {data}\n\tinstead: {expected_data}'
 
@@ -253,8 +250,9 @@ class TestCreateFile:
         """
         all_iocs, expected_data = self.get_all_iocs(self.data_test_create_file_sync, 'txt')
         mocker.patch.object(demisto, 'searchIndicators', return_value=all_iocs)
-        create_file_sync(TestCreateFile.path)
-        data = self.get_file(TestCreateFile.path)
+        with tempfile.NamedTemporaryFile(mode='w') as temp_file:
+            create_file_sync(temp_file.name)
+            data = self.get_file(temp_file.name)
         assert data == expected_data, f'create_file_sync with all iocs\n\tcreates: {data}\n\tinstead: {expected_data}'
 
     data_test_create_file_with_empty_indicators = [
@@ -277,8 +275,9 @@ class TestCreateFile:
         all_iocs['iocs'].append(defective_indicator)
         all_iocs['total'] += 1
         mocker.patch.object(demisto, 'searchIndicators', return_value=all_iocs)
-        create_file_sync(TestCreateFile.path)
-        data = self.get_file(TestCreateFile.path)
+        with tempfile.NamedTemporaryFile(mode='w') as temp_file:
+            create_file_sync(temp_file.name)
+            data = self.get_file(temp_file.name)
         assert data == expected_data, f'create_file_sync with all iocs\n\tcreates: {data}\n\tinstead: {expected_data}'
 
     def test_create_file_iocs_to_keep_without_iocs(self, mocker):
@@ -292,8 +291,9 @@ class TestCreateFile:
         """
 
         mocker.patch.object(demisto, 'searchIndicators', return_value={"total": 0})
-        create_file_iocs_to_keep(TestCreateFile.path)
-        data = self.get_file(TestCreateFile.path)
+        with tempfile.NamedTemporaryFile(mode='w') as temp_file:
+            create_file_iocs_to_keep(temp_file.name)
+            data = self.get_file(temp_file.name)
         expected_data = ' '
         assert data == expected_data, f'create_file_iocs_to_keep with no iocs\n\tcreates: {data}\n\tinstead: {expected_data}'
 
@@ -309,8 +309,9 @@ class TestCreateFile:
         """
         mocker.patch.object(demisto, 'searchIndicators', return_value=json.loads(
             self.get_file(f'test_data/{in_iocs}.json')))
-        create_file_iocs_to_keep(TestCreateFile.path)
-        data = self.get_file(TestCreateFile.path)
+        with tempfile.NamedTemporaryFile(mode='w') as temp_file:
+            create_file_iocs_to_keep(temp_file.name)
+            data = self.get_file(temp_file.name)
         expected_data = self.get_file(f'test_data/{out_iocs}.txt')
         assert data == expected_data, f'create_file_iocs_to_keep with {in_iocs} iocs\n\tcreates: {data}\n\tinstead: {expected_data}'    # noqa: E501
 
@@ -325,8 +326,9 @@ class TestCreateFile:
         """
         all_iocs, expected_data = self.get_all_iocs(self.data_test_create_file_iocs_to_keep, 'txt')
         mocker.patch.object(demisto, 'searchIndicators', return_value=all_iocs)
-        create_file_iocs_to_keep(TestCreateFile.path)
-        data = self.get_file(TestCreateFile.path)
+        with tempfile.NamedTemporaryFile('w') as temp_file:
+            create_file_iocs_to_keep(temp_file.name)
+            data = self.get_file(temp_file.name)
         assert data == expected_data, f'create_file_iocs_to_keep with all iocs\n\tcreates: {data}\n\tinstead: {expected_data}'
 
 
@@ -427,43 +429,58 @@ class TestDemistoIOCToXDR:
         (
             {'value': '11.11.11.11', 'indicator_type': 'IP', 'score': 2},
             {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'SUSPICIOUS', 'severity': 'INFO',
-             'type': 'IP'}
+             'type': 'IP', "comment": [""]}
         ),
         (
             {'value': '11.11.11.11', 'indicator_type': 100, 'score': 2},
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'SUSPICIOUS', 'severity': 'INFO', 'type': '100'}
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'SUSPICIOUS',
+             'severity': 'INFO', 'type': '100', "comment": [""]}
         ),
         (
             {'value': '11.11.11.11', 'indicator_type': 'IP'},
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP'}
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN',
+             'severity': 'INFO', 'type': 'IP', "comment": [""]}
         ),
         (
             {'value': '11.11.11.11', 'indicator_type': 'IP', 'expiration': '2020-06-03T00:00:00Z'},
-            {'expiration_date': 1591142400000, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP'}    # noqa: E501
+            {'expiration_date': 1591142400000, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO',
+             'type': 'IP', "comment": [""]}  # noqa: E501
         ),
         (
-            {'value': '11.11.11.11', 'indicator_type': 'IP', 'comments': [{'type': 'IndicatorCommentTimeLine', 'content': 'test'}]},    # noqa: E501
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP'}
+            {'value': '11.11.11.11', 'indicator_type': 'IP',
+             'comments': [{'type': 'IndicatorCommentTimeLine', 'content': 'test'}]},  # noqa: E501
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN',
+             'severity': 'INFO', 'type': 'IP', "comment": [""]}
         ),
         (
-            {'value': '11.11.11.11', 'indicator_type': 'IP', 'comments': [{'type': 'IndicatorCommentRegular', 'content': 'test'}]},    # noqa: E501
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP', 'comment': ['test']}    # noqa: E501
+            {'value': '11.11.11.11', 'indicator_type': 'IP',
+             'comments': [{'type': 'IndicatorCommentRegular', 'content': 'test'}]},  # noqa: E501
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP',
+             'comment': ['test']}  # noqa: E501
         ),
         (
-            {'value': '11.11.11.11', 'indicator_type': 'IP', 'comments': [{'type': 'IndicatorCommentRegular', 'content': 'test'}, {'type': 'IndicatorCommentRegular', 'content': 'this is the comment'}]},    # noqa: E501
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP', 'comment': ['this is the comment']}    # noqa: E501
+            {'value': '11.11.11.11', 'indicator_type': 'IP', 'comments': [{'type': 'IndicatorCommentRegular', 'content': 'test'},
+                                                                          {'type': 'IndicatorCommentRegular',
+                                                                           'content': 'this is the comment'}]},  # noqa: E501
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP',
+             'comment': ['this is the comment']}  # noqa: E501
         ),
         (
             {'value': '11.11.11.11', 'indicator_type': 'IP', 'aggregatedReliability': 'A - Completely reliable'},
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP', 'reliability': 'A'}    # noqa: E501
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP',
+             'reliability': 'A', "comment": [""]}  # noqa: E501
         ),
         (
-            {'value': '11.11.11.11', 'indicator_type': 'IP', 'CustomFields': {'threattypes': {'threatcategory': 'Malware'}}},    # noqa: E501
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP', 'class': 'Malware'}    # noqa: E501
+            {'value': '11.11.11.11', 'indicator_type': 'IP', 'CustomFields': {'threattypes': {'threatcategory': 'Malware'}}},
+            # noqa: E501
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP',
+             'class': 'Malware', "comment": [""]}  # noqa: E501
         ),
         (
-            {'value': '11.11.11.11', 'indicator_type': 'IP', 'moduleToFeedMap': {'module': {'sourceBrand': 'test', 'score': 2}}},    # noqa: E501
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP', 'vendors': [{'vendor_name': 'test', 'reputation': 'SUSPICIOUS', 'reliability': 'F'}]}    # noqa: E501
+            {'value': '11.11.11.11', 'indicator_type': 'IP', 'moduleToFeedMap': {'module': {'sourceBrand': 'test', 'score': 2}}},
+            # noqa: E501
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP',
+             'vendors': [{'vendor_name': 'test', 'reputation': 'SUSPICIOUS', 'reliability': 'F'}], "comment": [""]}  # noqa: E501
         )
     ]
 
@@ -643,21 +660,12 @@ class TestCommands:
         get_sync_file(zip=zip_value)
         assert return_results_mock.call_args[0][0]['File'] == expected_file_name
 
-    @pytest.mark.xfail(reason="Until API issue is fixed (XSUP-33235)")
-    @freeze_time('2020-06-03T02:00:00Z')
-    def test_iocs_to_keep(self, mocker):
-        http_request = mocker.patch.object(Client, 'http_request')
-        iocs, _ = TestCreateFile.get_all_iocs(TestCreateFile.data_test_create_file_iocs_to_keep, 'txt')
-        mocker.patch.object(demisto, 'searchIndicators', returnvalue=iocs)
-        mocker.patch('XDR_iocs.return_outputs')
-        iocs_to_keep(client)
-        assert http_request.call_args.args[0] == 'iocs_to_keep', 'iocs_to_keep command url changed'
-
     def test_tim_insert_jsons(self, mocker):
         http_request = mocker.patch.object(Client, 'http_request')
+        http_request.return_value = {'reply': {'success': True}}
         mocker.patch.object(demisto, 'getIntegrationContext', return_value={'time': '2020-06-03T00:00:00Z'})
         iocs, _ = TestCreateFile.get_all_iocs(TestCreateFile.data_test_create_file_sync, 'txt')
-        mocker.patch.object(demisto, 'searchIndicators', return_value=iocs)
+        mocker.patch.object(demisto, 'searchIndicators', side_effect=[iocs, {"total": 0}])
         mocker.patch('XDR_iocs.return_outputs')
         tim_insert_jsons(client)
         assert http_request.call_args.kwargs['url_suffix'] == 'tim_insert_jsons/', 'tim_insert_jsons command url changed'
@@ -740,9 +748,7 @@ def test_file_deleted_for_create_file_sync(mocker):
 
 
 data_test_test_file_deleted = [
-    (sync, 'create_file_sync'),
-    pytest.param(iocs_to_keep, 'create_file_iocs_to_keep', marks=pytest.mark.xfail(
-        reason="Until API issue is fixed (XSUP-33235)"))
+    (sync, 'create_file_sync')
 ]
 
 
@@ -888,7 +894,7 @@ def test_parse_demisto_comments__default_empty():
         ioc={},
         comment_field_name=Client.xsoar_comments_field,
         comments_as_tags=False
-    ) is None
+    ) == ['']
 
 
 def test_parse_demisto_comments__default_as_tag():
@@ -922,7 +928,7 @@ def test_parse_demisto_comments__custom_field(comment_value: str, comments_as_ta
     """
     from XDR_iocs import _parse_demisto_comments
     comment_field = 'comment_field'
-
+    Client.xsoar_comments_field = 'comment_field'
     assert _parse_demisto_comments(
         ioc={'CustomFields': {comment_field: comment_value}},
         comment_field_name=comment_field,
@@ -944,7 +950,7 @@ def test_parse_demisto_comments__custom_field_empty_value(comments_as_tags: bool
         ioc={'CustomFields': {comment_field: ''}},
         comment_field_name=comment_field,
         comments_as_tags=comments_as_tags
-    ) is None
+    ) == ['']
 
 
 @pytest.mark.parametrize('comments_as_tags', (True, False))
@@ -960,7 +966,7 @@ def test_parse_demisto_comments__custom_field_missing(comments_as_tags: bool):
         ioc={'CustomFields': {}},
         comment_field_name='comment_field',
         comments_as_tags=comments_as_tags
-    ) is None
+    ) == ['']
 
 
 @pytest.mark.parametrize(
@@ -1005,43 +1011,6 @@ def test_create_validation_errors_response(validation_errors, expected_str):
     assert expected_str in create_validation_errors_response(validation_errors)
 
 
-@pytest.mark.parametrize('current_time,next_iocs_to_keep_time,should_run_iocs_to_keep', [
-    ('2020-01-01T02:00:00Z', '2020-01-01T01:00:00Z', True),
-    ('2020-01-01T01:05:00Z', '2020-01-01T02:00:00Z', False),
-    ('2020-01-01T04:00:00Z', '2020-01-01T01:00:00Z', False),
-    ('2020-01-02T02:00:00Z', '2020-01-01T01:00:00Z', True),
-    ('2020-01-02T04:00:00Z', '2020-01-01T01:00:00Z', False),
-])
-def test_is_iocs_to_keep_time(current_time, next_iocs_to_keep_time, should_run_iocs_to_keep, mocker):
-    mocker.patch.object(demisto, 'getIntegrationContext', return_value={"next_iocs_to_keep_time": next_iocs_to_keep_time})
-    with freeze_time(current_time):
-        assert is_iocs_to_keep_time() == should_run_iocs_to_keep
-
-
-def test_is_iocs_to_keep_time_without_integration_context(mocker):
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=[{"next_iocs_to_keep_time": None},
-                                                                       {"next_iocs_to_keep_time": None},
-                                                                       {"next_iocs_to_keep_time": '2020-01-02T01:05:00Z'}])
-    with freeze_time('2020-01-02T04:00:00Z'):
-        assert not is_iocs_to_keep_time()
-
-
-@pytest.mark.parametrize('random_int,expected_next_time', [
-    (0, '2023-11-16T01:00:00Z'),
-    (40, '2023-11-16T01:40:00Z'),
-    (60, '2023-11-16T02:00:00Z'),
-    (100, '2023-11-16T02:40:00Z'),
-    (115, '2023-11-16T02:55:00Z'),
-])
-@freeze_time('2023-11-15T18:00:00')
-def test_set_new_iocs_to_keep_time(random_int, expected_next_time, mocker):
-    mocker.patch('XDR_iocs.secrets.randbelow', return_value=random_int)
-    mocker.patch.object(demisto, 'getIntegrationContext', return_value={})
-    set_integration_context_mock = mocker.patch.object(demisto, 'setIntegrationContext')
-    set_new_iocs_to_keep_time()
-    set_integration_context_mock.assert_called_once_with({'next_iocs_to_keep_time': expected_next_time})
-
-
 def test_parse_demisto_comments_url_xsoar_6_default(mocker):
     """
     Given:
@@ -1054,9 +1023,10 @@ def test_parse_demisto_comments_url_xsoar_6_default(mocker):
     from XDR_iocs import _parse_demisto_comments
     inc_id = '111111'
     mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'url'})
+    Client.add_link_as_a_comment = True
     assert _parse_demisto_comments(
         ioc={'id': inc_id},
-        comment_field_name='indicator_link',
+        comment_field_name='',
         comments_as_tags=False
     ) == [f'url/#/indicator/{inc_id}']
 
@@ -1075,9 +1045,10 @@ def test_parse_demisto_comments_url_xsoar_8_default(mocker):
     inc_id = '111111'
     mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'url'})
     mocker.patch.object(XDR_iocs, 'is_xsoar_saas', return_value=True)
+    Client.add_link_as_a_comment = True
     assert XDR_iocs._parse_demisto_comments(
         ioc={'id': inc_id},
-        comment_field_name='indicator_link',
+        comment_field_name='',
         comments_as_tags=False
     ) == [f'url/indicator/{inc_id}']
 
@@ -1092,9 +1063,283 @@ def test_parse_demisto_list_of_comments_default(mocker):
     inc_id = '111111'
     comment_value = 'here be comment'
     mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'url'})
+    Client.xsoar_comments_field, Client.add_link_as_a_comment = "comments", True
     assert _parse_demisto_comments(
         ioc={Client.xsoar_comments_field: [{'type': 'IndicatorCommentRegular', 'content': comment_value}],
              'id': inc_id},
-        comment_field_name=['indicator_link', Client.xsoar_comments_field],
-        comments_as_tags=False
-    ) == [f'url/#/indicator/{inc_id}, {comment_value}']
+        comment_field_name=Client.xsoar_comments_field,
+        comments_as_tags=False) == [f'{comment_value}, url/#/indicator/{inc_id}']
+
+
+@patch('XDR_iocs.demisto.params', return_value={'feed': True, 'feedFetchInterval': '14'})
+def test_module_fail_with_fetch_interval(mocker):
+    """
+    Given   The demisto.params() returns parameters with feed set to True and feedFetchInterval set to '15'.
+    When    The module_test() function is called.
+    Then    Raise a DemistoException with the message: "'Feed Fetch Interval' parameter should be 15 or larger."
+    """
+    from XDR_iocs import module_test
+    with pytest.raises(DemistoException) as e:
+        module_test(client)
+    assert e.value.message == ("`Feed Fetch Interval` is set to 14. Setting `Feed Fetch Interval` to less "
+                               "then 15 minutes could lead to internal error from xdr side.")
+
+
+ioc_example = {
+    'value': 'malicious.com',
+    'modified': '2023-09-09T12:00:00Z',
+    'indicator_type': 'Domain',
+    'score': 3,
+    'expiration': '2024-09-09T12:00:00Z',
+    'aggregatedReliability': ['A'],
+    'moduleToFeedMap': {
+        'FeedA': {'reliability': 'A'}
+    },
+    'CustomFields': {
+        'threattypes': [{'threatcategory': 'Malware'}],
+        'xdrstatus': 'enabled',
+        'sourceoriginalseverity': 'high',
+    }
+}
+
+
+@patch('XDR_iocs.get_integration_context', return_value={'time': '2024-09-10T12:13:57Z'})
+@patch('XDR_iocs.get_iocs_generator', return_value=[ioc_example])
+@patch('XDR_iocs.Client.http_request', return_value={'reply': {'success': True}})
+@patch('XDR_iocs.set_integration_context', return_value={})
+@patch('XDR_iocs.update_integration_context_override', return_value={})
+def test_xdr_iocs_sync_command_sync_for_fetch(mock_update_integration_context_override,
+                                              mock_set_integration_context,
+                                              mock_http_request,
+                                              mock_get_iocs_generator,
+                                              mock_get_integration_context):
+    """
+    Given   xdr_iocs_sync_command function is called with is_first_stage_sync=true, called_from_fetch=true
+    When   the http_request is successful,
+    Then   the update_integration_context function should be called with update_is_first_sync_phase='false'
+    """
+    xdr_iocs_sync_command(client, is_first_stage_sync=True, called_from_fetch=True)
+    mock_update_integration_context_override.assert_called_with(update_is_first_sync_phase='false')
+
+
+@patch('XDR_iocs.get_integration_context', return_value={'time': '2024-09-10T12:13:57Z'})
+@patch('XDR_iocs.get_iocs_generator', return_value=[ioc_example])
+@patch('XDR_iocs.Client.http_request', return_value={'reply': {'success': False}})
+@patch('XDR_iocs.set_integration_context', return_value={})
+@patch('XDR_iocs.update_integration_context', return_value={})
+def test_xdr_iocs_sync_command_sync_for_fetch_fails(mock_update_integration_context,
+                                                    mock_set_integration_context,
+                                                    mock_http_request,
+                                                    mock_get_iocs_generator,
+                                                    mock_get_integration_context):
+    """
+    Given   that the xdr_iocs_sync_command function is called with is_first_stage_sync=true, called_from_fetch=true
+    When    the http_request fails
+    Then    Raises DemistoException
+    """
+    with pytest.raises(DemistoException) as e:
+        xdr_iocs_sync_command(client, is_first_stage_sync=True, called_from_fetch=True)
+    assert e.value.message == ("Failed to sync indicators with error Response status was not success, "
+                               "response={'reply': {'success': False}}.")
+
+
+@patch('XDR_iocs.get_integration_context', return_value={'time': '2024-09-10T12:13:57Z'})
+@patch('XDR_iocs.get_iocs_generator', return_value=[ioc_example])
+@patch('XDR_iocs.Client.http_request', return_value={'reply': {'success': True, 'validation_errors': [
+    {'indicator': '123', 'error': 'error1'},
+    {'indicator': '456', 'error': 'error2'}]}})
+@patch('XDR_iocs.set_integration_context', return_value={})
+@patch('XDR_iocs.update_integration_context_override', return_value={})
+@patch('XDR_iocs.demisto.debug')
+def test_xdr_iocs_sync_command_sync_for_fetch_with_validation_errors(
+        mock_demisto_debug,
+        mock_update_integration_context_override,
+        mock_set_integration_context,
+        mock_http_request,
+        mock_get_iocs_generator,
+        mock_get_integration_context):
+    """
+    Given the xdr_iocs_sync_command function is called with is_first_stage_sync=true, called_from_fetch=true
+    When  There are validation errors in the response
+    Then update_integration_context should be called with update_is_first_sync_phase='false',
+        and a debug message should be logged indicating the validation errors.
+    """
+    xdr_iocs_sync_command(client, is_first_stage_sync=True, called_from_fetch=True)
+    mock_update_integration_context_override.assert_called_with(update_is_first_sync_phase='false')
+    debug_calls = [call.args[0] for call in mock_demisto_debug.call_args_list]
+    expected_debug_message = ('pushing IOCs to XDR:The following 2 IOCs were not pushed due to following errors:123: error1.456:'
+                              ' error2.')
+    assert any(expected_debug_message in call for call in debug_calls), \
+        f"Expected debug message not found in: {debug_calls}"
+
+
+@patch('XDR_iocs.get_integration_context', return_value={'time': '2024-09-10T12:13:57Z',
+                                                         'ts': '1234567',
+                                                         'is_first_sync_phase': True,
+                                                         'search_after': ['1234', '098765']})
+@patch('XDR_iocs.set_integration_context')
+def test_update_integration_context(mock_set_integration_context, mock_get_integration_context):
+    """
+    Given integration_context has some values
+    When  update_integration_context (of XDR_iocs) is being called with all args
+    Then  The integration context is being changed
+    """
+    fixed_datetime = datetime(2024, 9, 10, 12, 0, 0, tzinfo=timezone.utc)
+    update_integration_context_override(update_sync_time_with_datetime=fixed_datetime,
+                                        update_is_first_sync_phase='false',
+                                        update_search_after_array=['765', '000'])
+    mock_set_integration_context.assert_called_with({'time': '2024-09-10T12:00:00Z',
+                                                     'ts': 1725969600000,
+                                                     'is_first_sync_phase': False,
+                                                     'search_after': ['765', '000']})
+
+
+@patch('XDR_iocs.get_integration_context')
+@patch('XDR_iocs.sync')
+def test_xdr_iocs_sync_command(mock_sync, mock_integration_context):
+    """
+    Given:
+    - first_time is true - as this is the first sync phase
+    - integration context is empty
+    When:
+    - xdr_iocs_sync_command is called not from a fetch_indicators command
+    Then:
+    - The sync command is being called
+    """
+    client = MagicMock()
+    # Test case 1: first_time is true
+    xdr_iocs_sync_command(client, first_time=True)
+    mock_sync.assert_called_with(client, batch_size=4000)
+    mock_sync.reset_mock()
+    # Test case 2: integration context is empty
+    mock_integration_context.return_value = {}
+    xdr_iocs_sync_command(client)
+    mock_sync.assert_called_with(client, batch_size=4000)
+
+
+@patch('XDR_iocs.get_integration_context')
+@patch('XDR_iocs.sync_for_fetch')
+def test_xdr_iocs_sync_command_from_fetch(mock_sync_for_fetch, mock_integration_context):
+    """
+    Given:
+    - first_time is true- as this is the first sync phase
+    - integration context is empty
+    When:
+    - xdr_iocs_sync_command is called from a fetch_indicators command
+    Then:
+    - The sync_for_fetch command is being called
+    """
+    client = MagicMock()
+    xdr_iocs_sync_command(client, called_from_fetch=True, is_first_stage_sync=True)
+    mock_sync_for_fetch.assert_called_with(client, batch_size=4000)
+    mock_sync_for_fetch.reset_mock()
+    mock_integration_context.return_value = {}
+    xdr_iocs_sync_command(client, called_from_fetch=True)
+    mock_sync_for_fetch.assert_called_with(client, batch_size=4000)
+
+
+@pytest.mark.parametrize("indicators_input, search_results, expected_iocs, expected_warning, expected_info", [
+    ('indicator1,indicator2',
+     [{'iocs': ['ioc1']}, {'iocs': ['ioc2']}],
+     ['ioc1', 'ioc2'],
+     None,
+     'get_indicators found 2 IOCs'),
+    ('indicator1,indicator2',
+     [{'iocs': ['ioc1']}, {'iocs': []}],
+     ['ioc1'],
+     '1 indicators were not found: indicator2',
+     'get_indicators found 1 IOCs'),
+    ('indicator1,indicator2',
+     [{'iocs': None}, {'iocs': None}],
+     [],
+     '2 indicators were not found: indicator1,indicator2',
+     '2 indicators were not found: indicator1,indicator2'),
+    ('',
+     [],
+     [],
+     None,
+     None)
+])
+@patch('XDR_iocs.demisto.debug')
+@patch('XDR_iocs.demisto.info')
+@patch('XDR_iocs.return_warning')
+@patch('XDR_iocs.IndicatorsSearcher')
+def test_get_indicators(mock_IndicatorsSearcher,
+                        mock_return_warning,
+                        mock_info,
+                        mock_debug,
+                        indicators_input,
+                        search_results,
+                        expected_iocs,
+                        expected_warning,
+                        expected_info):
+    mock_searcher_instance = MagicMock()
+    mock_searcher_instance.search_indicators_by_version.side_effect = search_results
+    mock_IndicatorsSearcher.return_value = mock_searcher_instance
+    result = get_indicators(indicators_input)
+    assert result == expected_iocs
+    if expected_warning:
+        mock_return_warning.assert_called_with(expected_warning)
+    else:
+        mock_return_warning.assert_not_called()
+    if expected_info:
+        mock_info.assert_called_with(expected_info)
+    else:
+        mock_info.assert_not_called()
+
+
+@pytest.mark.parametrize('is_xsoar_saas, expected_link', ((True, ['url/indicator/111']), (False, ['url/#/indicator/111'])))
+def test_create_an_indicator_link(mocker, is_xsoar_saas: bool, expected_link: str):
+    """
+    Given:
+        -  indicator id and a bool argument is_xsoar_saas which presents if xsaor is a saas version or not
+    When:
+        -  creating an indicator link
+    Then:
+        - verify the link according to the XSAOR version
+    """
+    import XDR_iocs
+    mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'url'})
+    mocker.patch.object(XDR_iocs, 'is_xsoar_saas', return_value=is_xsoar_saas)
+    assert XDR_iocs.create_an_indicator_link(ioc={'id': '111'}) == expected_link
+
+
+@pytest.mark.parametrize('xsoar_comment_field, expected_result',
+                         ((["indicator_link"], ("comments", True)),
+                          (["comments"], ("comments", False)),
+                          (["comments", "indicator_link"], ("comments", True)),
+                          ))
+def test_parse_xsoar_field_name_and_link(xsoar_comment_field: list[str], expected_result: tuple[str, bool]):
+    """
+    Given:
+        -  xsoar_comment_field
+    When:
+        -  parsing xsoar_comment_field by our logic
+    Then:
+        - verify the function parses the xsoar_comment_field as expected
+    """
+    import XDR_iocs
+    result = XDR_iocs.parse_xsoar_field_name_and_link(xsoar_comment_field)
+    assert result == expected_result
+
+
+@pytest.mark.parametrize('xsoar_comment_field, informative_message',
+                         ((["comments", "not_indicator_link"],
+                           "The parameter xsoar_comment_field=['comments', 'not_indicator_link'] "
+                           "should only contain the field name,"
+                           " or the field name with the phrase indicator_link, separated by a comma."),
+                          (["a", "b", "c"], ("The parameter xsoar_comment_field=['a', 'b', 'c'] cannot contain more than "
+                                             'two values'))))
+def test_parse_xsoar_field_name_and_link_exceptions(xsoar_comment_field: list[str], informative_message: str):
+    """
+    Given:
+        -  invalid xsoar_comment_field and the expected_result
+    When:
+        -  parsing xsoar_comment_field by our logic
+    Then:
+        - verify the function throws a DemistoException with informative message
+    """
+    import XDR_iocs
+    with pytest.raises(DemistoException) as de:
+        XDR_iocs.parse_xsoar_field_name_and_link(xsoar_comment_field)
+        assert de.message == informative_message

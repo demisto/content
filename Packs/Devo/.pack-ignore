@@ -1,8 +1,8 @@
 [file:Devo_v2.yml]
-ignore=IN124,IN126,BA108,BA109
+ignore=IN126,BA108,BA109
 
 [file:README.md]
-ignore=RM106,RM108
+ignore=RM106,RM108,RM112
 
 [file:Devo_v2_image.png]
 ignore=IM111

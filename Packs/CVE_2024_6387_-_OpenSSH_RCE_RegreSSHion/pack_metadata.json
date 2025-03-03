@@ -1,0 +1,30 @@
+{
+    "name": "CVE-2024-6387 - OpenSSH RegreSSHion RCE",
+    "description": "This pack handles CVE-2024-6387 - OpenSSH RegreSSHion RCE",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Case Management"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "RCE",
+        "OpenSSH",
+        "RegreSSHion",
+        "CVE-2024-6387",
+        "6387"
+    ],
+    "dependencies": {
+        "MajorBreachesInvestigationandResponse": {
+            "mandatory": true,
+            "display_name": "Rapid Breach Response"
+        }
+    },
+    "marketplaces": [
+        "xsoar"
+    ]
+}

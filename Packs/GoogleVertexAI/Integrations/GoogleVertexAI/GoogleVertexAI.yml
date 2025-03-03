@@ -27,31 +27,43 @@ configuration:
   name: ProjectID
   required: true
   type: 0
-detaileddescription: |-
-  Fine-tuned to conduct natural conversation. Using Google Vertex Ai (PaLM API for Chat)
+detaileddescription: 'Fine-tuned to conduct natural conversation. Using Google Vertex Ai (PaLM API for Chat)
+
 
   Author: Sameh El-Hakim
 
+
   The current integration of Google Vertex Ai is focusing only on the Generative AI model (PaLM) using the Chat prediction.
 
+
   Later, this plugin will be updated to include the following:
+
   - Model Creation
+
   - Model Fine Tuning
+
   - PaLM Text
+
 
   For more information for how to create the authentication code, client id and secret please follow the integration documentation.
 
+
   ---
-  [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/google-vertex-ai)
-description: |-
-  Fine-tuned to conduct natural conversation. Using Google Vertex Ai (PaLM API for Chat)
+
+  [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/google-vertex-ai)'
+description: 'Fine-tuned to conduct natural conversation. Using Google Vertex Ai (PaLM API for Chat)
+
 
   The current integration of Google Vertex Ai is focusing only on the Generative AI model (PaLM) using the Chat prediction.
 
+
   Later, this plugin will be updated to include the following:
+
   - Model Creation
+
   - Model Fine Tuning
-  - PaLM Text
+
+  - PaLM Text'
 display: Google Vertex AI
 name: Google Vertex AI
 script:
@@ -65,7 +77,7 @@ script:
   - arguments: []
     description: This command will generate the authentication url required to generate auth code
     name: google-vertex-ai-generate-auth-url
-  dockerimage: demisto/googleapi-python3:1.0.0.62073
+  dockerimage: demisto/googleapi-python3:1.0.0.115085
   resetContext: true
   runonce: false
   script: ''

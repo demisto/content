@@ -1,0 +1,73 @@
+fromversion: 6.10.0
+category: Vulnerability Management
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: Serenety
+  version: -1
+configuration:
+- display: XMCO LePortail instance URL
+  defaultvalue: https://leportail.xmco.fr/
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- displaypassword: API Key
+  name: api_key
+  required: true
+  type: 9
+  hiddenusername: true
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  section: Collect
+- display: Maximum number of incidents per fetch
+  defaultvalue: '50'
+  name: max_fetch
+  type: 0
+  required: false
+  section: Collect
+- defaultvalue: 3 days
+  display: First fetch time
+  additionalinfo: First alert created date to fetch.
+  name: first_fetch
+  type: 0
+  required: false
+  section: Collect
+- display: Incident type
+  name: incidentType
+  defaultvalue: 'XMCO Serenety Alert'
+  type: 13
+description: 'Fetch Serenety alert from XMCO.'
+display: Serenety
+name: Serenety
+script:
+  commands:
+  - name: fetch-incidents
+    description: Fetch Serenety alert from XMCO LePortail.
+  dockerimage: demisto/python3:3.11.10.115186
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted).
+defaultmapperin: XMCO - Serenety Mapper

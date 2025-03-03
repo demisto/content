@@ -5,7 +5,7 @@ ignore=IN126,IN135
 ignore=PB110
 
 [file:playbook-Hostname_And_IP_Address_Investigation_And_Remediation_-_Chronicle.yml]
-ignore=PB111
+ignore=PB111,GR107
 
 [file:README.md]
 ignore=RM104,RM113
@@ -62,6 +62,9 @@ ignore=IF115
 ignore=PB114
 
 [file:GoogleChronicleBackstory_image.png]
+ignore=IM111
+
+[file:GoogleChronicleBackstoryStreamingAPI_image.png]
 ignore=IM111
 
 [file:classifier-Chronicle.json]
@@ -165,3 +168,16 @@ APPDATA
 txt
 retries
 Registerserver
+gcb
+HR
+IDP
+LSS
+TCP
+
+# GR103 is temporary, see CIAC-11656
+[file:layoutscontainer-Chronicle_User_Alert_Incident.json]
+ignore=GR103
+
+[file:playbook-Threat_Hunting_-_Chronicle.yml]
+ignore=GR107
+

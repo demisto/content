@@ -56,6 +56,12 @@ configuration:
   - ES384
   - ES512
   defaultvalue: RS256
+- display: Key ID
+  name: key_id
+  type: 0
+  section: Connect
+  required: false
+  additionalinfo: Required and used if more than one key is used for signing JWT tokens.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -1314,12 +1320,20 @@ script:
       required: true
     - description: Updates the zone name.
       name: zoneName
-    - description: 'Updates Gateway IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2).'
+    - description: 'Updates Gateway IP addresses: CIDR range (1.1.0.0/16), single IP address (2.2.2.2) or an IP range (1.2.3.4-1.2.3.5).'
       isArray: true
       name: gatewayIPs
-    - description: 'Update Proxy IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2).'
+    - description: 'Update Proxy IP addresses: CIDR range (1.1.0.0/16), single IP address (2.2.2.2) or an IP range (1.2.3.4-1.2.3.5).'
       isArray: true
       name: proxyIPs
+    - description: 'Indicate the update type: APPEND - add an IP to an existing list of zone IPs. OVERRIDE: overriding the existing IP list with the given IP.'
+      isArray: false
+      name: updateType
+      auto: PREDEFINED
+      predefined:
+      - "APPEND"
+      - "OVERRIDE"
+      defaultValue: 'OVERRIDE'
     description: Update an Okta Zone.
     name: okta-update-zone
     outputs:
@@ -1400,9 +1414,9 @@ script:
     - description: Zone name.
       name: name
       required: true
-    - description: 'Update Gateway IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2).'
+    - description: 'Update Gateway IP addresses: CIDR range (1.1.0.0/16), single IP address (2.2.2.2) or an IP range (1.2.3.4-1.2.3.5).'
       name: gateway_ips
-    - description: 'Update Proxy IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2).'
+    - description: 'Update Proxy IP addresses: CIDR range (1.1.0.0/16), single IP address (2.2.2.2) or an IP range (1.2.3.4-1.2.3.5).'
       name: proxies
     description: Creates a Zone with the specified name.
     name: okta-create-zone
@@ -1449,6 +1463,20 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Revokes the user's existing sessions and returns a temporary password, regardless of the temporary_password value. When true, you'll need to change the password in the next login.
+      name: revoke_session
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Prevents the password from being saved in the War Room.
+      name: hide_password
+      predefined:
+      - 'true'
+      - 'false'
     description: Expires a password for an existing Okta user.
     execution: true
     name: okta-expire-password
@@ -1485,7 +1513,8 @@ script:
       type: String
   - description: Reset OAuth authentication data (authentication process will start from the beginning, and a new token will be generated).
     name: okta-auth-reset
-  dockerimage: demisto/crypto:1.0.0.95384
+    arguments: []
+  dockerimage: demisto/crypto:1.0.0.2005673
   runonce: false
   script: ""
   subtype: python3

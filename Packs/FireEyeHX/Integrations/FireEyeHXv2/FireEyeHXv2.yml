@@ -85,7 +85,7 @@ script:
       description: Determines whether the host is queued for containment.
       type: Boolean
     - contextPath: FireEyeHX.Hosts.containment_state
-      description: The containment state of the host. Possible values normal,contain,contain_fail,containing,contained,uncontain,uncontaining,wtfc,wtfu
+      description: The containment state of the host. Possible values normal,contain,contain_fail,containing,contained,uncontain,uncontaining,wtfc,wtfu.
       type: String
     - contextPath: FireEyeHX.Hosts.stats.alerting_conditions
       description: The number of conditions that have alerted for the host.
@@ -453,7 +453,7 @@ script:
       name: offset
     - description: Limits the number of results.
       name: limit
-    - description: 'Must be from type of -> String: date-time'
+    - description: 'Must be from type of -> String: date-time.'
       name: state_update_time
     name: fireeye-hx-list-containment
     description: Fetches all containment states across known hosts.
@@ -521,12 +521,12 @@ script:
       - update_actor.username
       - create_actor._id
       - create_actor.username
-    - description: Filters searches by host set ID - <Integer>
+    - description: 'Filters searches by host set ID - <Integer>.'
       name: hostSetId
     - description: Returns a single enterprise search record. If you enter this argument, there is no need for other arguments.
       name: searchId
       isArray: true
-    - description: Filters searches by username that created searches - <String>
+    - description: 'Filters searches by username that created searches - <String>.'
       name: actorUsername
     description: Fetches all enterprise searches.
     name: fireeye-hx-search-list
@@ -604,7 +604,7 @@ script:
       description: The name of the search.
       type: String
   - arguments:
-    - description: Unique search ID - Required
+    - description: Unique search ID - Required.
       name: searchId
       required: true
       isArray: true
@@ -669,7 +669,7 @@ script:
       description: The terms for the operation.
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.hosts.settings.query_terms.exhaustive_terms
-      description: The exhaustive terms for the operation
+      description: The exhaustive terms for the operation.
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.settings.search_type
       description: The type of search.
@@ -687,6 +687,9 @@ script:
     - description: The Unique search ID.
       name: searchId
       required: true
+    - description: limit of results to return per search.
+      name: limit
+      required: false
     description: Fetches the results for a specific enterprise search.
     name: fireeye-hx-search-result-get
     outputs:
@@ -709,7 +712,7 @@ script:
       description: The object containing data relating to the search result for the host.
       type: Unknown
   - arguments:
-    - description: searchId
+    - description: searchId.
       name: searchId
     - description: The IDs of the gents to be searched.
       name: agentsIds
@@ -721,8 +724,9 @@ script:
       name: hostSet
     - description: The name of host set to be searched.
       name: hostSetName
-    - description: Limits the results count (once the limit is reached, the search is stopped).
+    - description: Limits the results count (default is 1000).
       name: limit
+      defaultValue: '1000'
     - auto: PREDEFINED
       defaultValue: 'true'
       description: Whether a search is exhaustive or quick.
@@ -863,43 +867,43 @@ script:
     name: fireeye-hx-search
     polling: true
     outputs:
-    - contextPath: FireEyeHX.Search.results.Timestamp - Modified
+    - contextPath: FireEyeHX.Search.results.data.Timestamp - Modified
       description: The time when the entry was last modified.
       type: string
-    - contextPath: FireEyeHX.Search.results.File Text Written
+    - contextPath: FireEyeHX.Search.results.data.File Text Written
       description: The file text content.
       type: string
-    - contextPath: FireEyeHX.Search.results.File Name
+    - contextPath: FireEyeHX.Search.results.data.File Name
       description: The name of the file.
       type: string
-    - contextPath: FireEyeHX.Search.results.File Full Path
+    - contextPath: FireEyeHX.Search.results.data.File Full Path
       description: The full path of the file.
       type: string
-    - contextPath: FireEyeHX.Search.results.File Bytes Written
+    - contextPath: FireEyeHX.Search.results.data.File Bytes Written
       description: The number of bytes written to the file.
       type: string
-    - contextPath: FireEyeHX.Search.results.Size in bytes
+    - contextPath: FireEyeHX.Search.results.data.Size in bytes
       description: The size of the file in bytes.
       type: string
-    - contextPath: FireEyeHX.Search.results.Browser Version
+    - contextPath: FireEyeHX.Search.results.data.Browser Version
       description: The version of the browser.
       type: string
-    - contextPath: FireEyeHX.Search.results.Browser Name
+    - contextPath: FireEyeHX.Search.results.data.Browser Name
       description: The name of the browser.
       type: string
-    - contextPath: FireEyeHX.Search.results.Cookie Name
+    - contextPath: FireEyeHX.Search.results.data.Cookie Name
       description: The name of the cookie.
       type: string
-    - contextPath: FireEyeHX.Search.results.DNS Hostname
+    - contextPath: FireEyeHX.Search.results.data.DNS Hostname
       description: The name of the DNS host.
       type: string
-    - contextPath: FireEyeHX.Search.results.URL
+    - contextPath: FireEyeHX.Search.results.data.URL
       description: The event URL.
       type: string
-    - contextPath: FireEyeHX.Search.results.Username
+    - contextPath: FireEyeHX.Search.results.data.Username
       description: The event username.
       type: string
-    - contextPath: FireEyeHX.Search.results.File MD5 Hash
+    - contextPath: FireEyeHX.Search.results.data.File MD5 Hash
       description: The MD5 hash of the file.
       type: string
     - contextPath: FireEyeHX.Search.host._id
@@ -914,31 +918,31 @@ script:
     - contextPath: FireEyeHX.Search.results.data
       description: The ID of the performed search.
       type: string
-    - contextPath: FireEyeHX.Search.results.Timestamp - Accessed
+    - contextPath: FireEyeHX.Search.results.data.Timestamp - Accessed
       description: The last accessed time.
       type: string
-    - contextPath: FireEyeHX.Search.results.Port
+    - contextPath: FireEyeHX.Search.results.data.Port
       description: The Port.
       type: number
-    - contextPath: FireEyeHX.Search.results.Process ID
+    - contextPath: FireEyeHX.Search.results.data.Process ID
       description: The ID of the process.
       type: string
-    - contextPath: FireEyeHX.Search.results.Local IP Address
+    - contextPath: FireEyeHX.Search.results.data.Local IP Address
       description: The local IP Address.
       type: string
-    - contextPath: FireEyeHX.Search.results.Local Port
+    - contextPath: FireEyeHX.Search.results.data.Local Port
       description: The local Port.
       type: number
-    - contextPath: FireEyeHX.Search.results.Remote Port
+    - contextPath: FireEyeHX.Search.results.data.Remote Port
       description: The remote port.
       type: number
-    - contextPath: FireEyeHX.Search.results.IP Address
+    - contextPath: FireEyeHX.Search.results.data.IP Address
       description: The IP address.
       type: string
-    - contextPath: FireEyeHX.Search.results.Process Name
+    - contextPath: FireEyeHX.Search.results.data.Process Name
       description: The process name.
       type: string
-    - contextPath: FireEyeHX.Search.results.Timestamp - Event
+    - contextPath: FireEyeHX.Search.results.data.Timestamp - Event
       description: The timestamp of the event.
       type: string
     - contextPath: FireEyeHX.Search.results.type
@@ -1122,7 +1126,7 @@ script:
     - description: The name of the indicator. Use the `uri_name` value.
       name: name
       required: true
-    - description: A list of conditions to add. The list can include a list of IPv4 addresses, MD5 files, and domain names. For example, example.netexample.orgexample.lol
+    - description: A list of conditions to add. The list can include a list of IPv4 addresses, MD5 files, and domain names. For example, example.netexample.orgexample.
       name: condition
       required: true
     description: Add conditions to an indicator. Conditions can be MD5, hash values, domain names, and IP addresses.
@@ -1421,7 +1425,7 @@ script:
       description: The indicator name, as displayed in the UI.
       type: string
     - contextPath: FireEyeHX.Indicators.created_by
-      description: The "Created By" field, as displayed in UI
+      description: The "Created By" field, as displayed in UI.
       type: string
     - contextPath: FireEyeHX.Indicators.url
       description: The data URL.
@@ -1795,7 +1799,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.11.10.116949
 fromversion: 6.0.0
 tests:
 - FireEyeHX_v2

@@ -1,9 +1,10 @@
+import uuid
 from CommonServerPython import *
 ''' IMPORTS '''
 import re
 import json
 import base64
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, UTC
 from email.utils import parsedate_to_datetime, format_datetime
 import httplib2
 from httplib2 import socks
@@ -39,6 +40,7 @@ FETCH_TIME = params.get('fetch_time', '1 days')
 MAX_FETCH = int(params.get('fetch_limit') or 50)
 AUTH_CODE = params.get('auth_code_creds', {}).get('password') or params.get('code')
 AUTH_CODE_UNQUOTE_PREFIX = 'code='
+LEGACY_NAME = argToBoolean(params.get('legacy_name', False))
 
 OOB_CLIENT_ID = "391797357217-pa6jda1554dbmlt3hbji2bivphl0j616.apps.googleusercontent.com"  # guardrails-disable-line
 CLIENT_ID = params.get('credentials', {}).get('identifier') or params.get('client_id') or OOB_CLIENT_ID
@@ -307,9 +309,19 @@ class Client:
 
             else:
                 if part['body'].get('attachmentId') is not None:
+                    content_id = ""
+                    is_inline = False
+                    attachmentName = part['filename']
+                    for header in part.get('headers', []):
+                        if header.get('name') == 'Content-ID':
+                            content_id = header.get('value').strip("<>")
+                        if header.get('name') == 'Content-Disposition':
+                            is_inline = 'inline' in header.get('value').strip('<>')
+                    if is_inline and content_id and content_id != "None" and not LEGACY_NAME:
+                        attachmentName = f"{content_id}-attachmentName-{attachmentName}"
                     attachments.append({
                         'ID': part['body']['attachmentId'],
-                        'Name': part['filename']
+                        'Name': attachmentName,
                     })
 
         return body, html, attachments
@@ -331,12 +343,11 @@ class Client:
             'messageId': _id,
         }
         files = []
-        for attachment in result['Attachments']:
+        for attachment in result.get('Attachments', []):
             command_args['id'] = attachment['ID']
             result = execute_gmail_action(service, "get_attachments", command_args)
             file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
             files.append((attachment['Name'], file_data))
-
         return files
 
     @staticmethod
@@ -358,7 +369,7 @@ class Client:
             res = parsedate_to_datetime(date_part)
             if res.tzinfo is None:
                 # some headers may contain a non TZ date so we assume utc
-                res = res.replace(tzinfo=timezone.utc)
+                res = res.replace(tzinfo=UTC)
             return res
         except Exception as ex:
             demisto.debug(f'Failed parsing date from header value: [{header}]. Err: {ex}. Will ignore and continue.')
@@ -397,10 +408,10 @@ class Client:
             timestamp_len = len(str(int(time.time())))
             if len(str(internalDate)) > timestamp_len:
                 internalDate = (str(internalDate)[:timestamp_len])
-            return datetime.fromtimestamp(int(internalDate), tz=timezone.utc), True
+            return datetime.fromtimestamp(int(internalDate), tz=UTC), True
         # we didn't get a date from anywhere
         demisto.info("Failed finding date from internal or headers. Using 'datetime.now()'")
-        return datetime.now(tz=timezone.utc), False
+        return datetime.now(tz=UTC), False
 
     def get_email_context(self, email_data, mailbox) -> tuple[dict, dict, dict, datetime, bool]:
         """Get the email context from email data
@@ -532,7 +543,7 @@ class Client:
         Returns:
             datetime: datetime representation
         """
-        return datetime.strptime(dt, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc)
+        return datetime.strptime(dt, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=UTC)
 
     def mail_to_incident(self, msg, service, user_key) -> tuple[dict, datetime, bool]:
         """Parse an email message
@@ -756,15 +767,17 @@ class Client:
                 re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', htmlBody, re.I | re.S)):
             maintype, subtype = m.group(2).split('/', 1)
             name = f"image{i}.{subtype}"
-            att = {
+            cid = f'{name}@{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}'
+            attachment = {
                 'maintype': maintype,
                 'subtype': subtype,
-                'data': base64.b64decode(m.group(3)),
+                'data': b64_decode(m.group(3)),
                 'name': name,
-                'cid': name
+                'cid': cid,
+                'ID': cid
             }
-            attachments.append(att)
-            cleanBody += htmlBody[lastIndex:m.start(1)] + 'cid:' + att['cid']
+            attachments.append(attachment)
+            cleanBody += htmlBody[lastIndex:m.start(1)] + 'cid:' + attachment['cid']
             lastIndex = m.end() - 1
 
         cleanBody += htmlBody[lastIndex:]
@@ -873,7 +886,7 @@ class Client:
                 msg_txt = MIMEText(att['data'], att['subtype'], 'utf-8')
                 if att['cid'] is not None:
                     msg_txt.add_header('Content-Disposition', 'inline', filename=att['name'])
-                    msg_txt.add_header('Content-ID', '<' + att['name'] + '>')
+                    msg_txt.add_header('Content-ID', '<' + att['cid'] + '>')
 
                 else:
                     msg_txt.add_header('Content-Disposition', 'attachment', filename=att['name'])
@@ -883,8 +896,9 @@ class Client:
                 msg_img = MIMEImage(att['data'], att['subtype'])
                 if att['cid'] is not None:
                     msg_img.add_header('Content-Disposition', 'inline', filename=att['name'])
-                    msg_img.add_header('Content-ID', '<' + att['name'] + '>')
-
+                    msg_img.add_header('Content-ID', '<' + att['cid'] + '>')
+                    if (att.get('ID')):
+                        msg_img.add_header('X-Attachment-Id', att['ID'])
                 else:
                     msg_img.add_header('Content-Disposition', 'attachment', filename=att['name'])
                 message.attach(msg_img)
@@ -893,7 +907,7 @@ class Client:
                 msg_aud = MIMEAudio(att['data'], att['subtype'])
                 if att['cid'] is not None:
                     msg_aud.add_header('Content-Disposition', 'inline', filename=att['name'])
-                    msg_aud.add_header('Content-ID', '<' + att['name'] + '>')
+                    msg_aud.add_header('Content-ID', '<' + att['cid'] + '>')
 
                 else:
                     msg_aud.add_header('Content-Disposition', 'attachment', filename=att['name'])
@@ -903,7 +917,7 @@ class Client:
                 msg_app = MIMEApplication(att['data'], att['subtype'])
                 if att['cid'] is not None:
                     msg_app.add_header('Content-Disposition', 'inline', filename=att['name'])
-                    msg_app.add_header('Content-ID', '<' + att['name'] + '>')
+                    msg_app.add_header('Content-ID', '<' + att['cid'] + '>')
                 else:
                     msg_app.add_header('Content-Disposition', 'attachment', filename=att['name'])
                 message.attach(msg_app)
@@ -913,7 +927,7 @@ class Client:
                 msg_base.set_payload(att['data'])
                 if att['cid'] is not None:
                     msg_base.add_header('Content-Disposition', 'inline', filename=att['name'])
-                    msg_base.add_header('Content-ID', '<' + att['name'] + '>')
+                    msg_base.add_header('Content-ID', '<' + att['cid'] + '>')
 
                 else:
                     msg_base.add_header('Content-Disposition', 'attachment', filename=att['name'])
@@ -973,7 +987,6 @@ class Client:
             inlineAttachments = []  # type: list
 
             if htmlBody:
-                # htmlBody, htmlAttachments = handle_html(htmlBody)
                 htmlBody, htmlAttachments = self.handle_html(htmlBody)
                 msg = MIMEText(htmlBody, 'html', 'utf-8')
                 attach_body_to.attach(msg)  # type: ignore
@@ -1114,7 +1127,7 @@ def reply_mail_command(client: Client):
     args = demisto.args()
     email_from = args.get('from')
     send_as = args.get('send_as')
-    in_reply_to = args.get('in_reply_to')
+    in_reply_to = args.get('inReplyTo')
     references = argToList(args.get('references'))
 
     return mail_command(client, args, email_from, send_as, 'Re: ', in_reply_to, references)

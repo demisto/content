@@ -1,0 +1,30 @@
+commonfields:
+  id: CreateSigmaRuleIndicator
+  version: -1
+name: CreateSigmaRuleIndicator
+script: ''
+type: python
+tags: []
+enabled: true
+args:
+- name: sigma_rule_str
+  description: A string containing the Sigma rule in its original format.
+- name: entry_id
+  description: The entry ID of the file that contains the Sigma rule. The script will read the Sigma rule from this file if provided.
+- name: create_indicators
+  default: true
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  defaultValue: "true"
+  description: If true, creates the indicators,. If false, returns a JSON of indicators. (Default is true).
+scripttarget: 0
+subtype: python3
+runonce: false
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+dockerimage: demisto/pysigma:1.0.0.110641
+tests:
+- No tests (auto formatted)

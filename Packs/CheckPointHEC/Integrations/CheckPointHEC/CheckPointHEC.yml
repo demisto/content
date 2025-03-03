@@ -11,11 +11,20 @@ configuration:
   options:
   - https://smart-api-production-1-us.avanan.net
   - https://smart-api-production-1-eu.avanan.net
+  - https://smart-api-production-5-ap.avanan.net
   - https://smart-api-production-1-ca.avanan.net
-  - https://cloudinfra-gw.portal.checkpoint.com
+  - https://smart-api-production-1-euw2.avanan.net
+  - https://smart-api-production-1-mec1.avanan.net
+  - https://smart-api-production-1-aps1.avanan.net
   - https://cloudinfra-gw-us.portal.checkpoint.com
+  - https://cloudinfra-gw.portal.checkpoint.com
+  - https://cloudinfra-gw.ca.portal.checkpoint.com
   - https://cloudinfra-gw.ap.portal.checkpoint.com
+  - https://cloudinfra-gw.uk.portal.checkpoint.com
+  - https://cloudinfra-gw.me.portal.checkpoint.com
+  - https://cloudinfra-gw.in.portal.checkpoint.com
   required: true
+  additionalinfo: The URL of the Smart API or Check Point Infinity API.
 - section: Collect
   display: Fetch incidents
   name: isFetch
@@ -33,18 +42,21 @@ configuration:
   required: true
   displaypassword: Client ID
   hiddenusername: true
+  additionalinfo: The client ID of the Smart API or Check Point Infinity API.
 - display: ""
   displaypassword: Client Secret
   name: client_secret
   type: 9
   required: true
   hiddenusername: true
+  additionalinfo: The client secret of the Smart API or Check Point Infinity API.
 - display: "First fetch time"
   name: first_fetch
   type: 0
   required: false
   section: Collect
   defaultvalue: 1 hour
+  additionalinfo: The time range for the first fetch. The default is 1 hour.
 - display: SaaS Application
   name: saas_apps
   type: 16
@@ -52,7 +64,7 @@ configuration:
   options:
   - Microsoft Exchange
   - Gmail
-  additionalinfo: Get incidents from the selected SaaS
+  additionalinfo: Get incidents from the selected SaaS.
 - display: State
   name: event_state
   type: 16
@@ -63,7 +75,7 @@ configuration:
   - Detected
   - Exception
   - Dismissed
-  additionalinfo: Get incidents with only the selected states
+  additionalinfo: Get incidents with only the selected states.
 - display: Severity
   name: event_severity
   type: 16
@@ -74,7 +86,7 @@ configuration:
   - Medium
   - Low
   - Very Low
-  additionalinfo: Get incidents with only the selected severities
+  additionalinfo: Get incidents with only the selected severities.
 - display: Threat Type
   name: threat_type
   type: 16
@@ -91,26 +103,48 @@ configuration:
   - Spam
   - Malicious URL
   - Malicious URL Click
-  additionalinfo: Get incidents with only the selected types
+  additionalinfo: Get incidents with only the selected types.
 - display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: "10"
   type: 0
   required: false
   section: Collect
-- section: Connect
-  advanced: true
-  display: Trust any certificate (not secure)
+  additionalinfo: The maximum number of incidents to retrieve per fetch.
+- section: Restore requests
+  display: Collect restore requests
+  name: collect_restore_requests
+  type: 8
+  required: false
+  additionalinfo: Collect restore requests as incidents.
+- section: Restore requests
+  display: Include denied requests
+  name: include_denied_requests
+  type: 8
+  required: false
+  additionalinfo: Denied restore requests will be in the results (they are not by default).
+- display: Include accepted requests
+  name: include_accepted_requests
+  type: 8
+  required: false
+  section: Restore requests
+  additionalinfo: Accepted restore requests will be in the results (they are not by default).
+- display: Trust any certificate (not secure)
+  additionalinfo: Trust server certificate.
   name: insecure
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - section: Connect
+  additionalinfo: Use system proxy settings.
   advanced: true
   display: Use system proxy settings
   name: proxy
   type: 8
   required: false
 - display: Incidents Fetch Interval
+  additionalinfo: The interval in minutes to fetch incidents. The default is 1 minute.
   name: incidentFetchInterval
   defaultvalue: "1"
   type: 19
@@ -560,13 +594,17 @@ script:
       - Microsoft Exchange
       - Gmail
     - name: action
-      description: Action to perform (quarantine or restore).
+      description: Action to perform.
       required: true
       auto: PREDEFINED
       predefined:
       - quarantine
       - restore
-    description: Quarantine or restore an email.
+      - decline_restore_request
+    - name: restore_decline_reason
+      description: Reason to decline restore request.
+      required: false
+    description: Action for one or more emails.
     outputs:
     - contextPath: CheckPointHEC.Task.task
       description: Task id of the sent action.
@@ -633,12 +671,1182 @@ script:
     - contextPath: CheckPointHEC.Notification.ok
       description: Result of the operation.
       type: Boolean
+  - name: checkpointhec-report-mis-classification
+    description: Report email mis-classification.
+    arguments:
+    - name: entities
+      description: Email entity ids.
+      required: true
+      isArray: true
+    - name: classification
+      description: New classification.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Clean Email
+      - Spam
+      - Phishing
+      - Legit Marketing Email
+    - name: confident
+      description: Confidence level.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Not so sure
+      - Medium Confidence
+      - High Confidence
+  - name: checkpointhec-get-ap-exceptions
+    description: Get Anti-Phishing and Anti-Spam exceptions or exception.
+    arguments:
+    - name: exc_type
+      description: List name of exceptions to retrieve.
+      auto: PREDEFINED
+      predefined:
+      - whitelist
+      - blacklist
+      - spam_whitelist
+      required: true
+    - name: exc_id
+      description: Exception id to retrieve.
+      required: false
+    outputs:
+    - contextPath: CheckPointHEC.AntiPhishingException.added_by
+      description: Exception added by user id.
+      type: Number
+    - contextPath: CheckPointHEC.AntiPhishingException.affected_count
+      description: Affected count.
+      type: String
+    - contextPath: CheckPointHEC.AntiPhishingException.allowed_links
+      description: Allowed links.
+      type: String
+    - contextPath: CheckPointHEC.AntiPhishingException.attachment_md5
+      description: Email attachment MD5.
+      type: String
+    - contextPath: CheckPointHEC.AntiPhishingException.auto_classify_as
+      description: Auto classify as.
+      type: String
+    - contextPath: CheckPointHEC.AntiPhishingException.comment
+      description: Exception description.
+      type: String
+    - contextPath: CheckPointHEC.AntiPhishingException.customer_domain
+      description: Customer name.
+      type: String
+    - contextPath: CheckPointHEC.AntiPhishingException.edited_by
+      description: Exception edited by.
+      type: String
+    - contextPath: CheckPointHEC.AntiPhishingException.email_link
+      description: Email link.
+      type: String
+    - contextPath: CheckPointHEC.AntiPhishingException.email_link_matching
+      description: Email link field condition.
+      type: String
+    - contextPath: CheckPointHEC.AntiPhishingException.entity_id
+      description: Entity id.
+      type: Number
+    - contextPath: CheckPointHEC.AntiPhishingException.exception_type
+      description: Exception type.
+      type: String
+    - contextPath: CheckPointHEC.AntiPhishingException.expiration_time
+      description: Exception expiration time.
+      type: String
+    - contextPath: CheckPointHEC.AntiPhishingException.from_domain
+      description: From domain.
+      type: String
+    - contextPath: CheckPointHEC.AntiPhishingException.from_domain_ends_with
+      description: From domain field ends with.
+      type: String
+    - contextPath: CheckPointHEC.AntiPhishingException.from_domain_matching
+      description: From domain field condition.
+      type: String
+    - contextPath: CheckPointHEC.AntiPhishingException.from_email
+      description: Email sender.
+      type: String
+    - contextPath: CheckPointHEC.AntiPhishingException.from_email_matching
+      description: From email field condition.
+      type: String
+    - contextPath: CheckPointHEC.AntiPhishingException.from_name_matching
+      description: From name field condition.
+      type: String
+    - contextPath: CheckPointHEC.AntiPhishingException.headers
+      description: Email headers.
+      type: String
+    - contextPath: CheckPointHEC.AntiPhishingException.ignoring_spf_check
+      description: Ignore SPF check.
+      type: Boolean
+    - contextPath: CheckPointHEC.AntiPhishingException.insert_time
+      description: Exception creation time.
+      type: String
+    - contextPath: CheckPointHEC.AntiPhishingException.max_confidence
+      description: Maximum confidence.
+      type: String
+    - contextPath: CheckPointHEC.AntiPhishingException.max_confidence_spam
+      description: Maximum confidence for spam.
+      type: String
+    - contextPath: CheckPointHEC.AntiPhishingException.message_headers
+      description: Message headers.
+      type: String
+    - contextPath: CheckPointHEC.AntiPhishingException.nickname
+      description: Sender name.
+      type: String
+    - contextPath: CheckPointHEC.AntiPhishingException.owner_email
+      description: Exception owner email.
+      type: String
+    - contextPath: CheckPointHEC.AntiPhishingException.override
+      description: Override.
+      type: Boolean
+    - contextPath: CheckPointHEC.AntiPhishingException.recipient
+      description: Email recipient.
+      type: String
+    - contextPath: CheckPointHEC.AntiPhishingException.recipient_matching
+      description: Recipient field condition.
+      type: String
+    - contextPath: CheckPointHEC.AntiPhishingException.sender_client_ip
+      description: Sender client IP.
+      type: String
+    - contextPath: CheckPointHEC.AntiPhishingException.sender_ip
+      description: Sender IP.
+      type: String
+    - contextPath: CheckPointHEC.AntiPhishingException.signature_key
+      description: Signature key.
+      type: String
+    - contextPath: CheckPointHEC.AntiPhishingException.subject
+      description: Email subject.
+      type: String
+    - contextPath: CheckPointHEC.AntiPhishingException.subject_matching
+      description: Subject field condition.
+      type: String
+    - contextPath: CheckPointHEC.AntiPhishingException.update_time
+      description: Exception update.
+      type: String
+    - contextPath: CheckPointHEC.AntiPhishingException.user_label
+      description: User label.
+      type: String
+  - name: checkpointhec-create-ap-exception
+    description: Create Anti-Phishing and Anti-Spam exception.
+    arguments:
+    - name: exc_type
+      description: Exception type.
+      auto: PREDEFINED
+      predefined:
+      - whitelist
+      - blacklist
+      - spam_whitelist
+      required: true
+    - name: entity_id
+      description: Entity id.
+      required: false
+    - name: attachment_md5
+      description: Attachment MD5 checksum.
+      required: false
+    - name: from_email
+      description: Email sender.
+      required: false
+    - name: nickname
+      description: Sender name.
+      required: false
+    - name: recipient
+      description: Email recipient.
+      required: false
+    - name: sender_client_ip
+      description: Sender client IP.
+      required: false
+    - name: from_domain_ends_with
+      description: From domain ends with.
+      required: false
+    - name: sender_ip
+      description: Sender IP.
+      required: false
+    - name: email_link
+      description: Email link or links separated by comma.
+      required: false
+    - name: subject
+      description: Email subject.
+      required: false
+    - name: comment
+      description: Exception comment.
+      required: false
+    - name: action_needed
+      description: Action needed.
+      required: false
+    - name: ignoring_spf_check
+      description: Ignoring SPF check.
+      required: false
+    - name: subject_matching
+      description: Subject field condition.
+      auto: PREDEFINED
+      predefined:
+      - matching
+      - contains
+      - exact
+      required: false
+    - name: email_link_matching
+      description: Email link field condition.
+      auto: PREDEFINED
+      predefined:
+      - matching
+      - contains
+      - exact
+      required: false
+    - name: from_name_matching
+      description: From name field condition.
+      auto: PREDEFINED
+      predefined:
+      - matching
+      - contains
+      - exact
+      required: false
+    - name: from_domain_matching
+      description: From domain field condition.
+      auto: PREDEFINED
+      predefined:
+      - contains
+      - ends_with
+      - exact
+      required: false
+    - name: from_email_matching
+      description: From email field condition.
+      auto: PREDEFINED
+      predefined:
+      - matching
+      - contains
+      - exact
+      required: false
+    - name: recipient_matching
+      description: Recipient field condition.
+      auto: PREDEFINED
+      predefined:
+      - matching
+      - contains
+      - exact
+      required: false
+  - name: checkpointhec-update-ap-exception
+    description: Update Anti-Phishing and Anti-Spam exception.
+    arguments:
+    - name: exc_type
+      description: Exception type.
+      auto: PREDEFINED
+      predefined:
+      - whitelist
+      - blacklist
+      - spam_whitelist
+      required: true
+    - name: exc_id
+      description: Exception id.
+      required: true
+    - name: entity_id
+      description: Entity id.
+      required: false
+    - name: attachment_md5
+      description: Attachment MD5 checksum.
+      required: false
+    - name: from_email
+      description: Email sender.
+      required: false
+    - name: nickname
+      description: Sender name.
+      required: false
+    - name: recipient
+      description: Email recipient.
+      required: false
+    - name: sender_client_ip
+      description: Sender client IP.
+      required: false
+    - name: from_domain_ends_with
+      description: From domain ends with.
+      required: false
+    - name: sender_ip
+      description: Sender IP.
+      required: false
+    - name: email_link
+      description: Email link or links separated by comma.
+      required: false
+    - name: subject
+      description: Email subject.
+      required: false
+    - name: comment
+      description: Exception comment.
+      required: false
+    - name: action_needed
+      description: Action needed.
+      required: false
+    - name: ignoring_spf_check
+      description: Ignoring SPF check.
+      required: false
+    - name: subject_matching
+      description: Subject field condition.
+      auto: PREDEFINED
+      predefined:
+      - matching
+      - contains
+      - exact
+      required: false
+    - name: email_link_matching
+      description: Email link field condition.
+      auto: PREDEFINED
+      predefined:
+      - matching
+      - contains
+      - exact
+      required: false
+    - name: from_name_matching
+      description: From name field condition.
+      auto: PREDEFINED
+      predefined:
+      - matching
+      - contains
+      - exact
+      required: false
+    - name: from_domain_matching
+      description: From domain field condition.
+      auto: PREDEFINED
+      predefined:
+      - contains
+      - ends_with
+      - exact
+      required: false
+    - name: from_email_matching
+      description: From email field condition.
+      auto: PREDEFINED
+      predefined:
+      - matching
+      - contains
+      - exact
+      required: false
+    - name: recipient_matching
+      description: Recipient field condition.
+      auto: PREDEFINED
+      predefined:
+      - matching
+      - contains
+      - exact
+      required: false
+  - name: checkpointhec-delete-ap-exception
+    description: Delete Anti-Phishing and Anti-Spam exception.
+    arguments:
+    - name: exc_type
+      description: Exception type.
+      auto: PREDEFINED
+      predefined:
+      - whitelist
+      - blacklist
+      - spam_whitelist
+      required: true
+    - name: exc_id
+      description: Exception id.
+      required: true
+  - name: checkpointhec-get-cp2-exception
+    description: Get Anti-Malware exception.
+    arguments:
+    - name: exc_type
+      description: List name of exceptions to retrieve.
+      auto: PREDEFINED
+      predefined:
+      - hash
+      - macro_hash
+      - file_type
+      - ppat_sender_name
+      required: true
+    - name: exc_str
+      description: Exception id to retrieve.
+      required: true
+    outputs:
+    - contextPath: CheckPointHEC.AntiMalwareException.insert_time
+      description: Exception insert time.
+      type: String
+    - contextPath: CheckPointHEC.AntiMalwareException.farm_customer_exception_type
+      description: Farm, customer and exception type info.
+      type: String
+    - contextPath: CheckPointHEC.AntiMalwareException.exception_str
+      description: Exception string, for id purposes.
+      type: String
+    - contextPath: CheckPointHEC.AntiMalwareException.created_by_email
+      description: Exception email creator.
+      type: String
+    - contextPath: CheckPointHEC.AntiMalwareException.comment
+      description: Exception comment.
+      type: String
+    - contextPath: CheckPointHEC.AntiMalwareException.exception_payload
+      description: Exception payload information.
+      type: String
+  - name: checkpointhec-create-cp2-exception
+    description: Create Anti-Malware exception.
+    arguments:
+    - name: exc_type
+      description: Exception type.
+      auto: PREDEFINED
+      predefined:
+      - hash
+      - macro_hash
+      - file_type
+      - ppat_sender_name
+      required: true
+    - name: exc_str
+      description: Exception string.
+      required: true
+    - name: entity_type
+      description: Entity type.
+      required: false
+    - name: entity_id
+      description: Entity id.
+      required: false
+    - name: comment
+      description: Exception comment.
+      required: false
+    - name: exc_payload_condition
+      description: Exception payload condition.
+      auto: PREDEFINED
+      predefined:
+      - with_or_without_link
+      - with_link
+      - without_link
+      required: false
+    - name: file_name
+      description: File name.
+      required: false
+    - name: created_by_email
+      description: Exception creator email.
+      required: false
+    - name: is_exclusive
+      description: Exclusive exception.
+      auto: PREDEFINED
+      predefined:
+      - yes
+      - no
+      required: false
+  - name: checkpointhec-update-cp2-exception
+    description: Update Anti-Malware exception.
+    arguments:
+    - name: exc_type
+      description: Exception type.
+      auto: PREDEFINED
+      predefined:
+      - hash
+      - macro_hash
+      - file_type
+      - ppat_sender_name
+      required: true
+    - name: exc_str
+      description: Exception string.
+      required: true
+    - name: comment
+      description: Exception comment.
+      required: false
+    - name: exc_payload_condition
+      description: Exception payload condition.
+      auto: PREDEFINED
+      predefined:
+      - with_or_without_link
+      - with_link
+      - without_link
+      required: false
+  - name: checkpointhec-delete-cp2-exception
+    description: Delete Anti-Malware exception.
+    arguments:
+    - name: exc_type
+      description: Exception type.
+      auto: PREDEFINED
+      predefined:
+      - hash
+      - macro_hash
+      - file_type
+      - ppat_sender_name
+      required: true
+    - name: exc_str
+      description: Exception string.
+      required: true
+    - name: entity_type
+      description: Entity type.
+      required: false
+    - name: entity_id
+      description: Entity id.
+      required: false
+  - name: checkpointhec-get-cp2-exceptions
+    description: Get Anti-Malware exceptions.
+    arguments:
+    - name: exc_type
+      description: List name of exceptions to retrieve.
+      auto: PREDEFINED
+      predefined:
+      - hash
+      - macro_hash
+      - file_type
+      - ppat_sender_name
+      required: true
+    - name: filter_str
+      description: Search string.
+      required: false
+    - name: filter_index
+      description: Search index.
+      auto: PREDEFINED
+      predefined:
+      - insert_time
+      - entity_type_id
+      - exception_str
+      - file_name
+      - created_by_email
+      - comment
+      required: false
+    - name: sort_dir
+      description: Sort direction.
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      required: false
+    - name: last_evaluated_key
+      description: Last evaluated key.
+      required: false
+    - name: insert_time_gte
+      description: Insert time field condition.
+      auto: PREDEFINED
+      predefined:
+      - yes
+      - no
+      required: false
+    - name: limit
+      description: Number of exceptions to retrieve.
+      required: false
+    outputs:
+    - contextPath: CheckPointHEC.AntiMalwareException.insert_time
+      description: Exception insert time.
+      type: String
+    - contextPath: CheckPointHEC.AntiMalwareException.farm_customer_exception_type
+      description: Farm, customer and exception type info.
+      type: String
+    - contextPath: CheckPointHEC.AntiMalwareException.exception_str
+      description: Exception string, for id purposes.
+      type: String
+    - contextPath: CheckPointHEC.AntiMalwareException.created_by_email
+      description: Exception email creator.
+      type: String
+    - contextPath: CheckPointHEC.AntiMalwareException.comment
+      description: Exception comment.
+      type: String
+    - contextPath: CheckPointHEC.AntiMalwareException.exception_payload
+      description: Exception payload information.
+      type: String
+  - name: checkpointhec-delete-cp2-exceptions
+    description: Delete Anti-Malware exceptions.
+    arguments:
+    - name: exc_type
+      description: Exception type.
+      auto: PREDEFINED
+      predefined:
+      - hash
+      - macro_hash
+      - file_type
+      - ppat_sender_name
+      required: true
+    - name: exc_str_list
+      description: List of exception strings to delete.
+      isArray: true
+      required: true
+    - name: entity_type
+      description: Entity type.
+      required: false
+    - name: entity_id
+      description: Entity id.
+      required: false
+  - name: checkpointhec-get-anomaly-exceptions
+    description: Get Anomaly exceptions.
+    outputs:
+    - contextPath: CheckPointHEC.AnomalyException.id
+      description: Anomaly exception id.
+      type: String
+    - contextPath: CheckPointHEC.AnomalyException.anomaly_type
+      description: Anomaly type.
+      type: String
+    - contextPath: CheckPointHEC.AnomalyException.insert_time
+      description: Anomaly exception creation time.
+      type: String
+    - contextPath: CheckPointHEC.AnomalyException.update_time
+      description: Anomaly exception update time.
+      type: String
+    - contextPath: CheckPointHEC.AnomalyException.added_by
+      description: Anomaly exception creator.
+      type: String
+    - contextPath: CheckPointHEC.AnomalyException.event_id
+      description: Security event id.
+      type: String
+    - contextPath: CheckPointHEC.AnomalyException.customer_domain
+      description: Customer domain.
+      type: String
+    - contextPath: CheckPointHEC.AnomalyException.comments
+      description: Anomaly exception comment.
+      type: String
+    - contextPath: CheckPointHEC.AnomalyException.enabled
+      description: Anomaly exception enabled.
+      type: Boolean
+    - contextPath: CheckPointHEC.AnomalyException.exception_rule
+      description: Anomaly exception rule.
+      type: String
+    - contextPath: CheckPointHEC.AnomalyException.expiration_date
+      description: Anomaly exception expiration date.
+      type: String
+  - name: checkpointhec-create-anomaly-exception
+    description: Create Anomaly exception.
+    arguments:
+    - name: request_json
+      description: Anomaly exception request json.
+      required: true
+      type: keyValue
+    - name: added_by
+      description: User id exception creator.
+      required: false
+  - name: checkpointhec-delete-anomaly-exceptions
+    description: Delete Anomaly exceptions.
+    arguments:
+    - name: rule_ids
+      description: Exceptions to delete.
+      isArray: true
+      required: true
+  - name: checkpointhec-get-ctp-lists
+    description: Get Click Time Protection lists.
+    outputs:
+    - contextPath: CheckPointHEC.CTPList.listid
+      description: List id.
+      type: String
+    - contextPath: CheckPointHEC.CTPList.listname
+      description: List name.
+      type: String
+    - contextPath: CheckPointHEC.CTPList.listitem
+      description: List item in the list.
+  - name: checkpointhec-get-ctp-list
+    description: Get Click Time Protection list.
+    arguments:
+    - name: list_id
+      description: List id to retrieve.
+      required: true
+    outputs:
+    - contextPath: CheckPointHEC.CTPList.listid
+      description: List id.
+      type: String
+    - contextPath: CheckPointHEC.CTPList.listname
+      description: List name.
+      type: String
+    - contextPath: CheckPointHEC.CTPList.listitem
+      description: List of items in the list.
+      type: String
+  - name: checkpointhec-get-ctp-list-items
+    description: Get Click Time Protection list items.
+    outputs:
+    - contextPath: CheckPointHEC.CTPListItem.created_at
+      description: List item creation time.
+      type: String
+    - contextPath: CheckPointHEC.CTPListItem.created_by
+      description: List item creator.
+      type: String
+    - contextPath: CheckPointHEC.CTPListItem.listid
+      description: List id.
+      type: String
+    - contextPath: CheckPointHEC.CTPListItem.listitemid
+      description: List item id.
+      type: String
+    - contextPath: CheckPointHEC.CTPListItem.listitemname
+      description: List item name.
+      type: String
+    - contextPath: CheckPointHEC.CTPListItem.listname
+      description: List name.
+      type: String
+  - name: checkpointhec-get-ctp-list-item
+    description: Get Click Time Protection list item.
+    arguments:
+    - name: item_id
+      description: Item id to retrieve.
+      required: true
+    outputs:
+    - contextPath: CheckPointHEC.CTPListItem.created_at
+      description: List item creation time.
+      type: String
+    - contextPath: CheckPointHEC.CTPListItem.created_by
+      description: List item creator.
+      type: String
+    - contextPath: CheckPointHEC.CTPListItem.listid
+      description: List id.
+      type: String
+    - contextPath: CheckPointHEC.CTPListItem.listitemid
+      description: List item id.
+      type: String
+    - contextPath: CheckPointHEC.CTPListItem.listitemname
+      description: List item name.
+      type: String
+    - contextPath: CheckPointHEC.CTPListItem.listname
+      description: List name.
+      type: String
+  - name: checkpointhec-create-ctp-list-item
+    description: Create Click Time Protection list item.
+    arguments:
+    - name: list_id
+      description: List id.
+      required: true
+    - name: list_item_name
+      description: List item name.
+      required: true
+    - name: created_by
+      description: List item creator.
+      required: true
+  - name: checkpointhec-update-ctp-list-item
+    description: Update Click Time Protection list item.
+    arguments:
+    - name: item_id
+      description: Item id to update.
+      required: true
+    - name: list_id
+      description: List id.
+      required: true
+    - name: list_item_name
+      description: List item name.
+      required: true
+    - name: created_by
+      description: List item creator.
+      required: true
+  - name: checkpointhec-delete-ctp-list-item
+    description: Delete Click Time Protection list item.
+    arguments:
+    - name: item_id
+      description: Item id to delete.
+      required: true
+  - name: checkpointhec-delete-ctp-list-items
+    description: Delete Click Time Protection list items.
+    arguments:
+    - name: list_item_ids
+      description: List of item ids to delete.
+      isArray: true
+      required: true
+  - name: checkpointhec-delete-ctp-lists
+    description: Delete Click Time Protection lists.
+  - name: checkpointhec-get-avurl-exception
+    description: Get Avanan URL exception.
+    arguments:
+    - name: exc_type
+      description: List name of exceptions to retrieve.
+      auto: PREDEFINED
+      predefined:
+      - allow-url
+      - allow-domain
+      - block-url
+      - block-domain
+      required: true
+    - name: exc_str
+      description: Exception id to retrieve.
+      required: true
+    outputs:
+    - contextPath: CheckPointHEC.AvananURLException.insert_time
+      description: Exception insert time.
+      type: String
+    - contextPath: CheckPointHEC.AvananURLException.farm_customer_exception_type
+      description: Farm, customer and exception type info.
+      type: String
+    - contextPath: CheckPointHEC.AvananURLException.exception_str
+      description: Exception string, for id purposes.
+      type: String
+    - contextPath: CheckPointHEC.AvananURLException.created_by_email
+      description: Exception email creator.
+      type: String
+    - contextPath: CheckPointHEC.AvananURLException.comment
+      description: Exception comment.
+      type: String
+    - contextPath: CheckPointHEC.AvananURLException.exception_payload
+      description: Exception payload information.
+      type: String
+  - name: checkpointhec-create-avurl-exception
+    description: Create Avanan URL exception.
+    arguments:
+    - name: exc_type
+      description: Exception type.
+      auto: PREDEFINED
+      predefined:
+      - allow-url
+      - allow-domain
+      - block-url
+      - block-domain
+      required: true
+    - name: exc_str
+      description: Exception string.
+      required: true
+    - name: entity_type
+      description: Entity type.
+      required: false
+    - name: entity_id
+      description: Entity id.
+      required: false
+    - name: comment
+      description: Exception comment.
+      required: false
+    - name: exc_payload_condition
+      description: Exception payload condition.
+      auto: PREDEFINED
+      predefined:
+      - with_or_without_link
+      - with_link
+      - without_link
+      required: false
+    - name: file_name
+      description: File name.
+      required: false
+    - name: created_by_email
+      description: Exception creator email.
+      required: false
+    - name: is_exclusive
+      description: Exclusive exception.
+      auto: PREDEFINED
+      predefined:
+      - yes
+      - no
+      required: false
+  - name: checkpointhec-update-avurl-exception
+    description: Update Avanan URL exception.
+    arguments:
+    - name: exc_type
+      description: Exception type.
+      auto: PREDEFINED
+      predefined:
+      - allow-url
+      - allow-domain
+      - block-url
+      - block-domain
+      required: true
+    - name: exc_str
+      description: Exception string.
+      required: true
+    - name: comment
+      description: Exception comment.
+      required: false
+    - name: exc_payload_condition
+      description: Exception payload condition.
+      auto: PREDEFINED
+      predefined:
+      - with_or_without_link
+      - with_link
+      - without_link
+      required: false
+  - name: checkpointhec-delete-avurl-exception
+    description: Delete Avanan URL exception.
+    arguments:
+    - name: exc_type
+      description: Exception type.
+      auto: PREDEFINED
+      predefined:
+      - allow-url
+      - allow-domain
+      - block-url
+      - block-domain
+      required: true
+    - name: exc_str
+      description: Exception string.
+      required: true
+    - name: entity_type
+      description: Entity type.
+      required: false
+    - name: entity_id
+      description: Entity id.
+      required: false
+  - name: checkpointhec-get-avurl-exceptions
+    description: Get Avanan URL exceptions.
+    arguments:
+    - name: exc_type
+      description: List name of exceptions to retrieve.
+      auto: PREDEFINED
+      predefined:
+      - allow-url
+      - allow-domain
+      - block-url
+      - block-domain
+      required: true
+    - name: filter_str
+      description: Search string.
+      required: false
+    - name: filter_index
+      description: Search index.
+      auto: PREDEFINED
+      predefined:
+      - insert_time
+      - entity_type_id
+      - exception_str
+      - file_name
+      - created_by_email
+      - comment
+      required: false
+    - name: sort_dir
+      description: Sort direction.
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      required: false
+    - name: last_evaluated_key
+      description: Last evaluated key.
+      required: false
+    - name: insert_time_gte
+      description: Insert time field condition.
+      auto: PREDEFINED
+      predefined:
+      - yes
+      - no
+      required: false
+    - name: limit
+      description: Number of exceptions to retrieve.
+      required: false
+    outputs:
+    - contextPath: CheckPointHEC.AvananURLException.insert_time
+      description: Exception insert time.
+      type: String
+    - contextPath: CheckPointHEC.AvananURLException.farm_customer_exception_type
+      description: Farm, customer and exception type info.
+      type: String
+    - contextPath: CheckPointHEC.AvananURLException.exception_str
+      description: Exception string, for id purposes.
+      type: String
+    - contextPath: CheckPointHEC.AvananURLException.created_by_email
+      description: Exception email creator.
+      type: String
+    - contextPath: CheckPointHEC.AvananURLException.comment
+      description: Exception comment.
+      type: String
+    - contextPath: CheckPointHEC.AvananURLException.exception_payload
+      description: Exception payload information.
+      type: String
+  - name: checkpointhec-delete-avurl-exceptions
+    description: Delete Avanan URL exceptions.
+    arguments:
+    - name: exc_type
+      description: Exception type.
+      auto: PREDEFINED
+      predefined:
+      - allow-url
+      - allow-domain
+      - block-url
+      - block-domain
+      required: true
+    - name: exc_str_list
+      description: List of exception strings to delete.
+      isArray: true
+      required: true
+    - name: entity_type
+      description: Entity type.
+      required: false
+    - name: entity_id
+      description: Entity id.
+      required: false
+  - name: checkpointhec-get-avdlp-exception
+    description: Get Avanan DLP exception.
+    arguments:
+    - name: exc_type
+      description: List name of exceptions to retrieve.
+      auto: PREDEFINED
+      predefined:
+      - hash
+      - text_content
+      - sender_email
+      - recipient_email
+      required: true
+    - name: exc_str
+      description: Exception id to retrieve.
+      required: true
+    outputs:
+    - contextPath: CheckPointHEC.AvananDLPException.insert_time
+      description: Exception insert time.
+      type: String
+    - contextPath: CheckPointHEC.AvananDLPException.farm_customer_exception_type
+      description: Farm, customer and exception type info.
+      type: String
+    - contextPath: CheckPointHEC.AvananDLPException.exception_str
+      description: Exception string, for id purposes.
+      type: String
+    - contextPath: CheckPointHEC.AvananDLPException.created_by_email
+      description: Exception email creator.
+      type: String
+    - contextPath: CheckPointHEC.AvananDLPException.comment
+      description: Exception comment.
+      type: String
+    - contextPath: CheckPointHEC.AvananDLPException.exception_payload
+      description: Exception payload information.
+      type: String
+  - name: checkpointhec-create-avdlp-exception
+    description: Create Avanan DLP exception.
+    arguments:
+    - name: exc_type
+      description: Exception type.
+      auto: PREDEFINED
+      predefined:
+      - hash
+      - text_content
+      - sender_email
+      - recipient_email
+      required: true
+    - name: exc_str
+      description: Exception string.
+      required: true
+    - name: entity_type
+      description: Entity type.
+      required: false
+    - name: entity_id
+      description: Entity id.
+      required: false
+    - name: comment
+      description: Exception comment.
+      required: false
+    - name: exc_payload_condition
+      description: Exception payload condition.
+      auto: PREDEFINED
+      predefined:
+      - with_or_without_link
+      - with_link
+      - without_link
+      required: false
+    - name: file_name
+      description: File name.
+      required: false
+    - name: created_by_email
+      description: Exception creator email.
+      required: false
+    - name: is_exclusive
+      description: Exclusive exception.
+      auto: PREDEFINED
+      predefined:
+      - yes
+      - no
+      required: false
+  - name: checkpointhec-update-avdlp-exception
+    description: Update Avanan URL exception.
+    arguments:
+    - name: exc_type
+      description: Exception type.
+      auto: PREDEFINED
+      predefined:
+      - hash
+      - text_content
+      - sender_email
+      - recipient_email
+      required: true
+    - name: exc_str
+      description: Exception string.
+      required: true
+    - name: comment
+      description: Exception comment.
+      required: false
+    - name: exc_payload_condition
+      description: Exception payload condition.
+      auto: PREDEFINED
+      predefined:
+      - with_or_without_link
+      - with_link
+      - without_link
+      required: false
+  - name: checkpointhec-delete-avdlp-exception
+    description: Delete Avanan URL exception.
+    arguments:
+    - name: exc_type
+      description: Exception type.
+      auto: PREDEFINED
+      predefined:
+      - hash
+      - text_content
+      - sender_email
+      - recipient_email
+      required: true
+    - name: exc_str
+      description: Exception string.
+      required: true
+    - name: entity_type
+      description: Entity type.
+      required: false
+    - name: entity_id
+      description: Entity id.
+      required: false
+  - name: checkpointhec-get-avdlp-exceptions
+    description: Get Avanan DLP exceptions.
+    arguments:
+    - name: exc_type
+      description: List name of exceptions to retrieve.
+      auto: PREDEFINED
+      predefined:
+      - hash
+      - text_content
+      - sender_email
+      - recipient_email
+      required: true
+    - name: filter_str
+      description: Search string.
+      required: false
+    - name: filter_index
+      description: Search index.
+      auto: PREDEFINED
+      predefined:
+      - insert_time
+      - entity_type_id
+      - exception_str
+      - file_name
+      - created_by_email
+      - comment
+      required: false
+    - name: sort_dir
+      description: Sort direction.
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      required: false
+    - name: last_evaluated_key
+      description: Last evaluated key.
+      required: false
+    - name: insert_time_gte
+      description: Insert time field condition.
+      auto: PREDEFINED
+      predefined:
+      - yes
+      - no
+      required: false
+    - name: limit
+      description: Number of exceptions to retrieve.
+      required: false
+    outputs:
+    - contextPath: CheckPointHEC.AvananDLPException.insert_time
+      description: Exception insert time.
+      type: String
+    - contextPath: CheckPointHEC.AvananDLPException.farm_customer_exception_type
+      description: Farm, customer and exception type info.
+      type: String
+    - contextPath: CheckPointHEC.AvananDLPException.exception_str
+      description: Exception string, for id purposes.
+      type: String
+    - contextPath: CheckPointHEC.AvananDLPException.created_by_email
+      description: Exception email creator.
+      type: String
+    - contextPath: CheckPointHEC.AvananDLPException.comment
+      description: Exception comment.
+      type: String
+    - contextPath: CheckPointHEC.AvananDLPException.exception_payload
+      description: Exception payload information.
+      type: String
+  - name: checkpointhec-delete-avdlp-exceptions
+    description: Delete Avanan DLP exceptions.
+    arguments:
+    - name: exc_type
+      description: Exception type.
+      auto: PREDEFINED
+      predefined:
+      - hash
+      - text_content
+      - sender_email
+      - recipient_email
+      required: true
+    - name: exc_str_list
+      description: List of exception strings to delete.
+      isArray: true
+      required: true
+    - name: entity_type
+      description: Entity type.
+      required: false
+    - name: entity_id
+      description: Entity id.
+      required: false
   isfetch: true
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.14.95137
+  dockerimage: demisto/python3:3.11.10.113941
 fromversion: 6.9.0
 tests:
 - No tests (auto formatted)

@@ -13,7 +13,7 @@
     "id": "incident_cyberintclosurereason",
     "isReadOnly": false,
     "locked": false,
-    "name": "CyberInt Closure reason",
+    "name": "Cyberint Closure reason",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

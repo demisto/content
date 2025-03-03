@@ -1,9 +1,10 @@
 import json
+
 import demistomock as demisto
 from pytest_mock import MockerFixture
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-from VaronisSaaS import *
+from VaronisSaaS import Client
 
 
 def util_load_json(file):
@@ -16,7 +17,92 @@ def util_load_json(file):
 ''' COMMAND UNIT TESTS '''
 
 
-def test_varonis_get_alerts_command(mocker: MockerFixture, requests_mock: MockerFixture):
+def test_check_module_command_success(mocker: MockerFixture):
+    from VaronisSaaS import check_module_command
+
+    client = Client(
+        base_url='https://test.com',
+        verify=False,
+        proxy=False
+    )
+
+    mocker.patch.object(client, 'varonis_get_enum', return_value=None)
+
+    result = check_module_command(client)
+    assert result.readable_output == 'ok'
+
+
+def test_update_remote_system_command(mocker: MockerFixture):
+    from VaronisSaaS import update_remote_system_command, CLOSE_REASONS, ALERT_STATUSES
+    from unittest.mock import ANY
+
+    varonis_update_alert_mock = mocker.patch('VaronisSaaS.varonis_update_alert', return_value=None)
+
+    # Test case 1: Incident not changed, no remote incident ID
+    args = {
+        'incidentChanged': False,
+        'remoteId': None
+    }
+    assert update_remote_system_command(None, args) is None
+
+    # Test case 2: Incident not changed, with remote incident ID
+    args = {
+        'incidentChanged': False,
+        'remoteId': '12345'
+    }
+    assert update_remote_system_command(None, args) == '12345'
+
+    # Test case 3: Incident changed, delta keys present
+    args = {
+        'incidentChanged': True,
+        'remoteId': '12345',
+        'data': {'Status': 'closed'},
+        'delta': ['Status']
+    }
+    assert update_remote_system_command(None, args) == '12345'
+    varonis_update_alert_mock\
+        .assert_called_with(ANY,
+                            CLOSE_REASONS['other'],
+                            ALERT_STATUSES['closed'],
+                            ['12345'],
+                            'Closed from XSOAR')
+
+    # Test case 4: Incident changed, status not closed
+    args = {
+        'incidentChanged': True,
+        'remoteId': '12345',
+        'delta': ['Status'],
+        'data': {'Status': 'under investigation'}
+    }
+    assert update_remote_system_command(None, args) == '12345'
+    varonis_update_alert_mock\
+        .assert_called_with(ANY,
+                            CLOSE_REASONS['none'],
+                            ALERT_STATUSES['under investigation'],
+                            ['12345'],
+                            'Status changed from XSOAR')
+
+
+def test_get_mapping_fields_command():
+    from VaronisSaaS import get_mapping_fields_command, strEqual, INCIDENT_FIELDS
+
+    response = get_mapping_fields_command()
+
+    # Assert that the response is an instance of GetMappingFieldsResponse
+    assert isinstance(response, GetMappingFieldsResponse)
+
+    # Assert that the incident type scheme is added to the response
+    assert len(response.scheme_types_mappings) == 1
+    assert strEqual(response.scheme_types_mappings[0].type_name, 'Varonis SaaS Incident')
+
+    # Assert that all the fields are added to the incident type scheme
+    expected_fields = INCIDENT_FIELDS
+    assert len(response.scheme_types_mappings[0].fields) == len(expected_fields)
+    for field in expected_fields:
+        assert field in response.scheme_types_mappings[0].fields
+
+
+def test_varonis_get_alerts_command(requests_mock: MockerFixture):
     """
         When:
             - Get alerts from Varonis api
@@ -80,7 +166,7 @@ def test_varonis_close_alert_command(requests_mock):
     )
 
     args = {
-        'close_reason': 'Inaccurate alert logic',
+        'close_reason': 'other',
         'alert_id': "C8CF4194-133F-4F5A-ACB1-FFFB00573468, F8F608A7-0256-42E0-A527-FFF4749C1A8B"
     }
 
@@ -89,7 +175,7 @@ def test_varonis_close_alert_command(requests_mock):
     assert resp is True
 
 
-def test_varonis_get_alerted_events_command(mocker: MockerFixture, requests_mock: MockerFixture):
+def test_varonis_get_alerted_events_command(requests_mock: MockerFixture):
     """
         When:
             - Get alerted events from Varonis api
@@ -122,7 +208,7 @@ def test_varonis_get_alerted_events_command(mocker: MockerFixture, requests_mock
 
 
 def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
-    from VaronisSaaS import fetch_incidents_command
+    from VaronisSaaS import fetch_incidents_command, AlertAttributes
 
     create_search_result = util_load_json('test_data/fetch_incidents_create_search_response.json')
     alerts = util_load_json('test_data/fetch_incidents_execute_search_response.json')
@@ -197,7 +283,7 @@ def test_enrich_with_url():
     obj = {}
     baseUrl = 'http://test.com'
     id = '1'
-    expectedUrl = f'{baseUrl}/#/app/analytics/entity/Alert/{id}'
+    expectedUrl = f'{baseUrl}/analytics/entity/Alert/{id}'
 
     enrich_with_url(obj, baseUrl, id)
     assert obj['Url'] == expectedUrl

@@ -2,7 +2,7 @@
     "name": "Exterro/AccessData",
     "description": "Use the Exterro package to integrate with the Exterro FTK Suite, enabling the playbook automation of incident response workflows upon detection of a possible threat.",
     "support": "partner",
-    "currentVersion": "1.0.10",
+    "currentVersion": "1.0.13",
     "author": "Exterro",
     "url": "https://exterro.freshdesk.com/support/home",
     "email": "support@exterro.com",

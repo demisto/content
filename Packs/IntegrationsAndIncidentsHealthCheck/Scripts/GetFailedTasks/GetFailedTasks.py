@@ -20,8 +20,10 @@ def get_rest_api_instance_to_use():
             rest_api_instance_to_use = instance_name
             number_of_rest_api_instances += 1
         if number_of_rest_api_instances > 1:
-            return_error("GetFailedTasks: This script can only run with a single instance of the Core REST API. "
-                         "Specify the instance name in the 'rest_api_instance' argument.")
+            raise DemistoException(
+                "This script can only run with a single instance of the Core REST API. "
+                "Specify the instance name in the 'rest_api_instance' argument."
+            )
     return rest_api_instance_to_use
 
 
@@ -40,7 +42,7 @@ def get_tenant_name():
     return tenant_name
 
 
-def get_failed_tasks_output(tasks: list, incident: dict):
+def get_failed_tasks_output(tasks: list, incident: dict, custom_scripts_map_id_and_name: dict[str, str] = {}):
     """
         Converts the failing task objects of an incident to context outputs.
 
@@ -59,6 +61,31 @@ def get_failed_tasks_output(tasks: list, incident: dict):
 
     for task in tasks:
         error_entries = task.get("entries", [])
+        command = task.get("task", {}).get("scriptId", '')
+
+        command_id = None
+        brand_name = None
+
+        if "|||" in command:
+            parts = command.split("|||")
+            command_id = parts[-1]
+            brand_name = parts[0] or None
+        else:
+            command_id = command
+
+        if task.get("continueOnError", False):
+            if task.get("continueOnErrorType", "Continue") == "errorPath":
+                error_handling = "Error Path"
+                next_task = task.get("nextTasks", {}).get("#error#", [])
+            else:
+                error_handling = "Continue"
+                next_task = task.get("nextTasks", {}).get("#none#", [])
+
+            if not next_task:
+                error_handling = error_handling + " (No Next Task)"
+        else:
+            error_handling = "Stop Playbook"
+
         entry = {
             "Incident ID": incident.get("id"),
             "Playbook Name": task.get("ancestors", [''])[0],
@@ -67,8 +94,10 @@ def get_failed_tasks_output(tasks: list, incident: dict):
             "Number of Errors": len(error_entries),
             "Task ID": task.get("id"),
             "Incident Created Date": incident.get("created", ''),
-            "Command Name": task.get("task", {}).get("scriptId", '').replace('|||', ''),
-            "Incident Owner": incident["owner"]
+            "Command Name": custom_scripts_map_id_and_name.get(command_id, command_id),
+            "Brand Name": brand_name,
+            "Incident Owner": incident["owner"],
+            "Error Handling": error_handling
         }
         if task.get("task", {}).get("description"):
             entry["Command Description"] = task.get("task", {}).get("description")
@@ -98,19 +127,24 @@ def get_incident_tasks_using_rest_api_instance(incident: dict, rest_api_instance
             "uri": uri,
             "body": {
                 "states": ["Error"],
-                "types": ["regular", "condition", "collection"],
+                "types": ["regular", "condition", "collection", "playbook"],
             },
             "using": rest_api_instance,
         }
     )
 
     if is_error(response):
-        error = f'Failed retrieving tasks for incident ID {incident["id"]}.\n \
-           Make sure that the API key configured in the Core REST API integration \
-is one with sufficient permissions to access that incident.\n' + get_error(response)
-        raise Exception(error)
+        error = (
+            f"Failed retrieving tasks for incident ID {incident['id']}.\n"
+            "Make sure that the API key configured in the Core REST API integration "
+            f"is one with sufficient permissions to access that incident.\n{get_error(response)}"
+        )
+        raise DemistoException(error)
 
-    return response[0]["Contents"]["response"]
+    raw_response = response[0]["Contents"]["response"]
+    filtered_response = filter_playbooks_failures(raw_response)
+
+    return filtered_response
 
 
 def get_incident_tasks_using_internal_request(incident: dict):
@@ -128,12 +162,14 @@ def get_incident_tasks_using_internal_request(incident: dict):
         uri=f'investigation/{str(incident["id"])}/workplan/tasks',
         body={
             "states": ["Error"],
-            "types": ["regular", "condition", "collection"],
+            "types": ["regular", "condition", "collection", "playbook"],
         }
     )
 
     if response and response.get('statusCode') == 200:
-        tasks = json.loads(response.get('body', '{}'))
+        raw_response = json.loads(response.get('body', '{}'))
+        tasks = filter_playbooks_failures(raw_response)
+
     else:
         demisto.error(f'Failed running POST query to /investigation/{str(incident["id"])}/workplan/tasks.\n{str(response)}')
         tasks = []
@@ -141,7 +177,68 @@ def get_incident_tasks_using_internal_request(incident: dict):
     return tasks
 
 
-def get_incident_data(incident: dict, rest_api_instance: str = None):
+def get_custom_scripts_map_id_and_name(rest_api_instance: str | None = None) -> dict[str, str]:
+    uri = "automation/search"
+    body = {"query": "system:F"}
+
+    scripts = []
+    if rest_api_instance:
+        demisto.debug(f"Retrieving custom scripts map using REST API instance: {rest_api_instance}")
+        response = demisto.executeCommand(
+            "core-api-post",
+            {
+                "uri": uri,
+                "body": body,
+                "using": rest_api_instance,
+            }
+        )
+
+        if is_error(response):
+            demisto.error(f"Failed retrieving custom scripts map.\n{get_error(response)}")
+        else:
+            scripts = response[0]["Contents"]["response"].get("scripts", [])
+
+    else:
+        demisto.debug("Retrieving custom scripts map using internal HTTP request")
+        response = demisto.internalHttpRequest(
+            method="POST",
+            uri=uri,
+            body=body
+        )
+
+        if response and response.get('statusCode') == 200:
+            scripts = json.loads(response.get('body', '{}')).get("scripts", [])
+        else:
+            demisto.error(f'Failed running POST query to {uri}.\n{str(response)}')
+
+    custom_scripts_map_id_and_name = {
+        script["id"]: script["name"]
+        for script in scripts
+    }
+    demisto.debug(f"Retrieve the following map: {custom_scripts_map_id_and_name}")
+    return custom_scripts_map_id_and_name
+
+
+def get_rest_api_instance(rest_api_instance: str | None) -> str | None:
+    # Define with which rest api instance to use or use internal http request
+    if rest_api_instance:
+        demisto.debug(f"Using REST API instance: {rest_api_instance}, that provided as an argument.")
+    else:
+        try:
+            get_incident_tasks_using_internal_request({"id": 0})
+            demisto.debug("Using internal HTTP request to retrieve incident tasks.")
+        except ValueError:
+            # using rest api call if using_internal_request fails on the following error:
+            # ValueError: dial tcp connect: connection refused
+            rest_api_instance = get_rest_api_instance_to_use()
+            demisto.debug(f"Using REST API instance: {rest_api_instance} to retrieve incident tasks.")
+            if not rest_api_instance:
+                raise DemistoException('Could not find which Rest API instance to use, '
+                                       'Please specify the rest_api_instance argument.')
+    return rest_api_instance
+
+
+def get_incident_data(incident: dict, custom_scripts_map_id_and_name: dict[str, str], rest_api_instance: str | None = None):
     """
         Returns the failing task objects of an incident.
         The request is done using a Core REST API instance if given,
@@ -157,22 +254,41 @@ def get_incident_data(incident: dict, rest_api_instance: str = None):
     if rest_api_instance:
         tasks = get_incident_tasks_using_rest_api_instance(incident, rest_api_instance)
     else:
-        try:
-            tasks = get_incident_tasks_using_internal_request(incident)
-        except ValueError:
-            # using rest api call if using_internal_request fails on the following error:
-            # ValueError: dial tcp connect: connection refused
-            rest_api_instance = get_rest_api_instance_to_use()
-            if not rest_api_instance:
-                raise DemistoException('Could not find which Rest API instance to use, '
-                                       'Please specify the rest_api_instance argument.')
-            tasks = get_incident_tasks_using_rest_api_instance(incident, rest_api_instance)
+        tasks = get_incident_tasks_using_internal_request(incident)
 
-    task_outputs, tasks_error_entries_number = get_failed_tasks_output(tasks, incident)
+    task_outputs, tasks_error_entries_number = get_failed_tasks_output(tasks, incident, custom_scripts_map_id_and_name)
     if task_outputs:
         return task_outputs, tasks_error_entries_number
     else:
         return [], 0
+
+
+def filter_playbooks_failures(response: list | None) -> list | None:
+    """
+    Filters out tasks of type "playbook" from the response if their name appears
+    in the ancestors of any other task in the list. This ensures that only errors
+    where the playbook itself failed to start are captured, avoiding duplication
+    when errors occur within internal tasks of the playbook.
+
+    Args:
+        response (list | None): List of failure tasks.
+
+    Returns:
+        The filtered list of tasks. Tasks of type "playbook" whose names appear in the ancestors of other tasks are removed.
+    """
+
+    if type(response) is not list:
+        return response
+
+    ancestors = set()
+    for task in response:
+        ancestors.update(task.get("ancestors", []))
+
+    filtered_response = [
+        task for task in response
+        if not (task.get("type") == "playbook" and task.get("task", {}).get("name") in ancestors)
+    ]
+    return filtered_response
 
 
 def main():
@@ -181,49 +297,60 @@ def main():
     max_incidents = arg_to_number(args.get("max_incidents")) or 300
     max_incidents = min(max_incidents, 1000)
     rest_api_instance = args.get("rest_api_instance")
+    get_scripts_name = argToBoolean(args.get("get_scripts_name", False))
 
     number_of_failed_incidents = 0
     number_of_error_entries = 0
     incidents_output = []  # type: Any
     total_failed_incidents = []
 
-    start_time = time.time()
+    try:
+        start_time = time.time()
 
-    get_incidents_result = demisto.executeCommand("getIncidents", {"query": query,
-                                                                   "size": max_incidents,
-                                                                   })
-    incidents_data = get_incidents_result[0]["Contents"]["data"]
-    total_incidents = incidents_data if incidents_data else []
+        get_incidents_result = demisto.executeCommand("getIncidents", {"query": query,
+                                                                       "size": max_incidents,
+                                                                       })
+        incidents_data = get_incidents_result[0]["Contents"]["data"]
+        total_incidents = incidents_data if incidents_data else []
 
-    demisto.debug(f'got {len(total_incidents)} incidents using {max_incidents} limit. '
-                  f'Elapsed time: {time.time() - start_time}')
+        demisto.debug(f'got {len(total_incidents)} incidents using {max_incidents} limit. '
+                      f'Elapsed time: {time.time() - start_time}')
 
-    for incident in total_incidents:
-        task_outputs, incident_error_entries_num = get_incident_data(incident, rest_api_instance)
+        rest_api_instance = get_rest_api_instance(rest_api_instance)
 
-        if task_outputs:
-            incidents_output.extend(task_outputs)
-            number_of_failed_incidents += 1
-            number_of_error_entries += incident_error_entries_num
+        custom_scripts_map_id_and_name = {}
+        if get_scripts_name:
+            custom_scripts_map_id_and_name = get_custom_scripts_map_id_and_name(rest_api_instance)
 
-    total_failed_incidents.append({
-        'total of failed incidents': number_of_failed_incidents,
-        'Number of total errors': number_of_error_entries,
-    })
-    if not incidents_output:
-        incidents_output = {}
+        for incident in total_incidents:
+            task_outputs, incident_error_entries_num = get_incident_data(
+                incident, custom_scripts_map_id_and_name, rest_api_instance)
 
-    return_results(CommandResults(
-        raw_response=incidents_output,
-        readable_output=tableToMarkdown("GetFailedTasks:", incidents_output,
-                                        ["Incident Created Date", "Incident ID", "Task Name", "Task ID",
-                                         "Playbook Name",
-                                         "Command Name", "Error Entry ID"]),
-        outputs={
-            "GetFailedTasks": incidents_output,
-            "NumberofFailedIncidents": total_failed_incidents,
-        }
-    ))
+            if task_outputs:
+                incidents_output.extend(task_outputs)
+                number_of_failed_incidents += 1
+                number_of_error_entries += incident_error_entries_num
+
+        total_failed_incidents.append({
+            'total of failed incidents': number_of_failed_incidents,
+            'Number of total errors': number_of_error_entries,
+        })
+        if not incidents_output:
+            incidents_output = {}
+
+        return_results(CommandResults(
+            raw_response=incidents_output,
+            readable_output=tableToMarkdown("GetFailedTasks:", incidents_output,
+                                            ["Incident Created Date", "Incident ID", "Task Name", "Task ID",
+                                             "Playbook Name",
+                                             "Command Name", "Brand Name", "Error Entry ID", "Error Handling"]),
+            outputs={
+                "GetFailedTasks": incidents_output,
+                "NumberofFailedIncidents": total_failed_incidents,
+            }
+        ))
+    except DemistoException as e:
+        return_error(f"[GetFailedTasks] Error occurred while running the script, exception info:\n{str(e)}")
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:

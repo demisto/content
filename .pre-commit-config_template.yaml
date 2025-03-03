@@ -1,4 +1,4 @@
-exclude: .devcontainer/|.vscode|Pipfile.lock|.gitlab/ci/|.circleci/|docs
+exclude: .devcontainer/|.vscode|Pipfile.lock|.gitlab/ci/|docs
 files: ''
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -15,6 +15,10 @@ repos:
   - id: name-tests-test
     min_py_version: '3.7'
     files: .+_test.py$
+  - id: check-added-large-files
+    args: ['--maxkb=5120', --enforce-all]
+    skip:nightly: true
+  - id: check-case-conflict
 - repo: https://github.com/python-poetry/poetry
   rev: 1.8.2
   hooks:
@@ -23,14 +27,14 @@ repos:
     - --lock
     files: ^pyproject.toml$
 - repo: https://github.com/hadialqattan/pycln
-  rev: v2.1.2
+  rev: v2.5.0
   hooks:
   - id: pycln
     min_py_version: '3.7'
     args:
     - --all
 - repo: https://github.com/charliermarsh/ruff-pre-commit
-  rev: v0.0.272
+  rev: v0.8.0
   hooks:
   - id: ruff
     parallel: false
@@ -41,15 +45,17 @@ repos:
     - --config=nightly_ruff.toml
     args:ci:
     - --config=nightly_ruff.toml
-    skip:docker_autoupdate: true
-- repo: https://github.com/pre-commit/mirrors-autopep8
-  rev: v2.0.4
+    args:docker_autoupdate:
+    - --config=nightly_ruff.toml
+- repo: https://github.com/hhatto/autopep8
+  rev: v2.3.1
   hooks:
   - id: autopep8
     exclude_support_level:ci:
     - community
     exclude_support_level:nightly:
     - community
+    skip:nightly: true
 - repo: https://github.com/pre-commit/mirrors-mypy
   rev: v0.982
   hooks:
@@ -61,7 +67,7 @@ repos:
     - --show-error-codes
     - --follow-imports=silent
     - --allow-redefinition
-    exclude: test_data|tests_data|.venv|.*_test.py$|infrastructure_tests|.vulture_whitelist.py|demistomock.py|Templates|conftest.py
+    exclude: test_data|tests_data|.venv|.*_test.py$|infrastructure_tests|.vulture_whitelist.py|demistomock.py|Templates|conftest.py|Utils/download_packs_and_docker_images.py
     language: system
     entry: mypy
 
@@ -82,9 +88,8 @@ repos:
   - id: pylint-in-docker
     name: pylint-in-docker
     description: Run pylint on the code in content packs
-    docker_image:nightly: native:ga,native:maintenance,from-yml,native:candidate
-    docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
-    docker_image:native: native:ga,from-yml,native:dev,native:maintenance
+    docker_image:nightly: from-yml
+    docker_image:ci: from-yml
     docker_image: from-yml
     entry: pylint
     files: Packs\/.*\.py$
@@ -102,13 +107,34 @@ repos:
     skip:commit: true
     pass_docker_extra_args:ci: --rm=false
     pass_docker_extra_args:nightly: --rm=false
-    
+
+  - id: mypy-in-docker
+    name: mypy-in-docker
+    copy_files:
+    - Packs/Base/Scripts/CommonServerPython/CommonServerPython.py 
+    - Tests/demistomock/demistomock.py
+    description: Run mypy on the code in content packs
+    docker_image:nightly: from-yml
+    docker_image:ci: from-yml
+    docker_image: from-yml
+    entry: mypy
+    files: Packs\/.*\.py$
+    exclude: test_data|tests_data|.venv|.*_test.py$|infrastructure_tests|.vulture_whitelist.py|demistomock.py|Templates|conftest.py|Utils/download_packs_and_docker_images.py
+    min_py_version: '3.7'
+    args:
+    - --check-untyped-defs
+    - --show-error-codes
+    - --allow-redefinition
+    - --cache-dir=/tmp/.mypy_cache
+    - --implicit-optional
+    pass_docker_extra_args:ci: --rm=false
+    pass_docker_extra_args:nightly: --rm=false
+
   - id: pytest-in-docker
     name: pytest-in-docker
     description: Run pytest on the code in content packs
-    docker_image:nightly: native:ga,native:maintenance,from-yml,native:candidate
-    docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
-    docker_image:native: native:ga,from-yml,native:dev,native:maintenance
+    docker_image:nightly: from-yml
+    docker_image:ci: from-yml
     docker_image: from-yml
     entry: python
     language: docker
@@ -128,7 +154,7 @@ repos:
     - -v
     - --override-ini='asyncio_mode=auto'
     - --rootdir=/src
-    - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
+    - --junitxml=/src/.pre-commit/pytest-junit/report_pytest.xml
     - --color=yes
     - --files
     args:docker_autoupdate:
@@ -137,7 +163,7 @@ repos:
     - -v
     - --override-ini='asyncio_mode=auto'
     - --rootdir=/src
-    - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
+    - --junitxml=/src/.pre-commit/pytest-junit/report_pytest.xml
     - --color=yes
     - --files
     copy_files:
@@ -150,9 +176,8 @@ repos:
   - id: pytest-network-in-docker
     name: pytest-network-in-docker
     description: Run pytest with network enabled on the code in content packs
-    docker_image:nightly: native:ga,native:maintenance,from-yml,native:candidate
-    docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
-    docker_image:native: native:ga,from-yml,native:dev,native:maintenance
+    docker_image:nightly: from-yml
+    docker_image:ci: from-yml
     docker_image: from-yml
     entry: coverage
     language: docker
@@ -168,20 +193,18 @@ repos:
     - -v
     - --override-ini='asyncio_mode=auto'
     - --rootdir=/src
-    - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
+    - --junitxml=/src/.pre-commit/pytest-junit/report_pytest.xml
     - --color=yes
     copy_files:
     - Tests/scripts/dev_envs/pytest/conftest.py
     skip:commit: true
     run_isolated: true
-    skip:docker_autoupdate: true
     pass_docker_extra_args:ci: --rm=false
     pass_docker_extra_args:nightly: --rm=false
 
   - id: validate-deleted-files
     name: validate-deleted-files
     entry: validate-deleted-files
-    skip:docker_autoupdate: true
     language: system
     require_serial: true
     pass_filenames: false
@@ -193,26 +216,18 @@ repos:
 
   - id: validate-content-paths
     name: validate-content-paths
-    skip:docker_autoupdate: true
     entry: validate-content-path
     language: system
     require_serial: true
     args:
     -  validate
-    -  --skip-depth-one-file
-    -  --skip-depth-one-folder
-    -  --skip-integration-script-file-name
-    -  --skip-markdown
-    -  --skip-suffix
-
-
+    
   - id: validate-conf-json
     name: validate-conf-json
     description: validate conf.json
     files: Tests/conf.json
     skip:commit: true
     skip:nightly: true
-    skip:docker_autoupdate: true
     entry: validate-conf-json
     pass_filenames: false
     language: system
@@ -267,6 +282,11 @@ repos:
     args:
     - --skip-pack-dependencies
     - --config-path=validation_config.toml
+    args:packwise:
+    - --skip-pack-dependencies
+    - --config-path=validation_config.toml
+    - --ignore=DO106
+    - --ignore=CJ105
     pass_filenames: false
     language: system
     require_serial: true
@@ -295,7 +315,6 @@ repos:
     - --ignore-entropy
     pass_filenames: false
     language: system
-    skip:ci: true
     skip:nightly: true
 
   - id: merge-pytest-reports

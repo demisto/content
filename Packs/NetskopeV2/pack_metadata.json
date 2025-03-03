@@ -2,13 +2,13 @@
     "name": "Netskope v2",
     "description": "Block URLs, domains and file hashes.",
     "support": "community",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "randomizerxd",
     "url": "",
     "email": "",
     "created": "2021-12-14T14:21:32Z",
     "categories": [
-        "Cloud Services"
+        "Network Security"
     ],
     "tags": [],
     "useCases": [],

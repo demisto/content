@@ -3,31 +3,32 @@ commonfields:
   id: Computer Vision Engine
   version: -1
 configuration: []
-description: |-
-  This integration is processing images or movies and detects objects on them by using Machine Learning.
+description: 'This integration is processing images or movies and detects objects on them by using Machine Learning.
+
   It is using OpenCV with:
-  YOLO COCO
+
+  YOLO COCO.'
 display: Computer Vision Engine
 name: Computer Vision Engine
 script:
   commands:
   - arguments:
-    - description: Image EntryID
+    - description: Image EntryID.
       name: entryid
       required: true
     - defaultValue: '0.5'
-      description: minimum probability to filter weak detections
+      description: minimum probability to filter weak detections.
       name: confidence
     - defaultValue: '0.3'
-      description: threshold when applying non-maxima suppression
+      description: threshold when applying non-maxima suppression.
       name: threshold
-    description: Detect objects on an picture using the yolo-coco ML
+    description: Detect objects on an picture using the yolo-coco ML.
     name: yolo-coco-process-image
     outputs:
     - contextPath: ComputerVision
-      description: The key holds down the information about detected objects in the picture
+      description: The key holds down the information about detected objects in the picture.
       type: Unknown
-  dockerimage: demisto/yolo-coco:1.0.0.15530
+  dockerimage: demisto/yolo-coco:1.0.0.115114
   runonce: false
   script: '-'
   subtype: python3

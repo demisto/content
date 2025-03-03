@@ -18,6 +18,7 @@ Load a PDF file's content and metadata into context. Supports extraction of hash
 | entryID | The War Room entryID of the file to read. |
 | userPassword | The password for the file, if encrypted. |
 | maxImages | The maximum number of images to extract from the PDF file. |
+| unescape_url | To unescape URLs that have been escaped as part of the URLs extraction. Invalid characters will be ignored. Default is true.|
 
 ## Outputs
 ---

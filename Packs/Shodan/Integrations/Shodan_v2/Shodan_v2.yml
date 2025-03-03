@@ -70,6 +70,15 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- display: The maximum number of events per fetch
+  name: max_fetch
+  defaultvalue: "50000"
+  advanced: true
+  type: 0
+  required: false
+  section: Collect
+  hidden:
+  - xsoar
 description: A search engine used for searching Internet-connected devices.
 display: Shodan v2
 name: Shodan_v2
@@ -200,16 +209,16 @@ script:
       description: A list of Vulnerabilities.
       type: Unknown
     - contextPath: DBotScore.Indicator
-      description: The indicator value.
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Score
-      description: The indicator score according to the vendor.
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor name.
+      description: The vendor used to calculate the score.
       type: String
   - arguments:
     - description: The query for searching the database of banners. The search query supports filtering using the "filter:value" format to narrow your search. For example, the query "apache country:DE" returns Apache web servers located in Germany.
@@ -348,11 +357,27 @@ script:
       required: true
     description: Resumes receiving notifications for network alerts that are set off by the specified triggers.
     name: shodan-network-alert-remove-service-from-whitelist
-  dockerimage: demisto/python3:3.10.13.80593
+  - name: shodan-get-events
+    description: Retrieves events from Shodan.
+    arguments:
+    - name: should_push_events
+      description: If set to 'True', the command will create events; otherwise, it will only display them.
+      defaultValue: 'False'
+      auto: PREDEFINED
+      isArray: false
+      predefined:
+      - 'True'
+      - 'False'
+    - name: max_fetch
+      description: The maximum amount of events to return.
+      defaultValue: 50000
+  dockerimage: demisto/python3:3.11.10.113941
   runonce: false
   script: '-'
   subtype: python3
   type: python
+  isfetchevents: true
+  isfetchevents:xsoar: false
 tests:
 - Test-Shodan_v2
 fromversion: 5.0.0

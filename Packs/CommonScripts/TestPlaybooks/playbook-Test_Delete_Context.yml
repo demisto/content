@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: cd44a265-75e2-4b3c-8ff5-10a93e7eef5a
+    taskid: a1ee09fd-205c-49c8-84b7-97d1cd9de6e9
     type: start
     task:
-      id: cd44a265-75e2-4b3c-8ff5-10a93e7eef5a
+      id: a1ee09fd-205c-49c8-84b7-97d1cd9de6e9
       version: -1
       name: ""
       iscommand: false
@@ -23,7 +23,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": -100
+          "y": 50
         }
       }
     note: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 1762e645-6ebf-4578-8ff4-0fff84685221
+    taskid: c68fa8d4-5964-4bd3-8395-1d59ea2c167b
     type: regular
     task:
-      id: 1762e645-6ebf-4578-8ff4-0fff84685221
+      id: c68fa8d4-5964-4bd3-8395-1d59ea2c167b
       version: -1
       name: Set A
       scriptName: Set
@@ -59,7 +59,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 400
+          "y": 545
         }
       }
     note: false
@@ -71,10 +71,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 6129234e-ea00-4488-8f05-36e617ac7cf4
+    taskid: 0b1e6b4e-7664-403e-8fbe-537aac8170bc
     type: regular
     task:
-      id: 6129234e-ea00-4488-8f05-36e617ac7cf4
+      id: 0b1e6b4e-7664-403e-8fbe-537aac8170bc
       version: -1
       name: Delete A
       scriptName: DeleteContext
@@ -93,7 +93,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 575
+          "y": 720
         }
       }
     note: false
@@ -105,10 +105,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 9154b5ab-b849-41d6-83bb-c1a1ec0f6cb9
+    taskid: a2bd7f08-4831-48a4-8162-ae9e77a9b11f
     type: condition
     task:
-      id: 9154b5ab-b849-41d6-83bb-c1a1ec0f6cb9
+      id: a2bd7f08-4831-48a4-8162-ae9e77a9b11f
       version: -1
       name: Ensure A doesn't exists
       type: condition
@@ -133,7 +133,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 750
+          "y": 895
         }
       }
     note: false
@@ -145,10 +145,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: b26a0386-3ea2-44d9-86cc-880651835678
+    taskid: 946eb31d-3f62-424c-82af-25743714f8f4
     type: regular
     task:
-      id: b26a0386-3ea2-44d9-86cc-880651835678
+      id: 946eb31d-3f62-424c-82af-25743714f8f4
       version: -1
       name: Fail
       script: RaiseError
@@ -168,7 +168,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 925
+          "y": 1070
         }
       }
     note: false
@@ -180,10 +180,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: b3698d3e-cf4d-4eeb-86b9-d6618fc76897
+    taskid: 004e6a23-0c5a-42d7-8209-321dce55e8db
     type: regular
     task:
-      id: b3698d3e-cf4d-4eeb-86b9-d6618fc76897
+      id: 004e6a23-0c5a-42d7-8209-321dce55e8db
       version: -1
       name: Set B
       scriptName: Set
@@ -204,7 +204,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 925
+          "y": 1070
         }
       }
     note: false
@@ -216,10 +216,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: c827c319-ea58-479c-8845-3a3937e26b45
+    taskid: 7e8947d6-d76b-49b5-8436-d0c89831b72e
     type: regular
     task:
-      id: c827c319-ea58-479c-8845-3a3937e26b45
+      id: 7e8947d6-d76b-49b5-8436-d0c89831b72e
       version: -1
       name: Set C
       scriptName: Set
@@ -240,7 +240,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1100
+          "y": 1245
         }
       }
     note: false
@@ -252,10 +252,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: c96e86fe-12c8-4056-8ea3-8b0f9ea1d114
+    taskid: 69bd90ae-baff-4259-8274-43b5c3faa1e1
     type: regular
     task:
-      id: c96e86fe-12c8-4056-8ea3-8b0f9ea1d114
+      id: 69bd90ae-baff-4259-8274-43b5c3faa1e1
       version: -1
       name: Delete All Context
       scriptName: DeleteContext
@@ -274,7 +274,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1275
+          "y": 1420
         }
       }
     note: false
@@ -286,10 +286,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 614ce630-d2e2-44e6-8233-3d9c2a7ae292
+    taskid: d73d80ee-3b21-412f-81cb-b6b420546025
     type: condition
     task:
-      id: 614ce630-d2e2-44e6-8233-3d9c2a7ae292
+      id: d73d80ee-3b21-412f-81cb-b6b420546025
       version: -1
       name: Ensure context is empty
       type: condition
@@ -314,7 +314,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1450
+          "y": 1595
         }
       }
     note: false
@@ -326,10 +326,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 15f7054b-5597-41d8-83f9-9760432d0588
+    taskid: 591a2d4b-1c0b-48f9-86ab-a3a19853a382
     type: regular
     task:
-      id: 15f7054b-5597-41d8-83f9-9760432d0588
+      id: 591a2d4b-1c0b-48f9-86ab-a3a19853a382
       version: -1
       name: Fail
       script: RaiseError
@@ -349,7 +349,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1625
+          "y": 1770
         }
       }
     note: false
@@ -361,10 +361,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 061e17a2-90f7-4ef2-8e06-8bf326977ef0
+    taskid: 6378af18-655e-405b-83b2-e78e891edbd1
     type: regular
     task:
-      id: 061e17a2-90f7-4ef2-8e06-8bf326977ef0
+      id: 6378af18-655e-405b-83b2-e78e891edbd1
       version: -1
       name: Set B
       scriptName: Set
@@ -385,7 +385,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 1625
+          "y": 1770
         }
       }
     note: false
@@ -397,10 +397,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 1aa4a424-e861-4a47-82de-8fa590f86718
+    taskid: 8c757065-c464-48a3-8746-26d476fed104
     type: regular
     task:
-      id: 1aa4a424-e861-4a47-82de-8fa590f86718
+      id: 8c757065-c464-48a3-8746-26d476fed104
       version: -1
       name: Set C
       scriptName: Set
@@ -421,7 +421,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 1800
+          "y": 1945
         }
       }
     note: false
@@ -433,10 +433,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 83be7291-2787-4114-88ab-d78cc8bb858a
+    taskid: 8b1f4b3f-f76a-4dfe-88ce-5bc61266d8c2
     type: regular
     task:
-      id: 83be7291-2787-4114-88ab-d78cc8bb858a
+      id: 8b1f4b3f-f76a-4dfe-88ce-5bc61266d8c2
       version: -1
       name: Delete All Context expect B
       scriptName: DeleteContext
@@ -457,7 +457,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 1975
+          "y": 2120
         }
       }
     note: false
@@ -469,10 +469,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 5b66a79e-edaa-48a7-8827-1e136073a417
+    taskid: ea1fb36a-3a3c-49e6-8b8c-e7de63a9a493
     type: condition
     task:
-      id: 5b66a79e-edaa-48a7-8827-1e136073a417
+      id: ea1fb36a-3a3c-49e6-8b8c-e7de63a9a493
       version: -1
       name: Ensure context is empty expect B
       type: condition
@@ -502,7 +502,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 2150
+          "y": 2295
         }
       }
     note: false
@@ -514,10 +514,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 9fcafc2b-d01b-4934-8c5f-4b08c9d77559
+    taskid: 213c9478-5676-4caa-82f6-bca57ae8a6c3
     type: regular
     task:
-      id: 9fcafc2b-d01b-4934-8c5f-4b08c9d77559
+      id: 213c9478-5676-4caa-82f6-bca57ae8a6c3
       version: -1
       name: Fail
       script: RaiseError
@@ -535,7 +535,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2325
+          "y": 2470
         }
       }
     note: false
@@ -547,10 +547,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 83bf7637-9711-4eb4-8563-dc63cad60b15
+    taskid: 7a945723-a110-46e1-8240-6c481c684098
     type: regular
     task:
-      id: 83bf7637-9711-4eb4-8563-dc63cad60b15
+      id: 7a945723-a110-46e1-8240-6c481c684098
       version: -1
       name: Set A 1
       scriptName: Set
@@ -571,7 +571,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 2325
+          "y": 2470
         }
       }
     note: false
@@ -583,10 +583,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: a152c7cf-6600-486d-890e-d6dbd66dc2ce
+    taskid: b54331d3-9dce-4abe-86c7-3612f759d5c1
     type: regular
     task:
-      id: a152c7cf-6600-486d-890e-d6dbd66dc2ce
+      id: b54331d3-9dce-4abe-86c7-3612f759d5c1
       version: -1
       name: Set A 2
       scriptName: Set
@@ -609,7 +609,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 2500
+          "y": 2645
         }
       }
     note: false
@@ -621,10 +621,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 7bc267af-29e9-4d75-8a5b-89e256868aec
+    taskid: 23f2f278-e27d-479d-8232-08ff35f885ad
     type: regular
     task:
-      id: 7bc267af-29e9-4d75-8a5b-89e256868aec
+      id: 23f2f278-e27d-479d-8232-08ff35f885ad
       version: -1
       name: Delete A at index 1
       scriptName: DeleteContext
@@ -647,7 +647,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 2675
+          "y": 2820
         }
       }
     note: false
@@ -659,10 +659,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 41cab530-f58f-45b1-89c4-4d0e06c5d89a
+    taskid: be273251-b40a-4745-8a1a-2a80010bc313
     type: condition
     task:
-      id: 41cab530-f58f-45b1-89c4-4d0e06c5d89a
+      id: be273251-b40a-4745-8a1a-2a80010bc313
       version: -1
       name: Ensure A has been updated
       type: condition
@@ -698,7 +698,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 2850
+          "y": 2995
         }
       }
     note: false
@@ -710,10 +710,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: f974475a-e3f0-4d2b-8687-7f4084b03d35
+    taskid: 7fe4ab39-2d5d-41f8-84b2-d50288d6dbcd
     type: regular
     task:
-      id: f974475a-e3f0-4d2b-8687-7f4084b03d35
+      id: 7fe4ab39-2d5d-41f8-84b2-d50288d6dbcd
       version: -1
       name: Fail
       script: RaiseError
@@ -731,7 +731,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 3025
+          "y": 3170
         }
       }
     note: false
@@ -743,10 +743,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 3868021e-4f6d-448b-89b7-7bbdede73f0b
+    taskid: c160e842-386e-4c2d-8658-de43d016f448
     type: regular
     task:
-      id: 3868021e-4f6d-448b-89b7-7bbdede73f0b
+      id: c160e842-386e-4c2d-8658-de43d016f448
       version: -1
       name: Delete A at index 1 - should give error
       scriptName: DeleteContext
@@ -768,7 +768,7 @@ tasks:
       {
         "position": {
           "x": 1125,
-          "y": 3025
+          "y": 3170
         }
       }
     note: false
@@ -780,10 +780,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: cfeee54c-c0a7-4f05-87dd-3bd337171212
+    taskid: 3ca97c15-3a18-4ae9-81a9-87e800030af8
     type: condition
     task:
-      id: cfeee54c-c0a7-4f05-87dd-3bd337171212
+      id: 3ca97c15-3a18-4ae9-81a9-87e800030af8
       version: -1
       name: Ensure error occurred
       scriptName: isError
@@ -804,7 +804,7 @@ tasks:
       {
         "position": {
           "x": 1125,
-          "y": 3200
+          "y": 3345
         }
       }
     note: false
@@ -816,10 +816,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 38cd0b63-9d20-4864-825b-df13dae4a354
+    taskid: 1d9e2155-62c4-449a-877a-6e081624c187
     type: regular
     task:
-      id: 38cd0b63-9d20-4864-825b-df13dae4a354
+      id: 1d9e2155-62c4-449a-877a-6e081624c187
       version: -1
       name: Fail
       script: RaiseError
@@ -837,7 +837,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 3375
+          "y": 3520
         }
       }
     note: false
@@ -849,10 +849,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 0fa029ce-e133-4d87-8e19-d27a53d52cf8
+    taskid: c0fbaeac-2f81-4a8d-8127-bf8286e0801e
     type: regular
     task:
-      id: 0fa029ce-e133-4d87-8e19-d27a53d52cf8
+      id: c0fbaeac-2f81-4a8d-8127-bf8286e0801e
       version: -1
       name: Delete A at index 0
       scriptName: DeleteContext
@@ -874,7 +874,7 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 3375
+          "y": 3520
         }
       }
     note: false
@@ -886,10 +886,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: e16cde9c-a6d7-4e13-88e3-4845be7061e4
+    taskid: fc4038c9-825c-46c8-87c2-bb7fb6948e50
     type: condition
     task:
-      id: e16cde9c-a6d7-4e13-88e3-4845be7061e4
+      id: fc4038c9-825c-46c8-87c2-bb7fb6948e50
       version: -1
       name: Ensure A doesn't exists
       type: condition
@@ -914,7 +914,7 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 3550
+          "y": 3695
         }
       }
     note: false
@@ -926,10 +926,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 9f20a48e-dfa1-4df1-8ff6-193217e5cd25
+    taskid: 6aa920f3-d6f5-4e93-8162-9c61d965ac5a
     type: regular
     task:
-      id: 9f20a48e-dfa1-4df1-8ff6-193217e5cd25
+      id: 6aa920f3-d6f5-4e93-8162-9c61d965ac5a
       version: -1
       name: Fail
       script: RaiseError
@@ -947,7 +947,7 @@ tasks:
       {
         "position": {
           "x": 1125,
-          "y": 3725
+          "y": 3870
         }
       }
     note: false
@@ -959,10 +959,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 17ebd51e-545e-4fc4-8b1a-b9416cb7ad13
+    taskid: cf53b613-5bdc-4c4c-8eee-eba8af4471e7
     type: title
     task:
-      id: 17ebd51e-545e-4fc4-8b1a-b9416cb7ad13
+      id: cf53b613-5bdc-4c4c-8eee-eba8af4471e7
       version: -1
       name: Done
       type: title
@@ -973,8 +973,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2630,
-          "y": 6640
+          "x": 2200,
+          "y": 6260
         }
       }
     note: false
@@ -986,10 +986,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: ade380b1-9114-47fb-887e-45b058b358ec
+    taskid: 246f6bcd-a8f2-4a5b-802a-f7033cde6a82
     type: regular
     task:
-      id: ade380b1-9114-47fb-887e-45b058b358ec
+      id: 246f6bcd-a8f2-4a5b-802a-f7033cde6a82
       version: -1
       name: Set D.E
       scriptName: Set
@@ -1010,7 +1010,7 @@ tasks:
       {
         "position": {
           "x": 1555,
-          "y": 3725
+          "y": 3870
         }
       }
     note: false
@@ -1022,10 +1022,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 63e8125c-4b66-4e97-82ff-55026580ffb4
+    taskid: 9fa368d7-a679-472c-88ec-a12df4d5936e
     type: regular
     task:
-      id: 63e8125c-4b66-4e97-82ff-55026580ffb4
+      id: 9fa368d7-a679-472c-88ec-a12df4d5936e
       version: -1
       name: Delete All Context expect D.E.d1 (tests trim as well)
       scriptName: DeleteContext
@@ -1046,7 +1046,7 @@ tasks:
       {
         "position": {
           "x": 1555,
-          "y": 3900
+          "y": 4045
         }
       }
     note: false
@@ -1058,10 +1058,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 83debd74-72d6-4e4b-873f-460634455cf5
+    taskid: 242f695d-c61c-46c3-89df-330ced30654e
     type: condition
     task:
-      id: 83debd74-72d6-4e4b-873f-460634455cf5
+      id: 242f695d-c61c-46c3-89df-330ced30654e
       version: -1
       name: Ensure D.E.d2 doesn't exists and D.E.d1 equals e1
       type: condition
@@ -1071,7 +1071,7 @@ tasks:
       '#default#':
       - "32"
       "yes":
-      - "36"
+      - "42"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1094,7 +1094,7 @@ tasks:
       {
         "position": {
           "x": 1555,
-          "y": 4075
+          "y": 4220
         }
       }
     note: false
@@ -1106,10 +1106,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 1b21bd8a-8edf-4bff-84e5-1a2085fb264c
+    taskid: 65765b1f-d1cb-42b8-8685-ab16ad3e6dfa
     type: regular
     task:
-      id: 1b21bd8a-8edf-4bff-84e5-1a2085fb264c
+      id: 65765b1f-d1cb-42b8-8685-ab16ad3e6dfa
       version: -1
       name: Fail
       script: RaiseError
@@ -1127,7 +1127,7 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 4250
+          "y": 4395
         }
       }
     note: false
@@ -1139,10 +1139,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 8dfd0b11-1316-4569-8e19-ffd851828c7c
+    taskid: f5c4d5a7-bfd3-4972-8784-68bba59b1b9f
     type: regular
     task:
-      id: 8dfd0b11-1316-4569-8e19-ffd851828c7c
+      id: f5c4d5a7-bfd3-4972-8784-68bba59b1b9f
       version: -1
       name: Clear context
       description: Delete field from context
@@ -1162,7 +1162,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 50
+          "y": 195
         }
       }
     note: false
@@ -1174,10 +1174,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: e1fa34d0-6759-4cb8-8064-0eb9d9184cec
+    taskid: e3640360-89fe-4917-8f5b-e46f84249e61
     type: playbook
     task:
-      id: e1fa34d0-6759-4cb8-8064-0eb9d9184cec
+      id: e3640360-89fe-4917-8f5b-e46f84249e61
       version: -1
       name: Delete Context Subplaybook Test
       playbookName: Delete Context Subplaybook Test
@@ -1193,163 +1193,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 225
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "36":
-    id: "36"
-    taskid: 11043d87-6870-400b-8f62-e9ae6bd49413
-    type: regular
-    task:
-      id: 11043d87-6870-400b-8f62-e9ae6bd49413
-      version: -1
-      name: Set array with duplicates
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "37"
-    scriptarguments:
-      key:
-        simple: ArrayWithDuplicates
-      value:
-        simple: '["duplicate","duplicate"]'
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1770,
-          "y": 4250
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "37":
-    id: "37"
-    taskid: a4084536-78cd-4d3c-8746-190b6fbb12c2
-    type: regular
-    task:
-      id: a4084536-78cd-4d3c-8746-190b6fbb12c2
-      version: -1
-      name: Delete All Context expect for the array with the duplicates
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "38"
-    scriptarguments:
-      all:
-        simple: "yes"
-      keysToKeep:
-        simple: ArrayWithDuplicates
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1770,
-          "y": 4425
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "38":
-    id: "38"
-    taskid: b5b65cb4-934f-4712-80ad-d6914029c37b
-    type: condition
-    task:
-      id: b5b65cb4-934f-4712-80ad-d6914029c37b
-      version: -1
-      name: Ensure the array contains duplicates
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "39"
-      "yes":
-      - "42"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: hasLength
-          left:
-            value:
-              simple: ${ArrayWithDuplicates}
-            iscontext: true
-          right:
-            value:
-              simple: "2"
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${ArrayWithDuplicates}
-            iscontext: true
-          right:
-            value:
-              simple: duplicate
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1770,
-          "y": 4600
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "39":
-    id: "39"
-    taskid: 085359b2-5a1a-4a21-8c7c-a5b3fcffbdd3
-    type: regular
-    task:
-      id: 085359b2-5a1a-4a21-8c7c-a5b3fcffbdd3
-      version: -1
-      name: Fail
-      script: RaiseError
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      actual:
-        simple: ArrayWithDuplicates - ${ArrayWithDuplicates}
-      error:
-        simple: Array should contain duplicates
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1760,
-          "y": 4775
+          "y": 370
         }
       }
     note: false
@@ -1361,10 +1205,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 2c2226db-90ef-426e-8f7e-02b5ffc141de
+    taskid: 88c69a71-97ea-41b4-882c-9bd08a7cab67
     type: regular
     task:
-      id: 2c2226db-90ef-426e-8f7e-02b5ffc141de
+      id: 88c69a71-97ea-41b4-882c-9bd08a7cab67
       version: -1
       name: Set some values
       description: Set a value in context under the key you entered.
@@ -1386,8 +1230,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2415,
-          "y": 5095
+          "x": 1555,
+          "y": 4715
         }
       }
     note: false
@@ -1399,10 +1243,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 4d5abddc-04b2-4c6f-8078-f7d04618595b
+    taskid: f3b0fac7-5ce5-4602-8c45-783f884a2c5f
     type: regular
     task:
-      id: 4d5abddc-04b2-4c6f-8078-f7d04618595b
+      id: f3b0fac7-5ce5-4602-8c45-783f884a2c5f
       version: -1
       name: Delete all but specific values from an array
       description: |-
@@ -1410,7 +1254,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -1428,8 +1274,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
-          "y": 5270
+          "x": 1770,
+          "y": 4890
         }
       }
     note: false
@@ -1441,10 +1287,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 4f725123-4d40-4a3d-8f5e-ad88269490e2
+    taskid: 9798ce63-89c3-4830-8056-a4261a672681
     type: title
     task:
-      id: 4f725123-4d40-4a3d-8f5e-ad88269490e2
+      id: 9798ce63-89c3-4830-8056-a4261a672681
       version: -1
       name: 'Use case: delete all context except specific array elements'
       type: title
@@ -1458,8 +1304,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
-          "y": 4790
+          "x": 1770,
+          "y": 4410
         }
       }
     note: false
@@ -1471,10 +1317,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: ac0c5d02-34e7-4b27-8b79-8ea072078bbf
+    taskid: 87d005cc-c264-416a-8754-2d1663b7ee14
     type: regular
     task:
-      id: ac0c5d02-34e7-4b27-8b79-8ea072078bbf
+      id: 87d005cc-c264-416a-8754-2d1663b7ee14
       version: -1
       name: Set some values
       description: Set a value in context under the key you entered.
@@ -1496,7 +1342,7 @@ tasks:
       {
         "position": {
           "x": 1985,
-          "y": 5095
+          "y": 4715
         }
       }
     note: false
@@ -1508,10 +1354,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: c480d276-a0de-4534-87b7-169bfc8586f1
+    taskid: 03b37568-7f0b-46a0-837b-aa8049803610
     type: condition
     task:
-      id: c480d276-a0de-4534-87b7-169bfc8586f1
+      id: 03b37568-7f0b-46a0-837b-aa8049803610
       version: -1
       name: Validate results
       type: condition
@@ -1546,8 +1392,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
-          "y": 5445
+          "x": 1770,
+          "y": 5065
         }
       }
     note: false
@@ -1559,10 +1405,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 20813564-03e5-4329-86c2-fff77ab91b9f
+    taskid: cd7c43a2-8d22-477c-878f-b0a109a8bb67
     type: regular
     task:
-      id: 20813564-03e5-4329-86c2-fff77ab91b9f
+      id: cd7c43a2-8d22-477c-878f-b0a109a8bb67
       version: -1
       name: Fail
       description: Prints an error entry with a given message
@@ -1580,8 +1426,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1985,
-          "y": 5620
+          "x": 1555,
+          "y": 5240
         }
       }
     note: false
@@ -1593,10 +1439,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 93d05528-64c5-4cb2-8783-bed25203d7b7
+    taskid: bb8275d7-5663-400f-831d-05a827c5c8d5
     type: title
     task:
-      id: 93d05528-64c5-4cb2-8783-bed25203d7b7
+      id: bb8275d7-5663-400f-831d-05a827c5c8d5
       version: -1
       name: End Use Case
       type: title
@@ -1610,8 +1456,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2415,
-          "y": 5635
+          "x": 1985,
+          "y": 5255
         }
       }
     note: false
@@ -1623,10 +1469,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: b608b3c0-8274-4f22-846f-727ed6938323
+    taskid: d2d351cd-e3c9-45c2-856c-e5957e2edb95
     type: title
     task:
-      id: b608b3c0-8274-4f22-846f-727ed6938323
+      id: d2d351cd-e3c9-45c2-856c-e5957e2edb95
       version: -1
       name: Case 1 - keys in array element
       type: title
@@ -1641,8 +1487,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
-          "y": 4950
+          "x": 1770,
+          "y": 4570
         }
       }
     note: false
@@ -1654,10 +1500,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 7a3c3624-db25-42bc-8dd0-72294f17158f
+    taskid: 234e09ff-2f10-41c2-8222-fe7fb26104e0
     type: title
     task:
-      id: 7a3c3624-db25-42bc-8dd0-72294f17158f
+      id: 234e09ff-2f10-41c2-8222-fe7fb26104e0
       version: -1
       name: Case 2 - array element
       type: title
@@ -1671,8 +1517,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2415,
-          "y": 5795
+          "x": 1985,
+          "y": 5415
         }
       }
     note: false
@@ -1684,10 +1530,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 288593e1-36d9-4f56-81cc-73940bf90233
+    taskid: c591ddaa-9259-4b9f-8e66-218f6dccd588
     type: regular
     task:
-      id: 288593e1-36d9-4f56-81cc-73940bf90233
+      id: c591ddaa-9259-4b9f-8e66-218f6dccd588
       version: -1
       name: Set some values
       description: Set a value in context under the key you entered.
@@ -1709,8 +1555,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2415,
-          "y": 5940
+          "x": 1985,
+          "y": 5560
         }
       }
     note: false
@@ -1722,10 +1568,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: f128db78-230e-4c57-8f00-11c100dd1848
+    taskid: b66c804d-b662-40cf-8d7a-e7518b2206a8
     type: regular
     task:
-      id: f128db78-230e-4c57-8f00-11c100dd1848
+      id: b66c804d-b662-40cf-8d7a-e7518b2206a8
       version: -1
       name: Delete all but specific values from an array
       description: |-
@@ -1733,7 +1579,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -1751,8 +1599,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2415,
-          "y": 6115
+          "x": 1985,
+          "y": 5735
         }
       }
     note: false
@@ -1764,10 +1612,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 87cccc4f-57f0-4dd9-82ef-ebf4bc314c34
+    taskid: 6fedae90-e1cd-444d-8602-6fccf72fa957
     type: condition
     task:
-      id: 87cccc4f-57f0-4dd9-82ef-ebf4bc314c34
+      id: 6fedae90-e1cd-444d-8602-6fccf72fa957
       version: -1
       name: Validate results
       type: condition
@@ -1794,8 +1642,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2415,
-          "y": 6290
+          "x": 1985,
+          "y": 5910
         }
       }
     note: false
@@ -1807,10 +1655,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 311be985-d42a-435c-87e2-347d84156a9d
+    taskid: 0135fbd8-9540-400a-8f6f-df56315b0fd3
     type: regular
     task:
-      id: 311be985-d42a-435c-87e2-347d84156a9d
+      id: 0135fbd8-9540-400a-8f6f-df56315b0fd3
       version: -1
       name: Fail
       description: Prints an error entry with a given message
@@ -1826,8 +1674,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
-          "y": 6465
+          "x": 1770,
+          "y": 6085
         }
       }
     note: false
@@ -1839,10 +1687,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 70ec0e25-88f9-4b7e-8cb9-86502819fe9a
+    taskid: 6acf25fe-6cb1-4933-8996-2c2442c71fea
     type: title
     task:
-      id: 70ec0e25-88f9-4b7e-8cb9-86502819fe9a
+      id: 6acf25fe-6cb1-4933-8996-2c2442c71fea
       version: -1
       name: End Use Case
       type: title
@@ -1856,8 +1704,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2630,
-          "y": 6480
+          "x": 2200,
+          "y": 6100
         }
       }
     note: false
@@ -1872,12 +1720,13 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 6805,
-        "width": 2960,
+        "height": 6275,
+        "width": 2530,
         "x": 50,
-        "y": -100
+        "y": 50
       }
     }
   }
 inputs: []
 outputs: []
+dirtyInputs: true

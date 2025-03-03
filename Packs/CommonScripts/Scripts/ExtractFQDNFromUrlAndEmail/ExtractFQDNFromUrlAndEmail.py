@@ -1,6 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
-from tld import get_tld
+from tld import get_tld, Result
 from validate_email import validate_email
 from urllib.parse import urlparse, parse_qs, unquote
 import re
@@ -52,16 +52,16 @@ def unescape_url(escaped_url):
     return url
 
 
-def get_fqdn(the_input):
+def get_fqdn(input_url: str) -> str | None:
     fqdn = None
-    domain = get_tld(the_input, fail_silently=True, as_object=True)
+    domain_info = get_tld(input_url, fail_silently=True, as_object=True)
 
-    # handle fqdn if needed
-    if domain:
-        # get the subdomain using tld.subdomain
-        subdomain = domain.subdomain
-        if (subdomain):
-            fqdn = f"{subdomain}.{domain.fld}"
+    if domain_info:
+        if not isinstance(domain_info, Result):
+            raise TypeError(f"Expected to get a Result object but got {type(domain_info)}")
+        subdomain = domain_info.subdomain
+        if subdomain:
+            fqdn = f"{subdomain}.{domain_info.fld}"
 
     return fqdn
 
@@ -113,5 +113,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

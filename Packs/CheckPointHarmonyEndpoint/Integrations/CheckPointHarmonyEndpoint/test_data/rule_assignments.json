@@ -1,0 +1,12 @@
+[
+    {
+        "id": "01",
+        "name": "Entire Organization",
+        "type": "ORGANIZATION_ROOT"
+    },
+    {
+        "id": "12",
+        "name": "Desktops",
+        "type": "VIRTUAL_GROUP"
+    }
+]

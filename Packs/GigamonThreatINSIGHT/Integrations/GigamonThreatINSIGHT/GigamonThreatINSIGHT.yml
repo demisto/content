@@ -318,13 +318,13 @@ script:
   - name: insight-get-telemetry-network
     arguments:
     - name: account_code
-      description: 'Account code to filter by.'
+      description: Account code to filter by.
     - name: interval
       auto: PREDEFINED
       predefined:
       - day
       - month_to_day
-      description: 'The interval to filter by (day, month_to_day).'
+      description: The interval to filter by (day, month_to_day).
     - name: latest_each_month
       description: "latest_each_month\tNo\tNo\tFilters out all but the latest day and month_to_date for each month."
     - name: sort_order
@@ -332,16 +332,16 @@ script:
       predefined:
       - asc
       - desc
-      description: 'Sorts by account code first, then timestamp. asc or desc. The default is desc.'
+      description: Sorts by account code first, then timestamp. asc or desc. The default is desc.
     - name: limit
       description: 'The maximum number of records to return, default: 100, max: 1000.'
       defaultValue: '1000'
     - name: offset
       description: 'The number of records to skip past. Default: 0.'
     - name: start_date
-      description: 'Start date to filter by.'
+      description: Start date to filter by.
     - name: end_date
-      description: 'End date to filter by.'
+      description: End date to filter by.
     outputs:
     - contextPath: Insight.Telemetry.NetworkUsage.account_code
       description: The account code for the network usage.
@@ -531,7 +531,7 @@ script:
       - status
       - device_ip
       - indicator_count
-      description: 'Field to sort by (first_seen, last_seen, status, device_ip, indicator_count).'
+      description: Field to sort by (first_seen, last_seen, status, device_ip, indicator_count).
     - name: sort_order
       auto: PREDEFINED
       predefined:
@@ -891,8 +891,7 @@ script:
       - x509:san_ip.ip
       description: List of event fields to check for impacted devices
     description: Create a new detection rule.
-
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   subtype: python3
 fromversion: 6.5.0

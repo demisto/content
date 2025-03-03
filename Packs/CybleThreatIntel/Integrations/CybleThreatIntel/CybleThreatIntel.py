@@ -13,6 +13,7 @@ from datetime import datetime
 from dateutil import parser
 from typing import *
 
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -20,7 +21,7 @@ urllib3.disable_warnings()
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S.%f+00:00"
 
 
-class Client(object):
+class Client:
     """
     Client will implement the feed service.
     Contatins the requests and return data.
@@ -67,15 +68,13 @@ class Client(object):
                 fields_found.append(value)
 
             elif isinstance(value, dict):
-                results = self.get_recursively(value, field)
-                for result in results:
+                for result in self.get_recursively(value, field):
                     fields_found.append(result)
 
             elif isinstance(value, list):
                 for item in value:
                     if isinstance(item, dict):
-                        more_results = self.get_recursively(item, field)
-                        for another_result in more_results:
+                        for another_result in self.get_recursively(item, field):
                             fields_found.append(another_result)
 
         return fields_found
@@ -86,46 +85,45 @@ class Client(object):
             indicator_obj = {
                 "service": "Cyble Feed"
             }
-            for eachtype in FeedIndicatorType.list_all_supported_indicators():
-                if eachtype.lower() in args.get('collection').lower():      # type: ignore
-                    indicator_obj['type'] = eachtype
-                    break
             multi_data = True
             try:
-                data = self.get_recursively(eachres['indicators'][0]['observable'], 'value')
-                if not data:
-                    data = self.get_recursively(eachres['indicators'][0]['observable'], 'address_value')
+                data_r = self.get_recursively(eachres['indicators'][0]['observable'], 'value')
+                if not data_r:
+                    data_r = self.get_recursively(eachres['indicators'][0]['observable'], 'address_value')
             except Exception:
                 try:
-                    data = self.get_recursively(eachres['observables']['observables'][0], 'value')
+                    data_r = self.get_recursively(eachres['observables']['observables'][0], 'value')
                 except Exception:
                     demisto.debug(f'Found indicator without observable field: {eachres}')
                     continue
 
+            if not data_r:
+                continue
+
             if multi_data:
                 ind_val = {}
-                for eachindicator in data:
+                for eachindicator in data_r:
                     typeval = auto_detect_indicator_type(eachindicator)
                     indicator_obj['type'] = typeval
                     if typeval:
                         ind_val[typeval] = eachindicator
 
-                if len(data) == 1:
-                    indicator_obj['value'] = str(data[0])
+                if len(data_r) == 1:
+                    indicator_obj['value'] = str(data_r[0])
                 elif indicator_obj['type'] in list(ind_val.keys()):
                     indicator_obj['value'] = str(ind_val[indicator_obj['type']])
                 elif len(ind_val) != 0:
                     indicator_obj['type'] = list(ind_val.keys())[0]
                     indicator_obj['value'] = ind_val[list(ind_val.keys())[0]]
-            #
+
             if eachres.get('indicators'):
-                for eachindicator in eachres.get('indicators'):
-                    indicator_obj['title'] = eachindicator.get('title')
-                    indicator_obj['time'] = eachindicator.get('timestamp')
+                ind_content = eachres.get('indicators')
             else:
-                for eachindicator in eachres.get('ttps').get('ttps'):
-                    indicator_obj['title'] = eachindicator.get('title')
-                    indicator_obj['time'] = eachindicator.get('timestamp')
+                ind_content = eachres.get('ttps').get('ttps')
+
+            for eachindicator in ind_content:
+                indicator_obj['title'] = eachindicator.get('title')
+                indicator_obj['time'] = eachindicator.get('timestamp')
 
             indicator_obj['rawJSON'] = eachres
             indicators.append(indicator_obj)
@@ -155,36 +153,42 @@ class Client(object):
         count = 0
 
         try:
+            if 'begin' not in args or 'end' not in args:
+                raise ValueError("Last fetch time retrieval failed.")
             for data in self.fetch(args.get('begin'), args.get('end'), args.get('collection')):
-                skip = False
-                response = self.parse_to_json(data)
+                try:
+                    skip = False
+                    response = self.parse_to_json(data)
 
-                if response.get('indicators') or False:
-                    content = response.get('indicators')
-                elif response.get('ttps') or False:
-                    content = response.get('ttps').get('ttps')
-                else:
-                    raise ValueError("Last fetch time retrieval failed.")
+                    if response.get('indicators') or False:
+                        content = response.get('indicators')
+                    elif response.get('ttps') or False:
+                        content = response.get('ttps').get('ttps')
+                    else:
+                        continue
 
-                for eachone in content:
-                    if eachone.get('confidence'):
-                        current_timestamp = parser.parse(
-                            eachone['confidence']['timestamp']).replace(tzinfo=pytz.UTC).strftime(DATETIME_FORMAT)
-                        if is_first_fetch or datetime.fromisoformat(current_timestamp) > datetime.fromisoformat(save_fetch_time):
-                            save_fetch_time = current_timestamp
-                        else:
-                            skip = True
+                    for eachone in content:
+                        if eachone.get('confidence'):
+                            current_timestamp = parser.parse(
+                                eachone['confidence']['timestamp']).replace(tzinfo=pytz.UTC).strftime(DATETIME_FORMAT)
+                            if (is_first_fetch
+                                    or datetime.fromisoformat(current_timestamp) > datetime.fromisoformat(save_fetch_time)):
+                                save_fetch_time = current_timestamp
+                            else:
+                                skip = True
 
-                if not skip:
-                    taxii_data.append(response)
-
-                    count += 1
-                    if count == args.get('limit'):
-                        break
+                    if not skip:
+                        taxii_data.append(response)
+                        count += 1
+                        if count == args.get('limit'):
+                            break
+                except Exception as e:
+                    demisto.debug(f"Error with formatting feeds, exception:{e}")
+                    continue
 
         except Exception as e:
-            demisto.error("Failed to fetch feed details, exception:{}".format(e))
-            raise e
+            demisto.debug(f"Failed to fetch feed details, exception:{e}")
+            return taxii_data, save_fetch_time
 
         return taxii_data, save_fetch_time
 
@@ -202,7 +206,7 @@ class Client(object):
                             collection_list.append({'name': eachone.name})
                         break
         except Exception as e:
-            demisto.error("Failed to fetch collections, exception:{}".format(e))
+            demisto.error(f"Failed to fetch collections, exception:{e}")
             raise e
 
         return collection_list
@@ -262,7 +266,7 @@ def cyble_fetch_taxii(client: Client, args: Dict[str, Any]):
         args['begin'] = str(parser.parse(args.get('begin', '')).replace(tzinfo=pytz.UTC)) if args.get('begin', None) else None
         args['end'] = str(parser.parse(args.get('end', '')).replace(tzinfo=pytz.UTC)) if args.get('end', None) else None
     except Exception as e:
-        raise ValueError("Invalid date format received, [{}]".format(e))
+        raise ValueError(f"Invalid date format received, [{e}]")
 
     result, time = client.get_taxii(args)
     indicators = client.build_indicators(args, result)
@@ -286,9 +290,11 @@ def fetch_indicators(client: Client):
     '''
     args = {}
     last_run = demisto.getLastRun()
-    is_first_fetch = None
     if isinstance(last_run, dict):
-        last_fetch_time = last_run.get('lastRun_{}'.format(client.collection_name), None)
+        last_fetch_time = last_run.get(f'lastRun_{client.collection_name}', None)
+    else:
+        last_fetch_time = ''
+        demisto.debug(f"{last_run=} isn't of type dict. {last_fetch_time=}")
 
     if last_fetch_time:
         args['begin'] = str(parser.parse(last_fetch_time).replace(tzinfo=pytz.UTC))
@@ -299,14 +305,13 @@ def fetch_indicators(client: Client):
         is_first_fetch = True
 
     args['end'] = str(datetime.utcnow().replace(tzinfo=pytz.UTC))
-
     args['collection'] = client.collection_name
     args['limit'] = client.limit       # type: ignore
     indicator, save_fetch_time = client.get_taxii(args, is_first_fetch)
     indicators = client.build_indicators(args, indicator)
 
     if save_fetch_time:
-        last_run['lastRun_{}'.format(client.collection_name)] = save_fetch_time
+        last_run[f'lastRun_{client.collection_name}'] = save_fetch_time
         demisto.setLastRun(last_run)
 
     return indicators
@@ -323,26 +328,24 @@ def validate_input(args: Dict[str, Any]):
             raise ValueError(f"Limit should be positive, limit: {args.get('limit')}")
 
         try:
-            if args.get('begin', None):
-                _start_date = parser.parse(args.get('begin', '')).replace(tzinfo=pytz.UTC)
-            if args.get('end', None):
-                _end_date = parser.parse(args.get('end', '')).replace(tzinfo=pytz.UTC)
+            _start_date = parser.parse(args.get('begin', '')).replace(tzinfo=pytz.UTC) if args.get('begin', None) else None
+            _end_date = parser.parse(args.get('end', '')).replace(tzinfo=pytz.UTC) if args.get('end', None) else None
         except Exception as e:
-            raise ValueError("Invalid date format received, [{}]".format(e))
+            raise ValueError(f"Invalid date format received, [{e}]")
 
-        if args.get('begin', None) and _start_date > datetime.now(timezone.utc):
+        if _start_date and _start_date > datetime.now(timezone.utc):
             raise ValueError("Start date must be a date before or equal to current")
-        if args.get('end', None) and _end_date > datetime.now(timezone.utc):
+        if _end_date and _end_date > datetime.now(timezone.utc):
             raise ValueError("End date must be a date before or equal to current")
-        if args.get('begin', None) and args.get('end', None) and _start_date > _end_date:
+        if _start_date and _end_date and _start_date > _end_date:
             raise ValueError("Start date cannot be after end date")
 
         if not args.get('collection', False):
             raise ValueError(f"Collection Name should be provided: {arg_to_number(args.get('collection', None))}")
 
-        return None
+        return
     except Exception as e:
-        demisto.error("Exception with validating inputs [{}]".format(e))
+        demisto.error(f"Exception with validating inputs [{e}]")
         raise e
 
 

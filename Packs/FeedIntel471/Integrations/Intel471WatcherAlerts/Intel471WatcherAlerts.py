@@ -5,7 +5,7 @@ from CommonServerUserPython import *  # noqa
 import re
 import json
 import traceback
-from typing import Tuple, List, Dict, Any, cast
+from typing import Any, cast
 import html
 from functools import reduce
 
@@ -40,7 +40,7 @@ class Client(BaseClient):
     def search_alerts(self, watcher_group_uids: Optional[str],
                       max_results: Optional[int],
                       start_time: Optional[int],
-                      last_alert_uid: Optional[str]) -> Dict:
+                      last_alert_uid: Optional[str]) -> dict:
         """Searches for Intel 471 Watcher Alerts using the '/get_alerts' API endpoint
 
         All the parameters are passed directly to the API as HTTP POST parameters in the request
@@ -61,7 +61,7 @@ class Client(BaseClient):
         :rtype: ``Dict``
         """
 
-        request_params: Dict[str, Any] = {}
+        request_params: dict[str, Any] = {}
 
         request_params['showRead'] = 'true'
         request_params['displayWatchers'] = 'true'
@@ -148,12 +148,12 @@ def get_report_type(url: str) -> str:
     return report_type
 
 
-def compose_incident_title(alert: Dict) -> str:
+def compose_incident_title(alert: dict) -> str:
     title: str = ''
 
     if alert.get('actor', None):
         title = 'ACTOR:\n'
-        handles: List = alert.get('actor', {}).get('handles', [])
+        handles: list = alert.get('actor', {}).get('handles', [])
         if handles:
             title += ','.join(handles)
     elif alert.get('breachAlert', None):
@@ -191,11 +191,11 @@ def compose_incident_title(alert: Dict) -> str:
     return title
 
 
-def compose_titan_url(alert: Dict) -> str:
+def compose_titan_url(alert: dict) -> str:
     titan_url: str = ''
 
     if alert.get('actor', None):
-        handles: List = alert.get('actor', {}).get('handles', [])
+        handles: list = alert.get('actor', {}).get('handles', [])
         if handles:
             titan_url = TITAN_PORTAL_URL + 'search/Actor:' + handles[0] + '/actors?ordering=latest&period_of_time=all'
     elif alert.get('breachAlert', None):
@@ -235,32 +235,32 @@ def compose_titan_url(alert: Dict) -> str:
     return titan_url
 
 
-def compose_incident_watcher_details(alert: Dict, watcher_groups: List) -> Tuple[str, str]:
+def compose_incident_watcher_details(alert: dict, watcher_groups: list) -> tuple[str, str]:
     watcher_group_description: str = ''
     watcher_group_uid: str = alert.get('watcherGroupUid', None)
-    watcher_group: Dict = [wg for wg in watcher_groups if wg['uid'] == watcher_group_uid][0]
+    watcher_group: dict = [wg for wg in watcher_groups if wg['uid'] == watcher_group_uid][0]
     if watcher_group:
         watcher_group_description = watcher_group.get('name', '')
 
     watcher_description: str = ''
     watcher_uid: str = alert.get('watcherUid', '')
-    watchers: List = []
+    watchers: list = []
     if watcher_group.get('watchers', None):
         watchers = watcher_group.get('watchers', [])
-        watcher: Dict = [w for w in watchers if w['uid'] == watcher_uid][0]
+        watcher: dict = [w for w in watchers if w['uid'] == watcher_uid][0]
         if watcher:
             watcher_description = watcher.get('description', '')
 
     return watcher_group_description, watcher_description
 
 
-def compose_incident_details(alert: Dict, watcher_groups: List) -> str:
+def compose_incident_details(alert: dict, watcher_groups: list) -> str:
     details: str = ''
 
     if alert.get('actor', None):
         details += 'Source Object: ACTOR'
         details += '\n\n' + 'Actor Details:'
-        actor_details: Dict = deep_get(alert, 'actor.links', {})
+        actor_details: dict = deep_get(alert, 'actor.links', {})
         actor_details_str: str = json.dumps(actor_details, indent=2, sort_keys=False)
         details += '\n' + actor_details_str
     elif alert.get('breachAlert', None):
@@ -270,7 +270,7 @@ def compose_incident_details(alert: Dict, watcher_groups: List) -> str:
                           ' (' + deep_get(alert, 'breachAlert.data.breach_alert.confidence.description', '') + ')'
         details += '\n' + 'Actor/Group: ' + deep_get(alert, 'breachAlert.data.breach_alert.actor_or_group', '')
         details += '\n\n' + 'Victim Details:'
-        victim_details: Dict = deep_get(alert, 'breachAlert.data.breach_alert.victim', {})
+        victim_details: dict = deep_get(alert, 'breachAlert.data.breach_alert.victim', {})
         victim_details_str: str = json.dumps(victim_details, indent=2, sort_keys=False)
         details += '/n' + victim_details_str
     elif alert.get('credential', None):
@@ -278,7 +278,7 @@ def compose_incident_details(alert: Dict, watcher_groups: List) -> str:
         details += '\n' + 'Credential Login: ' + deep_get(alert, 'credential.data.credential_login', '')
         details += '\n' + 'Detection Domain: ' + deep_get(alert, 'credential.data.detection_domain', '')
         details += '\n' + 'Password Strength: ' + deep_get(alert, 'credential.data.password.strength', '')
-        affiliations_list_credential: List = alert.get('credential', {}).get('data', {}).get('affiliations', [])
+        affiliations_list_credential: list = alert.get('credential', {}).get('data', {}).get('affiliations', [])
         affiliations_credential: str = ','.join(affiliations_list_credential)
         details += '\n' + 'Affiliations: ' + affiliations_credential
     elif alert.get('credential_occurrence', None):
@@ -286,7 +286,7 @@ def compose_incident_details(alert: Dict, watcher_groups: List) -> str:
         details += '\n' + 'Credential Login: ' + deep_get(alert, 'credential_occurrence.data.credential.credential_login', '')
         details += '\n' + 'Detection Domain: ' + deep_get(alert, 'credential_occurrence.data.credential.detection_domain', '')
         details += '\n' + 'Password Strength: ' + deep_get(alert, 'credential_occurrence.data.credential.password.strength', '')
-        affiliations_list_credential_occurrence: List = alert.get('credential_occurrence', {}).get('data', {}) \
+        affiliations_list_credential_occurrence: list = alert.get('credential_occurrence', {}).get('data', {}) \
                                                              .get('credential', {}).get('affiliations', [])
         affiliations_credential_occurrence: str = ','.join(affiliations_list_credential_occurrence)
         details += '\n' + 'Affiliations: ' + affiliations_credential_occurrence
@@ -321,7 +321,7 @@ def compose_incident_details(alert: Dict, watcher_groups: List) -> str:
         details += '\n' + 'Mitre Tactics: ' + deep_get(alert, 'event.data.mitre_tactics', '')
         details += '\n' + 'Event Type: ' + deep_get(alert, 'event.data.event_type', '')
         details += '\n\n' + 'Event Details:'
-        event_details: Dict = deep_get(alert, 'event.data.event_data', '')
+        event_details: dict = deep_get(alert, 'event.data.event_data', '')
         event_details_str: str = json.dumps(event_details, indent=2, sort_keys=False)
         details += '\n' + event_details_str
     elif alert.get('indicator', None):
@@ -333,7 +333,7 @@ def compose_incident_details(alert: Dict, watcher_groups: List) -> str:
         details += '\n' + 'Confidence Level: ' + deep_get(alert, 'indicator.data.confidence', '')
         details += '\n' + 'Indicator Type: ' + deep_get(alert, 'indicator.data.indicator_type', '')
         details += '\n\n' + 'Indicator Details:'
-        indicator_details: Dict = deep_get(alert, 'indicator.data.indicator_data', '')
+        indicator_details: dict = deep_get(alert, 'indicator.data.indicator_data', '')
         indicator_details_str: str = json.dumps(indicator_details, indent=2, sort_keys=False)
         details += '\n' + indicator_details_str
     elif alert.get('instantMessage', None):
@@ -360,7 +360,7 @@ def compose_incident_details(alert: Dict, watcher_groups: List) -> str:
     elif alert.get('spotReport', None):
         details += 'Source Object: SPOT REPORT'
         details += '\n\n' + deep_get(alert, 'spotReport.data.spot_report.spot_report_data.text', '')
-        purported_victims_details: Dict = deep_get(alert, 'spotReport.data.spot_report.spot_report_data.victims', '')
+        purported_victims_details: dict = deep_get(alert, 'spotReport.data.spot_report.spot_report_data.victims', '')
         if purported_victims_details:
             purported_victims_details_str: str = json.dumps(purported_victims_details, indent=2, sort_keys=False)
             details += '\n\n' + 'Purported Victims:'
@@ -411,7 +411,7 @@ def test_module(client: Client) -> str:
 
         last_alert_uid: str = ''
 
-        alerts_wrapper: Dict = client.search_alerts(
+        alerts_wrapper: dict = client.search_alerts(
             watcher_group_uids=watcher_group_uids,
             max_results=max_results,
             start_time=first_fetch_timestamp,
@@ -431,10 +431,10 @@ def test_module(client: Client) -> str:
     return message
 
 
-def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
+def fetch_incidents(client: Client, max_results: int, last_run: dict[str, int],
                     first_fetch_time: int,
                     watcher_group_uids: Optional[str], severity: str, last_alert_uid: str
-                    ) -> Tuple[str, Dict[str, int], List[dict]]:
+                    ) -> tuple[str, dict[str, int], list[dict]]:
 
     # Get the last fetch time, if exists
     # last_run is a dict with a single key, called last_fetch
@@ -452,12 +452,12 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
 
     # Initialize an empty list of incidents to return
     # Each incident is a dict with a string as a key
-    incidents: List[Dict[str, Any]] = []
+    incidents: list[dict[str, Any]] = []
 
     # Get the CSV list of severities from severity
     # severity = ','.join(INTEL471_SEVERITIES[INTEL471_SEVERITIES.index(severity):])
 
-    alerts_wrapper: Dict = client.search_alerts(
+    alerts_wrapper: dict = client.search_alerts(
         watcher_group_uids=watcher_group_uids,
         max_results=max_results,
         start_time=last_fetch,
@@ -467,11 +467,11 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     latest_alert_uid: str = ''
 
     if alerts_wrapper.get('alerts'):
-        watcher_groups: List = []
+        watcher_groups: list = []
         if alerts_wrapper.get('watcherGroups'):
             watcher_groups = alerts_wrapper.get('watcherGroups', [])
 
-        alerts: List = alerts_wrapper.get('alerts', [])
+        alerts: list = alerts_wrapper.get('alerts', [])
         for alert in alerts:
             # If no created_time set is as epoch (0). We use time in ms so we must
             # convert it from the Titan API response
@@ -535,7 +535,7 @@ def main() -> None:
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-        headers: Dict = {
+        headers: dict = {
             'user-agent': USER_AGENT
         }
 

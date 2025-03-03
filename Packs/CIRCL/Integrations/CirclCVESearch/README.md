@@ -1,22 +1,18 @@
 Searches for CVE information using [circl.lu](https://www.circl.lu/services/cve-search/).
 
-## Configure CIRCL CVE Search on Cortex XSOAR
+## Configure CIRCL CVE Search in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Data Enrichment & Threat Intelligence**.
-2. Search for CIRCL.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL | True |
-    | Use system proxy settings | False |
-    | Trust any certificate (not secure) | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL | True |
+| Use system proxy settings | False |
+| Trust any certificate (not secure) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### cve-latest
@@ -88,10 +84,10 @@ Returns CVE information by CVE ID.
 | CVE.vulnerableproduct | Dict | Vulnerable products in CPE format |
 | CVE.Tags | List | A list of tags |
 | CVE.Relationships | List | List of relationships for the CVE |
-| DBotScore.Indicator | String | The indicator value. |
-| DBotScore.Score | Number | The indicator score. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Score | Number | The actual score. |
 | DBotScore.Type | String | The indicator type. |
-| DBotScore.Vendor | String | The vendor reporting the score of the indicator. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
 
 
 ##### Command Example

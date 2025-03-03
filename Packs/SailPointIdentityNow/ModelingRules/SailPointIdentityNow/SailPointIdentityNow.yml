@@ -1,0 +1,6 @@
+fromversion: 8.6.0  # Will be updated with XSIAM version updates
+id: SailPoint_IdentityNow_ModelingRule
+name: SailPoint IdentityNow Modeling Rule
+rules: ''
+schema: ''
+tags: ''

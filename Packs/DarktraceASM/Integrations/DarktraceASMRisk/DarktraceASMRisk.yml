@@ -1,0 +1,301 @@
+commonfields:
+  id: Darktrace ASM
+  version: -1
+name: Darktrace ASM
+display: Darktrace ASM
+category: Network Security
+description: 'This pack includes configurations to combine the world-class threat
+  detection of Darktrace with the synchrony and automation abilities of XSOAR, allowing
+  security teams to monitor their attack surface for risks, high-impact vulnerabilities
+  and external threats.\nTo configure the connection to your Darktrace Attack Surface 
+  Management instance, you will provide:\n- Server URL of Darktrace ASM instance (ex: 
+  darktrace.yourcompany.com) and any necessary proxy information\n- The API Token from the Darktrace ASM instance.'
+detaileddescription: "### Partner Contributed Integration\n#### Integration Author:
+  Darktrace\nSupport and maintenance for this integration are provided by the author. Please create a 
+  Darktrace Customer Portal support ticket for any questions or concerns [here](https://customerportal.darktrace.com).
+  \n***\n## Darktrace ASM \nTo configure the integration with your 
+  Darktrace PREVENT/ASM instance, you will need:\n- URL of your Darktrace PREVENT/ASM instance 
+  (ex: example-asm.darktrace.com)\n- Darktrace PREVENT/ASM API token which can be retrieved by making 
+  a [Darktrace Customer Portal support ticket](https://customerportal.darktrace.com). \n\n"
+fromversion: 6.6.0
+defaultmapperin: Darktrace ASM Risk Mapper
+configuration:
+- display: Server URL (e.g. https://soar.monstersofhack.com)
+  name: url
+  defaultvalue: https://soar.monstersofhack.com
+  type: 0
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Maximum number of incidents per fetch
+  name: max_fetch
+  defaultvalue: "100"
+  type: 0
+  required: false
+- display: API Key
+  name: apikey
+  type: 4
+  required: true
+- display: Fetch alerts with type
+  name: alert_type
+  defaultvalue: GDPR, Informational, Misconfiguration, Reported, SSL, Vulnerable Software
+  type: 16
+  required: false
+  options:
+  - GDPR
+  - Informational
+  - Misconfiguration
+  - Reported
+  - SSL
+  - Vulnerable Software
+  additionalinfo: Comma-separated list of types of alerts to fetch. Types might change
+    over time. Some examples are 'Bug' and 'Vulnerability'
+- display: Minimum severity of alerts to fetch
+  name: min_severity
+  defaultvalue: Medium
+  type: 15
+  required: false
+  options:
+  - Low
+  - Medium
+  - High
+  - Critical
+- display: First fetch time
+  name: first_fetch
+  defaultvalue: 3 days
+  type: 0
+  required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: "1"
+  type: 19
+  required: false
+script:
+  script: '-'
+  type: python
+  commands:
+  - name: darktrace-asm-get-risk
+    arguments:
+    - name: risk_id
+      required: true
+      description: Unique ID of Risk.
+    outputs:
+    - contextPath: Darktrace.risk.id
+      description: Risk ID.
+      type: string
+    - contextPath: Darktrace.risk.type
+      description: Risk type.
+      type: string
+    - contextPath: Darktrace.risk.startedAt
+      description: Risk creation time.
+      type: date
+    - contextPath: Darktrace.risk.endedAt
+      description: Risk end time, no user mitigation.
+      type: date
+    - contextPath: Darktrace.risk.title
+      description: Risk title.
+      type: string
+    - contextPath: Darktrace.risk.description
+      description: Risk description.
+      type: string
+    - contextPath: Darktrace.risk.evidence
+      description: Evidence of risk.
+      type: string
+    - contextPath: Darktrace.risk.proposedAction
+      description: Proposed action to mitigate risk.
+      type: string
+    - contextPath: Darktrace.risk.securityRating
+      description: Security rating of the risk, A to F.
+      type: string
+    - contextPath: Darktrace.risk.mitigatedAt
+      description: Risk user mitigation time.
+      type: date
+    - contextPath: Darktrace.risk.asset.id
+      description: Associated asset ID.
+      type: string
+    - contextPath: Darktrace.risk.asset.state
+      description: State of asset.
+      type: string
+    - contextPath: Darktrace.risk.asset.brand
+      description: Brand asset is associated with.
+      type: string
+    - contextPath: Darktrace.risk.asset.createdAt
+      description: Asset creation time.
+      type: date
+    - contextPath: Darktrace.risk.asset.updatedAt
+      description: Time of asset's last update.
+      type: date
+    - contextPath: Darktrace.risk.asset.securityrating
+      description: Security rating of the asset, A to F.
+      type: string
+    - contextPath: Darktrace.risk.asset.isMalicious
+      description: Whether or note the asset is malicious.
+      type: boolean
+    - contextPath: Darktrace.risk.asset.tags
+      description: Tags applied to the asset.
+    - contextPath: Darktrace.risk.comments
+      description: Comments posted to the risk.
+    - contextPath: Darktrace.risk
+      description: Risk object dictionary.
+    - contextPath: Darktrace.risk.asset
+      description: Asset object dictionary.
+    description: Get a specific Darktrace ASM Risk.
+  - name: darktrace-asm-get-asset
+    arguments:
+    - name: asset_id
+      required: true
+      description: Unique ID of Asset.
+    outputs:
+    - contextPath: Darktrace.asset
+      description: Asset object dictionary.
+    - contextPath: Darktrace.asset.id
+      description: Asset ID.
+      type: string
+    - contextPath: Darktrace.asset.state
+      description: State of asset.
+      type: string
+    - contextPath: Darktrace.asset.brand
+      description: Brand asset is associated with.
+      type: string
+    - contextPath: Darktrace.asset.createdAt
+      description: Asset creation time.
+    - contextPath: Darktrace.asset.updatedAt
+      description: Time of asset's last update.
+    - contextPath: Darktrace.asset.securityrating
+      description: Security rating of the asset, A to F.
+    - contextPath: Darktrace.asset.isMalicious
+      description: Whether or note the asset is malicious.
+    - contextPath: Darktrace.asset.tags
+      description: Tags applied to the asset.
+    - contextPath: Darktrace.asset.type
+      description: Type of Asset.
+    - contextPath: Darktrace.asset.comments
+      description: Comments posted to the risk.
+    - contextPath: Darktrace.asset.discoverySources
+      description: Sources used in discovery of asset.
+    - contextPath: Darktrace.asset.risks
+      description: Risks associated with asset.
+    description: Get a specific Darktrace ASM Asset.
+  - name: darktrace-asm-post-comment
+    arguments:
+    - name: id
+      required: true
+      description: Can be a Risk ID or an Asset ID.
+    - name: comment
+      description: 'enter your comment.'
+    outputs:
+    - contextPath: Darktrace.comment.success
+      description: Whether or not comment was posted.
+      type: boolean
+    - contextPath: Darktrace.comment.comment.id
+      description: Comment ID.
+      type: string
+    - contextPath: Darktrace.comment.comment.text
+      description: Comment text.
+      type: string
+    description: Post a comment to a Darktrace ASM risk or asset within the Darktrace
+      UI.
+  - name: darktrace-asm-edit-comment
+    arguments:
+    - name: comment_id
+      required: true
+      description: Unique ID of Comment.
+    - name: comment
+      required: true
+      description: Enter comment here.
+    outputs:
+    - contextPath: Darktrace.comment.success
+      description: Whether or not comment was edited.
+      type: boolean
+    - contextPath: Darktrace.comment.comment.id
+      description: Comment ID.
+      type: string
+    - contextPath: Darktrace.comment.comment.text
+      description: Comment text.
+      type: string
+    description: Edit a comment within the Darktrace UI.
+  - name: darktrace-asm-delete-comment
+    arguments:
+    - name: comment_id
+      required: true
+      description: Unique ID of Comment.
+    outputs:
+    - contextPath: Darktrace.comment.success
+      description: Whether or not comment was deleted.
+    description: Edit a comment within the Darktrace UI.
+  - name: darktrace-asm-mitigate-risk
+    arguments:
+    - name: risk_id
+      required: true
+      description: Unique ID of Risk.
+    outputs:
+    - contextPath: Darktrace.risk.success
+      description: Whether or not risk was mitigated.
+      type: boolean
+    description: Mitigate Darktrace ASM Risk within the Darktrace UI.
+    execution: true
+  - name: darktrace-asm-create-tag
+    arguments:
+    - name: tag_name
+      required: true
+      description: Name of Tag being created.
+    outputs:
+    - contextPath: Darktrace.tag.success
+      description: Whether or not the tag was created.
+      type: boolean
+    - contextPath: Darktrace.tag.tag.id
+      description: Tag ID.
+      type: string
+    - contextPath: Darktrace.tag.tag.name
+      description: Tag name.
+      type: string
+    description: Create a tag to assign to Darktrace ASM Assets within the Darktrace
+      UI.
+  - name: darktrace-asm-assign-tag
+    arguments:
+    - name: tag_name
+      required: true
+      description: Name of tag to be assigned.
+    - name: asset_id
+      required: true
+      description: ID of asset tag should be assigned to.
+    outputs:
+    - contextPath: Darktrace.tag.success
+      description: Whether or not the tag was successfully assigned.
+      type: boolean
+    - contextPath: Darktrace.tag.asset.id
+      description: Asset ID.
+      type: string
+    - contextPath: Darktrace.tag.asset.tags
+      description: All tags assigned to asset.
+    description: Assign an existing tag to a Darktrace ASM Asset within the Darktrace
+      UI.
+  - name: darktrace-asm-unassign-tag
+    arguments:
+    - name: tag_name
+      required: true
+      description: Name of Tag to be assigned.
+    - name: asset_id
+      required: true
+      description: ID of asset tag should be assigned to.
+    outputs:
+    - contextPath: Darktrace.tag.success
+      description: Whether or not the tag was successfully unassigned.
+      type: boolean
+    - contextPath: Darktrace.tag.asset.id
+      description: Asset ID.
+      type: string
+    - contextPath: Darktrace.tag.asset.tags
+      description: All tags assigned to asset.
+    description: Unassign an existing tag to a Darktrace ASM Asset within the Darktrace
+      UI.
+  dockerimage: demisto/python3:3.11.10.115186
+  isfetch: true
+  runonce: false
+  subtype: python3

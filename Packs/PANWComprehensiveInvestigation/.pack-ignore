@@ -1,8 +1,10 @@
 [file:PANWComprehensiveInvestigation]
 ignore=PA116
 
+# GR103 is temporary, see CIAC-11705
 [file:layoutscontainer-PANW_Endpoint_Malware.json]
-ignore=BA101
+ignore=BA101,GR103
+
 
 [file:Palo_Alto_Networks_-_Endpoint_Malware_Investigation_v3_README.md]
 ignore=RM106

@@ -114,7 +114,7 @@ class Client(BaseClient):
             'password': self.password,
         }
         token_response = self._http_request('POST', url_suffix='/auth/refresh-token', headers=headers)
-        return token_response.get('access_token'), token_response.get('access_expires_in')
+        return token_response.get('access_token'), token_response.get('access_token_expires_in')
 
     def get_incidents(self, from_date, to_date) -> Any:
         return self.http_request(

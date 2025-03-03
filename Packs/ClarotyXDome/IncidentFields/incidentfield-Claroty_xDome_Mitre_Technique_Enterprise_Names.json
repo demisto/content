@@ -1,0 +1,32 @@
+{
+    "id": "incident_clarotyxdomemitretechniqueenterprisenames",
+    "version": -1,
+    "modified": "2024-09-16T10:25:25.209772537Z",
+    "name": "Claroty xDome Mitre Technique Enterprise Names",
+    "ownerOnly": false,
+    "description": "MITRE ATT&CK Enterprise technique names mapped to the alert",
+    "cliName": "clarotyxdomemitretechniqueenterprisenames",
+    "type": "multiSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": true,
+    "associatedTypes": [
+        "Claroty xDome Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

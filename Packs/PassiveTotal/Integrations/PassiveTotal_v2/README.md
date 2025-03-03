@@ -1,10 +1,8 @@
 Analyze and understand threat infrastructure from a variety of sources-passive DNS, active DNS, WHOIS, SSL certificates and more-without devoting resources to time-intensive manual threat research and analysis.
 This integration was integrated and tested with enterprise version of PassiveTotal v2.
-## Configure PassiveTotal v2 on Cortex XSOAR
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for PassiveTotal v2.
-3. Click **Add instance** to create and configure a new integration instance.
+## Configure PassiveTotal v2 in Cortex
+
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -15,11 +13,14 @@ This integration was integrated and tested with enterprise version of PassiveTot
 | proxy | Use system proxy settings | False |
 | request_timeout | HTTP\(S\) Request Timeout \(in seconds\) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### pt-whois-search
+
 ***
 Gets WHOIS information records based on field matching queries.
 
@@ -27,6 +28,7 @@ Gets WHOIS information records based on field matching queries.
 #### Base Command
 
 `pt-whois-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -117,9 +119,11 @@ Gets WHOIS information records based on field matching queries.
 
 
 #### Command Example
+
 ```!pt-whois-search field=domain query=riskiq.com```
 
 #### Context Example
+
 ```
 {
     "DBotScore": [
@@ -238,13 +242,16 @@ Gets WHOIS information records based on field matching queries.
 #### Human Readable Output
 
 >### Total Retrieved Record(s): 2
+
 >### Associated Domains
+
 >|Domain|WHOIS Server|Registrar|Contact Email|Name Servers|Registrant|Admin|Tech|Creation Date (GMT)|Expire Date (GMT)|Updated Date (GMT)|Last Scanned (GMT)|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| riskiq.com | whois.godaddy.com | GODADDY.COM, LLC | domains@riskiq.com | luke.ns.cloudflare.com, serena.ns.cloudflare.com | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | 2006-01-11T16:00:00.000-0800 | 2017-01-11T16:00:00.000-0800 | 2014-12-08T16:00:00.000-0800 | 2016-09-27T09:40:31.180-0700 |
 
 
 ### pt-get-components
+
 ***
 Retrieves the host attribute components for a domain or IP address. Maximum 2000 records are fetched.
 
@@ -252,6 +259,7 @@ Retrieves the host attribute components for a domain or IP address. Maximum 2000
 #### Base Command
 
 `pt-get-components`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -281,9 +289,11 @@ Retrieves the host attribute components for a domain or IP address. Maximum 2000
 
 
 #### Command Example
+
 ```!pt-get-components query=www.furth.com.ar```
 
 #### Context Example
+
 ```
 {
     "DBotScore": {
@@ -358,7 +368,9 @@ Retrieves the host attribute components for a domain or IP address. Maximum 2000
 #### Human Readable Output
 
 >### Total Retrieved Record(s): 7
+
 >### COMPONENTS
+
 >|Hostname|First (GMT)|Last (GMT)|Category|Value|Version|
 >|---|---|---|---|---|---|
 >| www.furth.com.ar | 2020-05-29 10:57:44 | 2020-05-29 10:57:44 | Framework | PHP |  |
@@ -371,6 +383,7 @@ Retrieves the host attribute components for a domain or IP address. Maximum 2000
 
 
 ### pt-get-trackers
+
 ***
 Retrieves the host attribute trackers for a domain or IP address. Maximum 2000 records are fetched.
 
@@ -378,6 +391,7 @@ Retrieves the host attribute trackers for a domain or IP address. Maximum 2000 r
 #### Base Command
 
 `pt-get-trackers`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -406,9 +420,11 @@ Retrieves the host attribute trackers for a domain or IP address. Maximum 2000 r
 
 
 #### Command Example
+
 ```!pt-get-trackers query=filmesonlinegratis.net```
 
 #### Context Example
+
 ```
 {
     "DBotScore": [
@@ -513,7 +529,9 @@ Retrieves the host attribute trackers for a domain or IP address. Maximum 2000 r
 #### Human Readable Output
 
 >### Total Retrieved Record(s): 10
+
 >### TRACKERS
+
 >|Hostname|First (GMT)|Last (GMT)|Type|Value|
 >|---|---|---|---|---|
 >| filmesonlinegratis.net | 2016-10-14 10:16:38 | 2020-06-14 19:43:28 | GoogleAnalyticsTrackingId | ua-70630818-3 |
@@ -529,6 +547,7 @@ Retrieves the host attribute trackers for a domain or IP address. Maximum 2000 r
 
 
 ### pt-get-pdns-details
+
 ***
 Retrieves the passive DNS results from active account sources.
 
@@ -536,6 +555,7 @@ Retrieves the passive DNS results from active account sources.
 #### Base Command
 
 `pt-get-pdns-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -567,9 +587,11 @@ Retrieves the passive DNS results from active account sources.
 
 
 #### Command Example
+
 ```!pt-get-pdns-details query=www.furth.com.ar```
 
 #### Context Example
+
 ```
 {
     "DBotScore": [
@@ -680,7 +702,9 @@ Retrieves the passive DNS results from active account sources.
 #### Human Readable Output
 
 >### Total Retrieved Record(s): 5
+
 >### PDNS detail(s)
+
 >|Resolve|Resolve Type|Record Type|Collected (GMT)|First (GMT)|Last (GMT)|Source|Record Hash|
 >|---|---|---|---|---|---|---|---|
 >| furth.com.ar | domain | CNAME | 2020-06-17 12:26:33 | 2010-12-15 09:10:10 | 2020-06-17 05:26:33 | riskiq, pingly | abf781b2484ea79d521cffb0745b71319d4db1158f71bb019b41077f8e55b035 |
@@ -691,6 +715,7 @@ Retrieves the passive DNS results from active account sources.
 
 
 ### pt-ssl-cert-search
+
 ***
 Retrieves SSL certificates for a given field value.
 
@@ -698,6 +723,7 @@ Retrieves SSL certificates for a given field value.
 #### Base Command
 
 `pt-ssl-cert-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -746,9 +772,11 @@ Retrieves SSL certificates for a given field value.
 
 
 #### Command Example
+
 ```!pt-ssl-cert-search field=serialNumber query=61135c80f8ed28d2```
 
 #### Context Example
+
 ```
 {
     "PassiveTotal": {
@@ -805,7 +833,9 @@ Retrieves SSL certificates for a given field value.
 #### Human Readable Output
 
 >### Total Retrieved Record(s): 2
+
 >### SSL certificate(s)
+
 >|Sha1|Serial Number|Issued (GMT)|Expires (GMT)|SSL Version|First (GMT)|Last (GMT)|Issuer Common Name|Subject Common Name|Subject Alternative Names|Issuer Organization Name|Subject Organization Name|Subject Locality Name|Subject State/Province Name|Issuer Country|Subject Country|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 8848e868b190d0fdcb6f39c37b5382c87e0976b0 | 6995036355238373586 | Jan 15 13:15:00 2019 GMT | Apr 09 13:15:00 2019 GMT | 3 | 2019-01-15 13:40:31 | 2019-01-16 03:00:34 | Google Internet Authority G3 | www.google.com | www.google.com | Google Trust Services | Google LLC | Mountain View | California | US | US |
@@ -813,6 +843,7 @@ Retrieves SSL certificates for a given field value.
 
 
 ### pt-get-host-pairs
+
 ***
 Retrieves the host attribute pairs related to a domain or IP address. Maximum 2000 records are fetched.
 
@@ -820,6 +851,7 @@ Retrieves the host attribute pairs related to a domain or IP address. Maximum 20
 #### Base Command
 
 `pt-get-host-pairs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -842,9 +874,11 @@ Retrieves the host attribute pairs related to a domain or IP address. Maximum 20
 
 
 #### Command Example
+
 ```!pt-get-host-pairs direction=children query=ns1.furth.com.ar```
 
 #### Context Example
+
 ```
 {
     "PassiveTotal": {
@@ -871,7 +905,9 @@ Retrieves the host attribute pairs related to a domain or IP address. Maximum 20
 #### Human Readable Output
 
 >### Total Retrieved Record(s): 2
+
 >### HOST PAIRS
+
 >|Parent Hostname|Child Hostname|First (GMT)|Last (GMT)|Cause|
 >|---|---|---|---|---|
 >| ns1.furth.com.ar | furth.com.ar | 2020-05-29 07:05:22 | 2020-06-10 11:53:23 | redirect |
@@ -879,6 +915,7 @@ Retrieves the host attribute pairs related to a domain or IP address. Maximum 20
 
 
 ### domain
+
 ***
 Provides data enrichment for domains.
 
@@ -888,6 +925,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -987,9 +1025,11 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 #### Command Example
+
 ```!domain domain=riskiq.com```
 
 #### Context Example
+
 ```
 {
     "DBotScore": [
@@ -1117,11 +1157,14 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Human Readable Output
 
 >### Domain(s)
+
 >|Domain|WHOIS Server|Registrar|Contact Email|Name Servers|Registrant|Admin|Tech|Creation Date (GMT)|Expire Date (GMT)|Updated Date (GMT)|Last Scanned (GMT)|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| riskiq.com | whois.godaddy.com | GODADDY.COM, LLC | domains@riskiq.com | luke.ns.cloudflare.com, serena.ns.cloudflare.com | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | 2006-01-11T16:00:00.000-0800 | 2017-01-11T16:00:00.000-0800 | 2014-12-08T16:00:00.000-0800 | 2016-09-27T09:40:31.180-0700 |
 >The reputation score for 'riskiq.com' is 3 and is classified as 'UNKNOWN'.
+
 >### Reputation Rules
+
 >|Name|Description|Severity|
 >|---|---|---|
 >| Open ports observed | The number of open ports may indicate maliciousness | 3 |
@@ -1321,7 +1364,9 @@ Retrieves exposed services on the recently open ports for an IP address.
 #### Human Readable Output
 
 > ### Total Retrieved Record(s) 13
+
 > ### Services
+
 >|Port Number|Protocol|Status|Current Service Labels|First Seen Date (GMT)|Last Seen Date (GMT)|Last Scanned Date (GMT)|
 >|---|---|---|---|---|---|---|
 >| 53 | UDP | filtered | Other Service | 2018-03-28 12:04:21 | 2021-03-04 05:11:29 | 2021-03-06 02:28:14 |
@@ -1329,6 +1374,7 @@ Retrieves exposed services on the recently open ports for an IP address.
 >| 111 | UDP | closed | Other Service | 2020-02-29 04:02:09 | 2021-02-27 16:00:28 | 2021-03-06 06:51:11 |
 
 ### pt-get-whois
+
 ***
 Gets WHOIS information records based on queries.
 
@@ -1336,6 +1382,7 @@ Gets WHOIS information records based on queries.
 #### Base Command
 
 `pt-get-whois`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1403,9 +1450,11 @@ Gets WHOIS information records based on queries.
 
 
 #### Command Example
+
 ```!pt-get-whois query=riskiq.com```
 
 #### Context Example
+
 ```
 {
     "PassiveTotal": {
@@ -1460,13 +1509,16 @@ Gets WHOIS information records based on queries.
 #### Human Readable Output
 
 >### Total Retrieved Record(s): 1
+
 >### Associated Domains
+
 >|Domain|WHOIS Server|Registrar|Contact Email|Name Servers|Registrant|Admin|Tech|Creation Date (GMT)|Expire Date (GMT)|Updated Date (GMT)|Last Scanned (GMT)|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| riskiq.com | whois.godaddy.com | GODADDY.COM, LLC | domains@riskiq.com | luke.ns.cloudflare.com, serena.ns.cloudflare.com | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | 2006-01-11T16:00:00.000-0800 | 2017-01-11T16:00:00.000-0800 | 2014-12-08T16:00:00.000-0800 | 2016-09-27T09:40:31.180-0700 |
 
 
 ### pt-get-cookies
+
 ***
 Retrieves cookies addresses or hostname information based on cookie name or domain.
 
@@ -1474,6 +1526,7 @@ Retrieves cookies addresses or hostname information based on cookie name or doma
 #### Base Command
 
 `pt-get-cookies`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1497,9 +1550,11 @@ Retrieves cookies addresses or hostname information based on cookie name or doma
 
 
 #### Command Example
+
 ```!pt-get-cookies search_by="get hosts by cookie name" query=dummyCookie```
 
 #### Context Example
+
 ```json
 {
     "PassiveTotal": {
@@ -1519,14 +1574,18 @@ Retrieves cookies addresses or hostname information based on cookie name or doma
 #### Human Readable Output
 
 >### Total Record(s): 1
+
 >### Total Retrieved Record(s): 1
+
 >### Cookies
+
 >|Hostname|Cookie Name|Cookie Domain|First Seen Date (GMT)|Last Seen Date (GMT)|
 >|---|---|---|---|---|
 >| dummy.domain | dummyCookie | dummy.domain | 2019-04-02 01:53:50 | 2021-01-22 07:15:13 |
 
 
 ### pt-get-articles
+
 ***
 Retrieves information related to articles for a specific indicator.
 
@@ -1534,6 +1593,7 @@ Retrieves information related to articles for a specific indicator.
 #### Base Command
 
 `pt-get-articles`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1561,9 +1621,11 @@ Retrieves information related to articles for a specific indicator.
 
 
 #### Command Example
+
 ```!pt-get-articles query=dummy.com```
 
 #### Context Example
+
 ```json
 {
     "PassiveTotal": {
@@ -1601,13 +1663,16 @@ Retrieves information related to articles for a specific indicator.
 #### Human Readable Output
 
 >### Total Retrieved Record(s): 1
+
 >### Article(s)
+
 >|GUID|Title|Summary|Type|Tags|Categories|Article Link|Published Date (GMT)|
 >|---|---|---|---|---|---|---|---|
->| 12e123b1 | Free PlayStations on the Internet are Probably an Online Scam | Did you know that you can get all kinds of free stuff, just by giving out your personal information? The internet is full of these fake reward scams which RiskIQ's sytems surface every hour of the day. | public | fake rewards, playstation, scam | Categories 1, Categories 2 | https://community.riskiq.com/article/12e123b1 | Mon Aug 29 20:00:00 VET 2016 |
+>| 12e123b1 | Free PlayStations on the Internet are Probably an Online Scam | Did you know that you can get all kinds of free stuff, just by giving out your personal information? The internet is full of these fake reward scams which RiskIQ's sytems surface every hour of the day. | public | fake rewards, playstation, scam | Categories 1, Categories 2 | <https://community.riskiq.com/article/12e123b1> | Mon Aug 29 20:00:00 VET 2016 |
 
 
 ### pt-get-data-card
+
 ***
 Retrieves a summary data card associated with the given query.
 
@@ -1615,6 +1680,7 @@ Retrieves a summary data card associated with the given query.
 #### Base Command
 
 `pt-get-data-card`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1659,9 +1725,11 @@ Retrieves a summary data card associated with the given query.
 
 
 #### Command Example
+
 ```!pt-get-data-card query="1.1.1.1"```
 
 #### Context Example
+
 ```json
 {
     "PassiveTotal": {
@@ -1728,12 +1796,14 @@ Retrieves a summary data card associated with the given query.
 #### Human Readable Output
 
 >### Data Card Summary
+
 >|Name|Type|Netblock|Autonomous System Number|Host Provider|Operating System|Data Card Summary|
 >|---|---|---|---|---|---|---|
 >| 1.1.1.1 | IP Address | 1.1.1.0/24 | AS13335 - CLOUDFLARENET | Cloudflare | CentOS | Resolutions: [1997](https://community.pt.com/search/1.1.1.1/resolutions), Services: [3](https://community.pt.com/search/1.1.1.1/services), Certificates: [3742](https://community.pt.com/search/1.1.1.1/domaincertificates), Hashes: [1000](https://community.pt.com/search/1.1.1.1/hashes), Projects: [4](https://community.pt.com/search/1.1.1.1/projects), Articles: 0, Trackers: [3983](https://community.pt.com/search/1.1.1.1/trackers), Components: [914](https://community.pt.com/search/1.1.1.1/components), Host Pairs: [6987](https://community.pt.com/search/1.1.1.1/hostpairs), Reverse Dns: [5](https://community.pt.com/search/1.1.1.1/dns), Cookies: [23346](https://community.pt.com/search/1.1.1.1/cookies) |
 
 
 ### pt-get-reputation
+
 ***
 Gets reputation for a given domain, host or IP.
 
@@ -1741,6 +1811,7 @@ Gets reputation for a given domain, host or IP.
 #### Base Command
 
 `pt-get-reputation`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1762,9 +1833,11 @@ Gets reputation for a given domain, host or IP.
 
 
 #### Command Example
+
 ```!pt-get-reputation query="amazon.hksupd.com"```
 
 #### Context Example
+
 ```json
 {
     "PassiveTotal": {
@@ -1788,13 +1861,16 @@ Gets reputation for a given domain, host or IP.
 #### Human Readable Output
 
 >The reputation score for 'amazon.hksupd.com' is 100 and is classified as 'MALICIOUS'.
+
 >### Reputation Rules
+
 >|Name|Description|Severity|
 >|---|---|---|
 >| [RiskIQ Intel Article](https://community.pt.com/article/d0bf5d18) | Vermilion Strike: Linux and Windows Re-implementation of Cobalt Strike | 5 |
 
 
 ### ip
+
 ***
 Checks the reputation of an IP address.
 
@@ -1802,6 +1878,7 @@ Checks the reputation of an IP address.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1821,16 +1898,18 @@ Checks the reputation of an IP address.
 | PassiveTotal.IP.rules.severity | Number | Severity of the rule. | 
 | PassiveTotal.IP.rules.link | String | Link to the rule. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Score | Number | The reputation score. | 
+| DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | IP.Address | String | The IP Address. | 
 
 
 #### Command Example
+
 ```!ip ip=8.8.8.8```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -1862,13 +1941,16 @@ Checks the reputation of an IP address.
 #### Human Readable Output
 
 >The reputation score for '8.8.8.8' is 3 and is classified as 'UNKNOWN'.
+
 >### Reputation Rules
+
 >|Name|Description|Severity|
 >|---|---|---|
 >| Open ports observed | The number of open ports may indicate maliciousness | 3 |
 
 
 ### pt-list-intel-profiles
+
 ***
 Retrieves the list of all profiles.
 
@@ -1876,6 +1958,7 @@ Retrieves the list of all profiles.
 #### Base Command
 
 `pt-list-intel-profiles`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1905,9 +1988,11 @@ Retrieves the list of all profiles.
 
 
 #### Command Example
+
 ```!pt-list-intel-profiles id="apt33"```
 
 #### Context Example
+
 ```json
 {
     "PassiveTotal": {
@@ -1973,12 +2058,14 @@ Retrieves the list of all profiles.
 #### Human Readable Output
 
 >### Profile(s)
+
 >|ID|Title|Aliases|Public Indicators|RiskIQ Indicators|
 >|---|---|---|---|---|
 >| apt33 | APT33 | Elfin, Magnallium, Refined Kitten, Holmium, Cobalt Trinity  | 410 | 122 |
 
 
 ### pt-list-intel-profile-indicators
+
 ***
 Retrieves the indicators for the given profile.
 
@@ -1986,6 +2073,7 @@ Retrieves the indicators for the given profile.
 #### Base Command
 
 `pt-list-intel-profile-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2016,9 +2104,11 @@ Retrieves the indicators for the given profile.
 
 
 #### Command Example
+
 ```!pt-list-intel-profile-indicators id="apt33" page_size=1```
 
 #### Context Example
+
 ```json
 {
     "PassiveTotal": {
@@ -2046,13 +2136,16 @@ Retrieves the indicators for the given profile.
 #### Human Readable Output
 
 >### Total Retrieved Indicator(s) 532
+
 >### Indicator(s)
+
 >|ID|Artifact Value|Type|First Seen (GMT)|Last Seen (GMT)|Source|
 >|---|---|---|---|---|---|
 >| apt33:00c417425a73db5a315d23fac8cb353f | 00c417425a73db5a315d23fac8cb353f | hash_md5 | 2017-03-06T00:00:00.000+00:00 | 2017-03-06T00:00:00.000+00:00 | OSINT |
 
 
 ### pt-list-my-attack-surface-insights
+
 ***
 Retrieves the attack surface insight  information of the individual's account.
 
@@ -2060,6 +2153,7 @@ Retrieves the attack surface insight  information of the individual's account.
 #### Base Command
 
 `pt-list-my-attack-surface-insights`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2086,9 +2180,11 @@ Retrieves the attack surface insight  information of the individual's account.
 
 
 #### Command Example
+
 ```!pt-list-my-attack-surface-insights priority="low"```
 
 #### Context Example
+
 ```json
 {
     "PassiveTotal": {
@@ -2128,6 +2224,7 @@ Retrieves the attack surface insight  information of the individual's account.
 #### Human Readable Output
 
 >### Low Severity Insights
+
 >6 Active of 11 Insights - 165 Observations
 >
 >|Name|Description|Observations|Insight ID|Segment By|
@@ -2137,6 +2234,7 @@ Retrieves the attack surface insight  information of the individual's account.
 
 
 ### pt-list-my-attack-surfaces
+
 ***
 Retrieves the attack surface information of the individual's account.
 
@@ -2144,6 +2242,7 @@ Retrieves the attack surface information of the individual's account.
 #### Base Command
 
 `pt-list-my-attack-surfaces`
+
 #### Input
 
 
@@ -2167,9 +2266,11 @@ Retrieves the attack surface information of the individual's account.
 
 
 #### Command Example
+
 ```!pt-list-my-attack-surfaces```
 
 #### Context Example
+
 ```json
 {
     "PassiveTotal": {
@@ -2198,12 +2299,14 @@ Retrieves the attack surface information of the individual's account.
 #### Human Readable Output
 
 >### Attack Surface(s)
+
 >|ID|Name|High Severity|Medium Severity|Low Severity|
 >|---|---|---|---|---|
 >| 88256 | [RiskIQ, Inc.](https://community.pt.com/attack-surfaces/88256) | 13 observations | 4 observations | 165 observations |
 
 
 ### pt-list-third-party-attack-surface
+
 ***
 Retrieves the attack surface observations by severity level for the given third-party account.
 
@@ -2211,6 +2314,7 @@ Retrieves the attack surface observations by severity level for the given third-
 #### Base Command
 
 `pt-list-third-party-attack-surface`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2239,9 +2343,11 @@ Retrieves the attack surface observations by severity level for the given third-
 
 
 #### Command Example
+
 ```!pt-list-third-party-attack-surface```
 
 #### Context Example
+
 ```json
 {
     "PassiveTotal": {
@@ -2297,6 +2403,7 @@ Retrieves the attack surface observations by severity level for the given third-
 #### Human Readable Output
 
 >### Attack Surface(s)
+
 >|ID|Name|High Severity|Medium Severity|Low Severity|
 >|---|---|---|---|---|
 >| 45998 | [Mitsubishi Corporation](https://community.pt.com/attack-surfaces/45998) | 3 observations | 35 observations | 92 observations |
@@ -2304,6 +2411,7 @@ Retrieves the attack surface observations by severity level for the given third-
 
 
 ### pt-list-third-party-attack-surface-insights
+
 ***
 Retrieves the attack surface insight information of the given third-party account.
 
@@ -2311,6 +2419,7 @@ Retrieves the attack surface insight information of the given third-party accoun
 #### Base Command
 
 `pt-list-third-party-attack-surface-insights`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2339,9 +2448,11 @@ Retrieves the attack surface insight information of the given third-party accoun
 
 
 #### Command Example
+
 ```!pt-list-third-party-attack-surface-insights id="45998" priority="low"```
 
 #### Context Example
+
 ```json
 {
     "PassiveTotal": {
@@ -2384,6 +2495,7 @@ Retrieves the attack surface insight information of the given third-party accoun
 #### Human Readable Output
 
 >### Low Severity Insights
+
 >9 Active of 11 Insights - 92 Observations
 >
 >|Name|Description|Observations|Insight ID|Segment By|
@@ -2392,6 +2504,7 @@ Retrieves the attack surface insight information of the given third-party accoun
 >| Affected CVSS Page | Root page assets with any CVSS/CVSS v3 score.  | 0 | 40466 | savedfilter_metric_15881 |
 
 ### pt-list-my-attack-surface-assets
+
 ***
 Retrieves the attack surface asset information of the individual's account.
 
@@ -2399,6 +2512,7 @@ Retrieves the attack surface asset information of the individual's account.
 #### Base Command
 
 `pt-list-my-attack-surface-assets`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2426,9 +2540,11 @@ Retrieves the attack surface asset information of the individual's account.
 
 
 #### Command Example
+
 ```!pt-list-my-attack-surface-assets id="40466" segment_by="savedfilter_metric_29634"```
 
 #### Context Example
+
 ```json
 {
     "PassiveTotal": {
@@ -2458,12 +2574,14 @@ Retrieves the attack surface asset information of the individual's account.
 #### Human Readable Output
 
 >### Asset(s)
+
 >|Name|Type|First Seen (GMT)|Last Seen (GMT)|
 >|---|---|---|---|
 >| financialtradie.com | DOMAIN | 2016-05-25 20:07:40 | 2021-09-19 09:50:32 |
 
 
 ### pt-list-my-attack-surface-vulnerable-components
+
 ***
 Retrieves the attack surface vulnerable component information of the individual's account.
 
@@ -2471,6 +2589,7 @@ Retrieves the attack surface vulnerable component information of the individual'
 #### Base Command
 
 `pt-list-my-attack-surface-vulnerable-components`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2494,9 +2613,11 @@ Retrieves the attack surface vulnerable component information of the individual'
 
 
 #### Command Example
+
 ```!pt-list-my-attack-surface-vulnerable-components page_size=2```
 
 #### Context Example
+
 ```json
 {
     "PassiveTotal": {
@@ -2529,6 +2650,7 @@ Retrieves the attack surface vulnerable component information of the individual'
 #### Human Readable Output
 
 >### Vulnerable Component(s)
+
 >|Name|Type|Severity|Asset Count|
 >|---|---|---|---|
 >| nginx 1.14.0 | Server | HIGH | 129 |
@@ -2536,6 +2658,7 @@ Retrieves the attack surface vulnerable component information of the individual'
 
 
 ### pt-list-my-attack-surface-vulnerabilities
+
 ***
 Retrieves the attack surface vulnerability information of the individual's account.
 
@@ -2543,6 +2666,7 @@ Retrieves the attack surface vulnerability information of the individual's accou
 #### Base Command
 
 `pt-list-my-attack-surface-vulnerabilities`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2567,9 +2691,11 @@ Retrieves the attack surface vulnerability information of the individual's accou
 
 
 #### Command Example
+
 ```!pt-list-my-attack-surface-vulnerabilities page_size=2```
 
 #### Context Example
+
 ```json
 {
     "PassiveTotal": {
@@ -2612,6 +2738,7 @@ Retrieves the attack surface vulnerability information of the individual's accou
 #### Human Readable Output
 
 >### Vulnerabilities
+
 >|CVE ID|CWE ID|RiskIQ Priority Score|Asset Count|
 >|---|---|---|---|
 >| CVE-2021-23017 | CWE-193  | 98.0 | 149 |
@@ -2619,6 +2746,7 @@ Retrieves the attack surface vulnerability information of the individual's accou
 
 
 ### pt-list-my-attack-surface-observations
+
 ***
 Retrieves the attack surface vulnerability observation information of the individual's account.
 
@@ -2626,6 +2754,7 @@ Retrieves the attack surface vulnerability observation information of the indivi
 #### Base Command
 
 `pt-list-my-attack-surface-observations`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2652,9 +2781,11 @@ Retrieves the attack surface vulnerability observation information of the indivi
 
 
 #### Command Example
+
 ```!pt-list-my-attack-surface-observations cve_id="CVE-2021-23017" page_size=2```
 
 #### Context Example
+
 ```json
 {
     "PassiveTotal": {
@@ -2695,6 +2826,7 @@ Retrieves the attack surface vulnerability observation information of the indivi
 #### Human Readable Output
 
 >### Observation(s)
+
 >|Name|Type|First Seen (GMT)|Last Seen (GMT)|
 >|---|---|---|---|
 >| riskiq.app | HOST | 2018-05-11 20:40:17 | 2021-09-19 14:46:48 |
@@ -2702,6 +2834,7 @@ Retrieves the attack surface vulnerability observation information of the indivi
 
 
 ### pt-list-third-party-attack-surface-assets
+
 ***
 Retrieves the attack surface asset information of the given third-party account.
 
@@ -2709,6 +2842,7 @@ Retrieves the attack surface asset information of the given third-party account.
 #### Base Command
 
 `pt-list-third-party-attack-surface-assets`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2738,9 +2872,11 @@ Retrieves the attack surface asset information of the given third-party account.
 
 
 #### Command Example
+
 ```!pt-list-third-party-attack-surface-assets id="40464" vendor_id="45998" segment_by="savedfilter_metric_29644"```
 
 #### Context Example
+
 ```json
 {
     "PassiveTotal": {
@@ -2779,6 +2915,7 @@ Retrieves the attack surface asset information of the given third-party account.
 #### Human Readable Output
 
 >### Asset(s)
+
 >|Name|Type|First Seen (GMT)|Last Seen (GMT)|
 >|---|---|---|---|
 >| 160.189.11.4 | IP_ADDRESS | 2010-06-24 07:49:19 | 2021-09-21 23:02:08 |
@@ -2786,6 +2923,7 @@ Retrieves the attack surface asset information of the given third-party account.
 
 
 ### pt-list-third-party-attack-surface-vulnerable-components
+
 ***
 Retrieves the attack surface vulnerable component information of the given third-party account.
 
@@ -2793,6 +2931,7 @@ Retrieves the attack surface vulnerable component information of the given third
 #### Base Command
 
 `pt-list-third-party-attack-surface-vulnerable-components`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2818,9 +2957,11 @@ Retrieves the attack surface vulnerable component information of the given third
 
 
 #### Command Example
+
 ```!pt-list-third-party-attack-surface-vulnerable-components id="45998" page_size=2```
 
 #### Context Example
+
 ```json
 {
     "PassiveTotal": {
@@ -2856,6 +2997,7 @@ Retrieves the attack surface vulnerable component information of the given third
 #### Human Readable Output
 
 >### Vulnerable Component(s)
+
 >|Name|Type|Severity|Asset Count|
 >|---|---|---|---|
 >| Microsoft-IIS 8.5 | Server | MEDIUM | 14 |
@@ -2863,6 +3005,7 @@ Retrieves the attack surface vulnerable component information of the given third
 
 
 ### pt-list-third-party-attack-surface-vulnerabilities
+
 ***
 Retrieves the attack surface vulnerability information of the given third-party account.
 
@@ -2870,6 +3013,7 @@ Retrieves the attack surface vulnerability information of the given third-party 
 #### Base Command
 
 `pt-list-third-party-attack-surface-vulnerabilities`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2896,9 +3040,11 @@ Retrieves the attack surface vulnerability information of the given third-party 
 
 
 #### Command Example
+
 ```!pt-list-third-party-attack-surface-vulnerabilities id="45998" page_size=2```
 
 #### Context Example
+
 ```json
 {
     "PassiveTotal": {
@@ -2944,6 +3090,7 @@ Retrieves the attack surface vulnerability information of the given third-party 
 #### Human Readable Output
 
 >### Vulnerabilities
+
 >|CVE ID|CWE ID|RiskIQ Priority Score|Asset Count|
 >|---|---|---|---|
 >| CVE-2020-11022 | CWE-79  | 61.0 | 19 |
@@ -2951,6 +3098,7 @@ Retrieves the attack surface vulnerability information of the given third-party 
 
 
 ### pt-list-third-party-attack-surface-observations
+
 ***
 Retrieves the attack surface vulnerability observation information of the given third-party account.
 
@@ -2958,6 +3106,7 @@ Retrieves the attack surface vulnerability observation information of the given 
 #### Base Command
 
 `pt-list-third-party-attack-surface-observations`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2986,9 +3135,11 @@ Retrieves the attack surface vulnerability observation information of the given 
 
 
 #### Command Example
+
 ```!pt-list-third-party-attack-surface-observations id="45998" cve_id="CVE-2020-11022" page_size=2```
 
 #### Context Example
+
 ```json
 {
     "PassiveTotal": {
@@ -3032,6 +3183,7 @@ Retrieves the attack surface vulnerability observation information of the given 
 #### Human Readable Output
 
 >### Observation(s)
+
 >|Name|Type|First Seen (GMT)|Last Seen (GMT)|
 >|---|---|---|---|
 >| blog.accesstage.com.br | HOST | 2015-05-12 14:58:34 | 2021-09-21 06:14:39 |

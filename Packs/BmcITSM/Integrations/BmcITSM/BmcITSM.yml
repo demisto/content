@@ -169,7 +169,7 @@ script:
   script: ""
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.11.10.115186
   commands:
   - name: bmc-itsm-user-list
     description: Retrieves a list of user profiles from BMC Helix ITSM. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
@@ -1161,6 +1161,10 @@ script:
       description: The task ticket summary.
       required: true
       defaultValue: ""
+    - name: customer_company
+      description: The name of the customer company.
+      required: false
+      defaultValue: ""
     - name: details
       description: The task ticket detailed description.
       required: true
@@ -1281,6 +1285,10 @@ script:
     - name: ticket_request_id
       description: The ID of the task ticket to update.
       required: true
+      defaultValue: ""
+    - name: customer_company
+      description: The name of the customer company.
+      required: false
       defaultValue: ""
     - name: summary
       description: The task ticket summary.

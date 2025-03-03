@@ -1,4 +1,5 @@
 from collections.abc import Callable
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -21,44 +22,57 @@ AUTHORIZATION_ERROR_MSG = 'There was a problem in retrieving an updated access t
 SAVED_SEARCH_HEADERS = [
     'etag', 'id', 'category', 'displayName', 'functionAlias', 'functionParameters', 'query', 'tags', 'version', 'type'
 ]
-LOG_ANALYTICS_RESOURCE = 'https://api.loganalytics.io'
-AZURE_MANAGEMENT_RESOURCE = 'https://management.azure.com'
-AUTH_CODE_SCOPE = 'https://api.loganalytics.io/Data.Read%20https://management.azure.com/user_impersonation'
 
 
 class Client:
     def __init__(self, self_deployed, refresh_token, auth_and_token_url, enc_key, redirect_uri, auth_code,
                  subscription_id, resource_group_name, workspace_name, verify, proxy, certificate_thumbprint,
-                 private_key, client_credentials, managed_identities_client_id=None):
+                 private_key, client_credentials, azure_cloud, managed_identities_client_id=None):
 
         tenant_id = refresh_token if self_deployed else ''
         refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
-        base_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/' \
-            f'{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/{workspace_name}'
+        self.azure_cloud = azure_cloud or AZURE_WORLDWIDE_CLOUD
+        suffix = (
+            f"subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/"
+            + f"providers/Microsoft.OperationalInsights/workspaces/{workspace_name}"
+        )
+        auth_code_scope = (
+            f"{urljoin(self.azure_cloud.endpoints.log_analytics_resource_id, 'Data.Read')} "
+            f"{urljoin(self.azure_cloud.endpoints.resource_manager, 'user_impersonation')}"
+        )
+        resources_list = [self.azure_cloud.endpoints.resource_manager, self.azure_cloud.endpoints.log_analytics_resource_id]
+        base_url = urljoin(url=self.azure_cloud.endpoints.resource_manager, suffix=suffix)
+
+        demisto.debug(
+            f"##### AzureLogAnalytics #####{self.azure_cloud.name=} \n{base_url=} \n{resources_list=} \n{auth_code_scope=}"
+        )
+
         self.ms_client = MicrosoftClient(
             self_deployed=self_deployed,
             auth_id=auth_and_token_url,  # client_id for client credential
             refresh_token=refresh_token,
             enc_key=enc_key,  # client_secret for client credential
             redirect_uri=redirect_uri,
-            token_retrieval_url='https://login.microsoftonline.com/{tenant_id}/oauth2/token',
+            token_retrieval_url=urljoin(self.azure_cloud.endpoints.active_directory, '/{tenant_id}/oauth2/token'),
             grant_type=CLIENT_CREDENTIALS if client_credentials else AUTHORIZATION_CODE,  # disable-secrets-detection
             app_name=APP_NAME,
             base_url=base_url,
             verify=verify,
             proxy=proxy,
-            scope='' if client_credentials else AUTH_CODE_SCOPE,
+            scope='' if client_credentials else auth_code_scope,
             tenant_id=tenant_id,
             auth_code=auth_code,
             ok_codes=(200, 202, 204, 400, 401, 403, 404, 409),
             multi_resource=True,
-            resources=[AZURE_MANAGEMENT_RESOURCE, LOG_ANALYTICS_RESOURCE],
+            resources=resources_list,
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=Resources.management_azure,
+            managed_identities_resource_uri=self.azure_cloud.endpoints.resource_manager,
             command_prefix="azure-log-analytics",
+            azure_cloud=azure_cloud
         )
+        demisto.debug('##### AzureLogAnalytics ##### MicrosoftClient created successfully. Using {self.ms_client._base_url=}')
         self.subscription_id = subscription_id
         self.resource_group_name = resource_group_name
 
@@ -74,8 +88,9 @@ class Client:
         """
         filter_by_tag = azure_tag_formatter(tag) if tag else None
         params = {'$filter': filter_by_tag, '$top': limit, 'api-version': RESOURCE_GROUP_LIST_API_VERSION} if not full_url else {}
-        full_url = full_url if full_url else f'https://management.azure.com/subscriptions/{self.subscription_id}/resourcegroups'
-        return self.http_request('GET', full_url=full_url, params=params, resource=AZURE_MANAGEMENT_RESOURCE)
+        default_url = f"{self.azure_cloud.endpoints.resource_manager}subscriptions/{self.subscription_id}/resourcegroups"
+        full_url = full_url if full_url else default_url
+        return self.http_request('GET', full_url=full_url, params=params, resource=self.azure_cloud.endpoints.resource_manager)
 
     def http_request(self, method, url_suffix=None, full_url=None, params=None,
                      data=None, resource=None, timeout=10):
@@ -116,9 +131,7 @@ def validate_params(refresh_token, managed_identities_client_id, client_credenti
     if not refresh_token:
         raise DemistoException('Token / Tenant ID must be provided.')
     if not managed_identities_client_id:
-        if client_credentials and not enc_key:
-            raise DemistoException("Client Secret must be provided for client credentials flow.")
-        elif not self_deployed and not enc_key:
+        if not self_deployed and not enc_key:
             raise DemistoException('Key must be provided when not using self deployed flow. For further information see '
                                    'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
         elif not enc_key and not (certificate_thumbprint and private_key):
@@ -181,7 +194,8 @@ def test_connection(client: Client, params: dict[str, Any]) -> str:
     ):
         raise DemistoException('You must enter an authorization code in a self-deployed configuration.')
 
-    client.ms_client.get_access_token(AZURE_MANAGEMENT_RESOURCE)  # If fails, MicrosoftApiModule returns an error
+    # If fails, MicrosoftApiModule returns an error
+    client.ms_client.get_access_token(client.azure_cloud.endpoints.resource_manager)
     try:
         execute_query_command(client, {'query': 'Usage | take 1'})
     except Exception as e:
@@ -196,10 +210,10 @@ def test_connection(client: Client, params: dict[str, Any]) -> str:
 
 def execute_query_command(client: Client, args: dict[str, Any]) -> CommandResults:
     query = args['query']
-    timeout = arg_to_number(args.get('timeout', 10))
+    timeout = arg_to_number(args.get('timeout', 10)) or 10
     workspace_id = args.get('workspace_id') or demisto.params().get('workspaceID')
 
-    full_url = f'https://api.loganalytics.io/v1/workspaces/{workspace_id}/query'
+    full_url = f"{client.azure_cloud.endpoints.log_analytics_resource_id}/v1/workspaces/{workspace_id}/query"
 
     data = {
         "timespan": args.get('timespan'),
@@ -210,7 +224,7 @@ def execute_query_command(client: Client, args: dict[str, Any]) -> CommandResult
     remove_nulls_from_dictionary(data)
 
     response = client.http_request('POST', full_url=full_url, data=data,
-                                   resource=LOG_ANALYTICS_RESOURCE, timeout=timeout)
+                                   resource=client.azure_cloud.endpoints.log_analytics_resource_id, timeout=timeout)
 
     output = []
 
@@ -242,7 +256,7 @@ def list_saved_searches_command(client: Client, args: dict[str, Any]) -> Command
     limit = arg_to_number(args.get('limit')) or 50
     url_suffix = '/savedSearches'
 
-    response = client.http_request('GET', url_suffix, resource=AZURE_MANAGEMENT_RESOURCE)
+    response = client.http_request('GET', url_suffix, resource=client.azure_cloud.endpoints.resource_manager)
     response = response.get('value')
 
     from_index = min(page * limit, len(response))
@@ -269,7 +283,7 @@ def list_saved_searches_command(client: Client, args: dict[str, Any]) -> Command
 def get_saved_search_by_id_command(client: Client, args: dict[str, Any]) -> CommandResults:
     saved_search_id = args['saved_search_id']
     url_suffix = f'/savedSearches/{saved_search_id}'
-    response = client.http_request('GET', url_suffix, resource=AZURE_MANAGEMENT_RESOURCE)
+    response = client.http_request('GET', url_suffix, resource=client.azure_cloud.endpoints.resource_manager)
     output = flatten_saved_search_object(response)
 
     title = f'Saved search `{saved_search_id}` properties'
@@ -314,7 +328,7 @@ def create_or_update_saved_search_command(client: Client, args: dict[str, Any]) 
     if etag:
         data['etag'] = etag
 
-    response = client.http_request('PUT', url_suffix, data=data, resource=AZURE_MANAGEMENT_RESOURCE)
+    response = client.http_request('PUT', url_suffix, data=data, resource=client.azure_cloud.endpoints.resource_manager)
     output = flatten_saved_search_object(response)
 
     title = f'Saved search `{saved_search_id}` properties'
@@ -336,14 +350,18 @@ def delete_saved_search_command(client: Client, args: dict[str, Any]) -> str:
     saved_search_id = args['saved_search_id']
     url_suffix = f'/savedSearches/{saved_search_id}'
 
-    client.http_request('DELETE', url_suffix, resource=AZURE_MANAGEMENT_RESOURCE)
+    client.http_request('DELETE', url_suffix, resource=client.azure_cloud.endpoints.resource_manager)
 
     return f'Successfully deleted the saved search {saved_search_id}.'
 
 
 def subscriptions_list_command(client: Client) -> CommandResults:
-    response = client.http_request('GET', full_url='https://management.azure.com/subscriptions',
-                                   params={'api-version': SUBSCRIPTION_LIST_API_VERSION}, resource=AZURE_MANAGEMENT_RESOURCE)
+    response = client.http_request(
+        "GET",
+        full_url=f"{client.azure_cloud.endpoints.resource_manager}subscriptions",
+        params={"api-version": SUBSCRIPTION_LIST_API_VERSION},
+        resource=client.azure_cloud.endpoints.resource_manager,
+    )
     value = response.get('value', [])
 
     subscriptions = []
@@ -373,10 +391,12 @@ def workspace_list_command(client: Client) -> CommandResults:
     Returns:
         List[dict]: API response from Azure.
     """
-    full_url = f'https://management.azure.com/subscriptions/{client.subscription_id}/resourceGroups/' \
-        f'{client.resource_group_name}/providers/Microsoft.OperationalInsights/workspaces'
+    full_url = (
+        f"{client.azure_cloud.endpoints.resource_manager}subscriptions/{client.subscription_id}/resourceGroups/"
+        f"{client.resource_group_name}/providers/Microsoft.OperationalInsights/workspaces"
+    )
     response = client.http_request('GET', full_url=full_url, params={
-                                   'api-version': API_VERSION}, resource=AZURE_MANAGEMENT_RESOURCE)
+                                   'api-version': API_VERSION}, resource=client.azure_cloud.endpoints.resource_manager)
     value = response.get('value', [])
 
     workspaces = []
@@ -489,7 +509,7 @@ def get_search_job(client: Client, table_name: str) -> dict:
     response = client.http_request(
         'GET',
         url_suffix,
-        resource=AZURE_MANAGEMENT_RESOURCE
+        resource=client.azure_cloud.endpoints.resource_manager
     )
 
     return response
@@ -540,8 +560,14 @@ def run_search_job_command(args: dict[str, Any], client: Client) -> PollResult:
     if argToBoolean(args["first_run"]):
         if start_search_time_datetime := arg_to_datetime(args.get('start_search_time', '1 day ago'), "start_search_time"):
             start_search_time_iso = start_search_time_datetime.isoformat()
+        else:
+            start_search_time_iso = None
+            demisto.debug(f"{start_search_time_datetime=} -> {start_search_time_iso=}")
         if end_search_time_datetime := arg_to_datetime(args.get('end_search_time', 'now'), "end_search_time"):
             end_search_time_iso = end_search_time_datetime.isoformat()
+        else:
+            end_search_time_iso = None
+            demisto.debug(f"{end_search_time_datetime=} -> {end_search_time_iso=}")
         url_suffix = f"/tables/{table_name}"
         data = {
             "properties": {
@@ -557,7 +583,7 @@ def run_search_job_command(args: dict[str, Any], client: Client) -> PollResult:
             client.http_request(
                 'PUT',
                 url_suffix,
-                resource=AZURE_MANAGEMENT_RESOURCE,
+                resource=client.azure_cloud.endpoints.resource_manager,
                 data=data
             )  # the response contain only the status code [202]
         except Exception as e:
@@ -608,7 +634,7 @@ def delete_search_job_command(client: Client, args: dict[str, str]) -> CommandRe
         raise DemistoException(f"Deleting tables without '{TABLE_NAME_SUFFIX}' suffix is not allowed.")
     url_suffix = f"/tables/{table_name}"
 
-    client.http_request('DELETE', url_suffix, resource=AZURE_MANAGEMENT_RESOURCE)
+    client.http_request('DELETE', url_suffix, resource=client.azure_cloud.endpoints.resource_manager)
 
     return CommandResults(readable_output=f"Search job {table_name} deleted successfully.")
 
@@ -619,6 +645,7 @@ def main():
     args = demisto.args()
 
     demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"##### AzureLogAnalytics ##### {params.get('azure_cloud')=}")
 
     try:
         self_deployed = params.get('self_deployed', False)
@@ -660,6 +687,7 @@ def main():
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             client_credentials=client_credentials,
+            azure_cloud=get_azure_cloud(params, 'Azure Log Analytics'),
             managed_identities_client_id=managed_identities_client_id,
         )
 

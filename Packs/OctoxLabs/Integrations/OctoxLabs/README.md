@@ -1,22 +1,22 @@
 Octox Labs Cyber Security Asset Management platform
-This integration was integrated and tested with version 3.3.0 of OctoxLabs
+This integration was integrated and tested with version 4.5.0 of OctoxLabs
 
-## Configure OctoxLabs on Cortex XSOAR
+## Configure OctoxLabs in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for OctoxLabs.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | IP | Your Octox Labs Platform IP | True |
-    | API Key | Your Octox Labs API Key. \(https://github.com/octoxlabs/py-octoxlabs\#getting-started\) | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| IP | Your Octox Labs Platform IP | True |
+| API Key | Your Octox Labs API Key. \(https://github.com/octoxlabs/py-octoxlabs\#getting-started\) | True |
+| HTTPS Proxy | Your HTTPS Proxy URL | False |
+| No Verify | Don't Verify SSL | False |
+
+
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### octoxlabs-get-adapters
@@ -265,3 +265,525 @@ Fetch your queries by id
 | OctoxLabs.Queries.results.updated_at | String | Query updated at |
 | OctoxLabs.Queries.results.username | String | Query creator |
 | OctoxLabs.Queries.results.is_temporary | Boolean | Query is temporary |
+
+### octoxlabs-get-user-by-username
+
+***
+Fetch your Users by username
+
+#### Base Command
+
+`octoxlabs-get-user-by-username`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | User username. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OctoxLabs.User.results.id | Number | User id. | 
+| OctoxLabs.User.results.email | String | User email. | 
+| OctoxLabs.User.results.username | String | User username. | 
+| OctoxLabs.User.results.name | String | User name. | 
+| OctoxLabs.User.results.first_name | String | User first name | 
+| OctoxLabs.User.results.last_name | String | User last name | 
+| OctoxLabs.User.results.is_active | Boolean | User is active | 
+| OctoxLabs.User.results.is_ldap | Boolean | User is ldap | 
+| OctoxLabs.Users.results.groups | Unknown | List&lt;Dict&gt; User groups | 
+
+### octoxlabs-get-groups
+
+***
+Fetch your Groups
+
+#### Base Command
+
+`octoxlabs-get-groups`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| page | Group list page. | Optional | 
+| search | Search text. | Optional | 
+| size | Group list size. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OctoxLabs.Groups.count | Number | Groups count. | 
+| OctoxLabs.Groups.results.id | Number | Group id. | 
+| OctoxLabs.Groups.results.name | String | Group name. | 
+| OctoxLabs.Groups.results.users_count | Number | Group users count. | 
+
+### octoxlabs-get-companies
+
+***
+Fetch your Companies
+
+#### Base Command
+
+`octoxlabs-get-companies`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| page | Company list page. | Optional | 
+| search | Search text. | Optional | 
+| size | Company list size. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OctoxLabs.Companies.count | Number | Companies count. | 
+| OctoxLabs.Companies.results.id | Number | Company id. | 
+| OctoxLabs.Companies.results.name | String | Company name. | 
+| OctoxLabs.Companies.results.domain | String | Company domain. | 
+| OctoxLabs.Companies.results.is_active | Boolean | Company is active. | 
+
+### octoxlabs-get-domain-by-domain-name
+
+***
+Fetch your Domain by Domain name.
+
+#### Base Command
+
+`octoxlabs-get-domain-by-domain-name`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain_name | Domain name. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OctoxLabs.Domain.results.id | Number | Domain id. | 
+| OctoxLabs.Domain.results.domain | String | Domain domain. | 
+| OctoxLabs.Domain.results.tenant_name | String | Domain tenant name. | 
+| OctoxLabs.Domain.results.tenant | Number | Domain tenant. | 
+
+### octoxlabs-get-company-by-id
+
+***
+Fetch your Company by id.
+
+#### Base Command
+
+`octoxlabs-get-company-by-id`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| company_id | Company id. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OctoxLabs.Company.results.id | Number | Company id. | 
+| OctoxLabs.Company.results.name | String | Company name. | 
+| OctoxLabs.Company.results.domain | String | Company domain. | 
+| OctoxLabs.Company.results.is_active | Boolean | Company is active. | 
+
+### octoxlabs-get-permissions
+
+***
+Fetch your Permissions
+
+#### Base Command
+
+`octoxlabs-get-permissions`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| page | Permission list page. | Optional | 
+| search | Search text. | Optional | 
+| size | Permission list size. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OctoxLabs.Permissions.count | Number | Permissions count. | 
+| OctoxLabs.Permissions.results.id | Number | Permission id. | 
+| OctoxLabs.Permissions.results.name | String | Permission name. | 
+| OctoxLabs.Permissions.results.app | String | Permission app. | 
+
+### octoxlabs-get-domains
+
+***
+Fetch your Domains
+
+#### Base Command
+
+`octoxlabs-get-domains`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| page | Domain list page. | Optional | 
+| search | Search text. | Optional | 
+| size | Domain list size. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OctoxLabs.Domains.count | Number | Domains count. | 
+| OctoxLabs.Domains.results.id | Number | Domain id. | 
+| OctoxLabs.Domains.results.domain | String | Domain domain. | 
+| OctoxLabs.Domains.results.tenant_name | String | Domain tenant name. | 
+| OctoxLabs.Domains.results.tenant | Number | Domain tenant. | 
+
+### octoxlabs-get-domain-by-id
+
+***
+Fetch your Domain by id.
+
+#### Base Command
+
+`octoxlabs-get-domain-by-id`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain_id | Domain id. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OctoxLabs.Domain.results.id | Number | Domain id. | 
+| OctoxLabs.Domain.results.domain | String | Domain domain. | 
+| OctoxLabs.Domain.results.tenant_name | String | Domain tenant name. | 
+| OctoxLabs.Domain.results.tenant | Number | Domain tenant. | 
+
+### octoxlabs-get-company-by-name
+
+***
+Fetch your Company by name.
+
+#### Base Command
+
+`octoxlabs-get-company-by-name`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| company_name | Company name. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OctoxLabs.Company.count | Number | Companies count. | 
+| OctoxLabs.Company.results.id | Number | Company id. | 
+| OctoxLabs.Company.results.name | String | Company name. | 
+| OctoxLabs.Company.results.domain | String | Company domain. | 
+| OctoxLabs.Company.results.is_active | Boolean | Company is active. | 
+
+### octoxlabs-get-users
+
+***
+Fetch your Users
+
+#### Base Command
+
+`octoxlabs-get-users`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| page | User list page. | Optional | 
+| search | Search text. | Optional | 
+| size | User list size. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OctoxLabs.Users.count | Number | Users count. | 
+| OctoxLabs.Users.results.id | Number | User id. | 
+| OctoxLabs.Users.results.email | String | User email. | 
+| OctoxLabs.Users.results.username | String | User username. | 
+| OctoxLabs.Users.results.name | String | User name. | 
+| OctoxLabs.Users.results.first_name | String | User first name | 
+| OctoxLabs.Users.results.last_name | String | User last name | 
+| OctoxLabs.Users.results.is_active | Boolean | User is active | 
+| OctoxLabs.Users.results.is_ldap | Boolean | User is ldap | 
+| OctoxLabs.Users.results.groups | Unknown | List&lt;Dict&gt; User groups | 
+
+### octoxlabs-get-user-by-id
+
+***
+Fetch your User by id
+
+#### Base Command
+
+`octoxlabs-get-user-by-id`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | User id. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OctoxLabs.User.results.id | Number | User id. | 
+| OctoxLabs.User.results.email | String | User email. | 
+| OctoxLabs.User.results.username | String | User username. | 
+| OctoxLabs.User.results.name | String | User name. | 
+| OctoxLabs.User.results.first_name | String | User first name | 
+| OctoxLabs.User.results.last_name | String | User last name | 
+| OctoxLabs.User.results.is_active | Boolean | User is active | 
+| OctoxLabs.User.results.is_ldap | Boolean | User is ldap | 
+| OctoxLabs.User.results.groups | Unknown | List&lt;Dict&gt; User groups | 
+### octoxlabs-search-scroll-users
+
+***
+Search in your users.
+
+#### Base Command
+
+`octoxlabs-search-scroll-users`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | Query. | Optional | 
+| fields | Fields. | Optional | 
+| size | Size. (Default: 50). | Optional | 
+| discovery_id | Specific Discovery Id. | Optional | 
+| scroll_id | Specific Scroll Id. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OctoxLabs.ScrolledUsers.count | Number | Total users count. | 
+| OctoxLabs.ScrolledUsers.scroll_id | String | Specific Scroll Id | 
+| OctoxLabs.ScrolledUsers.results | Unknown | List Users information. | 
+
+### octoxlabs-get-application-detail
+
+***
+Fetch your application.
+
+#### Base Command
+
+`octoxlabs-get-application-detail`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| application_id | Your application id. | Required | 
+| discovery_id | Your device at specific discovery. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OctoxLabs.Application | Unknown | &lt;Dict&gt; Octoxlabs Application. | 
+
+### octoxlabs-search-scroll-avm
+
+***
+Search in your AVM.
+
+#### Base Command
+
+`octoxlabs-search-scroll-avm`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | Query. | Optional | 
+| size | Size. | Optional | 
+| discovery_id | Specific Discovery Id. | Optional | 
+| scroll_id | Specific Scroll Id. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OctoxLabs.ScrolledAVM.count | Number | Total vulnerabilities count. | 
+| OctoxLabs.ScrolledAVM.scroll_id | String | Specific Scroll Id | 
+| OctoxLabs.ScrolledAVM.results | Unknown | List Vulnerability information. | 
+
+### octoxlabs-search-scroll-devices
+
+***
+Search in your devices.
+
+#### Base Command
+
+`octoxlabs-search-scroll-devices`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | Query. | Optional | 
+| fields | Fields. | Optional | 
+| size | Size. (Default: 50). | Optional | 
+| discovery_id | Specific Discovery Id. | Optional | 
+| scroll_id | Specific Scroll Id. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OctoxLabs.ScrolledDevices.count | Number | Total devices count. | 
+| OctoxLabs.ScrolledDevices.scroll_id | String | Specific Scroll Id | 
+| OctoxLabs.ScrolledDevices.results | Unknown | List Device information. | 
+
+### octoxlabs-search-applications
+
+***
+Search in your Applications
+
+#### Base Command
+
+`octoxlabs-search-applications`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | Query. | Optional | 
+| fields | Fields. | Optional | 
+| page | Page. (Default: 1). | Optional | 
+| size | Size. (Default: 50). | Optional | 
+| discovery_id | Specific Discovery Id. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OctoxLabs.Applications.count | Number | Total applications count. | 
+| OctoxLabs.Applications.results | Unknown | List Application information. | 
+
+### octoxlabs-search-avm
+
+***
+Search in your AVM
+
+#### Base Command
+
+`octoxlabs-search-avm`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | Query. | Optional | 
+| fields | Fields. | Optional | 
+| page | Page. (Default: 1). | Optional | 
+| size | Size. (Default: 50). | Optional | 
+| discovery_id | Specific Discovery Id. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OctoxLabs.AVM.count | Number | Total vulnerabilities count. | 
+| OctoxLabs.AVM.results | Unknown | List Vulnerability information. | 
+
+### octoxlabs-search-scroll-applications
+
+***
+Search in your applications.
+
+#### Base Command
+
+`octoxlabs-search-scroll-applications`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | Query. | Optional | 
+| fields | Fields. | Optional | 
+| size | Size. (Default: 50). | Optional | 
+| discovery_id | Specific Discovery Id. | Optional | 
+| scroll_id | Specific Scroll Id. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OctoxLabs.ScrolledApplications.count | Number | Total applications count. | 
+| OctoxLabs.ScrolledApplications.scroll_id | String | Specific Scroll Id | 
+| OctoxLabs.ScrolledApplications.results | Unknown | List Application information. | 
+
+### octoxlabs-get-user-inventory-detail
+
+***
+Fetch your user.
+
+#### Base Command
+
+`octoxlabs-get-user-inventory-detail`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | Your user username. | Required | 
+| discovery_id | Your device at specific discovery. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OctoxLabs.UserInv | Unknown | &lt;Dict&gt; Octoxlabs User. | 
+
+### octoxlabs-search-users-inventory
+
+***
+Search in your User Inventory.
+
+#### Base Command
+
+`octoxlabs-search-users-inventory`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | Query. | Optional | 
+| fields | Fields. | Optional | 
+| page | Page. (Default: 1). | Optional | 
+| size | Size. (Default: 50). | Optional | 
+| discovery_id | Specific Discovery Id. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OctoxLabs.UserInventory.count | Number | Total users count. | 
+| OctoxLabs.UserInventory.results | Unknown | List User information. | 
+

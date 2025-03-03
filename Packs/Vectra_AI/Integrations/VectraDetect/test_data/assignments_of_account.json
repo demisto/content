@@ -1,0 +1,101 @@
+{
+    "count": 2,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "id": 13,
+            "assigned_by": {
+                "id": 52,
+                "username": "cds_xsoar"
+            },
+            "date_assigned": "2024-07-11T05:40:56Z",
+            "date_resolved": null,
+            "events": [
+                {
+                    "assignment_id": 13,
+                    "actor": 52,
+                    "event_type": "created",
+                    "datetime": "2024-07-11T05:40:56Z",
+                    "context": {
+                        "to": 20,
+                        "entity_t_score": 0,
+                        "entity_c_score": 0
+                    }
+                }
+            ],
+            "outcome": null,
+            "resolved_by": null,
+            "triaged_detections": {},
+            "host_id": null,
+            "account_id": 107,
+            "assigned_to": {
+                "id": 20,
+                "username": "admin"
+            }
+        },
+        {
+            "id": 12,
+            "assigned_by": {
+                "id": 52,
+                "username": "cds_xsoar"
+            },
+            "date_assigned": "2024-07-11T05:34:24Z",
+            "date_resolved": "2024-07-11T05:34:47Z",
+            "events": [
+                {
+                    "assignment_id": 12,
+                    "actor": 52,
+                    "event_type": "resolved",
+                    "datetime": "2024-07-11T05:34:47Z",
+                    "context": {
+                        "entity_t_score": 76,
+                        "entity_c_score": 88,
+                        "triage_as": "cdsa",
+                        "triaged_detection_ids": [
+                            2614
+                        ],
+                        "fixed_detection_ids": null,
+                        "created_rule_ids": [
+                            2794,
+                            2795,
+                            2796,
+                            2797
+                        ]
+                    }
+                },
+                {
+                    "assignment_id": 12,
+                    "actor": 52,
+                    "event_type": "created",
+                    "datetime": "2024-07-11T05:34:24Z",
+                    "context": {
+                        "to": 52,
+                        "entity_t_score": 76,
+                        "entity_c_score": 88
+                    }
+                }
+            ],
+            "outcome": {
+                "id": 1,
+                "builtin": true,
+                "user_selectable": true,
+                "title": "Benign True Positive",
+                "category": "benign_true_positive"
+            },
+            "resolved_by": {
+                "id": 52,
+                "username": "cds_xsoar"
+            },
+            "triaged_detections": [
+                2614
+            ],
+            "host_id": null,
+            "account_id": 107,
+            "assigned_to": {
+                "id": 52,
+                "username": "cds_xsoar"
+            }
+        }
+    ]
+}

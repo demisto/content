@@ -1,25 +1,25 @@
 ACTI provides intelligence regarding security threats and vulnerabilities.
 This integration was integrated and tested with version 2.93.0 of ACTI
 
-## Configure ACTI Indicator Query on Cortex XSOAR
+## Configure ACTI Indicator Query in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for ACTI Indicator Query.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | url | URL | True |
-    | API Token | The API Token to use for connection | True |
-    | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| url | URL | True |
+| API Token | The API Token to use for connection | True |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Checks the reputation of the given IP address.
 
@@ -27,6 +27,7 @@ Checks the reputation of the given IP address.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -44,13 +45,16 @@ Checks the reputation of the given IP address.
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 | DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor that was used to calculate the score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Score | String | The actual score. | 
 
 
 #### Command Example
+
 ```!ip ip=0.0.0.0```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -69,12 +73,14 @@ Checks the reputation of the given IP address.
 #### Human Readable Output
 
 >### Results
+
 >|Confidence|DbotReputation|LastPublished|Name|ThreatTypes|TypeOfUse|
 >|---|---|---|---|---|---|
->| 0 | 2 | 2018-04-25 14:20:30 | 0.0.0.0 | Cyber Espionage | MALWARE_DOWNLOAD,<br/>MALWARE_C2 |
+>| 0 | 2 | 2018-04-25 14:20:30 | 0.0.0.0 | Cyber Espionage | MALWARE_DOWNLOAD, MALWARE_C2 |
 
 
 ### domain
+
 ***
 Checks the reputation of the given domain.
 
@@ -82,6 +88,7 @@ Checks the reputation of the given domain.
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -104,8 +111,11 @@ Checks the reputation of the given domain.
 
 
 #### Command Example
+
 ```!domain domain=example.org```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -124,12 +134,14 @@ Checks the reputation of the given domain.
 #### Human Readable Output
 
 >### Results
+
 >|Confidence|DbotReputation|LastPublished|Name|ThreatTypes|TypeOfUse|
 >|---|---|---|---|---|---|
 >| 50 | 2 | 2019-09-18 15:56:49 | example.org | Cyber Crime | MALWARE_C2 |
 
 
 ### url
+
 ***
 Checks the reputation of the given URL.
 
@@ -137,6 +149,7 @@ Checks the reputation of the given URL.
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -159,8 +172,11 @@ Checks the reputation of the given URL.
 
 
 #### Command Example
+
 ```!url url=http://example.com```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -179,12 +195,14 @@ Checks the reputation of the given URL.
 #### Human Readable Output
 
 >### Results
+
 >|Confidence|DbotReputation|LastPublished|Name|ThreatTypes|TypeOfUse|
 >|---|---|---|---|---|---|
->| 50 | 2 | 2020-09-16 20:29:35 | http://example.com | Cyber Crime | MALWARE_C2 |
+>| 50 | 2 | 2020-09-16 20:29:35 | <http://example.com> | Cyber Crime | MALWARE_C2 |
 
 
 ### acti-get-ioc-by-uuid
+
 ***
 Checks reputation of a specific indicator(URL/IP/Domain) uuid.
 
@@ -192,6 +210,7 @@ Checks reputation of a specific indicator(URL/IP/Domain) uuid.
 #### Base Command
 
 `acti-get-ioc-by-uuid`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -220,8 +239,11 @@ Checks reputation of a specific indicator(URL/IP/Domain) uuid.
 
 
 #### Command Example
+
 ```!acti-get-ioc-by-uuid uuid=xxxx```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -240,12 +262,14 @@ Checks reputation of a specific indicator(URL/IP/Domain) uuid.
 #### Human Readable Output
 
 >### Results
+
 >|Confidence|DbotReputation|LastPublished|Name|ThreatTypes|TypeOfUse|
 >|---|---|---|---|---|---|
 >| 0 | 2 | 2017-01-11 20:56:22 | example.org | Cyber Espionage | MALWARE_C2 |
 
 
 ### acti-get-fundamentals-by-uuid
+
 ***
 Checks reputation of a specific Malware Family/ Threat Campaign/ Threat Group/ Threat Actor.
 
@@ -253,6 +277,7 @@ Checks reputation of a specific Malware Family/ Threat Campaign/ Threat Group/ T
 #### Base Command
 
 `acti-get-fundamentals-by-uuid`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -308,8 +333,11 @@ Checks reputation of a specific Malware Family/ Threat Campaign/ Threat Group/ T
 
 
 #### Command Example
+
 ```!acti-get-fundamentals-by-uuid uuid=7q2b129s-6421-4e22-a276-22be5f76cba8```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -336,7 +364,8 @@ Checks reputation of a specific Malware Family/ Threat Campaign/ Threat Group/ T
 #### Human Readable Output
 
 >### Danabot
->For more insight click: https://intelgraph.idefense.com/#/node/malware_family/view/7q2b129s-6421-4e22-a276-22be5f76cba8
+
+>For more insight click: <https://intelgraph.idefense.com/#/node/malware_family/view/7q2b129s-6421-4e22-a276-22be5f76cba8>
 >
 >| CreatedOn | DBotReputation | IndexTimestamp | LastModified | LastPublished | Name | Severity | ThreatTypes | Type |
 >|---|---|---|---|---|---|---|---|---|
@@ -344,6 +373,7 @@ Checks reputation of a specific Malware Family/ Threat Campaign/ Threat Group/ T
 
 
 ### acti-getThreatIntelReport
+
 ***
 Fetches Intelligence Alerts & Intelligence Reports.
 
@@ -351,6 +381,7 @@ Fetches Intelligence Alerts & Intelligence Reports.
 #### Base Command
 
 `acti-getThreatIntelReport`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -374,7 +405,7 @@ Fetches Intelligence Alerts & Intelligence Reports.
 | IAIR.type | String | The type of report i.e. an IA/IR , for example, 'intelligence_alert' | 
 | IAIR.uuid | String | The uuid of the IA/IR, for example, '8b8b48f1-92a0-411a-a073-3241f6819f8b' | 
 | IAIR.analysis | String | The analysis of the IA/IR, for example, 'COVID-19 Introduces Cyberthreat Opportunities...' | 
-| IAIR.attachment_links | String | Provides with the document links related to the Intelligence Alert. This field is specific to Intelligence Alert, for example, 'https://intelgraph.idefense.com/rest/files/download/...' | 
+| IAIR.attachment_links | String | Provides with the document links related to the Intelligence Alert. This field is specific to Intelligence Alert, for example, '<https://intelgraph.idefense.com/rest/files/download/>...' | 
 | IAIR.severity | String | Provides severity rating. This field is specific to Intelligence Alert, for example, '4' | 
 | IAIR.mitigation | String | Provides info on how to mitigate. This field is specific to Intelligence Alert, for example, '\#\# Expert, Experienced Advice Will be CriticalTo minimize targeting opportunities...' | 
 | IAIR.conclusion | String | Provides conclusion of the report. This field is specific to Intelligence Report | 
@@ -390,8 +421,11 @@ Fetches Intelligence Alerts & Intelligence Reports.
 
 
 #### Command Example
+
 ```!acti-getThreatIntelReport uuid=8b8b48f1-92a0-411a-a073-3241f6819f8b```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -426,6 +460,6 @@ Fetches Intelligence Alerts & Intelligence Reports.
 
 #### Human Readable Output
 
->Report has been fetched!
-><br>UUID: 8b8b48f1-92a0-411a-a073-3241f6819f8b
-><br>Link to view report: https://intelgraph.idefense.com/#/node/intelligence_alert/view/8b8b48f1-92a0-411a-a073-3241f6819f8b
+Report has been fetched!
+UUID: 8b8b48f1-92a0-411a-a073-3241f6819f8b
+Link to view report: <https://intelgraph.idefense.com/#/node/intelligence_alert/view/8b8b48f1-92a0-411a-a073-3241f6819f8b>

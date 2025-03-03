@@ -3,6 +3,20 @@
 ---
 Use the Microsoft Defender for Endpoint (previously Microsoft Defender Advanced Threat Protection (ATP)) integration for preventative protection, post-breach detection, automated investigation, and response.
 
+
+## Deprecation Announcement
+
+Note: Following [this](https://learn.microsoft.com/en-us/defender-endpoint/configure-siem) announcement by Microsoft about migrating from the deprecated SIEM API to the Graph API, we are deprecating the following:
+
+- **14 commands**
+- **Fetch-incidents functionality**
+
+### Replacement Options:
+- Some commands have direct replacements in the **Microsoft Graph Security** integration.
+- Others do not have exact replacements but offer alternatives that return similar data.
+- A few commands have no available replacements.
+[See Deprecation Details](#deprecation-details) to find details on the deprecated commands and their replacements or alternatives.
+
 ## Microsoft Defender Advanced Threat Protection Playbook
 
 ---
@@ -134,6 +148,8 @@ Please add the following permissions to the app registration. Choose application
 - evidence
 
 
+
+
 ## Commands
 
 ---
@@ -146,14 +162,14 @@ After you successfully execute a command, a DBot message appears in the War Room
 4. microsoft-atp-get-file-related-machines
 5. microsoft-atp-get-machine-details
 6. microsoft-atp-run-antivirus-scan
-7. microsoft-atp-list-alerts
-8. microsoft-atp-update-alert
-9. microsoft-atp-advanced-hunting
-10. microsoft-atp-create-alert
-11. microsoft-atp-get-alert-related-user
-12. microsoft-atp-get-alert-related-files
-13. microsoft-atp-get-alert-related-ips
-14. microsoft-atp-get-alert-related-domains
+7. microsoft-atp-list-alerts (Deprecated)
+8. microsoft-atp-update-alert (Deprecated)
+9. microsoft-atp-advanced-hunting (Deprecated)
+10. microsoft-atp-create-alert (Deprecated)
+11. microsoft-atp-get-alert-related-user (Deprecated)
+12. microsoft-atp-get-alert-related-files (Deprecated)
+13. microsoft-atp-get-alert-related-ips (Deprecated)
+14. microsoft-atp-get-alert-related-domains (Deprecated)
 15. microsoft-atp-list-machine-actions-details
 16. microsoft-atp-collect-investigation-package
 17. microsoft-atp-get-investigation-package-sas-uri
@@ -163,13 +179,13 @@ After you successfully execute a command, a DBot message appears in the War Room
 21. microsoft-atp-list-investigations
 22. microsoft-atp-start-investigation
 23. microsoft-atp-get-domain-statistics
-24. microsoft-atp-get-domain-alerts
+24. microsoft-atp-get-domain-alerts (Deprecated)
 25. microsoft-atp-get-domain-machines
 26. microsoft-atp-get-file-statistics
-27. microsoft-atp-get-file-alerts
+27. microsoft-atp-get-file-alerts (Deprecated)
 28. microsoft-atp-get-ip-statistics
-29. microsoft-atp-get-ip-alerts
-30. microsoft-atp-get-user-alerts
+29. microsoft-atp-get-ip-alerts (Deprecated)
+30. microsoft-atp-get-user-alerts (Deprecated)
 31. microsoft-atp-get-user-machines
 32. microsoft-atp-add-remove-machine-tag
 33. microsoft-atp-indicator-list (deprecated)
@@ -187,7 +203,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 45. microsoft-atp-get-file-info
 46. endpoint
 47. microsoft-atp-indicator-batch-update
-48. microsoft-atp-get-alert-by-id
+48. microsoft-atp-get-alert-by-id (Deprecated)
 49. microsoft-atp-request-and-download-investigation-package
 50. microsoft-atp-offboard-machine
 51. microsoft-atp-list-software
@@ -949,7 +965,9 @@ Machine.Scan
 >| ecee8124 | RunAntiVirusScan | 2f48b784-5da5-4e61-9957-012d2630f1e4 | test3 | Pending | 48990365 | desktop-s8 |
 
 
-### 7. microsoft-atp-list-alerts
+### 7. microsoft-atp-list-alerts (Deprecated)
+
+This command has been deprecated. Use the 'msg-search-alerts' command in the 'Microsoft Graph Security' integration instead.
 
 ---
 Gets a list of alerts that are present on the system. Filtering can be done on a single argument only.
@@ -1096,7 +1114,9 @@ Alert.ReadWrite.All
 >| da637798264000574516_1915313662 | 'Test_File' malware was prevented | Malware and unwanted software are undesirable applications that perform annoying, disruptive, or harmful actions on affected machines. Some of these undesirable applications can replicate and spread from one machine to another. Others are able to receive commands from remote attackers and perform activities associated with cyber attacks.<br/><br/>This detection might indicate that the malware was stopped from delivering its payload. However, it is prudent to check the machine for signs of infection. | 648 | Informational | Resolved | Malware | Test_File | 4cceb3c642212014e0e9553aa8b59e999ea515ff |
 
 
-### 8. microsoft-atp-update-alert
+### 8. microsoft-atp-update-alert (Deprecated)
+
+This command has been deprecated. Use the 'msg-update-alert' command in the 'Microsoft Graph Security' integration instead.
 
 ---
 Updates the properties of an alert entity.
@@ -1172,7 +1192,9 @@ Alert.ReadWrite.All
 The alert da637200417169017725_183736971 has been updated successfully
 
 
-### 9. microsoft-atp-advanced-hunting
+### 9. microsoft-atp-advanced-hunting (Deprecated)
+
+This command has been deprecated. Use the 'msg-advanced-hunting' command in the 'Microsoft Graph Security' integration instead.
 
 ---
 Runs programmatic queries in Microsoft Defender ATP Portal (<https://securitycenter.windows.com/hunting>). 
@@ -1272,7 +1294,9 @@ AdvancedQuery.Read.All
 |---|---|---|
 | 2020-02-23T07:14:42.1599815Z | 4899036531e374137f63289c3267bad772c13fef | 35275 |
 
-### 10. microsoft-atp-create-alert
+### 10. microsoft-atp-create-alert (Deprecated)
+
+This command has been deprecated. No available replacement.
 
 ---
 Creates a new alert entity using event data, as obtained from the Advanced Hunting.
@@ -1382,7 +1406,9 @@ Alert.ReadWrite.All
 | da637204886635759335_1480542752 | testing alert | test | 18 | Low | New | Backdoor | 4899036531e374137f63289c3267bad772c13fef |
 
 
-### 11. microsoft-atp-get-alert-related-user
+### 11. microsoft-atp-get-alert-related-user (Deprecated)
+
+This command has been deprecated. An alternative is to use the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration, which can retrieve `userAccount` information as part of the alert details.
 
 ---
 Retrieves the user associated with a specific alert.
@@ -1458,7 +1484,9 @@ User.Read.All
 | desktop-s2455r8 | demisto | S-1-5-21-4197691174-1403503641-4006700887-1001 | false | 2020-02-23T07:14:42Z | desktop-s2455r8\demisto | 2020-03-03T12:32:51Z | 4899036531e374137f63289c3267bad772c13fef | 1 | 4899036531e374137f63289c3267bad772c13fef | false |
 
 
-### 12. microsoft-atp-get-alert-related-files
+### 12. microsoft-atp-get-alert-related-files (Deprecated)
+
+This command has been deprecated. An alternative is to use the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration, which can retrieve `fileDetails` as part of the alert details.
 
 ---
 Retrieves the files associated to a specific alert.
@@ -1559,8 +1587,9 @@ File.Read.All
 | 36c5d12033b2eaf251bae61c00690ffb17fddc87 | 908b64b1971a979c7e3e8ce4621945cba84854cb98d76367b791a6e22b5f6d53 | 451584 |
 
 
-### 13. microsoft-atp-get-alert-related-ips
+### 13. microsoft-atp-get-alert-related-ips (Deprecated)
 
+This command has been deprecated. An alternative is to use the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration, which can retrieve `IpAddress` as part of the alert details.
 ---
 Retrieves the IP addresses associated to a specific alert.
 
@@ -1609,7 +1638,9 @@ Ip.Read.All
 Alert da637200417169017725_183736971 Related IPs: []
 
 
-### 14. microsoft-atp-get-alert-related-domains
+### 14. microsoft-atp-get-alert-related-domains (Deprecated)
+
+This command has been deprecated. An alternative is to use the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration to retrieve `DomainName` as part of the alert details.
 
 ---
 Retrieves the domains associated with a specific alert.
@@ -2324,8 +2355,9 @@ URL.Read.All
 | google.com | 2020-02-24T12:50:04Z | 2020-02-24T13:14:54Z | 1 |
 
 
-### 24. microsoft-atp-get-domain-alerts
+### 24. microsoft-atp-get-domain-alerts (Deprecated)
 
+This command has been deprecated. No available replacement.
 ---
 Retrieves a collection of alerts related to a given domain address.
 
@@ -2515,14 +2547,22 @@ File.Read.All
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MicrosoftATP.FileStatistics.Sha1 | String | The file SHA1 hash. | 
-| MicrosoftATP.FileStatistics.Statistics.OrgPrevalence | String | The prevalence of the file in the organization. | 
+| MicrosoftATP.FileStatistics.Statistics.OrgPrevalence | String | The number of times the file is detected in the organization. | 
+| MicrosoftATP.FileStatistics.Statistics.OrganizationPrevalence | Number | The number of times the file is detected in the organization. | 
 | MicrosoftATP.FileStatistics.Statistics.OrgFirstSeen | Date | The first date and time the file was seen in the organization. | 
 | MicrosoftATP.FileStatistics.Statistics.OrgLastSeen | Date | The last date and time the file was seen in the organization. | 
-| MicrosoftATP.FileStatistics.Statistics.GlobalPrevalence | String | The global prevalence of the file. | 
+| MicrosoftATP.FileStatistics.Statistics.GlobalPrevalence | String | The number of times the file is detected across all organizations by Microsoft Defender ATP. | 
+| MicrosoftATP.FileStatistics.Statistics.GloballyPrevalence | Number | The number of times the file is detected across all organizations by Microsoft Defender ATP. | 
 | MicrosoftATP.FileStatistics.Statistics.GlobalFirstObserved | Date | The first global observation date and time of the file. | 
 | MicrosoftATP.FileStatistics.Statistics.GlobalLastObserved | Date | The last global observation date and time of the file. | 
 | MicrosoftATP.FileStatistics.Statistics.TopFileNames | String | The top names of the file. | 
-
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.OrganizationPrevalence | Number | The number of times the indicator is detected in the organization. |
+| File.GlobalPrevalence | Number | The number of times the indicator is detected across all organizations by Microsoft Defender ATP. |
+| File.OrganizationFirstSeen | Date | The date and time when the indicator was first seen in the organization. |
+| File.OrganizationLastSeen | Date | The date and time when the indicator was last seen in the organization. |
+| File.FirstSeenBySource | Date | The date and time when the indicator was first seen by Microsoft Defender ATP. |
+| File.LastSeenBySource | Date | The date and time when the indicator was last seen by Microsoft Defender ATP. |
 
 ##### Command Example
 
@@ -2532,16 +2572,33 @@ File.Read.All
 
 ```json
 {
-    "MicrosoftATP.FileStatistics": {
-        "Sha1": "9fe3ba25e5660c23dfe478d577cfacde5795870c", 
-        "Statistics": {
-            "TopFileNames": [
-                "lsass.exe"
-            ], 
-            "GlobalFirstObserved": "2019-04-03T04:10:18.1001071Z", 
-            "GlobalPrevalence": "1355899", 
-            "OrgPrevalence": "0", 
-            "GlobalLastObserved": "2020-03-23T09:24:54.169574Z"
+    "File": {
+        "SHA1": "9fe3ba25e5660c23dfe478d577cfacde5795870c",
+        "FirstSeenBySource": "2019-04-03T04:10:18.1001071Z",
+        "LastSeenBySource": "2020-03-23T09:24:54.169574Z",
+        "GlobalPrevalence": 1355899,
+        "Hashes":[
+            {
+                "type" :"SHA1",
+                "value": "9fe3ba25e5660c23dfe478d577cfacde5795870c"
+            }
+        ],
+        "OrganizationPrevalence": 0
+    },
+    "MicrosoftATP": {
+        "FileStatistics": {
+            "Sha1": "9fe3ba25e5660c23dfe478d577cfacde5795870c", 
+            "Statistics": {
+                "TopFileNames": [
+                    "lsass.exe"
+                ], 
+                "GlobalFirstObserved": "2019-04-03T04:10:18.1001071Z", 
+                "GlobalPrevalence": "1355899",
+                "GloballyPrevalence": 1355899,
+                "OrgPrevalence": "0",
+                "OrganizationPrevalence": 0,
+                "GlobalLastObserved": "2020-03-23T09:24:54.169574Z"
+            }
         }
     }
 }
@@ -2551,12 +2608,20 @@ File.Read.All
 
 ##### Statistics on 9fe3ba25e5660c23dfe478d577cfacde5795870c file:
 
-|GlobalFirstObserved|GlobalLastObserved|GlobalPrevalence|OrgPrevalence|TopFileNames|
+|Global First Observed|Global Last Observed|Global Prevalence|Organization Prevalence|Top File Names|
 |---|---|---|---|---|
 | 2019-04-03T04:10:18.1001071Z | 2020-03-23T09:24:54.169574Z | 1355899 | 0 | lsass.exe |
 
 
-### 27. microsoft-atp-get-file-alerts
+##### File Indicator Example
+
+| Type | Value | Verdict | Related Incidents | Expiration | Global Prevalence | Organization Prevalence | First Seen By Source | Last Seen By Source | Organization First Seen | Organization Last Seen |
+|---|---|---|---|---|---|---|---|---|---|---|
+| File | 50ef7c645fd5cbb95d50fbaddf6213800f9296ec | Benign | 2 | Never | 195803 | 0 | April 03, 2019 4:10 AM | March 23, 2020 9:24 AM | N/A | N/A |
+
+### 27. microsoft-atp-get-file-alerts (Deprecated)
+
+This command has been deprecated. No available replacement.
 
 ---
 Retrieves a collection of alerts related to a given file hash.
@@ -2743,7 +2808,9 @@ Ip.Read.All
 | 2020-02-22T12:52:35Z | 2020-03-01T15:19:40Z | 1 |
 
 
-### 29. microsoft-atp-get-ip-alerts
+### 29. microsoft-atp-get-ip-alerts (Deprecated)
+
+This command has been deprecated. No available replacement.
 
 ---
 Retrieves a collection of alerts related to a given IP address.
@@ -2817,7 +2884,9 @@ Alert.ReadWrite.All
 **No entries.**
 
 
-### 30. microsoft-atp-get-user-alerts
+### 30. microsoft-atp-get-user-alerts (Deprecated)
+
+This command has been deprecated. No available replacement.
 
 ---
 Retrieves a collection of alerts related to a given user ID.
@@ -4864,7 +4933,9 @@ We suggest using the [TransformIndicatorToMSDefenderIOC automation](https://gith
 >| 5218 | 2233223322332233223322332233223322332233223322332233223322332222 | false |
 
 
-### microsoft-atp-get-alert-by-id
+### microsoft-atp-get-alert-by-id (Deprecated)
+
+This command has been deprecated. Use 'msg-get-alert-details' in the 'Microsoft Graph Security' integration instead.
 
 ---
 Retrieves specific alert by the given alert ID. 
@@ -6308,7 +6379,9 @@ User.Read.All
 >| contoso\\user1 | user1 | contoso | 2019-12-18T08:02:54Z | 2020-01-06T08:01:48Z | Interactive | True | False |
 
 
-### microsoft-atp-get-machine-alerts
+### microsoft-atp-get-machine-alerts (Deprecated)
+
+This command has been deprecated. No available replacement.
 
 ---
 Retrieves all alerts related to a specific device.
@@ -7174,3 +7247,80 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+### microsoft-atp-get-machine-by-ip
+
+***
+Find Machines seen with the requested internal IP in the time range of 15 minutes prior and after a given timestamp.
+
+#### Base Command
+
+`microsoft-atp-get-machine-by-ip`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | The endpoint IP address. | Required | 
+| timestamp | The timestamp in witch the machines were seen with the internal ip address, 15 minutes before and after it. The given timestamp must be in the past 30 days. Timestamp format example- 2019-09-22T08:44:05Z. | Required | 
+| limit | Maximum number of results to return. Default is 50. | Optional | 
+| all_results | Whether to retrieve all results. If true, the "limit" argument will be ignored. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.Machine.ID | String | The machine ID. | 
+| MicrosoftATP.Machine.ComputerDNSName | String | The machine DNS name. | 
+| MicrosoftATP.Machine.FirstSeen | Date | The first date and time the machine was observed by Microsoft Defender ATP. | 
+| MicrosoftATP.Machine.LastSeen | Date | The last date and time the machine was observed by Microsoft Defender ATP. | 
+| MicrosoftATP.Machine.OSPlatform | String | The operating system platform. | 
+| MicrosoftATP.Machine.OSVersion | String | The operating system version. | 
+| MicrosoftATP.Machine.OSProcessor | String | The operating system processor. | 
+| MicrosoftATP.Machine.LastIPAddress | String | The last IP on the machine. | 
+| MicrosoftATP.Machine.LastExternalIPAddress | String | The last machine IP to access the internet. | 
+| MicrosoftATP.Machine.OSBuild | Number | The operating system build number. | 
+| MicrosoftATP.Machine.HealthStatus | String | The machine health status. | 
+| MicrosoftATP.Machine.RBACGroupID | Number | The machine RBAC group ID. | 
+| MicrosoftATP.Machine.RBACGroupName | String | The machine RBAC group name. | 
+| MicrosoftATP.Machine.RiskScore | String | The machine risk score. | 
+| MicrosoftATP.Machine.ExposureLevel | String | The machine exposure score. | 
+| MicrosoftATP.Machine.IsAADJoined | Boolean | True if machine is AAD joined, False otherwise. | 
+| MicrosoftATP.Machine.AADDeviceID | String | The AAD Device ID. | 
+| MicrosoftATP.Machine.MachineTags | String | Set of machine tags. | 
+| MicrosoftATP.Machine.IPAddresses.ipAddress | String | The machine IP address. | 
+| MicrosoftATP.Machine.IPAddresses.MACAddress | String | The machine MAC address. | 
+| MicrosoftATP.Machine.IPAddresses.operationalStatus | String | The machine operational status. | 
+| MicrosoftATP.Machine.IPAddresses.type | String | The machine IP address type. | 
+| MicrosoftATP.Machine.AgentVersion | String | The machine Agent version. | 
+
+#### Command example
+```!microsoft-atp-get-machine-by-ip ip=8.8.8.8 timestamp=2024-05-23T10:15:00Z```
+#### Human Readable Output
+
+>### Microsoft Defender ATP Machine:
+>
+>|ID|ComputerDNSName|OSPlatform|LastIPAddress|LastExternalIPAddress|HealthStatus|RiskScore|ExposureLevel|
+>|---|---|---|---|---|---|---|---|
+>| f3bba49a | ec2amaz-ua9hieu | WindowsServer2016 | 1.2.3.4 | 127.0.0.1 | Active | None | High |
+
+
+## Deprecation Details
+
+
+| **Deprecated Commands**                     | **Replacement**                                                                                                                                               |
+|----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Fetch incidents`    | Use `Fetch incidents` in the `Microsoft Graph Security` integration, and select `Graph Security Alert` under the `Alert type`.                                                   |
+| `microsoft-atp-create-alert`    | No available replacement.                                                                                                                                     |
+| `microsoft-atp-get-alert-by-id` | Use `msg-get-alert-details` in the `Microsoft Graph Security` integration instead.                                                                            |
+| `microsoft-atp-get-alert-related-files` | An alternative is to use the `msg-get-alert-details` command in the `Microsoft Graph Security` integration, which can retrieve `fileDetails` as part of the alert details. See Microsoft documentation [here](https://learn.microsoft.com/en-us/graph/api/resources/security-fileevidence?view=graph-rest-1.0). |
+| `microsoft-atp-get-alert-related-ips`   | An alternative is to use the `msg-get-alert-details` command in the `Microsoft Graph Security` integration, which can retrieve `IpAddress` as part of the alert details. See Microsoft documentation [here](https://learn.microsoft.com/en-us/graph/api/resources/security-ipevidence?view=graph-rest-1.0). |
+| `microsoft-atp-get-alert-related-user`  | An alternative is to use the `msg-get-alert-details` command in the `Microsoft Graph Security` integration, which can retrieve `userAccount` information as part of the alert details. See Microsoft documentation [here](https://learn.microsoft.com/en-us/graph/api/resources/security-userevidence?view=graph-rest-1.0). |
+| `microsoft-atp-get-alert-related-domains` | An alternative is to use the `msg-get-alert-details` command in the `Microsoft Graph Security` integration to retrieve `DomainName` as part of the alert details. See Microsoft documentation [here](https://learn.microsoft.com/en-us/graph/api/resources/security-userevidence?view=graph-rest-1.0). |
+| `microsoft-atp-get-domain-alerts`       | No available replacement.                                                                                                                                 |
+| `microsoft-atp-get-file-alerts`         | No available replacement.                                                                                                                                 |
+| `microsoft-atp-get-ip-alerts`           | No available replacement.                                                                                                                                 |
+| `microsoft-atp-get-machine-alerts`      | No available replacement.                                                                                                                                 |
+| `microsoft-atp-get-user-alerts`         | No available replacement.                                                                                                                                 |
+| `microsoft-atp-list-alerts`             | Use the `msg-search-alerts` command in the `Microsoft Graph Security` integration instead.                                                                |
+| `microsoft-atp-update-alert`            | Use the `msg-update-alert` command in the `Microsoft Graph Security` integration instead.                                                                 |
+| `microsoft-atp-advanced-hunting`        | Use the `msg-advanced-hunting` command in the `Microsoft Graph Security` integration instead.                                                             |

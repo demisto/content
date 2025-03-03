@@ -31,6 +31,14 @@ function setLock(guid, info, version) {
         return [integrationContext[lockName], null];
     }
 }
+function attemptToAcquireLock(guid, lockInfo, version) {
+    logDebug("Attempting to acquire lock");
+    try {
+        setLock(guid, lockInfo, version);
+    } catch (err) {
+        logDebug(err.message);
+    }
+}
 var lockName = args.name || 'Default';
 
 switch (command) {
@@ -41,15 +49,16 @@ switch (command) {
         var lockTimeout = args.timeout || params.timeout || 600;
         var lockInfo = 'Locked by incident #' + incidents[0].id + '.';
         lockInfo += (args.info) ? ' Additional info: ' + args.info : '';
+        var pollingInterval = args.polling_interval || params.polling_interval || '20';
 
         var guid = args.guid || guid();
         var time = 0;
-        var lock, version;
+        var lock, version, lock_candidate;
 
         if (isDemistoVersionGE('8.0.0')) {  // XSOAR 8 lock implementation with polling.
             logDebug('Running on XSOAR version 8');
 
-            // check if the process already holds the lock
+            // check if a lock already exists in the integration context
             [lock, version] = getLock();
 
             if (typeof version === "object") {
@@ -57,23 +66,21 @@ switch (command) {
             }
             logDebug('Task guid: ' + guid + ' | Current lock is: ' + JSON.stringify(lock) + ', version: ' + version);
 
-            if (lock.guid === guid) {
+            // if no lock found, try to acquire a new lock
+            if (!lock.guid) {
+                attemptToAcquireLock(guid, lockInfo, version)
+                lock_candidate = getLock();
+            }
+
+            // stopping condition - the lock is acquired successfully
+            if (lock_candidate && lock_candidate[0].guid === guid) {
                 var md = '### Demisto Locking Mechanism\n';
                 md += 'Lock acquired successfully\n';
                 md += 'GUID: ' + guid;
                 logDebug(md)
                 return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md };
             }
-            else {
-                // attempt to acquire the lock
-                if (!lock.guid) {
-                    logDebug("Attempting to acquire lock")
-                    try {
-                        setLock(guid, lockInfo, version);
-                    } catch (err) {
-                        logDebug(err.message);
-                    }
-                }
+            else { // polling condition - the lock acquire attempt failed (another lock already exist)
                 var timeout_err_msg = 'Timeout waiting for lock\n';
                 timeout_err_msg += 'Lock name: ' + lockName + '\n';
                 timeout_err_msg += 'Lock info: ' + lock.info + '\n';
@@ -82,8 +89,8 @@ switch (command) {
                     Type: entryTypes.note,
                     Contents: 'Lock was not acquired, Polling.',
                     PollingCommand: 'demisto-lock-get',
-                    NextRun: '30',
-                    PollingArgs: { name: lockName, info: args.info, timeout: args.timeout, guid: guid, timeout_err_msg: timeout_err_msg },
+                    NextRun: pollingInterval,
+                    PollingArgs: { name: lockName, info: args.info, timeout: args.timeout, polling_interval: pollingInterval ,guid: guid, timeout_err_msg: timeout_err_msg },
                     Timeout: String(lockTimeout)
                 }
             }

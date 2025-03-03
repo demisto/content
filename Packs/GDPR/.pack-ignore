@@ -4,3 +4,6 @@ ignore=BA101
 [file:GDPRContactAuthorities.yml]
 ignore=BA124
 
+# GR103 is temporary, see CIAC-11705
+[file:playbook-GDPR_Breach_Notification.yml]
+ignore=GR103

@@ -37,30 +37,44 @@ args:
 - defaultValue: 1-49151
   description: Default server port numbers by which to decide the direction.
   name: server_ports
-comment: |-
-  Extract payloads of each stream from a pcap.
+comment: 'Extract payloads of each stream from a pcap.
+
   The payloads will be retrieved with an array of dictionaries of these keys:
+
   - protocol
+
   - client_ip
+
   - client_port
+
   - server_ip
+
   - server_port
+
   - stream_size
+
   - stream_text
+
   - stream_base64
+
   - outgoing_size
+
   - outgoing_text
+
   - outgoing_base64
+
   - incoming_size
+
   - incoming_text
-  - incoming_base64
+
+  - incoming_base64.'
 commonfields:
   id: PcapExtractStreams
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/pcap-miner:1.0.0.32154
+dockerimage: demisto/pcap-miner:1.0.0.2020843
 enabled: true
 name: PcapExtractStreams
 runas: DBotWeakRole

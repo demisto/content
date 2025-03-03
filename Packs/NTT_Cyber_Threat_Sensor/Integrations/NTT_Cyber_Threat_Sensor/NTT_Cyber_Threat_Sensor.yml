@@ -8,7 +8,7 @@ description: Retrieve alerts and recommendations from NTT CTS
 configuration:
 - display: 'The API key for accessing CTS over AWS '
   name: APIKEY
-  defaultvalue: ""
+  defaultvalue: ''
   type: 4
   required: true
 - display: Tenant identification. UUID formatted string
@@ -28,7 +28,7 @@ configuration:
   required: true
 - display: The unique key for accessing the alerts and active response recommendations
   name: SOARTOKEN
-  defaultvalue: ""
+  defaultvalue: ''
   type: 4
   required: true
 - display: Fetch incidents
@@ -115,7 +115,7 @@ script:
       type: boolean
     description: Collecting blobs, most commonly pcap from an incident
     execution: true
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   subtype: python3
 fromversion: 5.0.0

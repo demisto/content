@@ -2,7 +2,7 @@
     "name": "Druva",
     "description": "Centrally orchestrate ransomware response and recovery via API integrations and automated playbooks.  This content pack will empower you to get back to normal faster after security incidents such as insider threats and ransomware attacks.",
     "support": "partner",
-    "currentVersion": "1.1.11",
+    "currentVersion": "1.2.3",
     "author": "Druva",
     "url": "",
     "email": "techpartners@druva.com",

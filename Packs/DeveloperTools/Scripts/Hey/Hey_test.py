@@ -1,4 +1,3 @@
-import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import Hey as hey
 import pytest
@@ -35,70 +34,69 @@ def test_try_name_value_arg_to_dict():
 
 
 def test_construct_hey_query():
-    url = 'http://mock.com'
+    url = "http://mock.com"
     res = hey.construct_hey_query(url)
     assert res[0] == {}
-    assert res[1] == f'hey {url}'
+    assert res[1] == ["hey", url]
 
-    requests_number = '2'
+    requests_number = "2"
     res = hey.construct_hey_query(url, requests_number=requests_number)
-    assert res[0] == {'n': '2'}
-    assert res[1] == f'hey -n 2 {url}'
+    assert res[0] == {"n": "2"}
+    assert res[1] == ["hey", "-n", "2", url]
 
-    timeout = '2'
+    timeout = "2"
     res = hey.construct_hey_query(url, timeout=timeout)
-    assert res[0] == {'t': '2'}
-    assert res[1] == f'hey -t 2 {url}'
+    assert res[0] == {"t": "2"}
+    assert res[1] == ["hey", "-t", "2", url]
 
-    concurrency = '2'
+    concurrency = "2"
     res = hey.construct_hey_query(url, concurrency=concurrency)
-    assert res[0] == {'c': '2'}
-    assert res[1] == f'hey -c 2 {url}'
+    assert res[0] == {"c": "2"}
+    assert res[1] == ["hey", "-c", "2", url]
 
-    duration = '2'
+    duration = "2"
     res = hey.construct_hey_query(url, duration=duration)
-    assert res[0] == {'z': '2s'}
-    assert res[1] == f'hey -z 2s {url}'
+    assert res[0] == {"z": "2s"}
+    assert res[1] == ["hey", "-z", "2s", url]
 
-    method = 'POST'
+    method = "POST"
     res = hey.construct_hey_query(url, method=method)
-    assert res[0] == {'m': method}
-    assert res[1] == f'hey -m {method} {url}'
+    assert res[0] == {"m": method}
+    assert res[1] == ["hey", "-m", method, url]
 
-    disable_compression = 'false'
+    disable_compression = "false"
     res = hey.construct_hey_query(url, disable_compression=disable_compression)
     assert res[0] == {}
-    assert res[1] == f'hey {url}'
+    assert res[1] == ["hey", url]
 
-    disable_compression = 'true'
+    disable_compression = "true"
     res = hey.construct_hey_query(url, disable_compression=disable_compression)
     assert res[0] == {}
-    assert res[1] == f'hey --disable-compression {url}'
-
-    headers = 'a=1,b=2'
+    assert res[1] == ["hey", "--disable-compression", url]
+    headers = "a=1,b=2,c=3 4"
     res = hey.construct_hey_query(url, headers=headers)
     assert res[0] == {}
-    assert res[1] == f'hey -H a:1 -H b:2 {url}'
+    assert res[1] == ["hey", "-H", "a:1", "-H", "b:2", "-H", "c:3 4", url]
 
-    body = '{}'
+    body = "{}"
     res = hey.construct_hey_query(url, body=body)
-    assert res[0] == {'d': body}
-    assert res[1] == f'hey -d {body} {url}'
+    assert res[0] == {"d": body}
+    assert res[1] == ["hey", "-d", body, url]
 
     proxy = "a:1"
     res = hey.construct_hey_query(url, proxy=proxy)
-    assert res[0] == {'x': proxy}
-    assert res[1] == f'hey -x {proxy} {url}'
+    assert res[0] == {"x": proxy}
+    assert res[1] == ["hey", "-x", proxy, url]
 
     enable_http2 = "true"
     res = hey.construct_hey_query(url, enable_http2=enable_http2)
     assert res[0] == {}
-    assert res[1] == f'hey -h2 {url}'
+    assert res[1] == ["hey", "-h2", url]
 
     disable_redirects = "true"
     res = hey.construct_hey_query(url, disable_redirects=disable_redirects)
     assert res[0] == {}
-    assert res[1] == f'hey -disable-redirects {url}'
+    assert res[1] == ["hey", "-disable-redirects", url]
 
     res = hey.construct_hey_query(
         url=url,
@@ -112,19 +110,44 @@ def test_construct_hey_query():
         body=body,
         proxy=proxy,
         enable_http2=enable_http2,
-        disable_redirects=disable_redirects
+        disable_redirects=disable_redirects,
     )
     assert res[0] == {
-        't': timeout,
-        'n': requests_number,
-        'c': concurrency,
-        'm': method,
-        'z': duration + 's',
-        'd': body,
-        'x': proxy
+        "t": timeout,
+        "n": requests_number,
+        "c": concurrency,
+        "m": method,
+        "z": duration + "s",
+        "d": body,
+        "x": proxy,
     }
-    assert res[1] == 'hey --disable-compression -h2 -disable-redirects -H a:1 -H b:2 -t 2 -n 2 -c 2 -m POST -z' \
-                     ' 2s -d {} -x a:1 http://mock.com'
+    assert res[1] == [
+        "hey",
+        "--disable-compression",
+        "-h2",
+        "-disable-redirects",
+        "-H",
+        "a:1",
+        "-H",
+        "b:2",
+        "-H",
+        "c:3 4",
+        "-t",
+        "2",
+        "-n",
+        "2",
+        "-c",
+        "2",
+        "-m",
+        "POST",
+        "-z",
+        "2s",
+        "-d",
+        "{}",
+        "-x",
+        "a:1",
+        "http://mock.com",
+    ]
 
 
 def test_run_hey_test(mocker):

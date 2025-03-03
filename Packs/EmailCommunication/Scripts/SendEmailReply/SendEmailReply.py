@@ -245,7 +245,7 @@ def create_thread_context(email_code, email_cc, email_bcc, email_text, email_fro
 
 def send_new_email(incident_id, email_subject, subject_include_incident_id, email_to, email_body, service_mail,
                    email_cc, email_bcc, email_html_body, body_type, entry_id_list, email_code, mail_sender_instance,
-                   new_attachment_names):
+                   new_attachment_names, context_html_body):
     """Send new email.-
     Args:
         incident_id: The incident ID.
@@ -268,7 +268,7 @@ def send_new_email(incident_id, email_subject, subject_include_incident_id, emai
 
     email_result = send_new_mail_request(incident_id, email_subject, subject_include_incident_id, email_to, email_body,
                                          service_mail, email_cc, email_bcc, email_html_body, body_type, entry_id_list,
-                                         new_attachment_names, email_code, mail_sender_instance)
+                                         new_attachment_names, email_code, mail_sender_instance, context_html_body)
 
     if is_error(email_result):
         return_error(f'Error:\n {get_error(email_result)}')
@@ -284,7 +284,7 @@ def send_new_email(incident_id, email_subject, subject_include_incident_id, emai
 
 def send_new_mail_request(incident_id, email_subject, subject_include_incident_id, email_to, email_body, service_mail,
                           email_cc, email_bcc, email_html_body, body_type, entry_id_list, new_attachment_names, email_code,
-                          mail_sender_instance):
+                          mail_sender_instance, context_html_body):
     """
             Use message details from the selected thread to construct a new mail message, since
             resending a first-contact email does not have a Message ID to reply to.
@@ -334,7 +334,7 @@ def send_new_mail_request(incident_id, email_subject, subject_include_incident_i
     email_result = demisto.executeCommand("send-mail", mail_content)
 
     # Store message details in context entry
-    create_thread_context(email_code, email_cc, email_bcc, email_body, service_mail, email_html_body,
+    create_thread_context(email_code, email_cc, email_bcc, email_body, service_mail, context_html_body,
                           "", "", service_mail, subject_with_id, email_to, incident_id, new_attachment_names)
 
     return email_result
@@ -470,8 +470,8 @@ def get_reply_body(notes, incident_id, attachments, reputation_calc_async=False)
     else:
         return_error("Please add a note")
 
-    reply_html_body = format_body(reply_body)
-    return reply_body, reply_html_body
+    context_html_body, reply_html_body = format_body(reply_body)
+    return reply_body, context_html_body, reply_html_body
 
 
 def get_email_recipients(email_to, email_from, service_mail, mailbox):
@@ -644,19 +644,65 @@ def resend_first_contact(email_selected_thread, email_thread, incident_id, new_e
         reply_code = email_thread['EmailCommsThreadId']
         entry_id_list = get_entry_id_list(incident_id, [], new_email_attachments, files)
 
-        html_body = format_body(new_email_body)
+        context_html_body, html_body = format_body(new_email_body)
 
         final_email_cc = get_email_cc(thread_cc, add_cc)
         final_email_bcc = get_email_cc(thread_bcc, add_bcc)
         result = send_new_email(incident_id, reply_subject, subject_include_incident_id, new_email_recipients,
                                 new_email_body, service_mail, final_email_cc, final_email_bcc, html_body, body_type,
-                                entry_id_list, reply_code, mail_sender_instance, new_attachment_names)
+                                entry_id_list, reply_code, mail_sender_instance, new_attachment_names, context_html_body)
 
         return result
     else:
         return_error(f'The selected Thread Number to respond to ({email_selected_thread}) '
                      f'does not exist.  Please choose a valid Thread Number and re-try.')
         return None
+
+
+def handle_image_type(base64_string):
+    """
+    Analyze the type of the image by its first 8 characters in order to insert it into the src attribute in the HTML.
+
+    Args:
+        base64_string (str): The image converted to base64 format.
+
+    Returns:
+        str: The image type.
+    """
+    first_chars = base64_string[:8]
+    decoded_data = base64.b64decode(first_chars)
+    image_types = {
+        b'\xFF\xD8\xFF': 'jpeg',
+        b'\x89\x50\x4E\x47': 'png',
+        b'\x47\x49\x46\x38': 'gif',
+        b'\x42\x4D': 'bmp',
+        b'\x52\x49\x46\x46': 'WebP',
+        b'\x49\x49\x2A\x00': 'tiff',
+        b'\x4D\x4D\x00\x2A': 'tiff'
+    }
+    for signature, image_type in image_types.items():
+        if decoded_data.startswith(signature):
+            return image_type
+    return 'png'
+
+
+def convert_internal_url_to_base64(match):
+    """
+    - When an inline image is attached through the Email layout, we need to download the image data.
+    - Then, we replace the URL inside XSOAR with the base64-encoded version of the image.
+
+    Args:
+        match (str): The URL inside XSOAR where the image is tentatively stored.
+
+    Returns:
+        str: The src attribute with the base64-encoded image.
+    """
+    original_src = match.group(1)
+    result = demisto.executeCommand("core-api-download", {"uri": original_src})
+    with open(demisto.getFilePath(result[0]['FileID']).get("path"), 'rb') as f:
+        base64_data_image = base64.b64encode(f.read()).decode('utf-8')
+    image_type = handle_image_type(base64_data_image)
+    return f'src="data:image/{image_type};base64,{base64_data_image}"'
 
 
 def format_body(new_email_body):
@@ -666,15 +712,18 @@ def format_body(new_email_body):
         new_email_body (str): Email body text with or without Markdown formatting included
     Returns: (str) HTML email body
     """
-    return markdown(new_email_body,
-                    extensions=[
-                        'tables',
-                        'fenced_code',
-                        'legacy_em',
-                        'sane_lists',
-                        'nl2br',
-                        DemistoExtension(),
-                    ])
+    context_html_body = markdown(new_email_body,
+                                 extensions=[
+                                     'tables',
+                                     'fenced_code',
+                                     'legacy_em',
+                                     'sane_lists',
+                                     'nl2br',
+                                     DemistoExtension(),
+                                 ])
+    saas_xsiam_prefix = "/xsoar" if is_xsiam_or_xsoar_saas() else ""
+    html_body = re.sub(rf'src="({saas_xsiam_prefix}/markdown/[^"]+)"', convert_internal_url_to_base64, context_html_body)
+    return context_html_body, html_body
 
 
 def single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, body_type, attachments, files, email_subject,
@@ -710,7 +759,7 @@ def single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, body_t
                                                'customFields': {'emailgeneratedcode': email_code}})
     try:
         final_email_cc = get_email_cc(email_cc, add_cc)
-        reply_body, reply_html_body = get_reply_body(notes, incident_id, attachments, reputation_calc_async)
+        reply_body, context_html_body, reply_html_body = get_reply_body(notes, incident_id, attachments, reputation_calc_async)
         entry_id_list = get_entry_id_list(incident_id, attachments, [], files)
         result = validate_email_sent(incident_id, email_subject, subject_include_incident_id, email_to_str, reply_body, body_type,
                                      service_mail, final_email_cc, '', reply_html_body, entry_id_list,
@@ -775,11 +824,11 @@ def multi_thread_new(new_email_subject, subject_include_incident_id, new_email_r
     try:
         entry_id_list = get_entry_id_list(incident_id, [], new_email_attachments, files)
 
-        html_body = format_body(new_email_body)
+        context_html_body, html_body = format_body(new_email_body)
 
         result = send_new_email(incident_id, new_email_subject, subject_include_incident_id, new_email_recipients,
                                 new_email_body, service_mail, add_cc, add_bcc, html_body, body_type, entry_id_list, thread_code,
-                                mail_sender_instance, new_attachment_names)
+                                mail_sender_instance, new_attachment_names, context_html_body)
         return_results(result)
 
         # Clear fields for re-use
@@ -894,6 +943,12 @@ def multi_thread_reply(new_email_body, body_type, incident_id, email_selected_th
         return_error('The \'New Email Body\' field has not been set. Please set it and try again')
 
     try:
+        reply_recipients = ""
+        reply_mailbox = ""
+        reply_to_message_id = ""
+        thread_cc = ""
+        thread_bcc = ""
+        reply_code = ""
         incident_email_threads = get_email_threads(incident_id)
         if not incident_email_threads:
             return_error('Failed to retrieve email thread entries - reply not sent!')
@@ -959,10 +1014,10 @@ def multi_thread_reply(new_email_body, body_type, incident_id, email_selected_th
             entry_id_list = get_entry_id_list(incident_id, [], new_email_attachments, files)
 
             # Format any markdown in the email body as HTML
-            reply_html_body = format_body(new_email_body)
+            context_html_body, reply_html_body = format_body(new_email_body)
 
-            # Trim "Re:" from subject since the reply-mail command in both EWS and Gmail adds it again
-            reply_subject = reply_subject.lstrip("Re: ")
+            # Trim "Re:" and "RE:" from subject since the reply-mail command in both EWS and Gmail adds it again
+            reply_subject = reply_subject.removeprefix("Re: ").removeprefix("RE: ")
 
             # Send the email reply
             result = validate_email_sent(incident_id, reply_subject, subject_include_incident_id,
@@ -980,9 +1035,9 @@ def multi_thread_reply(new_email_body, body_type, incident_id, email_selected_th
                 subject_with_id = reply_subject
 
             # Store message details in context entry
-            reply_html_body = append_email_signature(reply_html_body)
+            context_html_body = append_email_signature(context_html_body)
             create_thread_context(reply_code, final_email_cc, final_email_bcc, new_email_body, service_mail,
-                                  reply_html_body, '', '', service_mail, subject_with_id, final_reply_recipients,
+                                  context_html_body, '', '', service_mail, subject_with_id, final_reply_recipients,
                                   incident_id, new_attachment_names)
 
             # Clear fields for re-use

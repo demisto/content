@@ -72,7 +72,7 @@ class IntegrationHTTPRequest(BaseModel):
 
     _normalize_headers = validator('headers', pre=True, allow_reuse=True)(
         load_json
-    )
+    )  # type: ignore[type-var]
 
 
 class Credentials(BaseModel):
@@ -207,6 +207,7 @@ class DefenderAuthenticator(BaseModel):
             if not self.ms_client:
                 demisto.debug(f"try init the ms client for the first time, {self.url=}")
                 self.ms_client = MicrosoftClient(
+                    endpoint=self.endpoint_type,
                     base_url=self.url,
                     tenant_id=self.tenant_id,
                     auth_id=self.client_id,
@@ -240,7 +241,7 @@ class DefenderHTTPRequest(IntegrationHTTPRequest):
 
     _normalize_url = validator('url', pre=True, allow_reuse=True)(
         lambda base_url: f'{base_url}/api/alerts'
-    )
+    )  # type: ignore[type-var]
 
 
 class DefenderClient(IntegrationEventsClient):

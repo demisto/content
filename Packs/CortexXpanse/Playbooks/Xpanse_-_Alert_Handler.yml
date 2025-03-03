@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 214bf91b-ba2c-4bc0-8f79-b8fa030361a1
+    taskid: 51e81457-177e-4950-8197-6bfcaabd0be7
     type: start
     task:
-      id: 214bf91b-ba2c-4bc0-8f79-b8fa030361a1
+      id: 51e81457-177e-4950-8197-6bfcaabd0be7
       version: -1
       name: ""
       iscommand: false
@@ -36,17 +36,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: ae2ce6f3-734a-47ff-84f6-61606557ffea
+    taskid: 2dbfd762-668c-4085-89db-75eeae61e6fe
     type: playbook
     task:
-      id: ae2ce6f3-734a-47ff-84f6-61606557ffea
+      id: 2dbfd762-668c-4085-89db-75eeae61e6fe
       version: -1
       name: Xpanse - NMap - Detect Service
       description: Looks at what ASM sub-type the alert is and uses NMap to do a validation scan.
-      playbookName: Xpanse - NMap - Detect Service
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: Xpanse - NMap - Detect Service
     nexttasks:
       '#none#':
       - "6"
@@ -72,7 +72,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 250
+          "y": 180
         }
       }
     note: false
@@ -84,10 +84,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: b216af93-2946-42a9-87b8-be99ddc48659
+    taskid: 30d2124a-8ddf-4901-8bd7-089476652a10
     type: title
     task:
-      id: b216af93-2946-42a9-87b8-be99ddc48659
+      id: 30d2124a-8ddf-4901-8bd7-089476652a10
       version: -1
       name: Complete
       type: title
@@ -100,7 +100,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 980
+          "y": 1370
         }
       }
     note: false
@@ -112,17 +112,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 0a1ed7f5-fc19-4362-87c5-686806c40cbd
+    taskid: c47edf3e-f390-4c0c-8e46-666c4429f94d
     type: playbook
     task:
-      id: 0a1ed7f5-fc19-4362-87c5-686806c40cbd
+      id: c47edf3e-f390-4c0c-8e46-666c4429f94d
       version: -1
       name: Xpanse - Alert Self-Enrichment
       description: Enrichment on the alert itself using Cortex Xpanse APIs.
-      playbookName: Xpanse - Alert Self-Enrichment
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: Xpanse - Alert Self-Enrichment
     nexttasks:
       '#none#':
       - "4"
@@ -137,7 +137,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 580
+          "y": 470
         }
       }
     note: false
@@ -149,27 +149,27 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: eb478d2a-e73f-4840-8682-b02f063b587a
+    taskid: e55bd85b-30af-42a7-8556-2d5bf31ddfa5
     type: playbook
     task:
-      id: eb478d2a-e73f-4840-8682-b02f063b587a
+      id: e55bd85b-30af-42a7-8556-2d5bf31ddfa5
       version: -1
       name: Xpanse - Alert Enrichment
-      playbookName: Xpanse - Alert Enrichment
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: Xpanse - Alert Enrichment
       description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - "10"
     separatecontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 780
+          "y": 630
         }
       }
     note: false
@@ -181,10 +181,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 6f78d9b9-f90e-4c99-833d-742e6697d336
+    taskid: e7947bb6-bd91-43f4-8b58-9ea6e402aa4d
     type: title
     task:
-      id: 6f78d9b9-f90e-4c99-833d-742e6697d336
+      id: e7947bb6-bd91-43f4-8b58-9ea6e402aa4d
       version: -1
       name: Is the service still exposed?
       type: title
@@ -200,7 +200,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 80
+          "y": 50
         }
       }
     note: false
@@ -212,10 +212,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 9d7740e1-a0b5-4fc5-8c01-e5e0b876bee4
+    taskid: 8db016d6-0000-4d73-8b2e-d6d5d1ab0e2f
     type: title
     task:
-      id: 9d7740e1-a0b5-4fc5-8c01-e5e0b876bee4
+      id: 8db016d6-0000-4d73-8b2e-d6d5d1ab0e2f
       version: -1
       name: Asset and Alert Enrichment
       type: title
@@ -231,7 +231,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 420
+          "y": 340
         }
       }
     note: false
@@ -241,20 +241,216 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "7":
+    continueonerrortype: ""
+    form:
+      description: Add one or more tags to the assets(s) associated with the current Cortex XSOAR incident.
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: What tag(s) do you want to add to asset(s)?
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: Specify a comma-separated list of tags you want to add to the asset(s) associated to the current Cortex XSOAR incident.
+        type: shortText
+      sender: Your SOC team
+      title: Determine tags to add to asset
+      totalanswers: 0
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 0
+        retriesinterval: 0
+      to:
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 54995d00-c6c0-4549-8ded-319d5bc01e0e
+      iscommand: false
+      name: Determine tags to add to asset(s)
+      type: collection
+      version: -1
+      description: Add one or more tags to the assets(s) associated with the current Cortex XSOAR incident.
+    taskid: 54995d00-c6c0-4549-8ded-319d5bc01e0e
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1020
+        }
+      }
+  "9":
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asm_id_list:
+        complex:
+          accessor: xpanseassetids
+          root: incident
+          transformers:
+          - args:
+              chars:
+                value:
+                  simple: '[]'
+            operator: StripChars
+          - args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '"'
+            operator: replace
+      tags:
+        complex:
+          accessor: Answers
+          root: Determine tags to add to asset
+          transformers:
+          - operator: LastArrayElement
+          - args:
+              field:
+                value:
+                  simple: "0"
+            operator: getField
+          - args:
+              delimiter:
+                value:
+                  simple: ','
+            operator: split
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Cortex Xpanse
+      description: Assigns tags to a list of assets.
+      id: 3279b4b2-f6ca-4f10-8bcf-c199409bcf5f
+      iscommand: true
+      name: Assign Tag to Asset(s)
+      script: Cortex Xpanse|||asm-tag-asset-assign
+      type: regular
+      version: -1
+    taskid: 3279b4b2-f6ca-4f10-8bcf-c199409bcf5f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1180
+        }
+      }
+  "10":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: inputs.WriteToXpanse
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: "yes"
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determine whether the playbook should write data back to Cortex Xpanse.
+      id: 62fb488b-6b5a-469d-800e-80a6e253d8b1
+      iscommand: false
+      name: Are we writing to Cortex Xpanse?
+      type: condition
+      version: -1
+    taskid: 62fb488b-6b5a-469d-800e-80a6e253d8b1
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 790
+        }
+      }
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "10_7_yes": 0.49
+    },
     "paper": {
       "dimensions": {
-        "height": 1125,
+        "height": 1515,
         "width": 380,
         "x": 450,
         "y": -80
       }
     }
   }
-inputs: []
+inputs:
+- description: Whether to write data back to Cortex Xpanse. 
+  key: WriteToXpanse
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "False"
 outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.8.0
+contentitemexportablefields:
+  contentitemfields: {}
+inputSections:
+- description: Generic group for inputs.
+  inputs:
+  - WriteToXpanse
+  name: General (Inputs group)
+outputSections:
+- description: Generic group for outputs.
+  name: General (Outputs group)
+  outputs: []

@@ -1,12 +1,13 @@
-comment: |
-  Populates the value of the Salesforce status field and displays it in a layout widget.
+comment: 'Populates the value of the Salesforce status field and displays it in a layout widget.
+
+  '
 commonfields:
   id: SalesforceCaseStatus
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-dockerimage: demisto/python3:3.10.12.63474
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 name: SalesforceCaseStatus
 runas: DBotWeakRole

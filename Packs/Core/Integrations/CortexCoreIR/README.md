@@ -1,22 +1,18 @@
 The Cortex Core IR integration uses the Cortex API for detection and response, by natively integrating network, endpoint, and cloud data to stop sophisticated attacks.
 
-## Configure Investigation & Response on Cortex XSOAR
+## Configure Investigation & Response in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Investigation & Response.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Incident type |  | False |
-    | Server URL (copy URL from Core - click ? to see more info.) |  | False |
-    | API Key ID |  | False |
-    | API Key |  | False |
-    | HTTP Timeout | The timeout of the HTTP requests sent to Cortex API \(in seconds\). | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Incident type |  | False |
+| Server URL (copy URL from Core - click ? to see more info.) |  | False |
+| API Key ID |  | False |
+| API Key |  | False |
+| HTTP Timeout | The timeout of the HTTP requests sent to Cortex API \(in seconds\). | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### core-isolate-endpoint
 ***
@@ -327,6 +323,7 @@ Gets the distribution URL for downloading the installation package.
 | --- | --- | --- |
 | distribution_id | The ID of the installation package.<br/>Copy the distribution_id from the "id" field on Endpoints &gt; Agent Installation page. | Required | 
 | package_type | The installation package type. Valid<br/>values are:<br/>• upgrade<br/>• sh - For Linux<br/>• rpm - For Linux<br/>• deb - For Linux<br/>• pkg - For Mac<br/>• x86 - For Windows<br/>• x64 - For Windows. Possible values are: upgrade, sh, rpm, deb, pkg, x86, x64. | Required | 
+| download_package | Supported only for package_type x64 or x86. Whether to download the installation package file. | Optional | 
 
 
 #### Context Output
@@ -610,7 +607,18 @@ Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorData | String | The error reason data. | 
+| Core.GetActionStatus.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorDescription | String | The error reason description. | 
+| Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
+
 ### core-get-quarantine-status
 ***
 Retrieves the quarantine status for a selected file.
@@ -679,7 +687,18 @@ Restores a quarantined file on requested endpoints.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorData | String | The error reason data. | 
+| Core.GetActionStatus.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorDescription | String | The error reason description. | 
+| Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
+
 ### core-endpoint-scan
 ***
 Runs a scan on a selected endpoint. To scan all endpoints, run this command with argument all=true. Note that scanning all the endpoints may cause performance issues and latency.
@@ -717,6 +736,15 @@ Runs a scan on a selected endpoint. To scan all endpoints, run this command with
 | --- | --- | --- |
 | Core.endpointScan.actionId | Number | The action ID of the scan request. | 
 | Core.endpointScan.aborted | Boolean | Was the scan aborted. | 
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorData | String | The error reason data. | 
+| Core.GetActionStatus.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorDescription | String | The error reason description. | 
+| Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ### core-endpoint-scan-abort
 ***
@@ -1042,6 +1070,15 @@ Retrieves files from selected endpoints. You can retrieve up to 20 files, from n
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Core.RetrievedFiles.action_id | string | ID of the action to retrieve files from selected endpoints. | 
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorData | String | The error reason data. | 
+| Core.GetActionStatus.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorDescription | String | The error reason description. | 
+| Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ### core-retrieve-file-details
 ***
@@ -1219,19 +1256,19 @@ Gets the code of a specific script in the script library.
 > ```
 
 ### core-action-status-get
+
 ***
 Retrieves the status of the requested actions according to the action ID.
-
 
 #### Base Command
 
 `core-action-status-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | action_id | The action ID of the selected request. After performing an action, you will receive an action ID. | Required | 
-
 
 #### Context Output
 
@@ -1241,6 +1278,15 @@ Retrieves the status of the requested actions according to the action ID.
 | Core.GetActionStatus.endpoint_id | string | Endpoint ID. | 
 | Core.GetActionStatus.status | string | The status of the specific endpoint ID. | 
 | Core.GetActionStatus.action_id | number | The specified action ID. | 
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorData | String | The error reason data. | 
+| Core.GetActionStatus.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorDescription | String | The error reason description. | 
+| Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 #### Command example
 ```!core-action-status-get action_id="1819"```
@@ -1259,10 +1305,9 @@ Retrieves the status of the requested actions according to the action ID.
 >**No entries.**
 
 
-### core-run-script
+### core-run-script (Deprecated)
 ***
-Initiates a new endpoint script execution action using a script from the script library.
-
+Deprecated. Use core-script-run instead. 
 
 #### Base Command
 
@@ -1311,6 +1356,15 @@ Initiates a new endpoint script execution action using the provided snippet code
 | --- | --- | --- |
 | Core.ScriptRun.action_id | Number | ID of the action initiated. | 
 | Core.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorData | String | The error reason data. | 
+| Core.GetActionStatus.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorDescription | String | The error reason description. | 
+| Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ### core-get-script-execution-status
 ***
@@ -1424,12 +1478,13 @@ Initiate a new endpoint script execution of shell commands.
 | --- | --- | --- |
 | incident_id | Link the response action to triggered incident. | Optional | 
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command. | Required | 
-| commands | Comma-separated list of shell commands to execute. | Required | 
+| commands | Comma-separated list of shell commands to execute. Set the `is_raw_command` argument to `true` to prevent splitting by commas. (Useful when using `\|\|`, `&amp;&amp;`, `;` separators for controlling the flow of multiple commands). | Required | 
+| is_raw_command | Whether to pass the command as-is. When false, the command is split by commas and sent as a list of commands, that are run independently. | Optional | 
+| command_type | Type of shell command. Possible values are: powershell, native. | Optional | 
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional | 
 | action_id | For polling use. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
 | timeout_in_seconds | Polling timeout in seconds. | Optional | 
-
 
 #### Context Output
 
@@ -1437,6 +1492,15 @@ Initiate a new endpoint script execution of shell commands.
 | --- | --- | --- |
 | Core.ScriptRun.action_id | Number | ID of the action initiated. | 
 | Core.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorData | String | The error reason data. | 
+| Core.GetActionStatus.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorDescription | String | The error reason description. | 
+| Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ### core-run-script-delete-file
 ***
@@ -1465,6 +1529,15 @@ Initiates a new endpoint script execution to delete the specified file.
 | --- | --- | --- |
 | Core.ScriptRun.action_id | Number | ID of the action initiated. | 
 | Core.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorData | String | The error reason data. | 
+| Core.GetActionStatus.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorDescription | String | The error reason description. | 
+| Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ### core-run-script-file-exists
 ***
@@ -1493,6 +1566,15 @@ Initiates a new endpoint script execution to check if file exists.
 | --- | --- | --- |
 | Core.ScriptRun.action_id | Number | ID of the action initiated. | 
 | Core.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorData | String | The error reason data. | 
+| Core.GetActionStatus.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorDescription | String | The error reason description. | 
+| Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ### core-run-script-kill-process
 ***
@@ -1521,6 +1603,15 @@ Initiates a new endpoint script execution kill process.
 | --- | --- | --- |
 | Core.ScriptRun.action_id | Number | ID of the action initiated. | 
 | Core.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorData | String | The error reason data. | 
+| Core.GetActionStatus.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorDescription | String | The error reason description. | 
+| Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ### endpoint
 ***
@@ -1870,6 +1961,7 @@ Returns information about each alert ID.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_ids | A comma-separated list of alert IDs. | Required | 
+| events_from_decider_format | Whether to return events_from_decider context output as a dictionary (the raw API response) or as a list (improved for playbook automation) - relevant only when filter_alert_fields is set to False. | Optional |
 
 
 #### Context Output
@@ -2414,10 +2506,10 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| user_id | Unique ID of a specific user.<br/>User ID could be either of the `foo/dummy` format, or just `dummy`.<br/>. | Optional | 
-| limit | Limit the number of users that will appear in the list. (Use limit when no specific host is requested.). Default is 50. | Optional | 
+| **Argument Name** | **Description**                                                                                                         | **Required** |
+| --- |-------------------------------------------------------------------------------------------------------------------------| --- |
+| user_id | Unique ID of a specific user.<br/>User ID could be either of the `foo/dummy` format, or just `dummy`.<br/>.             | Optional | 
+| limit | Limit the number of users that will appear in the list. (Use limit when no specific host is requested.). Default is 10. | Optional | 
 
 #### Context Output
 
@@ -2468,10 +2560,10 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| host_id | Unique ID of a specific host.<br/>. | Optional | 
-| limit | Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(Use limit when no specific host is requested.). Default is 50. | Optional | 
+| **Argument Name** | **Description**                                                                                                                                           | **Required** |
+| --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| host_id | The host name of a specific host.                                                                                                                         | Optional | 
+| limit | Limit the number of hosts that will appear in the list. By default, the limit is 10 hosts.(Use limit when no specific host is requested.). Default is 50. | Optional | 
 
 #### Context Output
 
@@ -2723,3 +2815,283 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 >| 5 |  |  | 1577276587937 | 5 'This alert from content  TestXDRPlaybook' alerts detected by Checkpoint - SandBlast   |  | 4 | 1 | 4 | 0 |  | medium | 1 | 1579290004178 |  | This issue was solved in Incident number 192304 | medium | false | new | 1 | `https://some.xdr.url.com/incident-view/4` |
 >| 1 | woo@demisto.com | woo@demisto.com | 1576100096594 | 'test 1' generated by Virus Total - Firewall |  | 1 | 1 | 3 | 0 |  | medium | 0 | 1579237974014 |  |  | medium | false | new | 1 | `https://some.xdr.url.com/incident-view/3` |
 >| 2 |  |  | 1576062816474 | 'Alert Name Example 333' along with 1 other alert generated by Virus Total - VPN & Firewall-3 and Checkpoint - SandBlast |  | 2 | 1 | 2 | 0 |  | high | 0 | 1579288790259 |  |  | high | false | under_investigation | 1 | `https://some.xdr.url.com/incident-view/2` 
+>
+
+### core-script-run
+
+***
+Initiates a new endpoint script execution action using a script from the script library and returns the results.
+
+#### Base Command
+
+`core-script-run`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | Allows linking the response action to the incident that triggered it. | Optional | 
+| endpoint_ids | A comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command. | Required | 
+| script_uid | Unique identifier of the script. Can be retrieved by running the core-get-scripts command. | Required | 
+| parameters | Dictionary containing the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}. | Optional | 
+| timeout | The timeout in seconds for this execution. Default is 600. | Optional | 
+| polling_interval_in_seconds | Interval in seconds between each poll. Default is 10. | Optional | 
+| polling_timeout_in_seconds | Polling timeout in seconds. Default is 600. | Optional | 
+| action_id | The action ID for polling use. | Optional | 
+| hide_polling_output | Whether to hide the polling result (automatically filled by polling). | Optional | 
+| is_core | Is the command being called from a core pack. Default is True. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.ScriptResult.action_id | Number | ID of the action initiated. | 
+| Core.ScriptResult.results.retrieved_files | Number | Number of successfully retrieved files. | 
+| Core.ScriptResult.results.endpoint_ip_address | String | Endpoint IP address. | 
+| Core.ScriptResult.results.endpoint_name | String | Name of successfully retrieved files. | 
+| Core.ScriptResult.results.failed_files | Number | Number of files failed to be retrieved. | 
+| Core.ScriptResult.results.endpoint_status | String | Endpoint status. | 
+| Core.ScriptResult.results.domain | String | Domain to which the endpoint belongs. | 
+| Core.ScriptResult.results.endpoint_id | String | Endpoint ID. | 
+| Core.ScriptResult.results.execution_status | String | Execution status of this endpoint. | 
+| Core.ScriptResult.results.return_value | String | Value returned by the script in case the type is not a dictionary. | 
+| Core.ScriptResult.results.standard_output | String | The STDOUT and the STDERR logged by the script during the execution. | 
+| Core.ScriptResult.results.retention_date | Date | Timestamp in which the retrieved files will be deleted from the server. | 
+
+#### Command example
+
+```!core-script-run endpoint_ids=111 script_uid=111 polling_timeout_in_seconds=1200 timeout=1200```
+
+##### Context Example
+
+```
+{
+    "Core.ScriptResult": [
+        {
+            "action_id": 1, 
+            "results": [
+                {
+                    "retrieved_files" : 0,
+                    "_return_value": [],
+                    "standard_output": ""
+                    "domain" : "222",
+                    "endpoint_id" : "111",
+                    "endpoint_ip_address" : ["1.1.1.1"],
+                    "command" : "_return_value",
+                    "retention_date" : NULL,
+                    "command_output" : [],
+                    "endpoint_name" : "test",
+                    "failed_files" : 0,
+                    "execution_status" : "COMPLETED_SUCCESSFULLY",
+                    "endpoint_status" : "STATUS_010_CONNECTED"
+                },
+            ]
+        }
+    ],
+    "Core.ScriptRun": [
+        {
+            "action_id": 1,
+            "endpoints_count": 1,
+            "status": 1
+        }
+    ]
+}
+```
+
+##### Human Readable Output
+
+>### Script Execution Results
+
+>| _return_value| domain | endpoint_id| endpoint_ip_address| endpoint_name| endpoint_status| execution_status| failed_files| retention_date| retrieved_files| standard_output|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>||222|111|1.1.1.1|test|STATUS_010_CONNECTED|COMPLETED_SUCCESSFULLY|0||0||
+
+
+### core-terminate-process
+
+***
+Terminate a process by its instance ID. Available only for XSIAM 2.4 and above.
+
+#### Base Command
+
+`core-terminate-process`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| agent_id | The agent ID. | Required | 
+| instance_id | The instance ID. | Required | 
+| process_name | The process name. | Optional | 
+| incident_id | The incident ID. | Optional | 
+| action_id | The action ID. For polling use. | Optional | 
+| interval_in_seconds | Interval in seconds between each poll. | Optional | 
+| timeout_in_seconds | Polling timeout in seconds. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.TerminateProcess.action_id | String | The action ID. | 
+| Core.GetActionStatus | Unknown | The action status command results. | 
+| Core.GetActionStatus.endpoint_id | string | Endpoint ID. | 
+| Core.GetActionStatus.status | string | The status of the specific endpoint ID. | 
+| Core.GetActionStatus.action_id | number | The specified action ID. | 
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorData | String | The error reason data. | 
+| Core.GetActionStatus.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorDescription | String | The error reason description. | 
+| Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
+
+### core-terminate-causality
+
+***
+Terminate a process tree by its causality ID. Available only for XSIAM 2.4 and above.
+
+##### Command Example
+
+```!core-terminate-process agent_id=1 instance_id=1 process_name=process incident_id=2```
+
+##### Context Example
+
+```
+{
+    "Core.TerminateProcess": [
+        {
+            "action_id": "1",
+        }
+       
+    ]
+}
+```
+
+#### Base Command
+
+`core-terminate-causality`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| agent_id | The agent ID. | Required | 
+| causality_id | The causality ID. | Required | 
+| process_name | The process name. | Optional | 
+| incident_id | The incident ID. | Optional | 
+| action_id | The action ID. For polling use. | Optional | 
+| interval_in_seconds | Interval in seconds between each poll. | Optional | 
+| timeout_in_seconds | Polling timeout in seconds. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.TerminateCausality.action_id | String | The action id. | 
+| Core.GetActionStatus | Unknown | The action status command results. | 
+| Core.GetActionStatus.endpoint_id | string | Endpoint ID. | 
+| Core.GetActionStatus.status | string | The status of the specific endpoint ID. | 
+| Core.GetActionStatus.action_id | number | The specified action ID. | 
+| Core.GetActionStatus.ErrorReasons.bucket | String | The bucket in which the error occurred. | 
+| Core.GetActionStatus.ErrorReasons.file_name | String | The name of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_path | String | The path of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.file_size | Number | The size of the file that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.missing_files | Unknown | The missing files that caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorData | String | The error reason data. | 
+| Core.GetActionStatus.ErrorReasons.terminated_by | String | The instance ID which terminated the action and caused the error. | 
+| Core.GetActionStatus.ErrorReasons.errorDescription | String | The error reason description. | 
+| Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
+
+##### Command Example
+
+```!core-terminate-causality agent_id=1 causality_id=1 process_name=process incident_id=2```
+
+##### Context Example
+
+```
+{
+    "Core.TerminateCausality": [
+        {
+            "action_id": "1",
+        }
+       
+    ]
+}
+```
+
+### core-get-asset-details
+
+***
+Get asset information.
+
+#### Base Command
+
+`core-get-asset-details`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_id | Asset unique identifier. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.CoreAsset | unknown | Asset additional information. | 
+| Core.CoreAsset.xdm__asset__provider | unknown | The cloud provider or source responsible for the asset. | 
+| Core.CoreAsset.xdm__asset__realm | unknown | The realm or logical grouping of the asset. | 
+| Core.CoreAsset.xdm__asset__last_observed | unknown | The timestamp of when the asset was last observed, in ISO 8601 format. | 
+| Core.CoreAsset.xdm__asset__type__id | unknown | The unique identifier for the asset type. | 
+| Core.CoreAsset.xdm__asset__first_observed | unknown | The timestamp of when the asset was first observed, in ISO 8601 format. | 
+| Core.CoreAsset.asset_hierarchy | unknown | The hierarchy or structure representing the asset. | 
+| Core.CoreAsset.xdm__asset__type__category | unknown | The category type of the asset. | 
+| Core.CoreAsset.xdm__cloud__region | unknown | The cloud region where the asset resides. | 
+| Core.CoreAsset.xdm__asset__module_unstructured_fields | unknown | The unstructured fields or metadata associated with the asset module. | 
+| Core.CoreAsset.xdm__asset__source | unknown | The originating source of the asset's information. | 
+| Core.CoreAsset.xdm__asset__id | unknown | A unique identifier for the asset. | 
+| Core.CoreAsset.xdm__asset__type__class | unknown | The classification or type class of the asset. | 
+| Core.CoreAsset.xdm__asset__type__name | unknown | The specific name of the asset type. | 
+| Core.CoreAsset.xdm__asset__strong_id | unknown | The strong or immutable identifier for the asset. | 
+| Core.CoreAsset.xdm__asset__name | unknown | The name of the asset. | 
+| Core.CoreAsset.xdm__asset__raw_fields | unknown | The raw fields or unprocessed data related to the asset. | 
+| Core.CoreAsset.xdm__asset__normalized_fields | unknown | The normalized fields associated with the asset. | 
+| Core.CoreAsset.all_sources | unknown | A list of all sources providing information about the asset. | 
+
+##### Command Example
+
+```!core-get-asset-details asset_id=123```
+
+##### Context Example
+
+```
+{
+    "Core.CoreAsset": [
+        {
+            "asset_hierarchy": ["123"],
+            "xdm__asset__type__category": "Policy",
+            "xdm__cloud__region": "Global",
+            "xdm__asset__module_unstructured_fields": {},
+            "xdm__asset__source": "XSIAM",
+            "xdm__asset__id": "123",
+            "xdm__asset__type__class": "Identity",
+            "xdm__asset__normalized_fields": {},
+            "xdm__asset__first_observed": 100000000,
+            "xdm__asset__last_observed": 100000000,
+            "xdm__asset__name": "Fake Name",
+            "xdm__asset__type__name": "IAM",
+            "xdm__asset__strong_id": "FAKE ID"
+        }
+    ]
+}
+```
+
+##### Human Readable Output
+
+>| asset_hierarchy | xdm__asset__type__category | xdm__cloud__region | xdm__asset__module_unstructured_fields | xdm__asset__source | xdm__asset__id | xdm__asset__type__class | xdm__asset__normalized_fields | xdm__asset__first_observed | xdm__asset__last_observed | xdm__asset__name |
+xdm__asset__type__name | xdm__asset__strong_id |
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>|123|Policy|Global||XSIAM|123|Identity||100000000|100000000|Fake Name|IAM|FAKE ID|
+

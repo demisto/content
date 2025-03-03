@@ -1,0 +1,21 @@
+{
+    "event": "posted",
+    "data": {
+        "channel_display_name": "channel_display_name",
+        "channel_name": "channel_name",
+        "channel_type": "O",
+        "post": "{\"id\":\"id\",\"create_at\":1712131194180,\"update_at\":1712131194180,\"edit_at\":0,\"delete_at\":0,\"is_pinned\":false,\"user_id\":\"user_id_not_bot\",\"channel_id\":\"channel_id\",\"root_id\":\"\",\"original_id\":\"\",\"message\":\"message\",\"type\":\"\",\"props\":{\"disable_group_highlight\":true},\"hashtags\":\"\",\"pending_post_id\":\"pending_post_id\",\"reply_count\":0,\"last_reply_at\":0,\"participants\":null,\"metadata\":{}}",
+        "sender_name": "sender_name",
+        "set_online": true,
+        "team_id": "team_id"
+    },
+    "broadcast": {
+        "omit_users": null,
+        "user_id": "",
+        "channel_id": "channel_id",
+        "team_id": "",
+        "connection_id": "",
+        "omit_connection_id": ""
+    },
+    "seq": 8
+}

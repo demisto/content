@@ -86,25 +86,25 @@ ignore=BA101
 ignore=BA101
 
 [file:layoutscontainer-unifiedFile.json]
-ignore=BA101
+ignore=BA101,LO107
 
 [file:layoutscontainer-url.json]
 ignore=BA101
 
 [file:layoutscontainer-STIX_Tool.json]
-ignore=BA101
+ignore=BA101,LO107
 
 [file:layoutscontainer-STIX_Report.json]
-ignore=BA101
+ignore=BA101,LO107
 
 [file:layoutscontainer-STIX_Malware.json]
-ignore=BA101
+ignore=BA101,LO107
 
 [file:layoutscontainer-STIX_Attack_Pattern.json]
-ignore=BA101
+ignore=BA101,LO107
 
 [file:layoutscontainer-STIX_Threat_Actor.json]
-ignore=BA101
+ignore=BA101,LO107
 
 [file:classifier-mapper-incoming-Mail-listener.json]
 ignore=BA101
@@ -250,46 +250,47 @@ ignore=IF100
 ignore=BA101
 
 [file:layoutscontainer-CVEV2.json]
-ignore=BA101
+ignore=BA101,LO107
 
 [file:layoutscontainer-Threat_ActorV2.json]
-ignore=BA101
-
-[file:layoutscontainer-URLV2.json]
-ignore=BA101
+ignore=BA101,LO107
 
 [file:layoutscontainer-Attack_PatternV2.json]
-ignore=BA101
+ignore=BA101,LO107
+
+# GR103 is temporary, see CIAC-11705
+[file:layoutscontainer-URLV2.json]
+ignore=BA101,GR103,LO107
 
 [file:layoutscontainer-EmailV2.json]
-ignore=BA101
+ignore=BA101,GR103,LO107
 
 [file:layoutscontainer-FileV2.json]
-ignore=BA101
+ignore=BA101,GR103,LO107
 
 [file:layoutscontainer-IPV2.json]
-ignore=BA101
-
-[file:layoutscontainer-AccountV2.json]
-ignore=BA101
-
-[file:layoutscontainer-MalwareV2.json]
-ignore=BA101
+ignore=BA101,GR103,LO107
 
 [file:layoutscontainer-DomainV2.json]
-ignore=BA101
+ignore=BA101,GR103,LO107
+
+[file:layoutscontainer-AccountV2.json]
+ignore=BA101,LO107
+
+[file:layoutscontainer-MalwareV2.json]
+ignore=BA101,LO107
 
 [file:layoutscontainer-ReportV2.json]
-ignore=BA101
+ignore=BA101,LO107
 
 [file:layoutscontainer-Windows_Registry_KeyV2.json]
-ignore=BA101
+ignore=BA101,LO107
 
 [file:layoutscontainer-ToolV2.json]
-ignore=BA101
+ignore=BA101,LO107
 
 [file:layoutscontainer-HostV2.json]
-ignore=BA101
+ignore=BA101,LO107
 
 [file:incidentfield-Number_Of_Found_Related_Alerts.json]
 ignore=IF100
@@ -311,6 +312,37 @@ ignore=IF100
 
 [file:3_4_9.md]
 ignore=RN115
+
+[file:layoutscontainer-ASNV2.json]
+ignore=LO107
+
+[file:layoutscontainer-CampaignV2.json]
+ignore=LO107
+
+[file:layoutscontainer-Course_of_ActionV2.json]
+ignore=LO107
+
+[file:layoutscontainer-Identity.json]
+ignore=LO107
+
+[file:layoutscontainer-InfrastructureV2.json]
+ignore=LO107
+
+[file:layoutscontainer-Intrusion_SetV2.json]
+ignore=LO107
+
+[file:layoutscontainer-Location.json]
+ignore=LO107
+
+[file:layoutscontainer-MutexV2.json]
+ignore=LO107
+
+[file:layoutscontainer-Software.json]
+ignore=LO107
+
+[file:layoutscontainer-X509_Certificate.json]
+ignore=LO107
+
 
 [known_words]
 SysAid
@@ -343,3 +375,48 @@ DN
 PEM
 SPKI
 subkeys
+formatter# GR103 is temporary, see CIAC-11705
+[file:incidentfield-Last_Modified_By.json]
+ignore=GR103
+# GR103 is temporary, see CIAC-11705
+[file:incidentfield-Detected_External_IPs.json]
+ignore=GR103
+# GR103 is temporary, see CIAC-11705
+[file:incidentfield-Detected_Internal_Hosts.json]
+ignore=GR103
+# GR103 is temporary, see CIAC-11705
+[file:incidentfield-Detected_Users.json]
+ignore=GR103
+# GR103 is temporary, see CIAC-11705
+[file:incidentfield-Detected_Internal_IPs.json]
+ignore=GR103
+# GR103 is temporary, see CIAC-11705
+[file:incidentfield-Detected_External_Hosts.json]
+ignore=GR103
+# GR103 is temporary, see CIAC-11705
+[file:incidentfield-osversion.json]
+ignore=GR103
+# GR103 is temporary, see CIAC-11705
+[file:incidentfield-hostname.json]
+ignore=GR103
+# GR103 is temporary, see CIAC-11705
+[file:incidentfield-description.json]
+ignore=GR103
+# GR103 is temporary, see CIAC-11705
+[file:incidentfield-shortdescription.json]
+ignore=GR103
+# GR103 is temporary, see CIAC-11705
+[file:incidentfield-Last_Modified_On.json]
+ignore=GR103
+
+[file:reputation-ipv6.json]
+ignore=GR107
+
+[file:reputation-cidr.json]
+ignore=GR107
+
+[file:3_5_23.md]
+ignore=RN115
+
+[file:layoutscontainer-Tactic.json]
+ignore=LO107

@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 53abbfb6-59c8-4f6b-84ef-ee27d96e7185
+    taskid: c2b9f9a3-1791-4bae-88fa-218fb9363813
     type: start
     task:
-      id: 53abbfb6-59c8-4f6b-84ef-ee27d96e7185
+      id: c2b9f9a3-1791-4bae-88fa-218fb9363813
       version: -1
       name: ""
       iscommand: false
@@ -23,8 +23,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 170,
-          "y": -380
+          "x": -50,
+          "y": -150
         }
       }
     note: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: db89a5a4-9e07-4949-8d36-184fecb073e7
+    taskid: fa87fb97-33f7-4e96-8c0a-2bcaa794b242
     type: regular
     task:
-      id: db89a5a4-9e07-4949-8d36-184fecb073e7
+      id: fa87fb97-33f7-4e96-8c0a-2bcaa794b242
       version: -1
       name: Normalize and rank likely service owners
       description: Recommend most likely service owners from those surfaced by Cortex ASM Enrichment.
@@ -55,11 +55,16 @@ tasks:
         complex:
           root: alert.asmserviceownerunrankedraw
           filters:
-          - - left:
-                iscontext: true
+          - - operator: isNotExists
+              left:
                 value:
                   simple: alert.asmserviceownerunrankedraw.accounttype
-              operator: isNotEqualString
+                iscontext: true
+            - operator: isNotEqualString
+              left:
+                value:
+                  simple: alert.asmserviceownerunrankedraw.accounttype
+                iscontext: true
               right:
                 value:
                   simple: SERVICE-ACCOUNT
@@ -87,86 +92,7 @@ tasks:
       {
         "position": {
           "x": -50,
-          "y": 1180
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
-    taskid: 15f0d68e-0fb0-405e-863c-77bc513dfc5e
-    type: regular
-    task:
-      id: 15f0d68e-0fb0-405e-863c-77bc513dfc5e
-      version: -1
-      name: Add service owners to unranked list
-      description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
-        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      type: regular
-      iscommand: false
-      brand: ""
-      script: GridFieldSetup
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      gridfield:
-        simple: asmserviceownerunrankedraw
-      keys:
-        simple: name,email,source,timestamp
-      val1:
-        complex:
-          root: alert
-          accessor: asmserviceowner
-          transformers:
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: name
-      val2:
-        complex:
-          root: alert
-          accessor: asmserviceowner
-          transformers:
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: email
-      val3:
-        complex:
-          root: alert
-          accessor: asmserviceowner
-          transformers:
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: source
-      val4:
-        complex:
-          root: alert
-          accessor: asmserviceowner
-          transformers:
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: timestamp
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -50,
-          "y": 20
+          "y": 400
         }
       }
     note: false
@@ -178,12 +104,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 5505de94-3fde-4947-86d2-7e95c050fa14
+    taskid: 3c890c55-0002-44ef-8205-1027ca45d05f
     type: condition
     task:
-      id: 5505de94-3fde-4947-86d2-7e95c050fa14
+      id: 3c890c55-0002-44ef-8205-1027ca45d05f
       version: -1
-      name: Is asmserviceowner or asmserviceownerunrankedraw populated?
+      name: Is asmserviceownerunrankedraw populated?
       description: Determines if the asmserviceowner or asmserviceownerunrankedraw fields have been populated to continue.
       type: condition
       iscommand: false
@@ -191,64 +117,38 @@ tasks:
     nexttasks:
       '#default#':
       - "10"
-      service owner:
-      - "7"
       unranked raw:
-      - "17"
+      - "19"
     separatecontext: false
     conditions:
-    - label: "service owner"
+    - label: "unranked raw"
       condition:
       - - operator: isNotEmpty
           left:
             value:
-              simple: alert.asmserviceowner
-            iscontext: true
-          right:
-            value: {}
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: alert.asmserviceowner.email
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: alert.asmserviceowner.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: alert.asmserviceowner.source
-            iscontext: true
-    - condition:
-      - - left:
-            iscontext: true
-            value:
               simple: alert.asmserviceownerunrankedraw
-          operator: isNotEmpty
-      - - left:
             iscontext: true
+      - - operator: isNotEmpty
+          left:
             value:
               simple: alert.asmserviceownerunrankedraw.email
-          operator: isNotEmpty
-      - - left:
             iscontext: true
+      - - operator: isNotEmpty
+          left:
             value:
               simple: alert.asmserviceownerunrankedraw.name
-          operator: isNotEmpty
-      - - left:
             iscontext: true
+      - - operator: isNotEmpty
+          left:
             value:
               simple: alert.asmserviceownerunrankedraw.source
-          operator: isNotEmpty
-      label: unranked raw
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 170,
-          "y": -230
+          "x": -50,
+          "y": 0
         }
       }
     note: false
@@ -260,10 +160,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: cb0bfb1c-7405-4ef1-8bc8-c7dc537571d2
+    taskid: 18ae13e1-3413-44ba-82be-078c4c18fa9e
     type: title
     task:
-      id: cb0bfb1c-7405-4ef1-8bc8-c7dc537571d2
+      id: 18ae13e1-3413-44ba-82be-078c4c18fa9e
       version: -1
       name: Done
       type: title
@@ -275,155 +175,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 250,
-          "y": 1450
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
-    taskid: 25035e9c-31cb-46bc-86b3-9faa72de87a8
-    type: condition
-    task:
-      id: 25035e9c-31cb-46bc-86b3-9faa72de87a8
-      version: -1
-      name: Was there a result?
-      description: Determines if there was a result from the previous command to continue cloud enrichment.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "10"
-      "yes":
-      - "19"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalService
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -50,
-          "y": 640
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
-    taskid: 99e95e0d-34ae-4911-8200-eae1add67f1c
-    type: regular
-    task:
-      id: 99e95e0d-34ae-4911-8200-eae1add67f1c
-      version: -1
-      name: Get external service information
-      description: Get service details according to the service ID.
-      script: Cortex Attack Surface Management|||asm-get-external-service
-      type: regular
-      iscommand: true
-      brand: Cortex Attack Surface Management
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      service_id:
-        complex:
-          root: alert
-          accessor: asmserviceid
-          transformers:
-          - operator: StripChars
-            args:
-              chars:
-                value:
-                  simple: '[\"]'
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -50,
-          "y": 480
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
-    taskid: 82bd90cf-7ff2-4062-867e-d620bedbbfea
-    type: condition
-    task:
-      id: 82bd90cf-7ff2-4062-867e-d620bedbbfea
-      version: -1
-      name: Is Cortex ASM enabled?
-      description: Determines if the "Cortex Attack Surface Management" integration instance is configured to continue with cloud enrichment.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "10"
-      "yes":
-      - "16"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Cortex Attack Surface Management
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -50,
-          "y": 200
+          "x": 190,
+          "y": 570
         }
       }
     note: false
@@ -435,10 +188,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: d1039ef2-c791-4853-8367-d50fe11c8517
+    taskid: 06c23e12-3c68-49cc-81cb-37141b08c56d
     type: regular
     task:
-      id: d1039ef2-c791-4853-8367-d50fe11c8517
+      id: 06c23e12-3c68-49cc-81cb-37141b08c56d
       version: -1
       name: Look up project owners for service account
       description: Parse a GCP service account email for the project name, then lookup project owners and add them to a list of potential service owners for ranking.
@@ -451,8 +204,7 @@ tasks:
       - "6"
     scriptarguments:
       external_service:
-        complex:
-          root: ASM.ExternalService.externally_detected_providers
+        simple: ${alert.asmprovider}
       owners:
         simple: ${alert.asmserviceownerunrankedraw}
     separatecontext: false
@@ -461,7 +213,7 @@ tasks:
       {
         "position": {
           "x": -50,
-          "y": 1005
+          "y": 225
         }
       }
     note: false
@@ -474,17 +226,14 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "15_10_#default#": 0.2,
-      "17_10_#default#": 0.2,
-      "9_10_#default#": 0.33,
-      "9_7_service owner": 0.55
+      "9_10_#default#": 0.65
     },
     "paper": {
       "dimensions": {
-        "height": 1895,
-        "width": 680,
+        "height": 785,
+        "width": 620,
         "x": -50,
-        "y": -380
+        "y": -150
       }
     }
   }
@@ -493,5 +242,3 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.8.0
-contentitemexportablefields:
-  contentitemfields: {}

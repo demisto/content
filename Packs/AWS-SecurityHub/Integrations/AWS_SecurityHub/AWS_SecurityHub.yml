@@ -2077,7 +2077,7 @@ script:
       description: The UTC timestamp in seconds since the last update. The incident is only updated if it was modified after the last update time.
   - name: get-mapping-fields
     description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
-  dockerimage: demisto/boto3py3:1.0.0.89611
+  dockerimage: demisto/boto3py3:1.0.0.1918247
   isfetch: true
   ismappable: true
   isremotesyncin: true

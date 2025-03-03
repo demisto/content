@@ -1,0 +1,29 @@
+{
+    "option": "block_sender",
+    "id": "eNo1jrsOgjAAAP-lM0Npi4KJg_EFvoJIRd2wVCwoxRYkaPx3cXC_y90baM5qxUUCBsDhtttuFtRpbPryoA78XCm0jZhnZf2GVthX1kQz6NPJPpp6Z5nSZRETG5k3db-ecHxMefiQrhVVYhuXjTPHRUbWD0IuAa43-1wcpq8kmK3UeggMUMqbYO2vbFrI6RuA1bqSd66YTHi3M6a7kQnRCOFeRz-50kIWHfw3w7bk3s-GkMDPF2vCQTE",
+    "policy": {
+        "description": "test",
+        "fromPart": "both",
+        "from": {
+            "type": "email_domain",
+            "emailDomain": "google.com"
+        },
+        "to": {
+            "type": "everyone"
+        },
+        "fromType": "email_domain",
+        "fromValue": "google.com",
+        "toType": "everyone",
+        "fromEternal": true,
+        "toEternal": true,
+        "fromDate": "1900-01-01T00:00:00+0000",
+        "toDate": "2100-01-01T23:59:59+0000",
+        "override": false,
+        "bidirectional": false,
+        "conditions": {},
+        "enabled": true,
+        "enforced": false,
+        "createTime": "2024-06-06T08:18:34+0000",
+        "lastUpdated": "2024-06-06T08:18:34+0000"
+    }
+}

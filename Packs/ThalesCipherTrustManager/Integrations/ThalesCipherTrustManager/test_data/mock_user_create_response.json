@@ -1,0 +1,33 @@
+{
+    "created_at": "2023-11-25T14:35:53.123456Z",
+    "email": "fakeuser@example.com",
+    "last_login": null,
+    "logins_count": 0,
+    "name": "Fake User",
+    "nickname": "fakeuser",
+    "updated_at": "2023-11-25T14:35:53.123456Z",
+    "user_id": "local|12345678-90ab-cdef-1234-567890abcdef",
+    "username": "fakeuser",
+    "failed_logins_count": 0,
+    "account_lockout_at": null,
+    "failed_logins_initial_attempt_at": null,
+    "last_failed_login_at": null,
+    "password_changed_at": "2023-11-25T14:35:53.123456Z",
+    "password_change_required": false,
+    "certificate_subject_dn": "",
+    "enable_cert_auth": true,
+    "auth_domain": "abcdef00-1234-5678-90ab-cdef12345678",
+    "login_flags": {
+        "prevent_ui_login": false
+    },
+    "allowed_auth_methods": [
+        "user_certificate"
+    ],
+    "allowed_client_types": [
+        "unregistered",
+        "public",
+        "confidential"
+    ],
+    "user_metadata": {},
+    "app_metadata": {}
+}

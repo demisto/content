@@ -25,7 +25,7 @@ alter
 
 /* Extracts all the fields from _raw_log, fields are separated with a comma delimiter
 This mapping refers to Admin audit events */
-[MODEL: dataset="rsa_secureid_raw"]
+[MODEL: dataset="rsa_securid_raw"]
  alter log_array = split(_raw_log, ",")
 | alter event_type = arrayindex(log_array,3)
 | filter event_type contains "audit.admin"

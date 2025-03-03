@@ -47,3 +47,18 @@ def test_date_no_match(mocker):
     main()
 
     demisto.results.assert_called_with(False)
+
+
+def test_date_with_timezone(mocker):
+    """
+    Given a date and relative date, when the date is older than the relative date and is specified with time zone, return false.
+    """
+    args_value = {
+        "left": "2023-08-21 17:22:13 UTC",
+        "right": "1 day ago"
+    }
+    mocker.patch.object(demisto, "args", return_value=args_value)
+    mocker.patch.object(demisto, "results")
+    main()
+
+    demisto.results.assert_called_with(False)

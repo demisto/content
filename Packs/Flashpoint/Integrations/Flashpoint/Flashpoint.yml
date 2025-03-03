@@ -2,9 +2,10 @@ commonfields:
   id: Flashpoint
   version: -1
 name: Flashpoint
-display: Flashpoint
+display: Flashpoint (Deprecated)
 category: Data Enrichment & Threat Intelligence
-description: Use the Flashpoint integration to reduce business risk. Flashpoint allows users to ingest alerts and compromised credentials as incident alerts and executes commands such as search intelligence report, ip, url, get events, and more.
+deprecated: true
+description: Deprecated. Use Flashpoint Ignite instead.
 configuration:
 - display: Fetch incidents
   name: isFetch
@@ -1035,7 +1036,7 @@ script:
     - contextPath: Flashpoint.CompromisedCredential.sort
       description: Sort value of the IoC.
       type: Unknown
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   runonce: false
   subtype: python3

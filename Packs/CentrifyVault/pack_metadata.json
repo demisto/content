@@ -2,13 +2,13 @@
     "name": "Centrify Vault",
     "description": "Centrify Vault integration to create/fetch/delete secrets/folders/sets.",
     "support": "community",
-    "currentVersion": "1.0.7",
+    "currentVersion": "1.0.10",
     "author": "prashasthbaliga",
     "url": "",
     "email": "",
     "created": "2020-12-08T01:52:58Z",
     "categories": [
-        "Authentication & Identity Management"
+        "Identity and Access Management"
     ],
     "tags": [],
     "useCases": [],

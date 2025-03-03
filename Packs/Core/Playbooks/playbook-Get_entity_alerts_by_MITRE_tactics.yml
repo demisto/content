@@ -111,7 +111,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -159,10 +161,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: 23aeb319-9260-4ca8-88a5-a83e131b9b90
+    taskid: a6fafebb-c3f5-4df6-8151-d1e87e45dfcf
     type: regular
     task:
-      id: 23aeb319-9260-4ca8-88a5-a83e131b9b90
+      id: a6fafebb-c3f5-4df6-8151-d1e87e45dfcf
       version: -1
       name: Add Reconnaissance to query
       description: |-
@@ -170,7 +172,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -194,7 +198,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: 'categoryname:"Reconnaisance" or '
+                  simple: 'mitreattcktactic:"TA0043 - Reconnaissance" or '
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -311,7 +315,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
@@ -422,10 +428,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "76":
     id: "76"
-    taskid: 2de02662-7c12-46f4-8a5f-6de9d1f2c5a4
+    taskid: f8704cbd-2216-4667-80a6-0598eea4c297
     type: regular
     task:
-      id: 2de02662-7c12-46f4-8a5f-6de9d1f2c5a4
+      id: f8704cbd-2216-4667-80a6-0598eea4c297
       version: -1
       name: Add Command and Control to query
       description: |-
@@ -433,7 +439,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -457,7 +465,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: 'categoryname:"Command and Control" or '
+                  simple: 'mitreattcktactic:"TA0011 - Command and Control" or '
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1337,10 +1345,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "98":
     id: "98"
-    taskid: d6dbd1f3-291a-41d3-8940-0f4bb01f3ec4
+    taskid: 6a7cbc3f-4505-4433-8824-547496ae78df
     type: regular
     task:
-      id: d6dbd1f3-291a-41d3-8940-0f4bb01f3ec4
+      id: 6a7cbc3f-4505-4433-8824-547496ae78df
       version: -1
       name: Add Initial Access to query
       description: |-
@@ -1348,7 +1356,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1372,7 +1382,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: 'categoryname:"Initial Access" or '
+                  simple: 'mitreattcktactic:"TA0001 - Initial Access" or '
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1392,10 +1402,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "99":
     id: "99"
-    taskid: ab51d8aa-5001-4fe7-87e1-c0af8ab73d9d
+    taskid: 24bb20be-c615-41e3-85bd-53684350c012
     type: regular
     task:
-      id: ab51d8aa-5001-4fe7-87e1-c0af8ab73d9d
+      id: 24bb20be-c615-41e3-85bd-53684350c012
       version: -1
       name: Add Execution to query
       description: |-
@@ -1403,7 +1413,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1427,7 +1439,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: 'categoryname:"Execution" or '
+                  simple: 'mitreattcktactic:"TA0002 - Execution" or '
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1447,10 +1459,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "100":
     id: "100"
-    taskid: ec7e90f7-2b52-453e-8416-0ad9230574f5
+    taskid: ababc384-4722-4441-83d8-ca5851899d1a
     type: regular
     task:
-      id: ec7e90f7-2b52-453e-8416-0ad9230574f5
+      id: ababc384-4722-4441-83d8-ca5851899d1a
       version: -1
       name: Add Persistence to query
       description: |-
@@ -1458,7 +1470,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1482,7 +1496,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: 'categoryname:"Persistence" or '
+                  simple: 'mitreattcktactic:"TA0003 - Persistence" or '
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1502,10 +1516,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "107":
     id: "107"
-    taskid: 04c5b9b8-5f78-4992-8e38-f67cdfd69de8
+    taskid: 3ec25bba-f072-46b5-853d-f7d32b698359
     type: regular
     task:
-      id: 04c5b9b8-5f78-4992-8e38-f67cdfd69de8
+      id: 3ec25bba-f072-46b5-853d-f7d32b698359
       version: -1
       name: Add Privilege Escalation to query
       description: |-
@@ -1513,7 +1527,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1537,7 +1553,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: 'categoryname:"Privilege Escalation" or '
+                  simple: 'mitreattcktactic:"TA0004 - Privilege Escalation" or '
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1557,10 +1573,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "108":
     id: "108"
-    taskid: 9419e7f5-1b4c-438a-809d-5da85187810e
+    taskid: 8ef51106-2ea7-4020-86df-3af2dc171900
     type: regular
     task:
-      id: 9419e7f5-1b4c-438a-809d-5da85187810e
+      id: 8ef51106-2ea7-4020-86df-3af2dc171900
       version: -1
       name: Add Defense Evasion to query
       description: |-
@@ -1568,7 +1584,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1592,7 +1610,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: 'categoryname:"Defense Evasion" or '
+                  simple: 'mitreattcktactic:"TA0005 - Defense Evasion" or '
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1612,10 +1630,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "109":
     id: "109"
-    taskid: 9ba1fbd5-87dd-4a85-8081-c7c8c01270af
+    taskid: 2f5a14c3-7d46-4c59-805b-8fbb811b4b51
     type: regular
     task:
-      id: 9ba1fbd5-87dd-4a85-8081-c7c8c01270af
+      id: 2f5a14c3-7d46-4c59-805b-8fbb811b4b51
       version: -1
       name: Add Credential Access to query
       description: |-
@@ -1623,7 +1641,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1647,7 +1667,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: 'categoryname:"Credential Access" or '
+                  simple: 'mitreattcktactic:"TA0006 - Credential Access" or '
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1667,10 +1687,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "110":
     id: "110"
-    taskid: 92bd64eb-f199-412c-8a38-b399c348dad8
+    taskid: bf903dce-296b-4bd0-8eb2-a6c7d07f2813
     type: regular
     task:
-      id: 92bd64eb-f199-412c-8a38-b399c348dad8
+      id: bf903dce-296b-4bd0-8eb2-a6c7d07f2813
       version: -1
       name: Add Discovery to query
       description: |-
@@ -1678,7 +1698,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1702,7 +1724,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: 'categoryname:"Discovery" or '
+                  simple: 'mitreattcktactic:"TA0007 - Discovery" or '
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1722,10 +1744,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "111":
     id: "111"
-    taskid: c10dd7b5-e0d9-4a37-832f-a59c6a747d13
+    taskid: c2386f08-8339-401d-8d25-4ec123c827db
     type: regular
     task:
-      id: c10dd7b5-e0d9-4a37-832f-a59c6a747d13
+      id: c2386f08-8339-401d-8d25-4ec123c827db
       version: -1
       name: Add Lateral Movement to query
       description: |-
@@ -1733,7 +1755,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1757,7 +1781,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: 'categoryname:"Lateral Movement" or '
+                  simple: 'mitreattcktactic:"TA0008 - Lateral Movement" or '
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1777,10 +1801,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "112":
     id: "112"
-    taskid: 3a171e3a-a6e1-4b39-86a1-7964da7a99b5
+    taskid: b88de95c-964b-4cc6-834e-50dfa3963736
     type: regular
     task:
-      id: 3a171e3a-a6e1-4b39-86a1-7964da7a99b5
+      id: b88de95c-964b-4cc6-834e-50dfa3963736
       version: -1
       name: Add Collection to query
       description: |-
@@ -1788,7 +1812,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1812,7 +1838,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: 'categoryname:"Collection" or '
+                  simple: 'mitreattcktactic:"TA0009 - Collection" or '
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1832,10 +1858,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "113":
     id: "113"
-    taskid: 851cfe9e-0583-4f72-8a0b-ad46c721b1b0
+    taskid: 2cc2e6ef-3fa9-4dda-81a7-659b5ec94529
     type: regular
     task:
-      id: 851cfe9e-0583-4f72-8a0b-ad46c721b1b0
+      id: 2cc2e6ef-3fa9-4dda-81a7-659b5ec94529
       version: -1
       name: Add Impact to query
       description: |-
@@ -1843,7 +1869,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1867,7 +1895,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: 'categoryname:"Impact" or '
+                  simple: 'mitreattcktactic:"TA0040 - Impact" or '
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -2101,10 +2129,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "117":
     id: "117"
-    taskid: f2da8ae7-bba0-475f-87d4-728005910653
+    taskid: a7fc38ac-74b6-42aa-8709-134b74d8de8e
     type: regular
     task:
-      id: f2da8ae7-bba0-475f-87d4-728005910653
+      id: a7fc38ac-74b6-42aa-8709-134b74d8de8e
       version: -1
       name: Hunt all techniques
       description: |-
@@ -2112,7 +2140,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
@@ -2140,7 +2170,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: :"${inputs.EntityID}" and (categoryname:"Reconnaisance" or categoryname:"Initial Access" or categoryname:"Execution" or categoryname:"Persistence" or categoryname:"Privilege Escalation" or categoryname:"Defense Evasion" or categoryname:"Credential Access" or categoryname:"Discovery" or categoryname:"Lateral Movement" or categoryname:"Collection" or categoryname:"Command and Control" or categoryname:"Impact")
+                  simple: :"${inputs.EntityID}" and (mitreattcktactic:"TA0043 - Reconnaissance" or mitreattcktactic:"TA0001 - Initial Access" or mitreattcktactic:"TA0002 - Execution" or mitreattcktactic:"TA0003 - Persistence" or mitreattcktactic:"TA0004 - Privilege Escalation" or mitreattcktactic:"TA0005 - Defense Evasion" or mitreattcktactic:"TA0006 - Credential Access" or mitreattcktactic:"TA0007 - Discovery" or mitreattcktactic:"TA0008 - Lateral Movement" or mitreattcktactic:"TA0009 - Collection" or mitreattcktactic:"TA0011 - Command and Control" or mitreattcktactic:"TA0040 - Impact")
               variable_markers: {}
     reputationcalc: 1
     separatecontext: false

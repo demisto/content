@@ -100,23 +100,25 @@ Should be used after running the ***msgraph-api-auth-start*** command.
 Tests connectivity to Microsoft.
 
 ### msgraph-api-request
+
 ***
 Run a Microsoft Graph API query.
 
-
 #### Base Command
 
-`msgraph-api`
+`msgraph-api-request`
+
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                                                                                                        | **Required** |
-|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| resource          | The resource in Microsoft Graph to refer.                                                                                                                                                                              | Required     | 
-| http_method       | The HTTP method used for the request to Microsoft Graph. Possible values are: "GET", "POST", "DELETE", "PUT", or "PATCH". Default is "GET".                                                                            | Optional     | 
-| api_version       | The version of the Microsoft Graph API to use. Possible values are: "v1.0" or "beta". Default is "v1.0".                                                                                                               | Optional     | 
-| request_body      | The request body (required for POST queries).                                                                                                                                                                          | Optional     | 
-| odata             | OData system query options, e.g. $filter=startswith(givenName, 'J'). For more details see https://docs.microsoft.com/en-us/graph/query-parameters. It is recommended to use the $top query option to limit the result. | Optional     |
-| populate_context  | If "true", will populate the API response to the context data. Default is "true".                                                                                                                                      | Optional     | 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource | The resource in Microsoft Graph to refer. | Required | 
+| http_method | The HTTP method used for the request to Microsoft Graph. Possible values are: GET, POST, DELETE, PUT, PATCH. Default is GET. | Optional | 
+| api_version | The version of the Microsoft Graph API to use. Possible values are: v1.0, beta. Default is v1.0. | Optional | 
+| request_body | The request body (required for POST queries). | Optional | 
+| odata | OData system query options, e.g., $filter=startswith(givenName, 'J'). For more details see https://docs.microsoft.com/en-us/graph/query-parameters. It is recommended to use the $top query option to limit the result. | Optional | 
+| populate_context | If "true" will populate the API response to the context data. Possible values are: true, false. Default is true. | Optional | 
+| headers | A comma-separated list of headers to send in the GET request, for example: ConsistencyLevel:eventual,User-Agent:MyApp/1.0. | Optional | 
 
 #### Context Output
 

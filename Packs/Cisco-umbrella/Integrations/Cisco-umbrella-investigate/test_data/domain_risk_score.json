@@ -1,0 +1,11 @@
+{
+    "indicators": [
+        {
+            "indicator": "Geo Popularity Score",
+            "indicator_id": "Geo Popularity Score",
+            "normalized_score": 2,
+            "score": -3.610878170000004
+        }
+    ],
+    "risk_score": 2
+}

@@ -3,7 +3,22 @@ from graanalyticalfeaturedisplay import displayAnalyticalFeatures
 
 
 _INCIDENT = {
+    "CustomFields": {
+        "gracase": "CS-1",
+        "gracaseanomalydetails": [
+            {
+                "anomalyname": "anomaly_name",
+                "assignee": "assignee_name",
+                "assigneetype": "assignee_type",
+                "resourcename": "resource_name",
+                "riskaccepteddate": "null",
+                "riskscore": "0",
+                "status": "open",
+            },
+        ],
+    },
     'id': 28862,
+    'sourceInstance': 'instance_name',
     "labels": [
         {
             "type": "Brand",

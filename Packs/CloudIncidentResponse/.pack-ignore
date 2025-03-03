@@ -36,3 +36,9 @@ ignore=BA101
 
 [file:layoutscontainer-Cortex_XDR_-_XCLOUD_Cryptomining.json]
 ignore=BA101
+
+[file:layoutscontainer-Cloud_Alerts.json]
+ignore=LO107
+
+[file:layoutscontainer-CLOUD_Token_Theft.json]
+ignore=LO107

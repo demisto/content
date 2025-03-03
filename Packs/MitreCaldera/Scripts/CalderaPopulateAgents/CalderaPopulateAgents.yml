@@ -2,7 +2,7 @@ commonfields:
   id: CalderaPopulateAgents
   version: -1
 name: CalderaPopulateAgents
-comment: Populates the agents with agents from the MITRE Caldera
+comment: Populates the agents with agents from the MITRE Caldera.
 dependson:
   must:
   - '|||caldera-get-agents'
@@ -13,7 +13,7 @@ tags:
 enabled: true
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.11.10.116949
 runas: DBotWeakRole
 fromversion: 6.2.0
 tests:

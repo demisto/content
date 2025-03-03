@@ -111,7 +111,7 @@ def build_one_reputation_result(report: dict[str, Any]):
 
     final_verdict = report.get("finalVerdict", {})
     verdict = final_verdict.get("verdict")
-    if verdict.upper() == "BENIGN" or verdict.upper() == "INFORMATIONAL":
+    if verdict.upper() == "BENIGN" or verdict.upper() == "INFORMATIONAL" or verdict.upper() == "NO_THREAT":
         score = Common.DBotScore.GOOD
     elif verdict.upper() == "MALICIOUS" or verdict.upper() == "LIKELY_MALICIOUS":
         score = Common.DBotScore.BAD
@@ -175,7 +175,7 @@ def build_serach_query_result(analyses: list[dict]) -> CommandResults:
         score = Common.DBotScore.NONE
 
         verdict = analysis.get("verdict", "UNKNOWN")
-        if verdict.upper() == "BENIGN" or verdict.upper() == "INFORMATIONAL":
+        if verdict.upper() == "BENIGN" or verdict.upper() == "INFORMATIONAL" or verdict.upper() == "NO_THREAT":
             score = Common.DBotScore.GOOD
         elif verdict.upper() == "MALICIOUS" or verdict.upper() == "LIKELY_MALICIOUS":
             score = Common.DBotScore.BAD

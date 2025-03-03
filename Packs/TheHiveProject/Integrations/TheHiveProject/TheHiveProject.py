@@ -531,7 +531,7 @@ def update_case_command(client: Client, args: dict):
         v = v.split(",") if k in ['tags'] and "," in v else v
         original_case[k] = v
     case = client.update_case(case_id, args)
-    if type(case) == tuple:
+    if type(case) is tuple:
         raise DemistoException(f'Error updating case ({case[0]}) - {case[1]}')
     case_date_dt = dateparser.parse(str(case['createdAt']))
     case_update_dt = dateparser.parse(str(case['updatedAt']))
@@ -580,7 +580,7 @@ def fix_element(args: dict):
 def create_case_command(client: Client, args: dict):
     fix_element(args)
     case = client.create_case(args)
-    if type(case) == tuple:
+    if type(case) is tuple:
         raise DemistoException(f'Error creating case ({case[0]}) - {case[1]}')
 
     case_date_dt = dateparser.parse(str(case['createdAt']))
@@ -608,7 +608,7 @@ def remove_case_command(client: Client, args: dict):
         raise DemistoException(f'No case found with ID {case_id}')
 
     res = client.remove_case(case_id, permanent)
-    if type(res) == tuple:
+    if type(res) is tuple:
         raise DemistoException(f'Error removing case ID {case_id} ({res[0]}) - {res[1]}')
 
     return f'Case ID {case_id} permanently removed successfully' if permanent == 'true' \
@@ -637,7 +637,7 @@ def create_task_command(client: Client, args: dict):
 def get_linked_cases_command(client: Client, args: dict):
     case_id = args.get('case_id')
     res = client.get_linked_cases(case_id)
-    if type(res) == tuple:
+    if type(res) is tuple:
         raise DemistoException(f'Error getting linked cases ({res[0]}) - {res[1]}')
     if res:
         for case in res:
@@ -747,7 +747,7 @@ def update_task_command(client: Client, args: dict):
     task = client.get_task(task_id)
     if task:
         updated_task = client.update_task(task_id=task_id, updates=data)
-        if type(task) == dict:
+        if type(task) is dict:
             task_date_dt = dateparser.parse(str(updated_task['_createdAt']))
             if task_date_dt:
                 updated_task['_createdAt'] = task_date_dt.strftime(DATE_FORMAT)
@@ -915,7 +915,7 @@ def update_observable_command(client: Client, args: dict):
 def get_mapping_fields_command(client: Client, args: dict) -> Dict[str, Any]:
     instance_name = demisto.integrationInstance()
     schema = client.get_cases(limit=1)
-    schema = schema[0] if schema and type(schema) == list else {}
+    schema = schema[0] if schema and type(schema) is list else {}
     schema_id = schema.get('id', None)
     schema = client.get_case(schema_id) if schema_id else {"Warning": "No cases to pull schema from."}
     schema['dbotMirrorDirection'] = client.mirroring
@@ -926,6 +926,9 @@ def get_mapping_fields_command(client: Client, args: dict) -> Dict[str, Any]:
 def update_remote_system_command(client: Client, args: dict) -> str:
     parsed_args = UpdateRemoteSystemArgs(args)
     changes = {k: v for k, v in parsed_args.delta.items() if k in parsed_args.data}
+    demisto.debug(f'Changes from update_remote_system: {changes}')
+    # Convert the values: severity, pap and tlp to integer as the api request
+    changes = {k: (int(v) if isinstance(v, str) and v.isdigit() else v) for k, v in changes.items()}
     if parsed_args.remote_incident_id:
         # Apply the updates
         client.update_case(case_id=parsed_args.remote_incident_id, updates=changes)

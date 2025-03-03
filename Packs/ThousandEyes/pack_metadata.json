@@ -2,12 +2,14 @@
     "name": "ThousandEyes",
     "description": "This pack is used to to fetch-incidents, get alerts details and to get agent list",
     "support": "community",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.3",
     "author": "masquerad3r",
     "url": "",
     "email": "masquerad3r@gmail.com",
     "created": "2022-07-21T11:23:11Z",
-    "categories": ["Network Security"],
+    "categories": [
+        "Network Security"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],

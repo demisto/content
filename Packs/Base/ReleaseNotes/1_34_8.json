@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "Fixed an issue which caused email enrichers to save results in the wrong context key. `Email` key was changed to `Accounts.Email`. This change might affect the following integrations which output Email indicators to context:\n  1.  Anomali Threat Stream V3\n  2.  Cofense Intelligence V2\n  3.  Eclectic IQ Intelligence Center V3\n  4.  Email Hippo\n  5.  IP Quality Score\n  6.  MISP V3\n  7.  Reversing Labs Titanium Cloud V2\n  8.  SEKOIA Intelligence Center\n  9.  Threat Crowd V2\n  10. Threat Zone\n  11. VM Ray"
+    "breakingChangesNotes": "Fixed an issue which caused email enrichers to save results in the wrong context key. `Email` key was changed to `Account.Email`. This change might affect the following integrations which output Email indicators to context:\n  1.  Anomali Threat Stream V3\n  2.  Cofense Intelligence V2\n  3.  Eclectic IQ Intelligence Center V3\n  4.  Email Hippo\n  5.  IP Quality Score\n  6.  MISP V3\n  7.  Reversing Labs Titanium Cloud V2\n  8.  SEKOIA Intelligence Center\n  9.  Threat Crowd V2\n  10. Threat Zone\n  11. VM Ray"
 }

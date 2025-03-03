@@ -1,4 +1,3 @@
-import io
 import json
 
 import pytest
@@ -9,7 +8,7 @@ from paramiko import RSAKey
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -64,7 +63,7 @@ def test_create_paramiko_ssh_client_with_valid_ssh_certificate(mocker):
     mocker.patch('paramiko.RSAKey.from_private_key', return_value=RSAKey(key=valid_private_key))
 
     create_paramiko_ssh_client('host', 'user', None, set(), set(), private_key=valid_private_key)
-    assert type(ssh_connect_mock.call_args.kwargs.get('pkey')) == RSAKey
+    assert type(ssh_connect_mock.call_args.kwargs.get('pkey')) is RSAKey
     assert not ssh_connect_mock.call_args.kwargs.get('password')
 
 
@@ -180,6 +179,31 @@ def test_copy_to_command_valid(mocker):
 
     # When both entry and entry_id are given, validate that entry_id is used
     results: CommandResults = copy_to_command(mock_client, {'entry': 123, 'entry_id': 456})
+    assert results.readable_output == '### The file corresponding to entry ID: 456 was copied to remote host.'
+
+
+def test_copy_to_command_failed_to_mkdir(mocker):
+    """
+    Given:
+    - Cortex XSOAR arguments
+
+    When:
+    - Calling the copy-to command but failing to run the mkdir.
+
+    Then:
+    - Ensure the error info printed to debug but the command finished successfully.
+    """
+    from RemoteAccessv2 import copy_to_command
+    from paramiko import SSHClient
+    mock_client: SSHClient = SSHClient()
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'test', 'name': 'file-name.txt'})
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch('RemoteAccessv2.perform_copy_command', return_value='')
+    mocker.patch('RemoteAccessv2.execute_shell_command', side_effect=Exception('permission error'))
+
+    results: CommandResults = copy_to_command(mock_client, {'entry': 123, 'entry_id': 456, 'dest-dir': 'test_dir'})
+
+    assert 'permission error, occurred when run the command: mkdir -p test_dir' in demisto.debug.call_args[0][0]
     assert results.readable_output == '### The file corresponding to entry ID: 456 was copied to remote host.'
 
 

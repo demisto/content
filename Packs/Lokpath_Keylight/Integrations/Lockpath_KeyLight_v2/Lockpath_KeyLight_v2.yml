@@ -418,7 +418,7 @@ script:
     - contextPath: Keylight.User.MobilePhone
       description: The user's mobile phone.
       type: String
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.11.10.116439
   isfetch: true
   script: '-'
   type: python

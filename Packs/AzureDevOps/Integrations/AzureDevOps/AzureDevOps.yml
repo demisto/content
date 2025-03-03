@@ -69,26 +69,27 @@ configuration:
   required: true
   defaultvalue: Device Code
   type: 15
-  additionalinfo: Type of authentication - could be Authorization Code flow (recommended) or Device Code flow.
+  additionalinfo: Type of authentication - could be Authorization Code flow (recommended), Device Code flow or Client Credentials flow.
   options:
   - Authorization Code
   - Device Code
+  - Client Credentials
 - name: tenant_id
-  display: Tenant ID (for user-auth mode)
+  display: Tenant ID
   defaultvalue:
   type: 0
   additionalinfo: ""
   required: false
 - name: credentials
-  display: Client Secret (for user-auth mode)
+  display: Client Secret
   defaultvalue:
   type: 9
   additionalinfo: ""
-  displaypassword: Client Secret (for user-auth mode)
+  displaypassword: Client Secret
   hiddenusername: true
   required: false
 - name: redirect_uri
-  display: Application redirect URI (for user-auth mode)
+  display: Application redirect URI
   defaultvalue:
   type: 0
   additionalinfo: ""
@@ -2986,7 +2987,7 @@ script:
   - description: Generate the login url used for Authorization code flow.
     name: azure-devops-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.96042
+  dockerimage: demisto/crypto:1.0.0.117163
   isremotesyncout: true
   ismappable: true
   isfetch: true

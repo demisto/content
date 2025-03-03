@@ -1,19 +1,19 @@
 id: IBM Resilient Systems Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: IBM Resilient Systems Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 151ade90-a2af-441e-8d80-26ced1472592
+    taskid: 921218ea-1fa8-418a-8f67-579e99e9011a
     type: start
     task:
-      id: 151ade90-a2af-441e-8d80-26ced1472592
+      id: 921218ea-1fa8-418a-8f67-579e99e9011a
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "22"
@@ -32,12 +32,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
-    taskid: b51c45ea-ed7d-40b4-870a-2728ee3461c5
+    taskid: 13e99145-7a67-4c44-8ad1-e6be3912f834
     type: regular
     task:
-      id: b51c45ea-ed7d-40b4-870a-2728ee3461c5
+      id: 13e99145-7a67-4c44-8ad1-e6be3912f834
       version: -1
       name: rs-search-incidents
       description: Query for incidents
@@ -49,18 +50,12 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      date-created-after: {}
-      date-created-before: {}
-      date-created-within-the-last: {}
-      date-occurred-after: {}
-      date-occurred-before: {}
-      date-occurred-within-the-last: {}
-      due-in: {}
-      incident-type: {}
-      nist: {}
-      severity: {}
-      status: {}
-      timeframe: {}
+      limit:
+        simple: "3"
+      page:
+        simple: "1"
+      page_size:
+        simple: "3"
     separatecontext: false
     view: |-
       {
@@ -76,12 +71,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "2":
     id: "2"
-    taskid: 192364b7-ec92-42ab-832e-2b5bf3065fd2
+    taskid: b5fcfb9a-c2c5-4bc5-8338-e9e5ccf72794
     type: regular
     task:
-      id: 192364b7-ec92-42ab-832e-2b5bf3065fd2
+      id: b5fcfb9a-c2c5-4bc5-8338-e9e5ccf72794
       version: -1
       name: rs-incident-artifacts
       description: Gets incident artifacts
@@ -110,12 +106,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "3":
     id: "3"
-    taskid: 3978baee-59b6-45a0-8018-4fcd9d0714cd
+    taskid: f33832a2-3ad2-41b5-88ab-0c300b73e151
     type: regular
     task:
-      id: 3978baee-59b6-45a0-8018-4fcd9d0714cd
+      id: f33832a2-3ad2-41b5-88ab-0c300b73e151
       version: -1
       name: rs-incident-attachments
       description: Gets incident attachments
@@ -125,7 +122,7 @@ tasks:
       brand: IBM Resilient Systems
     nexttasks:
       '#none#':
-      - "7"
+      - "23"
     scriptarguments:
       incident-id:
         simple: ${Resilient.Incidents.Id}
@@ -144,12 +141,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "4":
     id: "4"
-    taskid: bef8360a-812d-4e18-8cdf-76141bfa0b25
+    taskid: 4ffa94c0-9df9-4e1d-887d-6761980ae219
     type: regular
     task:
-      id: bef8360a-812d-4e18-8cdf-76141bfa0b25
+      id: 4ffa94c0-9df9-4e1d-887d-6761980ae219
       version: -1
       name: rs-related-incidents
       description: Gets related incidents
@@ -159,7 +157,7 @@ tasks:
       brand: IBM Resilient Systems
     nexttasks:
       '#none#':
-      - "8"
+      - "24"
     scriptarguments:
       incident-id:
         simple: ${Resilient.Incidents.Id}
@@ -178,12 +176,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "5":
     id: "5"
-    taskid: d188dc47-8a2d-4750-87fa-f3602d7c057d
+    taskid: aac26532-4f9b-458d-8e4c-7681a3dd1398
     type: regular
     task:
-      id: d188dc47-8a2d-4750-87fa-f3602d7c057d
+      id: aac26532-4f9b-458d-8e4c-7681a3dd1398
       version: -1
       name: rs-incidents-get-tasks
       description: Gets tasks of incidents
@@ -193,7 +192,7 @@ tasks:
       brand: IBM Resilient Systems
     nexttasks:
       '#none#':
-      - "9"
+      - "25"
     scriptarguments:
       incident-id:
         simple: ${Resilient.Incidents.Id}
@@ -212,40 +211,29 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "6":
     id: "6"
-    taskid: f143297a-b0df-4a80-8c45-82a933a6982a
-    type: regular
+    taskid: bbd0914c-c63f-498e-8adf-8acdffbb5e1d
+    type: condition
     task:
-      id: f143297a-b0df-4a80-8c45-82a933a6982a
+      id: bbd0914c-c63f-498e-8adf-8acdffbb5e1d
       version: -1
       name: Verify Artifacts Context
       description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+        Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "3"
-    scriptarguments:
-      expectedValue: {}
-      extend-context: {}
-      fields:
-        simple: CreatedDate,Creator,ID,Type,Value
-      path:
-        simple: Resilient.Incidents.Artifacts
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 740
         }
       }
     note: false
@@ -255,150 +243,33 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
-    taskid: 3933828b-af80-44ea-8dab-53ec87db7dbe
-    type: regular
-    task:
-      id: 3933828b-af80-44ea-8dab-53ec87db7dbe
-      version: -1
-      name: Verify Attachments Context
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      expectedValue: {}
-      extend-context: {}
-      fields:
-        simple: ContentType,CreatedDate,Creator,ID,Name,Size
-      path:
-        simple: Resilient.Incidents.Attachments
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: b5478c17-e5cc-4d8b-89fd-d37f6858f243
-    type: regular
-    task:
-      id: b5478c17-e5cc-4d8b-89fd-d37f6858f243
-      version: -1
-      name: Verify Related Context
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: CreatedDate,Name,ID,Status
-      path:
-        simple: Resilient.Incidents.Related
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
-    taskid: a3affe43-f533-4123-84ca-b2f045d99085
-    type: regular
-    task:
-      id: a3affe43-f533-4123-84ca-b2f045d99085
-      version: -1
-      name: Verify Tasks Context
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: Category,Creator,ID,Status
-      path:
-        simple: Resilient.Incidents.Tasks
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${Resilient.Incidents.Artifacts}
+            iscontext: true
+    continueonerrortype: ""
   "10":
     id: "10"
-    taskid: c811f430-0823-4c8f-89d2-f5a3924da407
+    taskid: 0b2921ff-e5ee-4d7d-8b69-15b746c7d190
     type: title
     task:
-      id: c811f430-0823-4c8f-89d2-f5a3924da407
+      id: 0b2921ff-e5ee-4d7d-8b69-15b746c7d190
       version: -1
       name: Success
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3695
+          "y": 6480
         }
       }
     note: false
@@ -408,12 +279,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "11":
     id: "11"
-    taskid: c7d7f6f0-89e5-49b1-8cf6-6e0e4217515e
+    taskid: 7f0c1e35-ba0d-4be5-8f82-a006892757b4
     type: regular
     task:
-      id: c7d7f6f0-89e5-49b1-8cf6-6e0e4217515e
+      id: 7f0c1e35-ba0d-4be5-8f82-a006892757b4
       version: -1
       name: rs-add-note
       script: IBM Resilient Systems|||rs-add-note
@@ -433,7 +305,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 2950
         }
       }
     note: false
@@ -443,12 +315,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "12":
     id: "12"
-    taskid: bc055c52-c7bb-4302-8bb0-7ced5ce44abf
+    taskid: 18c6dbc8-c8de-4465-8068-2e148b16e145
     type: regular
     task:
-      id: bc055c52-c7bb-4302-8bb0-7ced5ce44abf
+      id: 18c6dbc8-c8de-4465-8068-2e148b16e145
       version: -1
       name: rs-add-artifact
       script: IBM Resilient Systems|||rs-add-artifact
@@ -472,7 +345,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 3260
         }
       }
     note: false
@@ -482,12 +355,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "13":
     id: "13"
-    taskid: ab83891c-6cc5-416b-86fb-2d23d007c2c9
+    taskid: dd26925b-483c-446a-8d08-73b87e1af6bc
     type: regular
     task:
-      id: ab83891c-6cc5-416b-86fb-2d23d007c2c9
+      id: dd26925b-483c-446a-8d08-73b87e1af6bc
       version: -1
       name: Update incident using other-fields argument
       description: Updates incidents using other-fields argument.
@@ -504,14 +378,13 @@ tasks:
           root: Resilient.Incidents
           accessor: Id
       other-fields:
-        simple: '{"description": {"textarea": {"format": "html", "content": "The new
-          description"}}, "name": {"text": "The new name"}}'
+        simple: '{"description": {"textarea": {"format": "html", "content": "The new description"}}, "name": {"text": "The new name"}}'
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3170
+          "y": 3580
         }
       }
     note: false
@@ -521,12 +394,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "14":
     id: "14"
-    taskid: ab2bf963-af6d-42e5-8838-b68d11d3d935
+    taskid: e7621c94-e9ca-4645-8f82-c68e4a32268c
     type: regular
     task:
-      id: ab2bf963-af6d-42e5-8838-b68d11d3d935
+      id: e7621c94-e9ca-4645-8f82-c68e4a32268c
       version: -1
       name: rs-create-incident
       description: Creates an incident
@@ -555,12 +429,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "15":
     id: "15"
-    taskid: 7a791d1f-892d-4e91-85f9-959cf976946a
+    taskid: 5520ed0c-13cb-40ef-8390-049312250cd3
     type: regular
     task:
-      id: 7a791d1f-892d-4e91-85f9-959cf976946a
+      id: 5520ed0c-13cb-40ef-8390-049312250cd3
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -589,12 +464,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "16":
     id: "16"
-    taskid: f2fa09fa-fee1-47bf-81a1-58879f9a9312
+    taskid: dffbffcf-0baa-4898-8399-bba55c8c9e8a
     type: regular
     task:
-      id: f2fa09fa-fee1-47bf-81a1-58879f9a9312
+      id: dffbffcf-0baa-4898-8399-bba55c8c9e8a
       version: -1
       name: rs-get-incident
       description: Gets an individual incident by ID
@@ -615,7 +491,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3345
+          "y": 3725
         }
       }
     note: false
@@ -625,12 +501,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "17":
     id: "17"
-    taskid: 5298e41b-0b00-49b2-8a9b-beec7a911044
+    taskid: 92f0f04f-c1e0-46d4-89ca-cbf3e82459b9
     type: condition
     task:
-      id: 5298e41b-0b00-49b2-8a9b-beec7a911044
+      id: 92f0f04f-c1e0-46d4-89ca-cbf3e82459b9
       version: -1
       name: Verify updated incident
       type: condition
@@ -638,7 +515,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "10"
+      - "33"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -667,7 +544,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3520
+          "y": 3900
         }
       }
     note: false
@@ -677,12 +554,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "19":
     id: "19"
-    taskid: 75f49135-ebb2-4fa8-8267-34970d4982d1
+    taskid: c342e980-ac95-4f58-800a-a6ec9d9db462
     type: condition
     task:
-      id: 75f49135-ebb2-4fa8-8267-34970d4982d1
+      id: c342e980-ac95-4f58-800a-a6ec9d9db462
       version: -1
       name: Verify Created Incident
       type: condition
@@ -698,9 +576,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              complex:
-                root: Resilient.Incidents
-                accessor: Name
+              simple: ${Resilient.Incidents.Name}
             iscontext: true
           right:
             value:
@@ -709,7 +585,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2310
         }
       }
     note: false
@@ -719,12 +595,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "20":
     id: "20"
-    taskid: 5882d7c7-ed3c-4cd3-8b79-c6b17f5ce744
+    taskid: fbceb0c0-f1ba-4a04-8b58-de1e98154a2d
     type: condition
     task:
-      id: 5882d7c7-ed3c-4cd3-8b79-c6b17f5ce744
+      id: fbceb0c0-f1ba-4a04-8b58-de1e98154a2d
       version: -1
       name: Verify Added Note
       type: condition
@@ -740,18 +617,16 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              complex:
-                root: Resilient.incidentNote
-                accessor: text
+              simple: ${Resilient.incidentNote.text}
             iscontext: true
           right:
             value:
-              simple: <div>This is a note</div>
+              simple: <div>This is a note<br/>FROM XSOAR</div>
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 3105
         }
       }
     note: false
@@ -761,12 +636,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "21":
     id: "21"
-    taskid: 2e91b60c-405c-40b1-81cf-9e1bc951fc78
+    taskid: e1fd2340-43c2-42e6-8b59-4fbddae30abd
     type: condition
     task:
-      id: 2e91b60c-405c-40b1-81cf-9e1bc951fc78
+      id: e1fd2340-43c2-42e6-8b59-4fbddae30abd
       version: -1
       name: Verify Added artifact
       type: condition
@@ -813,7 +689,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2995
+          "y": 3415
         }
       }
     note: false
@@ -823,12 +699,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "22":
     id: "22"
-    taskid: 25b85b2d-8015-4a7d-8810-c5f33dedf41e
+    taskid: 46a47025-0a95-4162-830d-6c6364f8bf60
     type: regular
     task:
-      id: 25b85b2d-8015-4a7d-8810-c5f33dedf41e
+      id: 46a47025-0a95-4162-830d-6c6364f8bf60
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -857,13 +734,654 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "23":
+    id: "23"
+    taskid: ae336c32-b142-45de-8a29-4fe60faafddf
+    type: condition
+    task:
+      id: ae336c32-b142-45de-8a29-4fe60faafddf
+      version: -1
+      name: Verify Attachments Context
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${Resilient.Incidents.Attachments}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 1604a19f-00fe-4621-87c7-51d5c9598712
+    type: condition
+    task:
+      id: 1604a19f-00fe-4621-87c7-51d5c9598712
+      version: -1
+      name: Verify Related Incidents Context
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${Resilient.Incidents.Related}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: bec95665-d178-48ec-8556-426e84c29f83
+    type: condition
+    task:
+      id: bec95665-d178-48ec-8556-426e84c29f83
+      version: -1
+      name: Verify Incident Tasks Context
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${Resilient.Incidents.Tasks}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: c12f494b-e68c-4c32-8864-2a17de1d1094
+    type: regular
+    task:
+      id: c12f494b-e68c-4c32-8864-2a17de1d1094
+      version: -1
+      name: rs-list-task-instructions
+      description: List task instructions
+      script: IBM Resilient Systems|||rs-list-task-instructions
+      type: regular
+      iscommand: true
+      brand: IBM Resilient Systems
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      task_id:
+        simple: ${Resilient.Incidents.Tasks.ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: d58f4e30-b691-4200-8ee3-5420cdca01fb
+    type: regular
+    task:
+      id: d58f4e30-b691-4200-8ee3-5420cdca01fb
+      version: -1
+      name: rs-list-scripts
+      description: List available scripts
+      script: IBM Resilient Systems|||rs-list-scripts
+      type: regular
+      iscommand: true
+      brand: IBM Resilient Systems
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 2fd0e1fa-2592-4c35-83ba-8675306c54ab
+    type: regular
+    task:
+      id: 2fd0e1fa-2592-4c35-83ba-8675306c54ab
+      version: -1
+      name: rs-add-custom-task
+      description: Add a custom task to an incident
+      script: IBM Resilient Systems|||rs-add-custom-task
+      type: regular
+      iscommand: true
+      brand: IBM Resilient Systems
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      description:
+        simple: build task
+      due_date:
+        simple: 2030-10-10T10:00:00
+      incident-id:
+        simple: ${Resilient.Incidents.Id}
+      incident_id:
+        simple: ${Resilient.Incidents.Id}
+      instructions:
+        simple: build_instructions
+      name:
+        simple: build_task
+      phase:
+        simple: Custom
+      task-instructions:
+        simple: This is a test custom task
+      task-name:
+        simple: Custom Test Task
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4905
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: ebe0abd3-2f1f-4785-84ed-0258e9b53915
+    type: regular
+    task:
+      id: ebe0abd3-2f1f-4785-84ed-0258e9b53915
+      version: -1
+      name: rs-list-incident-notes
+      description: Gets all of the top-level comments for an incident.
+      script: IBM Resilient Systems|||rs-list-incident-notes
+      type: regular
+      iscommand: true
+      brand: IBM Resilient Systems
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      incident_id:
+        simple: ${Resilient.Incidents.Id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 6ddeddc8-df46-4ff6-8dcb-f1e262bcb082
+    type: condition
+    task:
+      id: 6ddeddc8-df46-4ff6-8dcb-f1e262bcb082
+      version: -1
+      name: Verify task instructions
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${Resilient.Task}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 0e386fbe-8d8e-4093-8ee3-2923100bd212
+    type: regular
+    task:
+      id: 0e386fbe-8d8e-4093-8ee3-2923100bd212
+      version: -1
+      name: rs-incidents-get-tasks
+      description: Gets tasks of incidents.
+      script: IBM Resilient Systems|||rs-incidents-get-tasks
+      type: regular
+      iscommand: true
+      brand: IBM Resilient Systems
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      incident-id:
+        simple: ${Resilient.Incidents.Id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 04de6821-18ee-49ae-8a32-be870d7964f9
+    type: condition
+    task:
+      id: 04de6821-18ee-49ae-8a32-be870d7964f9
+      version: -1
+      name: Verify scripts context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${Resilient.Scripts}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: b00942b9-53c1-4b3f-87e1-a495b0e0ca73
+    type: condition
+    task:
+      id: b00942b9-53c1-4b3f-87e1-a495b0e0ca73
+      version: -1
+      name: 'Verify notes context '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${Resilient.IncidentNote}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: dc8d3231-b6de-4477-87ef-8492784ab800
+    type: regular
+    task:
+      id: dc8d3231-b6de-4477-87ef-8492784ab800
+      version: -1
+      name: rs-delete-tasks
+      description: Deletes a specified list of tasks. Note that only custom tasks can be deleted.
+      script: IBM Resilient Systems|||rs-delete-tasks
+      type: regular
+      iscommand: true
+      brand: IBM Resilient Systems
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      task_ids:
+        simple: ${Resilient.TaskId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 99b13d5d-d1df-426c-8afb-5216f7b3a66e
+    type: condition
+    task:
+      id: 99b13d5d-d1df-426c-8afb-5216f7b3a66e
+      version: -1
+      name: Verify created task
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${Resilient.TaskId}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: fb778277-8cfc-4747-8ddf-ccc9b8a19e4f
+    type: regular
+    task:
+      id: fb778277-8cfc-4747-8ddf-ccc9b8a19e4f
+      version: -1
+      name: rs-list-tasks
+      description: Gets an array of open tasks to which the current user is assigned.
+      script: IBM Resilient Systems|||rs-list-tasks
+      type: regular
+      iscommand: true
+      brand: IBM Resilient Systems
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 17ec66cc-8ae0-4f91-89df-1265e48a61ee
+    type: condition
+    task:
+      id: 17ec66cc-8ae0-4f91-89df-1265e48a61ee
+      version: -1
+      name: 'Verify notes context '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${Resilient.Tasks}
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 23bf737a-f0ea-4d46-8ef5-0d3da4bf9d6f
+    type: regular
+    task:
+      id: 23bf737a-f0ea-4d46-8ef5-0d3da4bf9d6f
+      version: -1
+      name: rs-update-task
+      description: Update an incident's task fields.
+      script: IBM Resilient Systems|||rs-update-task
+      type: regular
+      iscommand: true
+      brand: IBM Resilient Systems
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      due_date:
+        simple: "2030-01-01T00:00:00Z"
+      name:
+        simple: ${Resilient.Incidents.Tasks.Name}
+      task_id:
+        simple: ${Resilient.Incidents.Tasks.ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 5f369495-5bdf-4894-87a5-ef8c82c2341d
+    type: regular
+    task:
+      id: 5f369495-5bdf-4894-87a5-ef8c82c2341d
+      version: -1
+      name: rs-delete-incident
+      description: Delete multiple incidents.
+      script: IBM Resilient Systems|||rs-delete-incidents
+      type: regular
+      iscommand: true
+      brand: IBM Resilient Systems
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      incident_ids:
+        simple: ${Resilient.Incidents.Id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "19_11_yes": 0.74
+    },
     "paper": {
       "dimensions": {
         "height": 3710,
-        "width": 380,
+        "width": 860,
         "x": 50,
         "y": 50
       }
@@ -871,4 +1389,5 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0
+fromversion: 6.10.0
+description: Tests IBM Security QRadar SOAR integration.

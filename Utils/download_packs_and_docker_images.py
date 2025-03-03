@@ -1,3 +1,4 @@
+# This file has been deprecated and relocated to the contribution/utils directory.
 # Perquisites to run this script:
 #
 # 1. Python 3.8+
@@ -52,7 +53,9 @@ def get_docker_images_with_tag(pack_names: dict, id_set_json: dict) -> set:
         if pack_name not in id_set_json['Packs']:
             print(f"\tPack {pack_d_name} was not found in id_set.json.")
             continue
-        content_items = id_set_json['Packs'][pack_name]['ContentItems']
+        content_items = id_set_json['Packs'][pack_name].get('ContentItems', {})
+        if not content_items:
+            print(f"\tPack {pack_d_name} has no ContentItems - skipping pack.")
         integrations = content_items['integrations'] if 'integrations' in content_items else []
         scripts = content_items['scripts'] if 'scripts' in content_items else []
         if integrations:
@@ -94,7 +97,27 @@ def get_pack_names(pack_display_names: list, id_set_json: dict) -> dict:
     return pack_names
 
 
-def download_and_save_packs(pack_names: dict, id_set_json: dict, output_path: str, verify_ssl: bool) -> None:
+def should_filter_out_pack(pack_data: dict, fields: dict, remove_deprecated: bool = False):
+    """
+    Check if the pack should be filtered out based on given fields.
+
+    Parameters:
+    pack_data (dict): The dictionary containing the actual data. Based on id_set.
+    fields (dict): The dictionary containing the expected values for certain keys.
+    remove_deprecated (bool): If False, keys including "(Deprecated)" are not filtered out. Default is False.
+
+
+    Returns:
+    bool: True if all the values in fields match the values in data for the given keys, False otherwise.
+    """
+    if remove_deprecated and "(Deprecated)" in pack_data['name']:
+        return True
+
+    return any(pack_data.get(key) != value for key, value in fields.items())
+
+
+def download_and_save_packs(pack_names: dict, id_set_json: dict, output_path: str, verify_ssl: bool,
+                            use_defaut_filter: bool = False) -> None:
     """ Download and save packs under """
     if 'Packs' not in id_set_json:
         raise ValueError('Packs missing from id_set.json.')
@@ -106,6 +129,14 @@ def download_and_save_packs(pack_names: dict, id_set_json: dict, output_path: st
             if pack_name not in id_set_packs:
                 print(f"\tCouldn't find {pack_d_name} in id_set.json. Skipping pack download.")
                 continue
+            # In case no input is given (and only in that case) we automatically get all packs,
+            # we want to get only relevant packs.
+            if use_defaut_filter and should_filter_out_pack(id_set_packs[pack_name],
+                                                            fields={"author": 'Cortex XSOAR'},
+                                                            remove_deprecated=True):
+                print(f"\t{pack_d_name} filtered out. Skipping pack download.")
+                continue
+
             pack_version = id_set_packs[pack_name]['current_version']
             print(f"\tDownloading {pack_d_name} Pack")
             r = requests.request(method='GET',
@@ -169,6 +200,7 @@ def options_handler():
 
 
 def main():
+    print("This file has been deprecated and relocated to the contribution/utils directory.")
     options = options_handler()
     output_path = options.output_path
     packs = options.packs or ''
@@ -184,7 +216,10 @@ def main():
     pack_names = get_pack_names(pack_display_names, id_set_json)
     Path(output_path).mkdir(parents=True, exist_ok=True)
     if not options.skip_packs and pack_names:
-        download_and_save_packs(pack_names, id_set_json, os.path.join(output_path, 'packs'), verify_ssl)
+        download_and_save_packs(pack_names, id_set_json,
+                                os.path.join(output_path, 'packs'),
+                                verify_ssl,
+                                use_defaut_filter=not bool(packs))
     else:
         print('Skipping packs.zip creation')
     if pack_names:

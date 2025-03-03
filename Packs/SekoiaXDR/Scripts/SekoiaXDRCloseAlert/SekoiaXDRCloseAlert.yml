@@ -1,0 +1,19 @@
+commonfields:
+  id: CloseSekoiaAlert
+  version: -1
+name: CloseSekoiaAlert
+script: ''
+type: python
+tags:
+- post-processing
+comment: Post-processing script to close XSOAR incident.
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.11.10.111039
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

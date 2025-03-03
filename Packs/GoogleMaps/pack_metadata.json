@@ -2,13 +2,13 @@
     "name": "Google Maps",
     "description": "Use the Google Maps Geocoding API",
     "support": "xsoar",
-    "currentVersion": "1.0.15",
+    "currentVersion": "1.0.16",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2021-05-20T09:00:00Z",
     "categories": [
-        "Cloud Services"
+        "Utilities"
     ],
     "tags": [],
     "useCases": [],

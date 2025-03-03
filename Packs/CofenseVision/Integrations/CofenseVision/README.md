@@ -1,26 +1,22 @@
 The Cofense Vision integration provides commands to initiate advanced search jobs to hunt suspicious emails matching IOCs. It also contains commands to quarantine emails, download messages and their attachments, and aids to manage IOCs in the local repository to keep up with upcoming emerging threats.
 This integration was integrated and tested with version 4 of Cofense Vision and version 1 of Cofense IOC Repository.
 
-## Configure Cofense Vision on Cortex XSOAR
+## Configure Cofense Vision in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cofense Vision.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL | Server URL to connect to Cofense Vision. | True |
-    | Client ID |  | True |
-    | Client Secret |  | True |
-    | Threat levels to be marked as Good | Mapping of Cofense Vision threat level to XSOAR DbotScore.<br/>For 'Good', DbotScore will be 1 and default threat level value is 'low'.<br/>Comma separated values are supported. | False |
-    | Threat levels to be marked as Suspicious | Mapping of Cofense Vision threat level to XSOAR DbotScore.<br/>For 'Suspicious', DbotScore will be 2 and default threat level values are 'suspicious', 'moderate', 'substantial'.<br/>Comma separated values are supported. | False |
-    | Threat levels to be marked as Bad | Mapping of Cofense Vision threat level to XSOAR DbotScore.<br/>For 'Bad', DbotScore will be 3 and default threat level values are 'malicious', 'severe', 'critical', 'high'.<br/>Comma separated values are supported. | False |
-    | Trust any certificate (not secure) | Indicates whether to allow connections without verifying SSL certificate's validity. | False |
-    | Use system proxy settings | Indicates whether to use XSOAR's system proxy settings to connect to the API. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | Server URL to connect to Cofense Vision. | True |
+| Client ID |  | True |
+| Client Secret |  | True |
+| Threat levels to be marked as Good | Mapping of Cofense Vision threat level to XSOAR DbotScore.<br/>For 'Good', DbotScore will be 1 and default threat level value is 'low'.<br/>Comma separated values are supported. | False |
+| Threat levels to be marked as Suspicious | Mapping of Cofense Vision threat level to XSOAR DbotScore.<br/>For 'Suspicious', DbotScore will be 2 and default threat level values are 'suspicious', 'moderate', 'substantial'.<br/>Comma separated values are supported. | False |
+| Threat levels to be marked as Bad | Mapping of Cofense Vision threat level to XSOAR DbotScore.<br/>For 'Bad', DbotScore will be 3 and default threat level values are 'malicious', 'severe', 'critical', 'high'.<br/>Comma separated values are supported. | False |
+| Trust any certificate (not secure) | Indicates whether to allow connections without verifying SSL certificate's validity. | False |
+| Use system proxy settings | Indicates whether to use XSOAR's system proxy settings to connect to the API. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cofense-message-token-get
 ***
@@ -2284,4 +2280,3 @@ There are no input arguments for this command.
 >|Headers|
 >|---|
 >| X-MS-Exchange-Organization-AuthSource |
-

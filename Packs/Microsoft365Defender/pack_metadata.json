@@ -1,8 +1,8 @@
 {
     "name": "Microsoft 365 Defender",
-    "description": "Microsoft 365 Defender is a unified pre- and post-breach enterprise defense suite that natively coordinates detection, prevention, investigation, and response across endpoints, identities, email, and applications to provide integrated protection against sophisticated attacks.",
+    "description": "Microsoft Defender XDR (formerly Microsoft 365 Defender) is a unified pre- and post-breach enterprise defense suite that natively coordinates detection, prevention, investigation, and response across endpoints, identities, email, and applications to provide integrated protection against sophisticated attacks.",
     "support": "xsoar",
-    "currentVersion": "4.5.24",
+    "currentVersion": "4.6.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -11,7 +11,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Microsoft Defender XDR"
+    ],
     "dependencies": {},
     "marketplaces": [
         "xsoar",

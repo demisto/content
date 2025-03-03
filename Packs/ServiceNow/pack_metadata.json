@@ -2,7 +2,7 @@
     "name": "ServiceNow",
     "description": "Use The ServiceNow IT Service Management (ITSM) solution to modernize the way you manage and deliver services to your users.",
     "support": "xsoar",
-    "currentVersion": "2.6.2",
+    "currentVersion": "2.7.7",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,9 +10,17 @@
     "categories": [
         "Case Management"
     ],
-    "tags": [],
+    "tags": [
+        "IT",
+        "Security",
+        "Incident Handling"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "ServiceNow",
+        "Service Now",
+        "snow"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

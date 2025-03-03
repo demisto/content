@@ -4,6 +4,7 @@ import random
 import pytest
 from unittest.mock import patch
 import demistomock as demisto
+
 from CommonServerPython import DemistoException
 
 integration_params = {
@@ -20,7 +21,7 @@ TEST_TOKEN = '123456789'
 SIMILAR_COMMANDS = ['wiz-issue-in-progress', 'wiz-reopen-issue', 'wiz-reject-issue', 'wiz-get-issues',
                     'wiz-get-resource', 'wiz-get-issue',
                     'wiz-set-issue-note', 'wiz-clear-issue-note', 'wiz-get-issue-evidence', 'wiz-set-issue-due-date',
-                    'wiz-clear-issue-due-date', 'wiz-rescan-machine-disk', 'wiz-get-project-team', 'wiz-resolve-issue']
+                    'wiz-clear-issue-due-date', 'wiz-get-project-team', 'wiz-resolve-issue', 'wiz-copy-to-forensics-account']
 
 
 @pytest.fixture(autouse=True)
@@ -83,7 +84,7 @@ def test_get_filtered_issues(checkAPIerrors):
         }
     ]
 
-    res = get_filtered_issues('virtualMachine', '', 'CRITICAL', 500)
+    res = get_filtered_issues('virtualMachine', '', 'CRITICAL', '', 500)
     assert res == result_response
 
 
@@ -145,7 +146,7 @@ test_get_resource_response = {
 
 
 @patch('Wiz.checkAPIerrors', return_value=test_get_resource_response)
-def test_get_resource(checkAPIerrors):
+def test_get_resource_by_id(checkAPIerrors):
     from Wiz import get_resource
     result_response = {
         "id": "12345678-2222-3333-1111-ff5fa2ff7f78",
@@ -156,8 +157,41 @@ def test_get_resource(checkAPIerrors):
         }
     }
 
-    res = get_resource('i_am_an_id')
+    res = get_resource(resource_id='i_am_an_id', resource_name='')
     assert res == result_response
+
+
+test_get_resource_response_search = {
+    "data": {
+        "cloudResources": {
+            "nodes": [
+                {
+                    "id": "16da9341-6c72-46ba-948c-f0c057643e60",
+                    "name": "test_name_vm",
+                    "type": "VIRTUAL_MACHINE"
+                }
+            ]
+        }
+    }
+}
+
+
+@patch('Wiz.checkAPIerrors', return_value=test_get_resource_response_search)
+def test_get_resource_by_search(checkAPIerrors):
+    from Wiz import get_resource
+    res = get_resource(resource_id='', resource_name='test_name_vm')
+    assert res == test_get_resource_response_search
+
+
+def test_get_resource_fail(capfd):
+    with capfd.disabled():
+        from Wiz import get_resource
+
+        res = get_resource(resource_id='', resource_name='')
+        assert res == "You should pass exactly one of resource_name or resource_id"
+
+        res = get_resource(resource_id='12345678-2222-3333-1111-ff5fa2ff7f78', resource_name='test_name_vm')
+        assert res == "You should pass exactly one of resource_name or resource_id"
 
 
 test_reject_issue_response = {
@@ -403,6 +437,19 @@ VALID_RESPONSE_JSON = {
                 "projectOwners": "owner-test",
                 "securityChampions": "champion-test"
             }]
+        },
+        "cloudResources": {
+            "nodes": [{
+                "id": "test_id",
+                "name": "test_name",
+                "type": "test_type",
+                "properties": {
+                    "test": "test"
+                }
+            }]
+        },
+        "copyResourceForensicsToExternalAccount": {
+            "systemActivityGroupId": "test_id"
         }
     }
 }
@@ -415,7 +462,8 @@ DEMISTO_ARGS = {
     'issue_id': 123456,
     'reject_reason': 'reject_reason_test',
     'reopen_note': 'reopen_note_test',
-    'note': 'test-note'
+    'note': 'test-note',
+    'resource_name': 'resource_name'
 }
 
 
@@ -486,18 +534,6 @@ def test_get_project_team(mocker, capfd):
         assert not project
 
 
-def test_rescan_machine_disk(mocker, capfd):
-    from Wiz import rescan_machine_disk
-    with capfd.disabled():
-        mocker.patch('Wiz.checkAPIerrors', return_value=VALID_RESPONSE_JSON)
-        machine_disk = rescan_machine_disk('test_id_1234')
-        assert machine_disk
-
-        mocker.patch('Wiz.checkAPIerrors', side_effect=DemistoException('demisto exception'))
-        machine_disk = rescan_machine_disk('test_id_1234')
-        assert not machine_disk
-
-
 @pytest.mark.parametrize("severity", ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFORMATIONAL'])
 def test_get_filtered_issues_good_severity(mocker, capfd, severity):
     from Wiz import get_filtered_issues
@@ -506,7 +542,7 @@ def test_get_filtered_issues_good_severity(mocker, capfd, severity):
         valid_json_paging['data']['issues']['pageInfo']['hasNextPage'] = True
         valid_json_paging['data']['issues']['pageInfo']['endCursor'] = 'test'
         mocker.patch('Wiz.checkAPIerrors', side_effect=[valid_json_paging, VALID_RESPONSE_JSON])
-        get_filtered_issues(issue_type='virtualMachine', resource_id='', severity=severity, limit=500)
+        get_filtered_issues(entity_type='virtualMachine', resource_id='', severity=severity, issue_type='', limit=500)
 
 
 @pytest.mark.parametrize("severity", ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFORMATIONAL'])
@@ -517,19 +553,19 @@ def test_get_filtered_issues_good_severity_resource(mocker, capfd, severity):
         valid_json_paging['data']['issues']['pageInfo']['hasNextPage'] = True
         valid_json_paging['data']['issues']['pageInfo']['endCursor'] = 'test'
         mocker.patch('Wiz.checkAPIerrors', side_effect=[valid_json_paging, VALID_RESPONSE_JSON])
-        get_filtered_issues(issue_type='', resource_id='test_resource', severity=severity, limit=500)
+        get_filtered_issues(entity_type='', resource_id='test_resource', severity=severity, issue_type='', limit=500)
 
 
 def test_get_filtered_issues_bad_arguments(mocker, capfd):
     from Wiz import get_filtered_issues
     with capfd.disabled():
         mocker.patch('Wiz.checkAPIerrors', return_value=VALID_RESPONSE_JSON)
-        issue = get_filtered_issues(issue_type='virtualMachine', resource_id='test', severity='BAD', limit=500)
-        assert issue == 'You cannot pass issue_type and resource_id together\n'
-        issue = get_filtered_issues(issue_type='', resource_id='', severity='', limit=500)
-        assert issue == 'You should pass (at least) one of the following parameters:\n\tissue_type\n\tresource_id' \
-                        '\n\tseverity\n'
-        issue = get_filtered_issues(issue_type='virtualMachine', resource_id='', severity='BAD', limit=500)
+        issue = get_filtered_issues(entity_type='virtualMachine', resource_id='test', severity='BAD', issue_type='', limit=500)
+        assert issue == 'You cannot pass entity_type and resource_id together\n'
+        issue = get_filtered_issues(entity_type='', resource_id='', severity='', issue_type='', limit=500)
+        assert issue == "You should pass (at least) one of the following parameters:\n\tentity_type\n\tresource_id" \
+            "\n\tseverity\n\tissue_type\n"
+        issue = get_filtered_issues(entity_type='virtualMachine', resource_id='', severity='BAD', issue_type='', limit=500)
         assert issue == 'You should only use these severity types: CRITICAL, HIGH, MEDIUM, LOW or ' \
                         'INFORMATIONAL in upper or lower case.'
 
@@ -659,6 +695,141 @@ def test_get_issue_evidence_failure(checkAPIerrors, _get_issue, capfd):
         assert "Failed getting Issue evidence on ID 12345678-1234-1234-1234-d25e16359c19" in str(e)
 
 
+test_get_issue_evidence_tdr_response = {
+    "data": {
+        "issues": {
+            "nodes": [
+                {
+                    "type": "THREAT_DETECTION",
+                    "evidenceQuery": {
+
+                    },
+                    "threatDetectionDetails": {
+                        "data": "data"
+                    }
+                }
+            ]
+        }
+    }
+}
+
+
+@patch('Wiz._get_issue', return_value=test_get_issue_evidence_tdr_response)
+@patch('Wiz.checkAPIerrors', return_value=test_get_issue_evidence_tdr_response)
+def test_get_issue_evidence_tdr(checkAPIerrors, _get_issue):
+    from Wiz import get_issue_evidence
+    res = get_issue_evidence('12345678-1234-1234-1234-d25e16359c19')
+    assert res == test_get_issue_evidence_tdr_response['data']['issues']['nodes'][0]['threatDetectionDetails']
+
+
+test_get_issue_evidence_control_response = {
+    "data": {
+        "issues": {
+            "nodes": [
+                {
+                    "type": "TOXIC_COMBINATION",
+                    "evidenceQuery": {
+                        "data": "data"
+                    },
+                    "threatDetectionDetails": None
+                }
+            ]
+        }
+    }
+}
+
+test_get_evidence_control_response = {
+    "data": {
+        "graphSearch": {
+            "nodes": [
+                {
+                    "entities": [
+                        {
+                            "id": "12345678-222"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
+
+
+@patch('Wiz._get_issue', return_value=test_get_issue_evidence_control_response)
+@patch('Wiz.checkAPIerrors', return_value=test_get_evidence_control_response)
+def test_get_issue_evidence_control(checkAPIerrors, _get_issue):
+    from Wiz import get_issue_evidence
+    res = get_issue_evidence('12345678-1234-1234-1234-d25e16359c19')
+    assert res == test_get_evidence_control_response['data']['graphSearch']['nodes'][0]['entities']
+
+
+test_get_issue_empty_issue_response = {
+    "data": {
+        "issues": {
+            "nodes": []
+        }
+    }
+}
+
+
+@patch('Wiz._get_issue', return_value=test_get_issue_empty_issue_response)
+def test_get_issue_evidence_no_issue(_get_issue):
+    from Wiz import get_issue_evidence
+    res = get_issue_evidence('12345678-1234-1234-1234-d25e16359c19')
+    assert res == "Issue not found: 12345678-1234-1234-1234-d25e16359c19"
+
+
+test_get_issue_response_query_exists = {
+    "data": {
+        "issues": {
+            "nodes": [
+                {
+                    "type": "TOXIC_COMBINATION",
+                    "evidenceQuery": {
+                        "data": "data"
+                    },
+                    "threatDetectionDetails": {
+                    }
+                }
+            ]
+        }
+    }
+}
+
+test_get_evidence_empty = {
+    "data": {
+        "graphSearch": {
+            "nodes": [
+            ]
+        }
+    }
+}
+
+test_get_evidence_empty_none = {
+    "data": {
+        "graphSearch": {
+            "nodes": None
+        }
+    }
+}
+
+
+@patch('Wiz._get_issue', return_value=test_get_issue_response_query_exists)
+@patch('Wiz.checkAPIerrors', return_value=test_get_evidence_empty)
+def test_get_issue_evidence_no_evidence(checkAPIerrors, _get_issue):
+    from Wiz import get_issue_evidence
+    res = get_issue_evidence('12345678-1234-1234-1234-d25e16359c19')
+    assert res == "No Evidence Found"
+
+
+@patch('Wiz._get_issue', return_value=test_get_issue_response_query_exists)
+@patch('Wiz.checkAPIerrors', return_value=test_get_evidence_empty_none)
+def test_get_issue_evidence_no_resource(checkAPIerrors, _get_issue):
+    from Wiz import get_issue_evidence
+    res = get_issue_evidence('12345678-1234-1234-1234-d25e16359c19')
+    assert res == "Resource Not Found"
+
+
 test_set_issue_due_data_response = {
     "data": {
         "updateIssue": {
@@ -764,6 +935,30 @@ def test_bad_get_token(capfd):
 
         res = get_token()
         assert res == test_bad_token_response
+
+
+def test_generate_auth_urls_fed():
+    from Wiz import generate_auth_urls_fed
+    prefix = "auth"
+    expected_auth_url = "auth.wiz.us/oauth/token"
+    expected_http_auth_url = "https://auth.wiz.us/oauth/token"
+    auth_url, http_auth_url = generate_auth_urls_fed(prefix)
+    assert auth_url == expected_auth_url
+    assert http_auth_url == expected_http_auth_url
+
+    prefix = ""
+    expected_auth_url = ".wiz.us/oauth/token"
+    expected_http_auth_url = "https://.wiz.us/oauth/token"
+    auth_url, http_auth_url = generate_auth_urls_fed(prefix)
+    assert auth_url == expected_auth_url
+    assert http_auth_url == expected_http_auth_url
+
+    prefix = "auth!@#"
+    expected_auth_url = "auth!@#.wiz.us/oauth/token"
+    expected_http_auth_url = "https://auth!@#.wiz.us/oauth/token"
+    auth_url, http_auth_url = generate_auth_urls_fed(prefix)
+    assert auth_url == expected_auth_url
+    assert http_auth_url == expected_http_auth_url
 
 
 def test_token_url():
@@ -956,3 +1151,58 @@ def test_build_incidents_none(capfd):
 
         res = build_incidents(test_build_incidents_response)
         assert res == {}
+
+
+test_copy_to_forensics_account_response = {
+    "data": {
+        "copyResourceForensicsToExternalAccount": {
+            "systemActivityGroupId": "16dee032-9a56-4331-aca5-0df2a9d47745"
+        }
+    }
+}
+
+
+@patch('Wiz.checkAPIerrors', return_value=test_copy_to_forensics_account_response)
+def test_copy_to_forensics_account(checkAPIerrors):
+    from Wiz import copy_to_forensics_account
+    res = copy_to_forensics_account('12345678-1234-1234-1234-d25e16359c19')
+    assert res == test_copy_to_forensics_account_response
+
+
+test_get_resource_id_using_arn_response = {
+    "data": {
+        "cloudResources": {
+            "nodes": [
+                {
+                    "id": "12345678-1234-1234-1234-d25e16359c19"
+                }
+            ]
+        }
+    }
+}
+
+
+def test_copy_to_forensics_account_provider_id(mocker):
+    from Wiz import copy_to_forensics_account
+    mocker.patch('Wiz.checkAPIerrors', return_value=VALID_RESPONSE_JSON, side_effect=[test_get_resource_id_using_arn_response,
+                                                                                      test_copy_to_forensics_account_response])
+    res = copy_to_forensics_account('arn:aws:ec2:us-east-1:452225563321:instance/i-05r662bfb9708a4e8')
+    assert res == test_copy_to_forensics_account_response
+
+
+test_get_resource_id_using_arn_response_error = {
+    "data": None,
+    "errors": {
+        "message": "Resource not found",
+    }
+}
+
+
+def test_copy_to_forensics_account_invalid_id(mocker, capfd):
+    from Wiz import copy_to_forensics_account
+    with capfd.disabled():
+        mocker.patch('Wiz.checkAPIerrors', side_effect=[test_get_resource_id_using_arn_response,
+                                                        test_get_resource_id_using_arn_response_error])
+        issue = copy_to_forensics_account(resource_id='invalid_uuid')
+        assert issue == ("Resource with ID 12345678-1234-1234-1234-d25e16359c19 was not copied to Forensics Account. "
+                         "error: {'message': 'Resource not found'}")

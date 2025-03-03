@@ -1,9 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import *
-
 import requests
 import traceback
-from typing import Dict, Any
+from typing import Dict, Any, Optional, List
 import urllib3
 
 # Disable insecure warnings
@@ -94,6 +93,37 @@ class SecurityScorecardClient(BaseClient):
             params=request_params
         )
 
+    def get_company_events(self, domain: str, date_from: str, date_to: str) -> Dict[str, Any]:
+
+        request_params: Dict[str, Any] = assign_params(
+            date_from=date_from,
+            date_to=date_to
+        )
+
+        return self.http_request_wrapper(
+            method='GET',
+            url_suffix=f'companies/{domain}/history/events',
+            params=request_params
+        )
+
+    def get_company_event_findings(self, domain: str, date: str, issue_type: str, status: str) -> Dict[str, Any]:
+
+        request_params: Dict[str, Any] = assign_params(
+            group_status=status
+        )
+
+        return self.http_request_wrapper(
+            method='GET',
+            url_suffix=f'companies/{domain}/history/events/{date}/issues/{issue_type}',
+            params=request_params
+        )
+
+    def get_company_issue_findings(self, domain: str, issue_type: str) -> Dict[str, Any]:
+
+        return self.http_request_wrapper(
+            method='GET',
+            url_suffix=f'companies/{domain}/issues/{issue_type}')
+
     def get_company_historical_scores(self, domain: str, _from: str, to: str, timing: str) -> Dict[str, Any]:
 
         request_params: Dict[str, Any] = assign_params(
@@ -128,53 +158,48 @@ class SecurityScorecardClient(BaseClient):
             params=request_params
         )
 
-    def create_grade_change_alert(
-        self,
-        email: str,
-        change_direction: str,
-        score_types: List[str],
-        target: List[str]
-    ) -> Dict[str, Any]:
+    def get_issue_metadata(self, issue_type: str) -> Dict[str, Any]:
 
-        payload: Dict[str, Any] = assign_params(
-            change_direction=change_direction,
-            score_types=score_types,
-            target=target
-        )
         return self.http_request_wrapper(
-            method='POST',
-            url_suffix=f"users/by-username/{email}/alerts/grade",
-            json_data=payload
+            method='GET',
+            url_suffix=f'metadata/issue-types/{issue_type}'
         )
 
-    def create_score_threshold_alert(
+    def create_alert_subscription(
         self,
-        email: str,
-        change_direction: str,
-        threshold: int,
-        score_types: List[str],
-        target: List[str]
+        event_type: str,
+        delivery: Dict[str, Any],
     ) -> Dict[str, Any]:
 
         payload: Dict[str, Any] = assign_params(
-            change_direction=change_direction,
-            threshold=arg_to_number(arg=threshold, arg_name='threshold', required=True),
-            score_types=score_types,
-            target=target
+            event_type=event_type,
+            delivery=delivery,
         )
 
         return self.http_request_wrapper(
             method='POST',
-            url_suffix=f"users/by-username/{email}/alerts/score",
+            url_suffix="subscriptions",
             json_data=payload
         )
 
-    def delete_alert(self, email: str, alert_id: str, alert_type: str) -> None:
+    def delete_alert(self, id: str) -> None:
 
         return self.http_request_wrapper(
             method="DELETE",
-            url_suffix=f"users/by-username/{email}/alerts/{alert_type}/{alert_id}",
+            url_suffix=f"subscriptions/{id}",
             return_empty_response=True
+        )
+
+    def get_subscriptions(self) -> Dict[str, Any]:
+
+        query_params: Dict[str, Any] = assign_params(
+            username=self.username,
+        )
+
+        return self.http_request_wrapper(
+            method="GET",
+            url_suffix="subscriptions",
+            params=query_params
         )
 
     def get_alerts_last_week(self, email: str, portfolio_id: Optional[str]) -> Dict[str, Any]:
@@ -623,12 +648,11 @@ def company_factor_score_get_command(
 def company_history_score_get_command(client: SecurityScorecardClient, args: Dict[str, str]) -> CommandResults:
     """Retrieve company historical scores
 
-    See https://securityscorecard.readme.io/reference#get_companies-scorecard-identifier-history-score
+    See https://securityscorecard.readme.io/reference/get_companies-scorecard-identifier-history-score
 
     Args:
         ``client`` (``SecurityScorecardClient``): SecurityScorecard client.
         ``args`` (``Dict[str, str]``): Domain, start date, end date, timing.
-
 
     Returns:
         ``CommandResults``: The results of the command.
@@ -655,6 +679,162 @@ def company_history_score_get_command(client: SecurityScorecardClient, args: Dic
         outputs=entries,
         raw_response=response,
         outputs_key_field="date"
+    )
+
+    return results
+
+
+def company_events_get_command(
+    client: SecurityScorecardClient,
+    args: Dict[str, Any]
+) -> CommandResults:
+    """Retrieve company events
+
+    See https://securityscorecard.readme.io/reference/get_companies-scorecard-identifier-history-events
+
+    Args:
+        ``client`` (``SecurityScorecardClient``): SecurityScorecard client
+        ``args`` (``Dict[str, Any]``): The domain, the initial date and the end (date_from, date_to)
+
+    Returns:
+        ``CommandResults``: The results of the command.
+    """
+
+    domain = args.get("domain")
+    date_from = args.get("date_from")
+    date_to = args.get("date_to")
+
+    response = client.get_company_events(domain=domain, date_to=date_to, date_from=date_from)  # type: ignore
+
+    entries = response['entries']
+
+    events = []
+    for entry in entries:
+        event = {
+            "ssc_event_id": entry.get("id"),
+            "date": entry.get("date"),
+            "status": entry.get("group_status"),
+            "issue_count": entry.get("issue_count"),
+            "score_impact": entry.get("total_score_impact"),
+            "issue_type": entry.get("issue_type"),
+            "severity": entry.get("severity"),
+            "factor": entry.get("factor"),
+            "ssc_detail_url": entry.get("detail_url")
+        }
+
+        events.append(event)
+
+    markdown = tableToMarkdown(
+        f"Domain {domain} Events",
+        events,
+        headers=['ssc_event_id', 'date', 'status', 'factor', 'issue_type',
+                 'severity', 'issue_count', 'score_impact', 'ssc_detail_url']
+    )
+
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix="SecurityScorecard.Company.Events",
+        outputs=entries,
+        raw_response=response,
+        outputs_key_field='ssc_event_id'
+    )
+
+    return results
+
+
+def company_event_findings_get_command(
+    client: SecurityScorecardClient,
+    args: Dict[str, Any]
+) -> CommandResults:
+    """Get an issue_type's historical findings in a scorecard
+
+    See (example issue_type): https://securityscorecard.readme.io/reference/get_companies-scorecard-identifier-history-events-effective-date-issues-active-cve-exploitation-attempted-1
+
+    Args:
+        ``client`` (``SecurityScorecardClient``): SecurityScorecard client
+        ``args`` (``Dict[str, Any]``): domain, date, issue_type, status
+
+    Returns:
+        ``CommandResults``: The results of the command.
+    """
+
+    domain = args.get("domain")
+    date = args.get("date")
+    issue_type = args.get("issue_type")
+    status = args.get("status")
+
+    response = client.get_company_event_findings(domain=domain, date=date, issue_type=issue_type, status=status)  # type: ignore
+
+    entries = response['entries']
+
+    events = []
+    for entry in entries:
+
+        # some issue types have domains, IPs and/or ports, but not all of them do
+        if "domain" in entry:
+            domain = entry.get("domain")
+        elif "target" in entry:
+            domain = entry.get("target")
+        else:
+            domain = ""
+
+        if "ip" in entry:
+            ip = entry.get("ip")
+        elif "src_ip" in entry:
+            ip = entry.get("src_ip")
+        elif "ip_address" in entry:
+            ip = entry.get("ip_address")
+        elif "connection_attributes" in entry:
+            ip = entry.get("connection_attributes").get("dst_ip")
+        else:
+            ip = ""
+
+        if "protocol" in entry:
+            protocol = entry.get("protocol")
+        elif "scheme" in entry:
+            protocol = entry.get("scheme")
+        elif "connection_attributes" in entry:
+            protocol = entry.get("connection_attributes").get("protocol")
+        else:
+            protocol = ""
+
+        if "port" in entry:
+            port = entry.get("port")
+        elif "connection_attributes" in entry:
+            port = entry.get("connection_attributes").get("dst_port")
+        else:
+            port = ""
+
+        event = {
+            "parent_domain": entry.get("parent_domain"),
+            "count": entry.get("count"),
+            "status": entry.get("group_status"),
+            "first_seen_time": entry.get("first_seen_time"),
+            "last_seen_time": entry.get("last_seen_time"),
+            # the following details may or may not be populated
+            "port": port,
+            "domain_name": domain,
+            "ip_address": ip,
+            "protocol": protocol,
+            "observations": entry.get("observations"),
+            "issue_type": issue_type
+        }
+
+        events.append(event)
+
+    markdown = tableToMarkdown(
+        f"Domain {domain} Findings for {issue_type}",
+        events,
+        headers=['parent_domain', 'issue_type', 'count', 'status', 'first_seen_time',
+                 'last_seen_time', 'port', 'domain_name', 'ip_address', 'protocol', 'observations']
+    )
+
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix="SecurityScorecard.Company.Findings",
+        outputs=entries,
+        raw_response=response,
+        outputs_key_field='issue_id'
     )
 
     return results
@@ -714,39 +894,138 @@ def company_history_factor_score_get_command(client: SecurityScorecardClient, ar
     return results
 
 
-def alert_grade_change_create_command(client: SecurityScorecardClient, args: Dict[str, str]) -> CommandResults:
-    """Create alert based on grade change
+def issue_metadata_get_command(client: SecurityScorecardClient, args: Dict[str, str]) -> CommandResults:
+    """Retrieve description and recommendation for an issue.
 
-    See https://securityscorecard.readme.io/reference#post_users-by-username-username-alerts-grade
+    See https://securityscorecard.readme.io/reference/get_metadata-issue-types-type-1
 
     Args:
         ``client`` (``SecurityScorecardClient``): SecurityScorecard client
-        ``args`` (``Dict[str, str]``): The username, direction, score types, company, portfolio
+        ``args`` (``Dict[str, str]``): The issue type to retrieve metadata for.
 
     Returns:
         ``CommandResults``: The results of the command.
     """
 
+    issue_type = args.get("issue_type")
+
+    metadata = client.get_issue_metadata(issue_type=issue_type)  # type: ignore
+
+    markdown = tableToMarkdown(
+        f"Issue Type {issue_type}",
+        metadata,
+        headers=['key', 'severity', 'factor', 'title', 'short_description', 'long_description', 'recommendation']
+    )
+
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix="SecurityScorecard.Metadata.Issues",
+        outputs=metadata,
+        raw_response=metadata,
+        outputs_key_field='key'
+    )
+
+    return results
+
+
+@logger
+def alert_grade_change_create_command(client: SecurityScorecardClient, args: Dict[str, str]) -> CommandResults:
+    """Create an alert based on grade change.
+    This function creates an alert subscription for grade changes in SecurityScorecard.
+    It supports alerts for both overall and factor-specific grade changes.
+
+    See POST /subscriptions
+
+    Args:
+        client (SecurityScorecardClient): The SecurityScorecard client instance.
+        args (Dict[str, str]): The command arguments containing:
+            - change_direction (str): The direction of the grade change ('drops' or 'raises').
+            - score_types (str): The types of scores to monitor (e.g., 'overall', 'network_security').
+            - target (str): The target entity for the alert (e.g., 'any_followed_company', 'my_scorecard').
+            - portfolio (str): The portfolio ID to monitor.
+
+    Returns:
+        CommandResults: The results of the command, including the created alert ID.
+
+    Raises:
+        DemistoException: If both 'portfolio' and 'target' are set, or if neither is set.
+    """
     change_direction = args.get("change_direction")
     score_types = argToList(args.get('score_types'))
     target = args.get('target')
-    portfolios = args.get('portfolios')
+    portfolio = args.get('portfolio')
 
-    # Only one argument between portfolios and target should be defined
+    # Only one argument between portfolio and target should be defined
     # Return error if neither of them is defined or if both are defined
-    # Else choose the one that is defined and use it as the target
-    if portfolios and target:
+    if portfolio and target:
         raise DemistoException("Both 'portfolio' and 'target' argument have been set. Please remove one of them and try again.")
-    else:
-        target = target or portfolios
-    if not target:
+    elif not (target or portfolio):
         raise DemistoException("Either 'portfolio' or 'target' argument must be given")
 
-    response = client.create_grade_change_alert(
-        email=client.username,
-        change_direction=change_direction,  # type: ignore
-        score_types=score_types,
-        target=argToList(target)
+    filters_changes_value = (
+        "factor_grade_drop" if change_direction == "drops" else "factor_grade_raise"
+    ) if "overall" not in score_types else (
+        "grade_drop" if change_direction == "drops" else "grade_raise"
+    )
+    name = (
+        f"Alert me when {target or 'portfolio'} {change_direction} in "
+        f"{'factor(s) ' if 'overall' not in score_types else ''}grade"
+    )
+    delivery: Dict[str, Any] = {
+        "workflow": {
+            "steps": [
+                {
+                    "action": {
+                        "value": "alert_teammate",
+                        "recipientType": {
+                            "value": "self",
+                        },
+                    },
+                },
+            ],
+            "name": name,
+            "filters": {
+                "changes": {
+                    "value": filters_changes_value,
+                    "grade": {
+                        "value": "any",
+                    },
+                    "factor": {
+                        "value": [],
+                    },
+                },
+                "scorecards": {
+                    "value": (
+                        "followed" if target == "any_followed_company"
+                        else "my_scorecard" if target == "my_scorecard"
+                        else "in_portfolio"
+                    ),
+                    "portfolio_id": {
+                        "value": portfolio
+                    },
+                },
+            },
+        },
+    }
+
+    if not portfolio:
+        del delivery["workflow"]["filters"]["scorecards"]["portfolio_id"]
+
+    if "overall" not in score_types:
+        if "any_factor_score" in score_types:
+            delivery["workflow"]["filters"]["changes"]["factor"]["value"] = [
+                'network_security', 'dns_health', 'patching_cadence', 'endpoint_security',
+                'ip_reputation', 'application_security', 'cubit_score', 'hacker_chatter',
+                'leaked_information', 'social_engineering'
+            ]
+        else:
+            delivery["workflow"]["filters"]["changes"]["factor"]["value"] = score_types
+    else:
+        del delivery["workflow"]["filters"]["changes"]["factor"]
+
+    response = client.create_alert_subscription(
+        event_type="scorecard.changed",
+        delivery=delivery,
     )
     demisto.debug(f"Response received: {response}")
     alert_id = response.get("id")
@@ -765,40 +1044,111 @@ def alert_grade_change_create_command(client: SecurityScorecardClient, args: Dic
 
 
 def alert_score_threshold_create_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
-    """Create alert based score threshold met
+    """
+    Create an alert based on a score threshold being met.
+    This function creates an alert subscription in SecurityScorecard when a specified score threshold is met.
+    The alert can be configured to trigger on changes in overall score or specific factor scores, and can be
+    targeted to a specific portfolio or a general target.
 
-    See https://securityscorecard.readme.io/reference#post_users-by-username-username-alerts-score
+    See POST /subscriptions
 
     Args:
-        ``client`` (``SecurityScorecardClient``): SecurityScorecard client
-        ``args`` (``Dict[str, Any]``): direction, score threshold, score types, target, portfolio
+        client (SecurityScorecardClient): The SecurityScorecard client instance used to interact with the API.
+        args (Dict[str, Any]): A dictionary of arguments for the command.
+            - change_direction (str): The direction of the score change ('rises_above' or 'drops_below').
+            - threshold (int): The score threshold value.
+            - score_types (List[str]): The types of scores to monitor (e.g., 'overall', 'network_security').
+            - target (str): The target for the alert (e.g., 'any_followed_company', 'my_scorecard').
+            - portfolio (str): The portfolio ID to monitor.
 
     Returns:
-        ``CommandResults``: The results of the command.
+        CommandResults: The results of the command, including the alert ID and raw response from the API.
+
+    Raises:
+        DemistoException: If both 'portfolio' and 'target' are provided, or if neither is provided.
     """
 
     change_direction = args.get("change_direction")
     threshold = arg_to_number(args.get("threshold"))
     score_types = argToList(args.get("score_types"))
     target = args.get('target')
-    portfolios = args.get('portfolios')
+    portfolio = args.get('portfolio')
 
-    # Only one argument between portfolios and target should be defined
+    # Only one argument between portfolio and target should be defined
     # Return error if neither of them is defined or if both are defined
-    # Else choose the one that is defined and use it as the target
-    if portfolios and target:
+    if portfolio and target:
         raise DemistoException("Both 'portfolio' and 'target' argument have been set. Please remove one of them and try again.")
-    else:
-        target = target or portfolios
-    if not target:
+    elif not (target or portfolio):
         raise DemistoException("Either 'portfolio' or 'target' argument must be given")
 
-    response = client.create_score_threshold_alert(
-        email=client.username,
-        change_direction=change_direction,  # type: ignore
-        threshold=threshold,  # type: ignore
-        score_types=score_types,
-        target=argToList(target)
+    # filters_changes_value can be
+    # 'score_rise_threshold', 'score_drop_threshold', 'factor_score_rise_threshold', 'factor_score_drop_threshold'
+    filters_changes_value = (
+        "factor_score_drop_threshold" if change_direction == "drops_below" else "factor_score_rise_threshold"
+    ) if "overall" not in score_types else (
+        "score_drop_threshold" if change_direction == "drops_below" else "score_rise_threshold"
+    )
+
+    name = (
+        f"Alert me when {target or 'portfolio'} "
+        f"{'factor(s)' if 'overall' not in score_types else 'overall'} score {change_direction} {threshold} pts"
+    )
+
+    delivery: Dict[str, Any] = {
+        "workflow": {
+            "steps": [
+                {
+                    "action": {
+                        "value": "alert_teammate",
+                        "recipientType": {
+                            "value": "self",
+                        },
+                    },
+                },
+            ],
+            "name": name,
+            "filters": {
+                "changes": {
+                    "value": filters_changes_value,
+                    "threshold": {
+                        "value": f"{threshold}",
+                    },
+                    "factor": {
+                        "value": [],
+                    },
+                },
+                "scorecards": {
+                    "value": (
+                        "followed" if target == "any_followed_company"
+                        else "my_scorecard" if target == "my_scorecard"
+                        else "in_portfolio"
+                    ),
+                    "portfolio_id": {
+                        "value": portfolio
+                    },
+                },
+            },
+        },
+    }
+
+    if not portfolio:
+        del delivery["workflow"]["filters"]["scorecards"]["portfolio_id"]
+
+    if "overall" not in score_types:
+        if "any_factor_score" in score_types:
+            delivery["workflow"]["filters"]["changes"]["factor"]["value"] = [
+                'network_security', 'dns_health', 'patching_cadence', 'endpoint_security',
+                'ip_reputation', 'application_security', 'cubit_score', 'hacker_chatter',
+                'leaked_information', 'social_engineering'
+            ]
+        else:
+            delivery["workflow"]["filters"]["changes"]["factor"]["value"] = score_types
+    else:
+        del delivery["workflow"]["filters"]["changes"]["factor"]
+
+    response = client.create_alert_subscription(
+        event_type="scorecard.changed",
+        delivery=delivery,
     )
     demisto.debug(f"Response received: {response}")
     alert_id = response.get("id")
@@ -819,8 +1169,7 @@ def alert_score_threshold_create_command(client: SecurityScorecardClient, args: 
 def alert_delete_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
     """Delete an alert
 
-    See https://securityscorecard.readme.io/reference#delete_users-by-username-username-alerts-grade-alert
-
+    See DELETE /subscriptions/:id
     Args:
         client (SecurityScorecardClient): SecurityScorecard client
         args (Dict[str, Any]): Dictionary of arguments specified in the command
@@ -829,12 +1178,10 @@ def alert_delete_command(client: SecurityScorecardClient, args: Dict[str, Any]) 
         CommandResults: The results of the command.
     """
 
-    email = client.username
     alert_id = args.get("alert_id")
-    alert_type = args.get("alert_type")
-    client.delete_alert(email=email, alert_id=alert_id, alert_type=alert_type)  # type: ignore
+    client.delete_alert(id=alert_id)  # type: ignore
 
-    markdown = f"{str.capitalize(alert_type)} alert **{alert_id}** deleted"  # type: ignore
+    markdown = f"Alert **{alert_id}** deleted"  # type: ignore
 
     results = CommandResults(
         readable_output=markdown,
@@ -848,7 +1195,7 @@ def alert_delete_command(client: SecurityScorecardClient, args: Dict[str, Any]) 
 def alerts_list_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
     """Retrieve alerts triggered in the last week
 
-    See https://securityscorecard.readme.io/reference#get_users-by-username-username-notifications-recent
+    See https://securityscorecard.readme.io/reference/get_users-by-username-username-notifications-recent-1
 
     Args:
         client (SecurityScorecardClient): SecurityScorecard client
@@ -861,9 +1208,7 @@ def alerts_list_command(client: SecurityScorecardClient, args: Dict[str, Any]) -
     email = client.username
     demisto.debug(f"email: {email}")
     portfolio_id = args.get('portfolio_id')
-
     demisto.debug(f"Sending request to retrieve alerts with arguments {args}")
-
     response = client.get_alerts_last_week(email=email, portfolio_id=portfolio_id)
 
     entries = response.get("entries")  # type: ignore
@@ -872,30 +1217,38 @@ def alerts_list_command(client: SecurityScorecardClient, args: Dict[str, Any]) -
 
     for entry in entries:  # type: ignore
         content: Dict[str, str] = {
-            "Alert ID": entry.get("id"),
-            "Company": entry.get("company_name"),
-            "Domain": entry.get("domain"),
-            "Creation Time": entry.get("created_at")
+            "company": entry.get("company_name"),
+            "domain": entry.get("domain"),
+            "datetime": entry.get("created_at"),
         }
 
         change_data = entry.get("change_data")
 
-        # Some alerts may have more than one change data object
-        change_str = ""
-        if len(change_data) > 1:
-            for change in change_data:
-                factor_part = f"**{change.get('factor').replace('_', ' ').title()}** "
-                direction = f"**{change.get('direction')}** by {change.get('score_impact')} "
-                final_score = f"to {change.get('score')} ({change.get('grade_letter')})\n"
-                change_str = change_str + factor_part + direction + final_score
+        if change_data:
+            try:
+                for change in change_data:
+                    # content["change data"] = change
+                    content["alert id"] = change.get("workflow", {}).get("id", "N/A")
+                    content["trigger"] = change.get("score_change", {}).get("trigger_value", "N/A")
+                    content["grade"] = change.get("score_change", {}).get("grade", "N/A")
+                    content["score"] = change.get("score_change", {}).get("score", "N/A")
 
-        else:
-            factor_part = f"**{change_data[0]['factor'].replace('_', ' ').title()}** "
-            direction = f"**{change_data[0]['direction']}** by {change_data[0]['score_impact']} "
-            final_score = f"to {change_data[0]['score']} ({change_data[0]['grade_letter']})\n"
-            change_str = factor_part + direction + final_score
+                    # Handle additional optional fields
+                    content["factors"] = change.get("score_change", {}).get("factors", "N/A")
+                    content["issues"] = change.get("score_change", {}).get("issues", "N/A")
+            except (json.JSONDecodeError, TypeError, KeyError) as e:
+                demisto.error(f"Error processing change_data: {str(e)}")
 
-        content["Details"] = change_str
+        # Old alerts system had the possibility of multiple portfolios, new rules system allows one
+        portfolios = entry.get("portfolios")
+
+        if portfolios:
+            try:
+                for portfolio in portfolios:
+                    content["target portfolio"] = portfolio.get("id")
+            except (json.JSONDecodeError, TypeError, KeyError) as e:
+                demisto.error(f"Error processing change_data: {str(e)}")
+
         alerts.append(content)
 
     markdown = tableToMarkdown(f"Latest Alerts for user {email}", alerts)
@@ -1051,6 +1404,170 @@ def fetch_alerts(client: SecurityScorecardClient):
         demisto.incidents([])
 
 
+def alert_rules_list_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
+    """Retrieve alert subscriptions for the user
+
+    See https://securityscorecard.readme.io/reference/subscriptions (not available right now)
+
+    Args:
+        client (SecurityScorecardClient): SecurityScorecard client
+        args (Dict[str, Any]): Dictionary of arguments specified in the command
+
+    Returns:
+        CommandResults: The results of the command.
+    """
+
+    response = client.get_subscriptions()
+    demisto.debug(f"Response received: {response}")
+    entries = response.get("entries")
+
+    alert_rules: List[Dict[str, str]] = []
+
+    if entries:
+        for entry in entries:
+            target = entry.get("delivery", {}).get("workflow", {}).get("filters", {}).get("scorecards", {}).get("value", "N/A")
+            if target == "by_id":
+                target = "single scorecard"
+            elif target == "in_portfolio":
+                portfolio_id = entry.get("delivery", {}).get("workflow", {}).get(
+                    "filters", {}).get("scorecards", {}).get("portfolio_id", {}).get("value", "N/A")
+                target = f"portfolio with id {portfolio_id}"
+            elif target == "followed":
+                target = "all followed scorecards"
+            elif target == "my_scorecard":
+                target = "my scorecard"
+
+            content: Dict[str, str] = {
+                "Alert Rule ID": entry.get("id"),
+                "Target": target,
+                "Name": entry.get("delivery", {}).get("workflow", {}).get("name", "N/A"),
+                "Updated At": entry.get("updated_at", "N/A"),
+                "Paused At": entry.get("paused_at", "N/A"),
+            }
+
+            alert_rules.append(content)
+
+    markdown = tableToMarkdown("Alert Rules", alert_rules)
+
+    results = CommandResults(
+        outputs_prefix="SecurityScorecard.AlertRules.Rule",
+        outputs_key_field="id",
+        readable_output=markdown,
+        outputs=alert_rules,
+        raw_response=response
+    )
+
+    return results
+
+
+def issue_details_get_command(
+    client: SecurityScorecardClient,
+    args: Dict[str, Any]
+) -> CommandResults:
+    """Retrieve issue details for a specific issue type and domain.
+
+    See https://securityscorecard.readme.io/reference/get_companies-scorecard-identifier-issues-active-cve-exploitation-attempted
+
+    Args:
+        ``client`` (``SecurityScorecardClient``): SecurityScorecard client
+        ``args`` (``Dict[str, Any]``): The domain and issue type
+
+    Returns:
+        ``CommandResults``: The results of the command.
+    """
+
+    domain = args.get("domain")
+    issue_type = args.get("issue_type")
+
+    if not issue_type or not domain:
+        raise ValueError("Both 'issue_type' and 'domain' arguments are required and cannot be None.")
+
+    response = client.get_company_issue_findings(domain=domain, issue_type=issue_type)
+
+    entries = response.get('entries', [])
+
+    findings = []
+    for entry in entries:
+
+        # some issue types have domains, IPs and/or ports, but not all of them do
+        if "domain" in entry:
+            domain = entry.get("domain")
+        elif "target" in entry:
+            domain = entry.get("target")
+        else:
+            domain = ""
+
+        if "ip" in entry:
+            ip = entry.get("ip")
+        elif "src_ip" in entry:
+            ip = entry.get("src_ip")
+        elif "ip_address" in entry:
+            ip = entry.get("ip_address")
+        elif "connection_attributes" in entry:
+            ip = entry.get("connection_attributes", {}).get("dst_ip")
+        else:
+            ip = ""
+
+        if "protocol" in entry:
+            protocol = entry.get("protocol")
+        elif "scheme" in entry:
+            protocol = entry.get("scheme")
+        elif "connection_attributes" in entry:
+            protocol = entry.get("connection_attributes", {}).get("protocol")
+        else:
+            protocol = ""
+
+        if "port" in entry:
+            port = entry.get("port")
+        elif "connection_attributes" in entry:
+            port = entry.get("connection_attributes", {}).get("dst_port")
+        else:
+            port = ""
+
+        finding = {
+            "id": entry.get("issue_id"),
+            "parent_domain": entry.get("parent_domain"),
+            "count": entry.get("count"),
+            "status": entry.get("group_status"),
+            "first_seen": entry.get("first_seen_time"),
+            "last_seen": entry.get("last_seen_time"),
+            # the following details may or may not be populated
+            "port": port,
+            "domain_name": domain,
+            "ip_address": ip,
+            "protocol": protocol,
+            "observations": entry.get("observations"),
+            "issue_type": issue_type
+        }
+
+        findings.append(finding)
+
+    if not findings:
+        return CommandResults(
+            readable_output=f"No findings were found for domain {domain} and issue type {issue_type}.",
+            outputs_prefix="SecurityScorecard.IssueDetails",
+            outputs_key_field="issue_id",
+            outputs=[]
+        )
+
+    markdown = tableToMarkdown(
+        f"Domain {domain} -- Findings for {issue_type}",
+        findings,
+        headers=['id', 'parent_domain', 'issue_type', 'count', 'status', 'first_seen',
+                 'last_seen', 'port', 'domain_name', 'ip_address', 'protocol', 'observations']
+    )
+
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix="SecurityScorecard.IssueDetails",
+        outputs=entries,
+        raw_response=response,
+        outputs_key_field="issue_id"
+    )
+
+    return results
+
+
 """ MAIN FUNCTION """
 
 
@@ -1086,7 +1603,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
 
-        headers: Dict = {"Authorization": f"Token {api_key}", "X-SSC-Application-Name": "Cortex XSOAR"}
+        headers: Dict = {"Authorization": f"Token {api_key}", "X-SSC-Application-Name": "Cortex XSOAR", "X-SSC-Application-Version": "1.0.8"}  # noqa: E501
 
         client = SecurityScorecardClient(
             base_url=base_url,
@@ -1112,6 +1629,10 @@ def main() -> None:
             return_results(company_factor_score_get_command(client=client, args=args))
         elif demisto.command() == 'securityscorecard-company-history-score-get':
             return_results(company_history_score_get_command(client=client, args=args))
+        elif demisto.command() == 'securityscorecard-company-events-get':
+            return_results(company_events_get_command(client=client, args=args))
+        elif demisto.command() == 'securityscorecard-company-findings-get':
+            return_results(company_event_findings_get_command(client=client, args=args))
         elif demisto.command() == 'securityscorecard-company-history-factor-score-get':
             return_results(company_history_factor_score_get_command(client=client, args=args))
         elif demisto.command() == 'securityscorecard-alert-grade-change-create':
@@ -1124,6 +1645,12 @@ def main() -> None:
             return_results(alerts_list_command(client=client, args=args))
         elif demisto.command() == 'securityscorecard-company-services-get':
             return_results(company_services_get_command(client=client, args=args))
+        elif demisto.command() == 'securityscorecard-issue-metadata':
+            return_results(issue_metadata_get_command(client=client, args=args))
+        elif demisto.command() == 'securityscorecard-alert-rules-list':
+            return_results(alert_rules_list_command(client=client, args=args))
+        elif demisto.command() == 'securityscorecard-issue-details-get':
+            return_results(issue_details_get_command(client=client, args=args))
 
     # Log exceptions and return errors
     except Exception as e:

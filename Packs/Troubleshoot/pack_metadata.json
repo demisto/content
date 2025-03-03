@@ -2,7 +2,7 @@
     "name": "Troubleshoot",
     "description": "Use this pack to troubleshoot your environment.",
     "support": "xsoar",
-    "currentVersion": "2.0.20",
+    "currentVersion": "2.1.7",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

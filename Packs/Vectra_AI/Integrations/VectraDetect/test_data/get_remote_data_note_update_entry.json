@@ -1,0 +1,65 @@
+[
+    {
+        "_vectra_specific": {
+            "UI_URL": "https://vectra.test/hosts/1?pivot=Vectra_AI-XSOAR-2.0.0",
+            "entity_type": "host"
+        },
+        "assignment_details": [
+            {
+                "assigned_by": {
+                    "username": ""
+                },
+                "assigned_to": {
+                    "username": ""
+                },
+                "date_assigned": "",
+                "date_resolved": "",
+                "id": "",
+                "outcome": {
+                    "title": ""
+                },
+                "resolved_by": {
+                    "username": ""
+                }
+            }
+        ],
+        "detection_details": [],
+        "id": 1,
+        "last_modified": "2023-09-20T19:00:00+00:00",
+        "notes": [
+            {
+                "created_by": "dummy_api_client",
+                "date_created": "2023-09-20T10:33:14Z",
+                "id": 239,
+                "note": "test note."
+            },
+            {
+                "created_by": "dummy_api_client",
+                "date_created": "2023-08-20T10:33:14Z",
+                "id": 239,
+                "note": "test note."
+            },
+            {
+                "created_by": "dummy_api_client",
+                "date_created": "2023-09-20T10:33:14Z",
+                "id": 239,
+                "note": "[Mirrored From XSOAR]"
+            },
+            {
+                "created_by": "dummy_api_client",
+                "date_created": "2023-09-20T10:33:14Z",
+                "date_modified": "2023-09-20T08:33:14Z",
+                "id": 239,
+                "note": "test note."
+            }
+        ],
+        "calculated_severity": 0,
+        "certainty": 90
+    },
+    {
+        "Contents": "[Mirrored From Vectra]\nAdded By: dummy_api_client\nAdded At: 2023-09-20T10:33:14Z UTC\nNote: test note.",
+        "ContentsFormat": "markdown",
+        "Note": true,
+        "Type": 1
+    }
+]

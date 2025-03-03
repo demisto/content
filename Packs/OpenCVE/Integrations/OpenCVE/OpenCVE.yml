@@ -63,7 +63,7 @@ script:
       description: The indicator value.
       type: String
     - contextPath: DBotScore.Score
-      description: The indicator score.
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
       description: The indicator type.
@@ -96,16 +96,16 @@ script:
       description: The description of the CVE.
       type: String
     - contextPath: DBotScore.Indicator
-      description: The indicator value.
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Score
-      description: The indicator score.
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor reporting the score of the indicator.
+      description: The vendor used to calculate the score.
       type: String
   - arguments: []
     description: List the vendors subscriptions of the authenticated user.
@@ -203,7 +203,7 @@ script:
     outputs:
     - contextPath: vendors
       description: Vendors.
-  dockerimage: demisto/python3:3.10.14.92207
+  dockerimage: demisto/python3:3.11.10.115186
   feed: false
   isFetchSamples: true
   runonce: false

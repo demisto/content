@@ -1,0 +1,5 @@
+!recordedfuture-identity-lookup identities="fake@fakeyahoo.com,real@notfake.com" first-downloaded="3 Months ago"
+!recordedfuture-identity-search latest-downloaded="Two years ago" domain-type=Authorization
+!recordedfuture-identity-playbook-alerts-search
+!recordedfuture-identity-playbook-alerts-update alert_ids="12312312-1231-1231-1231-123123123123" new_status="New"
+!recordedfuture-identity-playbook-alerts-details alert_ids="12312312-1231-1231-1231-123123123123"

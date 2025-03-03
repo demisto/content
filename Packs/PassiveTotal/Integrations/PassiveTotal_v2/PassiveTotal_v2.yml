@@ -829,7 +829,7 @@ script:
       description: The indicator type.
       type: Unknown
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the DBot score.
+      description: The vendor used to calculate the score.
       type: Unknown
     - contextPath: DBotScore.Score
       description: The actual score.
@@ -1510,7 +1510,7 @@ script:
       description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Score
-      description: The reputation score.
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
       description: The indicator type.
@@ -2293,7 +2293,7 @@ script:
     - contextPath: PassiveTotal.Summary.ThirdPartyObservation.nextPage
       description: Link to the next page.
       type: String
-  dockerimage: demisto/python3:3.10.14.92207
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: '-'
   subtype: python3

@@ -5,6 +5,9 @@ name: GoogleThreatIntelligence
 display: Google Threat Intelligence
 fromversion: 6.10.0
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
 description: Analyzes suspicious hashes, URLs, domains, and IP addresses.
 configuration:
 - display: API Key (leave empty. Fill in the API key in the password field.)
@@ -13,6 +16,7 @@ configuration:
   type: 9
   required: true
   hiddenusername: true
+  section: Connect
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -26,92 +30,110 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   required: false
+  section: Collect
 - display: GTI Malicious Verdict. Check Google Threat Intelligence verdict to consider the file malicious.
   name: gti_malicious
   defaultvalue: 'false'
   type: 8
   required: false
+  section: Collect
 - display: GTI Suspicious Verdict. Check Google Threat Intelligence verdict to consider the file suspicious.
   name: gti_suspicious
   defaultvalue: 'false'
   type: 8
   required: false
+  section: Collect
 - display: File Malicious Threshold. Minimum number of positive results from VT scanners to consider the file malicious.
   name: fileThreshold
   defaultvalue: '10'
   type: 0
   required: false
+  section: Collect
 - display: File Suspicious Threshold. Minimum number of positive and suspicious results from VT scanners to consider the file suspicious.
   name: fileSuspiciousThreshold
   defaultvalue: '5'
   type: 0
   required: false
+  section: Collect
 - display: IP Malicious Threshold. Minimum number of positive results from VT scanners to consider the IP malicious.
   name: ipThreshold
   defaultvalue: '10'
   type: 0
   required: false
+  section: Collect
 - display: IP Suspicious Threshold. Minimum number of positive and suspicious results from VT scanners to consider the IP suspicious.
   name: ipSuspiciousThreshold
   defaultvalue: '5'
   type: 0
   required: false
+  section: Collect
 - display: Disable reputation lookups for private IP addresses
   name: disable_private_ip_lookup
   defaultvalue: 'false'
   type: 8
   required: false
   additionalinfo: To reduce the number of lookups made to the VT API, this option can be selected to gracefully skip enrichment of any IP addresses allocated for private networks.
+  section: Collect
 - display: 'URL Malicious Threshold. Minimum number of positive results from VT scanners to consider the URL malicious.'
   name: urlThreshold
   defaultvalue: '10'
   type: 0
   required: false
+  section: Collect
 - display: 'URL Suspicious Threshold. Minimum number of positive and suspicious results from VT scanners to consider the URL suspicious.'
   name: urlSuspiciousThreshold
   defaultvalue: '5'
   type: 0
   required: false
+  section: Collect
 - display: Domain Malicious Threshold. Minimum number of positive results from VT scanners to consider the Domain malicious.
   name: domainThreshold
   defaultvalue: '10'
   type: 0
   required: false
+  section: Collect
 - display: Domain Suspicious Threshold. Minimum number of positive and suspicious results from VT scanners to consider the Domain suspicious.
   name: domainSuspiciousThreshold
   defaultvalue: '5'
   type: 0
   required: false
-- display: 'Preferred Vendors List. CSV list of vendors who are considered more trustworthy.'
+  section: Collect
+- display: Preferred Vendors List. CSV list of vendors who are considered more trustworthy.
   name: preferredVendors
   defaultvalue: ''
   type: 12
   required: false
-- display: 'Preferred Vendor Threshold. The minimum number of highly trusted vendors required to consider a domain, IP address, URL, or file as malicious. '
+  section: Collect
+- display: Preferred Vendor Threshold. The minimum number of highly trusted vendors required to consider a domain, IP address, URL, or file as malicious.
   name: preferredVendorsThreshold
   defaultvalue: '5'
   type: 0
   required: false
-- display: 'Enable score analyzing by Crowdsourced Yara Rules, Sigma, and IDS'
+  section: Collect
+- display: Enable score analyzing by Crowdsourced Yara Rules, Sigma, and IDS.
   name: crowdsourced_yara_rules_enabled
   type: 8
   defaultvalue: 'true'
   required: false
+  section: Collect
 - display: Crowdsourced Yara Rules Threshold
   name: yaraRulesThreshold
   type: 0
   defaultvalue: '1'
   required: false
+  section: Collect
 - display: Sigma and Intrusion Detection Rules Threshold
   name: SigmaIDSThreshold
   type: 0
   defaultvalue: '5'
   required: false
-- display: 'Domain Popularity Ranking Threshold'
+  section: Collect
+- display: Domain Popularity Ranking Threshold
   name: domain_popularity_ranking
   type: 0
   defaultvalue: '10000'
   required: false
+  section: Collect
 - display: IP Relationships
   name: ip_relationships
   type: 16
@@ -123,6 +145,7 @@ configuration:
   - referrer files
   - 'urls'
   defaultvalue: 'communicating files,downloaded files,referrer files,urls'
+  section: Collect
 - additionalinfo: Select the list of relationships to retrieve from the API.
   display: Domain Relationships
   name: domain_relationships
@@ -143,6 +166,7 @@ configuration:
   type: 16
   defaultvalue: 'cname records,caa records,communicating files,downloaded files,immediate parent,mx records,ns records,parent,referrer files,siblings,soa records,subdomains,urls'
   required: false
+  section: Collect
 - additionalinfo: Select the list of relationships to retrieve from the API.
   display: URL Relationships
   name: url_relationships
@@ -160,6 +184,7 @@ configuration:
   type: 16
   defaultvalue: 'communicating files,contacted domains,contacted ips,downloaded files,last serving ip address,network location,redirecting urls,redirects to,referrer files,referrer urls'
   required: false
+  section: Collect
 - display: File Relationships
   name: file_relationships
   type: 16
@@ -189,14 +214,17 @@ configuration:
   - pe resource parents
   - 'similar files'
   defaultvalue: 'carbonblack children,carbonblack parents,compressed parents,contacted domains,contacted ips,contacted urls,dropped files,email attachments,email parents,embedded domains,embedded ips,embedded urls,execution parents,itw domains,itw ips,overlay children,overlay parents,pcap children,pcap parents,pe resource children,pe resource parents,similar files'
+  section: Collect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 script:
   script: ''
   type: python
@@ -1679,8 +1707,94 @@ script:
     - contextPath: GoogleThreatIntelligence.Submission.Type
       description: Type of the file.
       type: String
+  - name: gti-privatescanning-url
+    description: Checks the reputation of a private URL.
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: Private URL to check.
+      isArray: true
+    outputs:
+    - contextPath: GoogleThreatIntelligence.URL.attributes.favicon.raw_md5
+      description: The MD5 hash of the URL.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.favicon.dhash
+      description: Difference hash.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_http_response_content_length
+      description: The last HTTPS response length.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_http_response_headers.date
+      description: The last response header date.
+      type: Date
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_http_response_headers.x-sinkhole
+      description: DNS sinkhole from last response.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_http_response_headers.content-length
+      description: The content length of the last response.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_http_response_headers.content-type
+      description: The content type of the last response.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_http_response_content_sha256
+      description: The SHA-256 hash of the content of the last response.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_http_response_code
+      description: Last response status code.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_final_url
+      description: Last final URL.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.url
+      description: The URL itself.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.title
+      description: Title of the page.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_analysis_stats.harmless
+      description: The number of engines that found the domain to be harmless.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_analysis_stats.malicious
+      description: The number of engines that found the indicator to be malicious.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_analysis_stats.suspicious
+      description: The number of engines that found the indicator to be suspicious.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_analysis_stats.undetected
+      description: The number of engines that could not detect the indicator.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_analysis_stats.timeout
+      description: The number of engines that timed out for the indicator.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.outgoing_links
+      description: Outgoing links of the URL page.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.type
+      description: Type of the indicator (private_url).
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.id
+      description: ID of the indicator.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.links.self
+      description: Link to the response.
+      type: String
+  - name: gti-privatescanning-url-scan
+    description: Submits an URL for private scanning. Use the gti-privatescanning-analysis-get command to get the scan results.
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: The private URL to scan.
+    outputs:
+    - contextPath: GoogleThreatIntelligence.Submission.Type
+      description: The type of the submission (private_analysis).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Submission.id
+      description: The ID of the submission.
+      type: String
   - name: gti-privatescanning-analysis-get
-    description: Get analysis of a private file submitted to GoogleThreatIntelligence.
+    description: Get analysis of a private file or URL submitted to GoogleThreatIntelligence.
     arguments:
     - name: id
       required: true
@@ -1693,20 +1807,35 @@ script:
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.status
       description: Status of the analysis.
       type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.sha256
+      description: SHA-256 hash of the private file.
+      type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.threat_severity_level
-      description: Threat severity level of the private file.
+      description: Threat severity level of the private file (if analysis is completed).
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.popular_threat_category
-      description: Popular threat category of the private file.
+      description: Popular threat category of the private file (if analysis is completed).
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.threat_verdict
-      description: Threat verdict of the private file.
+      description: Threat verdict of the private file (if analysis is completed).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.url
+      description: URL submitted.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.title
+      description: Title of the private URL (if analysis is completed).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.last_http_response_content_sha256
+      description: Last HTTP response content SHA-256 hash of the private URL (if analysis is completed).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.positives
+      description: Ratio of malicious detections to the total number of engines that scanned the private URL (if analysis is completed).
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.id
       description: ID of the analysis.
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.type
-      description: Type of object (analysis).
+      description: Type of object (private_analysis).
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.meta.file_info.sha256
       description: SHA-256 hash of the file.
@@ -1720,6 +1849,12 @@ script:
     - contextPath: GoogleThreatIntelligence.Analysis.meta.file_info.size
       description: Size of the file.
       type: Number
+    - contextPath: GoogleThreatIntelligence.Analysis.meta.url_info.id
+      description: ID of the URL.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.meta.url_info.url
+      description: URL submitted.
+      type: String
     - contextPath: GoogleThreatIntelligence.Analysis.id
       description: The analysis ID.
       type: String
@@ -1735,6 +1870,8 @@ script:
       description: Special upload URL for files larger than 32 MB. Can be acquired from the gti-file-scan-upload-url command.
     - name: id
       description: This is an internal argument used for the polling process, not to be used by the user.
+    - name: file
+      description: This is an internal argument used for the polling process, not to be used by the user.
     - name: extended_data
       description: Whether to return extended data.
       defaultValue: false
@@ -1746,6 +1883,237 @@ script:
       description: Interval in seconds between each poll.
       defaultValue: '60'
     outputs:
+    - contextPath: File.MD5
+      description: Bad MD5 hash.
+    - contextPath: File.SHA1
+      description: Bad SHA1 hash.
+    - contextPath: File.SHA256
+      description: Bad SHA256 hash.
+    - contextPath: File.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: File.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+    - contextPath: File.Malicious.Detections
+      description: For malicious files, the total number of detections.
+    - contextPath: File.Malicious.TotalEngines
+      description: For malicious files, the total number of engines that checked the file hash.
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.attributes.type_description
+      description: Description of the type of the file.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.attributes.tlsh
+      description: The locality-sensitive hashing.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.attributes.exiftool.MIMEType
+      description: MIME type of the file.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.attributes.names
+      description: Names of the file.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.attributes.javascript_info.tags
+      description: Tags of the JavaScript.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.attributes.exiftool.FileType
+      description: The file type.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.attributes.exiftool.WordCount
+      description: Total number of words in the file.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.attributes.exiftool.LineCount
+      description: Total number of lines in file.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.attributes.crowdsourced_ids_stats.info
+      description: Number of IDS that marked the file as "info".
+      type: Number
+    - contextPath: GoogleThreatIntelligence.File.attributes.crowdsourced_ids_stats.high
+      description: Number of IDS that marked the file as "high".
+      type: Number
+    - contextPath: GoogleThreatIntelligence.File.attributes.crowdsourced_ids_stats.medium
+      description: Number of IDS that marked the file as "medium".
+      type: Number
+    - contextPath: GoogleThreatIntelligence.File.attributes.crowdsourced_ids_stats.low
+      description: Number of IDS that marked the file as "low".
+      type: Number
+    - contextPath: GoogleThreatIntelligence.File.attributes.sigma_analysis_stats.critical
+      description: Number of Sigma analysis that marked the file as "critical".
+      type: Number
+    - contextPath: GoogleThreatIntelligence.File.attributes.sigma_analysis_stats.high
+      description: Number of Sigma analysis that marked the file as "high".
+      type: Number
+    - contextPath: GoogleThreatIntelligence.File.attributes.sigma_analysis_stats.medium
+      description: Number of Sigma analysis that marked the file as "medium".
+      type: Number
+    - contextPath: GoogleThreatIntelligence.File.attributes.sigma_analysis_stats.low
+      description: Number of Sigma analysis that marked the file as "low".
+      type: Number
+    - contextPath: GoogleThreatIntelligence.File.attributes.exiftool.MIMEEncoding
+      description: The MIME encoding.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.attributes.exiftool.FileTypeExtension
+      description: The file type extension.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.attributes.exiftool.Newlines
+      description: Number of newlines signs.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.attributes.trid.file_type
+      description: The TrID file type.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.attributes.trid.probability
+      description: The TrID probability.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.File.attributes.crowdsourced_yara_results.description
+      description: Description of the YARA rule.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.attributes.crowdsourced_yara_results.source
+      description: Source of the YARA rule.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.attributes.crowdsourced_yara_results.author
+      description: Author of the YARA rule.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.attributes.crowdsourced_yara_results.ruleset_name
+      description: Rule set name of the YARA rule.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.attributes.crowdsourced_yara_results.rule_name
+      description: Name of the YARA rule.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.attributes.crowdsourced_yara_results.ruleset_id
+      description: ID of the YARA rule.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.attributes.names
+      description: Name of the file.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.attributes.last_modification_date
+      description: The last modification date in epoch format.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.File.attributes.type_tag
+      description: Tag of the type.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.attributes.total_votes.harmless
+      description: Total number of harmless votes.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.File.attributes.total_votes.malicious
+      description: Total number of malicious votes.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.File.attributes.size
+      description: Size of the file.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.File.attributes.popular_threat_classification.suggested_threat_label
+      description: Suggested thread label.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.attributes.popular_threat_classification.popular_threat_name
+      description: The popular thread name.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.File.attributes.times_submitted
+      description: Number of times the file was submitted.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.File.attributes.last_submission_date
+      description: Last submission date in epoch format.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.File.attributes.downloadable
+      description: Whether the file is downloadable.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligence.File.attributes.sha256
+      description: SHA-256 hash of the file.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.attributes.type_extension
+      description: Extension of the type.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.attributes.tags
+      description: File tags.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.attributes.last_analysis_date
+      description: Last analysis date in epoch format.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.File.attributes.unique_sources
+      description: Unique sources.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.File.attributes.first_submission_date
+      description: First submission date in epoch format.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.File.attributes.ssdeep
+      description: SSDeep hash of the file.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.attributes.md5
+      description: MD5 hash of the file.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.attributes.sha1
+      description: SHA-1 hash of the file.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.attributes.magic
+      description: Identification of file by the magic number.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.attributes.last_analysis_stats.harmless
+      description: The number of engines that found the indicator to be harmless.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.File.attributes.last_analysis_stats.type-unsupported
+      description: The number of engines that found the indicator to be of type unsupported.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.File.attributes.last_analysis_stats.suspicious
+      description: The number of engines that found the indicator to be suspicious.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.File.attributes.last_analysis_stats.confirmed-timeout
+      description: The number of engines that confirmed the timeout of the indicator.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.File.attributes.last_analysis_stats.timeout
+      description: The number of engines that timed out for the indicator.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.File.attributes.last_analysis_stats.failure
+      description: The number of failed analysis engines.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.File.attributes.last_analysis_stats.malicious
+      description: The number of engines that found the indicator to be malicious.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.File.attributes.last_analysis_stats.undetected
+      description: The number of engines that could not detect the indicator.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.File.attributes.meaningful_name
+      description: Meaningful name of the file.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.attributes.reputation
+      description: The reputation of the file.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.File.attributes.gti_assessment.threat_score.value
+      description: GTI threat score of the file.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.File.attributes.gti_assessment.severity.value
+      description: GTI severity of the file.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.attributes.gti_assessment.verdict.value
+      description: GTI verdict of the file.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.type
+      description: Type of the indicator (file).
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.id
+      description: Type ID of the indicator.
+      type: String
+    - contextPath: GoogleThreatIntelligence.File.links.self
+      description: Link to the response.
+      type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.date
       description: Date of the analysis in epoch format.
       type: Number
@@ -1817,20 +2185,23 @@ script:
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.status
       description: Status of the analysis.
       type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.sha256
+      description: SHA-256 hash of the private file.
+      type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.threat_severity_level
-      description: Threat severity level of the private file.
+      description: Threat severity level of the private file (if analysis is completed).
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.popular_threat_category
-      description: Popular threat category of the private file.
+      description: Popular threat category of the private file (if analysis is completed).
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.threat_verdict
-      description: Threat verdict of the private file.
+      description: Threat verdict of the private file (if analysis is completed).
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.id
       description: ID of the analysis.
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.type
-      description: Type of object (analysis).
+      description: Type of object (private_analysis).
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.meta.file_info.sha256
       description: SHA-256 hash of the file.
@@ -1868,6 +2239,141 @@ script:
       description: Interval in seconds between each poll.
       defaultValue: '60'
     outputs:
+    - contextPath: URL.Data
+      description: Bad URLs found.
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision.
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason that the vendor made the decision.
+    - contextPath: URL.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: URL.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.favicon.raw_md5
+      description: The MD5 hash of the URL.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.favicon.dhash
+      description: Difference hash.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_modification_date
+      description: Last modification date in epoch format.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.times_submitted
+      description: The number of times the url has been submitted.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.total_votes.harmless
+      description: Total number of harmless votes.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.total_votes.malicious
+      description: Total number of malicious votes.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.threat_names
+      description: Name of the threats found.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_submission_date
+      description: The last submission date in epoch format.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_http_response_content_length
+      description: The last HTTPS response length.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_http_response_headers.date
+      description: The last response header date.
+      type: Date
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_http_response_headers.x-sinkhole
+      description: DNS sinkhole from last response.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_http_response_headers.content-length
+      description: The content length of the last response.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_http_response_headers.content-type
+      description: The content type of the last response.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.reputation
+      description: Reputation of the indicator.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_analysis_date
+      description: The date of the last analysis in epoch format.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.has_content
+      description: Whether the url has content in it.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligence.URL.attributes.first_submission_date
+      description: The first submission date in epoch format.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_http_response_content_sha256
+      description: The SHA-256 hash of the content of the last response.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_http_response_code
+      description: Last response status code.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_final_url
+      description: Last final URL.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.url
+      description: The URL itself.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.title
+      description: Title of the page.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_analysis_stats.harmless
+      description: The number of engines that found the domain to be harmless.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_analysis_stats.malicious
+      description: The number of engines that found the indicator to be malicious.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_analysis_stats.suspicious
+      description: The number of engines that found the indicator to be suspicious.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_analysis_stats.undetected
+      description: The number of engines that could not detect the indicator.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_analysis_stats.timeout
+      description: The number of engines that timed out for the indicator.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.outgoing_links
+      description: Outgoing links of the URL page.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.gti_assessment.threat_score.value
+      description: GTI threat score of the URL.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.gti_assessment.severity.value
+      description: GTI severity of the URL.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.gti_assessment.verdict.value
+      description: GTI verdict of the URL.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.type
+      description: Type of the indicator (url).
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.id
+      description: ID of the indicator.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.links.self
+      description: Link to the response.
+      type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.date
       description: Date of the analysis in epoch format.
       type: Number
@@ -1904,6 +2410,171 @@ script:
     - contextPath: GoogleThreatIntelligence.Analysis.id
       description: The analysis ID.
       type: String
-  dockerimage: demisto/python3:3.10.14.95956
+  - name: gti-private-url-scan-and-analysis-get
+    description: Scan and get the analysis of a private URL submitted to GoogleThreatIntelligence.
+    polling: true
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: The URL to scan.
+    - name: id
+      description: This is an internal argument used for the polling process, not to be used by the user.
+    - name: extended_data
+      description: Whether to return extended data.
+      defaultValue: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: interval_in_seconds
+      description: Interval in seconds between each poll.
+      defaultValue: '60'
+    outputs:
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.date
+      description: Date of the analysis in epoch format.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.status
+      description: Status of the analysis.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.url
+      description: URL submitted.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.title
+      description: Title of the private URL (if analysis is completed).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.last_http_response_content_sha256
+      description: Last HTTP response content SHA-256 hash of the private URL (if analysis is completed).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.positives
+      description: Ratio of malicious detections to the total number of engines that scanned the private URL (if analysis is completed).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.id
+      description: ID of the analysis.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.type
+      description: Type of object (private_analysis).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.meta.url_info.id
+      description: ID of the URL.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.meta.url_info.url
+      description: URL submitted.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.id
+      description: The analysis ID.
+      type: String
+  - name: gti-curated-campaigns-get
+    description: Retrieves GTI curated campaigns for a given resource.
+    arguments:
+    - name: resource
+      required: true
+      description: The file hash (MD5, SHA1, or SHA256), Domain, URL or IP.
+    - name: resource_type
+      description: The type of the resource. If not supplied, will determine it's a file.
+      auto: PREDEFINED
+      predefined:
+      - ip
+      - url
+      - domain
+      - file
+      - hash
+    outputs:
+    - contextPath: GoogleThreatIntelligence.Collection.id
+      description: ID that contains the assessment (the given hash, domain, url, or ip).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Collection.collections.id
+      description: ID of the curated campaign.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.name
+      description: Name of the curated campaign.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.description
+      description: Description of the curated campaign.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.last_modification_date
+      description: Last modification date of the curated campaign.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.targeted_regions
+      description: Targeted regions of the curated campaign.
+      type: list
+    - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.targeted_industries
+      description: Targeted industries of the curated campaign.
+      type: list
+  - name: gti-curated-malware-families-get
+    description: Retrieves GTI curated malware families for a given resource.
+    arguments:
+    - name: resource
+      required: true
+      description: The file hash (MD5, SHA1, or SHA256), Domain, URL or IP.
+    - name: resource_type
+      description: The type of the resource. If not supplied, will determine it's a file.
+      auto: PREDEFINED
+      predefined:
+      - ip
+      - url
+      - domain
+      - file
+      - hash
+    outputs:
+    - contextPath: GoogleThreatIntelligence.Collection.id
+      description: ID that contains the assessment (the given hash, domain, url, or ip).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Collection.collections.id
+      description: ID of the curated malware families.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.name
+      description: Name of the curated malware families.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.description
+      description: Description of the curated malware families.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.last_modification_date
+      description: Last modification date of the curated malware families.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.targeted_regions
+      description: Targeted regions of the curated malware families.
+      type: list
+    - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.targeted_industries
+      description: Targeted industries of the curated malware families.
+      type: list
+  - name: gti-curated-threat-actors-get
+    description: Retrieves GTI curated threat actors for a given resource.
+    arguments:
+    - name: resource
+      required: true
+      description: The file hash (MD5, SHA1, or SHA256), Domain, URL or IP.
+    - name: resource_type
+      description: The type of the resource. If not supplied, will determine it's a file.
+      auto: PREDEFINED
+      predefined:
+      - ip
+      - url
+      - domain
+      - file
+      - hash
+    outputs:
+    - contextPath: GoogleThreatIntelligence.Collection.id
+      description: ID that contains the assessment (the given hash, domain, url, or ip).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Collection.collections.id
+      description: ID of the curated threat actors.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.name
+      description: Name of the curated threat actors.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.description
+      description: Description of the curated threat actors.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.last_modification_date
+      description: Last modification date of the curated threat actors.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.targeted_regions
+      description: Targeted regions of the curated threat actors.
+      type: list
+    - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.targeted_industries
+      description: Targeted industries of the curated threat actors.
+      type: list
+  dockerimage: demisto/python3:3.12.8.1983910
 tests:
 - GoogleThreatIntelligence-test

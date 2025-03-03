@@ -37,14 +37,15 @@ configuration:
   name: event_types_to_fetch
   type: 16
   required: false
-  additionalinfo: 'Event types to fetch. Default is all available types: Application, Alert, Page, Audit, Network.'
-  defaultvalue: Application,Alert,Page,Audit,Network
+  additionalinfo: 'Event types to fetch. Default is all available types: Application, Alert, Page, Audit, Network, Incident.'
+  defaultvalue: Application,Alert,Page,Audit,Network,Incident
   options:
   - Application
   - Alert
   - Page
   - Audit
   - Network
+  - Incident
 - display: Trust any certificate (not secure)
   section: Connect
   name: insecure
@@ -74,7 +75,7 @@ script:
       defaultValue: 10000
     description: Returns events extracted from SaaS traffic and or logs.
     name: netskope-get-events
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: '-'
   subtype: python3

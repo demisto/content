@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from datetime import timezone
+from datetime import UTC, datetime
+from enum import Enum
 import random
 
 import dateparser
@@ -54,6 +55,13 @@ ACCOUNT_STATUS_DICT = {1: "Active", 2: "Inactive", 3: "Locked"}
 API_ENDPOINT = demisto.params().get("api_endpoint", "api")
 
 
+class FilterConditionTypes(Enum):
+    date = 'DateComparisonFilterCondition'
+    numeric = 'NumericFilterCondition'
+    text = 'TextFilterCondition'
+    content = 'ContentFilterCondition'
+
+
 def parser(
     date_str,
     date_formats=None,
@@ -74,7 +82,7 @@ def parser(
     assert isinstance(
         date_obj, datetime
     ), f"Could not parse date {date_str}"  # MYPY Fix
-    return date_obj.replace(tzinfo=timezone.utc)
+    return date_obj.replace(tzinfo=UTC)
 
 
 def get_token_soap_request(user, password, instance, domain=None):
@@ -220,19 +228,86 @@ def search_records_by_report_soap_request(token, report_guid):
     return ET.tostring(root)
 
 
+def construct_generic_filter_condition(
+    condition_type: FilterConditionTypes,
+    operator: str,
+    field_name: str,
+    field_id: str,
+    search_value: str,
+    sub_elements_tags_values: dict[str, Any] | None = None
+) -> str:
+    """
+    Constructs an XML string representing any generic filter condition for searching records.
+
+    Args:
+        condition_type (FilterConditionTypes): The type of the filter condition.
+        operator (str): The comparison operator (e.g., 'Equals', 'GreaterThan').
+        field_name (str): The name of the application field.
+        field_id (str): The ID of the application field.
+        search_value (str): The value for the comparison.
+        sub_elements_tags_values (dict | None): Optional tag names and values to embed as sub-elements.
+
+    Returns:
+        str: An XML string representing the FilterCondition element.
+
+    Example:
+        >>> construct_generic_filter_condition(FilterConditionTypes.text, 'Equals', 'name', '123', 'John')
+        '<TextFilterCondition><Operator>Equals</Operator><Field name="name">123</Field><Value>John</Value></TextFilterCondition>'
+    """
+    root = ET.Element(condition_type.value)
+
+    ET.SubElement(root, 'Operator').text = operator
+    ET.SubElement(root, 'Field', attrib={'name': field_name}).text = field_id
+    ET.SubElement(root, 'Value').text = search_value
+
+    for tag_name, tag_text in (sub_elements_tags_values or {}).items():
+        ET.SubElement(root, tag_name).text = tag_text
+
+    return ET.tostring(root, encoding='unicode')
+
+
+def construct_content_filter_condition(operator: str, level_id: str, search_value: str) -> str:
+    """
+    Constructs an XML string representing a content filter condition for searching records.
+
+    Args:
+        operator (str): The comparison operator (e.g., 'Equals', 'GreaterThan').
+        field_name (str): The name of the application field.
+        field_id (str): The ID of the application field.
+        search_value (str): The value for the comparison.
+
+    Returns:
+        str: An XML string representing the ContentFilterCondition element.
+
+    Example:
+        >>> construct_content_filter_condition('Equals', '123', 'test_value')
+        '<ContentFilterCondition><Level>123</Level><Operator>Equals</Operator><Values><Value>test_value</Value></Values></ContentFilterCondition>'
+    """
+    root = ET.Element(FilterConditionTypes.content.value)
+
+    ET.SubElement(root, 'Level').text = level_id
+    ET.SubElement(root, 'Operator').text = operator
+
+    values_element = ET.SubElement(root, 'Values')
+    ET.SubElement(values_element, 'Value').text = search_value
+
+    return ET.tostring(root, encoding='unicode')
+
+
 def search_records_soap_request(
-    token,
-    app_id,
-    display_fields,
-    field_id,
-    field_name,
-    search_value,
-    date_operator="",
-    field_to_search_by_id="",
-    numeric_operator="",
-    max_results=10,
-    level_id="",
+    token: str,
+    app_id: str,
+    display_fields: str,
+    field_id: str,
+    field_name: str,
+    search_value: str | None,
+    date_operator: str | None = "",
+    field_to_search_by_id: str | None = "",
+    numeric_operator: str | None = "",
+    max_results: int = 10,
+    level_id: str = "",
     sort_type: str = "Ascending",
+    xml_filter_conditions: str | None = "",
 ):
     # CDATA is not supported in Element Tree, therefore keeping original structure.
     request_body = (
@@ -253,64 +328,61 @@ def search_records_soap_request(
         + f'             <Criteria><ModuleCriteria><Module name="appname">{app_id}</Module></ModuleCriteria>'
     )
 
+    filter_conditions: list[str] = []  # API uses "AND" logical operator by default to join multiple filters
+
+    if xml_filter_conditions:
+        filter_conditions.append(xml_filter_conditions)
+
     if search_value:
-        request_body += "<Filter><Conditions>"
-
         if date_operator:
-            request_body += (
-                "<DateComparisonFilterCondition>"
-                + f"        <Operator>{date_operator}</Operator>"
-                + f'        <Field name="{field_name}">{field_id}</Field>'
-                + f"        <Value>{search_value}</Value>"
-                + "        <TimeZoneId>UTC Standard Time</TimeZoneId>"
-                + "        <IsTimeIncluded>TRUE</IsTimeIncluded>"
-                + "</DateComparisonFilterCondition >"
+            filter_conditions.append(
+                construct_generic_filter_condition(
+                    FilterConditionTypes.date,
+                    operator=date_operator,
+                    field_name=field_name,
+                    field_id=field_id,
+                    search_value=search_value,
+                    sub_elements_tags_values={'TimeZoneId': 'UTC Standard Time', 'IsTimeIncluded': 'TRUE'},
+                )
             )
+
         elif numeric_operator:
-            request_body += (
-                "<NumericFilterCondition>"
-                + f"        <Operator>{numeric_operator}</Operator>"
-                + f'        <Field name="{field_name}">{field_id}</Field>'
-                + f"        <Value>{search_value}</Value>"
-                + "</NumericFilterCondition >"
+            filter_conditions.append(
+                construct_generic_filter_condition(
+                    FilterConditionTypes.numeric,
+                    operator=numeric_operator,
+                    field_name=field_name,
+                    field_id=field_id,
+                    search_value=search_value,
+                )
             )
+
+        elif (
+            field_to_search_by_id
+            and field_to_search_by_id.lower() == field_name.lower()
+        ):
+            filter_conditions.append(
+                construct_content_filter_condition(
+                    operator='Equals',
+                    level_id=level_id,
+                    search_value=search_value,
+                )
+            )
+
         else:
-            if (
-                field_to_search_by_id
-                and field_to_search_by_id.lower() == field_name.lower()
-            ):
-                request_body += (
-                    "<ContentFilterCondition>"
-                    + f"        <Level>{level_id}</Level>"
-                    + "        <Operator>Equals</Operator>"
-                    + f"        <Values><Value>{search_value}</Value></Values>"
-                    + "</ContentFilterCondition>"
+            filter_conditions.append(
+                construct_generic_filter_condition(
+                    FilterConditionTypes.text,
+                    operator='Contains',
+                    field_name=field_name,
+                    field_id=field_id,
+                    search_value=search_value
                 )
-            else:
-                request_body += (
-                    "<TextFilterCondition>"
-                    + "        <Operator>Contains</Operator>"
-                    + f'        <Field name="{field_name}">{field_id}</Field>'
-                    + f"        <Value>{search_value}</Value>"
-                    + "</TextFilterCondition >"
-                )
+            )
 
-        request_body += "</Conditions></Filter>"
-
-    if date_operator:  # Fetch incidents must present date_operator
-        request_body += (
-            "<Filter>"
-            + "<Conditions>"
-            + "    <DateComparisonFilterCondition>"
-            + f"        <Operator>{date_operator}</Operator>"
-            + f'        <Field name="{field_name}">{field_id}</Field>'
-            + f"        <Value>{search_value}</Value>"
-            + "        <TimeZoneId>UTC Standard Time</TimeZoneId>"
-            + "        <IsTimeIncluded>TRUE</IsTimeIncluded>"
-            + "    </DateComparisonFilterCondition >"
-            + "</Conditions>"
-            + "</Filter>"
-        )
+    if filter_conditions:
+        filter_conditions_xml = '\n'.join(filter_conditions)
+        request_body += f'<Filter><Conditions>{filter_conditions_xml}</Conditions></Filter>'
 
     if field_id:
         request_body += (
@@ -604,7 +676,7 @@ class Client(BaseClient):
             kwargs: (dict) dict of additional parameters relevant to the soap request.
 
         Returns:
-            requets.Response: the response object
+            requests.Response: the response object
         """
         headers = {
             "SOAPAction": req_data["soapAction"],
@@ -817,15 +889,16 @@ class Client(BaseClient):
 
     def search_records(
         self,
-        app_id,
-        fields_to_display=None,
-        field_to_search="",
-        search_value="",
-        field_to_search_by_id="",
-        numeric_operator="",
-        date_operator="",
-        max_results=10,
+        app_id: str,
+        fields_to_display: list[str] | None = None,
+        field_to_search: str | None = "",
+        search_value: str | None = "",
+        field_to_search_by_id: str | None = "",
+        numeric_operator: str | None = "",
+        date_operator: str | None = "",
+        max_results: int = 10,
         sort_type: str = "Ascending",
+        xml_filter_conditions: str | None = "",
     ):
         demisto.debug(f"searching for records {field_to_search}:{search_value}")
         if fields_to_display is None:
@@ -865,6 +938,7 @@ class Client(BaseClient):
             max_results=max_results,
             sort_type=sort_type,
             level_id=level_id,
+            xml_filter_conditions=xml_filter_conditions,
         )
 
         if not res:
@@ -1200,11 +1274,15 @@ def search_applications_command(client: Client, args: dict[str, str]):
     limit = args.get("limit")
     endpoint_url = f"{API_ENDPOINT}/core/system/application/"
 
+    res: dict | list[dict] = {}
     if app_id:
         endpoint_url = f"{API_ENDPOINT}/core/system/application/{app_id}"
         res = client.do_rest_request("GET", endpoint_url)
     elif limit:
         res = client.do_rest_request("GET", endpoint_url, params={"$top": limit})
+    else:
+        res = {}
+        demisto.debug(f"No condition was met {res=}")
 
     errors = get_errors_from_res(res)
     if errors:
@@ -1491,9 +1569,22 @@ def upload_and_associate_command(client: Client, args: dict[str, str]):
             "Found arguments to associate an attachment to a record, but not all required arguments supplied"
         )
 
-    attachment_id = upload_file_command(client, args)
+    entry_ids: list = argToList(args.get("entryId"))
+    attachment_ids: list = []
+    for entry_id in entry_ids:
+        attachment_ids.append(upload_file_command(client, {"entryId": entry_id}))
+    demisto.debug(f'All new uploaded {attachment_ids=}')
+
     if should_associate_to_record:
-        args["fieldsToValues"] = json.dumps({associate_field: [attachment_id]})
+        # Check if there are already attachments associated with this record.
+        record, _, errors = client.get_record(app_id, content_id, 0)
+        if errors:
+            return_error(errors)
+        record_attachments = record.get("Attachments", [])
+        demisto.debug(f'Record id {content_id} already has {record_attachments=} will add the new {attachment_ids=} as well')
+        attachment_ids.extend(record_attachments)
+        demisto.debug(f'All {attachment_ids=}')
+        args["fieldsToValues"] = json.dumps({associate_field: attachment_ids})
         update_record_command(client, args)
 
 
@@ -1553,12 +1644,35 @@ def list_users_command(client: Client, args: dict[str, str]):
     return_outputs(markdown, context, res)
 
 
+def validate_xml_conditions(xml_conditions: str, blacklisted_tags: list[str] | None = None) -> None:
+    """
+    Validates if the string is syntactically valid XML document and if the XML conditions contain any forbidden tags.
+
+    Args:
+        xml_conditions (str): String for checking.
+        blacklisted_tags (list): List of forbidden XML tags.
+
+    Raises:
+        ValueError: If invalid syntax or any forbidden XML tag is used,
+    """
+    blacklisted_tags = blacklisted_tags or []
+
+    try:
+        root = ET.fromstring(f'<Conditions>{xml_conditions}</Conditions>')
+    except ET.ParseError:
+        raise ValueError('Invalid XML filter condition syntax')
+
+    for blacklisted_tag in blacklisted_tags:
+        if root.find(blacklisted_tag) is not None:
+            raise ValueError(f'XML filter condition cannot contain the "{blacklisted_tag}" tag')
+
+
 def search_records_command(client: Client, args: dict[str, str]):
-    app_id = args.get("applicationId")
+    app_id = args["applicationId"]
     field_to_search = args.get("fieldToSearchOn")
     field_to_search_by_id = args.get("fieldToSearchById")
     search_value = args.get("searchValue")
-    max_results = args.get("maxResults", 10)
+    max_results = arg_to_number(args.get("maxResults")) or 10
     date_operator = args.get("dateOperator")
     numeric_operator = args.get("numericOperator")
     fields_to_display = argToList(args.get("fieldsToDisplay"))
@@ -1568,6 +1682,9 @@ def search_records_command(client: Client, args: dict[str, str]):
         "Descending" if argToBoolean(args.get("isDescending", "false")) else "Ascending"
     )
     level_id = args.get("levelId")
+
+    if xml_filter_conditions := args.get("xmlForFiltering"):
+        validate_xml_conditions(xml_filter_conditions)
 
     if fields_to_get and "Id" not in fields_to_get:
         fields_to_get.append("Id")
@@ -1592,6 +1709,7 @@ def search_records_command(client: Client, args: dict[str, str]):
         date_operator,
         max_results=max_results,
         sort_type=sort_type,
+        xml_filter_conditions=xml_filter_conditions,
     )
 
     records = [x["record"] for x in records]
@@ -1692,30 +1810,37 @@ def fetch_incidents(
     # Not using get method as those params are a must
     app_id = params["applicationId"]
     date_field = params["applicationDateField"]
-    max_results = params.get("fetch_limit", 10)
+    max_results = arg_to_number(params.get("fetch_limit")) or 10
     fields_to_display = argToList(params.get("fields_to_fetch"))
     fields_to_display.append(date_field)
+    xml_filter_conditions = params.get("fetch_xml")  # API uses "AND" logical operator by default to join multiple filters
+
+    # If XML filter is given, verify syntax and check no additional date filter that would interfere with the fetch filter
+    if xml_filter_conditions:
+        validate_xml_conditions(xml_filter_conditions, blacklisted_tags=[FilterConditionTypes.date.value])
+
     # API Call
     records, _ = client.search_records(
-        app_id,
-        fields_to_display,
-        date_field,
-        from_time.strftime(OCCURRED_FORMAT),
+        app_id=app_id,
+        fields_to_display=fields_to_display,
+        field_to_search=date_field,
+        search_value=from_time.strftime(OCCURRED_FORMAT),
         date_operator="GreaterThan",
         max_results=max_results,
+        xml_filter_conditions=xml_filter_conditions,
     )
     demisto.debug(f"Found {len(records)=}.")
     # Build incidents
     incidents = []
     # Encountered that sometimes, somehow, on of next_fetch is not UTC.
-    last_fetch_time = from_time.replace(tzinfo=timezone.utc)
+    last_fetch_time = from_time.replace(tzinfo=UTC)
     next_fetch = last_fetch_time
     for record in records:
         incident, incident_created_time = client.record_to_incident(
             record, app_id, fetch_param_id
         )
         # Encountered that sometimes, somehow, incident_created_time is not UTC.
-        incident_created_time = incident_created_time.replace(tzinfo=timezone.utc)
+        incident_created_time = incident_created_time.replace(tzinfo=UTC)
         if last_fetch_time < incident_created_time:
             incidents.append(incident)
             if next_fetch < incident_created_time:
@@ -1743,7 +1868,7 @@ def get_fetch_time(last_fetch: dict, first_fetch_time: str) -> datetime:
         start_fetch = parser(next_run)
     else:
         start_fetch, _ = parse_date_range(first_fetch_time)
-    start_fetch.replace(tzinfo=timezone.utc)
+    start_fetch.replace(tzinfo=UTC)
     return start_fetch
 
 

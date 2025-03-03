@@ -1,7 +1,7 @@
 import hashlib
 import hmac
 import json
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from typing import Any
 from collections.abc import Mapping
 
@@ -109,7 +109,7 @@ class Client(BaseClient):
     def _create_headers(self, query_uri: str, query_data: Dict = None, is_json: bool = False) -> Dict[str, str]:
         """Create headers required for successful authentication"""
         public_token, _ = self._auth
-        date = (datetime.now(timezone.utc)).isoformat(timespec="auto")
+        date = (datetime.now(UTC)).isoformat(timespec="auto")
         signature = _create_signature(self._auth, query_uri, date, query_data, is_json=is_json)
         return {'DTAPI-Token': public_token, 'DTAPI-Date': date, 'DTAPI-Signature': signature}
 
@@ -242,13 +242,14 @@ def main() -> None:  # pragma: no cover
         private_api_token = params.get('private_creds', {}).get('password', '')
         max_fetch = arg_to_number(params.get('max_fetch')) or DEFAULT_MAX_FETCH
         first_fetch_time_timestamp = convert_to_timestamp(arg_to_datetime(params.get('first_fetch', DEFAULT_FIRST_FETCH)))
+        proxy = argToBoolean(params.get('proxy', False))
 
         demisto.debug(f'Command being called is {demisto.command()}')
 
         client = Client(
             base_url=params.get('base_url'),
             verify=not params.get('insecure', False),
-            proxy=params.get('proxy', False),
+            proxy=proxy,
             auth=(public_api_token, private_api_token)
         )
 
@@ -261,7 +262,7 @@ def main() -> None:  # pragma: no cover
                                                  first_fetch_time_timestamp=first_fetch_time_timestamp)
             return_results(results)
             if argToBoolean(args.get("should_push_events")):
-                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)  # type: ignore
+                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT, add_proxy_to_request=proxy)  # type: ignore
         elif demisto.command() == 'fetch-events':
             last_run = demisto.getLastRun()
             events, new_last_run = fetch_events(client=client,
@@ -271,7 +272,7 @@ def main() -> None:  # pragma: no cover
                                                 last_run=last_run)
             if events:
                 add_time_field(events)
-                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)  # type: ignore
+                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT, add_proxy_to_request=proxy)  # type: ignore
                 if new_last_run:
                     demisto.setLastRun(new_last_run)
 

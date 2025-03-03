@@ -1,4 +1,4 @@
-description: "Collect Log bundle and parse data"
+description: "Collect Log bundle and parse data."
 id: Health Check - Collect Log Bundle
 inputs: []
 name: Health Check - Collect Log Bundle
@@ -315,7 +315,7 @@ view: |-
       }
     }
   }
-fromversion: 6.0.0
+fromversion: 6.9.0
 tests:
 - No tests (auto formatted)
 contentitemexportablefields:

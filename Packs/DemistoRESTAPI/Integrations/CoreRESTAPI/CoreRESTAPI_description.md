@@ -37,7 +37,13 @@
 Enter the server URL.
 </~XSOAR_ON_PREM>
 
+### NOTES:
 <~XSOAR_ON_PREM>
-### NOTE
 You do not need to provide an API Key ID.
 </~XSOAR_ON_PREM>
+<~XSOAR_SAAS>
+Make sure your API key has the proper permissions. For more information, please refer to the [Roles Management](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Roles-management) documentation.
+</~XSOAR_SAAS>
+<~XSIAM>
+Make sure your API key has the proper permissions. For more information, please refer to the [Roles Management](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Manage-Roles) documentation.
+</~XSIAM>

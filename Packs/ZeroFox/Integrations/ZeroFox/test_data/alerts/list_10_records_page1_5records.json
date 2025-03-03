@@ -1,0 +1,394 @@
+{
+    "count": 10,
+    "next": "https://api.zerofox.com/1.0/alerts/?limit=5&offset=5&sort_direction=asc",
+    "previous": null,
+    "page_size": 5,
+    "num_pages": 2,
+    "alerts": [
+        {
+            "alert_type": "search query",
+            "logs": [
+                {
+                    "id": 390795944,
+                    "timestamp": "2023-06-01T07:07:58+00:00",
+                    "actor": "",
+                    "subject": "",
+                    "action": "open"
+                }
+            ],
+            "offending_content_url": "https://cloud.zerofox.com/intelligence/advanced_dark_web/35803",
+            "asset_term": null,
+            "assignee": "",
+            "entity": {
+                "id": 560648,
+                "name": "Virginia Potts",
+                "image": "https://cdn.zerofox.com/media/entityimages/66bd7e83-1fd.jpg",
+                "labels": [
+                    {
+                        "id": 1639880,
+                        "name": "Stark"
+                    }
+                ],
+                "entity_group": {
+                    "id": 4636,
+                    "name": "Default"
+                }
+            },
+            "entity_term": null,
+            "content_created_at": "2023-06-01T06:55:20+00:00",
+            "id": 224850127,
+            "severity": 4,
+            "perpetrator": {
+                "name": "Akira Ransomware: Lewis Young Robertson & Burningham",
+                "display_name": "Akira Ransomware: Lewis Young Robertson & Burningham",
+                "id": 424158735,
+                "url": "https://cloud.zerofox.com/intelligence/advanced_dark_web/35803",
+                "content": "On June 01, 2023, ZeroFox observed an update on the Akira Ransomware leak site targeting Lewis Young Robertson & Burningham, a U.S.-based firm that provide financial advice and consultant to local governments. ZeroFox has detected close to 100 victims of ransomware and digital extortion in the financial services sector in the past year, more than 40 percent of which are in the U.S.-Canada region.",
+                "type": "page",
+                "timestamp": "2023-06-01T06:55:20+00:00",
+                "network": "advanced_dark_web"
+            },
+            "rule_group_id": 1775,
+            "asset": {
+                "id": 560648,
+                "name": "Virginia Potts",
+                "image": "https://cdn.zerofox.com/media/entityimages/66bd7e83-1fd.jpg",
+                "labels": [
+                    {
+                        "id": 1639880,
+                        "name": "Stark"
+                    }
+                ],
+                "entity_group": {
+                    "id": 4636,
+                    "name": "Default"
+                }
+            },
+            "entered_by": "",
+            "metadata": "",
+            "status": "Open",
+            "timestamp": "2023-06-01T07:07:58+00:00",
+            "rule_name": "Advanced Dark Web",
+            "last_modified": "2023-06-01T07:07:58Z",
+            "protected_locations": null,
+            "darkweb_term": null,
+            "business_network": null,
+            "reviewed": false,
+            "escalated": false,
+            "network": "advanced_dark_web",
+            "protected_social_object": null,
+            "notes": "",
+            "reviews": [],
+            "rule_id": 41785,
+            "entity_account": null,
+            "entity_email_receiver_id": null,
+            "tags": []
+        },
+        {
+            "alert_type": "search query",
+            "logs": [
+                {
+                    "id": 390795945,
+                    "timestamp": "2023-06-01T07:07:58+00:00",
+                    "actor": "",
+                    "subject": "",
+                    "action": "open"
+                }
+            ],
+            "offending_content_url": "https://cloud.zerofox.com/intelligence/advanced_dark_web/35804",
+            "asset_term": null,
+            "assignee": "",
+            "entity": {
+                "id": 560648,
+                "name": "Virginia Potts",
+                "image": "https://cdn.zerofox.com/media/entityimages/66bd7e83-1fd.jpg",
+                "labels": [
+                    {
+                        "id": 1639880,
+                        "name": "Stark"
+                    }
+                ],
+                "entity_group": {
+                    "id": 4636,
+                    "name": "Default"
+                }
+            },
+            "entity_term": null,
+            "content_created_at": "2023-06-01T06:54:10+00:00",
+            "id": 224850128,
+            "severity": 4,
+            "perpetrator": {
+                "name": "Akira Ransomware: National Association of Home Builders",
+                "display_name": "Akira Ransomware: National Association of Home Builders",
+                "id": 424158736,
+                "url": "https://cloud.zerofox.com/intelligence/advanced_dark_web/35804",
+                "content": "On June 01, 2023, ZeroFox observed an update on the Akira Ransomware leak site targeting National Association of Home Builders, a U.S.-based construction group. ZeroFox has detected more than 150 victims of ransomware and digital extortion in the construction sector in the past year, nearly 55 percent of which are in the U.S.-Canada region.",
+                "type": "page",
+                "timestamp": "2023-06-01T06:54:10+00:00",
+                "network": "advanced_dark_web"
+            },
+            "rule_group_id": 1775,
+            "asset": {
+                "id": 560648,
+                "name": "Virginia Potts",
+                "image": "https://cdn.zerofox.com/media/entityimages/66bd7e83-1fd.jpg",
+                "labels": [
+                    {
+                        "id": 1639880,
+                        "name": "Stark"
+                    }
+                ],
+                "entity_group": {
+                    "id": 4636,
+                    "name": "Default"
+                }
+            },
+            "entered_by": "",
+            "metadata": "",
+            "status": "Open",
+            "timestamp": "2023-06-01T07:07:58+00:00",
+            "rule_name": "Advanced Dark Web",
+            "last_modified": "2023-06-01T07:07:58Z",
+            "protected_locations": null,
+            "darkweb_term": null,
+            "business_network": null,
+            "reviewed": false,
+            "escalated": false,
+            "network": "advanced_dark_web",
+            "protected_social_object": null,
+            "notes": "",
+            "reviews": [],
+            "rule_id": 41785,
+            "entity_account": null,
+            "entity_email_receiver_id": null,
+            "tags": []
+        },
+        {
+            "alert_type": "search query",
+            "logs": [
+                {
+                    "id": 390795946,
+                    "timestamp": "2023-06-01T07:07:58+00:00",
+                    "actor": "",
+                    "subject": "",
+                    "action": "open"
+                }
+            ],
+            "offending_content_url": "https://cloud.zerofox.com/intelligence/advanced_dark_web/35805",
+            "asset_term": null,
+            "assignee": "",
+            "entity": {
+                "id": 560648,
+                "name": "Virginia Potts",
+                "image": "https://cdn.zerofox.com/media/entityimages/66bd7e83-1fd.jpg",
+                "labels": [
+                    {
+                        "id": 1639880,
+                        "name": "Stark"
+                    }
+                ],
+                "entity_group": {
+                    "id": 4636,
+                    "name": "Default"
+                }
+            },
+            "entity_term": null,
+            "content_created_at": "2023-06-01T06:53:04+00:00",
+            "id": 224850129,
+            "severity": 4,
+            "perpetrator": {
+                "name": "Akira Ransomware: SK Life Science",
+                "display_name": "Akira Ransomware: SK Life Science",
+                "id": 424158738,
+                "url": "https://cloud.zerofox.com/intelligence/advanced_dark_web/35805",
+                "content": "On June 01, 2023, ZeroFox observed an update on the Akira Ransomware leak site targeting SK Life Science, a U.S.-based pharmaceutical manufacturing company. ZeroFox has detected more than 140 victims of ransomware and digital extortion in the healthcare sector in the past year, nearly 75 percent of which are in the U.S.-Canada region.",
+                "type": "page",
+                "timestamp": "2023-06-01T06:53:04+00:00",
+                "network": "advanced_dark_web"
+            },
+            "rule_group_id": 1775,
+            "asset": {
+                "id": 560648,
+                "name": "Virginia Potts",
+                "image": "https://cdn.zerofox.com/media/entityimages/66bd7e83-1fd.jpg",
+                "labels": [
+                    {
+                        "id": 1639880,
+                        "name": "Stark"
+                    }
+                ],
+                "entity_group": {
+                    "id": 4636,
+                    "name": "Default"
+                }
+            },
+            "entered_by": "",
+            "metadata": "",
+            "status": "Takedown Requested",
+            "timestamp": "2023-06-01T07:07:58+00:00",
+            "rule_name": "Advanced Dark Web",
+            "last_modified": "2023-06-01T07:07:58Z",
+            "protected_locations": null,
+            "darkweb_term": null,
+            "business_network": null,
+            "reviewed": false,
+            "escalated": false,
+            "network": "advanced_dark_web",
+            "protected_social_object": null,
+            "notes": "",
+            "reviews": [],
+            "rule_id": 41785,
+            "entity_account": null,
+            "entity_email_receiver_id": null,
+            "tags": []
+        },
+        {
+            "alert_type": "search query",
+            "logs": [
+                {
+                    "id": 390795949,
+                    "timestamp": "2023-06-01T07:07:58+00:00",
+                    "actor": "",
+                    "subject": "",
+                    "action": "open"
+                }
+            ],
+            "offending_content_url": "https://cloud.zerofox.com/intelligence/advanced_dark_web/35806",
+            "asset_term": null,
+            "assignee": "",
+            "entity": {
+                "id": 560648,
+                "name": "Virginia Potts",
+                "image": "https://cdn.zerofox.com/media/entityimages/66bd7e83-1fd.jpg",
+                "labels": [
+                    {
+                        "id": 1639880,
+                        "name": "Stark"
+                    }
+                ],
+                "entity_group": {
+                    "id": 4636,
+                    "name": "Default"
+                }
+            },
+            "entity_term": null,
+            "content_created_at": "2023-06-01T06:50:15+00:00",
+            "id": 224850131,
+            "severity": 4,
+            "perpetrator": {
+                "name": "ALPHV Ransomware: Casepoint",
+                "display_name": "ALPHV Ransomware: Casepoint",
+                "id": 424158739,
+                "url": "https://cloud.zerofox.com/intelligence/advanced_dark_web/35806",
+                "content": "On June 01, 2023, ZeroFox observed an update on the ALPHV Ransomware leak site targeting the organization Casepoint, an U.S.-based software development company. ZeroFox has detected close to 300 victims of this ransomware in the past year, of which more than 50 percent are based in the U.S.-Canada region.",
+                "type": "page",
+                "timestamp": "2023-06-01T06:50:15+00:00",
+                "network": "advanced_dark_web"
+            },
+            "rule_group_id": 1775,
+            "asset": {
+                "id": 560648,
+                "name": "Virginia Potts",
+                "image": "https://cdn.zerofox.com/media/entityimages/66bd7e83-1fd.jpg",
+                "labels": [
+                    {
+                        "id": 1639880,
+                        "name": "Stark"
+                    }
+                ],
+                "entity_group": {
+                    "id": 4636,
+                    "name": "Default"
+                }
+            },
+            "entered_by": "",
+            "metadata": "",
+            "status": "Open",
+            "timestamp": "2023-06-01T07:07:58+00:00",
+            "rule_name": "Advanced Dark Web",
+            "last_modified": "2023-06-01T07:07:59Z",
+            "protected_locations": null,
+            "darkweb_term": null,
+            "business_network": null,
+            "reviewed": false,
+            "escalated": false,
+            "network": "advanced_dark_web",
+            "protected_social_object": null,
+            "notes": "",
+            "reviews": [],
+            "rule_id": 41785,
+            "entity_account": null,
+            "entity_email_receiver_id": null,
+            "tags": []
+        },
+        {
+            "alert_type": "search query",
+            "logs": [
+                {
+                    "id": 390800117,
+                    "timestamp": "2023-06-01T07:51:43+00:00",
+                    "actor": "",
+                    "subject": "",
+                    "action": "open"
+                }
+            ],
+            "offending_content_url": "https://cloud.zerofox.com/intelligence/advanced_dark_web/35803",
+            "asset_term": null,
+            "assignee": "",
+            "entity": {
+                "id": 6969249,
+                "name": "Peter Parker",
+                "image": "https://cdn.zerofox.com/media/entityimages/kv7b3f5ubcp9s79zigjegevdri4o274mu05h6d7ufijgsvr3pp8aiwalihnuvbi4.jpg",
+                "labels": [],
+                "entity_group": {
+                    "id": 4636,
+                    "name": "Default"
+                }
+            },
+            "entity_term": null,
+            "content_created_at": "2023-06-01T06:55:20+00:00",
+            "id": 224851768,
+            "severity": 4,
+            "perpetrator": {
+                "name": "Akira Ransomware: Lewis Young Robertson & Burningham",
+                "display_name": "Akira Ransomware: Lewis Young Robertson & Burningham",
+                "id": 424158735,
+                "url": "https://cloud.zerofox.com/intelligence/advanced_dark_web/35803",
+                "content": "On June 01, 2023, ZeroFox observed an update on the Akira Ransomware leak site targeting Lewis Young Robertson & Burningham, a U.S.-based firm that provide financial advice and consultant to local governments. ZeroFox has detected close to 100 victims of ransomware and digital extortion in the financial services sector in the past year, more than 40 percent of which are in the U.S.-Canada region.",
+                "type": "page",
+                "timestamp": "2023-06-01T06:55:20+00:00",
+                "network": "advanced_dark_web"
+            },
+            "rule_group_id": 1775,
+            "asset": {
+                "id": 6969249,
+                "name": "Peter Parker",
+                "image": "https://cdn.zerofox.com/media/entityimages/kv7b3f5ubcp9s79zigjegevdri4o274mu05h6d7ufijgsvr3pp8aiwalihnuvbi4.jpg",
+                "labels": [],
+                "entity_group": {
+                    "id": 4636,
+                    "name": "Default"
+                }
+            },
+            "entered_by": "",
+            "metadata": "",
+            "status": "Open",
+            "timestamp": "2023-06-01T07:51:43+00:00",
+            "rule_name": "Advanced Dark Web",
+            "last_modified": "2023-06-01T07:51:44Z",
+            "protected_locations": null,
+            "darkweb_term": null,
+            "business_network": null,
+            "reviewed": false,
+            "escalated": false,
+            "network": "advanced_dark_web",
+            "protected_social_object": null,
+            "notes": "",
+            "reviews": [],
+            "rule_id": 41785,
+            "entity_account": null,
+            "entity_email_receiver_id": null,
+            "tags": []
+        }
+    ]
+}

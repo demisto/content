@@ -9,7 +9,6 @@ args:
   - open-answer
 - description: Question (message) to send to the specified team member or channel.
   name: message
-  required: true
 - auto: PREDEFINED
   description: Indicates whether to use one-time entitlement or persistent entitlement.
   name: persistent
@@ -33,6 +32,8 @@ args:
   name: channel
 - description: The team in which to mirror the Cortex XSOAR investigation. If not specified, the default team configured in the integration parameters will be used.
   name: team
+- description: Adaptive card to send to the specified team member or channel.
+  name: adaptive_card
 comment: Send a team member or channel a question with predefined response options on Microsoft Teams. The response can be used to close a task (might be conditional) in a playbook.
 commonfields:
   id: MicrosoftTeamsAsk
@@ -43,7 +44,7 @@ tags:
 - microsoftteams
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.12.8.1983910
 tests:
 - No test
 dependson:

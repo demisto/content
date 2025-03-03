@@ -23,8 +23,9 @@ from PerformActionOnCampaignIncidents import (
     _parse_incident_context_to_valid_incident_campaign_context,
     perform_add_to_campaign,
     perform_remove_from_campaign,
+    _set_removed_from_campaigns_field,
+    ACTIONS
 )
-
 NUM_OF_INCIDENTS = 5
 INCIDENT_IDS = [str(i) for i in range(NUM_OF_INCIDENTS)]
 CUSTOM_FIELDS = {
@@ -549,6 +550,7 @@ def test_perform_add_to_campaign(
     """
     involved_incidents_count = [1]
     mocker.patch("PerformActionOnCampaignIncidents.isError", return_value=False)
+    mocker.patch("PerformActionOnCampaignIncidents._set_removed_from_campaigns_field")
     mocker.patch.object(demisto, "incidents", return_value=[MOCKED_INCIDENT])
     mocker.patch.object(demisto, "executeCommand", return_value=[{}])
     mocker.patch.object(
@@ -644,6 +646,7 @@ def test_perform_remove_from_campaign(
     """
     involved_incidents_count = [1]
     mocker.patch("PerformActionOnCampaignIncidents.isError", return_value=False)
+    mocker.patch("PerformActionOnCampaignIncidents._set_removed_from_campaigns_field")
     mocker.patch.object(demisto, "incidents", return_value=[MOCKED_INCIDENT])
     mocker.patch.object(demisto, "executeCommand", return_value=[{}])
     mocker.patch.object(
@@ -689,3 +692,31 @@ def test_perform_remove_from_campaign_no_incidents_to_remove(
     )
     res = perform_remove_from_campaign(ids_to_remove, "add to campaign")
     assert expected == res
+
+
+@pytest.mark.parametrize(
+    "campaign_ids_removed, action, expected_campaign_ids_removed",
+    [
+        (["campaign1", "campaign2"], ACTIONS.ADD, ["campaign1", "campaign2", "campaign_id"]),
+        (None, ACTIONS.ADD, ["campaign_id"]),
+        ([], ACTIONS.ADD, ["campaign_id"]),
+        (None, ACTIONS.REMOVE, []),
+        ([], ACTIONS.REMOVE, []),
+        (["campaign1", "campaign_id"], ACTIONS.REMOVE, ["campaign1"]),
+        (["campaign1", "campaign2", "campaign_id"], ACTIONS.ADD, ["campaign1", "campaign2", "campaign_id"]),
+        (["campaign1"], ACTIONS.REMOVE, ["campaign1"])
+    ]
+)
+def test_set_removed_from_campaigns_field(
+    mocker, campaign_ids_removed, action, expected_campaign_ids_removed
+):
+    mocker.patch("PerformActionOnCampaignIncidents._get_incident", return_value={})
+    mocker.patch("PerformActionOnCampaignIncidents._get_data_from_incident", return_value=campaign_ids_removed)
+    mock_execute_command = mocker.patch("PerformActionOnCampaignIncidents.demisto.executeCommand")
+    mocker.patch("PerformActionOnCampaignIncidents.isError", return_value=False)
+
+    _set_removed_from_campaigns_field("incident_id", "campaign_id", action)
+
+    mock_execute_command.assert_called_once_with(
+        "setIncident", {"id": "incident_id", "removedfromcampaigns": expected_campaign_ids_removed}
+    )

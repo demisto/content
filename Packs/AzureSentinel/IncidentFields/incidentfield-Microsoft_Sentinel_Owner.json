@@ -10,9 +10,9 @@
     "editForm": true,
     "required": false,
     "neverSetAsRequired": false,
-    "isReadOnly": false,
+    "isReadOnly": true,
     "useAsKpi": false,
-    "locked": false,
+    "locked": true,
     "system": false,
     "content": true,
     "group": 0,
@@ -24,8 +24,8 @@
     "caseInsensitive": true,
     "columns": [
         {
-            "key": "objectid",
-            "displayName": "Object Id",
+            "key": "assignedto",
+            "displayName": "Assigned To",
             "type": "shortText",
             "orgType": "shortText",
             "required": false,
@@ -33,7 +33,7 @@
             "width": 150,
             "isDefault": true,
             "fieldCalcScript": "",
-            "isReadOnly": false,
+            "isReadOnly": true,
             "selectValues": null
         },
         {
@@ -46,7 +46,7 @@
             "width": 150,
             "isDefault": true,
             "fieldCalcScript": "",
-            "isReadOnly": false,
+            "isReadOnly": true,
             "selectValues": null
         },
         {
@@ -59,12 +59,12 @@
             "width": 150,
             "isDefault": true,
             "fieldCalcScript": "",
-            "isReadOnly": false,
+            "isReadOnly": true,
             "selectValues": null
         },
         {
-            "key": "assignedto",
-            "displayName": "Assigned To",
+            "key": "objectid",
+            "displayName": "Object Id",
             "type": "shortText",
             "orgType": "shortText",
             "required": false,
@@ -72,7 +72,7 @@
             "width": 150,
             "isDefault": true,
             "fieldCalcScript": "",
-            "isReadOnly": false,
+            "isReadOnly": true,
             "selectValues": null
         }
     ],

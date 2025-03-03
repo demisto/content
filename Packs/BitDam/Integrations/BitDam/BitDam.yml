@@ -13,7 +13,7 @@ configuration:
   required: true
 - display: API Token
   name: apitoken
-  defaultvalue: ""
+  defaultvalue: ''
   type: 4
   required: true
 - display: Trust any certificate (not secure)
@@ -43,7 +43,7 @@ script:
     arguments:
     - name: idValue
       required: true
-      description: The value of the file's unique identifier (for example - file's SHA1)
+      description: The value of the file's unique identifier (for example - file's SHA1).
     outputs:
     - contextPath: BitDam.Analysis.Status
       description: The status of the analysis. Can be "DONE" or "IN_PROGRESS".
@@ -69,7 +69,7 @@ script:
     - contextPath: File.Malicious.Name
       description: The name of the file.
       type: string
-    - contextPath: File.Malicious.Vendor
+    - contextPath: File.Malicious.VendoridValue
       description: For malicious files, the vendor that made the decision.
       type: string
     - contextPath: File.Malicious.Description
@@ -77,7 +77,7 @@ script:
       type: string
     description: Returns the verdict for a scanned file.
   runonce: false
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.115186
 tests:
 - Detonate File - BitDam Test
 fromversion: 5.0.0

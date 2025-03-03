@@ -3,14 +3,14 @@ from CommonServerPython import *  # noqa: F401
 
 
 def create_widget_entry(ssim_score) -> dict:
-    stats = int(ssim_score*100)
+    stats = int(ssim_score * 100)
     if stats >= 0 and stats < 25:
         color_ssim = "#00cd33"
     elif stats >= 25 and stats < 75:
         color_ssim = "#f57d00"
     else:
         color_ssim = "#fe1403"
-        
+
     data = {
         "Type": 17,
         "size": 30,

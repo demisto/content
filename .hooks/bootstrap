@@ -71,8 +71,12 @@ else
     fi
     if [[ "${should_install_poetry}" == "yes" ]]; then
         echo "Installing Poetry version:${POETRY_VERSION}"
-        curl -sSL https://install.python-poetry.org | python3 - --version "${POETRY_VERSION}"
+        python3 .hooks/install.python-poetry.py --version "${POETRY_VERSION}"
+        # curl -sSL https://install.python-poetry.org | python3 - --version "${POETRY_VERSION}"
         error_code=$?
+        if [ -n "${ARTIFACTS_FOLDER}" ] && [ "${error_code}" -ne 0 ]; then
+            cp ${PWD}/poetry-installer-error-*.log "${ARTIFACTS_FOLDER}"
+        fi
         if ! command -v poetry >/dev/null 2>&1; then
             exit_on_error $? "Poetry isn't installed"
         fi
@@ -81,31 +85,18 @@ else
         else
           exit_on_error 1 "Poetry version $(poetry --version) doesn't match the required version: ${POETRY_VERSION}"
         fi
-        if [ -n "${ARTIFACTS_FOLDER}" ] && [ "${error_code}" -ne 0 ]; then
-            cp ${PWD}/poetry-installer-error-*.log "${ARTIFACTS_FOLDER}"
-        fi
         exit_on_error $error_code "Failed to install Poetry version:${POETRY_VERSION}"
     fi
 fi
 
 if [ -n "${CI}" ]; then
-    retry_count=3
-    sleep_time=10
-    echo "Detected CI environment. Running extra requirements"
-    echo "Check if poetry files are valid"
+    echo "Detected CI environment"
+    echo "Checking whether poetry files are valid"
     poetry check --no-interaction
     exit_on_error $? "Failed to check poetry files"
-
     echo "Installing dependencies..."
-    for ((i=1; i <= retry_count; i++)); do
-        poetry install --no-interaction --with ci && exit_code=0 && break || exit_code=$?
-        [ -d .venv ] && rm -rf .venv
-        if [ "${i}" -ne "${retry_count}" ]; then
-            echo "Sleeping for ${sleep_time} seconds before retrying"
-            sleep "${sleep_time}"
-        fi
-    done
-    exit_on_error "${exit_code}" "Failed to install dependencies after ${retry_count} tries"
+    poetry install --no-interaction
+    exit_on_error "${exit_code}" "Failed to install dependencies"
 else
     echo "Detected local environment"
     echo "Check if poetry files are valid"

@@ -44,6 +44,14 @@ configuration:
   name: proxy
   type: 8
   required: false
+- section: Collect
+  advanced: true
+  display: End of the fetch window
+  additionalinfo: The number of minutes to delay when fetching events (to handle events creation delay in the DUO database). The default value is 0 minutes. The recommended value is 5.
+  name: fetch_delay
+  defaultvalue: 0
+  type: 0
+  required: false
 script:
   script: ""
   type: python
@@ -57,9 +65,27 @@ script:
       - 'True'
       - 'False'
       required: true
+    - defaultValue: 'AUTHENTICATION'
+      description: The wanted log type. The default value is AUTHENTICATION. Enter one log type for each command execution.
+      name: logs_type_array
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - "AUTHENTICATION"
+        - "ADMINISTRATION"
+        - "TELEPHONY"
+    - defaultValue: 1 day
+      description: Date from which to get events (e.g. <number> <time unit>, for example, 12 hours, 7 days, 3 months, 1 year or 2023-13-30T03:11:29Z).
+      name: after
+      required: false
+    - defaultValue: 1000
+      description: Maximum results to return.
+      isArray: false
+      name: limit
+      required: false
     description: Manual command to fetch events and display them.
     name: duo-get-events
-  dockerimage: demisto/vendors-sdk:1.0.0.87491
+  dockerimage: demisto/vendors-sdk:1.0.0.1876031
   isfetchevents: true
   subtype: python3
 marketplaces:

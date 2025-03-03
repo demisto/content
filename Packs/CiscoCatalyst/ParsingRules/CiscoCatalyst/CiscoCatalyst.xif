@@ -1,22 +1,58 @@
+/*------------------------------------
+   CONSTANTS - COMMON REGEX PATTERNS
+ -----------------------------------*/
+[CONST]
+CISCO_CATALYST_TIMESTAMP_FORMAT = "[A-Z][a-z]{2}\s+\d{1,2}\s+\d{4}\s+\d{2}:\d{2}:\d{2}(?:\.\d+)?\sUTC|[A-Z][a-z]{2}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2}(?:\.\d+)?\sUTC"; // supported format samples:  May 16 2023 14:30:00 UTC or May  2 09:47:18.714 UTC
+CISCO_CATALYST_SYSTEM_LOG_MESSAGE_FORMAT = "%[\w\-]+\-\d\-\S+?:"; // %facility-severity-MNEMONIC:description (see https://www.cisco.com/c/en/us/td/docs/routers/access/wireless/software/guide/SysMsgLogging.html#wp1054470)
+
+/*---------
+   RULES 
+ --------*/
+[RULE: CISCO_CATALYST_PARSE_TIMESTAMP]
+// supported format: Mmm dd YYYY hh:mm:ss UTC. Example:  Nov  3 2024 12:55:20 UTC
+alter tmp_full_timestamp_with_year = parse_timestamp("%b %e %Y %H:%M:%E*S", arrayindex(regextract(_raw_log ,"([A-Z][a-z]{2}\s+\d{1,2}\s\d{4}\s\d{2}:\d{2}:\d{2}(?:\.\d+)?)\sUTC"), 0))
+
+// supported format: RFC 3164 with a UTC timezone. Example: Oct 27 21:00:49 UTC
+| alter // construct timestamp basted on log timestamp and current year
+    tmp_rfc_3164_timestamp = arrayindex(regextract(_raw_log, "([A-Z][a-z]{2}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2}(?:\.\d+)?)\sUTC"), 0),
+    tmp_current_year = format_timestamp("%Y", current_time())
+| alter tmp_current_year_timestamp = parse_timestamp("%Y %b %e %H:%M:%E*S", concat(tmp_current_year, " ", tmp_rfc_3164_timestamp), "UTC") 
+| alter tmp_constructed_rfc3164_timestamp = if( // validate the evaluated timestamp with current year is not in the future due to year transition during ingestion. If so, fallback to previous year. 
+    timestamp_diff(tmp_current_year_timestamp, current_time(), "MILLISECOND") <= 0, tmp_current_year_timestamp, // set timestamp with current (ingestion time) year 
+    parse_timestamp("%Y %b %e %H:%M%E*S", concat(to_string(subtract(to_integer(tmp_current_year), 1)), " ", tmp_rfc_3164_timestamp), "UTC")) // set timestamp with previous year 
+
+// set _time with either the full timestamp with year if such exists, or the constructed RFC 3164 timestamp
+| alter _time = coalesce(tmp_full_timestamp_with_year, tmp_constructed_rfc3164_timestamp) 
+| fields - tmp*;
+
+[RULE: CISCO_CATALYST_PARSE_STANDARD_LOG_MESSAGE_FORMAT]
+alter parsed_fields = regexcapture(_raw_log, "^\<\d+\>(?P<sequence_number>\d+):\s+.+?%(?P<facility>[\w\-]+)\-(?P<severity>\d)\-(?P<mnemonic>\S+?):\s*(?P<description>.+)");
+
+[RULE: CISCO_CATALYST_PARSE_NON_STANDARD_LOG_MESSAGE_FORMAT]
+alter parsed_fields = regexcapture(_raw_log, "^.+?(?P<device_ip>(?:\d{1,3}\.){3}\d{1,3})\s+(?P<event_id>\d+)\s+(?P<facility>[\w\-\.]+):\s+(?P<description>.+)")
+| alter tmp_syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>"), 0))
+| alter tmp_syslog_severity =  to_string(subtract(tmp_syslog_priority, multiply(floor(divide(tmp_syslog_priority, 8)), 8)))
+| alter parsed_fields = object_merge(parsed_fields, object_create("severity", tmp_syslog_severity))
+| fields - tmp*;
+
+/*---------
+   INGEST 
+ --------*/
 [INGEST:vendor="cisco", product="catalyst", target_dataset="cisco_catalyst_raw", no_hit = keep]
-filter _raw_log ~= "[A-Za-z]+\s+\d+\s+\d{4}\s+\d+\:\d+\:\d+\sUTC" or _raw_log ~= "[A-Za-z]+\s+\d+\s+\d+\:\d+\:\d+\.\d+\sUTC"
-// supported format May 16 2023 14:30:00 UTC
-| alter tmp_time_string1 = arrayindex(regextract(_raw_log ,"(\w+\s\d+\s\d+\s\d+\:\d+\:\d+)\sUTC"),0)
-| alter tmp_time_with_year = parse_timestamp("%b %d %Y %H:%M:%S",tmp_time_string1 )
-// supported format May  2 09:47:18.714 UTC
-| alter
-        tmp_time_without_year = arraystring(regextract( _raw_log, "(\w{3}\s+\d{1,2}\s+\d{2}\:\d{2}\:\d{2}\.\d+\s)UTC"), ""),
-        tmp_year = to_string(format_timestamp("%Y",current_time()))
-| alter
-        tmp_time_format2 = if(tmp_time_without_year != null and tmp_time_without_year != "", concat(tmp_year, " ", tmp_time_without_year), null)
-| alter
-    tmp_time1_1 = parse_timestamp("%Y %b %e %H:%M:%E*S", tmp_time_format2 )
-| alter tmp_timeDiff = timestamp_diff(tmp_time1_1, current_time(), "MILLISECOND")
-// Check if the date is a future date
-| alter tmp_year2 = if(tmp_timeDiff > 0, to_string(subtract(to_integer(tmp_year),1)),null)
-// Create timestamp minus 1 year if the timestamp is a future one
-| alter tmp_time1_2 = if(tmp_year2 != null, concat(tmp_year2, " ", tmp_time_without_year), null)
-| alter tmp_time1_2 = if(tmp_time1_2 != null, parse_timestamp("%Y %b %e %H:%M:%E*S", tmp_time1_2 ),null)
-| alter tmp_time_without_year = coalesce(tmp_time1_2, tmp_time1_1)
-| alter _time = coalesce(tmp_time_with_year, tmp_time_without_year)
-| fields -tmp_time_string1, tmp_time_with_year, tmp_time2 , tmp_time_concat2 , tmp_year, tmp_year2, tmp_time_without_year, tmp_time_format2, tmp_timeDiff, tmp_time1_1, tmp_time1_2;
+// use case 1: log in standard format with a valid timestamp
+filter _raw_log ~= $CISCO_CATALYST_SYSTEM_LOG_MESSAGE_FORMAT and _raw_log ~= $CISCO_CATALYST_TIMESTAMP_FORMAT
+| call CISCO_CATALYST_PARSE_TIMESTAMP
+| call CISCO_CATALYST_PARSE_STANDARD_LOG_MESSAGE_FORMAT;
+
+// use case 2: log in standard format without a valid timestamp
+filter _raw_log ~= $CISCO_CATALYST_SYSTEM_LOG_MESSAGE_FORMAT and _raw_log !~= $CISCO_CATALYST_TIMESTAMP_FORMAT
+| call CISCO_CATALYST_PARSE_STANDARD_LOG_MESSAGE_FORMAT;
+
+// use case 3: log in non-standard format with a valid timestamp
+filter _raw_log !~= $CISCO_CATALYST_SYSTEM_LOG_MESSAGE_FORMAT and _raw_log ~= $CISCO_CATALYST_TIMESTAMP_FORMAT
+| call CISCO_CATALYST_PARSE_TIMESTAMP
+| call CISCO_CATALYST_PARSE_NON_STANDARD_LOG_MESSAGE_FORMAT;
+
+// use case 4: log in non-standard format without a valid timestamp
+filter _raw_log !~= $CISCO_CATALYST_SYSTEM_LOG_MESSAGE_FORMAT and _raw_log !~= $CISCO_CATALYST_TIMESTAMP_FORMAT
+| call CISCO_CATALYST_PARSE_NON_STANDARD_LOG_MESSAGE_FORMAT;

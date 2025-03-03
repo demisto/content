@@ -8,7 +8,7 @@ ignore=BA101
 ignore=BA101
 
 [file:Cymulate_v2.yml]
-ignore=BA108,BA109,IN124
+ignore=BA108,BA109
 
 [file:classifier-mapper-incoming-Cymulate.json]
 ignore=BA101
@@ -34,3 +34,6 @@ ignore=BA101
 [file:Cymulate_Immediate_Threats_Playbook.yml]
 ignore=PB121
 
+# GR103 is temporary, see CIAC-11656
+[file:incidenttype-cymulate.json]
+ignore=GR103

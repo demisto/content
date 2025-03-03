@@ -9,7 +9,9 @@
         "Nutanix Hypervisor Alert",
 		"OpsGenie Alert",
 		"Microsoft Sentinel Incident",
-		"Prisma Cloud - VM Alert Prioritization"
+		"Prisma Cloud - VM Alert Prioritization",
+        "Exabeam Notable User",
+        "CrowdStrike Falcon OFP Detection"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
@@ -36,7 +38,8 @@
 	"sla": 0,
 	"system": false,
 	"systemAssociatedTypes": [
-		"Prisma Cloud - VM Alert Prioritization"
+		"Prisma Cloud - VM Alert Prioritization",
+        "CrowdStrike Falcon OFP Detection"
 	],
 	"threshold": 72,
 	"type": "shortText",

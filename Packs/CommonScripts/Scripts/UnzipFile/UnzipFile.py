@@ -122,9 +122,9 @@ def extract_using_unrar(file_path, dir_path, password=None):
     :param password: password if the zip file is encrypted
     """
     if password:
-        cmd = 'unrar x -p{} {} {}'.format(password, file_path, dir_path)
+        cmd = f'unrar x -p{password} {file_path} {dir_path}'
     else:
-        cmd = 'unrar x -p- {} {}'.format(file_path, dir_path)
+        cmd = f'unrar x -p- {file_path} {dir_path}'
     process = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
     # process = Popen([cmd], shell=True, stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
@@ -139,9 +139,12 @@ def extract_using_unrar(file_path, dir_path, password=None):
 
 def extract_using_tarfile(file_path: str, dir_path: str, file_name: str) -> str:
     if '.tar.gz' in file_name:
-        cmd = 'tar -xzvf {} -C {}'.format(file_path, dir_path)
+        cmd = f'tar -xzvf {file_path} -C {dir_path}'
     elif file_name.endswith('.tar'):
-        cmd = 'tar -xf {} -C {}'.format(file_path, dir_path)
+        cmd = f'tar -xf {file_path} -C {dir_path}'
+    else:
+        cmd = ''
+        demisto.debug(f"{file_name=} didn't match any condition. {cmd=}")
     process = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
     stdout = str(stdout)
@@ -158,7 +161,7 @@ def extract_using_7z(file_path, dir_path, password=None):
     :param dir_path: directory that the file will be extract to
     :param password: password if the zip file is encrypted
     """
-    cmd = '7z x -p{} -o{} {}'.format(password, dir_path, file_path)
+    cmd = f'7z x -p{password} -o{dir_path} {file_path}'
     process = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
     # process = Popen([cmd], shell=True, stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()

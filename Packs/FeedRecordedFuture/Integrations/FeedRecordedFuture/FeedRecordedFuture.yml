@@ -155,6 +155,12 @@ configuration:
   name: risk_score_threshold
   required: false
   type: 0
+- additionalinfo: 'Improve the feed performance by removing the rawJSON from the indicators. Note: A loss of data may occur if selecting this checkbox.'
+  display: Remove rawJSON from indicators
+  name: performance
+  defaultvalue: "false"
+  type: 8
+  required: false
 description: Ingests indicators from Recorded Future feeds into Demisto.
 display: Recorded Future RiskList Feed
 name: Recorded Future Feed
@@ -202,7 +208,7 @@ script:
     - contextPath: RecordedFutureFeed.RiskRule.Criticality
       description: The risk rule criticality.
       type: String
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.11.10.115186
   feed: true
   runonce: false
   script: ''

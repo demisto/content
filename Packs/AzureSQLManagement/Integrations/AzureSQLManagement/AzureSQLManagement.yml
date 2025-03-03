@@ -24,7 +24,7 @@ configuration:
   section: Connect
   additionalinfo: This value can be overridden on a command basis.
   required: false
-- additionalinfo: Type of authentication - can be Authorization Code Flow (recommended), Device Code Flow, or Azure Managed Identities.
+- additionalinfo: Type of authentication - can be Authorization Code Flow (recommended), Device Code Flow, Azure Managed Identities or Client Credentials Flow.
   display: Authentication Type
   name: auth_type
   required: true
@@ -33,15 +33,16 @@ configuration:
   - Authorization Code
   - Device Code
   - Azure Managed Identities
+  - Client Credentials
   type: 15
   section: Connect
-- display: Tenant ID (for authorization code mode)
+- display: Tenant ID
   name: tenant_id
   type: 0
   section: Connect
   required: false
-- display: Client Secret (for authorization code mode)
-  displaypassword: Client Secret (for authorization code mode)
+- display: Client Secret
+  displaypassword: Client Secret
   hiddenusername: true
   name: credentials
   type: 9
@@ -651,7 +652,7 @@ script:
     - contextPath: AzureSQL.ResourceGroup.tags
       description: The tags attached to the resource group.
       type: String
-  dockerimage: demisto/crypto:1.0.0.96042
+  dockerimage: demisto/crypto:1.0.0.114611
   runonce: false
   script: '-'
   subtype: python3

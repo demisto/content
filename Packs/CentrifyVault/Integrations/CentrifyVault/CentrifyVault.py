@@ -51,10 +51,9 @@ class Client(BaseClient):
         bearer_token = integration_context.get('bearer_token')
         valid_until = integration_context.get('valid_until')
         time_now = int(time.time())
-        if bearer_token and valid_until:
-            if time_now < valid_until:
-                # Bearer Token is still valid - did not expire yet
-                return bearer_token
+        if bearer_token and valid_until and time_now < valid_until:
+            # Bearer Token is still valid - did not expire yet
+            return bearer_token
         response = self.get_token_request()
         bearer_token = response.get('access_token')
         t = time.time()
@@ -230,10 +229,7 @@ def fetch_set_details(client: Client, set_details_list):
     centrify_setdetails_response = client.request_set_details(url_suffix=urlSuffix, data=payload)
     centrify_setdetails_response = centrify_setdetails_response.get('Result').get('Results')
     for set_item in centrify_setdetails_response:
-        if 'Description' not in set_item['Row']:
-            set_description = ""
-        else:
-            set_description = set_item['Row']['Description']
+        set_description = set_item['Row'].get('Description', '')
         set_details_list.append({'SetName': set_item['Row']['Name'], 'SetID': set_item['Row']['ID'],
                                  'SetDescription': set_description})
     return set_details_list
@@ -419,7 +415,7 @@ def fetch_secrets(args: dict, client: Client):
         else:
             folder_id = ""
             secret_ids_list = fetch_secretids_folder(client, folder_id, secret_ids_list, True)
-        secret_list = list()
+        secret_list = []
         for secret_id in secret_ids_list:
             secret_list.append(fetch_secret(client, secret_id, secret_name, True))
         secret_list = list(filter(None, secret_list))
@@ -492,8 +488,8 @@ def create_vault_secret(args: dict, client: Client):
             folder_name = args.get('holderName')
             folder_id = fetch_secret_folder_id(client, folder_name)
         else:
-            setId_list = list()
-            set_name_list = list()
+            setId_list = []
+            set_name_list = []
             if ';' in str(args.get('holderName')):
                 set_name_list = str(args.get('holderName')).split(';')
                 for set_item in set_name_list:
@@ -681,7 +677,7 @@ def delete_vault_secret(args: dict, client: Client):
 def delete_vault_secretid(args: dict, client: Client):
     try:
         secret_id = args.get('secretId')
-        delete_secret_id_list = list()
+        delete_secret_id_list = []
         delete_secret_id_list.append(fetch_secret(client, secret_id, None, None))
         delete_secret(client, secret_id)
         if delete_secret_id_list:
@@ -758,6 +754,7 @@ def main():
         args = demisto.args()
 
         LOG(f'Command being called is {command}.')
+        result = ""
         if command == 'test-module':
             result = test_module(client)
 

@@ -67,39 +67,39 @@ script:
     arguments:
     - name: file_id
       required: true
-      description: File ID in Demisto
+      description: File ID in Demisto.
     - name: password
-      description: Password for analyzed archive
+      description: Password for analyzed archive.
     outputs:
     - contextPath: Polygon.Analysis.ID
-      description: Analysis ID in THF
+      description: Analysis ID in THF.
       type: string
     - contextPath: Polygon.Analysis.EntryID
-      description: File id in Demisto
+      description: File id in Demisto.
       type: string
     - contextPath: Polygon.Analysis.FileName
-      description: Original file name
+      description: Original file name.
       type: string
     - contextPath: Polygon.Analysis.Status
-      description: The analysis status
+      description: The analysis status.
       type: string
-    description: Upload file for analysis
+    description: Upload file for analysis.
   - name: polygon-upload-url
     arguments:
     - name: url
       required: true
-      description: URL for analysis
+      description: URL for analysis.
     outputs:
     - contextPath: Polygon.Analysis.ID
-      description: Analysis ID in THF
+      description: Analysis ID in THF.
       type: string
     - contextPath: Polygon.Analysis.URL
-      description: URL analyzed
+      description: URL analyzed.
       type: string
     - contextPath: Polygon.Analysis.Status
-      description: The analysis status
+      description: The analysis status.
       type: string
-    description: Upload URL for analysis
+    description: Upload URL for analysis.
   - name: polygon-analysis-info
     arguments:
     - name: tds_analysis_id
@@ -111,264 +111,264 @@ script:
       description: The full file name (including file extension).
       type: string
     - contextPath: File.MD5
-      description: The MD5 hash of the file
+      description: The MD5 hash of the file.
       type: string
     - contextPath: File.SHA1
-      description: The SHA1 hash of the file
+      description: The SHA1 hash of the file.
       type: string
     - contextPath: File.SHA256
-      description: The SHA256 hash of the file
+      description: The SHA256 hash of the file.
       type: string
     - contextPath: File.Type
-      description: File type
+      description: File type.
       type: string
     - contextPath: File.Malicious.Vendor
-      description: The vendor that reported the file as malicious
+      description: The vendor that reported the file as malicious.
       type: string
     - contextPath: File.Malicious.Description
-      description: A description explaining why the file was determined to be malicious
+      description: A description explaining why the file was determined to be malicious.
       type: string
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The indicator type
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     - contextPath: IP.Address
-      description: IP address
+      description: IP address.
       type: String
     - contextPath: Domain.Name
-      description: The Domain name
+      description: The Domain name.
       type: String
     - contextPath: Domain.DNS
       description: A list of IP objects resolved by DNS.
       type: String
     - contextPath: URL.Data
-      description: The URL
+      description: The URL.
       type: String
     - contextPath: URL.Malicious.Vendor
-      description: The vendor that reported the url as malicious
+      description: The vendor that reported the url as malicious.
       type: string
     - contextPath: URL.Malicious.Description
-      description: A description explaining why the url was determined to be malicious
+      description: A description explaining why the url was determined to be malicious.
       type: string
     - contextPath: RegistryKey.Path
-      description: The path to the registry key
+      description: The path to the registry key.
       type: String
     - contextPath: RegistryKey.Value
       description: The value at the given RegistryKey.
       type: String
     - contextPath: Process.Name
-      description: Process name
+      description: Process name.
       type: String
     - contextPath: Process.PID
-      description: Process PID
+      description: Process PID.
       type: String
     - contextPath: Process.CommandLine
-      description: Process Command Line
+      description: Process Command Line.
       type: String
     - contextPath: Process.Path
-      description: Process path
+      description: Process path.
       type: String
     - contextPath: Process.StartTime
-      description: Process start time
+      description: Process start time.
       type: date
     - contextPath: Process.EndTime
-      description: Process end time
+      description: Process end time.
       type: date
     - contextPath: Polygon.Analysis.ID
-      description: THF File ID
+      description: THF File ID.
       type: string
     - contextPath: Polygon.Analysis.Name
-      description: File Name
+      description: File Name.
       type: string
     - contextPath: Polygon.Analysis.Size
-      description: File Size
+      description: File Size.
       type: number
     - contextPath: Polygon.Analysis.Started
-      description: Analysis start timestamp
+      description: Analysis start timestamp.
       type: date
     - contextPath: Polygon.Analysis.Analyzed
-      description: Analysis finish timestamp
+      description: Analysis finish timestamp.
       type: date
     - contextPath: Polygon.Analysis.MD5
-      description: Analyzed file MD5 hash
+      description: Analyzed file MD5 hash.
       type: string
     - contextPath: Polygon.Analysis.SHA1
-      description: Analyzed file SHA1 hash
+      description: Analyzed file SHA1 hash.
       type: string
     - contextPath: Polygon.Analysis.SHA256
-      description: Analyzed file SHA256
+      description: Analyzed file SHA256.
       type: string
     - contextPath: Polygon.Analysis.Result
-      description: Analysis verdict
+      description: Analysis verdict.
       type: boolean
     - contextPath: Polygon.Analysis.Status
-      description: Analysis status
+      description: Analysis status.
       type: string
     - contextPath: Polygon.Analysis.Verdict
-      description: Analysis verdict
+      description: Analysis verdict.
       type: string
     - contextPath: Polygon.Analysis.Probability
-      description: Verdict probability
+      description: Verdict probability.
       type: string
     - contextPath: Polygon.Analysis.Families
-      description: Malware families
+      description: Malware families.
       type: string
     - contextPath: Polygon.Analysis.Score
-      description: Polygon score
+      description: Polygon score.
       type: number
     - contextPath: Polygon.Analysis.Internet-connection
-      description: Internet availability
+      description: Internet availability.
       type: string
     - contextPath: Polygon.Analysis.Type
-      description: File type
+      description: File type.
       type: string
     - contextPath: Polygon.Analysis.DumpExists
-      description: Network activity dump exists
+      description: Network activity dump exists.
       type: boolean
     - contextPath: Polygon.Analysis.File
-      description: The information about files in analysis
+      description: The information about files in analysis.
     - contextPath: Polygon.Analysis.URL
-      description: The information about URL indicators
+      description: The information about URL indicators.
     - contextPath: Polygon.Analysis.IP
-      description: The information about IP indicators
+      description: The information about IP indicators.
     - contextPath: Polygon.Analysis.Domain
-      description: The information about Domain indicators
+      description: The information about Domain indicators.
     - contextPath: Polygon.Analysis.RegistryKey
-      description: The information about registry keys which were modified during the analysis
+      description: The information about registry keys which were modified during the analysis.
     - contextPath: Polygon.Analysis.Process
-      description: The information about processes started during the analysis
-    description: Get THF Polygon analysis info
+      description: The information about processes started during the analysis.
+    description: Get THF Polygon analysis info.
   - name: polygon-export-report
     arguments:
     - name: tds_analysis_id
       required: true
-      description: Analysis ID in THF
+      description: Analysis ID in THF.
     outputs:
     - contextPath: File.Name
-      description: The report file name
+      description: The report file name.
       type: string
     - contextPath: File.EntryID
-      description: Report file ID in Demisto
+      description: Report file ID in Demisto.
       type: string
     - contextPath: File.Size
-      description: The report size
+      description: The report size.
       type: number
     - contextPath: File.Type
-      description: The report file type
+      description: The report file type.
       type: string
     - contextPath: File.Info
-      description: The report file info
+      description: The report file info.
       type: string
-    description: Export an archive with THF Polygon report to War Room
+    description: Export an archive with THF Polygon report to War Room.
   - name: polygon-export-pcap
     arguments:
     - name: tds_analysis_id
       required: true
-      description: Analysis ID in THF
+      description: Analysis ID in THF.
     outputs:
     - contextPath: File.Name
-      description: The dump file name
+      description: The dump file name.
       type: string
     - contextPath: File.EntryID
-      description: The dump file ID in Demisto
+      description: The dump file ID in Demisto.
       type: string
     - contextPath: File.Size
-      description: The dump file size
+      description: The dump file size.
       type: number
     - contextPath: File.Type
-      description: The dump file type
+      description: The dump file type.
       type: string
     - contextPath: File.Info
-      description: The dump file info
+      description: The dump file info.
     description: The command allows you to download a network activity dump in case the file/link is malicious.
   - name: polygon-export-video
     arguments:
     - name: tds_analysis_id
       required: true
-      description: Analysis ID in THF
+      description: Analysis ID in THF.
     outputs:
     - contextPath: File.Name
-      description: The video file name
+      description: The video file name.
       type: string
     - contextPath: File.EntryID
-      description: The video file ID in Demisto
+      description: The video file ID in Demisto.
       type: string
     - contextPath: File.Size
-      description: The video file size
+      description: The video file size.
       type: number
     - contextPath: File.Type
-      description: The video file type
+      description: The video file type.
       type: string
     - contextPath: File.Info
-      description: The video file info
+      description: The video file info.
       type: string
     description: The command allows you to download a screen activity video in case the file/link is malicious.
   - name: file
     arguments:
     - name: file
       required: true
-      description: File hash (MD5, SHA1, SHA256)
+      description: File hash (MD5, SHA1, SHA256).
       isArray: true
       default: true
     outputs:
     - contextPath: File.MD5
-      description: The MD5 hash of the file
+      description: The MD5 hash of the file.
       type: string
     - contextPath: File.SHA1
-      description: The SHA1 hash of the file
+      description: The SHA1 hash of the file.
       type: string
     - contextPath: File.SHA256
-      description: The SHA256 hash of the file
+      description: The SHA256 hash of the file.
       type: string
     - contextPath: File.Malicious.Vendor
-      description: The vendor that reported the file as malicious
+      description: The vendor that reported the file as malicious.
       type: string
     - contextPath: File.Malicious.Description
-      description: A description explaining why the file was determined to be malicious
+      description: A description explaining why the file was determined to be malicious.
       type: string
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The indicator type
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: The vendor that reported the file as malicious
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: Malicious score
+      description: The actual score.
       type: number
     - contextPath: Polygon.Analysis.Score
-      description: Malware score in Polygon
+      description: Malware score in Polygon.
       type: number
     - contextPath: Polygon.Analysis.MD5
-      description: The MD5 hash of the file
+      description: The MD5 hash of the file.
       type: string
     - contextPath: Polygon.Analysis.SHA1
-      description: The SHA1 hash of the file
+      description: The SHA1 hash of the file.
       type: string
     - contextPath: Polygon.Analysis.SHA256
-      description: The SHA256 hash of the file
+      description: The SHA256 hash of the file.
       type: string
     - contextPath: Polygon.Analysis.Found
-      description: File was found in cloud or not
+      description: File was found in cloud or not.
       type: bool
     - contextPath: Polygon.Analysis.Verdict
-      description: Polygon verdict for file
+      description: Polygon verdict for file.
       type: bool
     - contextPath: Polygon.Analysis.Malware-families
-      description: Malware families
+      description: Malware families.
       type: string
-    description: Check file reputation
-  dockerimage: demisto/python3:3.10.14.90585
+    description: Check file reputation.
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: '-'
   subtype: python3

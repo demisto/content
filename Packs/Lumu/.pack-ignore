@@ -52,5 +52,9 @@ ignore=IF113
 [file:incidentfield-Lumu-lumu_event_type.json]
 ignore=IF113
 
+# GR103 is temporary, see CIAC-11656
 [file:classifier-mapper-incoming-Lumu.json]
-ignore=MP106
+ignore=MP106,GR103
+
+[file:layoutscontainer-layouts-Lumu.json]
+ignore=GR103

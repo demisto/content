@@ -1,0 +1,686 @@
+{
+    "description": "CrowdStrike Falcon Mapper for incidents and detections - for legacy version of CrowdStrike",
+    "feed": false,
+    "id": "Legacy CrowdStrike Falcon-Mapper",
+    "mapping": {
+        "CrowdStrike Falcon IOA Event": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Account ID": {
+                    "simple": "extracted_account_id"
+                },
+                "occurred": {
+                    "simple": "event_created"
+                },
+                "severity": {
+                    "simple": "severity"
+                },
+                "CrowdStrike Falcon Service Type": {
+                    "simple": "service"
+                },
+                "Cloud Region List": {
+                    "simple": "cloud_region"
+                },
+                "CrowdStrike Falcon Vertex ID": {
+                    "simple": "vertex_id"
+                },
+                "CrowdStrike Falcon Vertex Type": {
+                    "simple": "vertex_type"
+                },
+                "Event ID": {
+                    "simple": "event_id"
+                },
+                "Event Names": {
+                    "simple": "event_name"
+                },
+                "Event Type": {
+                    "simple": "event_type"
+                },
+                "External ID": {
+                    "simple": "request_id"
+                },
+                "Source IP": {
+                    "simple": "source_ip_address"
+                },
+                "CrowdStrike Falcon User Agent": {
+                    "simple": "user_agent"
+                },
+                "CrowdStrike Falcon Request Parameters": {
+                    "simple": "request_parameters"
+                },
+                "CrowdStrike Falcon Response Elements": {
+                    "simple": "response_elements"
+                },
+                "CrowdStrike Falcon User Identity": {
+                    "simple": "user_identity"
+                },
+                "Risk Score": {
+                    "simple": "aggregate.score"
+                },
+                "CrowdStrike Falcon Enrichments": {
+                    "simple": "enrichments"
+                },
+                "UUID": {
+                    "simple": "extracted_uuid"
+                },
+                "Resource ID": {
+                    "simple": "extracted_resource_id"
+                },
+                "Cloud Service": {
+                    "simple": "event_source"
+                },
+                "Source Create time": {
+                    "simple": "event_created"
+                },
+                "Policy ID": {
+                    "simple": "policy_id"
+                },
+                "Policy Description": {
+                    "simple": "policy_statement"
+                },
+                "Policy Type": {
+                    "simple": "policy_type"
+                },
+                "State": {
+                    "simple": "state"
+                },
+                "name": {
+                    "simple": "event_id"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "IncomingMirrorError": {
+                    "simple": "in_mirror_error"
+                }
+            }
+        },
+        "CrowdStrike Falcon IOM Event": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Account ID": {
+                    "simple": "account_id"
+                },
+                "occurred": {
+                    "simple": "report_date_time"
+                },
+                "severity": {
+                    "simple": "severity"
+                },
+                "Account Name": {
+                    "simple": "account_name"
+                },
+                "Policy ID": {
+                    "simple": "policy_id"
+                },
+                "Policy Description": {
+                    "simple": "policy_statement"
+                },
+                "Policy Type": {
+                    "simple": "policy_type"
+                },
+                "Region": {
+                    "simple": "region"
+                },
+                "Start Time": {
+                    "simple": "report_date_time"
+                },
+                "CrowdStrike Falcon Resource Attributes": {
+                    "simple": "resource_attributes"
+                },
+                "Source Create time": {
+                    "simple": "resource_create_time"
+                },
+                "Resource ID": {
+                    "simple": "resource_id"
+                },
+                "Resource Type": {
+                    "simple": "resource_id_type"
+                },
+                "External Link": {
+                    "simple": "resource_url"
+                },
+                "Cloud Service": {
+                    "simple": "cloud_provider"
+                },
+                "State": {
+                    "simple": "status"
+                },
+                "Tags": {
+                    "simple": "tags"
+                },
+                "name": {
+                    "simple": "id"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "IncomingMirrorError": {
+                    "simple": "in_mirror_error"
+                }
+            }
+        },
+        "CrowdStrike Falcon IDP Detection": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Account ID": {
+                    "simple": "source_endpoint_account_object_guid"
+                },
+                "Account Name": {
+                    "simple": "source_account_name"
+                },
+                "Behaviour Objective": {
+                    "simple": "objective"
+                },
+                "Behaviour Scenario": {
+                    "simple": "scenario"
+                },
+                "Behaviour Tactic": {
+                    "simple": "tactic"
+                },
+                "CrowdStrike Falcon Crawled Timestamp": {
+                    "simple": "crawled_timestamp"
+                },
+                "CrowdStrike Falcon Detection Type": {
+                    "simple": "type"
+                },
+                "Display Name": {
+                    "simple": "display_name"
+                },
+                "End Time": {
+                    "simple": "end_time"
+                },
+                "External Confidence": {
+                    "simple": "confidence"
+                },
+                "Last Update Time": {
+                    "simple": "updated_timestamp"
+                },
+                "OS": {
+                    "simple": "platform"
+                },
+                "CrowdStrike Falcon Pattern ID": {
+                    "simple": "pattern_id"
+                },
+                "Source Hostname": {
+                    "simple": "source_endpoint_host_name"
+                },
+                "Src NT Domain": {
+                    "simple": "source_account_domain"
+                },
+                "Start Time": {
+                    "simple": "start_time"
+                },
+                "State": {
+                    "simple": "status"
+                },
+                "Tactic ID": {
+                    "simple": "tactic_id"
+                },
+                "Technique": {
+                    "simple": "technique"
+                },
+                "Technique ID": {
+                    "simple": "technique_id"
+                },
+                "Threat Name": {
+                    "simple": "name"
+                },
+                "Vendor Product": {
+                    "simple": "product"
+                },
+                "name": {
+                    "simple": "id"
+                },
+                "occurred": {
+                    "simple": "created_timestamp"
+                },
+                "sAMAccountName": {
+                    "simple": "source_account_sam_account_name"
+                },
+                "severity": {
+                    "simple": "severity"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "composite_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "IncomingMirrorError": {
+                    "simple": "in_mirror_error"
+                }
+            }
+        },
+        "CrowdStrike Falcon Detection": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Account Name": {
+                    "simple": "behaviors.user_name"
+                },
+                "Alert ID": {
+                    "simple": "detection_id"
+                },
+                "Assigned User": {
+                    "simple": "assigned_to_uid"
+                },
+                "Behaviour Objective": {
+                    "simple": "behaviors.objective"
+                },
+                "Behaviour Scenario": {
+                    "simple": "behaviors.scenario"
+                },
+                "Behaviour Tactic": {
+                    "simple": "behaviors.tactic"
+                },
+                "Technique": {
+                    "simple": "behaviors.technique"
+                },
+                "CMD line": {
+                    "simple": "behaviors.cmdline"
+                },
+                "Cloud Instance ID": {
+                    "simple": "device.instance_id"
+                },
+                "Cloud Service": {
+                    "simple": "device.service_provider"
+                },
+                "Description": {
+                    "simple": "behaviors.description"
+                },
+                "Detected User": {
+                    "simple": "behaviors.user_name"
+                },
+                "Device External IP": {
+                    "simple": "device.external_ip"
+                },
+                "Device Local IP": {
+                    "simple": "device.local_ip"
+                },
+                "Device Model": {
+                    "simple": "device.platform_name"
+                },
+                "Device Name": {
+                    "simple": "device.hostname"
+                },
+                "Agent Version": {
+                    "simple": "device.agent_version"
+                },
+                "File MD5": {
+                    "simple": "behaviors.md5"
+                },
+                "MD5": {
+                    "complex": null,
+                    "simple": "behaviors.md5"
+                },
+                "SHA256": {
+                    "complex": null,
+                    "simple": "behaviors.sha256"
+                },
+                "File Name": {
+                    "simple": "behaviors.filename"
+                },
+                "File Paths": {
+                    "simple": "behaviors.filepath"
+                },
+                "File SHA256": {
+                    "simple": "behaviors.sha256"
+                },
+                "Hostnames": {
+                    "simple": "device.hostname"
+                },
+                "Last Update Time": {
+                    "simple": "last_behavior"
+                },
+                "MAC Address": {
+                    "simple": "device.mac_address"
+                },
+                "Event Names": {
+                    "simple": "behaviors.display_name"
+                },
+                "Event Descriptions": {
+                    "simple": "behaviors.description"
+                },
+                "OS": {
+                    "simple": "device.os_version"
+                },
+                "Parent CMD line": {
+                    "simple": "behaviors.parent_details.parent_cmdline"
+                },
+                "Start Time": {
+                    "simple": "first_behavior"
+                },
+                "State": {
+                    "simple": "status"
+                },
+                "name": {
+                    "complex": {
+                        "accessor": "display_name",
+                        "filters": [],
+                        "root": "behaviors.[0]",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "value": {
+                                            "simple": "Falcon Detection - "
+                                        }
+                                    },
+                                    "suffix": {
+                                        "value": {
+                                            "simple": " - Detection ID: "
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {},
+                                    "suffix": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "detection_id"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    }
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "detection_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "IncomingMirrorError": {
+                    "simple": "in_mirror_error"
+                }
+            }
+        },
+        "CrowdStrike Falcon Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Agents ID": {
+                    "simple": "hosts.device_id"
+                },
+                "Assigned User": {
+                    "simple": "assigned_to_name"
+                },
+                "Detected User": {
+                    "simple": "users"
+                },
+                "Device External IP": {
+                    "simple": "hosts.external_ip"
+                },
+                "Device Local IP": {
+                    "simple": "hosts.local_ip"
+                },
+                "Device Model": {
+                    "simple": "hosts.platform_name"
+                },
+                "Device Name": {
+                    "simple": "hosts.hostname"
+                },
+                "Device OU": {
+                    "simple": "hosts.ou"
+                },
+                "Agent Version": {
+                    "simple": "hosts.agent_version"
+                },
+                "DNS Name": {
+                    "simple": "hosts.site_name"
+                },
+                "Hostnames": {
+                    "simple": "hosts.hostname"
+                },
+                "Last Update Time": {
+                    "simple": "end"
+                },
+                "MAC Address": {
+                    "simple": "hosts.mac_address"
+                },
+                "OS": {
+                    "simple": "hosts.os_version"
+                },
+                "Objective": {
+                    "simple": "objectives"
+                },
+                "Src NT Domain": {
+                    "simple": "hosts.machine_domain"
+                },
+                "Start Time": {
+                    "simple": "start"
+                },
+                "Source Status": {
+                    "simple": "status"
+                },
+                "State": {
+                    "simple": "state"
+                },
+                "Tactic": {
+                    "simple": "tactics"
+                },
+                "Tags": {
+                    "simple": "tags"
+                },
+                "Technique": {
+                    "simple": "techniques"
+                },
+                "Users": {
+                    "simple": "users"
+                },
+                "name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "incident_id",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "value": {
+                                            "simple": "Falcon Incident - ID: "
+                                        }
+                                    },
+                                    "suffix": {}
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "fine_score",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "map_from": {
+                                        "value": {
+                                            "simple": "1-24,25-49,50-74,75-100"
+                                        }
+                                    },
+                                    "map_to": {
+                                        "value": {
+                                            "simple": "1,2,3,4"
+                                        }
+                                    },
+                                    "sep": {}
+                                },
+                                "operator": "MapRangeValues"
+                            }
+                        ]
+                    }
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "incident_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "IncomingMirrorError": {
+                    "simple": "in_mirror_error"
+                }
+            }
+        },
+        "CrowdStrike Falcon Mobile Detection": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Agent ID": {
+					"simple": "agent_id"
+				},
+				"State": {
+					"simple": "status"
+				},
+				"CrowdStrike Falcon Crawled Timestamp": {
+					"simple": "crawled_timestamp"
+				},
+				"CrowdStrike Falcon Detection Type": {
+					"simple": "type"
+				},
+				"CrowdStrike Falcon Firmware Build Fingerprint": {
+					"simple": "firmware_build_fingerprint"
+				},
+				"CrowdStrike Falcon Firmware Build Time": {
+					"simple": "firmware_build_time"
+				},
+				"Behaviour Objective": {
+					"simple": "objective"
+				},
+				"Behaviour Scenario": {
+					"simple": "scenario"
+				},
+				"Behaviour Tactic": {
+					"simple": "tactic"
+				},
+				"CrowdStrike Falcon Mobile Manufacturer": {
+					"simple": "mobile_manufacturer"
+				},
+				"CrowdStrike Falcon Mobile Product": {
+					"simple": "mobile_product"
+				},
+				"CrowdStrike Falcon Mobile platform version": {
+					"simple": "platform_version"
+				},
+				"CrowdStrike Falcon Security patch level": {
+					"simple": "security_patch_level"
+				},
+				"Description": {
+					"simple": "description"
+				},
+				"Device Name": {
+					"simple": "computer_name"
+				},
+				"External Confidence": {
+					"simple": "confidence"
+				},
+				"Mobile Device Model": {
+					"simple": "mobile_model"
+				},
+				"OS": {
+					"simple": "platform"
+				},
+				"OS Version": {
+					"simple": "os_version"
+				},
+				"Tactic ID": {
+					"simple": "tactic_id"
+				},
+				"Technique": {
+					"simple": "technique"
+				},
+				"Technique ID": {
+					"simple": "tactic_id"
+				},
+				"Threat Name": {
+					"simple": "name"
+				},
+				"occurred": {
+					"simple": "created_timestamp"
+				},
+				"severity": {
+					"simple": "severity"
+				},
+				"Display Name": {
+					"simple": "display_name"
+				},
+				"Email": {
+					"simple": "enrollment_email"
+				},
+				"Detection ID": {
+					"simple": "mobile_detection_id"
+				},
+				"Vendor Product": {
+					"simple": "product"
+				},
+				"Last Update Time": {
+					"simple": "updated_timestamp"
+				},
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "composite_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "IncomingMirrorError": {
+                    "simple": "in_mirror_error"
+                },
+                "name": {
+                    "simple": "composite_id"
+                }
+			}
+		},
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Detected User": {
+                    "simple": "users"
+                },
+                "OS Version": {
+                    "simple": "device.os_version"
+                },
+                "Scenario": {
+                    "simple": "behaviors.scenario"
+                },
+                "severity": {
+                    "simple": "fine_score"
+                }
+            }
+        }
+    },
+    "name": "Legacy CrowdStrike Falcon-Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "toVersion": "6.4.9",
+    "marketplaces": [
+        "xsoar"
+    ]
+}

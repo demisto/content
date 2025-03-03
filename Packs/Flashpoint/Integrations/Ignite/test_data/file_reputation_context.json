@@ -1,0 +1,108 @@
+{
+    "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": [
+        {
+            "Hashes": [
+                {
+                    "type": "MD5",
+                    "value": "00000000000000000000000000000001"
+                }
+            ],
+            "MD5": "00000000000000000000000000000001",
+            "Malicious": {
+                "Vendor": "Ignite",
+                "Description": "Found in malicious indicators dataset"
+            },
+            "Relationships": [
+                {
+                    "Relationship": "indicator-of",
+                    "EntityA": "00000000000000000000000000000001",
+                    "EntityAType": "file",
+                    "EntityB": "T1010",
+                    "EntityBType": "Attack Pattern"
+                },
+                {
+                    "Relationship": "indicator-of",
+                    "EntityA": "00000000000000000000000000000001",
+                    "EntityAType": "file",
+                    "EntityB": "T1016",
+                    "EntityBType": "Attack Pattern"
+                },
+                {
+                    "Relationship": "indicator-of",
+                    "EntityA": "00000000000000000000000000000001",
+                    "EntityAType": "file",
+                    "EntityB": "T1027",
+                    "EntityBType": "Attack Pattern"
+                },
+                {
+                    "Relationship": "indicator-of",
+                    "EntityA": "00000000000000000000000000000001",
+                    "EntityAType": "file",
+                    "EntityB": "T1036",
+                    "EntityBType": "Attack Pattern"
+                },
+                {
+                    "Relationship": "indicator-of",
+                    "EntityA": "00000000000000000000000000000001",
+                    "EntityAType": "file",
+                    "EntityB": "T1049",
+                    "EntityBType": "Attack Pattern"
+                },
+                {
+                    "Relationship": "indicator-of",
+                    "EntityA": "00000000000000000000000000000001",
+                    "EntityAType": "file",
+                    "EntityB": "T1053",
+                    "EntityBType": "Attack Pattern"
+                },
+                {
+                    "Relationship": "indicator-of",
+                    "EntityA": "00000000000000000000000000000001",
+                    "EntityAType": "file",
+                    "EntityB": "T1055",
+                    "EntityBType": "Attack Pattern"
+                }
+            ]
+        }
+    ],
+    "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+        {
+            "Indicator": "00000000000000000000000000000001",
+            "Reliability": "B - Usually reliable",
+            "Type": "file",
+            "Vendor": "Ignite",
+            "Score": 3
+        }
+    ],
+    "Ignite.File.Event(val.Fpid && val.Fpid == obj.Fpid)": [
+        {
+            "MD5": "00000000000000000000000000000001",
+            "EventDetails": {
+                "Tags": [
+                    "sample_tags"
+                ],
+                "attack_ids": [
+                    "T1010",
+                    "T1016",
+                    "T1027",
+                    "T1036",
+                    "T1049",
+                    "T1053",
+                    "T1055"
+                ],
+                "event_uuid": "sample_uuid",
+                "fpid": "sample_fpid",
+                "href": "https://api.flashpoint.io/technical-intelligence/v1/event/sample_fpid",
+                "info": "Observation: test_info [\"00000000000000000000000000000001\"]",
+                "timestamp": "0000000001"
+            },
+            "Category": "sample category",
+            "Fpid": "sample_fpid",
+            "Href": "https://api.flashpoint.io/technical-intelligence/v1/attribute/sample_fpid",
+            "Timestamp": "0000000001",
+            "Type": "md5",
+            "Uuid": "sample_uuid",
+            "Comment": ""
+        }
+    ]
+}

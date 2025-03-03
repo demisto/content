@@ -1,11 +1,11 @@
-import pytest
-import demistomock  # noqa # pylint: disable=unused-wildcard-import
+import pytest  # noqa: N999
 from SiemApiModule import *  # noqa # pylint: disable=unused-wildcard-import
 
-from MimecastEventCollector import *
-from test_data.data import WITH_OUT_DUP_TEST, WITH_DUP_TEST, EMPTY_EVENTS_LIST, FILTER_SAME_TIME_EVEMTS, \
-    AUDIT_LOG_RESPONSE, AUDIT_LOG_AFTER_PROCESS, SIEM_LOG_PROCESS_EVENT, SIEM_RESULT_MULTIPLE_EVENTS_PROCESS, \
-    SIEM_RESPONSE_MULTIPLE_EVENTS
+
+from Packs.Mimecast.Integrations.MimecastEventCollector.MimecastEventCollector import *
+from Packs.Mimecast.Integrations.MimecastEventCollector.test_data.data import WITH_OUT_DUP_TEST, WITH_DUP_TEST, \
+    EMPTY_EVENTS_LIST, FILTER_SAME_TIME_EVEMTS, AUDIT_LOG_RESPONSE, AUDIT_LOG_AFTER_PROCESS, \
+    SIEM_LOG_PROCESS_EVENT, SIEM_RESULT_MULTIPLE_EVENTS_PROCESS, SIEM_RESPONSE_MULTIPLE_EVENTS
 
 mimecast_options = MimecastOptions(**{
     'app_id': "XXX",
@@ -15,7 +15,8 @@ mimecast_options = MimecastOptions(**{
     'access_key': 'XXX',
     'secret_key': 'XXX',
     'after': '7 days',
-    'base_url': 'https://us-api.mimecast.com'
+    'base_url': 'https://us-api.mimecast.com',
+    'verify': False
 })
 
 empty_first_request = IntegrationHTTPRequest(method=Method.GET, url='http://bla.com', headers={})
@@ -43,7 +44,7 @@ def test_process_audit_data():
     Then:
         - collect all the events in the data section, add a xsiem_classifier, and set page_token for next run if exists
     """
-    assert AUDIT_LOG_AFTER_PROCESS == audit_event_handler.process_audit_response(AUDIT_LOG_RESPONSE)
+    assert audit_event_handler.process_audit_response(AUDIT_LOG_RESPONSE) == AUDIT_LOG_AFTER_PROCESS
     assert audit_event_handler.page_token == '1234'
 
 
@@ -67,7 +68,6 @@ def test_filter_same_time_events(audit_response, res):
      EMPTY_EVENTS_LIST.get('res'))
 ])
 def test_dedup_audit_events(audit_events, last_run_potential_dup, res):
-    from MimecastEventCollector import dedup_audit_events
     assert dedup_audit_events(audit_events, last_run_potential_dup) == res
 
 
@@ -185,64 +185,7 @@ def test_set_audit_next_run(audit_events, res):
     assert set_audit_next_run(audit_events) == res
 
 
-def test_handle_last_run_exit_with_values(mocker):
-    """
-    Given:
-        - events have been fetched this run and changes have been (need to update LastRun)
-    When:
-        - calling handle_last_run_exit to set the LastRun object for next run
-    Then:
-        check that the SetLastRun is set (called) with the correct values.
-    """
-    mocker.patch.object(demisto, 'getLastRun', return_value={SIEM_LAST_RUN: 'token1',
-                                                             SIEM_EVENTS_FROM_LAST_RUN: ['event1', 'event2'],
-                                                             AUDIT_EVENT_DEDUP_LIST: ['id1', 'id2'],
-                                                             AUDIT_LAST_RUN: '2011-12-03T10:15:30+0000'},
-                        )
-    mocker.patch('MimecastEventCollector.dedup_audit_events', return_value=[])
-    mocker.patch('MimecastEventCollector.prepare_potential_audit_duplicates_for_next_run', return_value=['id3', 'id4'])
-    mocker.patch('MimecastEventCollector.set_audit_next_run', return_value='2525')
-    local_siem_event_handler = MimecastGetSiemEvents(client, mimecast_options)
-    local_siem_event_handler.token = 'new token'
-    local_siem_event_handler.events_from_prev_run = ['event3', 'event4']
-
-    next_run_obj = handle_last_run_exit(local_siem_event_handler, ['audit event1', 'audit event2', 'audit event3'])
-
-    assert {SIEM_LAST_RUN: 'new token',
-            SIEM_EVENTS_FROM_LAST_RUN: ['event3', 'event4'],
-            AUDIT_LAST_RUN: '2525',
-            AUDIT_EVENT_DEDUP_LIST: ['id3', 'id4']} == next_run_obj
-
-
-def test_handle_last_run_exit_without_values(mocker):
-    """
-    Given:
-        - The last run object does not need to change after this run
-    When:
-        - calling handle_last_run_exit to set the LastRun object for next run
-    Then:
-        - check that the SetLastRun is set (called) with the correct values.
-    """
-    mocker.patch.object(demisto, 'getLastRun', return_value={SIEM_LAST_RUN: 'token1',
-                                                             SIEM_EVENTS_FROM_LAST_RUN: ['event1', 'event2'],
-                                                             AUDIT_EVENT_DEDUP_LIST: ['id1', 'id2'],
-                                                             AUDIT_LAST_RUN: '2011-12-03T10:15:30+0000'},
-                        )
-    audit_event_list = ['audit event1', 'audit event2', 'audit event3']
-    mocker.patch('MimecastEventCollector.dedup_audit_events', return_value=audit_event_list)
-    mocker.patch('MimecastEventCollector.prepare_potential_audit_duplicates_for_next_run', return_value=[])
-    mocker.patch('MimecastEventCollector.set_audit_next_run', return_value='')
-    local_siem_event_handler = MimecastGetSiemEvents(client, mimecast_options)
-
-    next_run_obj = handle_last_run_exit(local_siem_event_handler, audit_event_list)
-
-    assert {SIEM_LAST_RUN: 'token1',
-            SIEM_EVENTS_FROM_LAST_RUN: ['event1', 'event2'],
-            AUDIT_LAST_RUN: '2011-12-03T10:15:30+0000',
-            AUDIT_EVENT_DEDUP_LIST: ['id1', 'id2']} == next_run_obj
-
-
-def test_siem_custom_run():
+def test_siem_custom_run(mocker):
     """
     Given:
          - A list of events_from_prev_run
@@ -251,10 +194,11 @@ def test_siem_custom_run():
     Then:
         - assert that the stored returned are the events from last run and that the events_from_prev_run has been modified
     """
-    mock_events_from_prev_run: list = [i for i in range(500)]
+    mock_events_from_prev_run: list = list(range(500))
+    mocker.patch.object(MimecastGetSiemEvents, '_iter_events', return_value=[])
     siem_event_handler.events_from_prev_run = mock_events_from_prev_run
-    assert siem_event_handler.run() == mock_events_from_prev_run[:SIEM_LOG_LIMIT]
-    assert siem_event_handler.events_from_prev_run == mock_events_from_prev_run[SIEM_LOG_LIMIT:]
+    assert siem_event_handler.run() == mock_events_from_prev_run
+    assert siem_event_handler.events_from_prev_run == []
 
 
 def test_siem_custom_run2(mocker):
@@ -262,12 +206,12 @@ def test_siem_custom_run2(mocker):
     Given:
         - A list of events from last run
     When:
-        - The events_from_prev_run is smaller than SIEM_LOG_LIMIT
+        - calling the run function
     Then:
-        - Checke the events are stored correctly
+        - Verify all the events from prev run are stored correctly.
     """
     mocker.patch.object(MimecastGetSiemEvents, '_iter_events', return_value=[])
-    mock_events_from_prev_run: list = [i for i in range(200)]
+    mock_events_from_prev_run: list = list(range(200))
     siem_event_handler.events_from_prev_run = mock_events_from_prev_run
     assert siem_event_handler.run() == mock_events_from_prev_run[:SIEM_LOG_LIMIT]
     assert siem_event_handler.events_from_prev_run == []
@@ -282,18 +226,16 @@ def test_siem_custom_run3(mocker):
     Then:
         - Check the events are stored correctly
     """
-    iter_events_mock_return_val = [[i for i in range(600, 900)]]
+    # This is a list of list so the iter_events loop will take into acount as one batch of events.
+    iter_events_mock_return_val = [list(range(600, 900))]
     mocker.patch.object(MimecastGetSiemEvents, '_iter_events', return_value=iter_events_mock_return_val)
-    mock_events_from_prev_run: list = [i for i in range(200)]
-    siem_event_handler.events_from_prev_run = mock_events_from_prev_run.copy()
+    events_from_prev_run = list(range(200))
+    siem_event_handler.events_from_prev_run = events_from_prev_run
 
     stored = siem_event_handler.run()
 
-    len_from_last_run = len(mock_events_from_prev_run)
-    len_from_iter_events = SIEM_LOG_LIMIT - len_from_last_run
-
-    assert stored == mock_events_from_prev_run + iter_events_mock_return_val[0][:len_from_iter_events]
-    assert siem_event_handler.events_from_prev_run == iter_events_mock_return_val[0][len_from_iter_events:]
+    assert stored == events_from_prev_run + iter_events_mock_return_val[0]
+    assert siem_event_handler.events_from_prev_run == []
 
 
 def test_prepare_siem_request_body():
@@ -304,3 +246,101 @@ def test_prepare_siem_request_body():
     siem_event_handler.token = '1234'
     post_body = {'data': [{'type': 'MTA', 'compress': True, 'fileFormat': 'json', 'token': '1234'}]}
     assert json.dumps(post_body) == siem_event_handler.prepare_siem_request_body()
+
+
+def test_audit_events_next_run_with_new_events():
+    """
+    Given:
+        - Audit event with new events
+    When:
+        - handling the new events and preparing data for next run.
+    Then:
+        - Verify De dup event list, next run time, potential duplicate events list.
+    """
+    last_run_object = {
+        SIEM_LAST_RUN: "",
+        SIEM_EVENTS_FROM_LAST_RUN: [],
+        AUDIT_EVENT_DEDUP_LIST: ["1"],
+        AUDIT_LAST_RUN: "2011-12-03T10:15:30+0000",
+    }
+    audit_events = [
+        {"eventTime": "2011-12-03T10:15:32+0000", "id": "4"},
+        {"eventTime": "2011-12-03T10:15:31+0000", "id": "3"},
+        {"eventTime": "2011-12-03T10:15:30+0000", "id": "1"},
+    ]
+    res_audit_events = [
+        {"eventTime": "2011-12-03T10:15:32+0000", "id": "4"},
+        {"eventTime": "2011-12-03T10:15:31+0000", "id": "3"},
+    ]
+
+    res_potential_duplicate_events = ['4']
+    audit_event_handler = MimecastGetAuditEvents(client, mimecast_options)
+
+    audit_events, audit_next_run, duplicates_audit = audit_events_last_run(
+        audit_event_handler, audit_events, last_run_object
+    )
+    assert duplicates_audit == res_potential_duplicate_events
+    assert audit_events == res_audit_events
+    assert audit_next_run == "2011-12-03T10:15:32+0000"
+
+
+def test_audit_events_next_run_without_new_events():
+    """
+    Given:
+        - Audit event with no new events.
+    When:
+        - handling the audit events.
+    Then:
+        - Verify De dup event list, next run time, potential duplicate events list.
+    """
+    last_run_object = {
+        SIEM_LAST_RUN: "",
+        SIEM_EVENTS_FROM_LAST_RUN: [],
+        AUDIT_EVENT_DEDUP_LIST: ["1"],
+        AUDIT_LAST_RUN: "2011-12-03T10:15:30+0000",
+    }
+    audit_events = [
+        {"eventTime": "2011-12-03T10:15:30+0000", "id": "1"},
+    ]
+    res_audit_events = []
+    res_potential_duplicate_events = []
+    audit_event_handler = MimecastGetAuditEvents(client, mimecast_options)
+    audit_event_handler.end_time = '2024-24-24T00:00:00+0000'
+
+    audit_events, audit_next_run, duplicates_audit = audit_events_last_run(
+        audit_event_handler, audit_events, last_run_object
+    )
+    assert duplicates_audit == res_potential_duplicate_events
+    assert audit_events == res_audit_events
+    assert audit_next_run == '2024-24-24T00:00:00+0000'
+
+
+def test_siem_events_last_run_with_new_events():
+    last_run_object = {
+        SIEM_LAST_RUN: "token2",
+        SIEM_EVENTS_FROM_LAST_RUN: [],
+        AUDIT_EVENT_DEDUP_LIST: [],
+        AUDIT_LAST_RUN: "",
+    }
+    siem_event_handler = MimecastGetSiemEvents(client, mimecast_options)
+    siem_event_handler.token = 'token99'
+    siem_event_handler.events_from_prev_run = ['evnet1', 'event2']
+    siem_next_run = siem_events_last_run(siem_event_handler, last_run_object)
+
+    # When the token is set on the current run, use the new token.
+    assert siem_next_run == 'token99'
+
+
+def test_siem_events_last_run_without_new_events():
+    last_run_object = {
+        SIEM_LAST_RUN: "token2",
+        SIEM_EVENTS_FROM_LAST_RUN: ['siem_event1'],
+        AUDIT_EVENT_DEDUP_LIST: [],
+        AUDIT_LAST_RUN: "2011-12-03T10:15:30+0000",
+    }
+    siem_event_handler = MimecastGetSiemEvents(client, mimecast_options)
+    siem_event_handler.events_from_prev_run = []
+    siem_next_run = siem_events_last_run(siem_event_handler, last_run_object)
+
+    # When no new events arrive use the previous token set on the past run.
+    assert siem_next_run == 'token2'

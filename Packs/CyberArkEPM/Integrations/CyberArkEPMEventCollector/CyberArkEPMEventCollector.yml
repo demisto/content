@@ -61,6 +61,12 @@ configuration:
   required: false
   type: 0
   section: Collect
+- defaultvalue: 'false'
+  display: Enable admin audits events
+  name: enable_admin_audits
+  required: false
+  type: 8
+  section: Collect
 - display: Policy Audit Events
   additionalinfo: A comma-separated list of policy audits event type to fetch
   name: policy_audits_event_type
@@ -164,7 +170,7 @@ script:
     description: Gets events from Cyber Ark EPM.
     execution: false
     name: cyberarkepm-get-events
-  dockerimage: demisto/btfl-soup:1.0.1.92713
+  dockerimage: demisto/btfl-soup:1.0.1.115405
   isfetchevents: true
   runonce: false
   script: ''

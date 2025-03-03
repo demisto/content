@@ -266,7 +266,7 @@ def test_zoom__create_meeting_command__instant_meeting(mocker):
     zoom_create_meeting_command(client=client,
                                 user_id="mock@moker.com",
                                 topic="nonsense",
-                                type="Instant",)
+                                type="Instant", )
     assert zoom_create_meeting_mocker.call_args[1]["json_data"].get("type") == 1
 
 
@@ -631,7 +631,7 @@ def test_zoom_user_list_command__when_user_id(mocker):
                     client_id="mockclient", client_secret="mocksecret")
     from Zoom import zoom_list_users_command
     res = zoom_list_users_command(client, user_id="bla")
-    assert len(res.readable_output) == 159      # type: ignore[arg-type]
+    assert len(res.readable_output) == 159  # type: ignore[arg-type]
 
 
 def test_zoom_meeting_list_command__when_user_id(mocker):
@@ -655,7 +655,7 @@ def test_zoom_meeting_list_command__when_user_id(mocker):
                     client_id="mockclient", client_secret="mocksecret")
     from Zoom import zoom_meeting_list_command
     res = zoom_meeting_list_command(client, user_id="bla")
-    assert len(res.readable_output) == 133   # type: ignore[arg-type]
+    assert len(res.readable_output) == 133  # type: ignore[arg-type]
 
 
 def test_remove_None_values_from_dict():
@@ -990,9 +990,9 @@ def test_zoom_list_user_channels_command(mocker):
     expected_raw_data = {
         "channels": [
             {"jid": "channel_jid_1_t", "id": "channel_id_1", "name": "Channel 1", "type": "public",
-                "channel_url": "https://test1.com", "next_page_token": "token1"},
+             "channel_url": "https://test1.com", "next_page_token": "token1"},
             {"jid": "channel_jid_2", "id": "channel_id_2", "name": "Channel 2", "type": "public",
-                "channel_url": "https://test1.com", "next_page_token": "token2"}
+             "channel_url": "https://test1.com", "next_page_token": "token2"}
         ]
     }
 
@@ -1000,9 +1000,9 @@ def test_zoom_list_user_channels_command(mocker):
         'UserChannelsNextToken': None,
         "channels": [
             {"jid": "channel_jid_1_t", "id": "channel_id_1", "name": "Channel 1", "type": "public",
-                    "channel_url": "https://test1.com", "next_page_token": "token1"},
+             "channel_url": "https://test1.com", "next_page_token": "token1"},
             {"jid": "channel_jid_2", "id": "channel_id_2", "name": "Channel 2", "type": "public",
-                    "channel_url": "https://test1.com", "next_page_token": "token2"}
+             "channel_url": "https://test1.com", "next_page_token": "token2"}
         ]
     }
 
@@ -1316,9 +1316,9 @@ def test_zoom_list_account_public_channels_command(mocker):
     expected_raw_data = {
         "channels": [
             {"jid": "channel_jid_1", "id": "channel_id_1", "name": "Channel 1", "type": "public",
-                "channel_url": "https://test1.com", "next_page_token": "token1"},
+             "channel_url": "https://test1.com", "next_page_token": "token1"},
             {"jid": "channel_jid_2", "id": "channel_id_2", "name": "Channel 2", "type": "public",
-                "channel_url": "https://test1.com", "next_page_token": "token2"}
+             "channel_url": "https://test1.com", "next_page_token": "token2"}
         ]
     }
 
@@ -1347,7 +1347,7 @@ def test_zoom_list_account_public_channels_command(mocker):
             {"jid": "channel_jid_1", "id": "channel_id_1", "name": "Channel 1", "type": "public",
              "channel_url": "https://test1.com", "next_page_token": "token1"},
             {"jid": "channel_jid_2", "id": "channel_id_2", "name": "Channel 2", "type": "public",
-                    "channel_url": "https://test1.com", "next_page_token": "token2"}
+             "channel_url": "https://test1.com", "next_page_token": "token2"}
         ],
         "ChannelsNextToken": None
     }
@@ -1478,7 +1478,7 @@ def test_zoom_send_message_markdown_command(mocker):
              'start_position': 39, 'end_position': 44},
             {'text': 'HI ', 'format_type': 'paragraph', 'format_attr': 'h1', 'start_position': 0, 'end_position': 2},
             {'text': '@John, please review the following report', 'format_type': 'LeftIndent',
-                'format_attr': 40, 'start_position': 4, 'end_position': 44}
+             'format_attr': 40, 'start_position': 4, 'end_position': 44}
         ],
         'file_ids': []
     }
@@ -1556,9 +1556,9 @@ def test_zoom_list_messages_command(mocker):
     expected_raw_data = {
         "messages": [
             {"id": "message_id_1", "message": "Message 1", "sender": "sender_1",
-                "sender_display_name": "Sender 1", "date_time": "2023-03-07T10:30:00Z"},
+             "sender_display_name": "Sender 1", "date_time": "2023-03-07T10:30:00Z"},
             {"id": "message_id_2", "message": "Message 2", "sender": "sender_2",
-                "sender_display_name": "Sender 2", "date_time": "2023-03-08T09:15:00Z"}
+             "sender_display_name": "Sender 2", "date_time": "2023-03-08T09:15:00Z"}
         ]
     }
     expacted_result = {
@@ -1592,7 +1592,8 @@ def test_zoom_list_messages_command(mocker):
     assert result.outputs['ChatMessage']['messages'][0]['id'] == expacted_result['ChatMessage']['messages'][0]['id']
     assert result.outputs['ChatMessage']['messages'][0]['message'] == expacted_result['ChatMessage']['messages'][0]['message']
     assert result.outputs['ChatMessage']['messages'][0]['sender'] == expacted_result['ChatMessage']['messages'][0]['sender']
-    assert result.outputs['ChatMessage']['messages'][0]['sender_display_name'] == expacted_result['ChatMessage']['messages'][0]['sender_display_name']  # noqa: E501
+    assert result.outputs['ChatMessage']['messages'][0]['sender_display_name'] == expacted_result['ChatMessage']['messages'][0][
+        'sender_display_name']  # noqa: E501
     assert result.outputs['ChatMessage']['messages'][0]['date_time'] == expacted_result['ChatMessage']['messages'][0]['date_time']
 
 
@@ -1621,7 +1622,7 @@ def test_zoom_list_messages_command_pageination(mocker):
     expected_raw_data = {
         "messages": [
             {"id": "message_id_1", "message": "Message 1", "sender": "sender_1",
-                "sender_display_name": "Sender 1", "date_time": "2023-03-07T10:30:00Z"}
+             "sender_display_name": "Sender 1", "date_time": "2023-03-07T10:30:00Z"}
         ],
         "next_page_token": "xxxxxxxxxxx"
     }
@@ -1773,6 +1774,29 @@ def test_zoom_get_user_id_by_email(mocker):
     assert result == expected_user_id
 
 
+def test_zoom_get_user_email_by_id(mocker):
+    """
+    Given -
+        client
+    When -
+        get user email address by their user ID
+    Then -
+        Validate that the get_user_email_by_id function is called with the correct arguments
+        Validate the command results
+    """
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+    user_id = "user_id"
+    expected_user_email = "user@example.com"
+    expected_response = {"email": expected_user_email}
+
+    mock_zoom_list_users = mocker.patch.object(client, 'zoom_list_users', return_value=expected_response)
+    from Zoom import zoom_get_user_email_by_id
+    result = zoom_get_user_email_by_id(client, user_id)
+    mock_zoom_list_users.assert_called_with(page_size=1, url_suffix=f'users/{user_id}')
+    assert result == expected_user_email
+
+
 def test_zoom_send_notification_command(mocker):
     """
     Given -
@@ -1813,10 +1837,35 @@ def test_zoom_send_notification_command(mocker):
     assert mock_send_chat_message.call_args[0][1] == expected_request_payload
 
 
+def test_zoom_delete_user_token_command(mocker):
+    """
+    Given -
+        Zoom client
+    When -
+       zoom-delete-user-token has called
+    Then -
+        Validate that the zoom_delete_user_token function is called with the correct arguments
+        Validate the command results return the correct readable output
+    """
+
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+    mocker.patch.object(Client, "generate_oauth_token")
+
+    user_id = 'mock_user_id'
+    zoom_delete_user_token_mock = mocker.patch.object(client, "zoom_delete_user_token")
+
+    from Zoom import zoom_delete_user_token_command
+
+    result = zoom_delete_user_token_command(client, user_id=user_id)
+    zoom_delete_user_token_mock.assert_called_with(f"/users/{user_id}/token")
+    assert result.readable_output == 'User SSO token for user mock_user_id is deleted'
+
+
 @pytest.mark.parametrize("channel_name, investigation_id, expected_result", [
-    ('Channel1', None, 'JID1'),                # Scenario 1: Find by channel_name
-    (None, 'Incident123', 'JID1'),            # Scenario 2: Find by investigation_id
-    ('NonExistentChannel', None, None),       # Scenario 3: Channel not found
+    ('Channel1', None, 'JID1'),  # Scenario 1: Find by channel_name
+    (None, 'Incident123', 'JID1'),  # Scenario 2: Find by investigation_id
+    ('NonExistentChannel', None, None),  # Scenario 3: Channel not found
 ])
 def test_get_channel_jid_by_channel_name(channel_name, investigation_id, expected_result, mocker):
     """
@@ -1845,9 +1894,9 @@ def test_get_channel_jid_by_channel_name(channel_name, investigation_id, expecte
 # Test cases for check_authentication_bot_parameters
 @pytest.mark.parametrize("bot_Jid, client_id, client_secret, expected_exception", [
     ('bot_Jid', 'client_id', 'client_secret', None),  # Scenario 1: All parameters provided
-    (None, None, None, None),                        # Scenario 2: All parameters None
-    ('bot_Jid', None, None, DemistoException),       # Scenario 3: bot_Jid provided, others None
-    (None, 'client_id', None, DemistoException),     # Scenario 4: client_id provided, others None
+    (None, None, None, None),  # Scenario 2: All parameters None
+    ('bot_Jid', None, None, DemistoException),  # Scenario 3: bot_Jid provided, others None
+    (None, 'client_id', None, DemistoException),  # Scenario 4: client_id provided, others None
     (None, None, 'client_secret', DemistoException),  # Scenario 5: client_secret provided, others None
 ])
 def test_check_authentication_bot_parameters(bot_Jid, client_id, client_secret, expected_exception):
@@ -1941,10 +1990,11 @@ async def test_check_and_handle_entitlement(mocker):
     text = "Entitlement Text"
     message_id = "MessageID123"
     user_name = "User123"
+    user_id = "user123@example.com"
 
     # Call the async function and await its result
     from Zoom import check_and_handle_entitlement
-    result = await check_and_handle_entitlement(text, message_id, user_name)
+    result = await check_and_handle_entitlement(text, message_id, user_name, user_id)
 
     assert result == 'thanks'  # Adjust the expected reply as needed
 
@@ -2132,6 +2182,7 @@ async def test_handle_zoom_response(event_type, expected_status,
     mocker.patch('Zoom.check_and_handle_entitlement')
     mocker.patch('Zoom.process_entitlement_reply')
     mocker.patch('Zoom.handle_mirroring')
+    mocker.patch('Zoom.zoom_get_user_email_by_id', return_value="mock_user_email")
     mocker.patch.object(demisto, 'params', return_value={'credentials': {'identifier': 'test', 'password': 'testpass'}})
 
     # Create a mock HTTPBasicCredentials object
@@ -2156,7 +2207,8 @@ async def test_handle_zoom_response(event_type, expected_status,
             "messageId": "message_id",
             "robotJid": "robot_jid",
             "toJid": "mock_jid",
-            "userName": "admin zoom"
+            "userName": "admin zoom",
+            "userId": "mock_userId"
         }
     }
 
@@ -2228,7 +2280,6 @@ def test_save_entitlement():
     # Mock the required functions (get_integration_context, set_to_integration_context_with_retries) and any other dependencies
     with patch('Zoom.get_integration_context') as mock_get_integration_context, \
             patch('Zoom.set_to_integration_context_with_retries') as mock_set_integration_context:
-
         # Mock the return values of the mocked functions
         mock_get_integration_context.return_value = {'messages': []}
         fixed_timestamp = '2023-09-09 20:08:50'

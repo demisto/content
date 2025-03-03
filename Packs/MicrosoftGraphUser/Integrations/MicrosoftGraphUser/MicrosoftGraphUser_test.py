@@ -1,4 +1,5 @@
 import pytest
+from MicrosoftApiModule import AZURE_WORLDWIDE_CLOUD
 
 
 users_list_mock = [
@@ -66,7 +67,7 @@ def test_get_user_command_404_response(mocker):
     from requests.models import Response
 
     client = MsGraphClient('tenant_id', 'auth_id', 'enc_key', 'app_name', 'base_url', 'verify', 'proxy',
-                           'self_deployed', 'redirect_uri', 'auth_code', True)
+                           'self_deployed', 'redirect_uri', 'auth_code', True, azure_cloud=AZURE_WORLDWIDE_CLOUD)
     error_404 = Response()
     error_404._content = b'{"error": {"code": "Request_ResourceNotFound", "message": "Resource ' \
                          b'"NotExistingUser does not exist."}}'
@@ -91,7 +92,7 @@ def test_get_user_command_url_saved_chars(mocker):
 
     user_name = "dbot^"
     client = MsGraphClient('tenant_id', 'auth_id', 'enc_key', 'app_name', 'http://base_url', 'verify', 'proxy',
-                           'self_deployed', 'redirect_uri', 'auth_code', False)
+                           'self_deployed', 'redirect_uri', 'auth_code', False, azure_cloud=AZURE_WORLDWIDE_CLOUD)
     http_mock = mocker.patch.object(BaseClient, '_http_request')
     mocker.patch.object(MicrosoftClient, 'get_access_token')
     hr, _, _ = get_user_command(client, {'user': user_name})
@@ -157,7 +158,7 @@ def test_suppress_errors(mocker):
     client = MsGraphClient(base_url='https://graph.microsoft.com/v1.0', tenant_id='tenant-id',
                            auth_id='auth_and_token_url', enc_key='enc_key', app_name='ms-graph-groups',
                            verify='use_ssl', proxy='proxies', self_deployed='self_deployed', handle_error=True,
-                           auth_code='', redirect_uri='')
+                           auth_code='', redirect_uri='', azure_cloud=AZURE_WORLDWIDE_CLOUD)
     for test in TEST_SUPPRESS_ERRORS:
         mocker.patch.object(client, test['mock_fun'], side_effect=test['mock_value'])
         results, _, _ = test['fun'](client, test['args'])
@@ -257,7 +258,7 @@ def test_update_user_command(mocker, user: str, updated_fields: str,
     client = MsGraphClient(base_url='https://graph.microsoft.com/v1.0', tenant_id='tenant-id',
                            auth_id='auth_and_token_url', enc_key='enc_key', app_name='ms-graph-groups',
                            verify='use_ssl', proxy='proxies', self_deployed='self_deployed', handle_error=True,
-                           auth_code='', redirect_uri='')
+                           auth_code='', redirect_uri='', azure_cloud=AZURE_WORLDWIDE_CLOUD)
     request = mocker.patch.object(client.ms_client, 'http_request', return_value={})
     mocker.patch.object(client, 'get_user', return_value={})
 
@@ -366,7 +367,7 @@ def test_test_function(mocker, grant_type, self_deployed, expected_result, shoul
     client = MsGraphClient(base_url='https://graph.microsoft.com/v1.0', tenant_id='tenant-id',
                            auth_id='auth_and_token_url', enc_key='enc_key', app_name='user',
                            verify='use_ssl', proxy='proxies', self_deployed=self_deployed, handle_error=True,
-                           auth_code='', redirect_uri='')
+                           auth_code='', redirect_uri='', azure_cloud=AZURE_WORLDWIDE_CLOUD)
 
     client.ms_client.grant_type = grant_type
     mocker.patch.object(demisto, 'params', return_value={'self_deployed': self_deployed})

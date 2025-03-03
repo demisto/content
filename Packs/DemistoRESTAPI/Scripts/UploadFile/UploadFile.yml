@@ -15,6 +15,9 @@ args:
 - description: Incident ID to upload the file to.
   name: incID
   required: true
+- description: Integration instance used to run the script.
+  name: using
+  required: false
 - description: Request body.
   name: body
 - auto: PREDEFINED
@@ -31,7 +34,7 @@ args:
   - 'incident attachment'
 comment: Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident’s War Room.
 subtype: python3
-dockerimage: demisto/python3:3.10.13.88772
+dockerimage: demisto/python3:3.11.10.115186
 tags:
 - DemistoAPI
 timeout: '0'

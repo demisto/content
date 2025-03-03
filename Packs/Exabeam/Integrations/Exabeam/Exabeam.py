@@ -14,6 +14,10 @@ urllib3.disable_warnings()
 TOKEN_INPUT_IDENTIFIER = '__token'
 DAYS_BACK_FOR_FIRST_QUERY_OF_INCIDENTS = 3
 DATETIME_FORMAT_MILISECONDS = '%Y-%m-%dT%H:%M:%S.%f'
+DEFAULT_LIMIT = 50
+MAX_LENGTH_CONTEXT = 10000
+DEFAULT_FETCH_TYPE = ["Exabeam Incident"]
+MAX_LIMIT_FETCH_USERS = 200
 
 
 class Client(BaseClient):
@@ -1184,6 +1188,18 @@ def convert_all_unix_keys_to_date(incident: dict) -> dict:
     return incident
 
 
+def convert_all_unix_keys_to_date_user(incident: dict) -> dict:
+    keys = ['firstSeen', 'lastSeen', 'lastActivityTime', 'endTime', 'startTime']
+    if 'user' in incident:
+        for key in keys:
+            if key in incident['user']:
+                incident['user'][key] = convert_unix_to_date(incident['user'][key]).split('.')[0] + 'Z'
+            if key in incident['highestRiskSession'] and incident['highestRiskSession'][key]:
+                incident['highestRiskSession'][key] = convert_unix_to_date(
+                    incident['highestRiskSession'][key]).split('.')[0] + 'Z'
+    return incident
+
+
 def build_incident_response_query_params(query: str | None,
                                          incident_type: str | None,
                                          priority: str | None,
@@ -1233,6 +1249,25 @@ def test_module(client: Client, args: dict[str, str], params: dict[str, str]):
         ok if successful
     """
     client.test_module_request()
+
+    is_fetch = argToBoolean(params.get("isFetch") or False)
+    if is_fetch:
+        fetch_type = params.get("fetch_type", DEFAULT_FETCH_TYPE)
+        if "Exabeam Notable User" in fetch_type:
+
+            fetch_interval = arg_to_number(params.get("notable_users_fetch_interval")) or 60
+            if fetch_interval % 60 != 0:
+                raise ValueError("The Notable Users Fetch Interval must be specified in whole hours")
+
+            max_fetch_users = arg_to_number(params.get("max_fetch_users")) or DEFAULT_LIMIT
+            if max_fetch_users <= 0 or max_fetch_users > MAX_LIMIT_FETCH_USERS:
+                raise ValueError("The Max Users Per Fetch must be between 1 and 200")
+
+            client.get_notable_users_request("h", "1", 1)
+
+        if "Exabeam Incident" in fetch_type:
+            client.get_incidents({})
+
     demisto.results('ok')
 
 
@@ -2085,9 +2120,28 @@ def list_incidents(client: Client, args: dict[str, str]):
 
 
 def fetch_incidents(client: Client, args: dict[str, str]) -> tuple[list, dict]:
-    look_back = arg_to_number(args.get('look_back', '1'))
-    last_run = demisto.getLastRun()
+    incidents: list[dict] = []
+    last_run: dict[str, Any] = demisto.getLastRun()
     demisto.debug(f"Last run before the fetch run: {last_run}")
+    fetch_type = args.get("fetch_type", DEFAULT_FETCH_TYPE)
+
+    if "Exabeam Notable User" in fetch_type:
+        incidents, last_run = fetch_notable_users(client, args, last_run)
+        demisto.debug(f'After fetch notable users, there are {len(incidents)} new incidents')
+
+    if "Exabeam Incident" in fetch_type:
+        exabeam_incidents, updated_last_run = fetch_exabeam_incidents(client, args, last_run)
+        incidents.extend(exabeam_incidents)
+        last_run.update(updated_last_run)
+
+    demisto.debug(f"Last run after the fetch run: {last_run}")
+    return incidents, last_run
+
+
+def fetch_exabeam_incidents(client: Client, args: dict[str, str], last_run: dict[str, Any]) -> tuple[list, dict]:
+    incidents: list[dict] = []
+    look_back = arg_to_number(args.get('look_back')) or 1.
+
     start_time, end_time = get_fetch_run_time_range(
         last_run=last_run,
         first_fetch=args.get('first_fetch', '3 days'),
@@ -2135,11 +2189,11 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> tuple[list, dict]:
     )
     demisto.debug(f'After filtering, there are {len(incidents_filtered)} incidents')
 
-    incidents: list[dict] = []
     for incident in incidents_filtered:
         incident['createdAt'] = datetime.fromtimestamp(
             incident.get('baseFields', {}).get('createdAt') / 1000.0).strftime(DATETIME_FORMAT_MILISECONDS)
         incident = convert_all_unix_keys_to_date(incident)
+        incident['incident_type'] = 'Exabeam Incident'
         incidents.append({
             'Name': incident.get('name'),
             'occurred': incident.get('baseFields', {}).get('createdAt'),
@@ -2158,8 +2212,84 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> tuple[list, dict]:
         date_format=DATETIME_FORMAT_MILISECONDS,
         increase_last_run_time=True
     )
-    demisto.debug(f"Last run after the fetch run: {last_run}")
     return incidents, last_run
+
+
+def fetch_notable_users(client: Client, args: dict[str, str], last_run_obj: dict) -> tuple[list, dict]:
+    current_time = datetime.now(timezone.utc)
+    last_run_notable_users: str = last_run_obj.get("last_run_notable_users", "")
+    demisto.debug(f"Last run notable users: {last_run_notable_users}, before fetch")
+
+    if last_run_notable_users:
+        last_run_time = datetime.fromisoformat(last_run_notable_users).astimezone(timezone.utc)
+        difference = current_time - last_run_time
+        difference_minutes = difference.total_seconds() / 60
+        fetch_interval = arg_to_number(args.get("notable_users_fetch_interval")) or 60
+
+       # Ensure fetch_interval is at least 60 and rounded to the nearest multiple of 60
+        fetch_interval = max(60, round(fetch_interval / 60) * 60)
+
+        demisto.debug(f"Difference of {difference_minutes} minutes between the current time and the last run notable users")
+        if difference_minutes <= fetch_interval:  # Check if the time interval is past.
+            return [], last_run_obj
+
+        else:
+            time_period = f"{int(fetch_interval/60)} hours"
+
+    else:  # In the first run
+        time_period = args.get("notable_users_first_fetch", "3 months")
+
+    limit = arg_to_number(args.get("max_fetch_users")) or DEFAULT_LIMIT
+    args_notable_users = {"limit": limit, "time_period": time_period}
+    demisto.debug(f"Before the request args notable users, limit: {limit}, time period: {time_period}")
+    _, _, res = get_notable_users(client, args_notable_users)
+    users = res.get("users", [])
+    demisto.debug(f"Got {len(users)} users from the API, before filtering")
+
+    minimum_risks = arg_to_number(args.get("minimum_risk_score_to_fetch_users"))
+
+    existing_usernames: list[str] = last_run_obj.get("usernames", [])
+
+    demisto.debug(f"Existing {len(existing_usernames)} usernames in last run")
+    new_risky_users = []
+    new_usernames = []
+    for user in users:
+        user_details = user.get("user", {})
+        username = user_details.get("username", "")
+        risk_score = user_details.get("riskScore", -1)
+        if risk_score >= minimum_risks and username not in existing_usernames:
+            new_risky_users.append(user)
+            new_usernames.append(username)
+
+    demisto.debug(f"After filtering, there are {len(new_risky_users)} new risky users")
+
+    combined_usernames = existing_usernames + new_usernames
+
+    # Calculate the excess length, which is the amount by which the combined list exceeds the maximum allowed length
+    excess_length = max(len(combined_usernames) - MAX_LENGTH_CONTEXT, 0)
+
+    # Create the new list of usernames, trimming the excess from the existing ones
+    usernames_to_last_run = existing_usernames[excess_length:] + new_usernames
+    demisto.debug(f"{excess_length} usernames deleted from the lest run to avoid exceeding the maximum")
+
+    last_run_obj["usernames"] = usernames_to_last_run
+    demisto.debug(f"After the added lest run contain {len(usernames_to_last_run)} usernames")
+
+    incidents: list[dict] = []
+    for user_data in new_risky_users:
+        user_data_fixed_time = convert_all_unix_keys_to_date_user(user_data)
+        user_username = user_data.get("user", {}).get("username", "")
+        user_data_fixed_time['incident_type'] = 'Exabeam Notable User'
+        incidents.append(
+            {
+                "Name": user_username,
+                "rawJSON": json.dumps(user_data_fixed_time),
+            }
+        )
+
+    last_run_obj["last_run_notable_users"] = current_time.strftime(DATETIME_FORMAT_MILISECONDS)
+    demisto.debug(f"Last run notable users after the fetch run: {last_run_notable_users}")
+    return incidents, last_run_obj
 
 
 def main():  # pragma: no cover

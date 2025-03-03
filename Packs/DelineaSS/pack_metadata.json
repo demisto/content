@@ -2,13 +2,13 @@
     "name": "Delinea Secret Server",
     "description": "Secure privileges for service, application, root and administrator accounts across your enterprise.",
     "support": "partner",
-    "currentVersion": "3.0.21",
+    "currentVersion": "3.0.22",
     "author": "Delinea, Inc",
     "url": "https://delinea.com/support",
     "email": "support@delinea.com",
     "created": "2022-08-10T14:49:56Z",
     "categories": [
-        "Authentication & Identity Management"
+        "Identity and Access Management"
     ],
     "tags": [],
     "useCases": [],

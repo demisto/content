@@ -1,0 +1,107 @@
+[MODEL:dataset="fortinet_fortiweb_raw"]
+filter cat = "audit"
+	// cs1Label => userID
+	// cs2Label => userName
+	// cs3Label => level
+	// cs4Label => endpointID
+	// cs5Label => endpointDomain
+	// cs6Label => appName
+| alter
+	src_ip_v4 = if(src ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src, null),
+    src_ip_v6 = if(src ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", src, null),
+    lowercase_cs3 = lowercase(cs3)
+| alter
+	xdm.observer.version = cefDeviceVersion,
+	xdm.observer.unique_identifier = to_string(cefDeviceEventClassId),
+	xdm.alert.name = cefName,
+	xdm.alert.severity = cefSeverity,
+	xdm.observer.type = cat,
+	xdm.source.user.identifier = cs1,
+	xdm.source.ipv4 = src_ip_v4,
+	xdm.source.ipv6 = src_ip_v6,
+	xdm.source.port = spt,
+	xdm.target.port = dpt,
+	xdm.source.user.username = cs2,
+	xdm.network.application_protocol = app,
+	xdm.observer.action = act,
+	xdm.event.log_level = if(lowercase_cs3 ~= "debu", XDM_CONST.LOG_LEVEL_DEBUG, lowercase_cs3 ~= "info", XDM_CONST.LOG_LEVEL_INFORMATIONAL, lowercase_cs3 ~= "noti", XDM_CONST.LOG_LEVEL_NOTICE, lowercase_cs3 ~= "warn", XDM_CONST.LOG_LEVEL_WARNING, lowercase_cs3 ~= "erro", XDM_CONST.LOG_LEVEL_ERROR, lowercase_cs3 ~= "crit", XDM_CONST.LOG_LEVEL_CRITICAL, lowercase_cs3 ~= "aler", XDM_CONST.LOG_LEVEL_ALERT, lowercase_cs3 ~= "emer", XDM_CONST.LOG_LEVEL_EMERGENCY, lowercase_cs3 = null, null, to_string(lowercase_cs3)),
+	xdm.source.host.device_id = cs4,
+	xdm.target.host.hostname = dhost,
+	xdm.network.http.url = request,
+	xdm.network.http.method =  if(requestMethod = "ACL", XDM_CONST.HTTP_METHOD_ACL, requestMethod = "BASELINE_CONTROL", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL, requestMethod = "BIND", XDM_CONST.HTTP_METHOD_BIND, requestMethod = "CHECKIN", XDM_CONST.HTTP_METHOD_CHECKIN, requestMethod = "CHECKOUT", XDM_CONST.HTTP_METHOD_CHECKOUT, requestMethod = "CONNECT", XDM_CONST.HTTP_METHOD_CONNECT, requestMethod = "COPY", XDM_CONST.HTTP_METHOD_COPY, requestMethod = "DELETE", XDM_CONST.HTTP_METHOD_DELETE, requestMethod = "GET", XDM_CONST.HTTP_METHOD_GET, requestMethod = "HEAD", XDM_CONST.HTTP_METHOD_HEAD, requestMethod = "LABEL", XDM_CONST.HTTP_METHOD_LABEL, requestMethod = "LINK", XDM_CONST.HTTP_METHOD_LINK, requestMethod = "LOCK", XDM_CONST.HTTP_METHOD_LOCK, requestMethod = "MERGE", XDM_CONST.HTTP_METHOD_MERGE, requestMethod = "MKACTIVITY", XDM_CONST.HTTP_METHOD_MKACTIVITY, requestMethod = "MKCALENDAR", XDM_CONST.HTTP_METHOD_MKCALENDAR, requestMethod = "MKCOL", XDM_CONST.HTTP_METHOD_MKCOL, requestMethod = "MKREDIRECTREF", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, requestMethod = "MKWORKSPACE", XDM_CONST.HTTP_METHOD_MKWORKSPACE, requestMethod = "MOVE", XDM_CONST.HTTP_METHOD_MOVE, requestMethod = "OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS, requestMethod = "ORDERPATCH", XDM_CONST.HTTP_METHOD_ORDERPATCH, requestMethod = "PATCH", XDM_CONST.HTTP_METHOD_PATCH, requestMethod = "POST", XDM_CONST.HTTP_METHOD_POST, requestMethod = "PRI", XDM_CONST.HTTP_METHOD_PRI, requestMethod = "PROPFIND", XDM_CONST.HTTP_METHOD_PROPFIND, requestMethod = "PROPPATCH", XDM_CONST.HTTP_METHOD_PROPPATCH, requestMethod = "PUT", XDM_CONST.HTTP_METHOD_PUT, requestMethod = "REBIND", XDM_CONST.HTTP_METHOD_REBIND, requestMethod = "REPORT", XDM_CONST.HTTP_METHOD_REPORT, requestMethod = "SEARCH", XDM_CONST.HTTP_METHOD_SEARCH, requestMethod = "TRACE", XDM_CONST.HTTP_METHOD_TRACE, requestMethod = "UNBIND", XDM_CONST.HTTP_METHOD_UNBIND, requestMethod = "UNCHECKOUT", XDM_CONST.HTTP_METHOD_UNCHECKOUT, requestMethod = "UNLINK", XDM_CONST.HTTP_METHOD_UNLINK, requestMethod = "UNLOCK", XDM_CONST.HTTP_METHOD_UNLOCK, requestMethod = "UPDATE", XDM_CONST.HTTP_METHOD_UPDATE, requestMethod = "UPDATEREDIRECTREF", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, requestMethod = "VERSION_CONTROL", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, requestMethod = null, null, to_string(requestMethod)),
+	xdm.source.user_agent = requestClientApplication,
+	xdm.source.application.name = cs6,
+	xdm.event.description = msg;
+
+
+filter cat = "attack"
+	// cs1Label => appName
+	// cs2Label => srcCountry
+	// cs3Label => mainType
+	// cs4Label => subType
+	// cs5Label => threatLevel
+	// cs6Label => owaspTop10
+	// ------------------------
+	// cn1Label => threatWeight
+	// cn2Label => length	
+	// cn3Label => signatureID
+| alter
+	get_severity = coalesce(cefSeverity, cs5),
+	src_ip_v4 = if(src ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src, null),
+    src_ip_v6 = if(src ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", src, null)
+| alter
+	xdm.observer.version = cefDeviceVersion,
+	xdm.observer.unique_identifier = cefDeviceEventClassId,
+	xdm.alert.name = cefName,
+	xdm.observer.type = cat,
+	xdm.source.application.name = cs1,
+	xdm.source.ipv4 = src_ip_v4 ,
+	xdm.source.ipv6 = src_ip_v6,
+	xdm.source.port = spt,
+	xdm.target.port = dpt,
+	xdm.network.application_protocol = app,
+	xdm.observer.action = act,
+	xdm.event.original_event_type = cs3,
+	xdm.event.type = cs4,
+	xdm.target.host.hostname = dhost,
+	xdm.network.http.url = request,
+	xdm.alert.severity = get_severity,
+	xdm.network.http.method = if(requestMethod = "ACL", XDM_CONST.HTTP_METHOD_ACL, requestMethod = "BASELINE_CONTROL", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL, requestMethod = "BIND", XDM_CONST.HTTP_METHOD_BIND, requestMethod = "CHECKIN", XDM_CONST.HTTP_METHOD_CHECKIN, requestMethod = "CHECKOUT", XDM_CONST.HTTP_METHOD_CHECKOUT, requestMethod = "CONNECT", XDM_CONST.HTTP_METHOD_CONNECT, requestMethod = "COPY", XDM_CONST.HTTP_METHOD_COPY, requestMethod = "DELETE", XDM_CONST.HTTP_METHOD_DELETE, requestMethod = "GET", XDM_CONST.HTTP_METHOD_GET, requestMethod = "HEAD", XDM_CONST.HTTP_METHOD_HEAD, requestMethod = "LABEL", XDM_CONST.HTTP_METHOD_LABEL, requestMethod = "LINK", XDM_CONST.HTTP_METHOD_LINK, requestMethod = "LOCK", XDM_CONST.HTTP_METHOD_LOCK, requestMethod = "MERGE", XDM_CONST.HTTP_METHOD_MERGE, requestMethod = "MKACTIVITY", XDM_CONST.HTTP_METHOD_MKACTIVITY, requestMethod = "MKCALENDAR", XDM_CONST.HTTP_METHOD_MKCALENDAR, requestMethod = "MKCOL", XDM_CONST.HTTP_METHOD_MKCOL, requestMethod = "MKREDIRECTREF", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, requestMethod = "MKWORKSPACE", XDM_CONST.HTTP_METHOD_MKWORKSPACE, requestMethod = "MOVE", XDM_CONST.HTTP_METHOD_MOVE, requestMethod = "OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS, requestMethod = "ORDERPATCH", XDM_CONST.HTTP_METHOD_ORDERPATCH, requestMethod = "PATCH", XDM_CONST.HTTP_METHOD_PATCH, requestMethod = "POST", XDM_CONST.HTTP_METHOD_POST, requestMethod = "PRI", XDM_CONST.HTTP_METHOD_PRI, requestMethod = "PROPFIND", XDM_CONST.HTTP_METHOD_PROPFIND, requestMethod = "PROPPATCH", XDM_CONST.HTTP_METHOD_PROPPATCH, requestMethod = "PUT", XDM_CONST.HTTP_METHOD_PUT, requestMethod = "REBIND", XDM_CONST.HTTP_METHOD_REBIND, requestMethod = "REPORT", XDM_CONST.HTTP_METHOD_REPORT, requestMethod = "SEARCH", XDM_CONST.HTTP_METHOD_SEARCH, requestMethod = "TRACE", XDM_CONST.HTTP_METHOD_TRACE, requestMethod = "UNBIND", XDM_CONST.HTTP_METHOD_UNBIND, requestMethod = "UNCHECKOUT", XDM_CONST.HTTP_METHOD_UNCHECKOUT, requestMethod = "UNLINK", XDM_CONST.HTTP_METHOD_UNLINK, requestMethod = "UNLOCK", XDM_CONST.HTTP_METHOD_UNLOCK, requestMethod = "UPDATE", XDM_CONST.HTTP_METHOD_UPDATE, requestMethod = "UPDATEREDIRECTREF", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, requestMethod = "VERSION_CONTROL", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, requestMethod = null, null, to_string(requestMethod)),
+	xdm.source.user_agent = requestClientApplication,
+	xdm.network.rule = to_string(cn3),
+	xdm.alert.original_threat_name = cs6,
+	xdm.event.description = msg;
+
+
+filter cat = "trafficlog"
+| alter
+	src_ip_v4 = if(src ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src, null),
+    src_ip_v6 = if(src ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", src, null),
+	original_src_ip_v4 = if(original_src ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", original_src, null),
+    original_src_ip_v6 = if(original_src ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", original_src, null),
+	dst_ip_v4 = if(dst ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dst, null),
+    dst_ip_v6 = if(dst ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", dst, null),
+    uppercase_http_method = uppercase(http_method),
+	int_http_retcode = to_integer(http_retcode)
+| alter
+	xdm.network.tls.cipher = cipher_suite,
+	xdm.target.ipv4 = dst_ip_v4,
+	xdm.target.ipv6 = dst_ip_v6,
+	xdm.source.ipv4 = src_ip_v4,
+	xdm.source.ipv6 = src_ip_v6,
+	xdm.observer.type = cat,
+	xdm.target.host.fqdn = http_host,
+	xdm.source.host.ipv4_addresses = arraycreate(original_src_ip_v4),
+	xdm.source.host.ipv6_addresses = arraycreate(original_src_ip_v6),
+	xdm.target.sent_bytes = http_response_bytes,
+	xdm.network.http.response_code = if(int_http_retcode = 100, XDM_CONST.HTTP_RSP_CODE_CONTINUE, int_http_retcode = 101, XDM_CONST.HTTP_RSP_CODE_SWITCHING_PROTOCOLS, int_http_retcode = 102, XDM_CONST.HTTP_RSP_CODE_PROCESSING, int_http_retcode = 103, XDM_CONST.HTTP_RSP_CODE_EARLY_HINTS, int_http_retcode = 200, XDM_CONST.HTTP_RSP_CODE_OK, int_http_retcode = 201, XDM_CONST.HTTP_RSP_CODE_CREATED, int_http_retcode = 202, XDM_CONST.HTTP_RSP_CODE_ACCEPTED, int_http_retcode = 203, XDM_CONST.HTTP_RSP_CODE_NON__AUTHORITATIVE_INFORMATION, int_http_retcode = 204, XDM_CONST.HTTP_RSP_CODE_NO_CONTENT, int_http_retcode = 205, XDM_CONST.HTTP_RSP_CODE_RESET_CONTENT, int_http_retcode = 206, XDM_CONST.HTTP_RSP_CODE_PARTIAL_CONTENT, int_http_retcode = 207, XDM_CONST.HTTP_RSP_CODE_MULTI__STATUS, int_http_retcode = 208, XDM_CONST.HTTP_RSP_CODE_ALREADY_REPORTED, int_http_retcode = 226, XDM_CONST.HTTP_RSP_CODE_IM_USED, int_http_retcode = 300, XDM_CONST.HTTP_RSP_CODE_MULTIPLE_CHOICES, int_http_retcode = 301, XDM_CONST.HTTP_RSP_CODE_MOVED_PERMANENTLY, int_http_retcode = 302, XDM_CONST.HTTP_RSP_CODE_FOUND, int_http_retcode = 303, XDM_CONST.HTTP_RSP_CODE_SEE_OTHER, int_http_retcode = 304, XDM_CONST.HTTP_RSP_CODE_NOT_MODIFIED, int_http_retcode = 305, XDM_CONST.HTTP_RSP_CODE_USE_PROXY, int_http_retcode = 307, XDM_CONST.HTTP_RSP_CODE_TEMPORARY_REDIRECT, int_http_retcode = 308, XDM_CONST.HTTP_RSP_CODE_PERMANENT_REDIRECT, int_http_retcode = 400, XDM_CONST.HTTP_RSP_CODE_BAD_REQUEST, int_http_retcode = 401, XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED, int_http_retcode = 402, XDM_CONST.HTTP_RSP_CODE_PAYMENT_REQUIRED, int_http_retcode = 403, XDM_CONST.HTTP_RSP_CODE_FORBIDDEN, int_http_retcode = 404, XDM_CONST.HTTP_RSP_CODE_NOT_FOUND, int_http_retcode = 405, XDM_CONST.HTTP_RSP_CODE_METHOD_NOT_ALLOWED, int_http_retcode = 406, XDM_CONST.HTTP_RSP_CODE_NOT_ACCEPTABLE, int_http_retcode = 407, XDM_CONST.HTTP_RSP_CODE_PROXY_AUTHENTICATION_REQUIRED, int_http_retcode = 408, XDM_CONST.HTTP_RSP_CODE_REQUEST_TIMEOUT, int_http_retcode = 409, XDM_CONST.HTTP_RSP_CODE_CONFLICT, int_http_retcode = 410, XDM_CONST.HTTP_RSP_CODE_GONE, int_http_retcode = 411, XDM_CONST.HTTP_RSP_CODE_LENGTH_REQUIRED, int_http_retcode = 412, XDM_CONST.HTTP_RSP_CODE_PRECONDITION_FAILED, int_http_retcode = 413, XDM_CONST.HTTP_RSP_CODE_CONTENT_TOO_LARGE, int_http_retcode = 414, XDM_CONST.HTTP_RSP_CODE_URI_TOO_LONG, int_http_retcode = 415, XDM_CONST.HTTP_RSP_CODE_UNSUPPORTED_MEDIA_TYPE, int_http_retcode = 416, XDM_CONST.HTTP_RSP_CODE_RANGE_NOT_SATISFIABLE, int_http_retcode = 417, XDM_CONST.HTTP_RSP_CODE_EXPECTATION_FAILED, int_http_retcode = 421, XDM_CONST.HTTP_RSP_CODE_MISDIRECTED_REQUEST, int_http_retcode = 422, XDM_CONST.HTTP_RSP_CODE_UNPROCESSABLE_CONTENT, int_http_retcode = 423, XDM_CONST.HTTP_RSP_CODE_LOCKED, int_http_retcode = 424, XDM_CONST.HTTP_RSP_CODE_FAILED_DEPENDENCY, int_http_retcode = 425, XDM_CONST.HTTP_RSP_CODE_TOO_EARLY, int_http_retcode = 426, XDM_CONST.HTTP_RSP_CODE_UPGRADE_REQUIRED, int_http_retcode = 428, XDM_CONST.HTTP_RSP_CODE_PRECONDITION_REQUIRED, int_http_retcode = 429, XDM_CONST.HTTP_RSP_CODE_TOO_MANY_REQUESTS, int_http_retcode = 431, XDM_CONST.HTTP_RSP_CODE_REQUEST_HEADER_FIELDS_TOO_LARGE, int_http_retcode = 451, XDM_CONST.HTTP_RSP_CODE_UNAVAILABLE_FOR_LEGAL_REASONS, int_http_retcode = 500, XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR, int_http_retcode = 501, XDM_CONST.HTTP_RSP_CODE_NOT_IMPLEMENTED, int_http_retcode = 502, XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY, int_http_retcode = 503, XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE, int_http_retcode = 504, XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT, int_http_retcode = 505, XDM_CONST.HTTP_RSP_CODE_HTTP_VERSION_NOT_SUPPORTED, int_http_retcode = 506, XDM_CONST.HTTP_RSP_CODE_VARIANT_ALSO_NEGOTIATES, int_http_retcode = 507, XDM_CONST.HTTP_RSP_CODE_INSUFFICIENT_STORAGE, int_http_retcode = 508, XDM_CONST.HTTP_RSP_CODE_LOOP_DETECTED, int_http_retcode = 511, XDM_CONST.HTTP_RSP_CODE_NETWORK_AUTHENTICATION_REQUIRED, int_http_retcode = null, null, to_string(int_http_retcode)),	
+	xdm.network.application_protocol = service,
+	xdm.target.port = dst_port,
+	xdm.source.user.username = user_name,
+	xdm.network.http.method = if(uppercase_http_method = "ACL", XDM_CONST.HTTP_METHOD_ACL, uppercase_http_method = "BASELINE_CONTROL", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL, uppercase_http_method = "BIND", XDM_CONST.HTTP_METHOD_BIND, uppercase_http_method = "CHECKIN", XDM_CONST.HTTP_METHOD_CHECKIN, uppercase_http_method = "CHECKOUT", XDM_CONST.HTTP_METHOD_CHECKOUT, uppercase_http_method = "CONNECT", XDM_CONST.HTTP_METHOD_CONNECT, uppercase_http_method = "COPY", XDM_CONST.HTTP_METHOD_COPY, uppercase_http_method = "DELETE", XDM_CONST.HTTP_METHOD_DELETE, uppercase_http_method = "GET", XDM_CONST.HTTP_METHOD_GET, uppercase_http_method = "HEAD", XDM_CONST.HTTP_METHOD_HEAD, uppercase_http_method = "LABEL", XDM_CONST.HTTP_METHOD_LABEL, uppercase_http_method = "LINK", XDM_CONST.HTTP_METHOD_LINK, uppercase_http_method = "LOCK", XDM_CONST.HTTP_METHOD_LOCK, uppercase_http_method = "MERGE", XDM_CONST.HTTP_METHOD_MERGE, uppercase_http_method = "MKACTIVITY", XDM_CONST.HTTP_METHOD_MKACTIVITY, uppercase_http_method = "MKCALENDAR", XDM_CONST.HTTP_METHOD_MKCALENDAR, uppercase_http_method = "MKCOL", XDM_CONST.HTTP_METHOD_MKCOL, uppercase_http_method = "MKREDIRECTREF", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, uppercase_http_method = "MKWORKSPACE", XDM_CONST.HTTP_METHOD_MKWORKSPACE, uppercase_http_method = "MOVE", XDM_CONST.HTTP_METHOD_MOVE, uppercase_http_method = "OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS, uppercase_http_method = "ORDERPATCH", XDM_CONST.HTTP_METHOD_ORDERPATCH, uppercase_http_method = "PATCH", XDM_CONST.HTTP_METHOD_PATCH, uppercase_http_method = "POST", XDM_CONST.HTTP_METHOD_POST, uppercase_http_method = "PRI", XDM_CONST.HTTP_METHOD_PRI, uppercase_http_method = "PROPFIND", XDM_CONST.HTTP_METHOD_PROPFIND, uppercase_http_method = "PROPPATCH", XDM_CONST.HTTP_METHOD_PROPPATCH, uppercase_http_method = "PUT", XDM_CONST.HTTP_METHOD_PUT, uppercase_http_method = "REBIND", XDM_CONST.HTTP_METHOD_REBIND, uppercase_http_method = "REPORT", XDM_CONST.HTTP_METHOD_REPORT, uppercase_http_method = "SEARCH", XDM_CONST.HTTP_METHOD_SEARCH, uppercase_http_method = "TRACE", XDM_CONST.HTTP_METHOD_TRACE, uppercase_http_method = "UNBIND", XDM_CONST.HTTP_METHOD_UNBIND, uppercase_http_method = "UNCHECKOUT", XDM_CONST.HTTP_METHOD_UNCHECKOUT, uppercase_http_method = "UNLINK", XDM_CONST.HTTP_METHOD_UNLINK, uppercase_http_method = "UNLOCK", XDM_CONST.HTTP_METHOD_UNLOCK, uppercase_http_method = "UPDATE", XDM_CONST.HTTP_METHOD_UPDATE, uppercase_http_method = "UPDATEREDIRECTREF", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, uppercase_http_method = "VERSION_CONTROL", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, uppercase_http_method = null, null, to_string(uppercase_http_method)),	
+	xdm.source.sent_bytes = http_request_bytes,
+	xdm.network.http.url = http_url,
+	xdm.network.http.referrer = http_refer,
+	xdm.source.user_agent = http_agent,
+	xdm.source.port = src_port,
+	xdm.event.outcome = if(status = "success", XDM_CONST.OUTCOME_SUCCESS, status = "failure", XDM_CONST.OUTCOME_FAILED, status = null, null, to_string(status));

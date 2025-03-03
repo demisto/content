@@ -8,6 +8,7 @@ configuration:
   name: feed
   type: 8
   required: false
+  section: Collect
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: Good
   display: Indicator Reputation
@@ -19,6 +20,7 @@ configuration:
   - Bad
   type: 18
   required: false
+  section: Collect
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: A - Completely reliable
   display: Source Reliability
@@ -32,6 +34,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+  section: Collect
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
@@ -42,6 +45,7 @@ configuration:
   - WHITE
   type: 15
   required: false
+  section: Collect
 - defaultvalue: indicatorType
   display: ''
   name: feedExpirationPolicy
@@ -52,35 +56,58 @@ configuration:
   - suddenDeath
   type: 17
   required: false
+  section: Collect
+  advanced: true
 - defaultvalue: '20160'
   display: ''
   name: feedExpirationInterval
   type: 1
   required: false
+  section: Collect
+  advanced: true
 - defaultvalue: '5'
   display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
   required: false
+  section: Collect
+  advanced: true
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
   defaultvalue: "true"
   required: false
-- additionalinfo: Supports CSV values.
-  display: Tags
+  section: Collect
+  advanced: true
+- additionalinfo: Select this option to exclude the fetched indicators from the enrichment process.
+  display: Enrichment Excluded
+  name: enrichmentExcluded
+  type: 8
+  required: false
+  defaultvalue: 'false'
+  hidden:
+  - xsoar_on_prem
+  section: Collect
+- display: Tags
   name: feedTags
   type: 0
   required: false
+  additionalinfo: Supports CSV values.
+  section: Collect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+  advanced: true
 description: Use Fastly Feed to get assigned CIDRs and add them to your firewall's allowlist in order to enable using Fastly's services.
 display: Fastly Feed
 name: Fastly Feed
@@ -88,14 +115,19 @@ script:
   commands:
   - arguments:
     - defaultValue: '50'
-      description: limits the number of context indicators to output
+      description: limits the number of context indicators to output.
       name: limit
     description: Fetches indicators from the feed.
     name: fastly-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.91504
+  dockerimage: demisto/py3-tools:1.0.0.114656
   feed: true
   runonce: false
   script: '-'
   subtype: python3
   type: python
 fromversion: 5.5.0
+sectionOrder:
+- Connect
+- Collect
+tests:
+- No tests (auto formatted)

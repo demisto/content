@@ -2,7 +2,7 @@
     "name": "IBM X-Force Exchange",
     "description": "IBM X-Force Exchange lets you receive threat intelligence about applications,\n  IP addresses, URls and hashes",
     "support": "xsoar",
-    "currentVersion": "1.1.27",
+    "currentVersion": "1.1.30",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

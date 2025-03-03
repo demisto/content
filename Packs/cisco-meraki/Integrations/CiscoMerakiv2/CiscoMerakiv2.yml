@@ -1,0 +1,2283 @@
+category: IT Services
+commonfields:
+  id: Cisco Meraki v2
+  version: -1
+configuration:
+- name: base_url
+  display: Base URL
+  additionalinfo: The API base URL.
+  required: true
+  type: 0
+  section: Connect
+  defaultvalue: https://api.meraki.com
+- name: api_key
+  displaypassword: API Key
+  additionalinfo: An API key can be generated through 'My Profile' in 'API access'.
+  required: true
+  type: 9
+  hiddenusername: true
+  section: Connect
+- name: insecure
+  display: Trust any certificate (not secure)
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- name: proxy
+  display: Use system proxy settings
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+  defaultvalue: 'false'
+- name: organization_id
+  display: Organization ID
+  additionalinfo: A default ID to be used in all commands that require an organization.
+  required: false
+  type: 0
+  section: Collect
+- name: network_id
+  display: Network ID
+  additionalinfo: A default ID to be used in all commands that require a network.
+  required: false
+  type: 0
+  section: Collect
+description: Cisco Meraki is a cloud-managed IT company that simplifies networking, security, communications, and endpoint management. Its platform offers centralized management for devices, networks, and security through an intuitive web interface. Key functionalities include managing organizations, networks, devices, and their licenses, as well as monitoring device statuses and client activities.
+display: Cisco Meraki v2
+name: Cisco Meraki v2
+script:
+  commands:
+  - name: meraki-organization-list
+    description: List the organizations that the user has privileges on.
+    arguments:
+    - name: organization_id
+      description: ID of a specific organization to retrieve.
+      default: true
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: 50
+    - name: page_size
+      description: The maximum number of records to return per page. To receive additional pages after the first call, use `next_token`. Acceptable range is 3 - 9000. Default is 50.
+    - name: next_token
+      description: Insert 'OrganizationLinkTokens.Next' value received from a previous pagination command's context to further paginate through records.
+    outputs:
+    - contextPath: CiscoMeraki.OrganizationLinkTokens.Prev
+      description: Pagination token used to retrieve the previous batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.OrganizationLinkTokens.Next
+      description: Pagination token used to retrieve the next batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.OrganizationLinkTokens.First
+      description: Pagination token used to retrieve the first batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.OrganizationLinkTokens.Last
+      description: Pagination token used to retrieve the last batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.Organization.id
+      description: Organization ID.
+      type: String
+    - contextPath: CiscoMeraki.Organization.name
+      description: Organization name.
+      type: String
+    - contextPath: CiscoMeraki.Organization.url
+      description: Organization URL.
+      type: String
+    - contextPath: CiscoMeraki.Organization.api.enabled
+      description: Enable API access.
+      type: Boolean
+    - contextPath: CiscoMeraki.Organization.cloud.region.name
+      description: Cloud region name.
+      type: String
+    - contextPath: CiscoMeraki.Organization.cloud.region.host.name
+      description: Name of location where organization data is hosted.
+      type: String
+    - contextPath: CiscoMeraki.Organization.licensing.model
+      description: Organization licensing model. Can be 'co-term', 'per-device', or 'subscription'.
+      type: String
+    - contextPath: CiscoMeraki.Organization.management.details.name
+      description: Name of management data. Details may be named 'MSP ID', 'customer number', 'IP restriction mode for API', or 'IP restriction mode for dashboard', if the organization admin has configured any.
+      type: String
+    - contextPath: CiscoMeraki.Organization.management.details.value
+      description: Value of management data.
+      type: String
+  - name: meraki-network-list
+    description: List the networks that the user has privileges on in an organization.
+    arguments:
+    - name: network_id
+      description: ID of a specific network to retrieve.
+      default: true
+    - name: organization_id
+      description: ID of the organization to retrieve from. Use `meraki-organization-list` to fetch all organization IDs. This overrides the organization ID instance parameter.
+    - name: config_template_id
+      description: ID of a configuration template. Will return all networks bound to that template.
+    - name: is_bound_to_config_template
+      description: Whether to filter configuration template bound networks. If config_template_id is set, this cannot be false.
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+    - name: tags
+      description: Comma-separated list of tags to filter networks by. The filtering is case-sensitive. If tags are included, 'tags_filter_type' should also be included.
+      isArray: true
+    - name: tags_filter_type
+      description: Indicate whether to return networks that contain ANY or ALL of the included tags. If no type is included, 'withAnyTags' will be selected.
+      auto: PREDEFINED
+      predefined:
+      - 'withAnyTags'
+      - 'withAllTags'
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: 50
+    - name: page_size
+      description: The maximum number of records to return per page. To receive additional pages after the first call, use `next_token`. Acceptable range is 3 - 100000. Default is 50.
+    - name: next_token
+      description: Insert 'NetworkLinkTokens' value received from a previous pagination command's context to further paginate through records.
+    outputs:
+    - contextPath: CiscoMeraki.NetworkLinkTokens
+      description: Pagination token used to retrieve the next batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.Network.enrollmentString
+      description: Enrollment string for the network.
+      type: String
+    - contextPath: CiscoMeraki.Network.id
+      description: Network ID.
+      type: String
+    - contextPath: CiscoMeraki.Network.name
+      description: Network name.
+      type: String
+    - contextPath: CiscoMeraki.Network.notes
+      description: Notes for the network.
+      type: String
+    - contextPath: CiscoMeraki.Network.organizationId
+      description: Organization ID.
+      type: String
+    - contextPath: CiscoMeraki.Network.timeZone
+      description: Timezone of the network.
+      type: String
+    - contextPath: CiscoMeraki.Network.url
+      description: URL to the network dashboard UI.
+      type: String
+    - contextPath: CiscoMeraki.Network.isBoundToConfigTemplate
+      description: If the network is bound to a configuration template.
+      type: Boolean
+    - contextPath: CiscoMeraki.Network.productTypes
+      description: List of the product types that the network supports.
+      type: String
+    - contextPath: CiscoMeraki.Network.tags
+      description: Network tags.
+      type: String
+  - name: meraki-organization-license-state-list
+    description: List the license states overview of an organization.
+    arguments:
+    - name: organization_id
+      description: ID of the organization to retrieve from. Use `meraki-organization-list` to fetch all organization IDs. This overrides the organization ID instance parameter.
+      default: true
+    outputs:
+    - contextPath: CiscoMeraki.LicenseState.organizationId
+      description: The organization the license state belongs to.
+      type: String
+    - contextPath: CiscoMeraki.LicenseState.licenseCount
+      description: Total number of licenses (per-device licensing only).
+      type: Number
+    - contextPath: CiscoMeraki.LicenseState.expirationDate
+      description: License expiration date (co-termination licensing only).
+      type: String
+    - contextPath: CiscoMeraki.LicenseState.status
+      description: License status (co-termination licensing only).
+      type: String
+    - contextPath: CiscoMeraki.LicenseState.licensedDeviceCounts
+      description: License counts (co-termination licensing only).
+      type: Number
+    - contextPath: CiscoMeraki.LicenseState.states.active.count
+      description: The number of active licenses.
+      type: Number
+    - contextPath: CiscoMeraki.LicenseState.states.expired.count
+      description: The number of expired licenses.
+      type: Number
+    - contextPath: CiscoMeraki.LicenseState.states.expiring.count
+      description: The number of expiring licenses.
+      type: Number
+    - contextPath: CiscoMeraki.LicenseState.states.expiring.critical.expiringCount
+      description: The number of licenses that will expire in this window.
+      type: Number
+    - contextPath: CiscoMeraki.LicenseState.states.expiring.critical.thresholdInDays
+      description: The number of days from now denoting the critical threshold for an expiring license.
+      type: Number
+    - contextPath: CiscoMeraki.LicenseState.states.expiring.warning.expiringCount
+      description: The number of licenses that will expire in this window.
+      type: Number
+    - contextPath: CiscoMeraki.LicenseState.states.expiring.warning.thresholdInDays
+      description: The number of days from now denoting the warning threshold for an expiring license.
+      type: Number
+    - contextPath: CiscoMeraki.LicenseState.states.recentlyQueued.count
+      description: The number of recently queued licenses.
+      type: Number
+    - contextPath: CiscoMeraki.LicenseState.states.unused.count
+      description: The number of unused licenses.
+      type: Number
+    - contextPath: CiscoMeraki.LicenseState.states.unused.soonestActivation.toActivateCount
+      description: The number of licenses that will activate on this date.
+      type: Number
+    - contextPath: CiscoMeraki.LicenseState.states.unused.soonestActivation.activationDate
+      description: The soonest license activation date.
+      type: Date
+    - contextPath: CiscoMeraki.LicenseState.states.unusedActive.count
+      description: The number of unused, active licenses.
+      type: Number
+    - contextPath: CiscoMeraki.LicenseState.states.unusedActive.oldestActivation.activeCount
+      description: The number of licenses that activated on this date.
+      type: Number
+    - contextPath: CiscoMeraki.LicenseState.states.unusedActive.oldestActivation.activationDate
+      description: The oldest license activation date.
+      type: Date
+    - contextPath: CiscoMeraki.LicenseState.systemsManager.counts.activeSeats
+      description: The number of systems manager seats in use.
+      type: Number
+    - contextPath: CiscoMeraki.LicenseState.systemsManager.counts.orgwideEnrolledDevices
+      description: The total number of enrolled systems manager devices.
+      type: Number
+    - contextPath: CiscoMeraki.LicenseState.systemsManager.counts.totalSeats
+      description: The total number of systems manager seats.
+      type: Number
+    - contextPath: CiscoMeraki.LicenseState.systemsManager.counts.unassignedSeats
+      description: The number of unused systems manager seats.
+      type: Number
+    - contextPath: CiscoMeraki.LicenseState.licenseTypes.licenseType
+      description: License type.
+      type: String
+    - contextPath: CiscoMeraki.LicenseState.licenseTypes.counts.unassigned
+      description: The number of unassigned licenses.
+      type: Number
+  - name: meraki-organization-inventory-list
+    description: List the device inventories for an organization.
+    arguments:
+    - name: organization_id
+      description: ID of the organization to retrieve from. Use `meraki-organization-list` to fetch all organization IDs. This overrides the organization ID instance parameter.
+    - name: serial
+      description: Serial number of a specific device to retrieve. Use `meraki-device-list` or `meraki-organization-device-search` to fetch serial numbers.
+      default: true
+    - name: used_state
+      description: Filter results by used or unused inventory.
+      auto: PREDEFINED
+      predefined:
+      - used
+      - unused
+    - name: search
+      description: Search for devices in inventory based on serial number, MAC address, or model.
+    - name: macs
+      description: Comma-separated list of MAC addresses to search for in inventory.
+      isArray: true
+    - name: network_ids
+      description: Comma-separated list of network IDs to search for in inventory. Use explicit 'null' value to get available devices only. Use `meraki-network-list` to fetch all network IDs.
+      isArray: true
+    - name: serials
+      description: Comma-separated list of serial numbers to search for in inventory. Use `meraki-device-list` or `meraki-organization-device-search` to fetch serial numbers.
+      isArray: true
+    - name: models
+      description: Comma-separated list of models to search for in inventory.
+      isArray: true
+    - name: order_numbers
+      description: Comma-separated list of order numbers to search for in inventory.
+      isArray: true
+    - name: tags
+      description: Comma-separated list of tags to filter networks by. The filtering is case-sensitive. If tags are included, 'tags_filter_type' should also be included.
+      isArray: true
+    - name: tags_filter_type
+      description: Indicate whether to return networks that contain ANY or ALL of the included tags. If no type is included, 'withAnyTags' will be selected.
+      auto: PREDEFINED
+      predefined:
+      - 'withAnyTags'
+      - 'withAllTags'
+    - name: product_types
+      description: Comma-separated list of product types to search for in inventory.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - appliance
+      - camera
+      - cellularGateway
+      - sensor
+      - switch
+      - systemsManager
+      - wireless
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: 50
+    - name: page_size
+      description: The maximum number of records to return per page. To receive additional pages after the first call, use `next_token`. Acceptable range is 3 - 1000. Default is 50.
+    - name: next_token
+      description: Insert 'InventoryLinkTokens' value received from a previous pagination command's context to further paginate through records.
+    outputs:
+    - contextPath: CiscoMeraki.InventoryLinkTokens.Prev
+      description: Pagination token used to retrieve the previous batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.InventoryLinkTokens.Next
+      description: Pagination token used to retrieve the next batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.InventoryLinkTokens.First
+      description: Pagination token used to retrieve the first batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.InventoryLinkTokens.Last
+      description: Pagination token used to retrieve the last batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.Inventory.claimedAt
+      description: Claimed time of the device.
+      type: Date
+    - contextPath: CiscoMeraki.Inventory.countryCode
+      description: Country/region code from device, network, or store order.
+      type: String
+    - contextPath: CiscoMeraki.Inventory.licenseExpirationDate
+      description: License expiration date of the device.
+      type: Date
+    - contextPath: CiscoMeraki.Inventory.mac
+      description: MAC address of the device.
+      type: String
+    - contextPath: CiscoMeraki.Inventory.model
+      description: Model type of the device.
+      type: String
+    - contextPath: CiscoMeraki.Inventory.name
+      description: Name of the device.
+      type: String
+    - contextPath: CiscoMeraki.Inventory.networkId
+      description: Network ID of the device.
+      type: String
+    - contextPath: CiscoMeraki.Inventory.orderNumber
+      description: Order number of the device.
+      type: String
+    - contextPath: CiscoMeraki.Inventory.productType
+      description: Product type of the device.
+      type: String
+    - contextPath: CiscoMeraki.Inventory.serial
+      description: Serial number of the device.
+      type: String
+    - contextPath: CiscoMeraki.Inventory.tags
+      description: Device tags.
+      type: String
+    - contextPath: CiscoMeraki.Inventory.details.name
+      description: Additional property name.
+      type: String
+    - contextPath: CiscoMeraki.Inventory.details.value
+      description: Additional property value.
+      type: String
+  - name: meraki-device-claim
+    description: 'Claim devices into a network. (Note: For recently claimed devices, it may take a few minutes for API requests against that device to succeed). This operation can be used up to ten times within a single five minute window.'
+    arguments:
+    - name: network_id
+      description: ID of the network to claim the devices into. Use `meraki-network-list` to fetch all network IDs. This overrides the network ID instance parameter.
+    - name: serials
+      description: Comma-separated list of serial numbers of the devices to claim. Use `meraki-device-list` or `meraki-organization-device-search` to fetch serial numbers.
+      required: true
+      isArray: true
+      default: true
+  - name: meraki-organization-device-search
+    description: Search for devices in an organization.
+    arguments:
+    - name: organization_id
+      description: ID of the organization to retrieve from. Use `meraki-organization-list` to fetch all organization IDs. This overrides the organization ID instance parameter.
+      default: true
+    - name: configuration_updated_after
+      description: 'Filter results by whether the devices configuration has been updated after the given timestamp. Accepted formats: datetime any substring of yyyy-mm-ddThh:mm:ssZ, epoch 1720617001, relative 1 day 2h 3 minute.'
+    - name: network_ids
+      description: Comma-separated list of network IDs to retrieve from. Use `meraki-network-list` to fetch all network IDs.
+      isArray: true
+    - name: product_types
+      description: Comma-separated list of product types to search for in inventory.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - appliance
+      - camera
+      - cellularGateway
+      - sensor
+      - switch
+      - systemsManager
+      - wireless
+    - name: tags
+      description: Comma-separated list of tags to filter networks by. The filtering is case-sensitive. If tags are included, 'tags_filter_type' should also be included.
+      isArray: true
+    - name: tags_filter_type
+      description: Indicate whether to return networks that contain ANY or ALL of the included tags. If no type is included, 'withAnyTags' will be selected.
+      auto: PREDEFINED
+      predefined:
+      - 'withAnyTags'
+      - 'withAllTags'
+    - name: name
+      description: Filter devices by name. All returned devices will have a name that contains the search term or is an exact match.
+    - name: mac
+      description: Filter devices by MAC address. All returned devices will have a MAC address that contains the search term or is an exact match.
+    - name: serial
+      description: Filter devices by serial number. All returned devices will have a serial number that contains the search term or is an exact match.
+    - name: model
+      description: Filter devices by model. All returned devices will have a model that contains the search term or is an exact match.
+    - name: macs
+      description: Comma-separated list of MAC addresses to search. All returned devices will have a MAC address that is an exact match.
+      isArray: true
+    - name: serials
+      description: Comma-separated list of serial numbers to search. All returned devices will have a serial number that is an exact match.
+      isArray: true
+    - name: sensor_metrics
+      description: Comma-separated list of metrics that they provide. Only applies to sensor devices.
+      isArray: true
+    - name: sensor_alert_profile_ids
+      description: Comma-separated list of alert profiles that are bound to them. Only applies to sensor devices.
+      isArray: true
+    - name: models
+      description: Comma-separated list of models to search. All returned devices will have a model that is an exact match.
+      isArray: true
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: 50
+    - name: page_size
+      description: The maximum number of records to return per page. To receive additional pages after the first call, use `next_token`. Acceptable range is 3 - 1000. Default is 50.
+    - name: next_token
+      description: Insert 'DeviceLinkTokens' value received from a previous pagination command's context to further paginate through records.
+    outputs:
+    - contextPath: CiscoMeraki.DeviceLinkTokens.Prev
+      description: Pagination token used to retrieve the previous batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.DeviceLinkTokens.Next
+      description: Pagination token used to retrieve the next batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.DeviceLinkTokens.First
+      description: Pagination token used to retrieve the first batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.DeviceLinkTokens.Last
+      description: Pagination token used to retrieve the last batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.Device.address
+      description: Physical address of the device.
+      type: String
+    - contextPath: CiscoMeraki.Device.firmware
+      description: Firmware version of the device.
+      type: String
+    - contextPath: CiscoMeraki.Device.floorPlanId
+      description: The floor plan to associate to this device.
+      type: String
+    - contextPath: CiscoMeraki.Device.imei
+      description: IMEI of the device, if applicable.
+      type: String
+    - contextPath: CiscoMeraki.Device.lanIp
+      description: LAN IP address of the device.
+      type: String
+    - contextPath: CiscoMeraki.Device.mac
+      description: MAC address of the device.
+      type: String
+    - contextPath: CiscoMeraki.Device.model
+      description: Model of the device.
+      type: String
+    - contextPath: CiscoMeraki.Device.name
+      description: Name of the device.
+      type: String
+    - contextPath: CiscoMeraki.Device.networkId
+      description: ID of the network the device belongs to.
+      type: String
+    - contextPath: CiscoMeraki.Device.notes
+      description: Notes for the device, limited to 255 characters.
+      type: String
+    - contextPath: CiscoMeraki.Device.productType
+      description: Product type of the device.
+      type: String
+    - contextPath: CiscoMeraki.Device.serial
+      description: Serial number of the device.
+      type: String
+    - contextPath: CiscoMeraki.Device.lat
+      description: Latitude of the device.
+      type: Number
+    - contextPath: CiscoMeraki.Device.lng
+      description: Longitude of the device.
+      type: Number
+    - contextPath: CiscoMeraki.Device.tags
+      description: List of tags assigned to the device.
+      type: String
+    - contextPath: CiscoMeraki.Device.configurationUpdatedAt
+      description: The last time the device's configuration has been updated.
+      type: Date
+    - contextPath: CiscoMeraki.Device.beaconIdParams.major
+      description: The major number to be used in the beacon identifier.
+      type: Number
+    - contextPath: CiscoMeraki.Device.beaconIdParams.minor
+      description: The minor number to be used in the beacon identifier.
+      type: Number
+    - contextPath: CiscoMeraki.Device.beaconIdParams.uuid
+      description: The UUID to be used in the beacon identifier.
+      type: String
+    - contextPath: CiscoMeraki.Device.details.name
+      description: Additional property name.
+      type: String
+    - contextPath: CiscoMeraki.Device.details.value
+      description: Additional property value.
+      type: String
+  - name: meraki-device-list
+    description: List the devices in an network or fetch a specific device with a serial number. Input must contain 1 parameter.
+    arguments:
+    - name: network_id
+      description: ID of a specific network to retrieve from. Use `meraki-network-list` to fetch all network IDs. This overrides the network ID instance parameter.
+    - name: serial
+      description: Serial number of a specific device to retrieve.
+      default: true
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: 50
+    - name: all_results
+      description: Whether to retrieve all the results by overriding the default limit.
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+    outputs:
+    - contextPath: CiscoMeraki.Device.address
+      description: Physical address of the device.
+      type: String
+    - contextPath: CiscoMeraki.Device.firmware
+      description: Firmware version of the device.
+      type: String
+    - contextPath: CiscoMeraki.Device.floorPlanId
+      description: The floor plan to associate to this device.
+      type: String
+    - contextPath: CiscoMeraki.Device.lanIp
+      description: LAN IP address of the device.
+      type: String
+    - contextPath: CiscoMeraki.Device.mac
+      description: MAC address of the device.
+      type: String
+    - contextPath: CiscoMeraki.Device.model
+      description: Model of the device.
+      type: String
+    - contextPath: CiscoMeraki.Device.name
+      description: Name of the device.
+      type: String
+    - contextPath: CiscoMeraki.Device.networkId
+      description: ID of the network the device belongs to.
+      type: String
+    - contextPath: CiscoMeraki.Device.notes
+      description: Notes for the device, limited to 255 characters.
+      type: String
+    - contextPath: CiscoMeraki.Device.serial
+      description: Serial number of the device.
+      type: String
+    - contextPath: CiscoMeraki.Device.lat
+      description: Latitude of the device.
+      type: Number
+    - contextPath: CiscoMeraki.Device.lng
+      description: Longitude of the device.
+      type: Number
+    - contextPath: CiscoMeraki.Device.tags
+      description: List of tags assigned to the device.
+      type: String
+    - contextPath: CiscoMeraki.Device.beaconIdParams.major
+      description: The major number to be used in the beacon identifier.
+      type: Number
+    - contextPath: CiscoMeraki.Device.beaconIdParams.minor
+      description: The minor number to be used in the beacon identifier.
+      type: Number
+    - contextPath: CiscoMeraki.Device.beaconIdParams.uuid
+      description: The UUID to be used in the beacon identifier.
+      type: String
+    - contextPath: CiscoMeraki.Device.details.name
+      description: Additional property name.
+      type: String
+    - contextPath: CiscoMeraki.Device.details.value
+      description: Additional property value.
+      type: String
+  - name: meraki-device-update
+    description: Update the attributes of a device.
+    arguments:
+    - name: serial
+      description: Serial number of the device to update. Use `meraki-device-list` or `meraki-organization-device-search` to fetch serial numbers.
+      required: true
+      default: true
+    - name: address
+      description: The address of a device.
+    - name: floor_plan_id
+      description: The floor plan to associate to this device. Use explicit 'null' value to disassociate the device from the floor plan.
+    - name: name
+      description: The name of a device.
+    - name: notes
+      description: The notes for the device. Limited to 255 characters.
+    - name: switch_profile_id
+      description: The ID of a switch template to bind to the device (for available switch templates, see the 'Switch Templates' endpoint). Use explicit 'null' value to unbind the switch device from the current profile. For a device to be bindable to a switch template, it must (1) be a switch, and (2) belong to a network that is bound to a configuration template.
+    - name: move_map_marker
+      description: Whether to set the latitude and longitude of a device based on the new address. Only applies when lat and lng are not specified.
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+    - name: lat
+      description: The latitude of a device.
+    - name: lng
+      description: The longitude of a device.
+    - name: tags
+      description: Comma-separated list of tags for the device.
+    outputs:
+    - contextPath: CiscoMeraki.Device.address
+      description: Physical address of the device.
+      type: String
+    - contextPath: CiscoMeraki.Device.firmware
+      description: Firmware version of the device.
+      type: String
+    - contextPath: CiscoMeraki.Device.floorPlanId
+      description: The floor plan to associate to this device. Use explicit 'null' value to disassociate the device from the floor plan.
+      type: String
+    - contextPath: CiscoMeraki.Device.imei
+      description: IMEI of the device, if applicable.
+      type: String
+    - contextPath: CiscoMeraki.Device.lanIp
+      description: LAN IP address of the device.
+      type: String
+    - contextPath: CiscoMeraki.Device.mac
+      description: MAC address of the device.
+      type: String
+    - contextPath: CiscoMeraki.Device.model
+      description: Model of the device.
+      type: String
+    - contextPath: CiscoMeraki.Device.name
+      description: Name of the device.
+      type: String
+    - contextPath: CiscoMeraki.Device.networkId
+      description: ID of the network the device belongs to.
+      type: String
+    - contextPath: CiscoMeraki.Device.notes
+      description: Notes for the device, limited to 255 characters.
+      type: String
+    - contextPath: CiscoMeraki.Device.productType
+      description: Product type of the device.
+      type: String
+    - contextPath: CiscoMeraki.Device.serial
+      description: Serial number of the device.
+      type: String
+    - contextPath: CiscoMeraki.Device.lat
+      description: Latitude of the device.
+      type: Number
+    - contextPath: CiscoMeraki.Device.lng
+      description: Longitude of the device.
+      type: Number
+    - contextPath: CiscoMeraki.Device.tags
+      description: List of tags assigned to the device.
+      type: String
+    - contextPath: CiscoMeraki.Device.beaconIdParams.major
+      description: The major number to be used in the beacon identifier.
+      type: Number
+    - contextPath: CiscoMeraki.Device.beaconIdParams.minor
+      description: The minor number to be used in the beacon identifier.
+      type: Number
+    - contextPath: CiscoMeraki.Device.beaconIdParams.uuid
+      description: The UUID to be used in the beacon identifier.
+      type: String
+    - contextPath: CiscoMeraki.Device.details.name
+      description: Additional property name.
+      type: String
+    - contextPath: CiscoMeraki.Device.details.value
+      description: Additional property value.
+      type: String
+  - name: meraki-device-remove
+    description: Remove a single device from a network.
+    arguments:
+    - name: network_id
+      description: ID of the network to remove the device from. Use `meraki-network-list` to fetch all network IDs. This overrides the network ID instance parameter.
+    - name: serial
+      description: Serial number of the device to remove. Use `meraki-device-list` or `meraki-organization-device-search` to fetch serial numbers.
+      required: true
+      default: true
+  - name: meraki-device-status-list
+    description: List the status of every Meraki device in the organization.
+    arguments:
+    - name: organization_id
+      description: ID of the organization to retrieve from. Use `meraki-organization-list` to fetch all organization IDs. This overrides the organization ID instance parameter.
+      default: true
+    - name: network_ids
+      description: Comma-separated list of network IDs to search for. Use `meraki-network-list` to fetch all network IDs.
+      isArray: true
+    - name: serials
+      description: Comma-separated list of serial numbers to search for. Use `meraki-device-list` or `meraki-organization-device-search` to fetch serial numbers.
+      isArray: true
+    - name: statuses
+      description: Comma-separated list of statuses to search for.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - online
+      - alerting
+      - offline
+      - dormant
+    - name: product_types
+      description: Comma-separated list of product types to search for.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - appliance
+      - camera
+      - cellularGateway
+      - sensor
+      - switch
+      - systemsManager
+      - wireless
+    - name: models
+      description: Comma-separated list of models to search for.
+      isArray: true
+    - name: tags
+      description: Comma-separated list of tags to filter networks by. The filtering is case-sensitive. If tags are included, 'tags_filter_type' should also be included.
+      isArray: true
+    - name: tags_filter_type
+      description: Indicate whether to return networks that contain ANY or ALL of the included tags. If no type is included, 'withAnyTags' will be selected.
+      auto: PREDEFINED
+      predefined:
+      - 'withAnyTags'
+      - 'withAllTags'
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: 50
+    - name: page_size
+      description: The maximum number of records to return per page. To receive additional pages after the first call, use `next_token`. Acceptable range is 3 - 1000. Default is 50.
+    - name: next_token
+      description: Insert 'DeviceStatusLinkTokens' value received from a previous pagination command's context to further paginate through records.
+    outputs:
+    - contextPath: CiscoMeraki.DeviceStatusLinkTokens.Prev
+      description: Pagination token used to retrieve the previous batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.DeviceStatusLinkTokens.Next
+      description: Pagination token used to retrieve the next batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.DeviceStatusLinkTokens.First
+      description: Pagination token used to retrieve the first batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.DeviceStatusLinkTokens.Last
+      description: Pagination token used to retrieve the last batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.DeviceStatus.gateway
+      description: IP gateway.
+      type: String
+    - contextPath: CiscoMeraki.DeviceStatus.ipType
+      description: IP type.
+      type: String
+    - contextPath: CiscoMeraki.DeviceStatus.lanIp
+      description: LAN IP address.
+      type: String
+    - contextPath: CiscoMeraki.DeviceStatus.lastReportedAt
+      description: Device last reported location.
+      type: Date
+    - contextPath: CiscoMeraki.DeviceStatus.mac
+      description: MAC address.
+      type: String
+    - contextPath: CiscoMeraki.DeviceStatus.model
+      description: Model.
+      type: String
+    - contextPath: CiscoMeraki.DeviceStatus.name
+      description: Device name.
+      type: String
+    - contextPath: CiscoMeraki.DeviceStatus.networkId
+      description: Network ID.
+      type: String
+    - contextPath: CiscoMeraki.DeviceStatus.primaryDns
+      description: Primary DNS.
+      type: String
+    - contextPath: CiscoMeraki.DeviceStatus.productType
+      description: Product type.
+      type: String
+    - contextPath: CiscoMeraki.DeviceStatus.publicIp
+      description: Public IP address.
+      type: String
+    - contextPath: CiscoMeraki.DeviceStatus.secondaryDns
+      description: Secondary DNS.
+      type: String
+    - contextPath: CiscoMeraki.DeviceStatus.serial
+      description: Device serial number.
+      type: String
+    - contextPath: CiscoMeraki.DeviceStatus.status
+      description: Device status.
+      type: String
+    - contextPath: CiscoMeraki.DeviceStatus.tags
+      description: List of tags assigned to the device.
+      type: String
+    - contextPath: CiscoMeraki.DeviceStatus.components.powerSupplies.slot
+      description: Slot the power supply is in.
+      type: Number
+    - contextPath: CiscoMeraki.DeviceStatus.components.powerSupplies.model
+      description: Model of the power supply.
+      type: String
+    - contextPath: CiscoMeraki.DeviceStatus.components.powerSupplies.serial
+      description: Serial number of the power supply.
+      type: String
+    - contextPath: CiscoMeraki.DeviceStatus.components.powerSupplies.status
+      description: Status of the power supply.
+      type: String
+    - contextPath: CiscoMeraki.DeviceStatus.components.powerSupplies.poe.maximum
+      description: Maximum PoE this power supply can provide when connected to the current switch model.
+      type: Number
+    - contextPath: CiscoMeraki.DeviceStatus.components.powerSupplies.poe.unit
+      description: Unit of the PoE maximum.
+      type: String
+  - name: meraki-organization-uplink-status-list
+    description: List the uplink status of every Meraki MX, MG and Z series devices in the organization.
+    arguments:
+    - name: organization_id
+      description: ID of the organization to retrieve from. Use `meraki-organization-list` to fetch all organization IDs. This overrides the organization ID instance parameter.
+      default: true
+    - name: network_ids
+      description: Comma-separated list of network IDs to search for. Use `meraki-network-list` to fetch all network IDs.
+      isArray: true
+    - name: serials
+      description: Comma-separated list of serial numbers to search for. Use `meraki-device-list` or `meraki-organization-device-search` to fetch serial numbers.
+      isArray: true
+    - name: iccids
+      description: Comma-separated list of ICCIDs to search for.
+      isArray: true
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: 50
+    - name: page_size
+      description: The maximum number of records to return per page. To receive additional pages after the first call, use `next_token`. Acceptable range is 3 - 1000. Default is 50.
+    - name: next_token
+      description: Insert 'UplinkStatusLinkTokens' value received from a previous pagination command's context to further paginate through records.
+    outputs:
+    - contextPath: CiscoMeraki.UplinkStatusLinkTokens.Prev
+      description: Pagination token used to retrieve the previous batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.UplinkStatusLinkTokens.Next
+      description: Pagination token used to retrieve the next batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.UplinkStatusLinkTokens.First
+      description: Pagination token used to retrieve the first batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.UplinkStatusLinkTokens.Last
+      description: Pagination token used to retrieve the last batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.UplinkStatus.lastReportedAt
+      description: Last reported time for the device.
+      type: Date
+    - contextPath: CiscoMeraki.UplinkStatus.model
+      description: The uplink model.
+      type: String
+    - contextPath: CiscoMeraki.UplinkStatus.networkId
+      description: Network identifier.
+      type: String
+    - contextPath: CiscoMeraki.UplinkStatus.serial
+      description: The uplink serial number.
+      type: String
+    - contextPath: CiscoMeraki.UplinkStatus.highAvailability.role
+      description: The High Availability role of the device on the network. For devices that do not support HA, this will be 'primary'.
+      type: String
+    - contextPath: CiscoMeraki.UplinkStatus.highAvailability.enabled
+      description: Indicates whether High Availability is enabled for the device. For devices that do not support HA, this will be 'false'.
+      type: Boolean
+    - contextPath: CiscoMeraki.UplinkStatus.uplinks.apn
+      description: Access Point Name.
+      type: String
+    - contextPath: CiscoMeraki.UplinkStatus.uplinks.connectionType
+      description: Connection type.
+      type: String
+    - contextPath: CiscoMeraki.UplinkStatus.uplinks.dns1
+      description: Primary DNS IP.
+      type: String
+    - contextPath: CiscoMeraki.UplinkStatus.uplinks.dns2
+      description: Secondary DNS IP.
+      type: String
+    - contextPath: CiscoMeraki.UplinkStatus.uplinks.gateway
+      description: Gateway IP.
+      type: String
+    - contextPath: CiscoMeraki.UplinkStatus.uplinks.iccid
+      description: Integrated Circuit Card Identification number.
+      type: String
+    - contextPath: CiscoMeraki.UplinkStatus.uplinks.interface
+      description: Uplink interface enum = [cellular, wan1, wan2, wan3].
+      type: String
+    - contextPath: CiscoMeraki.UplinkStatus.uplinks.ip
+      description: Uplink IP address.
+      type: String
+    - contextPath: CiscoMeraki.UplinkStatus.uplinks.ipAssignedBy
+      description: The way in which the IP address is assigned.
+      type: String
+    - contextPath: CiscoMeraki.UplinkStatus.uplinks.primaryDns
+      description: Primary DNS IP address.
+      type: String
+    - contextPath: CiscoMeraki.UplinkStatus.uplinks.provider
+      description: Network provider.
+      type: String
+    - contextPath: CiscoMeraki.UplinkStatus.uplinks.publicIp
+      description: Public IP address.
+      type: String
+    - contextPath: CiscoMeraki.UplinkStatus.uplinks.secondaryDns
+      description: Secondary DNS IP address.
+      type: String
+    - contextPath: CiscoMeraki.UplinkStatus.uplinks.signalType
+      description: Signal type.
+      type: String
+    - contextPath: CiscoMeraki.UplinkStatus.uplinks.status
+      description: Uplink status enum = [active, connecting, failed, not connected, ready].
+      type: String
+    - contextPath: CiscoMeraki.UplinkStatus.uplinks.signalStat.rsrp
+      description: Reference Signal Received Power.
+      type: String
+    - contextPath: CiscoMeraki.UplinkStatus.uplinks.signalStat.rsrq
+      description: Reference Signal Received Quality.
+      type: String
+  - name: meraki-organization-client-list
+    description: Return the client details in an organization.
+    arguments:
+    - name: organization_id
+      description: ID of the organization to retrieve from. Use `meraki-organization-list` to fetch all organization IDs. This overrides the organization ID instance parameter.
+      default: true
+    - name: mac
+      description: The MAC address of the client.
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: 5
+    - name: page_size
+      description: The maximum number of records to return per page. To receive additional pages after the first call, use `next_token`. Acceptable range is 3 - 5. Default is 5.
+    - name: next_token
+      description: Insert 'ClientLinkTokens' value received from a previous pagination command's context to further paginate through records.
+    outputs:
+    - contextPath: CiscoMeraki.ClientLinkTokens.Prev
+      description: Pagination token used to retrieve the previous batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.ClientLinkTokens.Next
+      description: Pagination token used to retrieve the next batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.ClientLinkTokens.First
+      description: Pagination token used to retrieve the first batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.ClientLinkTokens.Last
+      description: Pagination token used to retrieve the last batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.Client.clientId
+      description: The ID of the client.
+      type: String
+    - contextPath: CiscoMeraki.Client.mac
+      description: The MAC address of the client.
+      type: String
+    - contextPath: CiscoMeraki.Client.manufacturer
+      description: Manufacturer of the client.
+      type: String
+    - contextPath: CiscoMeraki.Client.records.firstSeen
+      description: Timestamp client was first seen in the network.
+      type: Number
+    - contextPath: CiscoMeraki.Client.records.lastSeen
+      description: Timestamp client was last seen in the network.
+      type: Number
+    - contextPath: CiscoMeraki.Client.records.description
+      description: Short description of the client.
+      type: String
+    - contextPath: CiscoMeraki.Client.records.ip
+      description: The IP address of the client.
+      type: String
+    - contextPath: CiscoMeraki.Client.records.ip6
+      description: The IPv6 address of the client.
+      type: String
+    - contextPath: CiscoMeraki.Client.records.os
+      description: The operating system of the client.
+      type: String
+    - contextPath: CiscoMeraki.Client.records.recentDeviceMac
+      description: The MAC address of the node that the device was last connected to.
+      type: String
+    - contextPath: CiscoMeraki.Client.records.ssid
+      description: The name of the SSID that the client is connected to.
+      type: String
+    - contextPath: CiscoMeraki.Client.records.status
+      description: The connection status of the client enum = [Offline, Online].
+      type: String
+    - contextPath: CiscoMeraki.Client.records.switchport
+      description: The switch port the client is connected to.
+      type: String
+    - contextPath: CiscoMeraki.Client.records.user
+      description: The username of the user of the client.
+      type: String
+    - contextPath: CiscoMeraki.Client.records.vlan
+      description: The name of the VLAN that the client is connected to.
+      type: String
+    - contextPath: CiscoMeraki.Client.records.wirelessCapabilities
+      description: Wireless capabilities of the client.
+      type: String
+    - contextPath: CiscoMeraki.Client.records.smInstalled
+      description: Whether the system manager for the client is installed.
+      type: Boolean
+    - contextPath: CiscoMeraki.Client.records.cdp
+      description: The Cisco discover protocol settings for the client.
+      type: String
+    - contextPath: CiscoMeraki.Client.records.lldp
+      description: The link layer discover protocol settings for the client.
+      type: String
+    - contextPath: CiscoMeraki.Client.records.network.enrollmentString
+      description: The network enrollment string.
+      type: String
+    - contextPath: CiscoMeraki.Client.records.network.id
+      description: The network identifier.
+      type: String
+    - contextPath: CiscoMeraki.Client.records.network.name
+      description: The network name.
+      type: String
+    - contextPath: CiscoMeraki.Client.records.network.notes
+      description: The notes for the network.
+      type: String
+    - contextPath: CiscoMeraki.Client.records.network.organizationId
+      description: The organization identifier.
+      type: String
+    - contextPath: CiscoMeraki.Client.records.network.timeZone
+      description: The network's timezone.
+      type: String
+    - contextPath: CiscoMeraki.Client.records.network.url
+      description: The network URL.
+      type: String
+    - contextPath: CiscoMeraki.Client.records.network.isBoundToConfigTemplate
+      description: If the network is bound to a configuration template.
+      type: Boolean
+    - contextPath: CiscoMeraki.Client.records.network.productTypes
+      description: The product types of the network.
+      type: String
+    - contextPath: CiscoMeraki.Client.records.network.tags
+      description: The network tags.
+      type: String
+    - contextPath: CiscoMeraki.Client.records.clientVpnConnections.connectedAt
+      description: The time the client last connected to the VPN.
+      type: Number
+    - contextPath: CiscoMeraki.Client.records.clientVpnConnections.disconnectedAt
+      description: The time the client last disconnected from the VPN.
+      type: Number
+    - contextPath: CiscoMeraki.Client.records.clientVpnConnections.remoteIp
+      description: The IP address of the VPN the client last connected to.
+      type: String
+  - name: meraki-network-client-list
+    description: List the clients that have used this network in the time span. The data is updated at most once every five minutes.
+    arguments:
+    - name: network_id
+      description: ID of the network to retrieve from. Use `meraki-network-list` to fetch all network IDs. This overrides the network ID instance parameter.
+      default: true
+    - name: client_id
+      description: ID of a specific client to retrieve. Clients can be identified by a client key or either the MAC or IP address depending on whether the network uses Track-by-IP.
+    - name: t0
+      description: 'The time span in days for which the information will be fetched. The maximum lookback period is 31 days from today. Accepted formats: datetime any substring of yyyy-mm-ddThh:mm:ssZ, epoch 1720617001, relative 1 day 2h 3 minute.'
+    - name: time_span
+      description: The time span number in seconds for which the information will be fetched. If specifying time span, do not specify parameter t0. The value must be in seconds and be less than or equal to 31 days (2678400 seconds). The default is 1 day.
+    - name: statuses
+      description: Comma-separated list of statuses.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - online
+      - offline
+    - name: ip
+      description: Filters clients based on a partial or full match for the IP address field.
+    - name: ip6
+      description: Filters clients based on a partial or full match for the IPv6 address field.
+    - name: ip6_local
+      description: Filters clients based on a partial or full match for the local IPv6 address field.
+    - name: mac
+      description: Filters clients based on a partial or full match for the MAC address field.
+    - name: os
+      description: Filters clients based on a partial or full match for the operating system field.
+    - name: psk_group
+      description: Filters clients based on partial or full match for the IPSK name field.
+    - name: description
+      description: Filters clients based on a partial or full match for the description field.
+    - name: vlan
+      description: Filters clients based on the full match for the VLAN field.
+    - name: named_vlan
+      description: Filters clients based on the partial or full match for the named VLAN field.
+    - name: recent_device_connections
+      description: Comma-separated list of recent connection types.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - Wired
+      - Wireless
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: 50
+    - name: page_size
+      description: The maximum number of records to return per page. To receive additional pages after the first call, use `next_token`. Acceptable range is 3 - 5000. Default is 50.
+    - name: next_token
+      description: Insert 'NetworkClientLinkTokens' value received from a previous pagination command's context to further paginate through records.
+    outputs:
+    - contextPath: CiscoMeraki.NetworkClientLinkTokens.Prev
+      description: Pagination token used to retrieve the previous batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.NetworkClientLinkTokens.Next
+      description: Pagination token used to retrieve the next batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.NetworkClientLinkTokens.First
+      description: Pagination token used to retrieve the first batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.NetworkClientLinkTokens.Last
+      description: Pagination token used to retrieve the last batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.NetworkClient.firstSeen
+      description: Timestamp client was first seen in the network.
+      type: Number
+    - contextPath: CiscoMeraki.NetworkClient.lastSeen
+      description: Timestamp client was last seen in the network.
+      type: Number
+    - contextPath: CiscoMeraki.NetworkClient.adaptivePolicyGroup
+      description: The adaptive policy group of the client.
+      type: String
+    - contextPath: CiscoMeraki.NetworkClient.description
+      description: Short description of the client.
+      type: String
+    - contextPath: CiscoMeraki.NetworkClient.deviceTypePrediction
+      description: Prediction of the client's device type.
+      type: String
+    - contextPath: CiscoMeraki.NetworkClient.groupPolicy8021x
+      description: 802.1x group policy of the client.
+      type: String
+    - contextPath: CiscoMeraki.NetworkClient.id
+      description: The ID of the client.
+      type: String
+    - contextPath: CiscoMeraki.NetworkClient.ip
+      description: The IP address of the client.
+      type: String
+    - contextPath: CiscoMeraki.NetworkClient.ip6
+      description: The IPv6 address of the client.
+      type: String
+    - contextPath: CiscoMeraki.NetworkClient.ip6Local
+      description: Local IPv6 address of the client.
+      type: String
+    - contextPath: CiscoMeraki.NetworkClient.mac
+      description: The MAC address of the client.
+      type: String
+    - contextPath: CiscoMeraki.NetworkClient.manufacturer
+      description: Manufacturer of the client.
+      type: String
+    - contextPath: CiscoMeraki.NetworkClient.namedVlan
+      description: Named VLAN of the client.
+      type: String
+    - contextPath: CiscoMeraki.NetworkClient.notes
+      description: Notes on the client.
+      type: String
+    - contextPath: CiscoMeraki.NetworkClient.os
+      description: The operating system of the client.
+      type: String
+    - contextPath: CiscoMeraki.NetworkClient.pskGroup
+      description: IPSK name of the client.
+      type: String
+    - contextPath: CiscoMeraki.NetworkClient.recentDeviceConnection
+      description: Client's most recent connection type enum = [Wired, Wireless].
+      type: String
+    - contextPath: CiscoMeraki.NetworkClient.recentDeviceMac
+      description: The MAC address of the node that the device was last connected to.
+      type: String
+    - contextPath: CiscoMeraki.NetworkClient.recentDeviceName
+      description: The name of the node the device was last connected to.
+      type: String
+    - contextPath: CiscoMeraki.NetworkClient.recentDeviceSerial
+      description: The serial number of the node the device was last connected to.
+      type: String
+    - contextPath: CiscoMeraki.NetworkClient.ssid
+      description: The name of the SSID that the client is connected to.
+      type: String
+    - contextPath: CiscoMeraki.NetworkClient.status
+      description: The connection status of the client enum = [Offline, Online].
+      type: String
+    - contextPath: CiscoMeraki.NetworkClient.switchport
+      description: The switch port that the client is connected to.
+      type: String
+    - contextPath: CiscoMeraki.NetworkClient.user
+      description: The username of the user of the client.
+      type: String
+    - contextPath: CiscoMeraki.NetworkClient.vlan
+      description: The name of the VLAN that the client is connected to.
+      type: String
+    - contextPath: CiscoMeraki.NetworkClient.wirelessCapabilities
+      description: Wireless capabilities of the client.
+      type: String
+    - contextPath: CiscoMeraki.NetworkClient.smInstalled
+      description: Whether the service manager for the client is installed.
+      type: Boolean
+    - contextPath: CiscoMeraki.NetworkClient.cdp
+      description: The Cisco discover protocol settings for the client.
+      type: String
+    - contextPath: CiscoMeraki.NetworkClient.lldp
+      description: The link layer discover protocol settings for the client.
+      type: String
+    - contextPath: CiscoMeraki.NetworkClient.usage.recv
+      description: Usage received by the client.
+      type: Number
+    - contextPath: CiscoMeraki.NetworkClient.usage.sent
+      description: Usage sent by the client.
+      type: Number
+    - contextPath: CiscoMeraki.NetworkClient.clientVpnConnections.connectedAt
+      description: The time the client last connected to the VPN.
+      type: Number
+    - contextPath: CiscoMeraki.NetworkClient.clientVpnConnections.disconnectedAt
+      description: The time the client last disconnected from the VPN.
+      type: Number
+    - contextPath: CiscoMeraki.NetworkClient.clientVpnConnections.remoteIp
+      description: The IP address of the VPN the client last connected to.
+      type: String
+  - name: meraki-device-client-list
+    description: List the clients of a device, up to a maximum of a month ago. The usage of each client is returned in kilobytes. If the device is a switch, the switchport is returned; otherwise the switchport field is null.
+    arguments:
+    - name: serial
+      description: Serial number of the device to retrieve from. Use `meraki-device-list` or `meraki-organization-device-search` to fetch serial numbers.
+      required: true
+      default: true
+    - name: t0
+      description: 'The time span in days for which the information will be fetched. The maximum lookback period is 31 days from today. Accepted formats: datetime any substring of yyyy-mm-ddThh:mm:ssZ, epoch 1720617001, relative 1 day 2h 3 minute.'
+    - name: time_span
+      description: The time span number in seconds for which the information will be fetched. If specifying time span, do not specify parameter t0. The value must be in seconds and be less than or equal to 31 days (2678400 seconds). The default is 1 day.
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: 50
+    - name: all_results
+      description: Whether to retrieve all the results by overriding the default limit.
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+    outputs:
+    - contextPath: CiscoMeraki.DeviceClient.adaptivePolicyGroup
+      description: A description of the adaptive policy group.
+      type: String
+    - contextPath: CiscoMeraki.DeviceClient.description
+      description: Short description of the client.
+      type: String
+    - contextPath: CiscoMeraki.DeviceClient.dhcpHostname
+      description: The client's DHCP hostname.
+      type: String
+    - contextPath: CiscoMeraki.DeviceClient.id
+      description: The ID of the client.
+      type: String
+    - contextPath: CiscoMeraki.DeviceClient.ip
+      description: The IP address of the client.
+      type: String
+    - contextPath: CiscoMeraki.DeviceClient.mac
+      description: The MAC address of the client.
+      type: String
+    - contextPath: CiscoMeraki.DeviceClient.mdnsName
+      description: The client's MDNS name.
+      type: String
+    - contextPath: CiscoMeraki.DeviceClient.namedVlan
+      description: The owner-assigned name of the VLAN the client is connected to.
+      type: String
+    - contextPath: CiscoMeraki.DeviceClient.switchport
+      description: The name of the switchport with clients on it, if the device is a switch.
+      type: String
+    - contextPath: CiscoMeraki.DeviceClient.user
+      description: The client user's name.
+      type: String
+    - contextPath: CiscoMeraki.DeviceClient.vlan
+      description: The client-assigned name of the VLAN the client is connected to.
+      type: String
+    - contextPath: CiscoMeraki.DeviceClient.usage.recv
+      description: Usage received by the client.
+      type: Number
+    - contextPath: CiscoMeraki.DeviceClient.usage.sent
+      description: Usage sent by the client.
+      type: Number
+  - name: meraki-ssid-appliance-list
+    description: List the MX SSIDs in a network.
+    arguments:
+    - name: network_id
+      description: ID of the network to retrieve from. Use `meraki-network-list` to fetch all network IDs. This overrides the network ID instance parameter.
+    - name: number
+      description: Number of a specific SSID to retrieve.
+      default: true
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: 50
+    - name: all_results
+      description: Whether to retrieve all the results by overriding the default limit.
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+    outputs:
+    - contextPath: CiscoMeraki.SSID.Appliance.defaultVlanId
+      description: The VLAN ID of the VLAN associated to this SSID.
+      type: Number
+    - contextPath: CiscoMeraki.SSID.Appliance.number
+      description: The number of the SSID.
+      type: Number
+    - contextPath: CiscoMeraki.SSID.Appliance.authMode
+      description: The association control method for the SSID.
+      type: String
+    - contextPath: CiscoMeraki.SSID.Appliance.encryptionMode
+      description: The PSK encryption mode for the SSID.
+      type: String
+    - contextPath: CiscoMeraki.SSID.Appliance.name
+      description: The name of the SSID.
+      type: String
+    - contextPath: CiscoMeraki.SSID.Appliance.wpaEncryptionMode
+      description: WPA encryption mode for the SSID.
+      type: String
+    - contextPath: CiscoMeraki.SSID.Appliance.enabled
+      description: Whether the SSID is enabled.
+      type: Boolean
+    - contextPath: CiscoMeraki.SSID.Appliance.visible
+      description: Whether the MX should advertise or hide this SSID.
+      type: Boolean
+    - contextPath: CiscoMeraki.SSID.Appliance.radiusServers.port
+      description: The UDP port your RADIUS servers listens on for Access-requests.
+      type: Number
+    - contextPath: CiscoMeraki.SSID.Appliance.radiusServers.host
+      description: The IP address of your RADIUS server.
+      type: String
+  - name: meraki-ssid-wireless-list
+    description: List the MR SSIDs in a network.
+    arguments:
+    - name: network_id
+      description: ID of the network to retrieve from. Use `meraki-network-list` to fetch all network IDs. This overrides the network ID instance parameter.
+    - name: number
+      description: Number of a specific SSID to retrieve.
+      default: true
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: 50
+    - name: all_results
+      description: Whether to retrieve all the results by overriding the default limit.
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+    outputs:
+    - contextPath: CiscoMeraki.SSID.Wireless.minBitrate
+      description: The minimum bitrate in Mbps of this SSID in the default indoor RF profile.
+      type: Number
+    - contextPath: CiscoMeraki.SSID.Wireless.number
+      description: Unique identifier of the SSID.
+      type: Number
+    - contextPath: CiscoMeraki.SSID.Wireless.perClientBandwidthLimitDown
+      description: The download bandwidth limit in Kbps. (0 represents no limit.).
+      type: Number
+    - contextPath: CiscoMeraki.SSID.Wireless.perClientBandwidthLimitUp
+      description: The upload bandwidth limit in Kbps. (0 represents no limit.).
+      type: Number
+    - contextPath: CiscoMeraki.SSID.Wireless.perSsidBandwidthLimitDown
+      description: The total download bandwidth limit in Kbps (0 represents no limit).
+      type: Number
+    - contextPath: CiscoMeraki.SSID.Wireless.perSsidBandwidthLimitUp
+      description: The total upload bandwidth limit in Kbps (0 represents no limit).
+      type: Number
+    - contextPath: CiscoMeraki.SSID.Wireless.adminSplashUrl
+      description: URL for the admin splash page.
+      type: String
+    - contextPath: CiscoMeraki.SSID.Wireless.authMode
+      description: The association control method for the SSID enum = [8021x-google, 8021x-localradius, 8021x-meraki, 8021x-nac, 8021x-radius, ipsk-with-nac, ipsk-with-radius, ipsk-without-radius, open, open-enhanced, open-with-nac, open-with-radius, psk].
+      type: String
+    - contextPath: CiscoMeraki.SSID.Wireless.bandSelection
+      description: The client-serving radio frequencies of this SSID in the default indoor RF profile enum = [5 GHz band only, Dual band operation, Dual band operation with Band Steering].
+      type: String
+    - contextPath: CiscoMeraki.SSID.Wireless.encryptionMode
+      description: The PSK encryption mode for the SSID enum = [wep, wpa].
+      type: String
+    - contextPath: CiscoMeraki.SSID.Wireless.ipAssignmentMode
+      description: The client IP assignment mode enum = [Bridge mode, Ethernet over GRE, Layer 3 roaming, Layer 3 roaming with a concentrator, NAT mode, VPN].
+      type: String
+    - contextPath: CiscoMeraki.SSID.Wireless.name
+      description: The name of the SSID.
+      type: String
+    - contextPath: CiscoMeraki.SSID.Wireless.radiusAttributeForGroupPolicies
+      description: RADIUS attribute used to look up group policies enum = [Airespace-ACL-Name, Aruba-User-Role, Filter-Id, Reply-Message].
+      type: String
+    - contextPath: CiscoMeraki.SSID.Wireless.radiusFailoverPolicy
+      description: Policy which determines how authentication requests should be handled in the event that all of the configured RADIUS servers are unreachable enum = [Allow access, Deny access].
+      type: String
+    - contextPath: CiscoMeraki.SSID.Wireless.radiusLoadBalancingPolicy
+      description: Policy which determines which RADIUS server will be contacted first in an authentication attempt, and the ordering of any necessary retry attempts enum = [Round robin, Strict priority order].
+      type: String
+    - contextPath: CiscoMeraki.SSID.Wireless.splashPage
+      description: The type of splash page for the SSID enum = [Billing, Cisco ISE, Click-through splash page, Facebook Wi-Fi, Google Apps domain, Google OAuth, None, Password-protected with Active Directory, Password-protected with LDAP, Password-protected with Meraki RADIUS, Password-protected with custom RADIUS, SMS authentication, Sponsored guest, Systems Manager Sentry].
+      type: String
+    - contextPath: CiscoMeraki.SSID.Wireless.splashTimeout
+      description: Splash page timeout.
+      type: Date
+    - contextPath: CiscoMeraki.SSID.Wireless.wpaEncryptionMode
+      description: The types of WPA encryption enum = [WPA1 and WPA2, WPA1 only, WPA2 only, WPA3 192-bit Security, WPA3 Transition Mode, WPA3 only].
+      type: String
+    - contextPath: CiscoMeraki.SSID.Wireless.availableOnAllAps
+      description: Whether all APs broadcast the SSID or if it's restricted to APs matching any availability tags.
+      type: Boolean
+    - contextPath: CiscoMeraki.SSID.Wireless.enabled
+      description: Whether the SSID is enabled.
+      type: Boolean
+    - contextPath: CiscoMeraki.SSID.Wireless.localAuth
+      description: Extended local auth flag for Enterprise NAC.
+      type: Boolean
+    - contextPath: CiscoMeraki.SSID.Wireless.mandatoryDhcpEnabled
+      description: Whether clients connecting to this SSID must use the IP address assigned by the DHCP server.
+      type: Boolean
+    - contextPath: CiscoMeraki.SSID.Wireless.radiusAccountingEnabled
+      description: Whether or not RADIUS accounting is enabled.
+      type: Boolean
+    - contextPath: CiscoMeraki.SSID.Wireless.radiusEnabled
+      description: Whether RADIUS authentication is enabled.
+      type: Boolean
+    - contextPath: CiscoMeraki.SSID.Wireless.ssidAdminAccessible
+      description: SSID Administrator access status.
+      type: Boolean
+    - contextPath: CiscoMeraki.SSID.Wireless.visible
+      description: Whether the SSID is advertised.
+      type: Boolean
+    - contextPath: CiscoMeraki.SSID.Wireless.walledGardenEnabled
+      description: Whether to allow users to access a configurable list of IP ranges prior to sign-on.
+      type: Boolean
+    - contextPath: CiscoMeraki.SSID.Wireless.availabilityTags
+      description: List of tags for this SSID. If availableOnAllAps is false, then the SSID is only broadcast by APs with tags matching any of the tags in this list.
+      type: String
+    - contextPath: CiscoMeraki.SSID.Wireless.walledGardenRanges
+      description: Domain names and IP address ranges available in Walled Garden mode.
+      type: String
+    - contextPath: CiscoMeraki.SSID.Wireless.radiusAccountingServers.openRoamingCertificateId
+      description: The ID of the Openroaming Certificate attached to radius server.
+      type: Number
+    - contextPath: CiscoMeraki.SSID.Wireless.radiusAccountingServers.port
+      description: Port on the RADIUS server that is listening for accounting messages.
+      type: Number
+    - contextPath: CiscoMeraki.SSID.Wireless.radiusAccountingServers.caCertificate
+      description: Certificate used for authorization for the RADSEC Server.
+      type: String
+    - contextPath: CiscoMeraki.SSID.Wireless.radiusAccountingServers.host
+      description: IP address (or FQDN) to which the APs will send RADIUS accounting messages.
+      type: String
+    - contextPath: CiscoMeraki.SSID.Wireless.radiusServers.openRoamingCertificateId
+      description: The ID of the Openroaming Certificate attached to radius server.
+      type: Number
+    - contextPath: CiscoMeraki.SSID.Wireless.radiusServers.port
+      description: UDP port the RADIUS server listens on for Access-requests.
+      type: Number
+    - contextPath: CiscoMeraki.SSID.Wireless.radiusServers.caCertificate
+      description: Certificate used for authorization for the RADSEC Server.
+      type: String
+    - contextPath: CiscoMeraki.SSID.Wireless.radiusServers.host
+      description: IP address (or FQDN) of your RADIUS server.
+      type: String
+  - name: meraki-network-l3firewall-rule-list
+    description: List the L3 firewall rules for an MX network.
+    arguments:
+    - name: network_id
+      description: ID of the network to retrieve from. Use `meraki-network-list` to fetch all network IDs. This overrides the network ID instance parameter.
+      default: true
+    outputs:
+    - contextPath: CiscoMeraki.L3FirewallRule.networkId
+      description: ID of the network.
+      type: String
+    - contextPath: CiscoMeraki.L3FirewallRule.rules.comment
+      description: Comment for the rule.
+      type: String
+    - contextPath: CiscoMeraki.L3FirewallRule.rules.policy
+      description: Policy for the rule.
+      type: String
+    - contextPath: CiscoMeraki.L3FirewallRule.rules.protocol
+      description: Protocol for the rule.
+      type: String
+    - contextPath: CiscoMeraki.L3FirewallRule.rules.destPort
+      description: Destination port for the rule.
+      type: String
+    - contextPath: CiscoMeraki.L3FirewallRule.rules.destCidr
+      description: Destination CIDR for the rule.
+      type: String
+    - contextPath: CiscoMeraki.L3FirewallRule.rules.srcPort
+      description: Source port for the rule.
+      type: String
+    - contextPath: CiscoMeraki.L3FirewallRule.rules.srcCidr
+      description: Source CIDR for the rule.
+      type: String
+    - contextPath: CiscoMeraki.L3FirewallRule.rules.syslogEnabled
+      description: Whether syslog is enabled.
+      type: Boolean
+  - name: meraki-network-l3firewall-rule-update
+    description: Update the L3 firewall rules of an MX network.
+    arguments:
+    - name: network_id
+      description: ID of the network to update from. Use `meraki-network-list` to fetch all network IDs. This overrides the network ID instance parameter.
+      default: true
+    - name: override
+      description: Whether to override the current rules. If false, will append to the current rules.
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+    - name: syslog_default_rule
+      description: Log the special default rule, enable only if you've configured a syslog server.
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+    - name: entry_id
+      description: 'An entry ID of a JSON file to pass only rules. The format of a rule can be seen in the following link: https://developer.cisco.com/meraki/api-v1/update-network-appliance-firewall-l-3-firewall-rules/. Example: [{"comment": "Hello World!", "policy": "allow", "protocol": "tcp", "destPort": "443", "destCidr": "0.0.0.0/24", "srcPort": "Any", "srcCidr": "Any", "syslogEnabled": false}].'
+    - name: comment
+      description: Description of the rule.
+    - name: dest_cidr
+      description: Comma-separated list of destination IP address(es) (in IP or CIDR notation), fully-qualified domain names (FQDN) or 'any'.
+      isArray: true
+    - name: dest_port
+      description: Comma-separated list of destination port(s) (integer in the range 1-65535), or 'any'.
+      isArray: true
+    - name: src_cidr
+      description: "Comma-separated list of source IP address(es) (in IP or CIDR notation), or 'any' (note: FQDN not supported for source addresses)."
+      isArray: true
+    - name: src_port
+      description: Comma-separated list of source port(s) (integer in the range 1-65535), or 'any'.
+      isArray: true
+    - name: protocol
+      description: Type of protocol for each rule.
+      auto: PREDEFINED
+      predefined:
+      - tcp
+      - udp
+      - icmp
+      - icmp6
+      - any
+    - name: policy
+      description: Whether to allow or deny traffic specified by this rule.
+      auto: PREDEFINED
+      predefined:
+      - allow
+      - deny
+    - name: syslog_enabled
+      description: Whether to log this rule to syslog. Only applicable if a syslog has been configured.
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+    outputs:
+    - contextPath: CiscoMeraki.L3FirewallRule.networkId
+      description: ID of the network.
+      type: String
+    - contextPath: CiscoMeraki.L3FirewallRule.rules.comment
+      description: Comment for the rule.
+      type: String
+    - contextPath: CiscoMeraki.L3FirewallRule.rules.policy
+      description: Policy for the rule.
+      type: String
+    - contextPath: CiscoMeraki.L3FirewallRule.rules.protocol
+      description: Protocol for the rule.
+      type: String
+    - contextPath: CiscoMeraki.L3FirewallRule.rules.destPort
+      description: Destination port for the rule.
+      type: String
+    - contextPath: CiscoMeraki.L3FirewallRule.rules.destCidr
+      description: Destination CIDR for the rule.
+      type: String
+    - contextPath: CiscoMeraki.L3FirewallRule.rules.srcPort
+      description: Source port for the rule.
+      type: String
+    - contextPath: CiscoMeraki.L3FirewallRule.rules.srcCidr
+      description: Source CIDR for the rule.
+      type: String
+    - contextPath: CiscoMeraki.L3FirewallRule.rules.syslogEnabled
+      description: Whether syslog is enabled.
+      type: Boolean
+  - name: meraki-network-l3firewall-rule-delete
+    description: Delete the L3 firewall rules from an MX network.
+    arguments:
+    - name: network_id
+      description: ID of the network to delete all the L3Firewall rules for. Use `meraki-network-list` to fetch all network IDs. This overrides the network ID instance parameter.
+      default: true
+  - name: meraki-network-l7firewall-rule-list
+    description: List the MX L7 firewall rules for an MX network.
+    arguments:
+    - name: network_id
+      description: ID of the network to retrieve from. Use `meraki-network-list` to fetch all network IDs. This overrides the network ID instance parameter.
+      default: true
+    outputs:
+    - contextPath: CiscoMeraki.L7FirewallRule.networkId
+      description: ID of the network.
+      type: String
+    - contextPath: CiscoMeraki.L7FirewallRule.rules.policy
+      description: Policy for the rule.
+      type: String
+    - contextPath: CiscoMeraki.L7FirewallRule.rules.type
+      description: Type of the rule.
+      type: String
+    - contextPath: CiscoMeraki.L7FirewallRule.rules.value
+      description: Value for the chosen type.
+      type: String
+  - name: meraki-network-l7firewall-rule-update
+    description: Update the MX L7 firewall rules for an MX network.
+    arguments:
+    - name: network_id
+      description: ID of the network to update from. Use `meraki-network-list` to fetch all network IDs. This overrides the network ID instance parameter.
+      default: true
+    - name: override
+      description: Whether to override the current rules. If false, will append to the current rules.
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+    - name: entry_id
+      description: 'An entry ID of a JSON file to pass only rules. The format of a rule can be seen in the following link: https://developer.cisco.com/meraki/api-v1/update-network-appliance-firewall-l-7-firewall-rules/. Example: [{"policy": "deny", "type": "host", "value": "http://www.example.com"}].'
+    - name: value
+      description: A value of what needs to get blocked. Format of the value varies depending on the type of the firewall rule selected.
+    - name: type
+      description: The type of the L7 firewall rule.
+      auto: PREDEFINED
+      predefined:
+      - application
+      - applicationCategory
+      - host
+      - port
+      - ipRange
+    - name: policy
+      description: The traffic specified by this rule.
+      auto: PREDEFINED
+      predefined:
+      - deny
+    outputs:
+    - contextPath: CiscoMeraki.L7FirewallRule.networkId
+      description: ID of the network.
+      type: String
+    - contextPath: CiscoMeraki.L7FirewallRule.rules.policy
+      description: Policy for the rule.
+      type: String
+    - contextPath: CiscoMeraki.L7FirewallRule.rules.type
+      description: Type of the rule.
+      type: String
+    - contextPath: CiscoMeraki.L7FirewallRule.rules.value
+      description: Value for the chosen type.
+      type: String
+  - name: meraki-network-l7firewall-rule-delete
+    description: Delete the L7 firewall rules from an MX network.
+    arguments:
+    - name: network_id
+      description: ID of the network to delete all the L7Firewall rules for. Use `meraki-network-list` to fetch all network IDs. This overrides the network ID instance parameter.
+      default: true
+  - name: meraki-organization-adaptive-policy-acl-list
+    description: List adaptive policy ACLs in a organization.
+    arguments:
+    - name: organization_id
+      description: ID of the organization to retrieve from. Use `meraki-organization-list` to fetch all organization IDs. This overrides the organization ID instance parameter.
+    - name: acl_id
+      description: ID of a specific ACL to retrieve.
+      default: true
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: 50
+    - name: all_results
+      description: Whether to retrieve all the results by overriding the default limit.
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+    outputs:
+    - contextPath: CiscoMeraki.AdaptivePolicyACL.aclId
+      description: ID of the adaptive policy ACL.
+      type: String
+    - contextPath: CiscoMeraki.AdaptivePolicyACL.createdAt
+      description: When the adaptive policy ACL was created.
+      type: Date
+    - contextPath: CiscoMeraki.AdaptivePolicyACL.description
+      description: Description of the adaptive policy ACL.
+      type: String
+    - contextPath: CiscoMeraki.AdaptivePolicyACL.ipVersion
+      description: IP version of adaptive policy ACL.
+      type: String
+    - contextPath: CiscoMeraki.AdaptivePolicyACL.name
+      description: Name of the adaptive policy ACL.
+      type: String
+    - contextPath: CiscoMeraki.AdaptivePolicyACL.updatedAt
+      description: When the adaptive policy ACL was last updated.
+      type: Date
+    - contextPath: CiscoMeraki.AdaptivePolicyACL.rules.dstPort
+      description: Destination port.
+      type: String
+    - contextPath: CiscoMeraki.AdaptivePolicyACL.rules.policy
+      description: Allow or deny traffic specified by this rule.
+      type: String
+    - contextPath: CiscoMeraki.AdaptivePolicyACL.rules.protocol
+      description: The type of protocol.
+      type: String
+    - contextPath: CiscoMeraki.AdaptivePolicyACL.rules.srcPort
+      description: Source port.
+      type: String
+  - name: meraki-organization-adaptive-policy-list
+    description: List adaptive policies in an organization. An adaptive policy is a dynamic security framework that allows automated policy enforcement across networks based on user and device identity.
+    arguments:
+    - name: organization_id
+      description: ID of the organization to retrieve from. Use `meraki-organization-list` to fetch all organization IDs. This overrides the organization ID instance parameter.
+    - name: adaptive_policy_id
+      description: ID of a specific adaptive policy to retrieve.
+      default: true
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: 50
+    - name: all_results
+      description: Whether to retrieve all the results by overriding the default limit.
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+    outputs:
+    - contextPath: CiscoMeraki.AdaptivePolicy.adaptivePolicyId
+      description: The ID for the adaptive policy.
+      type: String
+    - contextPath: CiscoMeraki.AdaptivePolicy.createdAt
+      description: The created at timestamp for the adaptive policy.
+      type: Date
+    - contextPath: CiscoMeraki.AdaptivePolicy.lastEntryRule
+      description: The rule to apply if there is no matching ACL. enum = [allow, default, deny].
+      type: String
+    - contextPath: CiscoMeraki.AdaptivePolicy.updatedAt
+      description: The updated at timestamp for the adaptive policy.
+      type: Date
+    - contextPath: CiscoMeraki.AdaptivePolicy.destinationGroup.sgt
+      description: The security group tag for the destination group.
+      type: Number
+    - contextPath: CiscoMeraki.AdaptivePolicy.destinationGroup.id
+      description: The ID for the destination group.
+      type: String
+    - contextPath: CiscoMeraki.AdaptivePolicy.destinationGroup.name
+      description: The name for the destination group.
+      type: String
+    - contextPath: CiscoMeraki.AdaptivePolicy.sourceGroup.sgt
+      description: The security group tag for the source group.
+      type: Number
+    - contextPath: CiscoMeraki.AdaptivePolicy.sourceGroup.id
+      description: The ID for the source group.
+      type: String
+    - contextPath: CiscoMeraki.AdaptivePolicy.sourceGroup.name
+      description: The name for the source group.
+      type: String
+    - contextPath: CiscoMeraki.AdaptivePolicy.acls.id
+      description: The ID for the access control list.
+      type: String
+    - contextPath: CiscoMeraki.AdaptivePolicy.acls.name
+      description: The name for the access control list.
+      type: String
+  - name: meraki-organization-adaptive-policy-group-list
+    description: List adaptive policy groups in a organization.
+    arguments:
+    - name: organization_id
+      description: ID of the organization to retrieve from. Use `meraki-organization-list` to fetch all organization IDs. This overrides the organization ID instance parameter.
+    - name: adaptive_policy_group_id
+      description: ID of a specific adaptive policy group to retrieve.
+      default: true
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: 50
+    - name: all_results
+      description: Whether to retrieve all the results by overriding the default limit.
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+    outputs:
+    - contextPath: CiscoMeraki.AdaptivePolicyGroup.sgt
+      description: The security group tag for the adaptive policy group.
+      type: Number
+    - contextPath: CiscoMeraki.AdaptivePolicyGroup.createdAt
+      description: Created at timestamp for the adaptive policy group.
+      type: Date
+    - contextPath: CiscoMeraki.AdaptivePolicyGroup.description
+      description: The description for the adaptive policy group.
+      type: String
+    - contextPath: CiscoMeraki.AdaptivePolicyGroup.groupId
+      description: The ID of the adaptive policy group.
+      type: String
+    - contextPath: CiscoMeraki.AdaptivePolicyGroup.name
+      description: The name of the adaptive policy group.
+      type: String
+    - contextPath: CiscoMeraki.AdaptivePolicyGroup.updatedAt
+      description: Updated at timestamp for the adaptive policy group.
+      type: Date
+    - contextPath: CiscoMeraki.AdaptivePolicyGroup.isDefaultGroup
+      description: Whether the adaptive policy group is the default group.
+      type: Boolean
+    - contextPath: CiscoMeraki.AdaptivePolicyGroup.requiredIpMappings
+      description: List of required IP mappings for the adaptive policy group.
+      type: String
+    - contextPath: CiscoMeraki.AdaptivePolicyGroup.policyObjects.id
+      description: The ID of the policy object.
+      type: String
+    - contextPath: CiscoMeraki.AdaptivePolicyGroup.policyObjects.name
+      description: The name of the policy object.
+      type: String
+  - name: meraki-organization-adaptive-policy-settings-list
+    description: Returns global adaptive policy settings in an organization.
+    arguments:
+    - name: organization_id
+      description: ID of the organization to retrieve from. Use `meraki-organization-list` to fetch all organization IDs. This overrides the organization ID instance parameter.
+      default: true
+    outputs:
+    - contextPath: CiscoMeraki.AdaptivePolicySettings.organizationId
+      description: ID of the organization that the settings belong to.
+      type: String
+    - contextPath: CiscoMeraki.AdaptivePolicySettings.enabledNetworks
+      description: List of network IDs with adaptive policy enabled.
+      type: String
+  - name: meraki-organization-branding-policy-list
+    description: List the branding policies of an organization. This allows MSPs to view and monitor certain aspects of Dashboard for their users and customers.
+    arguments:
+    - name: organization_id
+      description: ID of the organization to retrieve from. Use `meraki-organization-list` to fetch all organization IDs. This overrides the organization ID instance parameter.
+    - name: branding_policy_id
+      description: ID of a specific branding policy to retrieve.
+      default: true
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: 50
+    - name: all_results
+      description: Whether to retrieve all the results by overriding the default limit.
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+    outputs:
+    - contextPath: CiscoMeraki.BrandingPolicy.name
+      description: Name of the Dashboard branding policy.
+      type: String
+    - contextPath: CiscoMeraki.BrandingPolicy.enabled
+      description: Boolean indicating whether this policy is enabled.
+      type: Boolean
+    - contextPath: CiscoMeraki.BrandingPolicy.adminSettings.appliesTo
+      description: Which kinds of admins this policy applies to. Can be one of 'All organization admins', 'All enterprise admins', 'All network admins', 'All admins of networks...', 'All admins of networks tagged...', 'Specific admins...', 'All admins' or 'All SAML admins'.
+      type: String
+    - contextPath: CiscoMeraki.BrandingPolicy.adminSettings.values
+      description:  If 'appliesTo' is set to one of 'Specific admins...', 'All admins of networks...' or 'All admins of networks tagged...', then you must specify this 'values' property to provide the set of entities to apply the branding policy to. For 'Specific admins...', specify an array of admin IDs. For 'All admins of networks...', specify an array of network IDs and/or configuration template IDs. For 'All admins of networks tagged...', specify an array of tag names.
+      type: String
+    - contextPath: CiscoMeraki.BrandingPolicy.customLogo.enabled
+      description: Whether there is a custom logo enabled.
+      type: Boolean
+    - contextPath: CiscoMeraki.BrandingPolicy.customLogo.image.preview.expiresAt
+      description: Timestamp of the preview image.
+      type: Date
+    - contextPath: CiscoMeraki.BrandingPolicy.customLogo.image.preview.url
+      description: URL of the preview image.
+      type: String
+    - contextPath: CiscoMeraki.BrandingPolicy.helpSettings.apiDocsSubtab
+      description: The 'Help -> API docs' subtab where a detailed description of the Dashboard API is listed. Can be one of 'default or inherit', 'hide' or 'show'.
+      type: String
+    - contextPath: CiscoMeraki.BrandingPolicy.helpSettings.casesSubtab
+      description:  The 'Help -> Cases' Dashboard subtab on which Cisco Meraki support cases for this organization can be managed. Can be one of 'default or inherit', 'hide' or 'show'.
+      type: String
+    - contextPath: CiscoMeraki.BrandingPolicy.helpSettings.ciscoMerakiProductDocumentation
+      description: The 'Product Manuals' section of the 'Help -> Get Help' subtab. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.
+      type: String
+    - contextPath: CiscoMeraki.BrandingPolicy.helpSettings.communitySubtab
+      description: The 'Help -> Community' subtab which provides a link to Meraki Community. Can be one of 'default or inherit', 'hide' or 'show'.
+      type: String
+    - contextPath: CiscoMeraki.BrandingPolicy.helpSettings.dataProtectionRequestsSubtab
+      description: The 'Help -> Data protection requests' Dashboard subtab on which requests to delete, restrict, or export end-user data can be audited. Can be one of 'default or inherit', 'hide' or 'show'.
+      type: String
+    - contextPath: CiscoMeraki.BrandingPolicy.helpSettings.firewallInfoSubtab
+      description: The 'Help -> Firewall info' subtab where necessary upstream firewall rules for communication to the Cisco Meraki cloud are listed. Can be one of 'default or inherit', 'hide' or 'show'.
+      type: String
+    - contextPath: CiscoMeraki.BrandingPolicy.helpSettings.getHelpSubtab
+      description: The 'Help -> Get Help' subtab on which Cisco Meraki KB, Product Manuals, and Support/Case Information are displayed. Note that if this subtab is hidden, branding customizations for the KB on 'Get help', Cisco Meraki product documentation, and support contact info will not be visible. Can be one of 'default or inherit', 'hide' or 'show'.
+      type: String
+    - contextPath: CiscoMeraki.BrandingPolicy.helpSettings.getHelpSubtabKnowledgeBaseSearch
+      description: The KB search box which appears on the Help page. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.
+      type: String
+    - contextPath: CiscoMeraki.BrandingPolicy.helpSettings.hardwareReplacementsSubtab
+      description: The 'Help -> Replacement info' subtab where important information regarding device replacements is detailed. Can be one of 'default or inherit', 'hide' or 'show'.
+      type: String
+    - contextPath: CiscoMeraki.BrandingPolicy.helpSettings.helpTab
+      description: The Help tab, under which all support information resides. If this tab is hidden, no other 'Help' branding customizations will be visible. Can be one of 'default or inherit', 'hide' or 'show'.
+      type: String
+    - contextPath: CiscoMeraki.BrandingPolicy.helpSettings.helpWidget
+      description: The 'Help Widget' is a support widget which provides access to live chat, documentation links, Sales contact info, and other contact avenues to reach Meraki Support. Can be one of 'default or inherit', 'hide' or 'show'.
+      type: String
+    - contextPath: CiscoMeraki.BrandingPolicy.helpSettings.newFeaturesSubtab
+      description: The 'Help -> New features' subtab where new Dashboard features are detailed. Can be one of 'default or inherit', 'hide' or 'show'.
+      type: String
+    - contextPath: CiscoMeraki.BrandingPolicy.helpSettings.smForums
+      description: The 'SM Forums' subtab which links to community-based support for Cisco Meraki Systems Manager. Only configurable for organizations that contain Systems Manager networks. Can be one of 'default or inherit', 'hide' or 'show'.
+      type: String
+    - contextPath: CiscoMeraki.BrandingPolicy.helpSettings.supportContactInfo
+      description: The 'Contact Meraki Support' section of the 'Help -> Get Help' subtab. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.
+      type: String
+    - contextPath: CiscoMeraki.BrandingPolicy.helpSettings.universalSearchKnowledgeBaseSearch
+      description: The universal search box always visible on Dashboard will, by default, present results from the Meraki KB. This configures whether these Meraki KB results should be returned. Can be one of 'default or inherit', 'hide' or 'show'.
+      type: String
+  - name: meraki-network-group-policy-list
+    description: List the group policies in a network.
+    arguments:
+    - name: network_id
+      description: ID of the network to retrieve from. Use `meraki-network-list` to fetch all network IDs. This overrides the network ID instance parameter.
+    - name: group_policy_id
+      description: ID of a specific group policy to retrieve.
+      default: true
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: 50
+    - name: all_results
+      description: Whether to retrieve all the results by overriding the default limit.
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+    outputs:
+    - contextPath: CiscoMeraki.GroupPolicy.groupPolicyId
+      description: The ID of the group policy.
+      type: String
+    - contextPath: CiscoMeraki.GroupPolicy.name
+      description: The name of the group policy.
+      type: String
+    - contextPath: CiscoMeraki.GroupPolicy.splashAuthSettings
+      description: Whether clients bound to your policy will bypass splash authorization or behave according to the network's rules. Can be one of 'network default' or 'bypass'. Only available if your network has a wireless configuration.
+      type: String
+    - contextPath: CiscoMeraki.GroupPolicy.bandwidth.settings
+      description: How bandwidth limits are enforced. Can be 'network default', 'ignore' or 'custom'.
+      type: String
+    - contextPath: CiscoMeraki.GroupPolicy.bandwidth.bandwidthLimits.limitDown
+      description: The maximum download limit (integer, in Kbps). null indicates no limit.
+      type: Number
+    - contextPath: CiscoMeraki.GroupPolicy.bandwidth.bandwidthLimits.limitUp
+      description: The maximum upload limit (integer, in Kbps). null indicates no limit.
+      type: Number
+    - contextPath: CiscoMeraki.GroupPolicy.bonjourForwarding.settings
+      description: How Bonjour rules are applied. Can be 'network default', 'ignore' or 'custom'.
+      type: String
+    - contextPath: CiscoMeraki.GroupPolicy.bonjourForwarding.rules.description
+      description: A description for your Bonjour forwarding rule.
+      type: String
+    - contextPath: CiscoMeraki.GroupPolicy.bonjourForwarding.rules.vlanId
+      description: The ID of the service VLAN.
+      type: String
+    - contextPath: CiscoMeraki.GroupPolicy.bonjourForwarding.rules.services
+      description: A list of Bonjour services. At least one service must be specified. Available services are 'All Services', 'AirPlay', 'AFP', 'BitTorrent', 'FTP', 'iChat', 'iTunes', 'Printers', 'Samba', 'Scanners' and 'SSH'.
+      type: String
+    - contextPath: CiscoMeraki.GroupPolicy.contentFiltering.allowedUrlPatterns.settings
+      description: How URL patterns are applied. Can be 'network default', 'append' or 'override'.
+      type: String
+    - contextPath: CiscoMeraki.GroupPolicy.contentFiltering.allowedUrlPatterns.patterns
+      description: A list of URL patterns that are allowed.
+      type: String
+    - contextPath: CiscoMeraki.GroupPolicy.contentFiltering.blockedUrlCategories.settings
+      description: How URL categories are applied. Can be 'network default', 'append' or 'override'.
+      type: String
+    - contextPath: CiscoMeraki.GroupPolicy.contentFiltering.blockedUrlCategories.categories
+      description: A list of URL categories to block.
+      type: String
+    - contextPath: CiscoMeraki.GroupPolicy.contentFiltering.blockedUrlPatterns.settings
+      description: How URL patterns are applied. Can be 'network default', 'append' or 'override'.
+      type: String
+    - contextPath: CiscoMeraki.GroupPolicy.contentFiltering.blockedUrlPatterns.patterns
+      description: A list of URL patterns that are blocked.
+      type: String
+    - contextPath: CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.settings
+      description: How firewall and traffic shaping rules are enforced. Can be 'network default', 'ignore' or 'custom'.
+      type: String
+    - contextPath: CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.l3FirewallRules.comment
+      description: Description of the rule.
+      type: String
+    - contextPath: CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.l3FirewallRules.destCidr
+      description: Destination IP address (in IP or CIDR notation), a fully-qualified domain name (FQDN, if your network supports it) or 'any'.
+      type: String
+    - contextPath: CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.l3FirewallRules.destPort
+      description: Destination port (integer in the range 1-65535), a port range (e.g., 8080-9090), or 'any'.
+      type: String
+    - contextPath: CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.l3FirewallRules.policy
+      description: Allow or deny traffic specified by this rule.
+      type: String
+    - contextPath: CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.l3FirewallRules.protocol
+      description: The type of protocol (must be 'tcp', 'udp', 'icmp', 'icmp6' or 'any').
+      type: String
+    - contextPath: CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.l7FirewallRules.policy
+      description: The policy applied to matching traffic. Must be 'deny'.
+      type: String
+    - contextPath: CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.l7FirewallRules.type
+      description: Type of the L7 Rule. Must be 'application', 'applicationCategory', 'host', 'port' or 'ipRange'.
+      type: String
+    - contextPath: CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.l7FirewallRules.value
+      description: The 'value' of what you want to block. If 'type' is 'host', 'port' or 'ipRange', 'value' must be a string matching either a hostname (e.g. somewhere.com), a port (e.g., 8080), or an IP range (e.g., 0.0.0.0/16). If 'type' is 'application' or 'applicationCategory', then 'value' must be an object with an ID for the application.
+      type: String
+    - contextPath: CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.trafficShapingRules.dscpTagValue
+      description: The DSCP tag applied by your rule. null means 'Do not change DSCP tag'.
+      type: Number
+    - contextPath: CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.trafficShapingRules.pcpTagValue
+      description: The PCP tag applied by your rule. Can be 0 (lowest priority) through 7 (highest priority). null means 'Do not set PCP tag'.
+      type: Number
+    - contextPath: CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.trafficShapingRules.priority
+      description: A string, indicating the priority level for packets bound to your rule. Can be 'low', 'normal' or 'high'.
+      type: String
+    - contextPath: CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.trafficShapingRules.perClientBandwidthLimits.settings
+      description: How bandwidth limits are applied by your rule. Can be one of 'network default', 'ignore' or 'custom'.
+      type: String
+    - contextPath: CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.trafficShapingRules.perClientBandwidthLimits.bandwidthLimits.limitDown
+      description: The maximum download limit (integer, in Kbps).
+      type: Number
+    - contextPath: CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.trafficShapingRules.perClientBandwidthLimits.bandwidthLimits.limitUp
+      description: The maximum upload limit (integer, in Kbps).
+      type: Number
+    - contextPath: CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.trafficShapingRules.definitions.type
+      description: The type of definition. Can be one of 'application', 'applicationCategory', 'host', 'port', 'ipRange' or 'localNet'.
+      type: String
+    - contextPath: CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.trafficShapingRules.definitions.value
+      description: If "type" is 'host', 'port', 'ipRange' or 'localNet', then "value" must be a string, matching either a hostname (e.g., "somesite.com"), a port (e.g., 8080), or an IP range ("0.0.0.0", "0.0.0.0/16", or "10.1.0.0/16:80"). 'localNet' also supports CIDR notation, excluding custom ports.
+      type: String
+    - contextPath: CiscoMeraki.GroupPolicy.scheduling.enabled
+      description: Whether scheduling is enabled (true) or disabled (false). Defaults to false. If true, the schedule objects for each day of the week (monday - sunday) are parsed.
+      type: Boolean
+    - contextPath: CiscoMeraki.GroupPolicy.scheduling.friday.from
+      description: The time, from '00:00' to '24:00'. Must be less than the time specified in 'to'. Defaults to '00:00'. Only 30 minute increments are allowed.
+      type: Date
+    - contextPath: CiscoMeraki.GroupPolicy.scheduling.friday.to
+      description: The time, from '00:00' to '24:00'. Must be greater than the time specified in 'from'. Defaults to '24:00'. Only 30 minute increments are allowed.
+      type: Date
+    - contextPath: CiscoMeraki.GroupPolicy.scheduling.friday.active
+      description: Whether the schedule is active (true) or inactive (false) during the time specified between 'from' and 'to'. Defaults to true.
+      type: Boolean
+    - contextPath: CiscoMeraki.GroupPolicy.scheduling.monday.from
+      description: The time, from '00:00' to '24:00'. Must be less than the time specified in 'to'. Defaults to '00:00'. Only 30 minute increments are allowed.
+      type: Date
+    - contextPath: CiscoMeraki.GroupPolicy.scheduling.monday.to
+      description: The time, from '00:00' to '24:00'. Must be greater than the time specified in 'from'. Defaults to '24:00'. Only 30 minute increments are allowed.
+      type: Date
+    - contextPath: CiscoMeraki.GroupPolicy.scheduling.monday.active
+      description: Whether the schedule is active (true) or inactive (false) during the time specified between 'from' and 'to'. Defaults to true.
+      type: Boolean
+    - contextPath: CiscoMeraki.GroupPolicy.scheduling.saturday.from
+      description: The time, from '00:00' to '24:00'. Must be less than the time specified in 'to'. Defaults to '00:00'. Only 30 minute increments are allowed.
+      type: Date
+    - contextPath: CiscoMeraki.GroupPolicy.scheduling.saturday.to
+      description: The time, from '00:00' to '24:00'. Must be greater than the time specified in 'from'. Defaults to '24:00'. Only 30 minute increments are allowed.
+      type: Date
+    - contextPath: CiscoMeraki.GroupPolicy.scheduling.saturday.active
+      description: Whether the schedule is active (true) or inactive (false) during the time specified between 'from' and 'to'. Defaults to true.
+      type: Boolean
+    - contextPath: CiscoMeraki.GroupPolicy.scheduling.sunday.from
+      description: The time, from '00:00' to '24:00'. Must be less than the time specified in 'to'. Defaults to '00:00'. Only 30 minute increments are allowed.
+      type: Date
+    - contextPath: CiscoMeraki.GroupPolicy.scheduling.sunday.to
+      description: The time, from '00:00' to '24:00'. Must be greater than the time specified in 'from'. Defaults to '24:00'. Only 30 minute increments are allowed.
+      type: Date
+    - contextPath: CiscoMeraki.GroupPolicy.scheduling.sunday.active
+      description: Whether the schedule is active (true) or inactive (false) during the time specified between 'from' and 'to'. Defaults to true.
+      type: Boolean
+    - contextPath: CiscoMeraki.GroupPolicy.scheduling.thursday.from
+      description: The time, from '00:00' to '24:00'. Must be less than the time specified in 'to'. Defaults to '00:00'. Only 30 minute increments are allowed.
+      type: Date
+    - contextPath: CiscoMeraki.GroupPolicy.scheduling.thursday.to
+      description: The time, from '00:00' to '24:00'. Must be greater than the time specified in 'from'. Defaults to '24:00'. Only 30 minute increments are allowed.
+      type: Date
+    - contextPath: CiscoMeraki.GroupPolicy.scheduling.thursday.active
+      description: Whether the schedule is active (true) or inactive (false) during the time specified between 'from' and 'to'. Defaults to true.
+      type: Boolean
+    - contextPath: CiscoMeraki.GroupPolicy.scheduling.tuesday.from
+      description: The time, from '00:00' to '24:00'. Must be less than the time specified in 'to'. Defaults to '00:00'. Only 30 minute increments are allowed.
+      type: Date
+    - contextPath: CiscoMeraki.GroupPolicy.scheduling.tuesday.to
+      description: The time, from '00:00' to '24:00'. Must be greater than the time specified in 'from'. Defaults to '24:00'. Only 30 minute increments are allowed.
+      type: Date
+    - contextPath: CiscoMeraki.GroupPolicy.scheduling.tuesday.active
+      description: Whether the schedule is active (true) or inactive (false) during the time specified between 'from' and 'to'. Defaults to true.
+      type: Boolean
+    - contextPath: CiscoMeraki.GroupPolicy.scheduling.wednesday.from
+      description: The time, from '00:00' to '24:00'. Must be less than the time specified in 'to'. Defaults to '00:00'. Only 30 minute increments are allowed.
+      type: Date
+    - contextPath: CiscoMeraki.GroupPolicy.scheduling.wednesday.to
+      description: The time, from '00:00' to '24:00'. Must be greater than the time specified in 'from'. Defaults to '24:00'. Only 30 minute increments are allowed.
+      type: Date
+    - contextPath: CiscoMeraki.GroupPolicy.scheduling.wednesday.active
+      description: Whether the schedule is active (true) or inactive (false) during the time specified between 'from' and 'to'. Defaults to true.
+      type: Boolean
+    - contextPath: CiscoMeraki.GroupPolicy.vlanTagging.settings
+      description: How VLAN tagging is applied. Can be 'network default', 'ignore' or 'custom'.
+      type: String
+    - contextPath: CiscoMeraki.GroupPolicy.vlanTagging.vlanId
+      description: The ID of the VLAN you want to tag. This only applies if 'settings' is set to 'custom'.
+      type: String
+  - name: meraki-network-client-policy-list
+    description: List all policies owned by each client.
+    arguments:
+    - name: network_id
+      description: ID of the network to retrieve from. Use `meraki-network-list` to fetch all network IDs. This overrides the network ID instance parameter.
+      default: true
+    - name: t0
+      description: 'The time span in days for which the information will be fetched. The maximum lookback period is 31 days from today. Accepted formats: datetime any substring of yyyy-mm-ddThh:mm:ssZ, epoch 1720617001, relative 1 day 2h 3 minute.'
+    - name: time_span
+      description: The time span number in seconds for which the information will be fetched. If specifying time span, do not specify parameter t0. The value must be in seconds and be less than or equal to 31 days (2678400 seconds). The default is 1 day.
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: 50
+    - name: page_size
+      description: The maximum number of records to return per page. To receive additional pages after the first call, use `next_token`. Acceptable range is 3 - 1000. Default is 50.
+    - name: next_token
+      description: Insert 'ClientPolicyLinkTokens' value received from a previous pagination command's context to further paginate through records.
+    outputs:
+    - contextPath: CiscoMeraki.ClientPolicyLinkTokens.Prev
+      description: Pagination token used to retrieve the previous batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.ClientPolicyLinkTokens.Next
+      description: Pagination token used to retrieve the next batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.ClientPolicyLinkTokens.First
+      description: Pagination token used to retrieve the first batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.ClientPolicyLinkTokens.Last
+      description: Pagination token used to retrieve the last batch of records by inserting the value into 'next_token'.
+      type: String
+    - contextPath: CiscoMeraki.ClientPolicy.clientId
+      description: ID of client.
+      type: String
+    - contextPath: CiscoMeraki.ClientPolicy.name
+      description: Name of client.
+      type: String
+    - contextPath: CiscoMeraki.ClientPolicy.mac
+      description: MAC of client.
+      type: String
+    - contextPath: CiscoMeraki.ClientPolicy.assigned.groupPolicyId
+      description: ID of policy.
+      type: String
+    - contextPath: CiscoMeraki.ClientPolicy.assigned.name
+      description: Name of policy.
+      type: String
+    - contextPath: CiscoMeraki.ClientPolicy.assigned.type
+      description: Type of policy.
+      type: String
+    - contextPath: CiscoMeraki.ClientPolicy.assigned.ssid.ssidNumber
+      description: SSID number.
+      type: Number
+  - name: meraki-network-vlan-profile-list
+    description: List VLAN profiles for a network.
+    arguments:
+    - name: network_id
+      description: ID of the network to retrieve from. Use `meraki-network-list` to fetch all network IDs. This overrides the network ID instance parameter.
+    - name: iname
+      description: Iname of a specific VLAN profile to retrieve.
+      default: true
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: 50
+    - name: all_results
+      description: Whether to retrieve all the results by overriding the default limit.
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+    outputs:
+    - contextPath: CiscoMeraki.VlanProfile.iname
+      description: Iname of the VLAN profile.
+      type: String
+    - contextPath: CiscoMeraki.VlanProfile.name
+      description: Name of the profile, string length must be from 1 to 255 characters.
+      type: String
+    - contextPath: CiscoMeraki.VlanProfile.isDefault
+      description: The default VLAN Profile for any device that does not have a profile explicitly assigned.
+      type: Boolean
+    - contextPath: CiscoMeraki.VlanProfile.vlanGroups.name
+      description: Name of the VLAN, string length must be from 1 to 32 characters.
+      type: String
+    - contextPath: CiscoMeraki.VlanProfile.vlanGroups.vlanIds
+      description: Comma-separated VLAN IDs or ID ranges.
+      type: String
+    - contextPath: CiscoMeraki.VlanProfile.vlanNames.name
+      description: Name of the VLAN, string length must be from 1 to 32 characters.
+      type: String
+    - contextPath: CiscoMeraki.VlanProfile.vlanNames.vlanId
+      description: VLAN ID.
+      type: String
+    - contextPath: CiscoMeraki.VlanProfile.vlanNames.adaptivePolicyGroup.id
+      description: Adaptive Policy Group ID.
+      type: String
+    - contextPath: CiscoMeraki.VlanProfile.vlanNames.adaptivePolicyGroup.name
+      description: Adaptive Policy Group name.
+      type: String
+  - name: meraki-network-appliance-vlan-list
+    description: List the VLANs for an MX network.
+    arguments:
+    - name: network_id
+      description: ID of the network to retrieve from. Use `meraki-network-list` to fetch all network IDs. This overrides the network ID instance parameter.
+    - name: vlan_id
+      description: ID of a specific VLAN profile to retrieve.
+      default: true
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: 50
+    - name: all_results
+      description: Whether to retrieve all the results by overriding the default limit.
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+    outputs:
+    - contextPath: CiscoMeraki.ApplianceVlan.mask
+      description: Mask used for the subnet of all bound to the template networks. Applicable only for template network.
+      type: Number
+    - contextPath: CiscoMeraki.ApplianceVlan.applianceIp
+      description: The local IP address of the appliance on the VLAN.
+      type: String
+    - contextPath: CiscoMeraki.ApplianceVlan.cidr
+      description: CIDR of the pool of subnets. Applicable only for template network. Each network bound to the template will automatically pick a subnet from this pool to build its own VLAN.
+      type: String
+    - contextPath: CiscoMeraki.ApplianceVlan.dhcpBootFilename
+      description: DHCP boot option for boot filename.
+      type: String
+    - contextPath: CiscoMeraki.ApplianceVlan.dhcpBootNextServer
+      description: DHCP boot option to direct boot clients to the server to load the boot file from.
+      type: String
+    - contextPath: CiscoMeraki.ApplianceVlan.dhcpHandling
+      description: The appliance's handling of DHCP requests on this VLAN. One of 'Run a DHCP server', 'Relay DHCP to another server' or 'Do not respond to DHCP requests'.
+      type: String
+    - contextPath: CiscoMeraki.ApplianceVlan.dhcpLeaseTime
+      description: The term of DHCP leases if the appliance is running a DHCP server on this VLAN. One of '30 minutes', '1 hour', '4 hours', '12 hours', '1 day' or '1 week'.
+      type: String
+    - contextPath: CiscoMeraki.ApplianceVlan.dnsNameservers
+      description: The DNS nameservers used for DHCP responses, either "upstream_dns", "google_dns", "opendns", or a newline separated string of IP addresses or domain names.
+      type: String
+    - contextPath: CiscoMeraki.ApplianceVlan.groupPolicyId
+      description: The ID of the desired group policy to apply to the VLAN.
+      type: String
+    - contextPath: CiscoMeraki.ApplianceVlan.id
+      description: The VLAN ID of the VLAN.
+      type: String
+    - contextPath: CiscoMeraki.ApplianceVlan.interfaceId
+      description: The interface ID of the VLAN.
+      type: String
+    - contextPath: CiscoMeraki.ApplianceVlan.name
+      description: The name of the VLAN.
+      type: String
+    - contextPath: CiscoMeraki.ApplianceVlan.subnet
+      description: The subnet of the VLAN.
+      type: String
+    - contextPath: CiscoMeraki.ApplianceVlan.templateVlanType
+      description: Type of subnetting of the VLAN. Applicable only for template network.
+      type: String
+    - contextPath: CiscoMeraki.ApplianceVlan.vpnNatSubnet
+      description: The translated VPN subnet if VPN and VPN subnet translation are enabled on the VLAN.
+      type: String
+    - contextPath: CiscoMeraki.ApplianceVlan.dhcpBootOptionsEnabled
+      description: Use DHCP boot options specified in other properties.
+      type: Boolean
+    - contextPath: CiscoMeraki.ApplianceVlan.fixedIpAssignments
+      description: The DHCP fixed IP assignments on the VLAN. This should be an object that contains mappings from MAC addresses to objects that themselves each contain "ip" and "name" string fields. See the sample request/response for more details.
+      type: String
+    - contextPath: CiscoMeraki.ApplianceVlan.dhcpRelayServerIps
+      description: The IP addresses of the DHCP servers that DHCP requests should be relayed to.
+      type: String
+    - contextPath: CiscoMeraki.ApplianceVlan.ipv6.enabled
+      description: Whether to enable IPv6 on VLAN.
+      type: Boolean
+    - contextPath: CiscoMeraki.ApplianceVlan.ipv6.prefixAssignments.staticApplianceIp6
+      description: Manual configuration of the IPv6 Appliance IP.
+      type: String
+    - contextPath: CiscoMeraki.ApplianceVlan.ipv6.prefixAssignments.staticPrefix
+      description: Manual configuration of a /64 prefix on the VLAN.
+      type: String
+    - contextPath: CiscoMeraki.ApplianceVlan.ipv6.prefixAssignments.autonomous
+      description: Whether to auto assign a /64 prefix from the origin to the VLAN.
+      type: Boolean
+    - contextPath: CiscoMeraki.ApplianceVlan.ipv6.prefixAssignments.origin.type
+      description: Type of the origin enum = [independent, internet].
+      type: String
+    - contextPath: CiscoMeraki.ApplianceVlan.ipv6.prefixAssignments.origin.interfaces
+      description: Interfaces associated with the prefix.
+      type: String
+    - contextPath: CiscoMeraki.ApplianceVlan.mandatoryDhcp.enabled
+      description: Whether to enable mandatory DHCP on VLAN.
+      type: Boolean
+    - contextPath: CiscoMeraki.ApplianceVlan.dhcpOptions.code
+      description: The code for the DHCP option. This should be an integer between 2 and 254.
+      type: String
+    - contextPath: CiscoMeraki.ApplianceVlan.dhcpOptions.type
+      description: The type for the DHCP option. One of 'text', 'ip', 'hex' or 'integer'.
+      type: String
+    - contextPath: CiscoMeraki.ApplianceVlan.dhcpOptions.value
+      description: The value for the DHCP option.
+      type: String
+    - contextPath: CiscoMeraki.ApplianceVlan.reservedIpRanges.comment
+      description: A text comment for the reserved range.
+      type: String
+    - contextPath: CiscoMeraki.ApplianceVlan.reservedIpRanges.end
+      description: The last IP address in the reserved range.
+      type: String
+    - contextPath: CiscoMeraki.ApplianceVlan.reservedIpRanges.start
+      description: The first IP address in the reserved range.
+      type: String
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.11.10.115186
+  isfetch: false
+  script: ''
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

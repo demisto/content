@@ -1323,6 +1323,141 @@ def get_objectives_command(client: Client, args: Dict[str, Any]) -> CommandResul
     return command_results
 
 
+def get_last_fetch_time(last_run, params):
+    last_fetch = last_run.get("latest_operation_found")
+    if not last_fetch:
+        demisto.debug("[Caldera] First run")
+        # handle first time fetch
+        first_fetch = f"{params.get('first_fetch') or '1 days'} ago"
+        default_fetch_datetime = dateparser.parse(first_fetch)
+        assert default_fetch_datetime is not None, f"failed parsing {first_fetch}"
+        last_fetch = str(default_fetch_datetime.isoformat(timespec="milliseconds")) + "Z"
+
+    demisto.debug(f"[Caldera] last_fetch: {last_fetch}")
+    return last_fetch
+
+
+def filter_operations(operations: list, params: Dict[str, str], last_fetch: str) -> list:
+    """
+    Filters a list of operations to include only those that contain the specified client name.
+
+    Args:
+        operations (list): A list of dictionaries, where each dictionary represents an operation.
+        params (dict): The integration parameters.
+        last_fetch (str): The last fetch time.
+
+    Returns:
+        list: A list of dictionaries containing only the operations after last fetch time and where the client's name, from the
+        integration's parameters, is present in the "name" field.
+    """
+    parsed_last_fetch = dateparser.parse(last_fetch)
+    if not parsed_last_fetch:
+        raise ValueError(f"Failed parsing {last_fetch}")
+
+    filtered_operations = [
+        operation for operation in operations
+        if (start_date := dateparser.parse(operation.get("start"))) and start_date > parsed_last_fetch
+    ]
+
+    if client_name := params.get("client_name"):
+        filtered_operations = [operation for operation in filtered_operations if client_name in operation.get("name")]
+
+    return filtered_operations
+
+
+def operation_to_incident(operation: dict, operation_date: str) -> dict:
+    """
+    Converts an operation dictionary into an incident dictionary.
+
+    Args:
+        operation (dict): A dictionary containing details of the operation.
+        operation_date (str): The date when the operation occurred.
+
+    Returns:
+        dict: A dictionary representing the incident, including the operation's ID, name, and the date it occurred.
+    """
+    operation_id = operation.get("id")
+    operation_name = operation.get("name")
+    incident = {
+        "name": f"Caldera: {operation_id} {operation_name}",
+        "occurred": operation_date,
+        "rawJSON": json.dumps(operation),
+    }
+    return incident
+
+
+def operations_to_incidents(operations: list, params: Dict[str, str], last_fetch_datetime: str) -> tuple[list, str]:
+    """
+    Converts a list of operations into a list of incidents and updates the latest incident time.
+
+    Args:
+        operations (list): A list of dictionaries, where each dictionary represents an operation.
+        params (dict): The integration parameters.
+        last_fetch_datetime (str): The datetime string representing the last time incidents were fetched.
+
+    Returns:
+        tuple: A tuple containing:
+            - A list of dictionaries, each representing an incident.
+            - A string representing the latest incident time.
+    """
+    incidents: List[Dict[str, str]] = []
+    latest_incident_time = last_fetch_datetime
+    max_fetch = int(params.get("max_fetch", 50))
+
+    # Parse last fetch datetime
+    parsed_last_fetch_datetime = dateparser.parse(last_fetch_datetime)
+    if not parsed_last_fetch_datetime:
+        raise ValueError(f"Failed parsing {last_fetch_datetime}")
+
+    # The count of incidents, so as not to pass the limit
+    count_incidents = 0
+
+    for operation in operations:
+        operation_datetime = operation.get("start", "")
+        parsed_datetime = dateparser.parse(operation_datetime)
+        if parsed_datetime:
+            operation_datetime = parsed_datetime.isoformat()
+            demisto.debug(f"Original: {operation.get('start', '')}, ISO 8601: {operation_datetime}")
+        else:
+            demisto.debug(f"Failed to parse date: {operation_datetime}")
+        incident = operation_to_incident(operation, operation_datetime)
+        incidents.append(incident)
+
+        if parsed_datetime and parsed_datetime > parsed_last_fetch_datetime:
+            latest_incident_time = operation_datetime
+
+        count_incidents += 1
+        if count_incidents == max_fetch:
+            break
+
+    return incidents, latest_incident_time
+
+
+def fetch_incidents(client: Client, args: Dict[str, Any], params: Dict[str, str]):
+    sort = args.get('sort')
+    last_run: Dict[str, str] = demisto.getLastRun()
+    demisto.debug(f"[Caldera] last run: {last_run}")
+
+    last_fetch = get_last_fetch_time(last_run, params)
+    demisto.debug(f"[Caldera] last fetch is: {last_fetch}")
+
+    operations = client.get_operations(sort, [], [])
+
+    # Fetch only operations after last fetch time
+    operations = filter_operations(operations, params, last_fetch)
+
+    incidents, latest_operation_time = operations_to_incidents(operations, params, last_fetch_datetime=last_fetch)
+
+    demisto.debug(f"[Caldera] Fetched {len(incidents)} incidents")
+
+    demisto.debug(f"[Caldera] next run latest_operation_found: {latest_operation_time}")
+    last_run = {
+        "latest_operation_found": latest_operation_time,
+    }
+
+    return incidents, last_run
+
+
 def get_operations_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     operation_id = args.get('id')
     sort = args.get('sort')
@@ -1980,6 +2115,10 @@ def main() -> None:
             test_module(client)
         elif command in commands:
             return_results(commands[command](client, args))
+        elif command == "fetch-incidents":
+            incidents, last_run = fetch_incidents(client, args, params)
+            demisto.incidents(incidents)
+            demisto.setLastRun(last_run)
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 

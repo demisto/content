@@ -200,6 +200,9 @@ script:
     - contextPath: SentinelOne.Agents.ComputerName
       description: Name of agent computer.
       type: string
+    - contextPath: SentinelOne.Agents.MachineType
+      description: Machine type.
+      type: string
     - contextPath: SentinelOne.Agents.Domain
       description: Domain name of the agent.
       type: string
@@ -209,6 +212,9 @@ script:
     - contextPath: SentinelOne.Agents.SiteName
       description: Site name associated with the agent.
       type: string
+    - contextPath: SentinelOne.Agents.Tags
+      description: Tags associated with the agent.
+      type: unknown
   - arguments:
     - auto: PREDEFINED
       description: Exclusion item type.
@@ -582,6 +588,9 @@ script:
       type: string
     - contextPath: SentinelOne.Agent.ComputerName
       description: Name of the agent computer.
+      type: string
+    - contextPath: SentinelOne.Agent.MachineType
+      description: Machine type.
       type: string
     - contextPath: SentinelOne.Agent.Domain
       description: Domain name of the agent.
@@ -991,8 +1000,11 @@ script:
     - contextPath: SentinelOne.Agent.AgentsAffected
       description: The number of affected agents.
       type: Number
+    - contextPath: SentinelOne.Agent.NetworkStatus
+      description: Agent network status.
+      type: String
     - contextPath: SentinelOne.Agent.ID
-      description: The IDs of the affected agents.
+      description: Input agents' IDs.
       type: String
   - arguments:
     - description: A comma-separated list of agent IDs to disconnect from the network. Run the list-agents command to get a list of agent IDs.
@@ -1006,7 +1018,7 @@ script:
       description: Agent network status.
       type: String
     - contextPath: SentinelOne.Agent.ID
-      description: The IDs of the affected agents.
+      description: Input agents' IDs.
       type: String
   - arguments:
     - description: The message to broadcast to agents.
@@ -1922,14 +1934,16 @@ script:
       description: Events created before or at this timestamp.
     - name: limit
       description: Limit number of returned items (1-100000).
-    description: Start a Deep Visibility Power query to get back status and potential results (ping afterwards using the queryId if query has not finished). Relevant for API version 2.1.
+    description: Deprecated. Use ***sentinelone-get-power-query-results*** instead. Start a Deep Visibility Power query to get back status and potential results (ping afterwards using the queryId if query has not finished). Relevant for API version 2.1.
     name: sentinelone-create-power-query
+    deprecated: true
   - arguments:
     - name: queryId
       required: true
       description: QueryId.
-    description: Ping a Deep Visibility Power query using the queryId argument if results have not returned from an initial Power query or a previous ping. Relevant for API version 2.1.
+    description: Deprecated. Use ***sentinelone-get-power-query-results*** instead. Ping a Deep Visibility Power query using the queryId argument if results have not returned from an initial Power query or a previous ping. Relevant for API version 2.1.
     name: sentinelone-ping-power-query
+    deprecated: true
   - arguments:
     - name: status
       required: true
@@ -2231,7 +2245,6 @@ script:
       required: true
       description: Script ID.
     - name: output_directory
-      required: true
       description: Output directory.
     - name: agent_ids
       required: true
@@ -2271,6 +2284,264 @@ script:
       type: string
     description: Run a remote script that was uploaded to the SentinelOne Script Library.
     name: sentinelone-run-remote-script
+  - arguments:
+    - name: account_ids
+      isArray: true 
+      description: "A comma-separated list of account IDs. Example: '225494730938493804,225494730938493915'."
+    - name: computer_name_contains
+      description: Free-text filter by agent computer name (supports multiple values).
+    - name: count_only
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: If true, only total number of items will be returned, without any of the actual objects.
+    - name: created_at_gt
+      description: "Created at greater than timedate. Example: '2018-02-27T04:49:26.257525Z'."
+    - name: created_at_gte
+      description: "Created at greater or equal than timedate. Example: '2018-02-27T04:49:26.257525Z'."
+    - name: created_at_lt
+      description: "Created at lesser than timedate. Example: '2018-02-27T04:49:26.257525Z'."
+    - name: created_at_lte
+      description: "Created at lesser or equal than timedate. Example: '2018-02-27T04:49:26.257525Z'."
+    - name: cursor
+      description: "Cursor position returned by the last request. Use to iterate over more than 1000 items. Example: 'YWdlbnRfaWQ6NTgwMjkzODE='."
+    - name: description_contains
+      description: Only include tasks with specific description.
+    - name: detailed_status_contains
+      isArray: true 
+      description: Only include tasks with specific detailed status.
+    - name: group_ids
+      isArray: true 
+      description: "Comma-separated list of Group IDs to filter by. Example: '225494730938493804,225494730938493915'."
+    - name: ids
+      isArray: true 
+      description: "Comma-separated list of IDs to filter by. Example: '225494730938493804,225494730938493915'."
+    - name: initiated_by_contains
+      isArray: true 
+      description: Only include tasks from specific initiating user.
+    - name: limit
+      description: "Limit number of returned items (1-1000). Example: '10'."
+    - name: parent_task_id
+      required: true
+      description: "Parent task ID to fetch the status by. Example: '225494730938493804'."
+    - name: parent_task_id_in
+      isArray: true 
+      description: List of IDs to filter by.
+    - name: query
+      description: Query.
+    - name: site_ids
+      isArray: true 
+      description: "List of site IDs to filter by. Example: '225494730938493804,225494730938493915'."
+    - name: status
+      description: "Status of the script task. Example: 'created'."
+    - name: tenant
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Indicates a tenant scope request.
+    - name: updated_at_gt
+      description: "Updated at greater than datetime. Example: '2018-02-27T04:49:26.257525Z'."
+    - name: updated_at_gte
+      description: "Updated at greater or equal than datetime. Example: '2018-02-27T04:49:26.257525Z'."
+    - name: updated_at_lt
+      description: "Updated at lesser than datetime. Example: '2018-02-27T04:49:26.257525Z'."
+    - name: updated_at_lte
+      description: "Updated at lesser or equal than datetime. Example: '2018-02-27T04:49:26.257525Z'."
+    - name: uuid_contains
+      description: Free-text filter by agent UUID (supports multiple values).
+    outputs:
+    - contextPath: SentinelOne.GetRemoteScript.id
+      description: ID of the task.
+      type: string
+    - contextPath: SentinelOne.GetRemoteScript.accountId
+      description: Account ID where this script is executed.
+      type: string
+    - contextPath: SentinelOne.GetRemoteScript.accountName
+      description: Account name where this script is executed.
+      type: string
+    - contextPath: SentinelOne.GetRemoteScript.agentId
+      description: Agent ID where this script is executed.
+      type: string
+    - contextPath: SentinelOne.GetRemoteScript.agentIsActive
+      description: The status of the agent.
+      type: boolean
+    - contextPath: SentinelOne.GetRemoteScript.agentMachineType
+      description: Agent machine yype.
+      type: string
+    - contextPath: SentinelOne.GetRemoteScript.agentOsType
+      description: Agent operating system type.
+      type: string
+    - contextPath: SentinelOne.GetRemoteScript.agentUuid
+      description: Agent UUID.
+      type: string
+    - contextPath: SentinelOne.GetRemoteScript.createdAt
+      description: The script created At datetime.
+      type: string
+    - contextPath: SentinelOne.GetRemoteScript.description
+      description: The description of the remote script.
+      type: string
+    - contextPath: SentinelOne.GetRemoteScript.detailedStatus
+      description: The detailed status of the remote script.
+      type: string
+    - contextPath: SentinelOne.GetRemoteScript.groupId
+      description: Group ID where this script is executed.
+      type: string
+    - contextPath: SentinelOne.GetRemoteScript.groupName
+      description: Group Name where this script is executed.
+      type: string
+    - contextPath: SentinelOne.GetRemoteScript.initiatedBy
+      description: Remote script initiate by.
+      type: string
+    - contextPath: SentinelOne.GetRemoteScript.initiatedById
+      description: ID of the remote script initiator.
+      type: string
+    - contextPath: SentinelOne.GetRemoteScript.parentTaskId
+      description: Parent task ID of the remote script.
+      type: string
+    - contextPath: SentinelOne.GetRemoteScript.siteId
+      description: Site ID where this script is executed.
+      type: string
+    - contextPath: SentinelOne.GetRemoteScript.siteName
+      description: Site name where this script is executed.
+      type: string
+    - contextPath: SentinelOne.GetRemoteScript.status
+      description: Status of the remote script.
+      type: string
+    - contextPath: SentinelOne.GetRemoteScript.statusCode
+      description: Status code of the remote script.
+      type: string
+    - contextPath: SentinelOne.GetRemoteScript.statusDescription
+      description: Status description of the remote script.
+      type: string
+    - contextPath: SentinelOne.GetRemoteScript.type
+      description: Type of remote script.
+      type: string
+    - contextPath: SentinelOne.GetRemoteScript.updateAt
+      description: Remote script upated at.
+      type: string
+    description: Get remote scripts tasks using a variety of filters.
+    name: sentinelone-get-remote-script-task-status
+  - arguments:
+    - name: computer_names
+      isArray: true
+      description: A comma-separated list of partial or whole computer names, which ran scripts, to get a download link for.
+    - name: task_ids
+      isArray: true
+      required: true
+      description: A comma-separated list of task IDs to get a download link for.
+    outputs:
+    - contextPath: SentinelOne.RemoteScriptResults.taskId
+      description: ID of the task.
+      type: string
+    - contextPath: SentinelOne.RemoteScriptResults.fileName
+      description: File name.
+      type: string
+    - contextPath: SentinelOne.RemoteScriptResults.downloadUrl
+      description: Download URL.
+      type: string
+    description: Get a script's result download URL.
+    name: sentinelone-get-remote-script-task-results
+  - arguments:
+    - name: account_ids
+      required: true
+      description: A comma-separated list of account IDs.
+      isArray: true
+    - name: output_destination
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - DataSetCloud
+      - Local
+      - None
+      - SentinelCloud
+      description: Output destination.
+    - name: task_description
+      required: true
+      description: Task description.
+    - name: script_id
+      required: true
+      description: Script ID.
+    - name: output_directory
+      description: Output directory.
+    - name: agent_ids
+      required: true
+      description: A comma-separated list of agent IDs on which the script should run.
+      isArray: true
+    - name: singularity_xdr_Keyword
+      description: Singularity XDR keyword.
+    - name: singularity_xdr_Url
+      description: Singularity XDR URL.
+    - name: api_key
+      description: API key.
+    - name: input_params
+      description: Input parameters.
+    - name: password
+      description: Password.
+    - name: script_runtime_timeout_seconds
+      description: Script runtime timout in seconds for current execution.
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: If set to true, execution will require approval.
+      name: requires_approval
+      predefined:
+      - "false"
+      - "true"
+    - defaultValue: '60'
+      description: Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. 
+      name: interval
+    - defaultValue: '600'
+      description: Indicates the time in seconds until the polling sequence timeouts. 
+      name: timeout
+    - description: "Parent task ID to fetch the status by. Example: '225494730938493804'."
+      name: parent_task_id
+    description: Automate a remote script's execution cycle and return the script's results.
+    name: sentinelone-remote-script-automate-results
+    outputs:
+    - contextPath: SentinelOne.RemoteScriptResults.taskId
+      description: ID of the task.
+      type: string
+    - contextPath: SentinelOne.RemoteScriptResults.fileName
+      description: File name.
+      type: string
+    - contextPath: SentinelOne.RemoteScriptResults.downloadUrl
+      description: Download URL.
+      type: string
+    polling: true
+  - arguments:
+    - name: account_ids
+      description: A comma-separated list of account IDs.
+      isArray: true
+    - name: site_ids
+      description: A comma-separated list of site IDs on which the query should run.
+      isArray: true
+    - name: query
+      required: true
+      description: Events matching the query search term will be returned.
+    - name: from_date
+      required: true
+      description: "Events created after this date. Example: '2018-02-27T04:49:26.257525Z'."
+    - name: to_date
+      required: true
+      description: "Events created before or at this date. Example: '2018-02-27T04:49:26.257525Z'."
+    - name: limit
+      description: Limit number of returned items (1-100000).
+    - defaultValue: '10'
+      description: Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds.
+      name: interval
+    - defaultValue: '300'
+      description: Indicates the time in seconds until the polling sequence timeouts.
+      name: timeout
+    - name: query_id
+      description: "QueryId. Example: pq3be5e2747f716cxxxxxxxxxxxxx20a0."
+    description: Automate a power query and return the query results. (The maximum timeout of 300 seconds is allowed.)
+    name: sentinelone-get-power-query-results
+    outputs:
+    - contextPath: SentinelOne.PowerQuery.ResultIndex
+      description: Result from the power query in list of objects format.
+      type: List
+    polling: true
   - arguments: []
     description: Returns the list of fields for an incident type.
     name: get-mapping-fields
@@ -2388,7 +2659,7 @@ script:
     - contextPath: SentinelOne.Notes.UpdatedAt
       description: The note updated time.
       type: string
-  dockerimage: demisto/python3:3.10.13.89009
+  dockerimage: demisto/python3:3.11.10.116949
   isfetch: true
   ismappable: true
   isremotesyncin: true

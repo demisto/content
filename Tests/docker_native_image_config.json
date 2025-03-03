@@ -1,7 +1,7 @@
 {
-    "native_images":{
-        "native:8.6":{
-            "supported_docker_images":[
+    "native_images": {
+        "native:8.8": {
+            "supported_docker_images": [
                 "python3",
                 "python3-deb",
                 "python3-ubi",
@@ -11,7 +11,38 @@
                 "readpdf",
                 "parse-emails",
                 "docxpy",
-                "sklearn",
+                "pandas",
+                "ippysocks-py3",
+                "oauthlib",
+                "unzip",
+                "py3ews",
+                "taxii2",
+                "pan-os-python",
+                "slackv3",
+                "google-api-py3",
+                "boto3py3",
+                "pyjwt3",
+                "joe-security",
+                "slack",
+                "office-utils",
+                "chromium",
+                "tesseract",
+                "netutils",
+                "auth-utils"
+            ],
+            "docker_ref": "demisto/py3-native:8.8.0.108569"
+        },
+        "native:8.6": {
+            "supported_docker_images": [
+                "python3",
+                "python3-deb",
+                "python3-ubi",
+                "py3-tools",
+                "py3-tools-ubi",
+                "crypto",
+                "readpdf",
+                "parse-emails",
+                "docxpy",
                 "pandas",
                 "ippysocks-py3",
                 "oauthlib",
@@ -33,10 +64,11 @@
             ],
             "docker_ref": "demisto/py3-native:8.6.0.88771"
         },
-        "native:dev":{
-            "supported_docker_images":[
+        "native:dev": {
+            "supported_docker_images": [
                 "python3",
                 "python3-deb",
+                "yarapy",
                 "python3-ubi",
                 "py3-tools",
                 "py3-tools-ubi",
@@ -44,7 +76,6 @@
                 "readpdf",
                 "parse-emails",
                 "docxpy",
-                "sklearn",
                 "pandas",
                 "ippysocks-py3",
                 "oauthlib",
@@ -63,8 +94,8 @@
                 "tesseract"
             ]
         },
-        "native:candidate":{
-            "supported_docker_images":[
+        "native:candidate": {
+            "supported_docker_images": [
                 "python3",
                 "python3-deb",
                 "python3-ubi",
@@ -74,7 +105,6 @@
                 "readpdf",
                 "parse-emails",
                 "docxpy",
-                "sklearn",
                 "pandas",
                 "ippysocks-py3",
                 "oauthlib",
@@ -94,99 +124,267 @@
                 "netutils",
                 "auth-utils"
             ],
-            "docker_ref": "demisto/py3-native:8.6.0.88771"
+            "docker_ref": "demisto/py3-native:8.9.0.112362"
         }
     },
-    "ignored_content_items":[
+    "ignored_content_items": [
         {
-            "id":"Symantec MSS",
-            "reason":"issue: CIAC-9119 - [Symantec MSS] Module 'OpenSSL.crypto' has deprecated 'load_pkcs12' member",
-            "ignored_native_images":[
+            "id": "Json2HtmlTable",
+            "reason": "Add json2html to py3-tools: Ignore due to this contribution PR: https://github.com/demisto/dockerfiles/pull/29877.",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "EWSO365",
+            "reason": "Issue: CIAC-10245 - Microsoft broke their API, and it was fixed in a newer version of the exchangelib package.",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "Rasterize",
+            "reason": "Issue: CRTX-72338 and CIAC-7694",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "Intezer v2",
+            "reason": "Issue: CIAC-10263",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "ConvertFile",
+            "reason": "Issue: CIAC-7625",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "DockerHardeningCheck",
+            "reason": "This script is supposed to run inside a container, does not support podman",
+            "ignored_native_images": [
+                "native:8.7",
                 "native:8.6",
                 "native:dev",
                 "native:candidate"
             ]
         },
         {
-            "id":"EWSO365",
-            "reason":"Issue: CIAC-10245 - Microsoft broke their API, and it was fixed in a newer version of the exchangelib package.",
-            "ignored_native_images":[
+            "id": "ParseEmailFilesV2",
+            "reason": "Script uses an updated openssl lib than native, see CIAC-11469",
+            "ignored_native_images": [
+                "native:8.8",
+                "native:8.7",
                 "native:8.6",
                 "native:dev",
                 "native:candidate"
             ]
         },
         {
-            "id":"FetchIndicatorsFromFile",
-            "reason":"issue: CIAC-5243 - ElementTree object (xml) in python3.9 has getiterator attribute while in python 3.10 this attribute does not exist - causing unit tests failures.",
-            "ignored_native_images":[
-                "native:8.6",
-                "native:dev",
-                "native:candidate"
+            "id": "Github Feed",
+            "reason": "update docker image",
+            "ignored_native_images": [
+                "native:8.6"
             ]
         },
         {
-            "id":"Rasterize",
-            "reason":"Issue: CRTX-72338 and CIAC-7694",
-            "ignored_native_images":[
-                "native:8.6",
-                "native:candidate"
+            "id": "CyrenThreatInDepthRenderRelated",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
             ]
         },
         {
-            "id":"Intezer v2",
-            "reason":"Issue: CIAC-7861",
-            "ignored_native_images":[
-                "native:8.6",
-                "native:candidate"
+            "id": "rapid7_threat_command",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
             ]
         },
         {
-            "id":"RegexExtractAll",
-            "reason":"Issue: CIAC-6005",
-            "ignored_native_images":[
-                "native:8.6",
-                "native:dev",
-                "native:candidate"
+            "id": "Respond_Analyst",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
             ]
         },
         {
-            "id":"ConvertFile",
-            "reason":"Issue: CIAC-7625",
+            "id": "rapid7appsec",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "FireEyeNX",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "IBMSecurityVerify",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id":"Gmail",
+            "reason":"CIAC-11186, This integration support only from python 3.11",
             "ignored_native_images":[
                 "native:8.6"
             ]
         },
         {
-            "id":"DockerHardeningCheck",
-            "reason":"This script is supposed to run inside a container, does not support podman",
-            "ignored_native_images":[
-                "native:8.6",
-                "native:dev",
-                "native:candidate"
+            "id": "Gmail Single User",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
             ]
         },
         {
-            "id":"Ping",
-            "reason":"see CIAC-8493",
-            "ignored_native_images":[
-                "native:8.6",
-                "native:dev",
-                "native:candidate"
+            "id": "RSA Archer v2",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
             ]
         },
         {
-            "id":"ZipFile",
-            "reason":"see CIAC-10361",
+            "id":"Cortex XDR - IOC",
+            "reason":"CIAC-11186, This integration support only from python 3.11",
             "ignored_native_images":[
-                "native:8.6",
-                "native:candidate"
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "FraudWatch",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "AWS - Security Hub",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "Box v2",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "CrowdStrike Falcon Intel v2",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "Cyberpion",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "Darktrace Event Collector",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "Infinipoint",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "Palo Alto Networks IoT",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "SecurityIntelligenceServicesFeed",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "ZoomEventCollector",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "DateStringToISOFormat",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "Forescout",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "FireEye ETP Event Collector",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "FormattedDateToEpoch",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "TimeComponents",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "DarktraceMBs",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "OnePassword",
+            "reason": "CIAC-12024, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
             ]
         }
     ],
-    "flags_versions_mapping":{
-        "native:dev":"native:dev",
-        "native:ga":"native:8.6",
-        "native:candidate":"native:candidate"
+    "flags_versions_mapping": {
+        "native:dev": "native:dev",
+        "native:maintenance": "native:8.6",
+        "native:ga": "native:8.8",
+        "native:candidate": "native:candidate"
     }
 }

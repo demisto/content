@@ -2,13 +2,13 @@
     "name": "Trend Micro Cloud App Security",
     "description": "Use Trend Micro - Cloud App Security to: Log retrieval - Threat investigation: - Threat mitigation - Threat remediation - Intelligent investigation.",
     "support": "xsoar",
-    "currentVersion": "1.1.6",
+    "currentVersion": "1.1.9",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-07-30T09:36:20Z",
     "categories": [
-        "Cloud Services"
+        "Cloud Security"
     ],
     "tags": [],
     "useCases": [],

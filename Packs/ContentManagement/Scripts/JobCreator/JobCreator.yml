@@ -19,7 +19,7 @@ tags:
 - Content Management
 timeout: '0'
 type: python
-dockerimage: demisto/xsoar-tools:1.0.0.83431
+dockerimage: demisto/xsoar-tools:1.0.0.1902141
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0

@@ -26,8 +26,8 @@ Parses a CSV and looks for a specific value in a specific column, returning a di
 
 ---
 
-| **Path** | **Description** | **Type** |
-| --- | --- | --- |
-| LookupCSV.result | List of result objects; either a list of dicts \(with header_row\) or a list of lists \(no header row\) | Unknown |
+| **Path**              | **Description** | **Type** |
+|-----------------------| --- | --- |
+| LookupCSV.Result      | List of result objects; either a list of dicts \(with header_row\) or a list of lists \(no header row\) | Unknown |
 | LookupCSV.FoundResult | Boolean, for whether the result was found in the CSV or not. | Unknown |
 | LookupCSV.SearchValue | The value that was searched. | Unknown |

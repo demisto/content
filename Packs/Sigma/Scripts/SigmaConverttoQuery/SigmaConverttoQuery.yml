@@ -1,0 +1,45 @@
+commonfields:
+  id: SigmaConverttoQuery
+  version: -1
+name: SigmaConverttoQuery
+script: ''
+type: python
+tags:
+- Sigma
+comment: Allows converting a Sigma Rule indicator into a SIEM query.
+enabled: true
+args:
+- name: indicator
+  required: true
+  description: The Sigma Rule indicator to convert to a query.
+- name: SIEM
+  description: The SIEM to convert the Sigma Rule to.
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - Splunk
+  - XQL
+  - Sentinel_One
+  - Qradar
+  - Microsoft_Defender
+  - Carbon_Black
+  - Elastic
+outputs:
+- contextPath: Sigma.query
+  description: The Sigma query in the correct format.
+  type: string
+- contextPath: Sigma.name
+  description: The Sigma query name.
+  type: string
+- contextPath: Sigma.format
+  description: The format in which the query was created.
+  type: string
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/pysigma:1.0.0.110641
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

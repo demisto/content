@@ -1,4 +1,7 @@
 category: Utilities
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Rasterize
   version: -1
@@ -9,353 +12,346 @@ configuration:
   defaultvalue: "false"
   type: 8
   additionalinfo:
+  section: Connect
 - name: wait_time
   display: Time to wait before taking a screenshot (in seconds)
   required: false
   defaultvalue: "0"
   type: 0
   additionalinfo:
+  section: Connect
 - name: max_page_load_time
   display: Maximum time to wait for a page to load (in seconds)
   required: false
   defaultvalue: "180"
   type: 0
   additionalinfo:
+  section: Connect
 - name: chrome_options
   display: Chrome options (Advanced. See [?])
   required: false
   defaultvalue:
   type: 0
   additionalinfo: Add or remove Chrome options used to rasterize. Use for advanced troubleshooting. See Help.
+  section: Connect
 - name: max_chromes_count
   display: Number of maximum Chrome instances to keep running simultaneously.
   required: false
   defaultvalue: "64"
   type: 0
   additionalinfo:
+  section: Connect
 - name: max_chrome_tabs_count
   display: Number of maximum tabs each Chrome will be allowed to open.
   required: false
   defaultvalue: "10"
   type: 0
   additionalinfo:
+  section: Connect
+- name: is_https
+  display: Use secure requests protocol (HTTPS).
+  defaultvalue: 'false'
+  type: 8
+  advanced: true
+  section: Connect
 - name: rasterize_mode
   display: Rasterize Mode
   required: false
-  defaultvalue:
   type: 0
   additionalinfo: Deprecated.
+  defaultvalue:
+  section: Connect
+- name: blocked_urls
+  display: List of domains to block
+  required: false
+  defaultvalue: "cloudflare.com"
+  type: 0
+  section: Connect
 - name: proxy
   display: Use system proxy settings
   required: false
   type: 8
   additionalinfo:
+  section: Connect
 description: Converts URLs, PDF files, and emails to an image file or PDF file.
 display: Rasterize
 name: Rasterize
 script:
   commands:
-    - arguments:
-        - description: Time in seconds to wait before taking a screenshot.
-          name: wait_time
-        - description: Maximum time to wait for a page to load (in seconds).
-          name: max_page_load_time
-        - default: true
-          description: The URL to rasterize. Must be the full URL, including the http
-            prefix.
-          name: url
-          isArray: true
-          required: true
-        - defaultValue: 1024px
-          description: The page width, for example, 1024px. Specify with or without the px
-            suffix.
-          name: width
-        - defaultValue: 800px
-          description: The page height, for example, 800px. Specify with or without the px
-            suffix.
-          name: height
-        - description: The file type to which to convert the contents of the URL. Can be
-            "pdf","png" or "json" (for use with raw-response). Default is "png".
-          name: type
-          predefined:
-            - pdf
-            - png
-            - json
-          auto: PREDEFINED
-        - description: Deprecated.
-          name: mode
-          auto: PREDEFINED
-          predefined:
-            - WebDriver - Preferred
-            - WebDriver - Only
-            - Headless CLI - Preferred
-            - Headless CLI - Only
-          deprecated: true
-        - defaultValue: url
-          description: The name the file will be saved as.
-          name: file_name
-          isArray: true
-        - auto: PREDEFINED
-          defaultValue: "False"
-          description: Get the full page. The actual page width and height will be auto
-            calculated up to a max value of 8000px. (Marking full_screen as true
-            means that the values for width and height arguments might not be
-            respected).
-          name: full_screen
-          predefined:
-            - "True"
-            - "False"
-        - auto: PREDEFINED
-          defaultValue: "False"
-          description: Whether to include the URL bar in the returned screenshot. (Only
-            for WebDriver mode. Ignored in Headless CLI mode).
-          name: include_url
-          predefined:
-            - "True"
-            - "False"
-      description: Converts the contents of a URL to an image file or a PDF file.
-      name: rasterize
-      outputs:
-        - contextPath: InfoFile.EntryID
-          description: The entry ID of the image/pdf file.
-          type: string
-        - contextPath: InfoFile.Extension
-          description: The extension of the image/pdf file.
-          type: string
-        - contextPath: InfoFile.Name
-          description: The name of the image/pdf file.
-          type: string
-        - contextPath: InfoFile.Info
-          description: The info of the image/pdf file.
-          type: string
-        - contextPath: InfoFile.Size
-          description: The size of the image/pdf file.
-          type: number
-        - contextPath: InfoFile.Type
-          description: The type of the image/pdf file.
-          type: string
-    - arguments:
-        - default: true
-          description: The HTML body of the email.
-          name: htmlBody
-          required: true
-        - description: Maximum time to wait for a page to load (in seconds).
-          name: max_page_load_time
-        - defaultValue: 1000px
-          description: The HTML page width, for example, 1000px. Specify with or without
-            the px suffix.
-          name: width
-        - defaultValue: 1500px
-          description: The HTML page height, for example, 1500px. Specify with or without
-            the px suffix.
-          name: height
-        - description: The file type to which to convert the email body. Can be "pdf" or
-            "png". Default is "png".
-          name: type
-          auto: PREDEFINED
-          predefined:
-            - pdf
-            - png
-        - auto: PREDEFINED
-          description: If "true", will block all outgoing communication.
-          name: offline
-          predefined:
-            - "true"
-            - "false"
-        - description: Deprecated.
-          name: mode
-          auto: PREDEFINED
-          predefined:
-            - WebDriver - Preferred
-            - WebDriver - Only
-            - Headless CLI - Preferred
-            - Headless CLI - Only
-          deprecated: true
-        - defaultValue: email
-          description: The name the file will be saved as.
-          name: file_name
-        - auto: PREDEFINED
-          defaultValue: "False"
-          description: Get the full page. The actual page width and height will be auto
-            calculated up to a max value of 8000px. (Marking full_screen as true
-            means that the values for width and height arguments might not be
-            respected).
-          name: full_screen
-          predefined:
-            - "True"
-            - "False"
-      description: Converts the body of an email to an image file or a PDF file.
-      name: rasterize-email
-      outputs:
-        - contextPath: InfoFile.EntryID
-          description: The entry ID of the image/pdf file.
-          type: string
-        - contextPath: InfoFile.Extension
-          description: The extension of the image/pdf file.
-          type: string
-        - contextPath: InfoFile.Name
-          description: The name of the image/pdf file.
-          type: string
-        - contextPath: InfoFile.Info
-          description: The info of the image/pdf file.
-          type: string
-        - contextPath: InfoFile.Size
-          description: The size of the image/pdf file.
-          type: number
-        - contextPath: InfoFile.Type
-          description: The type of the image/pdf file.
-          type: string
-    - arguments:
-        - default: true
-          description: The entry ID of the image file.
-          name: EntryID
-          required: true
-        - defaultValue: 600px
-          description: The image width, for example, 600px. Specify with or without the px
-            suffix.
-          name: width
-        - defaultValue: 800px
-          description: The image height, for example, 800px. If empty, the height is the
-            entire image.
-          name: height
-        - description: The name the file will be saved as.
-          name: file_name
-        - description: Deprecated.
-          name: mode
-          auto: PREDEFINED
-          predefined:
-            - WebDriver - Preferred
-            - WebDriver - Only
-            - Headless CLI - Preferred
-            - Headless CLI - Only
-          deprecated: true
-        - auto: PREDEFINED
-          defaultValue: "False"
-          description: Get the full page. The actual page width and height will be auto
-            calculated up to a max value of 8000px. (Marking full_screen as true
-            means that the values for width and height arguments might not be
-            respected).
-          name: full_screen
-          predefined:
-            - "True"
-            - "False"
-      description: Converts an image file to a PDF file.
-      name: rasterize-image
-      outputs:
-        - contextPath: InfoFile.EntryID
-          description: The entry ID of the pdf file.
-          type: string
-        - contextPath: InfoFile.Extension
-          description: The extension of the pdf file.
-          type: string
-        - contextPath: InfoFile.Name
-          description: The name of the pdf file.
-          type: string
-        - contextPath: InfoFile.Info
-          description: The info of the pdf file.
-          type: string
-        - contextPath: InfoFile.Size
-          description: The size of the pdf file.
-          type: number
-        - contextPath: InfoFile.Type
-          description: The type of the pdf file.
-          type: string
-    - arguments:
-        - default: true
-          description: The entry ID of PDF file.
-          name: EntryID
-          required: true
-        - defaultValue: "3"
-          description: The maximum number of pages to render. Default is "3". Use "*" to
-            render all pages.
-          name: maxPages
-        - description: The password to access the PDF.
-          name: pdfPassword
-        - auto: PREDEFINED
-          defaultValue: "false"
-          description: Deprecated.
-          name: horizontal
-          predefined:
-            - "true"
-            - "false"
-          deprecated: true
-        - defaultValue: image
-          description: The name the file will be saved as.
-          name: file_name
-      description: Converts a PDF file to an image file.
-      name: rasterize-pdf
-      outputs:
-        - contextPath: InfoFile.EntryID
-          description: The entry ID of the image file.
-          type: string
-        - contextPath: InfoFile.Extension
-          description: The extension of the image file.
-          type: string
-        - contextPath: InfoFile.Name
-          description: The name of the image file.
-          type: string
-        - contextPath: InfoFile.Info
-          description: The info of the image file.
-          type: string
-        - contextPath: InfoFile.Size
-          description: The size of the image file.
-          type: number
-        - contextPath: InfoFile.Type
-          description: The type of the image file.
-          type: string
-    - arguments:
-        - default: true
-          description: The entry ID of the HTML file.
-          name: EntryID
-          required: true
-        - defaultValue: 600px
-          description: The HTML page width, for example, 600px. Specify with or without
-            the px suffix.
-          name: width
-        - defaultValue: 800px
-          description: The HTML page height, for example, 800px. Specify with or without
-            the px suffix.
-          name: height
-        - description: The file type to which to convert the email body. Can be "pdf" or
-            "png". Default is "png".
-          name: type
-        - defaultValue: html
-          description: The name the file will be saved as.
-          name: file_name
-        - auto: PREDEFINED
-          defaultValue: "False"
-          description: Get the full page. The actual page width and height will be auto
-            calculated up to a max value of 8000px. (Marking full_screen as true
-            means that the values for width and height arguments might not be
-            respected).
-          name: full_screen
-          predefined:
-            - "True"
-            - "False"
-        - description: Time in seconds to wait before taking a screenshot.
-          name: wait_time
-      description: Converts an HTML file to an image file or a PDF file.
-      name: rasterize-html
-      outputs:
-        - contextPath: InfoFile.EntryID
-          description: The entry ID of the image/pdf file.
-          type: string
-        - contextPath: InfoFile.Extension
-          description: The extension of the image/pdf file.
-          type: string
-        - contextPath: InfoFile.Name
-          description: The name of the image/pdf file.
-          type: string
-        - contextPath: InfoFile.Info
-          description: The info of the image/pdf file.
-          type: string
-        - contextPath: InfoFile.Size
-          description: The size of the image/pdf file.
-          type: number
-        - contextPath: InfoFile.Type
-          description: The type of the image/pdf file.
-          type: string
-  dockerimage: demisto/chromium:124.0.6367.93838
+  - arguments:
+    - description: Time in seconds to wait before taking a screenshot.
+      name: wait_time
+    - description: Maximum time to wait for a page to load (in seconds).
+      name: max_page_load_time
+    - default: true
+      description: The URL to rasterize. Must be the full URL, including the http prefix.
+      name: url
+      required: true
+      isArray: true
+    - defaultValue: 1024px
+      description: The page width, for example, 1024px. Specify with or without the px suffix.
+      name: width
+    - defaultValue: 800px
+      description: The page height, for example, 800px. Specify with or without the px suffix.
+      name: height
+    - description: The file type to which to convert the contents of the URL. Can be "pdf","png" or "json" (for use with raw-response). Default is "png".
+      name: type
+      predefined:
+      - pdf
+      - png
+      - json
+      auto: PREDEFINED
+    - description: Deprecated.
+      name: mode
+      auto: PREDEFINED
+      predefined:
+      - WebDriver - Preferred
+      - WebDriver - Only
+      - Headless CLI - Preferred
+      - Headless CLI - Only
+      deprecated: true
+    - defaultValue: url
+      description: The name the file will be saved as.
+      name: file_name
+      isArray: true
+    - auto: PREDEFINED
+      defaultValue: "False"
+      description: Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected).
+      name: full_screen
+      predefined:
+      - "True"
+      - "False"
+    - auto: PREDEFINED
+      defaultValue: "False"
+      description: Whether to include the URL bar in the returned screenshot. (Only for WebDriver mode. Ignored in Headless CLI mode).
+      name: include_url
+      predefined:
+      - "True"
+      - "False"
+    description: Converts the contents of a URL to an image file or a PDF file.
+    name: rasterize
+    outputs:
+    - contextPath: InfoFile.EntryID
+      description: The entry ID of the image/pdf file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: The extension of the image/pdf file.
+      type: string
+    - contextPath: InfoFile.Name
+      description: The name of the image/pdf file.
+      type: string
+    - contextPath: InfoFile.Info
+      description: The info of the image/pdf file.
+      type: string
+    - contextPath: InfoFile.Size
+      description: The size of the image/pdf file.
+      type: number
+    - contextPath: InfoFile.Type
+      description: The type of the image/pdf file.
+      type: string
+  - arguments:
+    - default: true
+      description: The HTML body of the email.
+      name: htmlBody
+      required: true
+    - description: Maximum time to wait for a page to load (in seconds).
+      name: max_page_load_time
+    - defaultValue: 1000px
+      description: The HTML page width, for example, 1000px. Specify with or without the px suffix.
+      name: width
+    - defaultValue: 1500px
+      description: The HTML page height, for example, 1500px. Specify with or without the px suffix.
+      name: height
+    - description: The file type to which to convert the email body. Can be "pdf" or "png". Default is "png".
+      name: type
+      auto: PREDEFINED
+      predefined:
+      - pdf
+      - png
+    - auto: PREDEFINED
+      description: If "true", will block all outgoing communication.
+      name: offline
+      predefined:
+      - "true"
+      - "false"
+    - description: Deprecated.
+      name: mode
+      auto: PREDEFINED
+      predefined:
+      - WebDriver - Preferred
+      - WebDriver - Only
+      - Headless CLI - Preferred
+      - Headless CLI - Only
+      deprecated: true
+    - description: The name the file will be saved as.
+      name: file_name
+    - auto: PREDEFINED
+      defaultValue: "False"
+      description: Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected).
+      name: full_screen
+      predefined:
+      - "True"
+      - "False"
+    description: Converts the body of an email to an image file or a PDF file.
+    name: rasterize-email
+    outputs:
+    - contextPath: InfoFile.EntryID
+      description: The entry ID of the image/pdf file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: The extension of the image/pdf file.
+      type: string
+    - contextPath: InfoFile.Name
+      description: The name of the image/pdf file.
+      type: string
+    - contextPath: InfoFile.Info
+      description: The info of the image/pdf file.
+      type: string
+    - contextPath: InfoFile.Size
+      description: The size of the image/pdf file.
+      type: number
+    - contextPath: InfoFile.Type
+      description: The type of the image/pdf file.
+      type: string
+  - arguments:
+    - default: true
+      description: The entry ID of the image file.
+      name: EntryID
+      required: true
+    - defaultValue: 600px
+      description: The image width, for example, 600px. Specify with or without the px suffix.
+      name: width
+    - defaultValue: 800px
+      description: The image height, for example, 800px. If empty, the height is the entire image.
+      name: height
+    - description: The name the file will be saved as.
+      name: file_name
+    - description: Deprecated.
+      name: mode
+      auto: PREDEFINED
+      predefined:
+      - WebDriver - Preferred
+      - WebDriver - Only
+      - Headless CLI - Preferred
+      - Headless CLI - Only
+      deprecated: true
+    - auto: PREDEFINED
+      defaultValue: "False"
+      description: Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected).
+      name: full_screen
+      predefined:
+      - "True"
+      - "False"
+    description: Converts an image file to a PDF file.
+    name: rasterize-image
+    outputs:
+    - contextPath: InfoFile.EntryID
+      description: The entry ID of the pdf file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: The extension of the pdf file.
+      type: string
+    - contextPath: InfoFile.Name
+      description: The name of the pdf file.
+      type: string
+    - contextPath: InfoFile.Info
+      description: The info of the pdf file.
+      type: string
+    - contextPath: InfoFile.Size
+      description: The size of the pdf file.
+      type: number
+    - contextPath: InfoFile.Type
+      description: The type of the pdf file.
+      type: string
+  - arguments:
+    - default: true
+      description: The entry ID of PDF file.
+      name: EntryID
+      required: true
+    - defaultValue: "3"
+      description: The maximum number of pages to render. Default is "3". Use "*" to render all pages.
+      name: maxPages
+    - description: The password to access the PDF.
+      name: pdfPassword
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Deprecated.
+      name: horizontal
+      predefined:
+      - "true"
+      - "false"
+      deprecated: true
+    - defaultValue: image
+      description: The name the file will be saved as.
+      name: file_name
+    description: Converts a PDF file to an image file.
+    name: rasterize-pdf
+    outputs:
+    - contextPath: InfoFile.EntryID
+      description: The entry ID of the image file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: The extension of the image file.
+      type: string
+    - contextPath: InfoFile.Name
+      description: The name of the image file.
+      type: string
+    - contextPath: InfoFile.Info
+      description: The info of the image file.
+      type: string
+    - contextPath: InfoFile.Size
+      description: The size of the image file.
+      type: number
+    - contextPath: InfoFile.Type
+      description: The type of the image file.
+      type: string
+  - arguments:
+    - default: true
+      description: The entry ID of the HTML file.
+      name: EntryID
+      required: true
+    - defaultValue: 600px
+      description: The HTML page width, for example, 600px. Specify with or without the px suffix.
+      name: width
+    - defaultValue: 800px
+      description: The HTML page height, for example, 800px. Specify with or without the px suffix.
+      name: height
+    - description: The file type to which to convert the email body. Can be "pdf" or "png". Default is "png".
+      name: type
+    - defaultValue: html
+      description: The name the file will be saved as.
+      name: file_name
+    - auto: PREDEFINED
+      defaultValue: "False"
+      description: Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected).
+      name: full_screen
+      predefined:
+      - "True"
+      - "False"
+    - description: Time in seconds to wait before taking a screenshot.
+      name: wait_time
+    description: Converts an HTML file to an image file or a PDF file.
+    name: rasterize-html
+    outputs:
+    - contextPath: InfoFile.EntryID
+      description: The entry ID of the image/pdf file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: The extension of the image/pdf file.
+      type: string
+    - contextPath: InfoFile.Name
+      description: The name of the image/pdf file.
+      type: string
+    - contextPath: InfoFile.Info
+      description: The info of the image/pdf file.
+      type: string
+    - contextPath: InfoFile.Size
+      description: The size of the image/pdf file.
+      type: number
+    - contextPath: InfoFile.Type
+      description: The type of the image/pdf file.
+      type: string
+  dockerimage: demisto/chromium:131.0.6778.117810
   runonce: false
   script: "-"
   subtype: python3

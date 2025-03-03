@@ -1,0 +1,584 @@
+category: Vulnerability Management
+commonfields:
+  id: VBR REST API
+  version: -1
+configuration:
+- display: Username
+  displaypassword: Password
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: https://<fqdn>:9419
+  display: Resource URL
+  name: url
+  required: true
+  type: 0
+- defaultvalue: "false"
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: "false"
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: 3 days
+  display: First fetch time
+  name: first_fetch
+  required: false
+  type: 0
+- defaultvalue: "true"
+  display: Fetch configuration backup events
+  name: fetch_configuration_backup_events
+  required: false
+  type: 8
+- additionalinfo: An incident will be created If the last successful configuration backup is older than the specified value.
+  defaultvalue: "30"
+  display: Days Since Last Configuration Backup
+  name: days_since_last_configuration_backup
+  required: false
+  type: 0
+- defaultvalue: "true"
+  display: Fetch backup repository events
+  name: fetch_backup_repository_events
+  required: false
+  type: 8
+- additionalinfo: An incident will be created If the backup repository free space is less than the specified value.
+  defaultvalue: "200"
+  display: Backup Repository Free Space (GB)
+  name: backup_repository_free_space
+  required: false
+  type: 0
+- additionalinfo: The maximum number of backup repository events that can be fetched during command execution.
+  defaultvalue: "39"
+  display: Backup Repository Events Per Request
+  name: backup_repository_events_per_request
+  required: false
+  type: 0
+- defaultvalue: "true"
+  display: Fetch malware events
+  name: fetch_malware_events
+  required: false
+  type: 8
+- additionalinfo: The maximum number of malware events that can be fetched during command execution.
+  defaultvalue: "160"
+  display: Malware Events Per Request
+  name: malware_events_per_request
+  required: false
+  type: 0
+- defaultvalue: "120"
+  display: API Request Timeout (Seconds)
+  name: http_request_timeout_sec
+  required: false
+  type: 0
+- defaultvalue: "10"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- name: max_fetch
+  type: 0
+  defaultvalue: "200"
+  hidden: true
+description: 'Veeam Backup & Replication REST API allows you to query information about Veeam Backup & Replication entities and perform operations with these entities using HTTP requests and standard HTTP methods.'
+display: 'Veeam Backup & Replication REST API'
+name: VBR REST API
+script:
+  commands:
+  - arguments:
+    - description: 'Detection date and time, in UTC.'
+      name: detectiontimeutc
+      required: true
+    - description: 'Machine FQDN.'
+      name: machine_fqdn
+    - description: 'Machine IPv4 address.'
+      name: machine_ipv4
+    - description: 'Machine IPv6 address.'
+      name: machine_ipv6
+    - description: 'Machine BIOS UUID in the 8-4-4-4-12 format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.'
+      name: machine_uuid
+    - description: 'Event description.'
+      name: details
+      required: true
+    - description: 'Detection engine.'
+      name: engine
+      required: true
+    description: 'Create Malware Event.'
+    name: veeam-vbr-create-malware-event
+  - arguments:
+    - description: 'Number of events to skip.'
+      name: skip
+    - description: 'Maximum number of events to return.'
+      name: limit
+      defaultValue: "100"
+    - description: 'Sorts events by event meter.'
+      name: orderColumn
+    - description: 'Sorts events in the ascending order by the `orderColumn` meter.'
+      name: orderAsc
+    - description: 'Filters events by event type.'
+      name: typeFilter
+    - description: 'Returns events created after the specified time, in UTC.'
+      name: detectedAfterTimeUtcFilter
+    - description: 'Returns events created before the specified time, in UTC.'
+      name: detectedBeforeTimeUtcFilter
+    - description: 'Filters events by backup object ID.'
+      name: backupObjectIdFilter
+    - description: 'Filters events by state.'
+      name: stateFilter
+    - description: 'Filters events by source type.'
+      name: sourceFilter
+    - description: 'Filters events by severity.'
+      name: severityFilter
+    - description: 'Filters events by the `createdBy` pattern. To substitute one or more characters, use the asterisk (*) character at the beginning, at the end, or both.'
+      name: createdByFilter
+    - description: 'Filters events by the `engine` pattern. To substitute one or more characters, use the asterisk (*) character at the beginning, at the end, or both.'
+      name: engineFilter
+    description: 'Get All Malware Events.'
+    name: veeam-vbr-get-malware-events
+    outputs:
+    - contextPath: Veeam.VBR.get_malware_events.data.id
+      description: "Event ID."
+      type: String
+    - contextPath: Veeam.VBR.get_malware_events.data.type
+      description: "Event type."
+      type: String
+    - contextPath: Veeam.VBR.get_malware_events.data.detectionTimeUtc
+      description: "Detection date and time, in UTC."
+      type: String
+    - contextPath: Veeam.VBR.get_malware_events.data.state
+      description: "Event state."
+      type: String
+    - contextPath: Veeam.VBR.get_malware_events.data.details
+      description: "Event description."
+      type: String
+    - contextPath: Veeam.VBR.get_malware_events.data.source
+      description: "Event source type."
+      type: String
+    - contextPath: Veeam.VBR.get_malware_events.data.severity
+      description: "Malware status."
+      type: String
+    - contextPath: Veeam.VBR.get_malware_events.data.createdBy
+      description: "User account created the event."
+      type: String
+    - contextPath: Veeam.VBR.get_malware_events.data.engine
+      description: "Detection engine."
+      type: String
+  - arguments:
+    - description: 'Number of repository states to skip.'
+      name: skip
+    - description: 'Maximum number of repository states to return.'
+      name: limit
+      defaultValue: "100"
+    - description: 'Sorts repository states by state meter.'
+      name: orderColumn
+    - description: 'Sorts repository states in the ascending order by the `orderColumn` meter.'
+      name: orderAsc
+    - description: 'Filters repository states by repository ID.'
+      name: idFilter
+    - description: 'Filters repository states by the `nameFilter` pattern. The pattern can match any repository state meter. To substitute one or more characters, use the asterisk (*) character at the beginning, at the end, or both.'
+      name: nameFilter
+    - description: 'Filters repository states by repository type.'
+      name: typeFilter
+    - description: 'Filters repository states by repository capacity.'
+      name: capacityFilter
+    - description: 'Filters repository states by repository free space.'
+      name: freeSpaceFilter
+    - description: 'Filters repository states by repository used space.'
+      name: usedSpaceFilter
+    description: 'Get All Repository States.'
+    name: veeam-vbr-get-repository-states
+    outputs:
+    - contextPath: Veeam.VBR.get_repository_states.data.id
+      description: "Backup repository ID."
+      type: String
+    - contextPath: Veeam.VBR.get_repository_states.data.name
+      description: "Backup repository name."
+      type: String
+    - contextPath: Veeam.VBR.get_repository_states.data.type
+      description: "Backup repository type."
+      type: String
+    - contextPath: Veeam.VBR.get_repository_states.data.description
+      description: "Description of the backup repository."
+      type: String
+    - contextPath: Veeam.VBR.get_repository_states.data.capacityGB
+      description: "Repository capacity in GB."
+      type: String
+    - contextPath: Veeam.VBR.get_repository_states.data.freeGB
+      description: "Repository free space in GB."
+      type: String
+    - contextPath: Veeam.VBR.get_repository_states.data.usedSpaceGB
+      description: "Repository used space in GB."
+      type: String
+    - contextPath: Veeam.VBR.get_repository_states.data.hostId
+      description: "ID of the server that is used as a backup repository."
+      type: String
+    - contextPath: Veeam.VBR.get_repository_states.data.hostName
+      description: "Name of the server that is used as a backup repository."
+      type: String
+    - contextPath: Veeam.VBR.get_repository_states.data.path
+      description: "Path to the folder where backup files are stored."
+      type: String
+  - arguments:
+    - description: 'Number of restore points to skip.'
+      name: skip
+    - description: 'Maximum number of restore points to return.'
+      name: limit
+      defaultValue: "100"
+    - description: 'Sorts restore points by restore point meter.'
+      name: orderColumn
+    - description: 'Sorts restore points in the ascending order by the `orderColumn` meter.'
+      name: orderAsc
+    - description: 'Returns restore points created after the specified date and time.'
+      name: createdAfterFilter
+    - description: 'Returns restore points created before the specified date and time.'
+      name: createdBeforeFilter
+    - description: 'Filters restore points by the `nameFilter` pattern. The pattern can match any restore point meter. To substitute one or more characters, use the asterisk (*) character at the beginning and/or at the end.'
+      name: nameFilter
+    - description: 'Filters restore points by name of the backup object platform.'
+      name: platformNameFilter
+    - description: 'Filters restore points by ID of the backup object platform.'
+      name: platformIdFilter
+    - description: 'Filters restore points by backup ID.'
+      name: backupIdFilter
+    - description: 'Filters restore points by backup object ID.'
+      name: backupObjectIdFilter
+    - description: 'Filters restore points by malware status.'
+      name: malwareStatusFilter
+    description: 'Get All Restore Points.'
+    name: veeam-vbr-get-restore-points
+    outputs:
+    - contextPath: Veeam.VBR.get_restore_points.data.id
+      description: "Restore point ID."
+      type: String
+    - contextPath: Veeam.VBR.get_restore_points.data.name
+      description: "Object name."
+      type: String
+    - contextPath: Veeam.VBR.get_restore_points.data.platformId
+      description: "ID of a platform where the object was created."
+      type: String
+    - contextPath: Veeam.VBR.get_restore_points.data.creationTime
+      description: "Date and time when the restore point was created."
+      type: String
+    - contextPath: Veeam.VBR.get_restore_points.data.backupId
+      description: "ID of a backup that contains the restore point."
+      type: String
+    - contextPath: Veeam.VBR.get_restore_points.data.platformName
+      description: "Platform name."
+      type: String
+    - contextPath: Veeam.VBR.get_restore_points.data.malwareStatus
+      description: "Malware status."
+      type: String
+  - arguments:
+    - description: 'ID of the backup object.'
+      name: id_
+      required: true
+    description: 'Get Backup Object.'
+    name: veeam-vbr-get-backup-object
+    outputs:
+    - contextPath: Veeam.VBR.backup_object.objectId
+      description: "ID of the virtual infrastructure object (mo-ref or ID, depending on the virtualization platform)."
+      type: String
+    - contextPath: Veeam.VBR.backup_object.viType
+      description: "Type of the VMware vSphere object."
+      type: String
+    - contextPath: Veeam.VBR.backup_object.path
+      description: "Path to the object."
+      type: String
+    - contextPath: Veeam.VBR.backup_object.id
+      description: "Object ID."
+      type: String
+    - contextPath: Veeam.VBR.backup_object.name
+      description: "Object name."
+      type: String
+    - contextPath: Veeam.VBR.backup_object.type
+      description: "Object type."
+      type: String
+    - contextPath: Veeam.VBR.backup_object.vcenter_name
+      description: "Name of the vCenter Server."
+      type: string
+  - arguments: []
+    description: 'Get Configuration Backup.'
+    name: veeam-vbr-get-configuration-backup
+    outputs:
+    - contextPath: Veeam.VBR.get_configuration_backup.isEnabled
+      description: "If `true`, configuration backup is enabled."
+      type: String
+    - contextPath: Veeam.VBR.get_configuration_backup.backupRepositoryId
+      description: "ID of the backup repository on which the configuration backup is stored."
+      type: String
+    - contextPath: Veeam.VBR.get_configuration_backup.restorePointsToKeep
+      description: "Number of restore points to keep in the backup repository."
+      type: number
+    - contextPath: Veeam.VBR.get_configuration_backup.Schedule
+      description: "Scheduling settings."
+    - contextPath: Veeam.VBR.get_configuration_backup.Encryption
+      description: "Encryption settings."
+    - contextPath: Veeam.VBR.get_configuration_backup.LastSuccessfulBackup
+      description: "Last successful backup."
+  - arguments:
+    - description: 'If `true`, the cache will be reset for this request. Resetting the cache slows down request processing but allows you to get up-to-date data.'
+      name: resetCache
+    - description: Server name.
+      name: hostname
+      required: true
+    - description: Number of objects to skip.
+      name: skip
+    - description: Maximum number of objects to return.
+      name: limit
+      defaultValue: "100"
+    - description: Filter settings.
+      name: filter
+    - description: Sorting settings.
+      name: sorting
+    - description: Hierarchy type.
+      name: hierarchyType
+    - description: Object name.
+      name: objectName
+    - description: Type of the VMware vSphere object.
+      name: viType
+    description: 'Get Inventory Objects.'
+    name: veeam-vbr-get-inventory-objects
+    outputs:
+    - contextPath: Veeam.VBR.get_inventory_objects.data.name
+      description: "Name of the VMware vSphere object."
+      type: String
+    - contextPath: Veeam.VBR.get_inventory_objects.data.type
+      description: "Type of the VMware vSphere object."
+      type: String
+    - contextPath: Veeam.VBR.get_inventory_objects.data.hostName
+      description: "Name of the VMware vSphere server that hosts the object."
+      type: String
+    - contextPath: Veeam.VBR.get_inventory_objects.data.objectId
+      description: "ID of the VMware vSphere object. The parameter is required for all VMware vSphere objects except vCenter Servers and standalone ESXi hosts."
+      type: String
+    - contextPath: Veeam.VBR.get_inventory_objects.data.urn
+      description: "Object URN."
+      type: String
+    - contextPath: Veeam.VBR.get_inventory_objects.data.platform
+      description: "Platform name."
+      type: String
+    - contextPath: Veeam.VBR.get_inventory_objects.data.size
+      description: "Object size."
+      type: String
+  - arguments:
+    - description: 'Session ID.'
+      name: id_
+      required: true
+    description: 'Get Session.'
+    name: veeam-vbr-get-session
+    outputs:
+    - contextPath: Veeam.VBR.get_session.jobId
+      description: "ID of the job or job related activity."
+      type: String
+    - contextPath: Veeam.VBR.get_session.creationTime
+      description: "Date and time when the session was created."
+      type: String
+    - contextPath: Veeam.VBR.get_session.id
+      description: "Session ID."
+      type: String
+    - contextPath: Veeam.VBR.get_session.name
+      description: "Session name."
+      type: String
+    - contextPath: Veeam.VBR.get_session.sessionType
+      description: "Session type."
+      type: String
+    - contextPath: Veeam.VBR.get_session.state
+      description: "Session state."
+      type: String
+    - contextPath: Veeam.VBR.get_session.usn
+      description: "Update sequence number."
+      type: String
+    - contextPath: Veeam.VBR.get_session.endTime
+      description: "Date and time when the session was ended."
+      type: String
+    - contextPath: Veeam.VBR.get_session.progressPercent
+      description: "Progress percentage of the session."
+      type: String
+    - contextPath: Veeam.VBR.get_session.result
+      description: "Session result."
+    - contextPath: Veeam.VBR.get_session.resourceId
+      description: "Resource ID."
+      type: String
+    - contextPath: Veeam.VBR.get_session.resourceReference
+      description: "URI of the resource."
+      type: String
+    - contextPath: Veeam.VBR.get_session.parentSessionId
+      description: "Parent session ID."
+      type: String
+  - arguments: []
+    description: 'Start Configuration Backup.'
+    name: veeam-vbr-start-configuration-backup
+    outputs:
+    - contextPath: Veeam.VBR.Configurationbackuphasbeenstarted.jobId
+      description: "ID of the job or job related activity."
+      type: String
+    - contextPath: Veeam.VBR.Configurationbackuphasbeenstarted.creationTime
+      description: "Date and time when the session was created."
+      type: String
+    - contextPath: Veeam.VBR.Configurationbackuphasbeenstarted.id
+      description: "Session ID."
+      type: String
+    - contextPath: Veeam.VBR.Configurationbackuphasbeenstarted.name
+      description: "Session name."
+      type: String
+    - contextPath: Veeam.VBR.Configurationbackuphasbeenstarted.sessionType
+      description: "Session type."
+      type: String
+    - contextPath: Veeam.VBR.Configurationbackuphasbeenstarted.state
+      description: "Session state."
+      type: String
+    - contextPath: Veeam.VBR.Configurationbackuphasbeenstarted.usn
+      description: "Update sequence number."
+      type: String
+    - contextPath: Veeam.VBR.Configurationbackuphasbeenstarted.endTime
+      description: "Date and time when the session was ended."
+      type: String
+    - contextPath: Veeam.VBR.Configurationbackuphasbeenstarted.progressPercent
+      description: "Progress percentage of the session."
+      type: String
+    - contextPath: Veeam.VBR.Configurationbackuphasbeenstarted.resourceId
+      description: "Resource ID."
+      type: String
+    - contextPath: Veeam.VBR.Configurationbackuphasbeenstarted.resourceReference
+      description: "URI of the resource."
+      type: String
+    - contextPath: Veeam.VBR.Configurationbackuphasbeenstarted.parentSessionId
+      description: "Parent session ID."
+      type: String
+  - arguments:
+    - description: Restore point ID.
+      name: restorePointId
+      required: true
+    - description: 'If `true`, Veeam Backup & Replication restores tags that were assigned to the original VM, and assign them to the restored VM.'
+      name: vmTagsRestoreEnabled
+    - description: 'If `true`, Veeam Backup & Replication scans machine data with antivirus software before restoring the machine to the production environment.'
+      name: antivirusScanEnabled
+      required: true
+    - description: 'Action that Veeam Backup & Replication takes if the antivirus software finds a threat.'
+      name: virusDetectionAction
+    - description: 'If `true`, the antivirus continues machine scan after the first malware is found.'
+      name: entireVolumeScanEnabled
+    - description: 'If `true`, the restored VM is connected to the network.'
+      name: nicsEnabled
+    - description: 'If `true`, Veeam Backup & Replication powers on the restored VM on the target host.'
+      name: powerUp
+    - description: Reason for restoring the VM.
+      name: reason
+    - description: Restored VM name.
+      name: restoredVmName
+    - description: Name of the vCenter Server.
+      name: vCenterName
+      required: true
+    - description: ID of the VMware vSphere object. The parameter is required for all VMware vSphere objects except vCenter Servers and standalone ESXi hosts.
+      name: hostObjectId
+      required: true
+    - description: ID of the VMware vSphere object. The parameter is required for all VMware vSphere objects except vCenter Servers and standalone ESXi hosts.
+      name: folderObjectId
+      required: true
+    - description: ID of the VMware vSphere object. The parameter is required for all VMware vSphere objects except vCenter Servers and standalone ESXi hosts.
+      name: resObjectId
+    - description: Platform name.
+      name: platform
+      required: true
+    - description: BIOS UUID policy for the restored VM.
+      name: biosUuidPolicy
+      required: true
+    - description: 'If `true`, redo logs are redirected to `cacheDatastore`.'
+      name: redirectEnabled
+      required: true
+    - description: 'If `true`, Veeam Backup & Replication overwrites the existing VM that has the same name.'
+      name: overwrite
+    description: 'Start Customized VM Instant Recovery.'
+    name: veeam-vbr-start-instant-recovery-customized
+    outputs:
+    - contextPath: Veeam.VBR.start_recovery.id
+      description: "Session ID."
+      type: string
+    - contextPath: Veeam.VBR.start_recovery.name
+      description: "Session name."
+      type: string
+    - contextPath: Veeam.VBR.start_recovery.jobId
+      description: "ID of the job or job related activity."
+      type: string
+    - contextPath: Veeam.VBR.start_recovery.sessionType
+      description: "Session type."
+      type: string
+    - contextPath: Veeam.VBR.start_recovery.creationTime
+      description: "Date and time when the session was created."
+      type: string
+    - contextPath: Veeam.VBR.start_recovery.state
+      description: "Session state."
+      type: string
+    - contextPath: Veeam.VBR.start_recovery.endTime
+      description: "Date and time when the session was ended."
+      type: string
+    - contextPath: Veeam.VBR.start_recovery.usn
+      description: "Update sequence number."
+      type: string
+  - arguments:
+    - description: Restore point ID.
+      name: restorePointId
+      required: true
+    - description: 'If `true`, Veeam Backup & Replication restores tags that were assigned to the original VM, and assign them to the restored VM.'
+      name: vmTagsRestoreEnabled
+    - description: 'If `true`, Veeam Backup & Replication scans machine data with antivirus software before restoring the machine to the production environment.'
+      name: antivirusScanEnabled
+      required: true
+    - description: 'Action that Veeam Backup & Replication takes if the antivirus software finds a threat.'
+      name: virusDetectionAction
+    - description: 'If `true`, the antivirus continues machine scan after the first malware is found.'
+      name: entireVolumeScanEnabled
+    - description: 'If `true`, the restored VM is connected to the network.'
+      name: nicsEnabled
+    - description: 'If `true`, Veeam Backup & Replication powers on the restored VM on the target host.'
+      name: powerUp
+    - description: Reason for restoring the VM.
+      name: reason
+    description: 'Start VM Instant Recovery to Original Location.'
+    name: veeam-vbr-start-instant-recovery
+    outputs:
+    - contextPath: Veeam.VBR.start_recovery.id
+      description: "Session ID."
+      type: string
+    - contextPath: Veeam.VBR.start_recovery.name
+      description: "Session name."
+      type: string
+    - contextPath: Veeam.VBR.start_recovery.jobId
+      description: "ID of the job or job related activity."
+      type: string
+    - contextPath: Veeam.VBR.start_recovery.sessionType
+      description: "Session type."
+      type: string
+    - contextPath: Veeam.VBR.start_recovery.creationTime
+      description: "Date and time when the session was created."
+      type: string
+    - contextPath: Veeam.VBR.start_recovery.state
+      description: "Session state."
+      type: string
+    - contextPath: Veeam.VBR.start_recovery.endTime
+      description: "Date and time when the session was ended."
+      type: string
+    - contextPath: Veeam.VBR.start_recovery.usn
+      description: "Update sequence number."
+      type: string
+  dockerimage: demisto/python3:3.11.10.116949
+  isFetchSamples: true
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.10.0
+defaultclassifier: "Veeam Backup & Replication Incidents Classifier"
+defaultmapperin: "Veeam Backup & Replication Incoming Mapper"
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,18 @@
+[
+    {
+        "aclId": "12345678",
+        "name": "Block sensitive web traffic",
+        "description": "Blocks sensitive web traffic",
+        "ipVersion": "ipv6",
+        "rules": [
+            {
+                "policy": "deny",
+                "protocol": "tcp",
+                "srcPort": "1,33",
+                "dstPort": "22-30"
+            }
+        ],
+        "createdAt": "2021-05-19T17:08:25Z",
+        "updatedAt": "2021-05-19T17:11:54Z"
+    }
+]

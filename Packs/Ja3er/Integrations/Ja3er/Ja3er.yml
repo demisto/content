@@ -21,15 +21,15 @@ script:
     name: ja3-search
     outputs:
     - contextPath: JA3.Count
-      description: 'Number of times seen'
+      description: Number of times seen
       type: Number
     - contextPath: JA3.Last_seen
-      description: 'Last seen date'
+      description: Last seen date
       type: Date
     - contextPath: JA3.User-Agent
-      description: 'User-Agent'
+      description: User-Agent
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: ''
   subtype: python3

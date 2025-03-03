@@ -16,6 +16,9 @@ REMOVE_RESPONSE_LINKS = True  # Whether to remove `links` keys from responses.
 REPORT_DOWNLOAD_WAIT_TIME = 60  # Time in seconds to wait before downloading a report after starting its generation
 CONNECTION_ERRORS_RETRIES = 5  # num of times to retry in case of connection-errors
 CONNECTION_ERRORS_INTERVAL = 1  # num of seconds between each time to send an http-request in case of a connection error.
+VALID_TAG_TYPES = ["custom", "location", "owner"]
+VALID_ASSET_GROUP_TYPES = ["dynamic", "static"]
+VALID_TAG_COLORS = ["blue", "green", "orange", "red", "purple", "default"]
 
 urllib3.disable_warnings()  # Disable insecure warnings
 
@@ -30,7 +33,7 @@ class ScanStatus(Enum):
 class FlexibleEnum(EnumMeta):
     """A custom EnumMeta to allow flexible conversion from strings to Enum."""
 
-    def __getitem__(self, item: Any):
+    def __getitem__(cls, item: Any):
         try:
             return super().__getitem__(item)
 
@@ -157,7 +160,7 @@ class Client(BaseClient):
             verify=verify,
         )
 
-    def _http_request(self, **kwargs):
+    def _http_request(self, **kwargs):  # type: ignore[override]
         """Wrapper for BaseClient._http_request() that optionally removes `links` keys from responses."""
         for _time in range(1, self.connection_error_retries + 1):
             try:
@@ -1921,6 +1924,182 @@ class Client(BaseClient):
 
         return None
 
+    def create_tag(self, name: str, type: str, color: str, filters: list[dict] | None = None,
+                   match: str | None = MATCH_DEFAULT_VALUE) -> dict:
+        """
+        | Create a new tag.
+        |
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/createTag
+
+        Args:
+            name (str): Name of the tag.
+            type (str): Type of the tag.
+            color (str): Color of the tag.
+            filters (list[dict], optional): Filters to apply to the tag.
+            match (str, optional): Match criteria for the filters. Default is MATCH_DEFAULT_VALUE.
+
+        Returns:
+            dict: API response.
+        """
+        json_data: dict[str, str | dict] = {
+            "type": type,
+            "name": name,
+            "color": color
+        }
+        if filters:
+            json_data["searchCriteria"] = find_valid_params(filters=filters, match=match)
+
+        return self._http_request(
+            method="POST",
+            url_suffix="/tags",
+            json_data=json_data,
+            resp_type="json",
+        )
+
+    def delete_tag(self, id: int) -> dict:
+        """
+        | Delete a tag by ID.
+        |
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/deleteTag
+
+        Args:
+            id (int): ID of the tag to delete.
+
+        Returns:
+            dict: API response.
+        """
+        return self._http_request(
+            method="DELETE",
+            url_suffix=f"/tags/{id}",
+            resp_type="json"
+        )
+
+    def get_tag_by_id(self, id: int) -> dict:
+        """
+        | Get details of a tag by ID.
+        |
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getTag
+
+        Args:
+            id (int): ID of the tag to retrieve.
+
+        Returns:
+            dict: API response.
+        """
+        return self._http_request(
+            url_suffix=f"/tags/{id}",
+            method="GET",
+            resp_type="json"
+        )
+
+    def get_tags_list(self, name: str | None = None, type: str | None = None, page_size: int | None = DEFAULT_PAGE_SIZE,
+                      page: int | None = None, limit: int | None = None):
+        """
+        | Get a list of tags.
+        |
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getTags
+
+        Args:
+            name (str, optional): Filter tags by name.
+            type (str, optional): Filter tags by type.
+            page_size (int, optional): Number of results per page. Default is DEFAULT_PAGE_SIZE.
+            page (int, optional): Page number to retrieve.
+            limit (int, optional): Maximum number of results to retrieve.
+
+        Returns:
+            dict: API response.
+        """
+        params = assign_params(name=name, type=type)
+
+        return self._paged_http_request(
+            url_suffix="/tags",
+            method="GET",
+            params=params,
+            page_size=page_size,
+            page=page,
+            limit=limit,
+            resp_type="json",
+        )
+
+    def update_tag_search_criteria(self, id: int, filters: list[dict] = [], match: str | None = MATCH_DEFAULT_VALUE) -> dict:
+        """
+        | Update search criteria for a tag by ID.
+        |
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/updateTagSearchCriteria
+
+        Args:
+            id (int): ID of the tag to update.
+            filters (list[dict], optional): New filters to apply to the tag.
+            match (str, optional): Match criteria for the filters. Default is MATCH_DEFAULT_VALUE.
+
+        Returns:
+            dict: API response.
+        """
+        return self._http_request(
+            method="PUT",
+            url_suffix=f"/tags/{id}/search_criteria",
+            json_data=find_valid_params(filters=filters, match=match),
+            resp_type="json",
+        )
+
+    def send_http_request(self, method: str, url: str, body: list[Any] | None = None) -> dict:
+        """
+        | Send a generic HTTP request.
+        |
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html
+
+        Args:
+            method (str): HTTP method (e.g., 'GET', 'POST').
+            url (str): URL suffix for the request.
+            body (list[Any], optional): JSON data to send in the body of the request.
+
+        Returns:
+            dict: API response.
+        """
+        request_data: dict[str, Any] = {
+            "method": method,
+            "url_suffix": url,
+            "resp_type": "json"
+        }
+        if body is not None:
+            request_data["json_data"] = body
+
+        return self._http_request(**request_data)
+
+    def create_asset_group(self, name: str, type: str, description: str, filters: list[dict] | None = None,
+                           match: str | None = MATCH_DEFAULT_VALUE) -> dict:
+        json_data = assign_params(name=name, type=type, description=description,
+                                  searchCriteria=find_valid_params(filters=filters, match=match))
+
+        return self._http_request(
+            method="POST",
+            url_suffix="/asset_groups",
+            json_data=json_data,
+            resp_type="json"
+        )
+
+    def get_asset_groups(self, name: str | None = None, type: str | None = None, page_size: int | None = DEFAULT_PAGE_SIZE,
+                         page: int | None = None, sort: str | None = None, limit: int | None = None) -> list[dict]:
+        params = assign_params(name=name, type=type)
+
+        return self._paged_http_request(
+            url_suffix="/asset_groups",
+            method="GET",
+            params=params,
+            page_size=page_size,
+            page=page,
+            sort=sort,
+            limit=limit,
+            resp_type="json",
+        )
+
+    def get_asset_group_by_id(self, id: int) -> list[dict]:
+        return self._http_request(
+            url_suffix=f"/asset_groups/{id}",
+            method="GET",
+            resp_type="json",
+        )
+
 
 class Site:
     """A class representing a site, which can be identified by ID or name."""
@@ -1981,6 +2160,7 @@ def convert_asset_search_filters(search_filters: str | list[str]) -> list[dict]:
     range_operators = ["in-range", "is-between", "not-in-range"]
     numeric_operators = ["is-earlier-than", "is-greater-than"]
     numeric_operators.extend(range_operators)
+    values_field = ["site-id"]
 
     if isinstance(search_filters, str):
         search_filters = [search_filters]
@@ -2009,6 +2189,8 @@ def convert_asset_search_filters(search_filters: str | list[str]) -> list[dict]:
                 filter_dict["upper"] = values[1]
             else:
                 filter_dict["values"] = values
+        elif _field in values_field:
+            filter_dict["values"] = values
         else:
             filter_dict["value"] = values[0]
 
@@ -2710,6 +2892,87 @@ def find_dict_item(data: dict | list | tuple, key_path: str) -> Any:
         return [item for item in result if item is not None]
 
     return None
+
+
+def parse_asset_filters(client, **kwargs):
+    """
+    Parse and generate a list of asset filters based on provided keyword arguments.
+
+    Args:
+        client (Client): Client to use for API requests.
+        **kwargs: Arbitrary keyword arguments representing filter criteria.
+            - ip_address_is (str): A specific IP address to filter assets by.
+            - host_name_is (str): A specific host name to filter assets by.
+            - risk_score_higher_than (str): A minimum risk score to filter assets by.
+            - vulnerability_title_contains (str): A keyword to filter assets by vulnerability title.
+            - query (str): A semicolon-separated list of custom query strings.
+            - site_id_in (str): A comma-separated list of site IDs to filter assets by.
+            - site_name_in (str): A comma-separated list of site names to filter assets by.
+
+
+    Returns:
+        list[str]: A list of asset filter strings.
+    """
+    filters_data: list[str] = []
+
+    if kwargs.get("ip_address_is"):
+        filters_data.append("ip-address is " + kwargs["ip_address_is"])
+
+    if kwargs.get("host_name_is"):
+        filters_data.append("host-name is " + kwargs["host_name_is"])
+
+    if kwargs.get("risk_score_higher_than"):
+        filters_data.append("risk-score is-greater-than " + kwargs["risk_score_higher_than"])
+
+    if kwargs.get("vulnerability_title_contains"):
+        filters_data.append("vulnerability-title contains " + kwargs["vulnerability_title_contains"])
+
+    if kwargs.get("query"):
+        filters_data.extend(kwargs["query"].split(";"))
+
+    sites: list[Site] = []
+
+    for site_id in argToList(kwargs.get("site_id_in")):
+        sites.append(Site(site_id=site_id, client=client))
+
+    for site_name in argToList(kwargs.get("site_name_in")):
+        sites.append(Site(site_name=site_name, client=client))
+
+    if sites:
+        str_site_ids: str = ""
+
+        if isinstance(sites, list):
+            str_site_ids = ",".join([site.id for site in sites])
+
+        elif isinstance(sites, Site):
+            str_site_ids = sites.id
+
+        filters_data.append("site-id in " + str_site_ids)
+
+    return filters_data
+
+
+def validate_input(input_value: str | None, valid_options: list[str], arg_name: str, is_required: bool = True):
+    """
+    Validates the input value against a list of valid options.
+
+    Args:
+        input_value (str | None): The input value to validate.
+        valid_options (list[str]): The list of valid options.
+        parameter_name (str): The name of the parameter being validated (used in the error message).
+        is_required (bool): Whether the input value is required. Defaults to True.
+
+    Raises:
+        DemistoException: If the input value is invalid or not in the list of valid options.
+
+    Returns:
+        bool: True if the input value is valid or not required and None is provided.
+    """
+    if input_value is None and not is_required:
+        return True
+    elif not input_value or input_value.lower() not in valid_options:
+        raise DemistoException(f"{input_value} is an invalid {arg_name} the only options are: {', '.join(valid_options)}")
+    return True
 
 
 # --- Command Functions --- #
@@ -4671,10 +4934,10 @@ def list_vulnerability_exceptions_command(client: Client, vulnerability_exceptio
     )
 
 
-def search_assets_command(client: Client, filter_query: str | None = None, ip_addresses: str | None = None,
-                          hostnames: str | None = None, risk_score: str | None = None,
-                          vulnerability_title: str | None = None, site_ids: str | None = None,
-                          site_names: str | None = None, match: str | None = None, page_size: str | None = None,
+def search_assets_command(client: Client, query: str | None = None, ip_address_is: str | None = None,
+                          host_name_is: str | None = None, risk_score_higher_than: str | None = None,
+                          vulnerability_title_contains: str | None = None, site_id_in: str | None = None,
+                          site_name_in: str | None = None, match: str | None = None, page_size: str | None = None,
                           page: str | None = None, sort: str | None = None,
                           limit: str | None = None) -> CommandResults | list[CommandResults]:
     """
@@ -4682,16 +4945,16 @@ def search_assets_command(client: Client, filter_query: str | None = None, ip_ad
 
     Args:
         client (Client): Client to use for API requests.
-        filter_query (str | None, optional): String based filters to use separated by ';'. Defaults to None.
-        ip_addresses (str | None, optional): IP address(es) to filter for separated by ','. Defaults to None.
-        hostnames (str | None, optional): Hostname(s) to filter for separated by ','. Defaults to None.
-        risk_score (str | None, optional): Filter for risk scores that are higher than the provided value.
+        query (str | None, optional): String based filters to use separated by ';'. Defaults to None.
+        ip_address_is (str | None, optional): IP address(es) to filter for. Defaults to None.
+        host_name_is (str | None, optional): Hostname(s) to filter for. Defaults to None.
+        risk_score_higher_than (str | None, optional): Filter for risk scores that are higher than the provided value.
             Defaults to None.
-        vulnerability_title (str | None, optional): Filter for vulnerability titles that contain the provided value.
+        vulnerability_title_contains (str | None, optional): Filter for vulnerability titles that contain the provided value.
             Defaults to None. Defaults to None.
-        site_ids (str | None, optional): Filter for assets that are under a specific site(s).
+        site_id_in (str | None, optional): Filter for assets that are under a specific site(s).
             Defaults to None.
-        site_names (str | None, optional): Filter for assets that are under a specific site(s).
+        site_name_in (str | None, optional): Filter for assets that are under a specific site(s).
             Defaults to None.
         match (str | None, optional): Determine if the filters should match all or any of the filters.
             Can be either "all" or "any". Defaults to None (Results in using MATCH_DEFAULT_VALUE).
@@ -4703,7 +4966,7 @@ def search_assets_command(client: Client, filter_query: str | None = None, ip_ad
         limit (str | None, optional): Limit the number of scans to return. None means to not use a limit.
             Defaults to None.
     """
-    sites: list[Site] = []
+    # sites: list[Site] = []
 
     hr_headers = [
         "AssetId",
@@ -4719,12 +4982,6 @@ def search_assets_command(client: Client, filter_query: str | None = None, ip_ad
         "LastScanId"
     ]
 
-    for site_id in argToList(site_ids):
-        sites.append(Site(site_id=site_id, client=client))
-
-    for site_name in argToList(site_names):
-        sites.append(Site(site_name=site_name, client=client))
-
     page_size_int = arg_to_number(page_size, required=False)
     page_int = arg_to_number(page, required=False)
     limit_int = arg_to_number(limit, required=False)
@@ -4732,49 +4989,24 @@ def search_assets_command(client: Client, filter_query: str | None = None, ip_ad
     if not match:
         match = MATCH_DEFAULT_VALUE
 
-    filters_data: list[list[str] | str] = []
+    filters_data = parse_asset_filters(
+        client=client,
+        ip_address_is=ip_address_is,
+        host_name_is=host_name_is,
+        risk_score_higher_than=risk_score_higher_than,
+        vulnerability_title_contains=vulnerability_title_contains,
+        site_id_in=site_id_in,
+        site_name_in=site_name_in,
+        query=query)
 
-    if filter_query:
-        filters_data.append(filter_query.split(";"))
-
-    if risk_score:
-        filters_data.append("risk-score is-greater-than " + risk_score)
-
-    if vulnerability_title:
-        filters_data.append("vulnerability-title contains " + vulnerability_title)
-
-    if sites:
-        str_site_ids: str = ""
-
-        if isinstance(sites, list):
-            str_site_ids = ",".join([site.id for site in sites])
-
-        elif isinstance(sites, Site):
-            str_site_ids = sites.id
-
-        filters_data.append("site-id in " + str_site_ids)
-
-    if ip_addresses:
-        for ip_address in argToList(ip_addresses):
-            filters_data.append("ip-address is " + ip_address)
-
-    if hostnames is not None:
-        for hostname in argToList(hostnames):
-            filters_data.append("host-name is " + hostname)
-
-    assets = []
-
-    for filter_data in filters_data:
-        assets.extend(
-            client.search_assets(
-                filters=convert_asset_search_filters(filter_data),
-                match=match,
-                page_size=page_size_int,
-                page=page_int,
-                sort=sort,
-                limit=limit_int,
-            )
-        )
+    assets = client.search_assets(
+        filters=convert_asset_search_filters(filters_data),
+        match=match,
+        page_size=page_size_int,
+        page=page_int,
+        sort=sort,
+        limit=limit_int,
+    )
 
     if not assets:
         return CommandResults(readable_output="No assets were found")
@@ -4954,7 +5186,7 @@ def start_site_scan_command(client: Client, site_id: str | None = None, site_nam
     scan_response = client.start_site_scan(
         site_id=site.id,
         scan_name=name if name else f"scan {datetime.now()}",
-        hosts=argToList(hosts) if hosts else None,
+        hosts=argToList(hosts) if hosts else None,  # type: ignore[arg-type]
     )
 
     if not scan_response or "id" not in scan_response:
@@ -5376,6 +5608,488 @@ def update_vulnerability_exception_status_command(client: Client, vulnerability_
     )
 
 
+def create_tag_command(client: Client, name: str, type: str, color: str, ip_address_is: str | None = None,
+                       host_name_is: str | None = None, risk_score_higher_than: str | None = None,
+                       vulnerability_title_contains: str | None = None, site_id_in: str | None = None,
+                       site_name_in: str | None = None, query: str | None = None, match: str | None = None):
+    """
+    Create a tag.
+
+    Args:
+        client (Client): Client to use for API requests.
+        name (str): The tag name.
+        type (str): The tag type.
+        color (str): The tag color - relevant only for "custom" type.
+        ip_address_is (str, optional): A specific IP address to search for.
+        host_name_is (str, optional): A specific host name to search for.
+        risk_score_higher_than (str, optional): A minimum risk score to use as a filter.
+        vulnerability_title_contains (str, optional): A string to search for in vulnerability titles.
+        site_id_in (str, optional): Site IDs to filter for. Can be a comma-separated list.
+        site_name_in (str, optional): Site names to filter for. Can be a comma-separated list.
+        query (str, optional): Additional queries to use as a filter, in the format: {field} {operator} {value}.
+                                Multiple queries can be specified, separated by a ";" separator.
+        match (str, optional): Operator to determine how to match filters.
+                                "All" requires all filters to match, "Any" requires only one filter to match.
+
+    Returns:
+        CommandResults: Results of the tag creation.
+    """
+    validate_input(type, VALID_TAG_TYPES, "type", True)
+    validate_input(color, VALID_TAG_COLORS, "color", False)
+
+    if type.lower() != "custom" and color.lower() != "default":
+        raise DemistoException("color argument is only relevant for “custom” type.")
+
+    filters_data = parse_asset_filters(
+        client=client,
+        ip_address_is=ip_address_is,
+        host_name_is=host_name_is,
+        risk_score_higher_than=risk_score_higher_than,
+        site_id_in=site_id_in,
+        site_name_in=site_name_in,
+        vulnerability_title_contains=vulnerability_title_contains,
+        query=query)
+
+    filters = convert_asset_search_filters(filters_data)
+    res = client.create_tag(name=name, type=type, color=color, filters=filters, match=match)
+
+    return CommandResults(
+        outputs_prefix="Nexpose.Tag",
+        outputs_key_field="id",
+        outputs=res,
+        readable_output=f"A new tag '{name}' created successfully with ID: {res['id']}",
+        raw_response=res,
+    )
+
+
+def delete_tag_command(client: Client, id: str):
+    """
+    Delete a tag by ID.
+
+    Args:
+        client (Client): Client to use for API requests.
+        id (str): The tag ID.
+
+    Returns:
+        CommandResults: Results of the tag deletion.
+    """
+    id_int = arg_to_number(id, arg_name="id", required=True)
+    client.delete_tag(id_int)  # type: ignore[arg-type]
+    return CommandResults(readable_output=f"Tag: {id_int} was deleted successfully")
+
+
+def get_list_tag_command(client: Client, id: str | None = None, name: str | None = None, type: str | None = None,
+                         page_size: str | None = None, page: str | None = None, limit: str | None = None):
+    """
+    Get a list of tags or a tag by ID.
+
+    Args:
+        client (Client): Client to use for API requests.
+        id (str, optional): Get tag by ID.
+        name (str, optional): Filters the returned tags to only those containing the value within their name.
+        type (str, optional): Filters the returned tags to only those of this type.
+        page_size (str, optional): Number of records to retrieve in each API call when pagination is used.
+        page (str, optional): A specific page to retrieve when pagination is used. Page indexing starts at 0.
+        limit (str, optional): A number of records to limit the response to.
+
+    Returns:
+        CommandResults: Results of the tags retrieval.
+    """
+    validate_input(type, VALID_TAG_TYPES, "type", False)
+
+    if id_int := arg_to_number(id, required=False):
+        tags = client.get_tag_by_id(id=id_int)
+    else:
+        page_size_int = arg_to_number(page_size, required=False)
+        page_int = arg_to_number(page, required=False)
+        limit_int = arg_to_number(limit, required=False)
+        tags = client.get_tags_list(name=name, type=type, page_size=page_size_int, page=page_int, limit=limit_int)
+
+    headers = ['id', 'color', 'created', 'name', 'riskmodifier', 'source', 'type']
+    return CommandResults(
+        outputs_prefix="Nexpose.Tag",
+        outputs_key_field="id",
+        outputs=tags,
+        readable_output=tableToMarkdown("Tags list", remove_dict_key(deepcopy(tags), "searchCriteria"), headers=headers,
+                                        headerTransform=string_to_table_header),
+        raw_response=tags
+    )
+
+
+def update_tag_search_criteria_command(client: Client, tag_id: str, overwrite: str, ip_address_is: str | None = None,
+                                       host_name_is: str | None = None, risk_score_higher_than: str | None = None,
+                                       vulnerability_title_contains: str | None = None, site_id_in: str | None = None,
+                                       site_name_in: str | None = None, query: str | None = None, match: str | None = None):
+    """
+    Update the search criteria of a tag.
+
+    Args:
+        client (Client): Client to use for API requests.
+        tag_id (str): The tag ID.
+        overwrite (str): Whether to overwrite the original search values or append new conditions to the existing search.
+        ip_address_is (str, optional): A specific IP address to search for.
+        host_name_is (str, optional): A specific host name to search for.
+        risk_score_higher_than (str, optional): A minimum risk score to use as a filter.
+        vulnerability_title_contains (str, optional): A string to search for in vulnerability titles.
+        site_id_in (str, optional): Site IDs to filter for. Can be a comma-separated list.
+        site_name_in (str, optional): Site names to filter for. Can be a comma-separated list.
+        query (str, optional): Additional queries to use as a filter, following the Search Criteria API standard.
+        match (str, optional): Operator to determine how to match filters.
+            "All" requires all filters to match, "Any" requires only one filter to match.
+
+    Returns:
+        CommandResults: Results of the search criteria update.
+    """
+    tag_id_int = arg_to_number(tag_id, arg_name="tag_id", required=True)
+
+    filters_data = parse_asset_filters(
+        client=client,
+        ip_address_is=ip_address_is,
+        host_name_is=host_name_is,
+        risk_score_higher_than=risk_score_higher_than,
+        site_name_in=site_name_in,
+        site_id_in=site_id_in,
+        vulnerability_title_contains=vulnerability_title_contains,
+        query=query)
+
+    filters = convert_asset_search_filters(filters_data)
+
+    if not argToBoolean(overwrite):
+        tag_data = client.get_tag_by_id(tag_id_int)  # type: ignore[arg-type]
+        old_filters = tag_data.get("searchCriteria", {}).get("filters", [])
+        filters.extend(old_filters)
+
+    client.update_tag_search_criteria(tag_id_int, filters, match)  # type: ignore[arg-type]
+    return CommandResults(readable_output=f"Tag {tag_id_int} search criteria were updated successfully")
+
+
+def get_list_tag_asset_group_command(client: Client, tag_id: str):
+    """
+    Get a list of asset groups for a tag.
+
+    Args:
+        client (Client): Client to use for API requests.
+        tag_id (str): The tag ID.
+
+    Returns:
+        CommandResults: Results of the asset groups retrieval.
+    """
+    tag_id_int = arg_to_number(tag_id, arg_name="tag_id", required=True)
+
+    res = client.send_http_request("GET", f"/tags/{tag_id_int}/asset_groups")
+    asset_groups_ids = res.get("resources", [])
+    return CommandResults(
+        outputs_prefix="Nexpose.TagAssetGroup",
+        outputs=asset_groups_ids,
+        readable_output=tableToMarkdown(f"Tag {tag_id_int} asset groups.", asset_groups_ids, headers=['Asset groups IDs']),
+        raw_response=res
+    )
+
+
+def add_tag_asset_group_command(client: Client, tag_id: str, asset_group_ids: str):
+    """
+    Add existing asset groups to a tag.
+
+    Args:
+        client (Client): Client to use for API requests.
+        tag_id (str): The tag ID.
+        asset_group_ids (str): The asset group IDs to add. Can be a comma-separated list.
+
+    Returns:
+        CommandResults: Results of the asset groups addition.
+    """
+    tag_id_int = arg_to_number(tag_id, arg_name="tag_id", required=True)
+    asset_group_ids_list = argToList(asset_group_ids, transform=int)
+
+    old_asset_groups = client.send_http_request("GET", f"/tags/{tag_id_int}/asset_groups")
+    all_asset_group = list(set(old_asset_groups.get("resources", []) + asset_group_ids_list))
+
+    client.send_http_request("PUT", f"/tags/{tag_id_int}/asset_groups", all_asset_group)
+    return CommandResults(readable_output=f"Asset groups '{asset_group_ids}' were added successfully")
+
+
+def remove_tag_asset_group_command(client: Client, tag_id: str, asset_group_id: str):
+    """
+    Remove an asset group from a tag.
+
+    Args:
+        client (Client): Client to use for API requests.
+        tag_id (str): The tag ID.
+        asset_group_id (str): The asset group ID to remove.
+
+    Returns:
+        CommandResults: Results of the asset group removal.
+    """
+    tag_id_int = arg_to_number(tag_id, arg_name="tag_id", required=True)
+    asset_group_id_int = arg_to_number(asset_group_id, arg_name="asset_group_id", required=True)
+
+    client.send_http_request("DELETE", f"/tags/{tag_id_int}/asset_groups/{asset_group_id_int}")
+    return CommandResults(readable_output=f"Asset group {asset_group_id_int} was removed from tag {tag_id_int} successfully")
+
+
+def get_list_tag_asset_command(client: Client, tag_id: str):
+    """
+    Get a list of assets for a tag.
+
+    Args:
+        client (Client): Client to use for API requests.
+        tag_id (str): The tag ID.
+
+    Returns:
+        CommandResults: Results of the assets retrieval.
+    """
+    tag_id_int = arg_to_number(tag_id, arg_name="tag_id", required=True)
+
+    res = client.send_http_request("GET", f"/tags/{tag_id_int}/assets")
+    resources = res.get("resources", [])
+    return CommandResults(
+        outputs_prefix="Nexpose.TagAsset",
+        outputs_key_field="id",
+        outputs=resources,
+        readable_output=tableToMarkdown(f"Tag {tag_id_int} assets", resources, headerTransform=string_to_table_header),
+        raw_response=res
+    )
+
+
+def add_tag_asset_command(client: Client, tag_id: str, asset_id: str):
+    """
+    Add an existing asset to a tag.
+
+    Args:
+        client (Client): Client to use for API requests.
+        tag_id (str): The tag ID.
+        asset_id (str): The asset ID to add.
+
+    Returns:
+        CommandResults: Results of the asset addition.
+    """
+    tag_id_int = arg_to_number(tag_id, arg_name="tag_id", required=True)
+    asset_id_int = arg_to_number(asset_id, arg_name="asset_id", required=True)
+
+    client.send_http_request("PUT", f"/tags/{tag_id_int}/assets/{asset_id_int}")
+    return CommandResults(readable_output=f"Asset {asset_id_int} was added in tag {tag_id_int} successfully")
+
+
+def remove_tag_asset_command(client: Client, tag_id: str, asset_id: str):
+    """
+    Remove an asset from a tag.
+
+    Args:
+        client (Client): Client to use for API requests.
+        tag_id (str): The tag ID.
+        asset_id (str): The asset ID to remove.
+
+    Returns:
+        CommandResults: Results of the asset removal.
+    """
+    tag_id_int = arg_to_number(tag_id, arg_name="tag_id", required=True)
+    asset_id_int = arg_to_number(asset_id, arg_name="asset_id", required=True)
+
+    client.send_http_request("DELETE", f"/tags/{tag_id_int}/assets/{asset_id_int}")
+    return CommandResults(readable_output=f"Asset {asset_id_int} was removed from tag {tag_id_int} successfully")
+
+
+def add_site_asset_command(client: Client, target_type: str, site_id: str, assets: str | None = None,
+                           asset_group_ids: str | None = None):
+    """
+    Add assets or asset groups to a site's included/excluded assets.
+
+    Args:
+        client (Client): Client to use for API requests.
+        target_type (str): Type of target, either "included" or "excluded".
+        site_id (str): The site ID.
+        assets (str, optional): The assets to add. Can be a comma-separated list.
+        asset_group_ids (str, optional): The asset group IDs to add. Can be a comma-separated list.
+
+    Returns:
+        CommandResults: Results of the assets or asset groups addition/exclusion.
+    """
+    site_id_int = arg_to_number(site_id, arg_name="site_id", required=True)
+
+    if assets_list := argToList(assets):
+        client.send_http_request("POST", f"/sites/{site_id_int}/{target_type}_targets", assets_list)
+        added_assets = f"assets {', '.join(assets_list)}"
+
+    elif asset_group_ids_list := argToList(asset_group_ids, transform=int):
+        client.send_http_request("PUT", f"/sites/{site_id_int}/{target_type}_asset_groups", asset_group_ids_list)
+        added_assets = f"asset group IDs {asset_group_ids}"
+
+    else:
+        raise DemistoException("Must provide at least one Asset ID or Asset Group ID")
+
+    return CommandResults(readable_output=f"Added assets- {added_assets} to site ID - {site_id_int}.")
+
+
+def remove_site_asset_command(client: Client, target_type: str, site_id: str, assets: str | None = None,
+                              asset_group_ids: str | None = None):
+    """
+    Remove assets or asset groups from a site's included/excluded assets.
+
+    Args:
+        client (Client): Client to use for API requests.
+        target_type (str): Type of target, either "included" or "excluded".
+        site_id (str): The site ID.
+        assets (str, optional): The assets to remove. Can be a comma-separated list.
+        asset_group_ids (str, optional): The asset group IDs to remove. Can be a comma-separated list.
+
+    Returns:
+        CommandResults: Results of the assets or asset groups removal.
+    """
+    site_id_int = arg_to_number(site_id, arg_name="site_id", required=True)
+
+    if assets_list := argToList(assets):
+        client.send_http_request("DELETE", f"/sites/{site_id_int}/{target_type}_targets", assets_list)
+        removed_assets = f"assets {', '.join(assets_list)}"
+
+    elif asset_group_ids_list := argToList(asset_group_ids, transform=int):
+        client.send_http_request("DELETE", f"/sites/{site_id_int}/{target_type}_asset_groups", asset_group_ids_list)
+        removed_assets = f"asset group IDs {asset_group_ids}"
+
+    else:
+        raise DemistoException("Must provide at least one assets or asset_group_ids")
+
+    return CommandResults(readable_output=f"Removed assets-{removed_assets} from site ID {site_id_int}.")
+
+
+def list_site_assets_command(client: Client, site_id: str, asset_type: str, target_type: str):
+    """
+    List included or excluded assets or asset groups for a site.
+
+    Args:
+        client (Client): Client to use for API requests.
+        site_id (str): The site ID.
+        asset_type (str): Type of asset, either "assets" or "asset_groups".
+        target_type (str): Type of target, either "included" or "excluded".
+
+    Returns:
+        CommandResults: Results of the assets or asset groups retrieval.
+    """
+    site_id_int = arg_to_number(site_id, arg_name="site_id", required=True)
+
+    if asset_type == "assets":
+        res = client.send_http_request("GET", f"/sites/{site_id_int}/{target_type}_targets")
+        output_prefix = f"Nexpose.{target_type.capitalize()}Asset"
+        readable_title = f"{target_type.capitalize()} Asset list for site ID {site_id_int}"
+    elif asset_type == "asset_groups":
+        res = client.send_http_request("GET", f"/sites/{site_id_int}/{target_type}_asset_groups")
+        output_prefix = f"Nexpose.{target_type.capitalize()}AssetGroup"
+        readable_title = f"{target_type.capitalize()} Asset group list for site ID {site_id_int}"
+    else:
+        raise ValueError("Invalid asset_type. Expected 'assets' or 'asset_groups'.")
+
+    outputs = dict(**res, site_id=site_id_int)
+    readable_results = res.get("resources") if asset_type == 'asset_groups' else res
+
+    return CommandResults(
+        outputs_prefix=output_prefix,
+        outputs_key_field="id",
+        outputs=outputs,
+        readable_output=tableToMarkdown(readable_title, readable_results,
+                                        headerTransform=string_to_table_header, removeNull=True),
+        raw_response=outputs
+    )
+
+
+def create_asset_group_command(client: Client, name: str, description: str, type: str, match: str | None = None,
+                               ip_address_is: str | None = None, host_name_is: str | None = None,
+                               risk_score_higher_than: str | None = None, vulnerability_title_contains: str | None = None,
+                               site_id_in: str | None = None, site_name_in: str | None = None, query: str | None = None, ):
+    """
+    Creates a new asset group in Nexpose.
+
+    Args:
+        client (Client): Client to use for API requests.
+        name (str): The name of the asset group.
+        description (str): The description of the asset group.
+        type (str): The type of the asset group, valid values: "dynamic" or "static".
+        match (str, optional): The match criteria for the asset group.
+        ip_address_is (str, optional): Filter by IP address.
+        host_name_is (str, optional): Filter by host name.
+        risk_score_higher_than (str, optional): Filter by risk score higher than the specified value.
+        vulnerability_title_contains (str, optional): Filter by vulnerability title.
+        site_id_in (str, optional): Filter by site ID.
+        site_name_in (str, optional): Filter by site name.
+        query (str, optional): Additional queries to use as a filter, in the format: {field} {operator} {value}.
+                                Multiple queries can be specified, separated by a ";" separator.
+
+    Returns:
+        CommandResults: The results of the command execution.
+    """
+    filters_data = parse_asset_filters(
+        client=client,
+        ip_address_is=ip_address_is,
+        host_name_is=host_name_is,
+        risk_score_higher_than=risk_score_higher_than,
+        site_id_in=site_id_in,
+        site_name_in=site_name_in,
+        vulnerability_title_contains=vulnerability_title_contains,
+        query=query)
+
+    validate_input(type, VALID_ASSET_GROUP_TYPES, "type", False)
+
+    if type == "Dynamic" and not filters_data:
+        raise DemistoException("You must add filters to create a Dynamic asset group.")
+
+    filters = convert_asset_search_filters(filters_data)
+
+    res = client.create_asset_group(name=name, description=description, type=type, filters=filters, match=match)
+
+    return CommandResults(
+        outputs_prefix="Nexpose.AssetGroup",
+        outputs_key_field="id",
+        outputs=res,
+        readable_output=f"A new asset group {name} created successfully with ID: {res['id']}",
+        raw_response=res
+    )
+
+
+def get_list_asset_group_command(client: Client, group_id: str | None = None, group_name: str | None = None,
+                                 type: str | None = None, page_size: str | None = None, page: str | None = None,
+                                 limit: str | None = None, sort: str | None = None):
+    """
+    Get a list of asset groups or a asset group by ID.
+
+    Args:
+        client (Client): Client to use for API requests.
+        id (str, optional): Get asset group by ID.
+        name (str, optional): Filters the returned asset groups to only those containing the value within their name.
+        type (str, optional): Filters the returned asset groups to only those of this type.
+        page_size (str, optional): Number of records to retrieve in each API call when pagination is used.
+        page (str, optional): A specific page to retrieve when pagination is used. Page indexing starts at 0.
+        limit (str, optional): A number of records to limit the response to.
+        sort (str, optional): The sorting criteria for the results.
+
+    Returns:
+        CommandResults: Results of the asset groups retrieval.
+    """
+    validate_input(type, VALID_ASSET_GROUP_TYPES, "type", False)
+
+    if id_int := arg_to_number(group_id, required=False):
+        asset_groups = client.get_asset_group_by_id(id=id_int)
+    else:
+        page_size_int = arg_to_number(page_size, required=False)
+        page_int = arg_to_number(page, required=False)
+        limit_int = arg_to_number(limit, required=False)
+
+        asset_groups = client.get_asset_groups(
+            name=group_name,
+            type=type,
+            page_size=page_size_int,
+            page=page_int,
+            limit=limit_int,
+            sort=sort
+        )
+
+    return CommandResults(
+        outputs_prefix="Nexpose.AssetGroup",
+        outputs_key_field="id",
+        outputs=asset_groups,
+        readable_output=tableToMarkdown("Asset groups list", remove_dict_key(deepcopy(asset_groups), "searchCriteria"),
+                                        headerTransform=string_to_table_header),
+        raw_response=asset_groups
+    )
+
+
 def main():  # pragma: no cover
     try:
         args = demisto.args()
@@ -5496,13 +6210,13 @@ def main():  # pragma: no cover
         elif command == "nexpose-search-assets":
             results = search_assets_command(
                 client=client,
-                filter_query=args.pop("query", None),
-                ip_addresses=args.pop("ipAddressIs", None),
-                hostnames=args.pop("hostNameIs", None),
-                risk_score=args.pop("riskScoreHigherThan", None),
-                vulnerability_title=args.pop("vulnerabilityTitleContains", None),
-                site_ids=args.pop("siteIdIn", None),
-                site_names=args.pop("siteNameIn", None),
+                query=args.pop("query", None),
+                ip_address_is=args.pop("ipAddressIs", None),
+                host_name_is=args.pop("hostNameIs", None),
+                risk_score_higher_than=args.pop("riskScoreHigherThan", None),
+                vulnerability_title_contains=args.pop("vulnerabilityTitleContains", None),
+                site_id_in=args.pop("siteIdIn", None),
+                site_name_in=args.pop("siteNameIn", None),
                 **args
             )
         elif command == "nexpose-start-assets-scan":
@@ -5512,6 +6226,46 @@ def main():  # pragma: no cover
             results = start_site_scan_command(client=client, site_id=args.pop("site", None), **args)
         elif command == "nexpose-stop-scan":
             results = update_scan_command(client=client, scan_id=args.pop("id"), scan_status=ScanStatus.STOP)
+        elif command == "nexpose-create-tag":
+            results = create_tag_command(client=client, **args)
+        elif command == "nexpose-delete-tag":
+            results = delete_tag_command(client=client, **args)
+        elif command == "nexpose-list-tag":
+            results = get_list_tag_command(client=client, **args)
+        elif command == "nexpose-update-tag-search-criteria":
+            results = update_tag_search_criteria_command(client=client, **args)
+        elif command == "nexpose-list-tag-asset-group":
+            results = get_list_tag_asset_group_command(client=client, **args)
+        elif command == "nexpose-add-tag-asset-group":
+            results = add_tag_asset_group_command(client=client, **args)
+        elif command == "nexpose-remove-tag-asset-group":
+            results = remove_tag_asset_group_command(client=client, **args)
+        elif command == "nexpose-list-tag-asset":
+            results = get_list_tag_asset_command(client=client, **args)
+        elif command == "nexpose-add-tag-asset":
+            results = add_tag_asset_command(client=client, **args)
+        elif command == "nexpose-remove-tag-asset":
+            results = remove_tag_asset_command(client=client, **args)
+        elif command == "nexpose-add-site-included-asset":
+            results = add_site_asset_command(client=client, target_type="included", **args)
+        elif command == "nexpose-remove-site-included-asset":
+            results = remove_site_asset_command(client=client, target_type="included", **args)
+        elif command == "nexpose-list-site-included-asset":
+            results = list_site_assets_command(client=client, asset_type="assets", target_type="included", **args)
+        elif command == "nexpose-list-site-included-asset-group":
+            results = list_site_assets_command(client=client, asset_type="asset_groups", target_type="included", **args)
+        elif command == "nexpose-add-site-excluded-asset":
+            results = add_site_asset_command(client=client, target_type="excluded", **args)
+        elif command == "nexpose-remove-site-excluded-asset":
+            results = remove_site_asset_command(client=client, target_type="excluded", **args)
+        elif command == "nexpose-list-site-excluded-asset":
+            results = list_site_assets_command(client=client, asset_type="assets", target_type="excluded", **args)
+        elif command == "nexpose-list-site-excluded-asset-group":
+            results = list_site_assets_command(client=client, asset_type="asset_groups", target_type="excluded", **args)
+        elif command == "nexpose-list-asset-group":
+            results = get_list_asset_group_command(client=client, **args)
+        elif command == "nexpose-create-asset-group":
+            results = create_asset_group_command(client=client, **args)
         else:
             raise NotImplementedError(f"Command {command} not implemented.")
 

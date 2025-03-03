@@ -1,0 +1,8 @@
+{
+    "os_type": "AGENT_OS_WINDOWS",
+    "profile_type": "STANDARD",
+    "name": "HashiCorp Vault (Windows)",
+    "content_global_id": "HashiCorpVaultWindows",
+    "from_xdr_version": "3.10.0",
+    "yaml_template": ""
+  }

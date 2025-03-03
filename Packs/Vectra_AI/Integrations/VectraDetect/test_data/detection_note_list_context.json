@@ -1,0 +1,20 @@
+{
+    "Vectra.Detection.Notes(val.note_id && val.note_id == obj.note_id)": [
+        {
+            "date_created": "2024-07-12T04:52:20Z",
+            "date_modified": "2024-07-12T10:21:03Z",
+            "created_by": "xsoar",
+            "modified_by": "xsoar",
+            "note": "updated note 2nd",
+            "note_id": 1961,
+            "detection_id": 9
+        },
+        {
+            "date_created": "2024-07-11T07:32:20Z",
+            "created_by": "xsoar",
+            "note": "your first test note",
+            "note_id": 1937,
+            "detection_id": 9
+        }
+    ]
+}

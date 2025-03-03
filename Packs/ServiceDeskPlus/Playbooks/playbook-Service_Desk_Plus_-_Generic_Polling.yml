@@ -1,8 +1,8 @@
 id: Service Desk Plus - Generic Polling
 version: -1
 name: Service Desk Plus - Generic Polling
+description: This playbook uses generic polling to wait until a request is closed.
 starttaskid: "0"
-description: 'This playbook uses generic polling to wait until a request is closed.'
 tasks:
   "0":
     id: "0"
@@ -55,8 +55,6 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      AdditionalPollingCommandArgNames: {}
-      AdditionalPollingCommandArgValues: {}
       Ids:
         simple: ${inputs.RequestId}
       Interval:
@@ -105,12 +103,8 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      filter_by: {}
-      page_size: {}
       request_id:
         simple: ${inputs.RequestId}
-      search_fields: {}
-      start_index: {}
     separatecontext: false
     view: |-
       {
@@ -139,6 +133,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      "no":
+      - "5"
       "yes":
       - "4"
     scriptarguments:
@@ -178,6 +174,35 @@ tasks:
       {
         "position": {
           "x": 50,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 5f07445f-7a29-445c-8357-5189ce6d1ac5
+    type: regular
+    task:
+      id: 5f07445f-7a29-445c-8357-5189ce6d1ac5
+      version: -1
+      name: Close request
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: The ID '${ServiceDeskPlus.Request.Id}' wasn't closed.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 380,
           "y": 720
         }
       }
@@ -186,6 +211,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -193,8 +219,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 735,
-        "width": 380,
+        "height": 905,
+        "width": 710,
         "x": 50,
         "y": 50
       }
@@ -205,18 +231,18 @@ inputs:
   value: {}
   required: true
   description: The id of the Service Desk Plus request
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Timeout
   value: {}
   required: true
   description: Amount of time to poll before declaring a timeout and resuming the
     playbook (minutes).
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Interval
   value: {}
   required: true
   description: Frequency that the polling command will run (minutes).
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs:
 - contextPath: ${ServiceDeskPlus.Request.ClosureInfo.closure_comments}
   description: The closure comments added to the request.

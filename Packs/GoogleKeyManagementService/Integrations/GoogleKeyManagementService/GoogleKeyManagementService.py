@@ -9,7 +9,7 @@ from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
 from json import JSONDecodeError
 import base64
-from typing import Any, Dict, Tuple, List
+from typing import Any
 
 """
 For further information about the API used in the integration see:
@@ -33,7 +33,7 @@ RFC3339_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
 
 class Client:
-    def __init__(self, params: Dict[str, Any]):
+    def __init__(self, params: dict[str, Any]):
         self.project = params.get('project')
         self.location = params.get('location')
         self.key_ring = params.get('key_ring')
@@ -61,7 +61,7 @@ class Client:
             json_object = json.loads(str(self.service_account))
             json.dump(json_object, creds_file)
 
-        return kms.KeyManagementServiceClient.from_service_account_json(credentials_file_path)
+        return kms.KeyManagementServiceClient.from_service_account_json(filename=credentials_file_path)  # type: ignore[call-arg]
 
 
 """HELPER FUNCTIONS"""
@@ -75,7 +75,7 @@ def get_timestamp_seconds(date):
         seconds = date.total_seconds()
 
     else:
-        seconds = str(date.timestamp()).split('.')[0]  # type: ignore
+        seconds = str(date.timestamp()).split('.')[0]  # type: ignore[assignment]
 
     return seconds
 
@@ -84,8 +84,7 @@ def get_timestamp_nanoseconds(date):
     if not date:
         return 0
 
-    nanos = str(date.timestamp()).split('.')[1]
-    return nanos
+    return str(date.timestamp()).split('.')[1]
 
 
 def arg_dict_creator(string: Any):
@@ -123,7 +122,7 @@ def clear_label_commas(labels: Any):
         return None
 
     cleared_labels = {}  # type:Dict
-    for label in labels.keys():
+    for label in labels:
         # A label key can come in the form of: 'info' or _'info' (with an extra space)
         # The following check is whether to drop the first 2 characters or just one
         if str(label).startswith(' '):
@@ -143,7 +142,7 @@ def clear_label_commas(labels: Any):
     return cleared_labels
 
 
-def key_context_creation(res: Any, project_id: str, location_id: str, key_ring_id: str) -> Dict:
+def key_context_creation(res: Any, project_id: str, location_id: str, key_ring_id: str) -> dict:
     """Creates GoogleKMS.CryptoKey context.
 
     Args:
@@ -203,7 +202,7 @@ def key_context_creation(res: Any, project_id: str, location_id: str, key_ring_i
     return key_context
 
 
-def crypto_key_to_json(crypto_key: Any) -> Dict:
+def crypto_key_to_json(crypto_key: Any) -> dict:
     """Creates a json dict from `~google.cloud.kms.CryptoKey` instance to use as raw response.
 
     Args:
@@ -261,7 +260,7 @@ def crypto_key_to_json(crypto_key: Any) -> Dict:
     return key_json
 
 
-def demisto_args_extract(client: Client, args: Dict[str, Any]) -> Tuple[str, str, str, str]:
+def demisto_args_extract(client: Client, args: dict[str, Any]) -> tuple[str, str, str, str]:
     """Extracts IDs to use for KMS functions.
 
     Args:
@@ -285,7 +284,7 @@ def demisto_args_extract(client: Client, args: Dict[str, Any]) -> Tuple[str, str
     return str(project_id), str(location_id), str(key_ring_id), str(crypto_key_id)
 
 
-def get_update_mask(args: Dict[str, Any]) -> Dict:
+def get_update_mask(args: dict[str, Any]) -> dict:
     """ Creates the 'updateMask' parameter for the command
     which is a comma separated list of fields to update.
 
@@ -325,7 +324,7 @@ def get_update_mask(args: Dict[str, Any]) -> Dict:
     }
 
 
-def get_update_command_body(args: Dict[str, Any], update_mask: List) -> Dict:
+def get_update_command_body(args: dict[str, Any], update_mask: list) -> dict:
     """Creates update command request body, in accordance with the updateMask.
 
     Args:
@@ -352,7 +351,7 @@ def get_update_command_body(args: Dict[str, Any], update_mask: List) -> Dict:
 
     if 'purpose' in update_mask:
         # Add purpose enum to body
-        body['purpose'] = kms.CryptoKey.CryptoKeyPurpose[args.get('purpose')].value
+        body['purpose'] = kms.CryptoKey.CryptoKeyPurpose[args['purpose']].value  # type: ignore[misc]
 
     if 'rotation_period' in update_mask:
         # Add rotation_period to body
@@ -368,7 +367,7 @@ def get_update_command_body(args: Dict[str, Any], update_mask: List) -> Dict:
 
         if 'primary.state' in update_mask:
             # Add state enum to 'primary' sub-dictionary
-            body['primary']['state'] = kms.CryptoKeyVersion.CryptoKeyVersionState[args.get('state')].value
+            body['primary']['state'] = kms.CryptoKeyVersion.CryptoKeyVersionState[args.get('state')].value  # type: ignore[misc]
 
     if 'version_template.algorithm' in update_mask or 'version_template.protection_level' in update_mask:
         # Init the 'version_template' sun-dictionary
@@ -376,12 +375,12 @@ def get_update_command_body(args: Dict[str, Any], update_mask: List) -> Dict:
 
         if 'version_template.algorithm' in update_mask:
             # Add algorithm enum to 'version_template' sun-dictionary
-            val = kms.CryptoKeyVersion.CryptoKeyVersionAlgorithm[args.get('algorithm')].value
+            val = kms.CryptoKeyVersion.CryptoKeyVersionAlgorithm[args['algorithm']].value  # type: ignore[misc]
             body['version_template']['algorithm'] = val
 
         if 'version_template.protection_level' in update_mask:
             # Add protection_level to 'version_template' sun-dictionary
-            val = kms.ProtectionLevel[args.get('protection_level')].value
+            val = kms.ProtectionLevel[args['protection_level']].value  # type: ignore[misc]
             body['version_template']['protection_level'] = val
 
     return body
@@ -412,7 +411,7 @@ def get_primary_key_version(project_id: str, location_id: str, key_ring_id: str,
     return str(crypto_key.primary.name)
 
 
-def key_ring_context_and_json_creation(key_ring: Any) -> Tuple[Dict, Dict]:
+def key_ring_context_and_json_creation(key_ring: Any) -> tuple[dict, dict]:
     key_ring_context = {
         'Name': key_ring.name,
         'CreateTime': datetime.fromtimestamp(int(key_ring.create_time.timestamp())).strftime(DEMISTO_DATETIME_FORMAT)
@@ -432,7 +431,7 @@ def key_ring_context_and_json_creation(key_ring: Any) -> Tuple[Dict, Dict]:
 """GENERAL FUNCTIONS"""
 
 
-def create_crypto_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, Dict]:
+def create_crypto_key_command(client: Client, args: dict[str, Any]) -> tuple[str, dict, dict]:
     """Create a new CryptoKey.
 
     Args:
@@ -464,7 +463,7 @@ def create_crypto_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str
 
     # Create the CryptoKey object template
     crypto_key = {
-        'purpose': kms.CryptoKey.CryptoKeyPurpose[args.get('purpose')].value,
+        'purpose': kms.CryptoKey.CryptoKeyPurpose[args.get('purpose')].value,  # type: ignore[misc]
         'next_rotation_time': next_rotation_time,
         'labels': arg_dict_creator(args.get('labels')),
         'rotation_period': {
@@ -473,14 +472,14 @@ def create_crypto_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str
     }
 
     # Additional info in case CryptoKeyVersion is created
-    if not args.get('skip_initial_version_creation') == 'true':
+    if args.get('skip_initial_version_creation') != 'true':
         crypto_key['primary'] = {
-            'state': kms.CryptoKeyVersion.CryptoKeyVersionState[args.get('state')].value,
+            'state': kms.CryptoKeyVersion.CryptoKeyVersionState[args.get('state')].value,  # type: ignore[misc]
             'attestation': arg_dict_creator(args.get('attestation'))
         }
         crypto_key['version_template'] = {
-            'algorithm': kms.CryptoKeyVersion.CryptoKeyVersionAlgorithm[args.get('algorithm')].value,
-            'protection_level': kms.ProtectionLevel[args.get('protection_level')].value
+            'algorithm': kms.CryptoKeyVersion.CryptoKeyVersionAlgorithm[args.get('algorithm')].value,  # type: ignore[misc]
+            'protection_level': kms.ProtectionLevel[args.get('protection_level')].value  # type: ignore[misc]
         }
 
     # Create a CryptoKey for the given KeyRing.
@@ -503,7 +502,7 @@ def create_crypto_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str
     )
 
 
-def symmetric_encrypt_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, Any]:
+def symmetric_encrypt_key_command(client: Client, args: dict[str, Any]) -> tuple[str, Any, Any]:
     """Encrypt plaintext to ciphertext using a symmetric key.
 
     Args:
@@ -563,7 +562,7 @@ def symmetric_encrypt_key_command(client: Client, args: Dict[str, Any]) -> Tuple
             }, symmetric_encrypt_context)
 
 
-def symmetric_decrypt_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, Any]:
+def symmetric_decrypt_key_command(client: Client, args: dict[str, Any]) -> tuple[str, Any, Any]:
     """Decrypt ciphertext to plaintext using a symmetric key.
 
     Args:
@@ -607,6 +606,9 @@ def symmetric_decrypt_key_command(client: Client, args: Dict[str, Any]) -> Tuple
 
     elif args.get('simple_ciphertext') or args.get('entry_id'):
         plaintext = str(base64.b64decode(response.plaintext))[2:-1].replace('\\n', '\n')
+    else:
+        plaintext = ""
+        demisto.debug(f"The arguments didn't match any condition, {plaintext=}")
 
     if args.get('entry_id'):
         file_name = demisto.getFilePath(args.get('entry_id'))['name'] + '_decrypted.txt'
@@ -625,7 +627,7 @@ def symmetric_decrypt_key_command(client: Client, args: Dict[str, Any]) -> Tuple
             }, symmetric_decrypt_context)
 
 
-def get_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, Dict]:
+def get_key_command(client: Client, args: dict[str, Any]) -> tuple[str, dict, dict]:
     """Gets a CryptoKey.
 
     Args:
@@ -654,7 +656,7 @@ def get_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, Di
     )
 
 
-def disable_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, Any]:
+def disable_key_command(client: Client, args: dict[str, Any]) -> tuple[str, Any, Any]:
     """Disable a given CryptoKeyVersion.
 
     Args:
@@ -689,7 +691,7 @@ def disable_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any,
             f'{kms.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}.', None, None)
 
 
-def enable_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, Any]:
+def enable_key_command(client: Client, args: dict[str, Any]) -> tuple[str, Any, Any]:
     """Enable a CryptoKeyVersion.
 
     Args:
@@ -724,7 +726,7 @@ def enable_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, 
             f'{kms.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}.', None, None)
 
 
-def destroy_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, Any]:
+def destroy_key_command(client: Client, args: dict[str, Any]) -> tuple[str, Any, Any]:
     """Schedule the destruction of a given CryptoKeyVersion.
 
     Args:
@@ -756,7 +758,7 @@ def destroy_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any,
             None, None)
 
 
-def restore_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, Any]:
+def restore_key_command(client: Client, args: dict[str, Any]) -> tuple[str, Any, Any]:
     """Restores a CryptoKeyVersion scheduled for destruction.
 
     Args:
@@ -787,7 +789,7 @@ def restore_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any,
             f'{kms.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}.', None, None)
 
 
-def update_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, Dict]:
+def update_key_command(client: Client, args: dict[str, Any]) -> tuple[str, dict, dict]:
     """Update a given CryptoKey.
 
     Args:
@@ -823,7 +825,7 @@ def update_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict,
     )
 
 
-def list_keys_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, List]:
+def list_keys_command(client: Client, args: dict[str, Any]) -> tuple[str, dict, list]:
     """List All keys in a KeyRing.
 
     Args:
@@ -859,7 +861,7 @@ def list_keys_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, 
     )
 
 
-def asymmetric_encrypt_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, Any]:
+def asymmetric_encrypt_command(client: Client, args: dict[str, Any]) -> tuple[str, Any, Any]:
     """Encrypt plainttext using an asymmetric key.
 
     Args:
@@ -936,7 +938,7 @@ def asymmetric_encrypt_command(client: Client, args: Dict[str, Any]) -> Tuple[st
             }, asymmetric_encrypt_context)
 
 
-def asymmetric_decrypt_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, Any]:
+def asymmetric_decrypt_command(client: Client, args: dict[str, Any]) -> tuple[str, Any, Any]:
     """Decrypt chipertext to plaintext using asymmetric key.
 
     Args:
@@ -977,6 +979,10 @@ def asymmetric_decrypt_command(client: Client, args: Dict[str, Any]) -> Tuple[st
     elif args.get('simple_ciphertext') or args.get('entry_id'):
         plaintext = str(base64.b64decode(response.plaintext))[2:-1].replace('\\n', '\n')
 
+    else:
+        plaintext = ""
+        demisto.debug(f"The arguments didn't match any condition, {plaintext=}")
+
     if args.get('entry_id'):
         file_name = demisto.getFilePath(args.get('entry_id'))['name'] + '_decrypted.txt'
         demisto.results(fileResult(file_name, plaintext))
@@ -994,7 +1000,7 @@ def asymmetric_decrypt_command(client: Client, args: Dict[str, Any]) -> Tuple[st
             }, asymmetric_decrypt_context)
 
 
-def list_key_rings_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, Any]:
+def list_key_rings_command(client: Client, args: dict[str, Any]) -> tuple[str, Any, Any]:
     """List all KeyRings in a given location
 
     Args:
@@ -1035,7 +1041,7 @@ def list_key_rings_command(client: Client, args: Dict[str, Any]) -> Tuple[str, A
                 f'{INTEGRATION_CONTEXT_NAME}.KeyRing(val.Name == obj.Name)': key_rings_context}, key_rings_json)
 
 
-def list_all_keys_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, Any]:
+def list_all_keys_command(client: Client, args: dict[str, Any]) -> tuple[str, Any, Any]:
     """List all CryptokKeys across all KeyRings in a given location.
 
     Args:
@@ -1090,7 +1096,7 @@ def list_all_keys_command(client: Client, args: Dict[str, Any]) -> Tuple[str, An
     )
 
 
-def get_public_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, Dict]:
+def get_public_key_command(client: Client, args: dict[str, Any]) -> tuple[str, dict, dict]:
     """Get the public key from an asymmetric CryptoKey
 
     Args:

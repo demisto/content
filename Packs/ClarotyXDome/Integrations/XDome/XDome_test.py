@@ -3,7 +3,8 @@ import dateparser
 import pytest
 import demistomock as demisto
 from XDome import (
-    Client, _split_device_alert_relation_id, _format_date, _build_alert_types_filter, _or, _simple_filter, _next_tick
+    Client, _split_device_alert_relation_id, _format_date, _build_alert_types_filter, _or, _simple_filter, _next_tick,
+    _ascending
 )
 
 INTEGRATION_PARAMS = {
@@ -359,6 +360,10 @@ def test_or_compound_filter():
         "operation": "or",
         "operands": [filter1, filter2, filter3]
     }
+
+
+def test_ascending():
+    assert _ascending("some_field") == {"field": "some_field", "order": "asc"}
 
 
 def test_next_tick():

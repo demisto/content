@@ -1,18 +1,18 @@
 import gzip
 import json
-import io
+from unittest.mock import MagicMock, patch
 from freezegun import freeze_time
 import XQLQueryingEngine
 import pytest
 from CommonServerPython import *
 
-CLIENT = XQLQueryingEngine.Client(base_url='some_mock_url', verify=False)
+CLIENT = XQLQueryingEngine.Client(headers={}, base_url='some_mock_url', verify=False, is_core=False)
 ENDPOINT_IDS = '"test1","test2"'
 INTEGRATION_CONTEXT = {}
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -692,8 +692,8 @@ def test_start_xql_query_polling_not_supported(mocker):
                      'execution_id': 'query_id_mock',
                      'results': None}
     mocker.patch.object(CLIENT, 'start_xql_query', return_value='1234')
-    mocker.patch('XQLQueryingEngine.get_xql_query_results', return_value=(mock_response, None))
-    mocker.patch('XQLQueryingEngine.is_demisto_version_ge', return_value=False)
+    mocker.patch('CoreXQLApiModule.get_xql_query_results', return_value=(mock_response, None))
+    mocker.patch('CoreXQLApiModule.is_demisto_version_ge', return_value=False)
     mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
     command_results = XQLQueryingEngine.start_xql_query_polling_command(CLIENT, {'query': query, 'query_name': 'mock_name'})
     assert command_results.outputs == {'status': 'PENDING',
@@ -733,7 +733,7 @@ def test_start_xql_query_polling_command(mocker):
                      'results': [{'x': 'test1', 'y': None}],
                      'execution_id': 'query_id_mock'}
     mocker.patch.object(CLIENT, 'start_xql_query', return_value='1234')
-    mocker.patch('XQLQueryingEngine.get_xql_query_results', return_value=(mock_response, None))
+    mocker.patch('CoreXQLApiModule.get_xql_query_results', return_value=(mock_response, None))
     mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
@@ -766,7 +766,7 @@ def test_get_xql_query_results_polling_command_success_under_1000(mocker):
                      'remaining_quota': 1000.0,
                      'results': [{'x': 'test1', 'y': None}],
                      'execution_id': 'query_id_mock'}
-    mocker.patch('XQLQueryingEngine.get_xql_query_results', return_value=(mock_response, None))
+    mocker.patch('CoreXQLApiModule.get_xql_query_results', return_value=(mock_response, None))
     mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
     command_results = XQLQueryingEngine.get_xql_query_results_polling_command(CLIENT, {'query': query, })
     assert command_results.outputs == {'status': 'SUCCESS', 'number_of_results': 1, 'query_name': '',
@@ -796,7 +796,7 @@ def test_get_xql_query_results_clear_integration_context_on_success(mocker):
                      'remaining_quota': 1000.0,
                      'results': [{'x': 'test1', 'y': None}],
                      'execution_id': 'query_id_mock'}
-    mocker.patch('XQLQueryingEngine.get_xql_query_results', return_value=(mock_response, None))
+    mocker.patch('CoreXQLApiModule.get_xql_query_results', return_value=(mock_response, None))
     mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
     command_results = XQLQueryingEngine.get_xql_query_results_polling_command(CLIENT, {'query': query})
     assert command_results.outputs == {'status': 'SUCCESS', 'number_of_results': 1, 'query_name': '',
@@ -826,9 +826,9 @@ def test_get_xql_query_results_polling_command_success_more_than_1000(mocker):
                      'remaining_quota': 1000.0,
                      'results': {'stream_id': 'test_stream_id'},
                      'execution_id': 'query_id_mock'}
-    mocker.patch('XQLQueryingEngine.get_xql_query_results', return_value=(mock_response, 'File Data'))
+    mocker.patch('CoreXQLApiModule.get_xql_query_results', return_value=(mock_response, 'File Data'))
     mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
-    mocker.patch('XQLQueryingEngine.fileResult',
+    mocker.patch('CoreXQLApiModule.fileResult',
                  return_value={'Contents': '', 'ContentsFormat': 'text', 'Type': 3, 'File': 'results.gz',
                                'FileID': '12345'})
     results = XQLQueryingEngine.get_xql_query_results_polling_command(CLIENT, {'query': query})
@@ -870,14 +870,14 @@ def test_get_xql_query_results_polling_command_success_more_than_1000_results_pa
         {"_time": "2021-10-14 04:00:27.797 UTC", "event_id": "567", "_vendor": "PANW", "_product": "XDR agent",
          "insert_timestamp": "2021-10-14 04:04:34.332563 UTC"}
     ]
-    # Creates the mocked data which returns from 'XQLQueryingEngine.get_xql_query_results' command:
+    # Creates the mocked data which returns from 'CoreXQLApiModule.get_xql_query_results' command:
     mock_file_data = b''
     for item in expected_results_in_context:
         mock_file_data += json.dumps(item).encode('utf-8')
         mock_file_data += b'\n'
     compressed_mock_file_data = gzip.compress(mock_file_data)
 
-    mocker.patch('XQLQueryingEngine.get_xql_query_results', return_value=(mock_response, compressed_mock_file_data))
+    mocker.patch('CoreXQLApiModule.get_xql_query_results', return_value=(mock_response, compressed_mock_file_data))
     mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
     results = XQLQueryingEngine.get_xql_query_results_polling_command(CLIENT, {'query': query,
                                                                                'parse_result_file_to_context': True})
@@ -905,10 +905,10 @@ def test_get_xql_query_results_polling_command_pending(mocker):
     mock_response = {'status': 'PENDING',
                      'execution_id': 'query_id_mock',
                      'results': None}
-    mocker.patch('XQLQueryingEngine.get_xql_query_results', return_value=(mock_response, None))
-    mocker.patch('XQLQueryingEngine.is_demisto_version_ge', return_value=True)
+    mocker.patch('CoreXQLApiModule.get_xql_query_results', return_value=(mock_response, None))
+    mocker.patch('CoreXQLApiModule.is_demisto_version_ge', return_value=True)
     mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
-    mocker.patch('XQLQueryingEngine.ScheduledCommand', return_value=None)
+    mocker.patch('CoreXQLApiModule.ScheduledCommand', return_value=None)
     command_results = XQLQueryingEngine.get_xql_query_results_polling_command(CLIENT, {'query': query})
     assert command_results.readable_output == 'Query is still running, it may take a little while...'
     assert command_results.outputs == {'status': 'PENDING', 'execution_id': 'query_id_mock', 'results': None, 'query_name': ''}
@@ -962,7 +962,7 @@ def test_get_built_in_query_results_polling_command(mocker):
         'tenants': "tenantID,tenantID",
         'time_frame': '7 days'
     }
-    res = mocker.patch('XQLQueryingEngine.start_xql_query_polling_command')
+    res = mocker.patch('CoreXQLApiModule.start_xql_query_polling_command')
     mocker.patch.object(demisto, 'command', return_value='xdr-xql-file-event-query')
     XQLQueryingEngine.get_built_in_query_results_polling_command(CLIENT, args)
     assert (
@@ -973,3 +973,77 @@ def test_get_built_in_query_results_polling_command(mocker):
     )
     assert res.call_args.args[1]['tenants'] == ["tenantID", "tenantID"]
     assert res.call_args.args[1]['time_frame'] == '7 days'
+
+
+@patch('XQLQueryingEngine.Client')
+@patch('CoreXQLApiModule.demisto.params')
+@patch('XQLQueryingEngine.get_nonce')
+@patch('CoreXQLApiModule.demisto.debug')
+@patch('CoreXQLApiModule.demisto.command')
+@patch('CoreXQLApiModule.demisto.args')
+@patch('CoreXQLApiModule.return_results')
+@patch('CoreXQLApiModule.return_error')
+def test_main_success(mock_return_error, mock_return_results, mock_demisto_args,
+                      mock_demisto_command, mock_demisto_debug, mock_get_nonce,
+                      mock_demisto_params, mock_Client):
+    """
+    Given:
+    - demisto.params().
+    - Calling main().
+    When:
+    - main() is called.
+    Then:
+    - Ensure the main() is called properly.
+    """
+    from XQLQueryingEngine import main
+    mock_demisto_params.return_value = {
+        'apikey': {'password': 'test_apikey'},
+        'apikey_id': {'password': 'test_apikey_id'},
+        'url': 'http://example.com',
+        'insecure': False,
+        'proxy': False
+    }
+    mock_demisto_command.return_value = 'some_command'
+    mock_demisto_args.return_value = {'arg1': 'value1'}
+    mock_get_nonce.return_value = 'random_nonce'
+    mock_Client.return_value = MagicMock()
+    mock_demisto_command.return_value = 'test-module'
+    mock_return_results.return_value = None
+
+    main()
+
+    mock_demisto_debug.assert_called_once_with('Command being called is test-module')
+    actual_call = mock_Client.call_args
+    filtered_kwargs = {k: v for k, v in actual_call.kwargs.items() if k != 'headers'}
+    expected_kwargs = {
+        'base_url': 'http://example.com/public_api/v1',
+        'verify': True,
+        'proxy': False,
+        'is_core': False,
+    }
+    assert filtered_kwargs == expected_kwargs
+    mock_return_error.assert_not_called()
+
+
+@patch('CoreXQLApiModule.IS_CORE_AVAILABLE', False)
+@patch('CoreXQLApiModule.BaseClient._http_request')
+def test_get_xql_quota_is_core_available_false(mock_http_request):
+    """
+    Given:
+    - IS_CORE_AVAILABLE is false meaning we run on necessary version of xsiam.
+
+    When:
+    - Calling get_xql_quota function.
+
+    Then:
+    - Ensure the request for get_xql_quota use the _http_request.
+
+    """
+    mock_http_request.return_value = {'name': '/api/webapp/public_api/v1/xql/get_quota', 'status': 200, 'data':
+                                      '{"reply": {"license_quota": 1, "additional_purchased_quota": 0.0, "used_quota": 0.0,'
+                                      ' "eval_quota": 0.0}}'}
+    CLIENT.get_xql_quota({})
+    mock_http_request.assert_called_once_with(CLIENT, method='POST', url_suffix='/xql/get_quota',
+                                              full_url=None, headers=None, json_data={}, params=None, data=None, timeout=None,
+                                              raise_on_status=False, ok_codes=None, error_handler=None, with_metrics=False,
+                                              resp_type='json')

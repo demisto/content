@@ -6,7 +6,11 @@ comment: Takes an input docx file (entryID) as an input and saves an output text
 script: ''
 type: python
 subtype: python3
-tags: [word, docx, doc, parser]
+tags:
+- word
+- docx
+- doc
+- parser
 enabled: true
 args:
 - name: entryID
@@ -14,7 +18,7 @@ args:
   default: true
   description: Docx file to parse.
 scripttarget: 0
-dockerimage: demisto/office-utils:2.0.0.93886
+dockerimage: demisto/office-utils:2.0.0.2020302
 fromversion: 5.0.0
 tests:
 - ParseWordDoc-Test

@@ -1,0 +1,26 @@
+[
+    {
+        "id": "2930418",
+        "name": "My organization",
+        "url": "http://www.example.com",
+        "api": {
+            "enabled": true
+        },
+        "licensing": {
+            "model": "co-term"
+        },
+        "cloud": {
+            "region": {
+                "name": "North America"
+            }
+        },
+        "management": {
+            "details": [
+                {
+                    "name": "MSP ID",
+                    "value": "123456"
+                }
+            ]
+        }
+    }
+]

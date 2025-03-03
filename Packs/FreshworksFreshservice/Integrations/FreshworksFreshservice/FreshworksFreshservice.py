@@ -2629,11 +2629,13 @@ def update_custom_fields(args: dict[str, Any]) -> dict[Any, Any] | None:
     Returns:
         Optional[Dict[Any, Any]]: Updated field.
     """
-    updated_custom_fields = None
-    if custom_fields := args.get('custom_fields'):
-        custom_fields = custom_fields.split('=')
-        updated_custom_fields = {custom_fields[0]: custom_fields[1]}
-    return updated_custom_fields
+    try:
+        return {
+            item.split("=")[0].strip(): item.split("=")[1].strip()
+            for item in argToList(args.get('custom_fields'))
+        } or None
+    except IndexError:
+        raise DemistoException("The custom_fields argument must be a comma-separated list of `key=value` items")
 
 
 def validate_mandatory_ticket_requester_fields(
@@ -3001,6 +3003,9 @@ def convert_date_time(date_time: str) -> str | None:
     datetime_arg = arg_to_datetime(date_time)
     if isinstance(datetime_arg, datetime):
         updated_datetime_arg = datetime_arg.strftime(STRFTIME)
+    else:
+        updated_datetime_arg = date_time
+        demisto.debug(f"{datetime_arg=} isn't of type datetime.")
     return updated_datetime_arg
 
 
@@ -3315,6 +3320,9 @@ def get_last_run(args: dict[str, Any], ticket_type: str) -> tuple:
     # use condition statement to avoid mypy error
     if last_run_datetime:
         last_run_datetime_str = last_run_datetime.strftime(TIME_FORMAT)
+    else:
+        last_run_datetime_str = ''
+        demisto.debug(f"{last_run_datetime=} -> {last_run_datetime_str=}")
     last_run_datetime = dateparser.parse(last_run_datetime_str)
 
     return last_run_id, last_run_datetime, last_run_datetime_str

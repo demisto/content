@@ -1,8 +1,0 @@
-!asm-get-asset-internet-exposure asm_id=3c176460-8735-333c-b618-8262e2fb660c
-!asm-get-external-ip-address-range range_id=4da29b7f-3086-3b52-981b-aa8ee5da1e60
-!asm-get-external-service service_id=94232f8a-f001-3292-aa65-63fa9d981427
-!asm-list-external-ip-address-range
-!asm-list-asset-internet-exposure name="acme.com" type=certificate has_active_external_services=no
-!asm-list-external-service domain=acme.com is_active=yes discovery_type=directly_discovery
-!asm-list-alerts limit=2 severity=high sort_by_creation_time=asc status=reopened
-!asm-list-external-websites authentication="Form" limit=5 

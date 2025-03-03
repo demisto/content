@@ -19,7 +19,7 @@ configuration:
   name: device_group
   type: 0
   required: false
-- defaultvalue: 8
+- defaultvalue: '8'
   display: PAN-OS Version (The exact version, e.g., 10.1.4, 1.1, 9)
   name: version
   type: 0
@@ -47,6 +47,8 @@ script:
       predefined:
       - pre
       - post
+    - description: Query an alternate device group. Overrides the Device Group parameter.
+      name: device_group
     outputs:
     - contextPath: PanOS.PolicyOptimizer.Stats.no_app_specified
       description: Number of rules with no apps specified.
@@ -73,6 +75,8 @@ script:
       predefined:
       - pre
       - post
+    - description: Query an alternate device group. Overrides the Device Group parameter.
+      name: device_group
     outputs:
     - contextPath: PanOS.PolicyOptimizer.NoApps
       description: Contains information about the rules that have no apps specified. For example, Source and Destination.
@@ -87,6 +91,8 @@ script:
       predefined:
       - pre
       - post
+    - description: Query an alternate device group. Overrides the Device Group parameter.
+      name: device_group
     outputs:
     - contextPath: PanOS.PolicyOptimizer.UnusedApps
       description: Shows all security rules with unused apps.
@@ -109,6 +115,7 @@ script:
       predefined:
       - 'false'
       - 'true'
+      auto: PREDEFINED
     - auto: PREDEFINED
       description: Whether to get pre-rules, post-rules or both. 'pre' for pre rules, 'post' for post-rules, only for panorama instances.
       name: position
@@ -131,6 +138,7 @@ script:
       - authentication
       - dos
       - sdwan
+      auto: PREDEFINED
     - defaultValue: '200'
       description: The maximum number of rules to return.
       name: limit
@@ -139,6 +147,8 @@ script:
       name: page_size
     - description: A specific pagination page to get items from.
       name: page
+    - description: Query an alternate device group. Overrides the Device Group parameter.
+      name: device_group
     description: Gets unused, used, or any rules.
     name: pan-os-po-get-rules
     outputs:
@@ -155,6 +165,8 @@ script:
     - description: The UUID of the security rule.
       name: rule_uuid
       required: true
+    - description: Query an alternate device group. Overrides the Device Group parameter.
+      name: device_group
     description: Gets the app usage statistics for a specific security rule.
     name: pan-os-po-app-and-usage
     outputs:
@@ -165,11 +177,13 @@ script:
     - description: Dynamic address group name.
       name: dag
       required: true
+    - description: Query an alternate device group. Overrides the Device Group parameter.
+      name: device_group
     description: Gets a specific dynamic address group.
     name: pan-os-get-dag
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:

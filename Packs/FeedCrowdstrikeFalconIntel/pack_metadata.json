@@ -2,7 +2,7 @@
     "name": "Crowdstrike Falcon Intel Feed",
     "description": "Tracks the activities of threat actor groups and advanced persistent threats (APTs) to understand as much as possible about their known aliases, targets, methods, and more.",
     "support": "xsoar",
-    "currentVersion": "2.1.16",
+    "currentVersion": "2.1.19",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

@@ -12,16 +12,19 @@ def escape_special_characters(text: str) -> str:
     Returns:
         return the value with the added escape char.
     """
-    text = text.replace('\n', '\\n')
-    text = text.replace('\t', '\\t')
-    text = text.replace('\r', '\\r')
-    text = text.replace('(', '\(')
-    text = text.replace(')', '\)')
-    text = text.replace('[', '\[')
-    text = text.replace(']', '\]')
-    text = text.replace('^', '\^')
-    text = text.replace(':', '\:')
-    return text
+    return (
+        text.replace("\\", r"\\")
+        .replace("\n", r"\n")
+        .replace("\t", r"\t")
+        .replace("\r", r"\r")
+        .replace("(", r"\(")
+        .replace(")", r"\)")
+        .replace("[", r"\[")
+        .replace("]", r"\]")
+        .replace("^", r"\^")
+        .replace(":", r"\:")
+        .replace('"', r"\"")
+    )
 
 
 def main():

@@ -96,7 +96,7 @@ def test_get_incident_command(requests_mock):
     command_result = get_incident_command(client, args)
 
     assert command_result
-    assert '### Mandiant Automated Defense Alert, Tenant 1 : 6' in getattr(command_result, 'readable_output')
+    assert '### Mandiant Automated Defense Alert, Tenant 1 : 6' in command_result.readable_output
 
 
 def test_fetch_incidents_no_new(mocker, requests_mock):
@@ -328,8 +328,8 @@ def test_close_incident(mocker, requests_mock):
     }
 
     # not expecting a different id bc of mocked responses, just expecting a successful response
-    res == close_incident_command(rest_client, args)
-    assert 'incident closed and/or feedback updated for incident with id 5 on tenant Tenant 1' in \
+    res = close_incident_command(rest_client, args)
+    assert 'incident closed and/or feedback updated for incident with id 6 on tenant Tenant 1' in \
            res
 
 
@@ -461,7 +461,7 @@ def test_close_incident_with_bad_responses(mocker, requests_mock):
         close_incident_command(rest_client, args)
 
     demisto.error.assert_any_call(
-        "error closing incident and/or updating feedback: 'type' object is not subscriptable")
+        "error closing incident and/or updating feedback: type 'Exception' is not subscriptable")
 
 
 def test_get_remote_data_command(requests_mock):

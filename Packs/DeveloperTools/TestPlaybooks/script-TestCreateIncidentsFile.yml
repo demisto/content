@@ -3409,9 +3409,9 @@ args:
   defaultValue: encodedIncidentsFile
   description: ''
 scripttarget: 0
-subtype: python2
+subtype: python3
 runonce: false
-dockerimage: demisto/python:2.7.18.9326
+dockerimage: demisto/python3:3.12.8.1983910
 runas: DBotWeakRole
 comment: ''
 fromversion: 5.0.0

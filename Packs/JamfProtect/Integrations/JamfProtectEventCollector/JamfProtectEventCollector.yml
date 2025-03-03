@@ -48,7 +48,25 @@ configuration:
   type: 0
   advanced: true
   section: Collect
-description: Use this integration to fetch audits and alerts from Jamf Protect as events in Cortex XSIAM.
+- additionalinfo: The fetch interval. It is recommended to set it to 12 hours. The minimum interval is 1 hour.
+  defaultvalue: 720
+  display: Fetch Computer Assets Interval
+  name: assetsFetchInterval
+  type: 19
+  section: Collect
+  advanced: true
+  required: false
+- display: Fetch Events
+  name: isFetchEvents
+  type: 8
+  required: false
+  section: Collect
+- display: Fetch Assets
+  name: isFetchAssets
+  type: 8
+  required: false
+  section: Collect
+description: Use this integration to fetch audit logs events, alerts events and computer assets from Jamf Protect to Cortex XSIAM.
 display: Jamf Protect Event Collector
 name: Jamf Protect Event Collector
 script:
@@ -71,12 +89,19 @@ script:
       required: false
     description: Gets events from Jamf Protect.
     name: jamf-protect-get-events
+  - arguments:
+    - description: The number of computer assets to return.
+      name: limit
+      defaultValue: 10
+    description: Gets computer assets from Jamf Protect.
+    name: jamf-protect-get-computer-assets
   runonce: false
   script: "-"
   type: python
   subtype: python3
   isfetchevents: true
-  dockerimage: demisto/python3:3.10.13.89873
+  isfetchassets: true
+  dockerimage: demisto/python3:3.11.10.116949
 marketplaces:
 - marketplacev2
 fromversion: 6.9.0

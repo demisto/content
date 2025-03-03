@@ -1,0 +1,74 @@
+microsoft-atp-isolate-machine machine_id=f70f9fe6b29cd9511652434919c6530618f06606 comment="test isolate machine" isolation_type=Selective
+microsoft-atp-unisolate-machine machine_id=f70f9fe6b29cd9511652434919c6530618f06606 comment="test unisolate machine"
+microsoft-atp-get- health_status=Active risk_score=Medium
+microsoft-atp-get-file-related- file_hash=36c5d12033b2eaf251bae61c00690ffb17fddc87
+microsoft-atp-get-machine-details machine_id=f70f9fe6b29cd9511652434919c6530618f06606
+microsoft-atp-run-antivirus-scan machine_id=f70f9fe6b29cd9511652434919c6530618f06606 comment="testing anti virus" scan_type=Quick
+microsoft-atp-list-alerts severity=Low
+microsoft-atp-update-alert alert_id=da637200417169017725_183736971 status=InProgress
+microsoft-atp-advanced-hunting query="LogonEvents | take 1 | project MachineId, ReportId, tostring(EventTime)"
+microsoft-atp-advanced-hunting query_batch=`{"queries": [{"query": "DeviceInfo | where OnboardingStatus == 'Onboarded' | limit 10 | distinct DeviceName", "name": "name1", "timeout": "20"}]}`
+microsoft-atp-create-alert category=Backdoor description="test" report_id=20279 event_time=2020-02-23T07:22:07.1532018Z
+machine_id=4899036531e374137f63289c3267bad772c13fef recommended_action="runAntiVirusScan" severity=Low title="testing alert"
+microsoft-atp-get-alert-related-user id=da637175364995825348_1865170845
+microsoft-atp-get-alert-related-files id=da637175364995825348_1865170845
+microsoft-atp-get-alert-related-ips id=da637200417169017725_183736971 limit=3 offset=0
+microsoft-atp-get-alert-related-domains id=da637175364995825348_1865170845 limit=2 offset=0
+microsoft-atp-list-machine-actions-details type=RestrictCodeExecution
+microsoft-atp-collect-investigation-package comment="testing" machine_id=f70f9fe6b29cd9511652434919c6530618f06606
+microsoft-atp-get-investigation-package-sas-uri action_id=6ae51f8f-68e6-4259-abae-0018fdf2e418
+microsoft-atp-restrict-app-execution machine_id=f70f9fe6b29cd9511652434919c6530618f06606 comment="test restrict app"
+microsoft-atp-remove-app-restriction machine_id=f70f9fe6b29cd9511652434919c6530618f06606 comment="testing remove restriction"
+microsoft-atp-stop-and-quarantine-file comment="testing" file_hash=9fe3ba25e5660c23dfe478d577cfacde5795870c machine_id=f70f9fe6b29cd9511652434919c6530618f06606
+microsoft-atp-list-investigations limit=3 offset=0
+microsoft-atp-start-investigation comment="testing" machine_id=f70f9fe6b29cd9511652434919c6530618f06606
+microsoft-atp-get-domain-statistics domain=google.com
+microsoft-atp-get-domain-alerts
+microsoft-atp-get-domain-
+microsoft-atp-get-file-statistics file_hash=9fe3ba25e5660c23dfe478d577cfacde5795870c
+microsoft-atp-get-file-alerts file_hash=9fe3ba25e5660c23dfe478d577cfacde5795870c
+microsoft-atp-get-ip-statistics ip=8.8.8.8
+microsoft-atp-get-ip-alerts
+microsoft-atp-get-user-alerts username=demisto
+microsoft-atp-get-user- username=demisto
+microsoft-atp-add-remove-machine-tag action=Add machine_id=f70f9fe6b29cd9511652434919c6530618f06606 tag="test add tag"
+microsoft-atp-sc-indicator-list limit=2
+microsoft-atp-sc-indicator-create action=Allowed indicator_description=test indicator_title=title indicator_type=IpAddress indicator_value=2.2.2.2 expiration_time="1 day" severity=Informational
+microsoft-atp-sc-indicator-update action=Allowed indicator_description=test indicator_title=title indicator_type=IpAddress indicator_value=2.2.2.2 expiration_time="1 day" severity=Low
+microsoft-atp-sc-indicator-get-by-id indicator_id=5142
+microsoft-atp-sc-indicator-delete indicator_id=5142
+microsoft-atp-list--by-vulnerability cve_id=CVE-2021-32810,CVE-2020-12321
+microsoft-atp-get-file-info hash="3395856ce81f2b7382dee72602f798b642f14140,db79e9e669c42b5ac46fc6d6b590ca990687958b"
+endpoint id="f3bba49af4d3bacedc62ca0fe580a4d5925af8aa,48a62a741512515e356c6896d428ebddd0a04c0d"ip=1.2.3.4 hostname="ec2amaz-ua9hieu"
+microsoft-atp-indicator-batch-update indicator_batch=`[{"indicatorValue": "220e7d15b011d7fac48f2bd61114db1022197f7f","indicatorType": "FileSha1","title": "demo","application": "demo-test", "action": "Alert","severity": "Informational","description": "demo2","recommendedActions": "nothing","rbacGroupNames": ["group1", "group2"]},{"indicatorValue": "2233223322332233223322332233223322332233223322332233223322332222","indicatorType": "FileSha256","title": "demo2","application": "demo-test2","action": "Alert","severity": "Medium","description": "demo2","recommendedActions": "nothing","rbacGroupNames": []}]`
+microsoft-atp-get-alert-by-id alert_ids=da637797972607470400_795854214,da637750706361180181_-1167994114
+microsoft-atp-list-alerts category=Malware severity=Informational status=Resolved creation_time="3 days" limit=1
+microsoft-atp-live-response-put-file machine_id="4899036531e374137f63289c3267bad772c13fef" comment="testing" file_name="C:\\Users\\example\\Desktop\\test.txt"
+microsoft-atp-live-response-run-script machine_id=f70f9fe6b29cd9511652434919c6530618f06606 scriptName=test_script.ps1 comment="testing"
+microsoft-atp-live-response-get-file machine_id="4899036531e374137f63289c3267bad772c13fef" comment="jas testing" path="C:\\windows\\TEMP\\test_script.ps1"
+microsoft-atp-live-response-result machine_action_id=11a86b87-12b8-423b-9e8d-9775ab2da78f command_index=0
+microsoft-atp-advanced-hunting-lateral-movement-evidence query_purpose=network_connections device_name=desktop-s2455r8,desktop-s2455r9 limit=6
+microsoft-atp-advanced-hunting-lateral-movement-evidence query_purpose=smb_connections device_name=desktop-s2455r9
+microsoft-atp-advanced-hunting-lateral-movement-evidence query_purpose="management_connection" device_id="4cceb3c642212014e0e9553aa8b59e999ea515ff" query_operation="or" limit="50" timeout="10"
+microsoft-atp-advanced-hunting-persistence-evidence query_purpose=scheduled_job device_name=desktop-s2455r8 device_id=4cceb3c642212014e0e9553aa8b59e999ea515ff,96444b946be252d1f4550354edef5fdc23aca2c5 query_operation=or
+microsoft-atp-advanced-hunting-persistence-evidence query_purpose=new_service_created  file_name=installer,services
+microsoft-atp-advanced-hunting-persistence-evidence query_purpose=service_updated device_name=msde
+microsoft-atp-advanced-hunting-persistence-evidence query_purpose=file_replaced device_name=msde file_name=chrome query_operation=and
+microsoft-atp-advanced-hunting-persistence-evidence query_purpose=new_user device_name=desktop
+microsoft-atp-advanced-hunting-persistence-evidence query_purpose=new_group device_id=f70f9fe6b29cd9511652434919c6530618f06606 device_name=desktop  query_operation=and
+microsoft-atp-advanced-hunting-persistence-evidence query_purpose=group_user_change device_name=desktop
+microsoft-atp-advanced-hunting-persistence-evidence query_purpose=local_firewall_change device_name=desktop
+microsoft-atp-advanced-hunting-persistence-evidence query_purpose=host_file_change device_name=desktop
+microsoft-atp-advanced-hunting-process-details query_purpose=beaconing_evidence file_name=powershell device_name=desktop query_operation=and
+microsoft-atp-advanced-hunting-network-connections query_purpose=external_addresses device_id=48a62a741512515e356c6896d428ebddd0a04c0d
+microsoft-atp-advanced-hunting-network-connections query_purpose=dns_query device_name=desktop-s2455r9,desktop-s2455r8
+microsoft-atp-advanced-hunting-process-details query_purpose=process_excecution_powershell device_name=msde query_operation=and file_name=explorer
+microsoft-atp-advanced-hunting-cover-up query_purpose=file_deleted  file_name=chrome device_name=desktop query_operation=and
+microsoft-atp-advanced-hunting-cover-up query_purpose=event_log_cleared device_name=desktop-s2455r9
+microsoft-atp-advanced-hunting-cover-up query_purpose=compromised_information username=demisto
+microsoft-atp-advanced-hunting-cover-up query_purpose=connected_devices username=demisto
+microsoft-atp-advanced-hunting-cover-up query_purpose=action_types username=demisto
+microsoft-atp-advanced-hunting-cover-up query_purpose=common_files  username=demisto
+microsoft-atp-get-machine-users machine_id=0a3250e0693a109f1affc9217be9459028aa8424
+microsoft-atp-get-machine-alerts machine_id=0a3250e0693a109f1affc9217be9459028aa8424
+microsoft-atp-get-machine-by-ip ip=8.8.8.8 timestamp=2024-05-23T10:15:00Z

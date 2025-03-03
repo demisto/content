@@ -1,0 +1,33 @@
+{
+    "id": "Umlza1R5cGU6MTE5Nzc=",
+    "type": "SSL",
+    "startedAt": "2022-05-27T18:38:45.439551+00:00",
+    "endedAt": "2023-06-07T09:59:49.344739+00:00",
+    "title": "HSTS header missing",
+    "description": "The HSTS header enforces users to always visit your website through SSL, after their first visit.",
+    "evidence": "No HSTS header present.",
+    "proposedAction": "Turn on the HSTS header, read more on https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Strict_Transport_Security_Cheat_Sheet.html",
+    "asset": {
+        "id": "QXBwbGljYXRpb25UeXBlOjIyNjg0",
+        "state": "Unconfirmed",
+        "brand": "Darktrace",
+        "createdAt": "2022-05-27 14:18:24.264958+00:00",
+        "updatedAt": "2023-06-29 06:40:41.007652+00:00",
+        "securityrating": "f",
+        "isMalicious": true,
+        "tags": [],
+        "asset_url": "None/app/#/detail/overview/22684"
+    },
+    "securityRating": "b",
+    "mitigatedAt": "2023-06-06T09:59:49.344739+00:00",
+    "comments": {
+        "edges": [
+        {
+            "node": {
+            "id": "Q29tbWVudFR5cGU6ODM=",
+            "text": "API TEST EDIT"
+            }
+        }
+        ]
+    }
+}

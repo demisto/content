@@ -11,6 +11,7 @@ from test_data import input_data
 from freezegun import freeze_time
 from typing import Any
 from pytest_mock import MockerFixture
+from unittest.mock import ANY
 
 RETURN_ERROR_TARGET = 'CrowdStrikeFalcon.return_error'
 SERVER_URL = 'https://4.4.4.4'
@@ -87,7 +88,7 @@ def test_incident_to_incident_context():
 
 def test_detection_to_incident_context():
     from CrowdStrikeFalcon import detection_to_incident_context
-    res = detection_to_incident_context(input_data.response_idp_detection.copy(), "IDP Detection")
+    res = detection_to_incident_context(input_data.response_idp_detection.copy(), "IDP Detection", 'created_timestamp')
     assert res == input_data.context_idp_detection
 
 
@@ -1585,6 +1586,7 @@ def test_get_extracted_file(requests_mock, mocker):
         content=response_content,
         status_code=201
     )
+    mocker.patch.object(demisto, 'debug', return_value=None)
     results = get_extracted_file_command(demisto.args())
 
     fpath = demisto.investigation()['id'] + '_' + results['FileID']
@@ -2220,7 +2222,7 @@ class TestFetch:
                                           })
         fetch_incidents()
         assert demisto.setLastRun.mock_calls[0][1][0] == [
-            {'time': '2020-09-04T09:16:10Z'}, {'time': '2020-09-04T09:22:10Z'}, {}, {}, {}, {}]
+            {'time': '2020-09-04T09:16:10Z'}, {'time': '2020-09-04T09:22:10Z'}, {}, {}, {}, {}, {}, {}]
 
     @freeze_time("2020-09-04T09:16:10Z")
     def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
@@ -2233,6 +2235,7 @@ class TestFetch:
         Then:
             The `first_behavior_time` changes and no `offset` is added.
         """
+        mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', True)
         mocker.patch.object(demisto, 'getLastRun',
                             return_value=[{'time': '2020-09-04T09:16:10.000000Z',
                                           'offset': 2}, {}, {}])
@@ -2261,6 +2264,7 @@ class TestFetch:
             - In the next call, the offset will be reset to 0 and the last time will be the latest detection time
 
         """
+        mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', True)
         # mock the total number of detections to be 4, so offset will be set
         requests_mock.get(f'{SERVER_URL}/detects/queries/detects/v1', json={'resources': ['ldt:1', 'ldt:2'],
                                                                             'meta': {'pagination': {'total': 4}}})
@@ -2312,6 +2316,7 @@ class TestFetch:
             "incident_type": "detection" is in raw result returned by the indicator
 
         """
+        mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', True)
         from CrowdStrikeFalcon import fetch_incidents
         mocker.patch.object(demisto, 'getLastRun', return_value=[{
             'time': '2020-09-04T09:16:10Z',
@@ -2353,6 +2358,7 @@ class TestFetch:
             Validate the results contains only IDP detection when fetch_incidents_or_detections = ['IDP Detections'],
 
         """
+        mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', True)
         from CrowdStrikeFalcon import fetch_incidents
         mocker.patch.object(demisto, 'getLastRun', return_value=[{'time': '2020-09-04T09:16:10Z'}, {}, {}])
 
@@ -2363,8 +2369,10 @@ class TestFetch:
                                                {'incident_id': 'ldt:2', 'start': '2020-09-04T09:16:11Z'}]})
         requests_mock.get(f'{SERVER_URL}/alerts/queries/alerts/v1', json={'resources': ['a:ind:1', 'a:ind:2']})
         requests_mock.post(f'{SERVER_URL}/alerts/entities/alerts/v1',
-                           json={'resources': [{'composite_id': 'a:ind:1', 'start_time': '2020-09-04T09:16:11.000Z'},
-                                               {'composite_id': 'a:ind:2', 'start_time': '2020-09-04T09:16:11.000Z'}]})
+                           json={'resources': [{'composite_id': 'a:ind:1', 'start_time': '2020-09-04T09:16:11.000Z',
+                                                "created_timestamp": "2020-09-04T09:16:11.000Z"},
+                                               {'composite_id': 'a:ind:2', 'start_time': '2020-09-04T09:16:11.000Z',
+                                                "created_timestamp": "2020-09-04T09:16:11.000Z"}]})
 
         mocker.patch.object(
             demisto,
@@ -2432,6 +2440,7 @@ class TestIncidentFetch:
 
     @freeze_time("2020-08-26 17:22:13 UTC")
     def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
+        mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', True)
         mocker.patch.object(demisto, 'getLastRun', return_value=[{}, {'time': '2020-09-04T09:16:10Z',
                                                                       'offset': 2}, {}])
         # Override post to have 1 results so FETCH_LIMIT won't be reached
@@ -2457,6 +2466,7 @@ class TestIncidentFetch:
             - In the next call, the offset will be reset to 0 and the last time will be the latest detection time
 
         """
+        mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', True)
         # mock the total number of detections to be 4, so offset will be set
         requests_mock.get(f'{SERVER_URL}/incidents/queries/incidents/v1', json={'resources': ['ldt:1', 'ldt:2'],
                                                                                 'pagination': {'meta': {'total': 4}}})
@@ -2504,6 +2514,7 @@ class TestIncidentFetch:
         Then:
             "incident_type": "incident" is in raw result returned by the indicator
         """
+        mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', True)
         mocker.patch.object(demisto, 'getLastRun', return_value=[{}, {'time': '2020-09-04T09:16:10Z',
                                                                       }])
         from CrowdStrikeFalcon import fetch_incidents
@@ -2663,7 +2674,7 @@ def test_get_ioc_command_does_not_exist(requests_mock):
     )
     with pytest.raises(DemistoException) as excinfo:
         get_ioc_command(ioc_type='md5', value='testmd5')
-    assert [{'code': 404, 'message': 'md5:testmd5 - Resource Not Found'}] == excinfo.value.args[0]
+    assert excinfo.value.args[0] == [{'code': 404, 'message': 'md5:testmd5 - Resource Not Found'}]
 
 
 def test_get_ioc_command_exists(requests_mock):
@@ -2951,7 +2962,7 @@ def test_get_custom_ioc_command_does_not_exist(requests_mock):
     )
     with pytest.raises(DemistoException) as excinfo:
         get_custom_ioc_command(ioc_type='md5', value='testmd5')
-    assert [{'code': 404, 'message': 'md5:testmd5 - Resource Not Found'}] == excinfo.value.args[0]
+    assert excinfo.value.args[0] == [{'code': 404, 'message': 'md5:testmd5 - Resource Not Found'}]
 
 
 def test_get_custom_ioc_command_by_id(requests_mock):
@@ -3332,6 +3343,43 @@ def test_get_ioc_device_count_command_exists(requests_mock):
     assert result['EntryContext']['CrowdStrike.IOC(val.ID === obj.ID)'][0]['ID'] == 'md5:testmd5'
 
 
+def test_get_ioc_device_count_command_rate_limit_exceeded(requests_mock):
+    """
+    Test cs-falcon-device-count-ioc with rate limit exceeded
+
+    Given
+    - There is a rate limit in CS side
+    When
+    - The user is running cs-falcon-device-count-ioc with md5:testmd5
+    Then
+    - ensure the correct count is returned by the offset mechanism
+    """
+    from CrowdStrikeFalcon import get_ioc_device_count_command
+    response = {'resources': [{'id': 'md5:testmd5', 'type': 'md5',
+                               'value': 'testmd5', 'limit_exceeded': 'true', 'device_count': 1}]}
+    indicators_queries_res = {'resources': ["res_1", "res_2", "res_3"]}
+    indicators_queries_res_with_offset = indicators_queries_res | {'meta': {'pagination': {'offset': 1}}}
+    requests_mock.get(
+        f'{SERVER_URL}/indicators/aggregates/devices-count/v1',
+        json=response,
+        status_code=200,
+    )
+    requests_mock.get(
+        f'{SERVER_URL}/indicators/queries/devices/v1',
+        json=indicators_queries_res_with_offset,
+        status_code=200,
+    )
+    requests_mock.get(
+        f'{SERVER_URL}/indicators/queries/devices/v1?type=md5&value=testmd5&offset=1',
+        json=indicators_queries_res,
+        status_code=200,
+    )
+
+    res = get_ioc_device_count_command(ioc_type='md5', value='testmd5')
+
+    assert 'device count: **6**' in res['HumanReadable']
+
+
 def test_get_process_details_command_not_exists(requests_mock, mocker):
     """
     Test cs-falcon-process-details with an unsuccessful query (doesn't exist)
@@ -3456,11 +3504,11 @@ def test_search_device_command(requests_mock):
     response = {'resources': {'meta': {'query_time': 0.010188508, 'pagination': {'offset': 1, 'limit': 100, 'total': 1},
                                        'powered_by': 'device-api', 'trace_id': 'c876614b-da71-4942-88db-37b939a78eb3'},
                               'resources': ['15dbb9d8f06b45fe9f61eb46e829d986'], 'errors': []}}
-    device_context = {'ID': 'identifier_number', 'ExternalIP': '1.1.1.1', 'MacAddress': '42-01-0a-80-00-07',
+    device_context = {'ID': '15dbb9d8f06b45fe9f61eb46e829d986', 'ExternalIP': '1.1.1.1', 'MacAddress': '42-01-0a-80-00-07',
                       'Hostname': 'FALCON-CROWDSTR', 'FirstSeen': '2020-02-10T12:40:18Z',
                       'LastSeen': '2021-04-05T13:48:12Z', 'LocalIP': '1.1.1.1', 'OS': 'Windows Server 2019',
                       'Status': 'normal'}
-    endpoint_context = {'Hostname': 'FALCON-CROWDSTR', 'ID': 'identifier_number', 'IPAddress': '1.1.1.1',
+    endpoint_context = {'Hostname': 'FALCON-CROWDSTR', 'ID': '15dbb9d8f06b45fe9f61eb46e829d986', 'IPAddress': '1.1.1.1',
                         'MACAddress': '42-01-0a-80-00-07', 'OS': 'Windows', 'OSVersion': 'Windows Server 2019',
                         'Status': 'Offline', 'Vendor': 'CrowdStrike Falcon'}
     status_res = {
@@ -3485,8 +3533,8 @@ def test_search_device_command(requests_mock):
         json=response,
         status_code=200,
     )
-    requests_mock.get(
-        f'{SERVER_URL}/devices/entities/devices/v2?ids=meta&ids=resources&ids=errors',
+    requests_mock.post(
+        f'{SERVER_URL}/devices/entities/devices/v2',
         json=test_data2,
         status_code=200,
     )
@@ -3522,7 +3570,7 @@ def test_get_endpoint_command(requests_mock, mocker):
     response = {'resources': {'meta': {'query_time': 0.010188508, 'pagination': {'offset': 1, 'limit': 100, 'total': 1},
                                        'powered_by': 'device-api', 'trace_id': 'c876614b-da71-4942-88db-37b939a78eb3'},
                               'resources': ['15dbb9d8f06b45fe9f61eb46e829d986'], 'errors': []}}
-    endpoint_context = {'Hostname': 'FALCON-CROWDSTR', 'ID': 'identifier_number', 'IPAddress': '1.1.1.1',
+    endpoint_context = {'Hostname': 'FALCON-CROWDSTR', 'ID': '15dbb9d8f06b45fe9f61eb46e829d986', 'IPAddress': '1.1.1.1',
                         'MACAddress': '42-01-0a-80-00-07', 'OS': 'Windows', 'OSVersion': 'Windows Server 2019',
                         'Status': 'Online', 'Vendor': 'CrowdStrike Falcon'}
 
@@ -3554,8 +3602,8 @@ def test_get_endpoint_command(requests_mock, mocker):
         json=response,
         status_code=200,
     )
-    requests_mock.get(
-        f'{SERVER_URL}/devices/entities/devices/v2?ids=meta&ids=resources&ids=errors',
+    requests_mock.post(
+        f'{SERVER_URL}/devices/entities/devices/v2',
         json=test_data2,
         status_code=200,
     )
@@ -4018,7 +4066,7 @@ def test_rtr_read_registry_keys_command(mocker):
     assert "reg-1key" in parsed_result[0].readable_output
 
 
-detections = {'resources': [
+detections_legacy = {'resources': [
     {'behavior_id': 'example_behavior_1',
      'detection_ids': ['example_detection'],
      'incident_id': 'example_incident_id',
@@ -4031,15 +4079,25 @@ detections = {'resources': [
      }
 ]}
 
+detections_new = {'resources': [
+    {'behavior_id': 'example_behavior',
+     'alert_ids': ['example_detection'],
+     'incident_id': 'example_incident_id',
+     'some_field': 'some_example',
+     }
+]}
+
 DETECTION_FOR_INCIDENT_CASES = [
     (
-        detections,
+        detections_legacy,
+        True,
         ['a', 'b'],
         [
             {'incident_id': 'example_incident_id', 'behavior_id': 'example_behavior_1',
              'detection_ids': ['example_detection']},
             {'incident_id': 'example_incident_id', 'behavior_id': 'example_behavior_2',
-             'detection_ids': ['example_detection2']}],
+             'detection_ids': ['example_detection2']}
+        ],
         [
             {'behavior_id': 'example_behavior_1',
              'detection_ids': ['example_detection'],
@@ -4054,23 +4112,42 @@ DETECTION_FOR_INCIDENT_CASES = [
         '### Detection For Incident\n|behavior_id|detection_ids|incident_id|\n|---|---|---|'
         '\n| example_behavior_1 | example_detection | example_incident_id |\n'
         '| example_behavior_2 | example_detection2 | example_incident_id |\n'),
-    ({'resources': []}, [], None, None, None, 'Could not find behaviors for incident zz')
+    (
+        detections_new,
+        False,
+        ['a', 'b'],
+        [{'incident_id': 'example_incident_id', 'behavior_id': 'example_behavior',
+          'detection_ids': ['example_detection']}
+         ],
+        [
+            {'behavior_id': 'example_behavior',
+             'alert_ids': ['example_detection'],
+             'incident_id': 'example_incident_id',
+             'some_field': 'some_example'}
+        ],
+        'CrowdStrike.IncidentDetection',
+        '### Detection For Incident\n|behavior_id|detection_ids|incident_id|\n|---|---|---|'
+        '\n| example_behavior | example_detection | example_incident_id |\n',
+    ),
+    ({'resources': []}, False, [], None, None, None, 'Could not find behaviors for incident zz')
 ]
 
 
 @pytest.mark.parametrize(
-    'detections, resources, expected_outputs, expected_raw, expected_prefix, expected_md',
+    'detections, use_legacy, resources, expected_outputs, expected_raw, expected_prefix, expected_md',
     DETECTION_FOR_INCIDENT_CASES)
-def test_get_detection_for_incident_command(mocker, detections, resources, expected_outputs, expected_raw,
+def test_get_detection_for_incident_command(mocker, detections, use_legacy, resources, expected_outputs, expected_raw,
                                             expected_prefix,
                                             expected_md):
     """
-    Given: An incident ID
-    When: When running cs-falcon-get-detections-for-incident command
+    Given: An incident ID.
+    When: When running cs-falcon-get-detections-for-incident command in legacy and new API.
     Then: validates the created command result contains the correct data (whether found or not).
     """
 
     from CrowdStrikeFalcon import get_detection_for_incident_command
+
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', new=use_legacy)
 
     mocker.patch('CrowdStrikeFalcon.get_behaviors_by_incident',
                  return_value={'resources': resources, 'meta': {'pagination': {'total': len(resources)}}})
@@ -4101,6 +4178,7 @@ def test_get_remote_data_command(mocker, remote_id, close_incident, incident_sta
         - the mirrored_object in the GetRemoteDataResponse contains the modified incident fields
         - the entries in the GetRemoteDataResponse contain expected entries (an incident closure/reopen entry when needed)
     """
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', True)
     from CrowdStrikeFalcon import get_remote_data_command
     incident_entity = input_data.response_incident.copy()
     incident_entity['status'] = incident_status
@@ -4108,7 +4186,8 @@ def test_get_remote_data_command(mocker, remote_id, close_incident, incident_sta
     detection_entity = input_data.response_detection.copy()
     detection_entity['status'] = detection_status
     mocker.patch('CrowdStrikeFalcon.get_detections_entities', return_value={'resources': [detection_entity]})
-    mocker.patch.object(demisto, 'params', return_value={'close_incident': close_incident})
+    reopen_statuses = 'New,In progress,True positive,False positive,Reopened,Ignored'
+    mocker.patch.object(demisto, 'params', return_value={'close_incident': close_incident, 'reopen_statuses': reopen_statuses})
 
     result = get_remote_data_command({'id': remote_id, 'lastUpdate': '2022-03-08T08:17:09Z'})
     assert result.mirrored_object == mirrored_object
@@ -4126,7 +4205,7 @@ def test_find_incident_type():
     """
     from CrowdStrikeFalcon import find_incident_type, IncidentType
     assert find_incident_type(input_data.remote_incident_id) == IncidentType.INCIDENT
-    assert find_incident_type(input_data.remote_detection_id) == IncidentType.DETECTION
+    assert find_incident_type(input_data.remote_detection_id) == IncidentType.LEGACY_ENDPOINT_DETECTION
     assert find_incident_type('') is None
 
 
@@ -4159,6 +4238,7 @@ def test_get_remote_detection_data(mocker):
     Then
         - returns the relevant detection entity from the remote system with the relevant incoming mirroring fields
     """
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', True)
     from CrowdStrikeFalcon import get_remote_detection_data
     detection_entity = input_data.response_detection.copy()
     mocker.patch('CrowdStrikeFalcon.get_detections_entities', return_value={'resources': [detection_entity.copy()]})
@@ -4174,8 +4254,77 @@ def test_get_remote_detection_data(mocker):
                               'behaviors.display_name': 'SampleTemplateDetection'}
 
 
+def test_get_remote_detection_data_for_multiple_types__idp(mocker):
+    """
+    Given
+        - an idp detection ID on the remote system
+    When
+        - running get_remote_data_command with changes to make on a detection
+    Then
+        - returns the relevant detection entity from the remote system with the relevant incoming mirroring fields
+    """
+    from CrowdStrikeFalcon import get_remote_detection_data_for_multiple_types
+    detection_entity = input_data.response_idp_detection.copy()
+    mocker.patch('CrowdStrikeFalcon.get_detection_entities', return_value={'resources': [detection_entity.copy()]})
+    mocker.patch.object(demisto, 'debug', return_value=None)
+    mirrored_data, updated_object, detection_type = get_remote_detection_data_for_multiple_types(
+        input_data.remote_idp_detection_id)
+    detection_entity['severity'] = 2
+    assert mirrored_data == detection_entity
+    assert detection_type == 'IDP'
+    assert updated_object == {'incident_type': 'IDP detection',
+                              'status': 'closed',
+                              'id': 'ind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56'}
+
+
+def test_get_remote_detection_data_for_multiple_types__mobile_detection(mocker):
+    """
+    Given
+        - an idp detection ID on the remote system
+    When
+        - running get_remote_data_command with changes to make on a detection
+    Then
+        - returns the relevant detection entity from the remote system with the relevant incoming mirroring fields
+    """
+    from CrowdStrikeFalcon import get_remote_detection_data_for_multiple_types
+    detection_entity = input_data.response_mobile_detection.copy()
+    mocker.patch('CrowdStrikeFalcon.get_detection_entities', return_value={'resources': [detection_entity.copy()]})
+    mocker.patch.object(demisto, 'debug', return_value=None)
+    mirrored_data, updated_object, detection_type = get_remote_detection_data_for_multiple_types(
+        input_data.remote_mobile_detection_id)
+    detection_entity['severity'] = 90
+    assert mirrored_data == detection_entity
+    assert detection_type == 'Mobile'
+    assert updated_object == {'incident_type': 'MOBILE detection',
+                              'status': 'new',
+                              'mobile_detection_id': '1111111111111111111'}
+
+
+def test_get_remote_detection_data_for_multiple_types__endpoint_detection(mocker):
+    """
+    Given
+        - an endpoint detection ID on the remote system
+    When
+        - running get_remote_data_command with changes to make on a detection
+    Then
+        - returns the relevant detection entity from the remote system with the relevant incoming mirroring fields
+    """
+    from CrowdStrikeFalcon import get_remote_detection_data_for_multiple_types
+    detection_entity = input_data.response_detection_new_version.copy()
+    mocker.patch('CrowdStrikeFalcon.get_detection_entities', return_value={'resources': [detection_entity.copy()]})
+    mocker.patch.object(demisto, 'debug', return_value=None)
+    mirrored_data, updated_object, detection_type = get_remote_detection_data_for_multiple_types(
+        input_data.remote_detection_id_new_version)
+    detection_entity['severity'] = 90
+    assert mirrored_data == detection_entity
+    assert detection_type == 'Detection'
+    assert updated_object == {'incident_type': 'detection',
+                              'status': 'new',
+                              'severity': 90}
+
+
 @pytest.mark.parametrize('updated_object, entry_content, close_incident', input_data.set_xsoar_incident_entries_args)
-def test_set_xsoar_incident_entries(mocker, updated_object, entry_content, close_incident):
+def test_set_xsoar_entries__incident(mocker, updated_object, entry_content, close_incident):
     """
     Given
         - the incident status from the remote system
@@ -4185,33 +4334,134 @@ def test_set_xsoar_incident_entries(mocker, updated_object, entry_content, close
     Then
         - adds the relevant entry (closure/reopen) to the entries
     """
-    from CrowdStrikeFalcon import set_xsoar_incident_entries
+    from CrowdStrikeFalcon import set_xsoar_entries
     mocker.patch.object(demisto, 'params', return_value={'close_incident': close_incident})
+    mocker.patch.object(demisto, 'debug', return_value=None)
     entries = []
-    set_xsoar_incident_entries(updated_object, entries, input_data.remote_incident_id)
+    reopen_statuses = ['New', 'Reopened', 'In Progress']
+    set_xsoar_entries(updated_object, entries, input_data.remote_incident_id, "Incident", reopen_statuses)
     if entry_content:
         assert entry_content in entries[0].get('Contents')
     else:
         assert entries == []
 
 
-@pytest.mark.parametrize('updated_object, entry_content, close_incident', input_data.set_xsoar_detection_entries_args)
-def test_set_xsoar_detection_entries(mocker, updated_object, entry_content, close_incident):
+@pytest.mark.parametrize('updated_object', input_data.check_reopen_set_xsoar_incident_entries_args)
+def test_set_xsoar_entries__reopen(mocker, updated_object):
     """
     Given
-        - the detection status from the remote system
+        - the incident status from the remote system
         - the close_incident parameter that was set when setting the integration
+        - the reopen statuses set.
+    When
+        - running get_remote_data_command with changes to make on an incident
+    Then
+        - add the relevant entries only if the status is Reopened.
+    """
+    from CrowdStrikeFalcon import set_xsoar_entries
+    mocker.patch.object(demisto, 'params', return_value={'close_incident': True})
+    mocker.patch.object(demisto, 'debug', return_value=None)
+    entries = []
+    reopen_statuses = ['Reopened']  # Add a reopen entry only if the status in CS Falcon is reopened
+    set_xsoar_entries(updated_object, entries, input_data.remote_incident_id, 'Incident', reopen_statuses)
+    if updated_object.get('status') == 'Reopened':
+        assert 'dbotIncidentReopen' in entries[0].get('Contents')
+    else:
+        assert entries == []
+
+
+@pytest.mark.parametrize('updated_object', input_data.check_reopen_set_xsoar_incident_entries_args)
+def test_set_xsoar_entries__empty(mocker, updated_object):
+    """
+    Given
+        - the incident status from the remote system
+        - the close_incident parameter that was set when setting the integration
+        - empty reopen statuses set.
+    When
+        - running get_remote_data_command with reopen_statuses = []
+    Then
+        - A reopen entry wasn't added in any case.
+    """
+    from CrowdStrikeFalcon import set_xsoar_entries
+    mocker.patch.object(demisto, 'params', return_value={'close_incident': True})
+    mocker.patch.object(demisto, 'debug', return_value=None)
+    entries = []
+    reopen_statuses = []  # don't add a reopen entry in any case
+    set_xsoar_entries(updated_object, entries, input_data.remote_incident_id, 'Incident', reopen_statuses)
+    assert entries == []
+
+
+@pytest.mark.parametrize('updated_object', input_data.check_reopen_set_xsoar_detections_entries_args)
+def test_set_xsoar_detection_entries_empty_check(mocker, updated_object):
+    """
+    Given
+        - the incident status from the remote system
+        - the close_incident parameter that was set when setting the integration
+        - empty reopen statuses set.
     When
         - running get_remote_data_command with changes to make on a detection
     Then
-        - adds the relevant entry (closure/reopen) to the entries
+        - add the relevant entries only if the status is Reopened.
     """
-    from CrowdStrikeFalcon import set_xsoar_detection_entries
-    mocker.patch.object(demisto, 'params', return_value={'close_incident': close_incident})
+    from CrowdStrikeFalcon import set_xsoar_entries
+    mocker.patch.object(demisto, 'params', return_value={'close_incident': True})
+    mocker.patch.object(demisto, 'debug', return_value=None)
     entries = []
-    set_xsoar_detection_entries(updated_object, entries, input_data.remote_incident_id)
-    if entry_content:
-        assert entry_content in entries[0].get('Contents')
+    reopen_statuses = []  # don't add a reopen entry in any case
+    set_xsoar_entries(updated_object, entries, input_data.remote_detection_id, 'Detection', reopen_statuses)
+    assert entries == []
+
+
+@pytest.mark.parametrize('updated_object', input_data.set_xsoar_idp_or_mobile_detection_entries)
+def test_set_xsoar_entries___idp_or_mobile_detection(mocker, updated_object):
+    """
+    Given
+        - the incident status from the remote system
+        - the close_incident parameter that was set when setting the integration
+        - the reopen statuses set.
+    When
+        - running get_remote_data_command with changes to make on a detection
+    Then
+        - add the relevant entries only if the status is Reopened.
+    """
+    from CrowdStrikeFalcon import set_xsoar_entries
+    mocker.patch.object(demisto, 'params', return_value={'close_incident': True})
+    mocker.patch.object(demisto, 'debug', return_value=None)
+    entries = []
+    reopen_statuses = ['Reopened']  # Add a reopen entry only if the status in CS Falcon is reopened
+    set_xsoar_entries(updated_object, entries, input_data.remote_idp_detection_id, 'IDP', reopen_statuses)
+    if updated_object.get('status') == 'reopened':
+        assert 'dbotIncidentReopen' in entries[0].get('Contents')
+    elif updated_object.get('status') == 'closed':
+        assert 'dbotIncidentClose' in entries[0].get('Contents')
+        assert 'closeReason' in entries[0].get('Contents')
+        assert entries[0].get('Contents', {}).get('closeReason') == 'IDP was closed on CrowdStrike Falcon'
+    else:
+        assert entries == []
+
+
+@pytest.mark.parametrize('updated_object', input_data.set_xsoar_idp_or_mobile_detection_entries)
+def test_set_xsoar_entries__empty_reopen_statuses(mocker, updated_object):
+    """
+    Given
+        - the incident status from the remote system
+        - the close_incident parameter that was set when setting the integration
+        - empty reopen statuses set.
+    When
+        - running get_remote_data_command with changes to make on a detection
+    Then
+        - add the relevant entries.
+    """
+    from CrowdStrikeFalcon import set_xsoar_entries
+    mocker.patch.object(demisto, 'params', return_value={'close_incident': True})
+    mocker.patch.object(demisto, 'debug', return_value=None)
+    entries = []
+    reopen_statuses = []  # don't add a reopen entry in any case
+    set_xsoar_entries(updated_object, entries, input_data.remote_idp_detection_id, 'IDP', reopen_statuses)
+    if updated_object.get('status') == 'closed':
+        assert 'dbotIncidentClose' in entries[0].get('Contents')
+        assert 'closeReason' in entries[0].get('Contents')
+        assert entries[0].get('Contents', {}).get('closeReason') == 'IDP was closed on CrowdStrike Falcon'
     else:
         assert entries == []
 
@@ -4243,6 +4493,7 @@ def test_get_modified_remote_data_command(mocker):
     Then
         - returns a list of incidents, detections, and idp detections IDs that were modified since the lastUpdate time
     """
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', True)
     from CrowdStrikeFalcon import get_modified_remote_data_command
     mock_get_incidents = mocker.patch('CrowdStrikeFalcon.get_incidents_ids',
                                       return_value={'resources': [input_data.remote_incident_id]})
@@ -4257,6 +4508,26 @@ def test_get_modified_remote_data_command(mocker):
 
 @pytest.mark.parametrize('status',
                          ['new', 'in_progress', 'true_positive', 'false_positive', 'ignored', 'closed', 'reopened'])
+def test_update_detection_request_good__legacy(mocker, status):
+    """
+    Given
+        - list of detections IDs
+        - status to change for the given detection in the remote system, which is one of the permitted statuses
+    When
+        - running update_remote_system_command
+    Then
+        - the resolve_detection command is called successfully with the right arguments
+    """
+    from CrowdStrikeFalcon import update_detection_request
+    mock_resolve_detection = mocker.patch('CrowdStrikeFalcon.resolve_detection')
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', True)
+    update_detection_request([input_data.remote_detection_id], status)
+    assert mock_resolve_detection.call_args[1]['ids'] == [input_data.remote_detection_id]
+    assert mock_resolve_detection.call_args[1]['status'] == status
+
+
+@pytest.mark.parametrize('status',
+                         ['new', 'in_progress', 'closed', 'reopened'])
 def test_update_detection_request_good(mocker, status):
     """
     Given
@@ -4269,13 +4540,14 @@ def test_update_detection_request_good(mocker, status):
     """
     from CrowdStrikeFalcon import update_detection_request
     mock_resolve_detection = mocker.patch('CrowdStrikeFalcon.resolve_detection')
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', False)
     update_detection_request([input_data.remote_detection_id], status)
     assert mock_resolve_detection.call_args[1]['ids'] == [input_data.remote_detection_id]
     assert mock_resolve_detection.call_args[1]['status'] == status
 
 
 @pytest.mark.parametrize('status', ['other', ''])
-def test_update_detection_request_bad(status):
+def test_update_detection_request_bad__lagacy(status):
     """
     Given
         - list of detections IDs
@@ -4286,6 +4558,25 @@ def test_update_detection_request_bad(status):
         - an exception is raised
     """
     from CrowdStrikeFalcon import update_detection_request
+    with pytest.raises(DemistoException) as de:
+        update_detection_request([input_data.remote_detection_id], status)
+    assert 'CrowdStrike Falcon Error' in str(de.value)
+
+
+@pytest.mark.parametrize('status', ['true_positive', ''])
+def test_update_detection_request_bad(status, mocker):
+    """
+    Given
+        - list of detections IDs
+        - status to change for the given detection in the remote system, which is not one of the permitted statuses
+            'true_positive' is not a valid status for the new version of the API
+    When
+        - running update_remote_system_command
+    Then
+        - an exception is raised
+    """
+    from CrowdStrikeFalcon import update_detection_request
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', False)
     with pytest.raises(DemistoException) as de:
         update_detection_request([input_data.remote_detection_id], status)
     assert 'CrowdStrike Falcon Error' in str(de.value)
@@ -4455,21 +4746,45 @@ def test_remote_incident_handle_tags(mocker, tags, action_name):
         assert mock_update_incident_request.call_args_list[0].kwargs['json']['action_parameters'][0]['name'] == action_name
 
 
-def test_get_mapping_fields_command():
+def test_get_mapping_fields_command(mocker):
     """
     Given
         - nothing
     When
-        - running get_mapping_fields_command
+        - running get_mapping_fields_command on the new version of the API
     Then
         - the result fits the expected mapping scheme
     """
     from CrowdStrikeFalcon import get_mapping_fields_command
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', False)
     result = get_mapping_fields_command()
     assert result.scheme_types_mappings[0].type_name == 'CrowdStrike Falcon Incident'
     assert result.scheme_types_mappings[0].fields.keys() == {'status', 'tag'}
     assert result.scheme_types_mappings[1].type_name == 'CrowdStrike Falcon Detection'
     assert result.scheme_types_mappings[1].fields.keys() == {'status'}
+    assert result.scheme_types_mappings[2].type_name == 'CrowdStrike Falcon OFP Detection'
+    assert result.scheme_types_mappings[2].fields.keys() == {'status'}
+    assert result.scheme_types_mappings[3].type_name == 'CrowdStrike Falcon On-Demand Scans Detection'
+    assert result.scheme_types_mappings[3].fields.keys() == {'status'}
+
+
+def test_get_mapping_fields_command__legacy(mocker):
+    """
+    Given
+        - nothing
+    When
+        - running get_mapping_fields_command on the legacy version of the API
+    Then
+        - the result fits the expected mapping scheme
+    """
+    from CrowdStrikeFalcon import get_mapping_fields_command
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', True)
+    result = get_mapping_fields_command()
+    assert result.scheme_types_mappings[0].type_name == 'CrowdStrike Falcon Incident'
+    assert result.scheme_types_mappings[0].fields.keys() == {'status', 'tag'}
+    assert result.scheme_types_mappings[1].type_name == 'CrowdStrike Falcon Detection - LAGACY'
+    assert result.scheme_types_mappings[1].fields.keys() == {'status'}
+    assert len(result.scheme_types_mappings) == 2
 
 
 def test_error_in_get_detections_by_behaviors(mocker):
@@ -4543,10 +4858,10 @@ ARGS_vulnerability = [
                         "impact_score": 1.4}}
          ]
          },
-        '### List Vulnerabilities\n' \
-        '|ID|Severity|Status|Base Score|Published Date|Impact Score|Exploitability Score|\n' \
-        '|---|---|---|---|---|---|---|\n' \
-        '| cveid1 | LOW | open | 3.3 | 2021-09-15T12:15:00Z |  |  |\n' \
+        '### List Vulnerabilities\n'
+        '|ID|Severity|Status|Base Score|Published Date|Impact Score|Exploitability Score|\n'
+        '|---|---|---|---|---|---|---|\n'
+        '| cveid1 | LOW | open | 3.3 | 2021-09-15T12:15:00Z |  |  |\n'
         '| idcve4 |  | open |  | 2022-10-11T19:15:00Z | 1.4 | 1.8 |\n'  # args list
 
     )
@@ -5913,23 +6228,33 @@ class TestCSFalconCSPMUpdatePolicySettingsCommand:
 
 
 class TestCSFalconResolveIdentityDetectionCommand:
-    def test_http_request_arguments(self, mocker: MockerFixture):
+    @pytest.mark.parametrize('Legacy_version, url_suffix, ids_request_key', [
+        (False, '/alerts/entities/alerts/v3', 'composite_ids'),
+        (True, '/alerts/entities/alerts/v2', 'ids')])
+    def test_http_request_arguments(self, mocker: MockerFixture, Legacy_version, url_suffix, ids_request_key):
         """
         Given:
             - Arguments for the cs-falcon-resolve-identity-detection command.
+            case 1: Legacy_version is False
+            case 2: Legacy_version is True
         When
             - Making a http request.
         Then
             - Validate that the arguments are mapped correctly to the json body.
+            - Validate the url_suffix and the ids_request_key according to the Legacy_version value:
+                case 1: url_suffix should be '/alerts/entities/alerts/v3' and the ids_request_key should be 'composite_ids'
+                case 2: url_suffix should be '/alerts/entities/alerts/v2' and the ids_request_key should be 'ids'
         """
         from CrowdStrikeFalcon import resolve_detections_request
+        mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', Legacy_version)
         http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
         ids = ['1,2']
         action_param_values = {'update_status': 'new', 'assign_to_name': 'bot'}
         action_params_http_body = [{'name': 'update_status', 'value': 'new'}, {'name': 'assign_to_name', 'value': 'bot'}]
         resolve_detections_request(ids=ids, **action_param_values)
+        assert http_request_mocker.call_args_list[0][1].get('url_suffix') == url_suffix
         assert http_request_mocker.call_args_list[0][1].get('json') == {'action_parameters': action_params_http_body,
-                                                                        'ids': ids}
+                                                                        ids_request_key: ids}
 
     def test_resolve_identity_detection(self, mocker: MockerFixture):
         """
@@ -6777,6 +7102,122 @@ def test_http_request(mocker):
     assert mock_request_get_token.call_count == 2
 
 
+def test_http_request_get_token_request(mocker):
+    """
+    Given:
+        - arguments of a http_request send by get_token_request()
+    When:
+        - requesting a new token
+    Then:
+        - validate that the correct arguments were sent
+    """
+    from requests import Response
+    from CrowdStrikeFalcon import http_request
+    res_200 = Response()
+    res_200.status_code = 200
+    mock_request_generic_http_request = mocker.patch('CrowdStrikeFalcon.generic_http_request', side_effect=[res_200])
+    mocker.patch.object(
+        demisto,
+        'params',
+        return_value={
+            'url': SERVER_URL,
+            'proxy': True
+        }
+    )
+    body = {
+        'client_id': 'client_id',
+        'client_secret': 'client_secret'
+    }
+    retries = 5
+    status_list_to_retry = [429]
+    valid_status_codes = [200, 201, 202, 204]
+    int_timeout = 60
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    method = 'POST'
+    url_suffix = '/oauth2/token'
+    http_request(url_suffix=url_suffix,
+                 method=method,
+                 data=body,
+                 get_token_flag=False,
+                 headers=headers,
+                 no_json=True)
+    headers['User-Agent'] = 'PANW-XSOAR'
+    assert mock_request_generic_http_request.call_count == 1
+    mock_request_generic_http_request.assert_called_with(
+        method=method,
+        server_url=SERVER_URL,
+        headers=headers,
+        url_suffix=url_suffix,
+        data=body,
+        files=ANY,
+        params=ANY,
+        proxy=ANY,
+        resp_type='response',
+        verify=True,
+        error_handler=ANY,
+        json_data=ANY,
+        timeout=int_timeout,
+        ok_codes=valid_status_codes,
+        retries=retries,
+        status_list_to_retry=status_list_to_retry)
+
+
+def test_http_request_get_token_request_429(mocker, requests_mock):
+    """
+    Given:
+        - arguments of a http_request send by get_token_request()
+    When:
+        - requesting a new token
+    Then:
+        - Validate that in case of 429 error code when trying to create a new token won't return None at the end of http_request,
+            but raise an exception with the relevant error.
+    """
+    from CrowdStrikeFalcon import http_request
+
+    requests_mock.post(
+        f'{SERVER_URL}/oauth2/token',
+        json={
+            "meta": {
+                "query_time": 0.000875986,
+                "powered_by": "crowdstrike-api-gateway",
+                "trace_id": "trace_id"
+            },
+            "errors": [
+                {
+                    "code": 429,
+                    "message": "API rate limit exceeded."
+                }
+            ]
+        },
+        status_code=429
+    )
+    mocker.patch.object(
+        demisto,
+        'params',
+        return_value={
+            'url': SERVER_URL,
+            'proxy': True
+        }
+    )
+    mock_request_generic_http_request = mocker.patch('CrowdStrikeFalcon.generic_http_request')
+    mock_request_error_handler = mocker.patch('CrowdStrikeFalcon.error_handler')
+    body = {
+        'client_id': 'client_id',
+        'client_secret': 'client_secret'
+    }
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    method = 'POST'
+    url_suffix = '/oauth2/token'
+    http_request(url_suffix=url_suffix,
+                 method=method,
+                 data=body,
+                 get_token_flag=False,
+                 headers=headers,
+                 no_json=True)
+    assert mock_request_generic_http_request.call_count == 1
+    assert mock_request_error_handler.call_count == 1
+
+
 class ResMocker:
     def __init__(self, http_response, status_code, reason):
         self.http_response = http_response
@@ -6819,3 +7260,368 @@ def test_error_handler():
         error_handler(arg_res)
     except DemistoException as e:
         assert e.message == f'Error in API call to CrowdStrike Falcon: code: {status_code} - reason: {reason}'
+
+
+@pytest.mark.parametrize('Legacy_version, url_suffix, expected_len', [
+    (False,
+     "alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27%2Bcreated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27",
+     3),
+    (True, '/detects/queries/detects/v1', 3)
+])
+def test_get_detection___url_and_params(mocker, Legacy_version, url_suffix, expected_len):
+    """
+    Given:
+    - The `Legacy_version` flag
+When:
+    - Invoking `get_fetch_detections` with various input parameters
+Then:
+    - Verify that the correct `url_suffix` is used
+
+Test Scenarios:
+    1. When `Legacy_version` is False, the `url_suffix` should be:
+       "alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27%2Bcreated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27"
+       since all parameters are part of the URL and are URL-encoded, and the expected len should be 2 since no parameters
+       are passed.
+    2. When `Legacy_version` is True, the `url_suffix` should be:
+       "/detects/queries/detects/v1" and the expected len is 3 since all the provided parameters are passed under 'parameters'.
+    """
+    from CrowdStrikeFalcon import get_detections
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', Legacy_version)
+    http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
+
+    get_detections(last_behavior_time='2024-06-19T15:25:00Z', behavior_id=123,
+                   filter_arg="created_timestamp:>'2024-06-19T15:25:00Z'")
+    assert http_request_mocker.call_args_list[0][0][1] == url_suffix
+    assert len(http_request_mocker.call_args_list[0][0]) == expected_len
+
+
+@pytest.mark.parametrize('Legacy_version, tag, url_suffix, data', [
+    (False, "test_tag", "/alerts/entities/alerts/v3",
+     '{"action_parameters": [{"name": "show_in_ui", "value": "True"}, {"name": "assign_to_uuid", "value": "123"}, {"name": "update_status", "value": "resolved"}, {"name": "append_comment", "value": "comment"}, {"name": "add_tag", "value": "test_tag"}], "composite_ids": ["123"]}'),  # noqa: E501
+    (True, None, '/detects/entities/detects/v2',
+     '{"ids": ["123"], "status": "resolved", "assigned_to_uuid": "123", "show_in_ui": "True", "comment": "comment"}')
+                                                             ])
+def test_resolve_detection(mocker, Legacy_version, tag, url_suffix, data):
+    """
+    Given:
+        - The Legacy_version flag
+    When:
+        - Running resolve_detection
+    Then:
+        - Validate that the correct url_suffix is used
+            case 1: Legacy_version is False, the url_suffix should be alerts/entities/alerts/v2
+            case 2: Legacy_version is True, the url_suffix should be /detects/entities/detects/v1
+    """
+    from CrowdStrikeFalcon import resolve_detection
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', Legacy_version)
+    http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
+
+    resolve_detection(ids=["123"], status="resolved", assigned_to_uuid="123", show_in_ui="True", comment="comment", tag=tag)
+    assert http_request_mocker.call_args_list[0][0][1] == url_suffix
+    assert http_request_mocker.call_args_list[0][1]["data"] == data
+
+
+@pytest.mark.parametrize('Legacy_version, url_suffix, request_params', [
+    (False,
+     "/alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27%2Bupdated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27",
+     {'sort': 'created_timestamp.asc', 'offset': 5, 'limit': 3}),
+    (True, '/detects/queries/detects/v1', {'sort': 'first_behavior.asc',
+     'offset': 5, 'limit': 3, 'filter': "date_updated:>'2024-06-19T15:25:00Z'"})
+])
+def test_get_fetch_detections__url(mocker, Legacy_version, url_suffix, request_params):
+    """
+    Given:
+        - The `Legacy_version` flag
+    When:
+        - Invoking `get_fetch_detections` with various input parameters
+    Then:
+        - Verify that the correct `url_suffix` is used and the input parameters are correctly passed
+
+    Test Scenarios:
+        1. When `Legacy_version` is False, the `url_suffix` should be:
+        '/alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27%2Bupdated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27'
+        All parameters (except 'limit') are part of the URL and are URL-encoded.
+        2. When `Legacy_version` is True, the `url_suffix` should be "/detects/queries/detects/v1"
+        All the provided parameters are passed under 'parameters'.
+    """
+    from CrowdStrikeFalcon import get_fetch_detections
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', Legacy_version)
+    http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
+
+    get_fetch_detections(filter_arg=None, offset=5,
+                         last_updated_timestamp='2024-06-19T15:25:00Z',
+                         has_limit=True, limit=3)
+
+    assert http_request_mocker.call_args_list[0][0][1] == url_suffix
+    assert http_request_mocker.call_args_list[0][0][2] == request_params
+
+
+@pytest.mark.parametrize('Legacy_version, expected_output', [
+    (False, [{'status': 'open', 'max_severity': 'critical', 'detection_id': '123', 'created_time': '2022-01-01T00:00:00Z'}]),
+    (True, [{'status': 'open', 'max_severity': 'high', 'detection_id': '123', 'created_time': '2022-01-01T00:00:00Z'}])])
+def test_detections_to_human_readable(mocker, expected_output, Legacy_version):
+    """
+    Given:
+        - The Legacy_version flag
+    When:
+        - Running detections_to_human_readable
+    Then:
+        - Validate that the correct output is returned based on the Legacy_version flag
+    """
+    from CrowdStrikeFalcon import detections_to_human_readable
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', Legacy_version)
+    mock_table_to_markdown = mocker.patch('CrowdStrikeFalcon.tableToMarkdown')
+    input = {'status': 'open', 'max_severity_displayname': 'high', 'detection_id': '123',
+             'created_timestamp': '2022-01-01T00:00:00Z', 'severity_name': 'critical'},
+    detections_to_human_readable(input)
+
+    assert mock_table_to_markdown.call_args[0][1] == expected_output
+
+
+def test_modify_detection_summaries_outputs():
+    """
+    Given:
+        - A detection dictionary
+    When:
+        - Running modify_detection_summaries_outputs
+    Then:
+        - Validate that the output is correctly modified
+    """
+    from CrowdStrikeFalcon import modify_detection_summaries_outputs
+
+    detection = {
+        "pattern_disposition_details": "details",
+        "timestamp": "time",
+        "device": {"device_id": "device1", "hostinfo": "info"},
+        "filename": "file",
+        "cmdline": "cmd",
+        "pattern_disposition": "disposition",
+        "parent_details": {"sha256": "parent_sha256_test", "cmdline": "parent_cmd_test",
+                           "md5": "parent_md5_test", "process_graph_id": "parent_id_test"},
+        "composite_id": "composite"
+    }
+
+    modified_detection = modify_detection_summaries_outputs(detection)
+
+    assert modified_detection["behaviors"]["device_id"] == "device1"
+    assert modified_detection["behaviors"]["filename"] == "file"
+    assert modified_detection["hostinfo"] == "info"
+    assert modified_detection["detection_id"] == "composite"
+    assert modified_detection["behaviors"]["parent_details"]["parent_sha256"] == "parent_sha256_test"
+    assert modified_detection["behaviors"]["parent_details"]["parent_cmdline"] == "parent_cmd_test"
+    assert modified_detection["behaviors"]["parent_details"]["parent_md5"] == "parent_md5_test"
+    assert modified_detection["behaviors"]["timestamp"] == "time"
+
+
+def test_truncate_long_time_str():
+    """
+    Given:
+        - A list of detections
+    When:
+        - Running truncate_long_time_str
+    Then:
+        - Validate that the time string is correctly truncated to 6 digits after the dot
+    """
+    from CrowdStrikeFalcon import truncate_long_time_str
+
+    detections = [{"time": "2022-01-01T00:00:00.000000000000000000000000000Z"},
+                  {"time": "2022-01-01T00:00:00.000000Z"},
+                  {"time": "2022-01-01T00:00:00.000000000000000000000000000Z"},
+                  {"time": "2022-01-01T00:00:00Z"}
+                  ]
+    time_key = "time"
+
+    assert truncate_long_time_str(detections, time_key) == [{'time': '2022-01-01T00:00:00.000000Z'},
+                                                            {'time': '2022-01-01T00:00:00.000000Z'},
+                                                            {'time': '2022-01-01T00:00:00.000000Z'},
+                                                            {"time": "2022-01-01T00:00:00Z"}
+                                                            ]
+
+
+@pytest.mark.parametrize('Legacy_version, expected_url', [
+    (False, '/alerts/entities/alerts/v2'),
+    (True, '/detects/entities/summaries/GET/v1')
+])
+def test_get_detections_entities__url(mocker, Legacy_version, expected_url):
+    """
+    Given:
+        - The Legacy_version flag
+    When:
+        - Running get_detections_entities
+    Then:
+        - Validate that the correct url is used based on the Legacy_version flag
+    """
+    from CrowdStrikeFalcon import get_detections_entities
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', Legacy_version)
+    http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
+    get_detections_entities(["123"])
+    assert http_request_mocker.call_args_list[0][0][1] == expected_url
+
+
+@pytest.mark.parametrize('Legacy_version, expected_url, exepted_parameters', [
+    (False, '/alerts/queries/alerts/v2?filter=created_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27',
+     {'sort': 'created_timestamp.asc', 'offset': 0, 'limit': 2}),
+    (True, '/alerts/queries/alerts/v1',
+     {'sort': 'created_timestamp.asc', 'offset': 0, 'filter': "created_timestamp:>'2024-06-19T15:25:00Z'", 'limit': 2}
+     )
+])
+def test_get_detections_ids__url_and_params(mocker, Legacy_version, expected_url, exepted_parameters):
+    """
+    Given:
+        - The Legacy_version flag
+    When:
+        - Running get_detections_ids
+    Then:
+        - Validate that the correct url and params are sent based on the Legacy_version flag
+        case 1:
+            Legacy_version is False, the url_suffix should be:
+            '/alerts/queries/alerts/v2?filter=created_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27'
+            and the parameters are passed under are:
+            {'sort': 'created_timestamp.asc', 'offset': 0, 'limit': 2}
+        case 2:
+            Legacy_version is True, the url_suffix should be:
+            '/alerts/queries/alerts/v1'
+            and the parameters are passed under are:
+            {'sort': 'created_timestamp.asc', 'offset': 0, 'filter': "created_timestamp:>'2024-06-19T15:25:00Z'", 'limit': 2}
+
+
+    """
+    from CrowdStrikeFalcon import get_detections_ids
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', Legacy_version)
+    http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
+    get_detections_ids(filter_arg="created_timestamp:>'2024-06-19T15:25:00Z'")
+    assert http_request_mocker.call_args_list[0][0][1] == expected_url
+    assert http_request_mocker.call_args_list[0][0][2] == exepted_parameters
+
+
+def test_modify_detection_outputs(mocker):
+    """
+    Given:
+        - A detection dictionary
+    When:
+        - Running modify_detection_outputs
+    Then:
+        - Validate that the output is correctly modified
+    """
+    from CrowdStrikeFalcon import modify_detection_outputs
+    mocker.patch('CrowdStrikeFalcon.DETECTIONS_BEHAVIORS_KEY_MAP', {"key1": "value1", "key2": "value2"})
+
+    detection = {"key1": "value1", "key2": "value2", "key3": "value3", "parent_details": "details",
+                 "triggering_process_graph_id": "id", "testing": "test"}
+
+    assert modify_detection_outputs(detection) == {'key3': 'value3', 'testing': 'test',
+                                                   'behaviors': [{'key1': 'value1',
+                                                                  'key2': 'value2',
+                                                                  'parent_details': 'details',
+                                                                  'triggering_process_graph_id': 'id'}]}
+
+
+@pytest.mark.parametrize('Legacy_version, expected_results', [
+    (False, {'action_parameters': [{'name': 'key1', 'value': 'value1'}], 'composite_ids': ['123']}),
+    (True, {'action_parameters': [{'name': 'key1', 'value': 'value1'}], 'ids': ['123']})
+])
+def test_resolve_detections_prepare_body_request(mocker, Legacy_version, expected_results):
+    """
+    Given:
+        - The Legacy_version flag
+    When:
+        - Running resolve_detections_prepare_body_request
+    Then:
+        - Validate that the correct body is returned based on the Legacy_version flag
+    """
+    from CrowdStrikeFalcon import resolve_detections_prepare_body_request
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', Legacy_version)
+    assert resolve_detections_prepare_body_request(ids=["123"], action_params_values={"key1": "value1"}) == expected_results
+
+
+@pytest.mark.parametrize('Legacy_version, expected_url', [
+    (False, '/alerts/entities/alerts/v3'),
+    (True, '/alerts/entities/alerts/v2')
+])
+def test_resolve_detections_request__url(mocker, Legacy_version, expected_url):
+    """
+    Given:
+        - The Legacy_version flag
+    When:
+        - Running resolve_detections_request
+    Then:
+        - Validate that the correct url is used based on the Legacy_version flag
+    """
+    from CrowdStrikeFalcon import resolve_detections_request
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', Legacy_version)
+    http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
+    resolve_detections_request(ids=["123"])
+    assert http_request_mocker.call_args_list[0][1]['url_suffix'] == expected_url
+
+
+def test_get_status(mocker):
+    """
+    Given:
+        - Raw response of get_status_request
+    When:
+        - Running get_status command
+    Then:
+        - Validate that the contains the ids and state
+    """
+    import CrowdStrikeFalcon
+    device_ids = ["0bde2c4645294245aca522971ccc4567", "04a75a2d15b44a5995c9c17200ad1212", "046761c46ec84f40b27b6f79ce7c6543",
+                  "8ed44198a6f64f9fabd0479c30989876", "d4210a0957e640f18c237a2fa1141122"]
+
+    response = load_json('test_data/online_states_response.json')
+
+    mocker.patch.object(CrowdStrikeFalcon, 'http_request', return_value=response)
+
+    results = CrowdStrikeFalcon.get_status(device_ids)
+    assert len(results) == 5
+    assert results == {'0bde2c4645294245aca522971ccc4567': 'Online',
+                       '04a75a2d15b44a5995c9c17200ad1212': 'Online',
+                       '046761c46ec84f40b27b6f79ce7c6543': 'Online',
+                       '8ed44198a6f64f9fabd0479c30989876': 'Online',
+                       'd4210a0957e640f18c237a2fa1141122': 'Online'}
+
+
+def test_fix_time_field():
+    """
+    Given:
+        - A detection, a string representing the key of the time we want to fix.
+    When:
+        - Running fetch_incidents command
+    Then:
+        - Validate that the value of the given key in the detection was updated correctly.
+    """
+    from CrowdStrikeFalcon import fix_time_field
+    detection_1 = {
+        'created_timestamp': '2023-04-20T11:13:10.424647194Z'
+    }
+    detection_2 = {
+        'created_timestamp': '2023-04-20T11:13:10.424647Z'
+    }
+    detection_3 = {
+        'created_timestamp': '2023-04-20T11:13:10.424Z'
+    }
+
+    fix_time_field(detection_1, 'created_timestamp')
+    fix_time_field(detection_2, 'created_timestamp')
+    fix_time_field(detection_3, 'created_timestamp')
+
+    assert detection_1['created_timestamp'] == '2023-04-20T11:13:10.424647Z'
+    assert detection_2['created_timestamp'] == '2023-04-20T11:13:10.424647Z'
+    assert detection_3['created_timestamp'] == '2023-04-20T11:13:10.424Z'
+
+
+def test_enrich_groups_no_resources(mocker):
+    """
+    Given:
+        - A non exist group id.
+    When:
+        - Running enrich_groups.
+    Then:
+        - Validate that the result are empty and no exception raised.
+    """
+    import CrowdStrikeFalcon
+
+    group_ids = "test_group_id"
+
+    mocker.patch.object(CrowdStrikeFalcon, 'http_request', return_value={"resources": None})
+
+    assert CrowdStrikeFalcon.enrich_groups(group_ids) == {}

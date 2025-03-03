@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "<ul><li>Renamed incident type 'Review Indicators Manually For Whitelisting' to 'Review Indicators Manually For Allowlisting' in the 'TIM - Indicator Auto-Processing Pack', which is used by this pack. This will affect references to this content that may exist in custom content. As long as you update the 'TIM - Indicator Auto-Processing' pack as well, out-of-the-box content will not be affected.</li><ul>"
+}

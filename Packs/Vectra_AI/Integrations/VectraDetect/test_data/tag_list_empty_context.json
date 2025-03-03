@@ -1,0 +1,5 @@
+{
+    "Vectra.Account(val.ID && val.ID == obj.ID)": {
+        "ID": 5
+    }
+}

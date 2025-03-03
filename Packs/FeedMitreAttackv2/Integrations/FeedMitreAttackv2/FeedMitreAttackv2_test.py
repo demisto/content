@@ -3,11 +3,11 @@ import pytest
 from stix2 import TAXIICollectionSource, parse
 import demistomock as demisto  # noqa: F401
 from test_data.mitre_test_data import ATTACK_PATTERN, COURSE_OF_ACTION, INTRUSION_SET, MALWARE, TOOL, ID_TO_NAME, \
-    RELATION, STIX_TOOL, STIX_MALWARE, STIX_ATTACK_PATTERN, MALWARE_LIST_WITHOUT_PREFIX, MALWARE_LIST_WITH_PREFIX, \
+    RELATION, MALWARE_LIST_WITHOUT_PREFIX, MALWARE_LIST_WITH_PREFIX, \
     INDICATORS_LIST, NEW_INDICATORS_LIST, MITRE_ID_TO_MITRE_NAME, OLD_ID_TO_NAME, NEW_ID_TO_NAME, RELATIONSHIP_ENTITY, \
     CAMPAIGN, ATTACK_PATTERNS
 
-ENTERPRISE_COLLECTION_ID = '95ecc380-afe9-11e4-9b6c-751b66dd541e'
+ENTERPRISE_COLLECTION_ID = '	x-mitre-collection–1f5f1533-f617-4ca8-9ab4-6a02367fa019'
 NON_ENTERPRISE_COLLECTION_ID = '101010101010101010101010101010101'
 
 
@@ -45,15 +45,18 @@ def test_fetch_indicators(mocker, indicator, expected_result):
     import FeedMitreAttackv2 as fm
     from FeedMitreAttackv2 import Client, create_relationship
     client = Client(url="https://test.org", proxies=False, verify=False, tags=[], tlp_color=None)
+    client.tactic_name_to_mitre_id = {"Defense Evasion": "TA0005",
+                                      "Privilege Escalation": "TA0004",
+                                      "Resource Development": "TA0042"}
 
     default_id = ENTERPRISE_COLLECTION_ID
     nondefault_id = 2
-    client.collections = [MockCollection(default_id, 'default'), MockCollection(nondefault_id, 'not_default')]
+    client.collections = [MockCollection(default_id, 'enterprise att&ck'), MockCollection(nondefault_id, 'not_default')]
     mocker.patch.object(client, 'initialise')
 
     mocker.patch.object(TAXIICollectionSource, "__init__", return_value=None)
     mocker.patch.object(TAXIICollectionSource, 'query', return_value=indicator)
-    mocker.patch.object(json, 'loads', return_value=indicator[0])
+    # mocker.patch.object(json, 'loads', return_value=indicator[0])
     mocker.patch.object(fm, 'create_relationship', wraps=mock_create_relations(create_relationship))
 
     indicators = client.build_iterator(create_relationships=True, limit=7)
@@ -118,9 +121,6 @@ def test_is_indicator_deprecated_or_revoked(indicator, expected_result):
     ('Intrusion Set', INTRUSION_SET.get('response'), INTRUSION_SET.get('map_result')),
     ('Malware', MALWARE.get('response'), MALWARE.get('map_result')),
     ('Tool', TOOL.get('response'), TOOL.get('map_result')),
-    ('STIX Tool', STIX_TOOL.get('response'), STIX_TOOL.get('map_result')),
-    ('STIX Malware', STIX_MALWARE.get('response'), STIX_MALWARE.get('map_result')),
-    ('STIX Attack Pattern', STIX_ATTACK_PATTERN.get('response'), STIX_ATTACK_PATTERN.get('map_result')),
     ('Campaign', CAMPAIGN.get('response'), CAMPAIGN.get('map_result')),
 ])
 def test_map_fields_by_type(indicator_type, indicator_json, expected_result):
@@ -270,6 +270,55 @@ def test_attack_pattern_reputation_command(mocker):
 
     assert command_results[0].indicator.value == 'Abuse Elevation Control Mechanism'
     assert command_results[1].indicator.value == 'Active Scanning: Wordlist Scanning'
+
+
+def test_attack_pattern_reputation_without_answer_command(mocker):
+    """
+    Given:
+        One attach pattern to retrive data on, that is not found in the collection
+
+    When:
+        Running attack-pattern reputation command
+
+    Then:
+        Ensures the command_results is not empty and readable_output is as expected
+    """
+    from FeedMitreAttackv2 import attack_pattern_reputation_command
+
+    stix_objs = [parse(stix_obj_dict, allow_custom=True) for stix_obj_dict in ATTACK_PATTERNS]
+    mocker.patch('FeedMitreAttackv2.get_mitre_data_by_filter', return_value=stix_objs)
+
+    args = {'attack_pattern': 'dummy attack pattern'}
+    command_results = attack_pattern_reputation_command('', args)
+
+    assert command_results
+    assert command_results.readable_output == "MITRE ATTACK Attack Patterns values: No Attack " \
+                                              "Patterns found for ['dummy attack pattern'] in the Enterprise collection."
+
+
+def test_get_mitre_value_from_id_without_answer_command(mocker):
+    """
+    Given:
+        One attach pattern to retrive data on, that is not found in the collection
+
+    When:
+        Running attack-pattern reputation command
+
+    Then:
+        Ensures the command_results is not empty and readable_output is as expected
+    """
+    from FeedMitreAttackv2 import get_mitre_value_from_id
+
+    stix_objs = [parse(stix_obj_dict, allow_custom=True) for stix_obj_dict in ATTACK_PATTERNS]
+    mocker.patch('FeedMitreAttackv2.get_mitre_data_by_filter', return_value=stix_objs)
+
+    args = {'attack_ids': ['dummy attack pattern id']}
+    command_results = get_mitre_value_from_id('', args)
+
+    assert command_results
+    assert command_results.readable_output == "MITRE ATTACK Attack Patterns values: " \
+                                              "No Attack Patterns found for ['dummy attack pattern id'] in the " \
+                                              "Enterprise collection."
 
 
 @pytest.mark.parametrize('description, expected_result', [

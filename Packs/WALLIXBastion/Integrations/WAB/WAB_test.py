@@ -2,10 +2,172 @@ from WAB import main, Client
 import demistomock as demisto
 from CommonServerPython import *
 from typing import Any
+import yaml
+from os import path
 
 
 class Settable:
     pass
+
+
+def load_commands() -> List[str]:
+    yml_path = path.join(path.dirname(__file__), "WAB.yml")
+
+    with open(yml_path) as wab_yml:
+        commands = yaml.safe_load(wab_yml)["script"]["commands"]
+
+    assert len(commands) > 0
+
+    return [cm["name"] for cm in commands]
+
+
+command_names = load_commands()
+
+
+class Counter:
+    def __init__(self) -> None:
+        self.count = 0
+
+
+def test_timeout(mocker):
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "timeout": "0"
+        },
+    )
+    try:
+        main()
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("zero timeout should not be allowed")
+
+
+def test_test_module(mocker):
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(demisto, "args", return_value={})
+    results_mock = mocker.patch.object(demisto, "results")
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "url": "1.1.1.1",
+            "verify_certificate": False,
+            "api_version": "v3.12",
+            "auth_key": "key",
+            "auth_user": "user"
+        }
+    )
+
+    def mock_http_request(*args, **kwargs):
+        assert args[0] == "get"
+        assert args[1] == ""
+        assert kwargs["headers"].get("X-Auth-Key") == "key"
+        assert kwargs["headers"].get("X-Auth-User") == "user"
+
+        mock: Any = Settable()
+
+        mock.status_code = 204
+        mock.headers = {}
+
+        return mock
+
+    mocker.patch.object(BaseClient, "_http_request", side_effect=mock_http_request)
+
+    main()
+
+    results_mock.assert_called_once_with("ok")
+
+
+def test_login(mocker):
+    mocker.patch.object(demisto, "command", return_value="wab-get-current-serial-configuration-number-of-bastion")
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "results")
+
+    params = {
+        "url": "1.1.1.1",
+        "verify_certificate": False,
+        "api_version": "v3.12",
+        "auth_key": "key",
+        "auth_user": "user"
+    }
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value=params
+    )
+
+    integration_context = {}
+
+    def set_context(new_context, *args):
+        integration_context.clear()
+        integration_context.update(new_context)
+
+    mocker.patch.object(demisto, "getIntegrationContextVersioned", return_value=integration_context)
+    mocker.patch.object(demisto, "setIntegrationContextVersioned", side_effect=set_context)
+    mocker.patch.object(demisto, "getIntegrationContext", return_value=integration_context)
+    mocker.patch.object(demisto, "setIntegrationContext", side_effect=set_context)
+
+    c = Counter()
+
+    def mock_http_request(*args, **kwargs):
+        c.count += 1
+        mock: Any = Settable()
+        mock.headers = {}
+
+        if c.count == 1:
+            # API key auth
+            assert kwargs["headers"].get("X-Auth-Key") == "key"
+            assert kwargs["headers"].get("X-Auth-User") == "user"
+
+            mock.status_code = 200
+            mock.headers["Set-Cookie"] = "session=foobar"
+            mock.json = lambda: {"configuration_number": "3615"}
+
+        elif c.count == 2:
+            # session token auth
+            assert integration_context.get("session_token") == "session=foobar"
+            assert integration_context.get("last_request_at") > 0
+
+            assert kwargs["headers"].get("Cookies") == "session=foobar"
+            assert kwargs["headers"].get("X-Auth-User") is None
+            assert kwargs["headers"].get("X-Auth-Key") is None
+
+            mock.status_code = 401
+
+            kwargs["error_handler"](mock)
+
+        elif c.count == 3:
+            # password auth
+            assert not integration_context
+            assert kwargs.get("auth") == ("user", "key")
+            assert kwargs["headers"].get("X-Auth-User") is None
+            assert kwargs["headers"].get("X-Auth-Key") is None
+
+            mock.status_code = 200
+            mock.headers["Set-Cookie"] = "session=foobaz"
+            mock.json = lambda: {"configuration_number": "3615"}
+
+        else:
+            raise ValueError("counter: " + str(c.count))
+
+        return mock
+
+    mocker.patch.object(BaseClient, "_http_request", side_effect=mock_http_request)
+
+    main()
+    assert c.count == 1
+
+    params["is_password"] = True
+
+    main()
+
+    assert c.count == 3
+    assert integration_context.get("session_token") == "session=foobaz"
 
 
 def test_wab_get_device(mocker):
@@ -19,6 +181,7 @@ def test_wab_get_device(mocker):
             "api_version": "v3.12",
             "auth_key": "key",
             "auth_user": "user",
+            "timeout": "50"
         },
     )
     mocker.patch.object(demisto, "results")
@@ -26,11 +189,12 @@ def test_wab_get_device(mocker):
 
     mock_result = mocker.patch("WAB.return_results")
 
-    def mock_http_request(*args, **kwargs):
+    def mock_http_request(self: BaseClient, *args, **kwargs):
         assert args[0] == "get"
         assert args[1] == "/devices/012345"
         assert kwargs["headers"].get("X-Auth-Key") == "key"
         assert kwargs["headers"].get("X-Auth-User") == "user"
+        assert self.timeout == 50
 
         mock: Any = Settable()
 
@@ -40,7 +204,7 @@ def test_wab_get_device(mocker):
 
         return mock
 
-    mocker.patch.object(BaseClient, "_http_request", side_effect=mock_http_request)
+    mocker.patch.object(BaseClient, "_http_request", autospec=True, side_effect=mock_http_request)
 
     main()
 
@@ -73,6 +237,7 @@ def test_commands(mocker):
             "api_version": "v3.12",
             "auth_key": "key",
             "auth_user": "user",
+            "timeout": "50"
         },
     )
 
@@ -92,133 +257,3 @@ def test_commands(mocker):
         main()
 
         assert mock_result.call_count == 1
-
-    for deprecated in deprecated_names:
-        mocker.patch.object(demisto, "command", return_value=deprecated)
-
-        mock_result = mocker.patch("WAB.return_results")
-        main()
-
-        assert mock_result.call_count == 1
-
-
-deprecated_names = {
-    "wab-get-metadata-of-one-or-multiple-sessions"
-}
-
-command_names = {
-    "wab-add-session-target-to-target-group",
-    "wab-add-password-target-to-target-group",
-    "wab-add-restriction-to-target-group",
-    "wab-get-account-references",
-    "wab-get-account-reference",
-    "wab-get-all-accounts",
-    "wab-get-one-account",
-    "wab-delete-account",
-    "wab-get-application-accounts",
-    "wab-add-account-to-local-domain-of-application",
-    "wab-get-application-account",
-    "wab-edit-account-on-local-domain-of-application",
-    "wab-delete-account-from-local-domain-of-application",
-    "wab-get-applications",
-    "wab-get-application",
-    "wab-edit-application",
-    "wab-delete-application",
-    "wab-get-approvals",
-    "wab-get-approvals-for-all-approvers",
-    "wab-reply-to-approval-request",
-    "wab-get-approvals-for-approver",
-    "wab-cancel-accepted-approval",
-    "wab-get-approval-request-pending-for-user",
-    "wab-make-new-approval-request-to-access-target",
-    "wab-cancel-approval-request",
-    "wab-notify-approvers-linked-to-approval-request",
-    "wab-check-if-approval-is-required-for-target",
-    "wab-get-auth-domains",
-    "wab-get-auth-domain",
-    "wab-get-authentications",
-    "wab-get-authentication",
-    "wab-get-authorizations",
-    "wab-add-authorization",
-    "wab-get-authorization",
-    "wab-edit-authorization",
-    "wab-delete-authorization",
-    "wab-get-checkout-policies",
-    "wab-get-checkout-policy",
-    "wab-getx509-configuration-infos",
-    "wab-uploadx509-configuration",
-    "wab-updatex509-configuration",
-    "wab-resetx509-configuration",
-    "wab-get-current-serial-configuration-number-of-bastion",
-    "wab-get-all-accounts-on-device-local-domain",
-    "wab-add-account-to-local-domain-on-device",
-    "wab-get-one-account-on-device-local-domain",
-    "wab-edit-account-on-local-domain-of-device",
-    "wab-delete-account-from-local-domain-of-device",
-    "wab-get-certificates-on-device",
-    "wab-get-certificate-on-device",
-    "wab-revoke-certificate-of-device",
-    "wab-get-services-of-device",
-    "wab-get-service-of-device",
-    "wab-edit-service-of-device",
-    "wab-delete-service-from-device",
-    "wab-get-devices",
-    "wab-add-device",
-    "wab-get-device",
-    "wab-edit-device",
-    "wab-delete-device",
-    "wab-get-accounts-of-global-domain",
-    "wab-add-account-in-global-domain",
-    "wab-get-account-of-global-domain",
-    "wab-edit-account-in-global-domain",
-    "wab-delete-account-from-global-domain",
-    "wab-delete-resource-from-global-domain-account",
-    "wab-get-global-domains",
-    "wab-get-global-domain",
-    "wab-get-ldap-users-of-domain",
-    "wab-get-ldap-user-of-domain",
-    "wab-get-information-about-wallix-bastion-license",
-    "wab-post-logsiem",
-    "wab-get-notifications",
-    "wab-add-notification",
-    "wab-get-notification",
-    "wab-edit-notification",
-    "wab-delete-notification",
-    "wab-get-object-to-onboard",
-    "wab-get-profiles",
-    "wab-get-profile",
-    "wab-get-scanjobs",
-    "wab-start-scan-job-manually",
-    "wab-get-scanjob",
-    "wab-cancel-scan-job",
-    "wab-get-scans",
-    "wab-get-scan",
-    "wab-get-sessionrights",
-    "wab-get-sessionrights-user-name",
-    "wab-get-sessions",
-    "wab-edit-session",
-    "wab-get-session-metadata",
-    "wab-get-session-sharing-requests",
-    "wab-create-session-request",
-    "wab-delete-pending-or-live-session-request",
-    "wab-get-latest-snapshot-of-running-session",
-    "wab-get-status-of-trace-generation",
-    "wab-generate-trace-for-session",
-    "wab-get-wallix-bastion-usage-statistics",
-    "wab-get-target-groups",
-    "wab-add-target-group",
-    "wab-get-target-group",
-    "wab-edit-target-group",
-    "wab-delete-target-group",
-    "wab-delete-target-from-group",
-    "wab-get-user-groups",
-    "wab-get-user-group",
-    "wab-get-users",
-    "wab-add-user",
-    "wab-get-user",
-    "wab-extend-duration-time-to-get-passwords-for-target",
-    "wab-release-passwords-for-target",
-    "wab-get-target-by-type",
-    "wab-get-password-for-target",
-    "wab-add-service-in-device"
-}

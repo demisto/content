@@ -113,19 +113,29 @@ class SeverityEnum(enum.Enum):
 
 
 def flatten_advisory_dict(advisory_dict: dict) -> Advisory:
-    """Given a dictionary advisory, return an `Advisory` object"""
+    """
+    Given a dictionary representing a CVE advisory, return an Advisory object
+    with relevant fields extracted and flattened.
+
+    :param advisory_dict: Dictionary containing CVE advisory information.
+    :return: Advisory object with fields populated from advisory_dict.
+    """
+    cna = advisory_dict.get("containers", {}).get("cna", {})
+
+    metrics = cna.get("metrics", [{}])
+    cvss_info = metrics[0].get("cvssV4_0", {})
 
     return Advisory(
-        data_type=advisory_dict.get("data_type", ""),
-        data_format=advisory_dict.get("data_format", ""),
-        cve_id=advisory_dict.get("CVE_data_meta", {}).get("ID", ""),
-        cve_title=advisory_dict.get("CVE_data_meta", {}).get("TITLE", ""),
-        cve_date_public=advisory_dict.get("CVE_data_meta", {}).get("DATE_PUBLIC", ""),
-        description=advisory_dict.get("description", {}).get("description_data", [])[0].get("value", ""),
-        cvss_score=advisory_dict.get("impact", {}).get("cvss", {}).get("baseScore", ""),
-        cvss_severity=advisory_dict.get("impact", {}).get("cvss", {}).get("baseSeverity", ""),
-        cvss_vector_string=advisory_dict.get("impact", {}).get("cvss", {}).get("vectorString", ""),
-        affected_version_list=advisory_dict.get("x_affectedList", ""),
+        data_type=advisory_dict.get("dataType", ""),
+        data_format=metrics[0].get("format", ""),
+        cve_id=advisory_dict.get("cveMetadata", {}).get("cveId", ""),
+        cve_title=cna.get("title", ""),
+        cve_date_public=cna.get("datePublic", ""),
+        description=cna.get("descriptions", [{}])[0].get("value", ""),
+        cvss_score=cvss_info.get("baseScore", 0),
+        cvss_severity=cvss_info.get("baseSeverity", ""),
+        cvss_vector_string=cvss_info.get("vectorString", ""),
+        affected_version_list=cna.get("x_affectedList", [])
     )
 
 
@@ -175,32 +185,25 @@ def advisory_to_indicator(advisory_dict: dict) -> dict:
     """
 
     fields: dict = {}
+    containers_cna = advisory_dict.get("containers", {}).get("cna", {})
 
-    if problem_type := advisory_dict.get("problemtype"):
+    if problem_types := containers_cna.get("problemTypes"):
         tags = []  # holds cwe information as tags
-        # the dict that holds the advisory information fo CWE data
-        cwe_str: str = problem_type.get('problemtype_data', [{}])[0].get('description', [{}])[0].get('value', "")
 
-        if cwe_str and cwe_str.startswith('CWE-'):
-            # split this string after the CWE-\d* first space
-            # CWE-754 Improper Check for Unusual or Exceptional Conditions
-            cwe = cwe_str.split(" ", 1)
-            cwe[0] = cwe[0].rstrip(':')
+        for problem_type in problem_types:
+            for description in problem_type.get("descriptions"):
+                tags.append(description.get("cweId"))
 
-            tags.append(cwe[0])
-            fields['tags'] = tags
+        fields['tags'] = tags
 
-    if references := advisory_dict.get("references"):
-        references_list: list[dict] = references.get('reference_data', [{}])
+    if references := containers_cna.get("references", {}):
         fields['publications'] = [
             {
-                "link": x.get('url'),
-                "title": x.get('name'),
-                "source": x.get('refsource')
-            } for x in references_list]
+                "link": x.get('url')
+            } for x in references]
 
-    impact: dict = advisory_dict.get("impact", {})
-    cvss: dict = impact.get("cvss", {})
+    impacts: list = containers_cna.get('impacts', [{}])
+    cvss: dict = containers_cna.get('metrics', [{}])[0].get("cvssV4_0", {})
     # score mirrored to both fields so that default cve layout displays with full data
     fields['cvss'] = cvss.get("baseScore", "")
     fields['cvssscore'] = cvss.get("baseScore", "")
@@ -208,14 +211,14 @@ def advisory_to_indicator(advisory_dict: dict) -> dict:
     fields['sourceoriginalseverity'] = cvss.get("baseSeverity", "")
     # mirror data in these fields so default CVE layout does not need to be changed
     # cvedescription not in default cve layout
-    advisory_description = advisory_dict.get("description", {}).get("description_data", [{}])[0].get("value", "")
+    advisory_description = containers_cna.get("descriptions", [{}])[0].get("value", "")
     fields['cvedescription'] = advisory_description
     # description in default cve layout
     fields['description'] = advisory_description
-    fields['published'] = advisory_dict.get("CVE_data_meta", {}).get("DATE_PUBLIC", "")
-    fields['name'] = advisory_dict.get("CVE_data_meta", {}).get("TITLE", [])
+    fields['published'] = containers_cna.get("datePublic", "")
+    fields['name'] = containers_cna.get("title", "")
 
-    if impact and cvss.get("version") in ['3.1', '4.0']:
+    if impacts and cvss.get("version") in ['3.1', '4.0']:
         fields['cvssversion'] = cvss.get("version", "")
 
         # is this v3/v4 cvss?
@@ -231,7 +234,7 @@ def advisory_to_indicator(advisory_dict: dict) -> dict:
         fields['cvsstable'] = cvss_data
 
     return {
-        "value": advisory_dict.get("CVE_data_meta", {}).get("ID", ""),
+        "value": advisory_dict.get("cveMetadata", {}).get("cveId"),
         "type": FeedIndicatorType.CVE,
         "rawJSON": advisory_dict,
         "fields": fields
@@ -248,7 +251,6 @@ def fetch_indicators(client: Client, fetch_product_name="PAN-OS") -> list[dict]:
     indicator_objects = []
     for advisory_dict in advisory_data:
         indicator_objects.append(advisory_to_indicator(advisory_dict))
-
     return indicator_objects
 
 

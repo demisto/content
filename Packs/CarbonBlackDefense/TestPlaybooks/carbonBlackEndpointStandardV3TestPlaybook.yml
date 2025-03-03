@@ -1,0 +1,2036 @@
+id: carbonBlackEndpointStandardV3TestPlaybook
+version: -1
+name: carbonBlackEndpointStandardV3TestPlaybook
+description: A test playbook of the Carbon Black Endpoint Standard pack.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bf81db11-415c-48b6-8fe4-6994059bac66
+    type: start
+    task:
+      id: bf81db11-415c-48b6-8fe4-6994059bac66
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 78018eb2-063f-40bb-8760-8790e9ab1774
+    type: regular
+    task:
+      id: 78018eb2-063f-40bb-8760-8790e9ab1774
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "66"
+      - "99"
+      - "65"
+      - "64"
+      - "61"
+      - "107"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: e0c18b5d-4ff6-4203-8ae5-33c2cd3d4e6f
+    type: regular
+    task:
+      id: e0c18b5d-4ff6-4203-8ae5-33c2cd3d4e6f
+      version: -1
+      name: cbd-get-alert-details
+      script: '|||cbd-get-alert-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      alertId:
+        complex:
+          root: CarbonBlackDefense.Alert
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: f0f140da-77f2-4a60-8b4a-5218d31c0834
+    type: condition
+    task:
+      id: f0f140da-77f2-4a60-8b4a-5218d31c0834
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "87"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CarbonBlackDefense.Alert
+                accessor: id
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CarbonBlackDefense.Alert
+                accessor: id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: af10cdca-84eb-4395-8d36-507ba07cbf66
+    type: regular
+    task:
+      id: af10cdca-84eb-4395-8d36-507ba07cbf66
+      version: -1
+      name: cbd-device-search
+      script: '|||cbd-device-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      rows:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 6fe352db-6b01-4f74-879d-526c83946220
+    type: regular
+    task:
+      id: 6fe352db-6b01-4f74-879d-526c83946220
+      version: -1
+      name: cbd-get-policies-summary
+      script: "|||cbd-get-policies-summary"
+      type: regular
+      iscommand: true
+      brand: ""
+      description: Get an overview of the policies available in the organization.
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 9a34c47c-ab04-4e6b-8c67-9c818c687c9d
+    type: regular
+    task:
+      id: 9a34c47c-ab04-4e6b-8c67-9c818c687c9d
+      version: -1
+      name: cbd-get-policy
+      script: '|||cbd-get-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      policyId:
+        complex:
+          root: CarbonBlackDefense.Policy
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 037ef1f8-2c4e-400b-8116-01dfc4ddbbd2
+    type: condition
+    task:
+      id: 037ef1f8-2c4e-400b-8116-01dfc4ddbbd2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "89"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CarbonBlackDefense.Policy
+                accessor: name
+            iscontext: true
+          right:
+            value:
+              simple: ${GeneratedUUID}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 31538426-1c6a-46d2-8ebe-1a7e7735d041
+    type: regular
+    task:
+      id: 31538426-1c6a-46d2-8ebe-1a7e7735d041
+      version: -1
+      name: cbd-create-policy
+      script: '|||cbd-create-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      description:
+        simple: A policy created for the test playbook for Demisto
+      name:
+        simple: ${GeneratedUUID}
+      policy:
+        simple: |-
+          {    "sensor_settings": [
+                  {
+                      "name": "ALLOW_UNINSTALL",
+                      "value": "true"
+                  }
+              ]}
+      priorityLevel:
+        simple: MEDIUM
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 1d3b79ea-55f8-4257-847f-6a6e29d3eddc
+    type: regular
+    task:
+      id: 1d3b79ea-55f8-4257-847f-6a6e29d3eddc
+      version: -1
+      name: cbd-delete-policy
+      script: '|||cbd-delete-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      policyId:
+        complex:
+          root: CarbonBlackDefense.Policy
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: fb2f685c-2d67-4d9f-88c7-7ab4f61675e8
+    type: regular
+    task:
+      id: fb2f685c-2d67-4d9f-88c7-7ab4f61675e8
+      version: -1
+      name: cbd-update-policy
+      script: '|||cbd-update-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "78"
+    scriptarguments:
+      description:
+        simple: Updated policy
+      id:
+        complex:
+          root: CarbonBlackDefense.Policy
+          accessor: id
+      name:
+        simple: ${GeneratedUUID}
+      policy:
+        simple: |-
+          {    "sensor_settings": [
+                  {
+                      "name": "ALLOW_UNINSTALL",
+                      "value": "true"
+                  }
+              ]}
+      priorityLevel:
+        simple: MEDIUM
+      priorityLevl:
+        simple: MEDIUM
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 151ce170-d432-4352-856b-14eb8919797c
+    type: regular
+    task:
+      id: 151ce170-d432-4352-856b-14eb8919797c
+      version: -1
+      name: cbd-add-rule-to-policy
+      script: '|||cbd-add-rule-to-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      action:
+        simple: TERMINATE
+      id:
+        simple: "1"
+      operation:
+        simple: INVOKE_SYSAPP
+      policyId:
+        complex:
+          root: CarbonBlackDefense.Policy
+          accessor: id
+      required:
+        simple: "false"
+      type:
+        simple: REPUTATION
+      value:
+        simple: ADWARE
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 4f18688f-7f70-42d2-851e-a0b80fc4039d
+    type: regular
+    task:
+      id: 4f18688f-7f70-42d2-851e-a0b80fc4039d
+      version: -1
+      name: cbd-update-rule-in-policy
+      description: Update an existing rule with a new rule. Please note that system policies cannot be modified.
+      script: '|||cbd-update-rule-in-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      action:
+        simple: TERMINATE
+      id:
+        complex:
+          root: CarbonBlackDefense.Policy.policy.rules.[0]
+          accessor: id
+      operation:
+        simple: INVOKE_SYSAPP
+      policyId:
+        complex:
+          root: CarbonBlackDefense.Policy
+          accessor: id
+      required:
+        simple: "true"
+      type:
+        simple: SIGNED_BY
+      value:
+        simple: COMMON_WHITE_LIST
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 0c5f115d-8e91-4239-8c71-4ff0c15a951e
+    type: regular
+    task:
+      id: 0c5f115d-8e91-4239-8c71-4ff0c15a951e
+      version: -1
+      name: cbd-delete-rule-from-policy
+      script: '|||cbd-delete-rule-from-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      policyId:
+        complex:
+          root: CarbonBlackDefense.Policy
+          accessor: id
+      ruleId:
+        complex:
+          root: CarbonBlackDefense.Policy.policy.rules.[0]
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 8bed5bd7-2c95-4280-8642-a07be12ef0ad
+    type: regular
+    task:
+      id: 8bed5bd7-2c95-4280-8642-a07be12ef0ad
+      version: -1
+      name: cbd-device-quarantine
+      script: '|||cbd-device-quarantine'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "79"
+    scriptarguments:
+      device_id:
+        simple: ${CarbonBlackDefense.Device.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 5c22b19b-c423-4fcf-89ca-24d629dbd90b
+    type: regular
+    task:
+      id: 5c22b19b-c423-4fcf-89ca-24d629dbd90b
+      version: -1
+      name: cbd-device-background-scan
+      script: '|||cbd-device-background-scan'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      device_id:
+        simple: ${CarbonBlackDefense.Device.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 87c2dbf4-7831-4c83-8160-0255790130c2
+    type: regular
+    task:
+      id: 87c2dbf4-7831-4c83-8160-0255790130c2
+      version: -1
+      name: cbd-device-background-scan-stop
+      script: '|||cbd-device-background-scan-stop'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      device_id:
+        simple: ${CarbonBlackDefense.Device.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 35e6b1fe-01e6-469f-81b2-bae741fbcb45
+    type: regular
+    task:
+      id: 35e6b1fe-01e6-469f-81b2-bae741fbcb45
+      version: -1
+      name: cbd-device-bypass
+      script: '|||cbd-device-bypass'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      device_id:
+        simple: ${CarbonBlackDefense.Device.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 146144d9-4e4f-483c-833e-95685057a031
+    type: regular
+    task:
+      id: 146144d9-4e4f-483c-833e-95685057a031
+      version: -1
+      name: cbd-device-unbypass
+      script: '|||cbd-device-unbypass'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "100"
+    scriptarguments:
+      device_id:
+        simple: ${CarbonBlackDefense.Device.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 256506fc-cbb8-43dc-85b2-3dd8e6a3bbf2
+    type: regular
+    task:
+      id: 256506fc-cbb8-43dc-85b2-3dd8e6a3bbf2
+      version: -1
+      name: cbd-device-policy-update
+      script: '|||cbd-device-policy-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      device_id:
+        simple: ${CarbonBlackDefense.Device.id}
+      policy_id:
+        simple: ${CarbonBlackDefense.PolicySummary.[0].id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 94e8acd6-3104-448b-8d31-e3f08ee3d964
+    type: regular
+    task:
+      id: 94e8acd6-3104-448b-8d31-e3f08ee3d964
+      version: -1
+      name: cbd-device-update-sensor-version
+      script: '|||cbd-device-update-sensor-version'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      device_id:
+        simple: ${CarbonBlackDefense.Device.id}
+      sensor_version:
+        complex:
+          root: inputs.sensor_version
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: f780e993-4806-4cfd-83f3-281bf6524d08
+    type: title
+    task:
+      id: f780e993-4806-4cfd-83f3-281bf6524d08
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2455
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: c5e3e2da-2d2e-4cf2-8eef-c15e51070a06
+    type: condition
+    task:
+      id: c5e3e2da-2d2e-4cf2-8eef-c15e51070a06
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "69"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: CarbonBlackDefense.Policy
+                accessor: id
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: fbcc1aab-f15b-4197-8c0d-a556ddc6cb10
+    type: condition
+    task:
+      id: fbcc1aab-f15b-4197-8c0d-a556ddc6cb10
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: CarbonBlackDefense.Device
+                accessor: id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: eb73c426-649c-40b0-8bd4-47e923e6db79
+    type: title
+    task:
+      id: eb73c426-649c-40b0-8bd4-47e923e6db79
+      version: -1
+      name: Test policies commands
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "109"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: b402d2e1-e5b3-44bd-8932-e139541eea1f
+    type: title
+    task:
+      id: b402d2e1-e5b3-44bd-8932-e139541eea1f
+      version: -1
+      name: Test devices commands
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: 44a62606-e896-49a0-85ed-97ce79d6333e
+    type: title
+    task:
+      id: 44a62606-e896-49a0-85ed-97ce79d6333e
+      version: -1
+      name: Test alerts commands
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "81"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: db4f9f64-a257-4369-86be-af5a7e098790
+    type: title
+    task:
+      id: db4f9f64-a257-4369-86be-af5a7e098790
+      version: -1
+      name: Test processes commands
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "88"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 108d1a3b-fbc4-45ad-8ae8-46958647aeb3
+    type: title
+    task:
+      id: 108d1a3b-fbc4-45ad-8ae8-46958647aeb3
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: 596a0648-87d6-4bac-8080-9b77e4e5514e
+    type: title
+    task:
+      id: 596a0648-87d6-4bac-8080-9b77e4e5514e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 69ac9c1a-893e-4051-8a5e-9c221d7713d1
+    type: condition
+    task:
+      id: 69ac9c1a-893e-4051-8a5e-9c221d7713d1
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CarbonBlackDefense.Policy
+                accessor: description
+            iscontext: true
+          right:
+            value:
+              simple: Updated policy
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: c56f600b-2be6-429d-844f-d2b9f4ca1e7a
+    type: regular
+    task:
+      id: c56f600b-2be6-429d-844f-d2b9f4ca1e7a
+      version: -1
+      name: cbd-device-unquarantine
+      description: Unquarantine the device
+      script: '|||cbd-device-unquarantine'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      device_id:
+        simple: ${CarbonBlackDefense.Device.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: fd96a9a4-f54f-41ee-8ee4-bba4cf83135b
+    type: regular
+    task:
+      id: fd96a9a4-f54f-41ee-8ee4-bba4cf83135b
+      version: -1
+      name: cbd-alerts-search
+      description: Alert search request. Multiple pathways support similar request body schemas. (CbAnalytics/devicecontrol/all)
+      script: '|||cbd-alerts-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "82"
+    scriptarguments:
+      reputation:
+        simple: NOT_LISTED
+      rows:
+        simple: "1"
+      type:
+        simple: all
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: 714dcb97-42b0-49df-851a-2d201712d859
+    type: condition
+    task:
+      id: 714dcb97-42b0-49df-851a-2d201712d859
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: CarbonBlackDefense.Alert
+                accessor: id
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: c0d02533-11d5-463b-8127-e7e96a5af051
+    type: condition
+    task:
+      id: c0d02533-11d5-463b-8127-e7e96a5af051
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CarbonBlackDefense.Policy
+                accessor: description
+            iscontext: true
+          right:
+            value:
+              simple: Set policy
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: 01cfff6c-ed3b-425d-8520-7054faef9dad
+    type: title
+    task:
+      id: 01cfff6c-ed3b-425d-8520-7054faef9dad
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: 4249c068-cb6f-4d74-8cb3-e69d6964450f
+    type: regular
+    task:
+      id: 4249c068-cb6f-4d74-8cb3-e69d6964450f
+      version: -1
+      name: cdb-find-processes
+      description: "Creates a process search job and retrieves the search results. At least one of the arguments (not including: rows, start, and time_range) is required."
+      script: "|||cbd-find-processes"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "92"
+    scriptarguments:
+      alert_category:
+        simple: THREAT
+      event_type:
+        simple: filemod
+      rows:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "89":
+    id: "89"
+    taskid: bc500147-deb8-4ab4-88df-2ada31f07ec0
+    type: regular
+    task:
+      id: bc500147-deb8-4ab4-88df-2ada31f07ec0
+      version: -1
+      name: cbd-set-policy
+      description: Set existing policy's fields on the CB Defense backend.
+      script: "|||cbd-set-policy"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "84"
+    scriptarguments:
+      keyValue:
+        simple: ' {"id":${CarbonBlackDefense.Policy.id},"name":"${GeneratedUUID}", "description": "Set policy", "priority_level": "MEDIUM", "rules": [], "sensor_settings": [{"name": "ALLOW_UNINSTALL", "value": "true"}]}'
+      policy:
+        simple: ${CarbonBlackDefense.Policy.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: 73643ec3-bda7-4475-84ee-0a88519b50c9
+    type: regular
+    task:
+      id: 73643ec3-bda7-4475-84ee-0a88519b50c9
+      version: -1
+      name: cdb-find-processes polllin=false
+      description: "Creates a process search job and retrieves the search results. At least one of the arguments (not including: rows, start, and time_range) is required."
+      script: "|||cbd-find-processes"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "91"
+    scriptarguments:
+      alert_category:
+        simple: THREAT
+      event_type:
+        simple: filemod
+      polling:
+        simple: "no"
+      rows:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "91":
+    id: "91"
+    taskid: b2424988-4c75-4a8a-870a-67eb1cf5557f
+    type: regular
+    task:
+      id: b2424988-4c75-4a8a-870a-67eb1cf5557f
+      version: -1
+      name: cbd-find-processes-results
+      description: Retrieves the search results using the specified job ID.
+      script: "|||cbd-find-processes-results"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "67"
+    scriptarguments:
+      job_id:
+        simple: ${CarbonBlackDefense.Process.job_id}
+      rows:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "92":
+    id: "92"
+    taskid: d520e39c-f1d1-46eb-8c47-c780b1e5b761
+    type: condition
+    task:
+      id: d520e39c-f1d1-46eb-8c47-c780b1e5b761
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "90"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.Process.Results
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: 3a99864d-fc1b-4eb7-850e-ba2e85ab675a
+    type: regular
+    task:
+      id: 3a99864d-fc1b-4eb7-850e-ba2e85ab675a
+      version: -1
+      name: cbd-find-observation
+      description: Fetches Carbon Black events details based on specified parameters. Supports polling to wait for the search job completion.
+      script: "|||cbd-find-observation"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "97"
+    scriptarguments:
+      alert_category:
+        simple: THREAT
+      event_type:
+        simple: filemod
+      rows:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: 110a3986-370d-430f-8e11-619778aaf1ed
+    type: regular
+    task:
+      id: 110a3986-370d-430f-8e11-619778aaf1ed
+      version: -1
+      name: cbd-find-observation polllin=false
+      description: Fetches Carbon Black events details based on specified parameters. Supports polling to wait for the search job completion.
+      script: "|||cbd-find-observation"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "96"
+    scriptarguments:
+      alert_category:
+        simple: THREAT
+      event_type:
+        simple: filemod
+      polling:
+        simple: "no"
+      rows:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "96":
+    id: "96"
+    taskid: 346b7dfe-ebfa-4924-8800-ca3c1a9b1fcf
+    type: regular
+    task:
+      id: 346b7dfe-ebfa-4924-8800-ca3c1a9b1fcf
+      version: -1
+      name: cbd-find-observation-results
+      description: Retrieves the search results using the specified job ID.
+      script: "|||cbd-find-observation-results"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "98"
+    scriptarguments:
+      job_id:
+        simple: ${CarbonBlackDefense.Events.job_id}
+      rows:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "97":
+    id: "97"
+    taskid: 9f0a6499-5132-47c0-8a82-09a0ffc9c553
+    type: condition
+    task:
+      id: 9f0a6499-5132-47c0-8a82-09a0ffc9c553
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "95"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.Events.Results
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "98":
+    id: "98"
+    taskid: c6d9f4a7-3943-4f34-8e51-04136afa0003
+    type: title
+    task:
+      id: c6d9f4a7-3943-4f34-8e51-04136afa0003
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "99":
+    id: "99"
+    taskid: 068c94d7-39dd-482e-8bc9-a7db36a2930d
+    type: title
+    task:
+      id: 068c94d7-39dd-482e-8bc9-a7db36a2930d
+      version: -1
+      name: Test observation commands
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "#none#":
+      - "93"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "100":
+    id: "100"
+    taskid: efca9194-fd24-4366-807c-b4adeef4e43e
+    type: regular
+    task:
+      id: efca9194-fd24-4366-807c-b4adeef4e43e
+      version: -1
+      name: cbd-get-policies-summary
+      description: Get an overview of the policies available in the organization.
+      script: "|||cbd-get-policies-summary"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "33"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "101":
+    id: "101"
+    taskid: ba9518f5-e3ca-4a79-86b7-1e3860665225
+    type: regular
+    task:
+      id: ba9518f5-e3ca-4a79-86b7-1e3860665225
+      version: -1
+      name: cbd-find-observation-detsails
+      description: Fetches Carbon Black events details based on specified parameters. Supports polling to wait for the search job completion.
+      script: "|||cbd-find-observation-details"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "103"
+    scriptarguments:
+      alert_id:
+        simple: ${CarbonBlackDefense.Alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "103":
+    id: "103"
+    taskid: e0dee57b-e0e7-4263-85aa-7cb3905b4ced
+    type: regular
+    task:
+      id: e0dee57b-e0e7-4263-85aa-7cb3905b4ced
+      version: -1
+      name: cbd-find-observation-details polllin=false
+      description: Fetches Carbon Black events details based on specified parameters. Supports polling to wait for the search job completion.
+      script: "|||cbd-find-observation-details"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "104"
+    scriptarguments:
+      alert_id:
+        simple: ${CarbonBlackDefense.Alert.id}
+      polling:
+        simple: "no"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "104":
+    id: "104"
+    taskid: c9cacd59-a6e2-4de8-8b24-6a5e52de9a2f
+    type: regular
+    task:
+      id: c9cacd59-a6e2-4de8-8b24-6a5e52de9a2f
+      version: -1
+      name: cbd-find-observation-details-results
+      description: Retrieves the search results using the specified job ID.
+      script: "|||cbd-find-observation-details-results"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "108"
+    scriptarguments:
+      job_id:
+        simple: ${CarbonBlackDefense.EventDetails.job_id}
+      rows:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "105":
+    id: "105"
+    taskid: bc0346ec-ffc8-4ce2-8a87-2d1fe0cefdf1
+    type: regular
+    task:
+      id: bc0346ec-ffc8-4ce2-8a87-2d1fe0cefdf1
+      version: -1
+      name: cbd-alerts-search
+      description: Alert search request. Multiple pathways support similar request body schemas. (CbAnalytics/devicecontrol/all)
+      script: "|||cbd-alerts-search"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "101"
+    scriptarguments:
+      reputation:
+        simple: NOT_LISTED
+      rows:
+        simple: "1"
+      type:
+        simple: all
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "107":
+    id: "107"
+    taskid: 265d7a9b-364c-4194-8627-e864f6cdcdd8
+    type: title
+    task:
+      id: 265d7a9b-364c-4194-8627-e864f6cdcdd8
+      version: -1
+      name: Test observation details commands
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "#none#":
+      - "105"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "108":
+    id: "108"
+    taskid: 2481693c-59cc-4bc8-8b54-b90564990521
+    type: title
+    task:
+      id: 2481693c-59cc-4bc8-8b54-b90564990521
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "109":
+    id: "109"
+    taskid: 41bc7f70-a0c0-43bd-81e7-8484f5e406b2
+    type: regular
+    task:
+      id: 41bc7f70-a0c0-43bd-81e7-8484f5e406b2
+      version: -1
+      name: Generate Ppolicy Name
+      description: Generates a random UUID (UUID 4).
+      scriptName: GenerateRandomUUID
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2980,
+        "width": 2530,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: sensor_version
+  value:
+    simple: '{ "OTHER": "1.2.3.4" }'
+  required: true
+  description: ""
+  playbookInputQuery:
+outputs: []
+fromversion: 6.10.0

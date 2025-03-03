@@ -1,0 +1,21 @@
+[
+  {
+    "triggeredAlarmId": 4,
+    "name": "VM with no replica",
+    "alarmTemplateId": 330,
+    "predefinedAlarmId": 331,
+    "triggeredTime": "2024-05-27T14:28:52.66Z",
+    "status": "Resolved",
+    "description": "All metrics are back to normal",
+    "comment": "",
+    "repeatCount": 13,
+    "alarmAssignment": {
+      "objectId": 0,
+      "objectName": "Virtual Infrastructure",
+      "objectType": "VirtualInfrastructure"
+    },
+    "childAlarmsCount": 0,
+    "remediation": []
+  }
+]
+

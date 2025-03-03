@@ -12,6 +12,7 @@ configuration:
   - Microsoft SQL Server
   - Microsoft SQL Server - MS ODBC Driver
   - Oracle
+  - Trino
   - Teradata
   required: true
   type: 15
@@ -103,7 +104,7 @@ configuration:
   name: incidentType
   type: 13
   required: false
-description: 'Use the Generic SQL integration to run SQL queries on the following databases: MySQL, PostgreSQL, Microsoft SQL Server, and Oracle.'
+description: 'Use the Generic SQL integration to run SQL queries on the following databases: MySQL, PostgreSQL, Microsoft SQL Server, Oracle, Teradata and Trino.'
 display: Generic SQL
 name: Generic SQL
 script:
@@ -164,7 +165,7 @@ script:
       name: bind_variables_values
     description: Running a sql query.
     name: sql-command
-  dockerimage: demisto/genericsql:1.1.0.91695
+  dockerimage: demisto/genericsql:1.1.0.1836486
   isfetch: true
   runonce: false
   script: '-'
@@ -173,4 +174,5 @@ script:
 fromversion: 5.0.0
 tests:
 - generic-sql
+- generic-sql-oracle
 defaultclassifier: GenericSQL Classifier
