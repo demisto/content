@@ -11,7 +11,7 @@ name = "pypi-public"
 url = "https://pypi.org/simple/"
 
 [tool.poetry.dependencies]
-python = "^3.9,<3.13"
+python = "^3.9,<3.11"
 
 [tool.poetry.group.github-actions.dependencies]
 packaging = "^24"
@@ -25,13 +25,12 @@ sendgrid = "^6.11"
 slack_sdk = "^3.31.0"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = "1.35.0" # Only affects GitHub Actions. To control the SDK version elsewhere, modify the infra repo's pyproject file
+demisto-sdk = "1.35.1" # Only affects GitHub Actions. To control the SDK version elsewhere, modify the infra repo's pyproject file
 pytest = ">=7.1.2"
 requests-mock = ">=1.9.3"
 pytest-mock = ">=3.7.0"
 freezegun = ">=1.1.0"
 dateparser = ">=1.2.0"
-types-requests = "*"
 ruff = "*"  # See `.pre-commit-config-template` for version used in pre-commit. Version here doesn't matter.
 
 [tool.poetry.group.typing.dependencies]
