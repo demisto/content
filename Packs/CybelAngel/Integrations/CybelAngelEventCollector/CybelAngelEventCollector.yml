@@ -152,7 +152,7 @@ script:
       description: 'The ID of the report.'
       required: true
     outputs:
-    - contextPath: CybelAngel.Report.Comments
+    - contextPath: CybelAngel.Report.Comment
       description: 'The list of comments for the report.'
   - name: cybelangel-report-comment-create
     description: 'Create a new comment on a report.'
@@ -170,9 +170,6 @@ script:
       description: 'Specifies if the comment is assigned to analysts (true/false).'
       defaultValue: false
       required: false
-    outputs:
-    - contextPath: CybelAngel.Report.Comments
-      description: 'Updated comment list with the new comment included.'
   - name: cybelangel-report-attachment-get
     description: 'Retrieve an attachment from a report.'
     arguments:
