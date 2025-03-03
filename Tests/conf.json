@@ -5924,6 +5924,7 @@
         }
     ],
     "skipped_tests": {
+        "Tanium Threat Response V2 Test": "The creds were expired, opened a ticket CRTX-155635",
         "ExabeamDataLake-test": "The credentials were expired, can't restore CRTX-149225",
         "Okta IAM - Test Playbook": "Credentials issue CRTX-116483",
         "ThreatCrowd - Test": "The pack is deprecated",
