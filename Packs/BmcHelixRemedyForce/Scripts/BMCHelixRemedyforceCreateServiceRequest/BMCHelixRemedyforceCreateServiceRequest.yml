@@ -71,6 +71,6 @@ dependson:
   - '|||bmc-remedy-account-details-get'
   - '|||bmc-remedy-service-request-create'
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.8.1983910
 tests:
 - No tests (auto formatted)
