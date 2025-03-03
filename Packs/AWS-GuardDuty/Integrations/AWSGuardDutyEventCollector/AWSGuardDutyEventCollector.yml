@@ -121,7 +121,7 @@ script:
       name: limit
     description: Manual command used to fetch events and display them.
     name: aws-gd-get-events
-  dockerimage: demisto/boto3py3:1.0.0.1865449
+  dockerimage: demisto/boto3py3:1.0.0.2449603
   isfetchevents: true
   subtype: python3
 marketplaces:

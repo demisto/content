@@ -95,7 +95,7 @@ script:
       name: max
     description: Get a list of incidents.
     name: symantec-mss-incidents-list
-  dockerimage: demisto/crypto:1.0.0.114611
+  dockerimage: demisto/crypto:1.0.0.2005673
   isfetch: true
   runonce: false
   script: '-'

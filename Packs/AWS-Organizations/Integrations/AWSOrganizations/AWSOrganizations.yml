@@ -690,7 +690,7 @@ script:
     - contextPath: AWS.Organizations.TagNextToken
       description: If not null, indicates that more output is available than is included in the current response. Use this value as the next_token argument in a subsequent call of the command to get the next part of the output.
       type: String
-  dockerimage: demisto/boto3py3:1.0.0.115129
+  dockerimage: demisto/boto3py3:1.0.0.2449603
   feed: false
   longRunning: false
   longRunningPort: false

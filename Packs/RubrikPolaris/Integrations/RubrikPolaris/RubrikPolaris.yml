@@ -3720,7 +3720,7 @@ script:
     - contextPath: RubrikPolaris.Domain.threatMonitoringInfo.redirectLink
       description: 'The link to the threat monitoring information in the Rubrik UI.'
       type: String
-  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.117242
+  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.2072916
   isfetch: true
   runonce: false
   script: '-'

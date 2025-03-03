@@ -431,7 +431,7 @@ script:
     - contextPath: AWS.CloudTrail.TrailStatus.LatestDigestDeliveryError
       description: Displays any Amazon S3 error that CloudTrail encountered when attempting to deliver a digest file to the designated bucket.
       type: string
-  dockerimage: demisto/boto3py3:1.0.0.115129
+  dockerimage: demisto/boto3py3:1.0.0.2449603
   runonce: false
   script: ''
   subtype: python3
