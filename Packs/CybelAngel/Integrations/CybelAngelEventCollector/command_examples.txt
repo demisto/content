@@ -1,4 +1,4 @@
-!cybelangel-report-list start_date="19 hours ago" end_date="now"
+!cybelangel-report-list
 !cybelangel-report-get report_id=1234
 !cybelangel-report-get report_id=1234 pdf=true
 !cybelangel-mirror-report-get report_id=1234
@@ -7,6 +7,6 @@
 !cybelangel-report-status-update report_ids=1234 status=open
 !cybelangel-report-status-update report_ids=1234,1234 status=resolved
 !cybelangel-report-comments-get report_id=1234
-!cybelangel-report-comment-create report_id=1234 content="Test Comment"
+!cybelangel-report-comment-create discussion_id=1234:5678 content="Test Comment"
 !cybelangel-report-attachment-get report_id=1234 attachment_id=5678
 !cybelangel-report-remediation-request-create report_id=1234 requestor_email=test@paloaltonetworks.com requestor_fullname="Example Test"
