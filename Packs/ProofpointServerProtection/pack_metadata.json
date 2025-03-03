@@ -2,18 +2,27 @@
     "name": "Proofpoint Protection Server",
     "description": "Proofpoint email security appliance.",
     "support": "xsoar",
-    "currentVersion": "2.1.8",
+    "currentVersion": "2.1.9",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "Network Security"
+        "Network Security",
+        "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Email"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "proofpoint",
+        "email",
+        "security",
+        "protection server"
+    ],
     "marketplaces": [
-        "xsoar"
+        "xsoar",
+        "marketplacev2"
     ]
 }
