@@ -2,7 +2,7 @@
     "name": "Cybersixgill Actionable Alerts",
     "description": "The integration allow retrieving Cybersixgill's actionable alerts based on organization assets",
     "support": "partner",
-    "currentVersion": "1.2.19",
+    "currentVersion": "1.2.20",
     "author": "Cybersixgill",
     "url": "https://www.cybersixgill.com/",
     "email": "getstarted@cybersixgill.com",
