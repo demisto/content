@@ -290,7 +290,7 @@ script:
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: ms-management-activity-auth-reset
     arguments: []
-  dockerimage: demisto/auth-utils:1.0.0.116752
+  dockerimage: demisto/auth-utils:1.0.0.2025089
   isfetch: true
   runonce: false
   script: '-'

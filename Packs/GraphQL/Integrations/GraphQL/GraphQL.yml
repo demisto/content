@@ -84,7 +84,7 @@ script:
       - 'false'
     description: Executes a mutation request to the GraphQL server.
     name: graphql-mutation
-  dockerimage: demisto/graphql:1.0.0.117182
+  dockerimage: demisto/graphql:1.0.0.2065790
   runonce: false
   script: '-'
   subtype: python3

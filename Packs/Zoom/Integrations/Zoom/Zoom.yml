@@ -1302,7 +1302,7 @@ script:
   runonce: false
   longRunning: true
   longRunningPort: true
-  dockerimage: demisto/fastapi:0.115.5.117397
+  dockerimage: demisto/fastapi:0.115.8.2108714
   script: "-"
   subtype: python3
   type: python

@@ -56,7 +56,7 @@ script:
       name: file_entry_id
       required: true
     description: Upload a file to a path on the SFTP Server
-  dockerimage: demisto/netmiko:1.0.0.114712
+  dockerimage: demisto/netmiko:1.0.0.2034736
   subtype: python3
 fromversion: 6.2.0
 tests:

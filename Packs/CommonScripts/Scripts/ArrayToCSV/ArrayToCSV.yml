@@ -16,7 +16,7 @@ runas: DBotWeakRole
 script: ""
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.8.1983910
 tags:
 - transformer
 - general

@@ -4130,7 +4130,7 @@ script:
       type: String
     description: Creates a VPC endpoint.
     name: aws-ec2-create-vpc-endpoint
-  dockerimage: demisto/boto3py3:1.0.0.115129
+  dockerimage: demisto/boto3py3:1.0.0.2449603
   runonce: false
   script: '-'
   subtype: python3

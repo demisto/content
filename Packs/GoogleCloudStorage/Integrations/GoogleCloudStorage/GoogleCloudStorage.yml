@@ -379,7 +379,7 @@ script:
     description: |
       Blocks public access to a specified Google Cloud Storage bucket by enabling public access prevention, ensuring only authorized users can access the bucket.
     name: gcs-block-public-access-bucket
-  dockerimage: demisto/google-cloud-storage:1.0.0.117186
+  dockerimage: demisto/google-cloud-storage:1.0.0.2113590
   runonce: false
   script: ''
   type: python
