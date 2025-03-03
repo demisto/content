@@ -2,12 +2,15 @@ category: Utilities
 commonfields:
   id: Aha
   version: -1
+sectionOrder:
+- Connect
 configuration:
 - name: url
   display: Server URL
   required: true
   defaultvalue: https://example.com/
   type: 0
+  section: Connect
   additionalinfo:
 - name: project_name
   display: Project Name
@@ -15,6 +18,7 @@ configuration:
   defaultvalue: DEMO
   type: 0
   additionalinfo: "Check the Aha! project name in the URL. Replace the <PROJECT_NAME> placeholder in the following : example.com.aha.io/products/<PROJECT_NAME>/features."
+  section: Connect
 - name: api_key
   displaypassword: Api Key
   required: true
@@ -22,16 +26,19 @@ configuration:
   type: 9
   hiddenusername: true
   additionalinfo: "API Key to access the service REST API."
+  section: Connect
 - name: insecure
   display: Trust any certificate (not secure)
   type: 8
   additionalinfo:
   required: false
+  section: Connect
 - name: proxy
   display: Use system proxy settings
   type: 8
   additionalinfo:
   required: false
+  section: Connect
 description: Use the Aha! integration to list and manage Cortex XSOAR features from Aha.
 display: Aha
 name: Aha
