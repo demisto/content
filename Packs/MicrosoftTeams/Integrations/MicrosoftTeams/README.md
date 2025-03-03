@@ -49,6 +49,15 @@ In order to verify that the messaging endpoint is open as expected, you can surf
     - microsoftonline.com
 When [installing the bot in Microsoft Teams](#add-the-demisto-bot-to-a-team), according to [Microsoft](https://learn.microsoft.com/en-us/answers/questions/1600179/ms-teams-custom-app-takes-very-long-time-to-show-u), it usually takes up to 3-5 business days for the app to reflect in the "built for your org" section.
 
+## First time setup
+
+Refer to the [Setup Video](#setup-video) and the [Prerequisites](#prerequisites) sections for detailed steps to configure the teams bot and instance for the first time.
+
+**Important notes:**
+
+- The steps should be performed in order to ensure no communication between the services is lost.
+- Refer to the [Setup Examples](#setup-examples) for information regarding advanced setups.
+
 ## Migration from Cortex XSOAR 6 to Cortex XSOAR 8 and Cortex XSIAM.
 
 ### Using Cortex XSOAR or Cortex XSIAM rerouting
@@ -155,8 +164,8 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 
 ### Create the Demisto Bot in Microsoft Teams
 
-
 #### Creating the Demisto Bot using Microsoft Azure Portal
+
 1. Navigate to the [Create an Azure Bot page](https://portal.azure.com/#create/Microsoft.AzureBot).
 2. In the Bot Handle field, type **Demisto Bot**.
 3. Fill in the required Subscription and Resource Group, relevant links: [Subscription](https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/create-subscription), [Resource Groups](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal).
@@ -165,7 +174,11 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 6. Click **Review + Create**, and wait for the validation to pass.
 7. Click **create** if the validation has passed, and wait for the deployment to finish.
 8. Under Next Steps, click **Go to resource**.
-9. Navigate to **Configuration** on the left bar, and fill in the **Messaging Endpoint**. (To get the correct messaging endpoint based on the server URL, the server version, and the instance configurations. use the `microsoft-teams-create-messaging-endpoint`command).
+9. Navigate to **Settings -> Configuration** on the left bar, and fill in the **Messaging Endpoint**.
+
+    - To get the correct messaging endpoint based on the server URL, the server version, and the instance configurations. use the `microsoft-teams-create-messaging-endpoint`command.
+**Note:** Using this command requires an active integration instance. This step can be done after completing the [instance configuration](#configure-microsoft-teams-on-cortex-xsoar) section.
+
 10. Store the **Microsoft App ID** value for the next steps, and navigate to **Manage** next to it.
 11. Click **New Client Secret**, fill in the **Description** and **Expires** fields as desired. Then click **Add**.
 12. Copy the client secret from the **value** field and store it for the next steps.
@@ -182,71 +195,66 @@ In order to connect to Microsoft Teams use one of the following authentication m
 1. *Client Credentials Flow*
 2. *Authorization Code Flow*
 
-##### Client Credentials Flow
+#### Client Credentials Flow
 
 Note: [The chat commands](#chat-commands) are only supported when using the `Authorization Code flow`.
 
+Executing commands when using client credentials requires **Application Permissions**.
+Perform the following steps to add the needed permissions:
+
 1. Go to your Microsoft Azure portal, and from the left navigation pane select **Azure Active Directory > App registrations**.
 2. Search for and click **Demisto Bot**.
 3. Click **API permissions > Add a permission > Microsoft Graph > Application permissions**.
-4. For the following permissions, search for the permission, select the checkbox, and click **Add permissions**.
-  - User.Read.All
-  - Group.ReadWrite.All
-  - Calls.Initiate.All
-  - Calls.InitiateGroupCall.All
-  - OnlineMeetings.ReadWrite.All
-  - ChannelMember.ReadWrite.All
-  - Channel.Create
+4. For each permission, search for the permission, select the checkbox, and click **Add permissions**.
+   **Application permissions required to use all credential flow supported commands:**
 
-5. Verify that all permissions were added, and click **Grant admin consent for Demisto**.
+    - `User.Read.All`
+    - `GroupMember.Read.All`
+    - `Channel.ReadBasic.All`
+    - `ChannelMember.ReadWrite.All`
+    - `Channel.Create`
+    - `Channel.Delete.All`
+    - `OnlineMeetings.ReadWrite.All`
+    - `Calls.Initiate.All`
+
+    Alternatively, check each relevant command section below for the minimum permissions it requires.
+
+5. Verify that all the needed permissions were added, and click **Grant admin consent for Demisto**.
 6. When prompted to verify granting permissions, click **Yes**, and verify that permissions were successfully added.
-
 
 #### Authorization Code Flow
 
-Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/api/application-post-calls?view=graph-rest-1.0&tabs=http) command is only supported when using the `Client Credentials flow` due to a limitation in Microsoft's permissions system. 
+Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/api/application-post-calls?view=graph-rest-1.0&tabs=http) command is only supported when using the `Client Credentials flow` due to a limitation in Microsoft's permissions system.
+
+Executing commands when using an authorization code requires **Delegated Permissions**.
+Perform the following steps to add the needed permissions:
 
 1. Go to your Microsoft Azure portal, and from the left navigation pane select **Azure Active Directory > App registrations**.
 2. Search for and click **Demisto Bot**.
-3. Click **API permissions > Add a permission > Microsoft Graph > Application permissions**.
-4. For the following permissions, search for the permission, select the checkbox and click **Add permissions**.
-    ###### Required Application Permissions:
-      - User.Read.All
-      - Group.ReadWrite.All
-      - OnlineMeetings.ReadWrite.All 
-      - ChannelMember.ReadWrite.All
-      - Channel.Create
-      - Chat.Create
-      - TeamsAppInstallation.ReadWriteSelfForChat.All
-      - TeamsAppInstallation.ReadWriteForChat.All
-      - AppCatalog.Read.All
+3. Click **API permissions > Add a permission > Microsoft Graph > Delegated permissions**.
+4. For each permission, search for the permission, select the checkbox, and click **Add permissions**.
+   **Delegated permissions required to use all auth code flow supported commands:**
 
-    ###### Required Delegated Permissions:
-      - OnlineMeetings.ReadWrite
-      - ChannelMessage.Send
-      - Chat.ReadWrite
-      - ChatMessage.Send
-      - Group.ReadWrite.All
-      - Channel.Create
-      - ChannelSettings.ReadWrite.All
-      - ChatMember.ReadWrite
-      - Chat.Create
-      - TeamsAppInstallation.ReadWriteForChat
-      - TeamsAppInstallation.ReadWriteSelfForChat
-      - User.Read.All
-      - AppCatalog.Read.All
+    - `User.Read.All`
+    - `GroupMember.Read.All`
+    - `Channel.ReadBasic.All`
+    - `ChannelMember.ReadWrite.All`
+    - `Channel.Create`
+    - `Channel.Delete.All`
+    - `OnlineMeetings.ReadWrite.All`
+    - `Chat.ReadBasic`
+    - `Chat.Create`
+    - `ChatMessage.Send`
+    - `ChatMember.ReadWrite`
+    - `AppCatalog.Read.All`
+    - `TeamsAppInstallation.ReadWriteSelfForChat`
+
+    Alternatively, check each relevant command section below for the minimum permissions it requires.
+
 5. Verify that all permissions were added, and click **Grant admin consent for Demisto**.
 6. When prompted to verify granting permissions, click **Yes**, and verify that permissions were successfully added.
 7. Click **Expose an API** and add **Application ID URI**
-8. Click **Expose an API > Add a scope** > 
-   - Chat.ReadWrite
-   - ChatMessage.Send
-   - ChannelSettings.ReadWrite.All
-   - ChannelMember.Read.All
-   - ChannelMember.ReadWrite.All
-   - TeamsAppInstallation.ReadWriteForTeam
-9. Click **Authentication > Platform configurations > Add a platform.** Choose **Web** and add Redirect URIs: https://login.microsoftonline.com/common/oauth2/nativeclient
-
+8. Click **Authentication > Platform configurations > Add a platform.** Choose **Web** and add Redirect URIs: <https://login.microsoftonline.com/common/oauth2/nativeclient>
 
 ### Configure Microsoft Teams on Cortex XSOAR
 
@@ -290,7 +298,8 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
 5. Set the *Long running instance* parameter to 'True'.
 6. Save the instance.
 7. Click **Test** to validate the URLs, token, and connection.
-8. [Add the Demisto Bot to a Team](#Add-the-Demisto-Bot-to-a-Team)
+8. Configure the messaging endpoint if you haven't done so already (Step #9 in the [Bot Creation](#creating-the-demisto-bot-using-microsoft-azure-portal) section).
+9. [Add the Demisto Bot to a Team](#add-the-demisto-bot-to-a-team)
 
 ##### Authentication Using the Authorization Code Flow
 
@@ -301,35 +310,38 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
 5. Set the *Default team* and the *Notifications channel* parameters.
 6. Set the *Long running instance* parameter to 'True'.
 7. Save the instance.
-8. [Add the Demisto Bot to a Team](#Add-the-Demisto-Bot-to-a-Team)
-9. Run the ***!microsoft-teams-generate-login-url*** command in the War Room and follow the instructions.
-10. Save the instance.
-11. Run the ***!microsoft-teams-auth-test*** command. A 'Success' message should be printed to the War Room.
-
+8. Configure the messaging endpoint if you haven't done so already (Step #9 in the [Bot Creation](#creating-the-demisto-bot-using-microsoft-azure-portal) section).
+9. [Add the Demisto Bot to a Team](#add-the-demisto-bot-to-a-team)
+10. Run the ***!microsoft-teams-generate-login-url*** command in the War Room and follow the instructions.
+11. Save the instance.
+12. Run the ***!microsoft-teams-auth-test*** command. A 'Success' message should be printed to the War Room.
 
 ### Add the Demisto Bot to a Team
 
 **Notes:**
+
 - The following needs to be done after configuring the integration on Cortex XSOAR/Cortex XSIAM (the previous step).
 - According to [Microsoft](https://learn.microsoft.com/en-us/answers/questions/1600179/ms-teams-custom-app-takes-very-long-time-to-show-u) it usually takes up to 3-5 business days for the app to reflect in the "built for your org" section.
 
 1. Download the ZIP file located at the bottom of this article.
 2. Uncompress the ZIP file. You should see 3 files (`manifest.json`, `color.png` and `outline.png`).
 3. Open the `manifest.json` file that was extracted from the ZIP file.
-4. In the `id`, replace the value of the attribute with the value of the *Bot ID* from step 5 of the **Create the Demisto Bot in Microsoft Teams section**.
-5. In the `bots` list, replace the value of the `botId` attribute with the value of the *Bot ID* from step 5 of the **Create the Demisto Bot in Microsoft Teams section**.
-6. In the `webApplicationInfo`, replace the value of `id` attribute with the value of the *Bot ID* from step 5 of the **Create the Demisto Bot in Microsoft Teams section**.
-7. Compress the 3 files (the modified `manifest.json` file, `color.png` and `outline.png`).
-8. Navigate to [Manage Apps in the Microsoft Teams admin center](https://admin.teams.microsoft.com/policies/manage-apps).
-9. Click the **Actions** button and then the **+ Upload new app** button.
-10. In the pop-up window, click the **Upload** button.
-11. Browse for the ZIP file you created in step 7, open it, and wait a few seconds until it loads.
-12. Search for **Demisto Bot**.
-13. In the line where `Demisto Bot` shows under **Name**, tick the V on the left.
-14. Click the **Add to team** button.
-15. In the search box, type the name of the team to which you want to add the bot.
-16. Click the **Add** button on the wanted team and then click the **Apply** button.
+4. Update the following values to use the *Bot ID* from step 5 of the [Create the Demisto Bot in Microsoft Teams](#creating-the-demisto-bot-using-microsoft-azure-portal) section:
 
+    1. The `id` field.
+    2. The `BotId` attribute in the `bots` list.
+    3. The `id` attribute in the `webApplicationInfo` field.
+
+5. Compress the 3 files (the modified `manifest.json` file, `color.png` and `outline.png`).
+6. Navigate to [Manage Apps in the Microsoft Teams admin center](https://admin.teams.microsoft.com/policies/manage-apps).
+7. Click the **Actions** button and then the **+ Upload new app** button.
+8. In the pop-up window, click the **Upload** button.
+9. Browse for the ZIP file you created in step 7, open it, and wait a few seconds until it loads.
+10. Search for **Demisto Bot**.
+11. In the line where `Demisto Bot` shows under **Name**, tick the V on the left.
+12. Click the **Add to team** button.
+13. In the search box, type the name of the team to which you want to add the bot.
+14. Click the **Add** button on the wanted team and then click the **Apply** button.
 
 ## Known Limitations
 ---
@@ -362,7 +374,16 @@ and picture to match the bot will make it appear to be from the same source.
 
 ##### Required Permissions
 
-`Group.ReadWrite.All`
+`GroupMember.Read.All`
+
+`Channel.ReadBasic.All`
+
+*Note: The required permission type depends on the authentication method used:*
+
+|||
+|-------------|-------------|
+|*Client Credentials*|*Application permissions*|
+|*Authorization Code*|*Delegated permissions*|
 
 ##### Input
 
@@ -402,7 +423,18 @@ Mirrors the Cortex XSOAR/Cortex XSIAM investigation to the specified Microsoft T
 
 ##### Required Permissions
 
-`Group.ReadWrite.All`
+`GroupMember.Read.All`
+
+`Channel.ReadBasic.All`
+
+`Channel.Create`
+
+*Note: The required permission type depends on the authentication method used:*
+
+|||
+|-------------|-------------|
+|*Client Credentials*|*Application permissions*|
+|*Authorization Code*|*Delegated permissions*|
 
 ##### Input
 
@@ -437,7 +469,18 @@ Deletes the specified Microsoft Teams channel.
 
 ##### Required Permissions
 
-`Group.ReadWrite.All`
+`GroupMember.Read.All`
+
+`Channel.ReadBasic.All`
+
+`Channel.Delete.All`
+
+*Note: The required permission type depends on the authentication method used:*
+
+|||
+|-------------|-------------|
+|*Client Credentials*|*Application permissions*|
+|*Authorization Code*|*Delegated permissions*|
 
 ##### Input
 
@@ -494,10 +537,11 @@ Rings a user's Teams account. Note: This is a ring only! no media will play in c
 
 `microsoft-teams-ring-user`
 
-##### Required Permissions
+##### Required Permissions (Application)
+
+`User.Read.All`
 
 `Calls.Initiate.All`
-`Calls.InitiateGroupCall.All`
 
 ##### Input
 
@@ -530,7 +574,19 @@ For a comparison of Teams features for each channel type, see the Microsoft docu
 ##### Required Permissions
 
 `User.Read.All`
+
 `ChannelMember.ReadWrite.All`
+
+`Channel.ReadBasic.All`
+
+`GroupMember.Read.All`
+
+*Note: The required permission type depends on the authentication method used:*
+
+|||
+|-------------|-------------|
+|*Client Credentials*|*Application permissions*|
+|*Authorization Code*|*Delegated permissions*|
 
 ##### Input
 
@@ -565,8 +621,18 @@ See also [Channel feature comparison](https://learn.microsoft.com/en-us/Microsof
 
 ##### Required Permissions
 
-`Group.ReadWrite.All`
+`User.Read.All`
+
+`GroupMember.Read.All`
+
 `Channel.Create`
+
+*Note: The required permission type depends on the authentication method used:*
+
+|||
+|-------------|-------------|
+|*Client Credentials*|*Application permissions*|
+|*Authorization Code*|*Delegated permissions*|
 
 ##### Input
 
@@ -600,8 +666,10 @@ Creates a new meeting in Microsoft Teams.
 `microsoft-teams-create-meeting`
 
 ##### Required Permissions
-`OnlineMeetings.ReadWrite.All` - Application
-`OnlineMeetings.ReadWrite` - Delegated
+
+`OnlineMeetings.ReadWrite.All` - *Application (Client Credentials)*
+
+`OnlineMeetings.ReadWrite` - *Delegated (Authorization Code)*
 
 When using `Client Credentials Flow`:
 Besides setting up this permission, in order to create a meeting, the Azure admin needs to configure application access policy
@@ -653,7 +721,18 @@ Removes a member (user) from a private/shared channel.
 
 ##### Required Permissions
 
-`ChannelMember.ReadWrite.All` - Application
+`GroupMember.Read.All`
+
+`Channel.ReadBasic.All`
+
+`ChannelMember.ReadWrite.All`
+
+*Note: The required permission type depends on the authentication method used:*
+
+|||
+|-------------|-------------|
+|*Client Credentials*|*Application permissions*|
+|*Authorization Code*|*Delegated permissions*|
 
 ##### Input
 
@@ -685,8 +764,18 @@ Retrieves a list of members from a channel.
 
 ##### Required Permissions
 
-`ChannelMember.Read.All` - Application
-`ChannelMember.ReadWrite.All` - Application
+`GroupMember.Read.All`
+
+`Channel.ReadBasic.All`
+
+`ChannelMember.Read.All`
+
+*Note: The required permission type depends on the authentication method used:*
+
+|||
+|-------------|-------------|
+|*Client Credentials*|*Application permissions*|
+|*Authorization Code*|*Delegated permissions*|
 
 ##### Input
 
@@ -736,14 +825,15 @@ Notes:
 
 `microsoft-teams-chat-create`
 
-##### Required Permissions
-`Chat.Create` - Delegated, Application<br>
-`Chat.ReadWrite` - Delegated<br>
-`TeamsAppInstallation.ReadWriteForChat` - Delegated<br>
-`TeamsAppInstallation.ReadWriteSelfForChat` - Delegated<br>
-`TeamsAppInstallation.ReadWriteSelfForChat.All` - Application<br>           
-`TeamsAppInstallation.ReadWriteForChat.All` - Application<br>
-`AppCatalog.Read.All` - Application<br>
+##### Required Permissions (Delegated)
+
+`User.Read.All`
+
+`Chat.Create`
+
+`AppCatalog.Read.All`
+
+`TeamsAppInstallation.ReadWriteSelfForChat`
 
 ##### Input
 
@@ -789,14 +879,17 @@ This command works with the consent user, not with the bot. Which means, the mes
 
 `microsoft-teams-message-send-to-chat`
 
-##### Required Permissions
-`ChatMessage.Send` - Delegated<br>
-`Chat.ReadWrite` - Delegated<br>
-`TeamsAppInstallation.ReadWriteForChat` - Delegated<br>
-`TeamsAppInstallation.ReadWriteSelfForChat` - Delegated<br>
-`TeamsAppInstallation.ReadWriteSelfForChat.All` - Application<br>               
-`TeamsAppInstallation.ReadWriteForChat.All` - Application<br>
-`AppCatalog.Read.All` - Application
+##### Required Permissions (Delegated)
+
+`User.Read.All`
+
+`Chat.Create`
+
+`ChatMessage.Send`
+
+`AppCatalog.Read.All`
+
+`TeamsAppInstallation.ReadWriteSelfForChat`
 
 ##### Input
 
@@ -854,10 +947,11 @@ Adds a member (user) to a group chat.
 
 `microsoft-teams-chat-add-user`
 
-##### Required Permissions
+##### Required Permissions (Delegated)
 
-`ChatMember.ReadWrite` - Delegated
-`Chat.ReadWrite` - Delegated
+`Chat.ReadBasic`
+
+`ChatMember.ReadWrite`
 
 #### Input
 
@@ -887,9 +981,13 @@ Retrieves a list of members from a chat.
 
 `microsoft-teams-chat-member-list`
 
-##### Required Permissions
-`Chat.ReadWrite` - Delegated
-`ChatMember.ReadWrite` - Delegated
+##### Required Permissions (Delegated)
+
+`User.Read.All`
+
+`Chat.ReadBasic`
+
+`Chat.Create`
 
 #### Input
 
@@ -930,9 +1028,13 @@ Retrieves a list of chats that the user is part of. If 'chat' is specified - ret
 
 `microsoft-teams-chat-list`
 
-##### Required Permissions
+##### Required Permissions (Delegated)
 
-`Chat.ReadWrite` - Delegated
+`User.Read.All`
+
+`Chat.ReadBasic`
+
+`Chat.Create`
 
 #### Input
 
@@ -980,8 +1082,13 @@ Retrieves a list of messages in a chat.
 
 `microsoft-teams-chat-message-list`
 
-##### Required Permissions
-`Chat.ReadWrite` - Delegated
+##### Required Permissions (Delegated)
+
+`User.Read.All`
+
+`Chat.Read`
+
+`Chat.Create`
 
 #### Input
 
@@ -1041,9 +1148,11 @@ Updates the chat name. It can only be set for group chats.
 
 `microsoft-teams-chat-update`
 
-##### Required Permissions
+##### Required Permissions (Delegated)
 
-`Chat.ReadWrite` - Delegated
+`User.Read.All`
+
+`Chat.ReadWrite`
 
 #### Input
 
@@ -1281,6 +1390,7 @@ If your authentication type is the `Authorization Code Flow`, after running the 
    First, make sure to remove the bot from the team (only via the Teams app), before clearing the integration cache, and add it back after done.
    If the bot belongs to multiple teams, make sure to remove it from all the teams it was added to, and then clear the cache.
 5. If the previous step did not work, remove the bot from the team, go to the Microsoft Teams admin center > Manage apps and hard refresh the page!(cmd+ shift + R), then add the bot to the team again.
+6. If you are receiving repeated `Connection reset by peer` errors, the requests might be getting blocked temporarily by Azure due to repeated permission errors. Ensure you are not missing any permissions that might cause constant failures and eventually leading to server timeouts.
 
 ## Download Demisto Bot
 
