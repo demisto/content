@@ -1321,102 +1321,108 @@ inputs:
     simple: "False"
   required: false
   description: Whether to open a ticket automatically in a ticketing system. (True/False).
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: serviceNowShortDescription
   value:
     simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
   required: false
   description: A short description of the ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: serviceNowImpact
   value: {}
   required: false
   description: The impact for the new ticket. Leave empty for ServiceNow default impact.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: serviceNowUrgency
   value: {}
   required: false
   description: The urgency of the new ticket. Leave empty for ServiceNow default urgency.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: serviceNowSeverity
   value: {}
   required: false
-  description: The severity of the new ticket. Leave empty for ServiceNow default severity.
-  playbookInputQuery:
+  description: The severity of the new ticket. Leave empty for ServiceNow default
+    severity.
+  playbookInputQuery: null
 - key: serviceNowTicketType
   value: {}
   required: false
-  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
-  playbookInputQuery:
+  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request",
+    "sc_request", "sc_task", or "sc_req_item". Default is "incident".
+  playbookInputQuery: null
 - key: serviceNowCategory
   value: {}
   required: false
   description: The category of the ServiceNow ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: serviceNowAssignmentGroup
   value: {}
   required: false
   description: The group to which to assign the new ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ZendeskPriority
   value: {}
   required: false
-  description: The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low".
-  playbookInputQuery:
+  description: The urgency with which the ticket should be addressed. Allowed values
+    are "urgent", "high", "normal", or "low".
+  playbookInputQuery: null
 - key: ZendeskRequester
   value: {}
   required: false
   description: The user who requested this ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ZendeskStatus
   value: {}
   required: false
-  description: The state of the ticket. Allowed values are "new", "open", "pending", "hold", "solved", or "closed".
-  playbookInputQuery:
+  description: The state of the ticket. Allowed values are "new", "open", "pending",
+    "hold", "solved", or "closed".
+  playbookInputQuery: null
 - key: ZendeskSubject
   value:
     simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
   required: false
   description: The value of the subject field for this ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ZendeskTags
   value: {}
   required: false
   description: The array of tags applied to this ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ZendeskType
   value: {}
   required: false
-  description: The type of this ticket. Allowed values are "problem", "incident", "question", or "task".
-  playbookInputQuery:
+  description: The type of this ticket. Allowed values are "problem", "incident",
+    "question", or "task".
+  playbookInputQuery: null
 - key: ZendeskAssigne
   value: {}
   required: false
   description: The agent currently assigned to the ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ZendeskCollaborators
   value: {}
   required: false
   description: The users currently CC'ed on the ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: description
   value:
     simple: ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url}
   required: false
   description: The ticket description.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: addCommentPerEndpoint
   value:
     simple: "True"
   required: false
-  description: 'Whether to append a new comment to the  ticket for each endpoint in the incident. Possible values: True/False.'
-  playbookInputQuery:
+  description: 'Whether to append a new comment to the  ticket for each endpoint in the incident.
+    Possible values: True/False.'
+  playbookInputQuery: null
 - key: CommentToAdd
   value:
     simple: '${alert.name}. Alert ID: ${alert.id}'
   required: false
   description: Comment for the ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 inputSections:
 - inputs:
   - ShouldCloseAutomatically
