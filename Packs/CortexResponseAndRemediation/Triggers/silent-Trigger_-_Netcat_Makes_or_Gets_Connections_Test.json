@@ -1,9 +1,9 @@
 {
     "trigger_id": "407c5db410d816a487249e77cbbf411a",
-    "playbook_id": "Netcat Makes or Gets Connections Test",
+    "playbook_id": "silent-Netcat Makes or Gets Connections Test",
     "suggestion_reason": "Recommended for `Netcat Makes or Gets Connections` Alerts ",
     "description": "This trigger is responsible for handling `Netcat Makes or Gets Connections` alert",
-    "trigger_name": "Netcat Makes or Gets Connections Test",
+    "trigger_name": "silent-Netcat Makes or Gets Connections Test",
     "fromVersion": "8.8.0",
     "issilent": true,
     "alerts_filter": {
