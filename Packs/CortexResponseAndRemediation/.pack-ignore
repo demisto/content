@@ -1,11 +1,18 @@
 [file:playbook-Azure_AD_account_unlock_or_password_reset.yml]
 ignore=GR103
 
+[file:playbook-Azure_AD_account_unlock_or_password_reset_Test.yml]
+ignore=GR103
+
 [file:silent-playbook-Authentication_method_added_to_an_Azure_account.yml]
 ignore=GR103
 
 [file:playbook-A_mail_forwarding_rule_was_configured_in_Google_Workspace.yml]
 ignore=PB106
+
+[file:playbook-A_mail_forwarding_rule_was_configured_in_Google_Workspace_Test.yml]
+ignore=PB106
+
 
 [file:README.md]
 ignore=RM104,RM106
@@ -15,7 +22,15 @@ ignore=RM104,RM106
 ignore=GR103
 
 # See CIAC-7711, CIAC-11954
+[file:playbook-Suspicious_Hidden_User_Created_Test.yml]
+ignore=GR103
+
+# See CIAC-7711, CIAC-11954
 [file:playbook-Suspicious_Local_Administrator_Login.yml]
+ignore=GR103
+
+# See CIAC-7711, CIAC-11954
+[file:playbook-Suspicious_Local_Administrator_Login_Test.yml]
 ignore=GR103
 
 # See CIAC-7711, CIAC-11954
@@ -26,8 +41,16 @@ ignore=GR103
 [file:playbook-Excessive_User_Account_Lockouts.yml]
 ignore=GR103
 
+# See CIAC-7711, CIAC-11954
+[file:playbook-Excessive_User_Account_Lockouts_Test.yml]
+ignore=GR103
+
 # GR103 is temporary, see CIAC-11954
 [file:playbook-Scheduled_task_created_with_HTTP_or_FTP_reference.yml]
+ignore=GR103
+
+# GR103 is temporary, see CIAC-11954
+[file:playbook-Scheduled_task_created_with_HTTP_or_FTP_reference_Test.yml]
 ignore=GR103
 
 # GR103 fails on SearchAlertsv2
@@ -35,7 +58,15 @@ ignore=GR103
 ignore=GR103
 
 # GR103 fails on SearchAlertsv2
+[file:playbook-A_user_executed_multiple_LDAP_enumeration_queries_Test.yml]
+ignore=GR103
+
+# GR103 fails on SearchAlertsv2
 [file:playbook-SSO_Authentication_With_Suspicious_Characteristics.yml]
+ignore=GR103
+
+# GR103 fails on SearchAlertsv2
+[file:playbook-SSO_Authentication_With_Suspicious_Characteristics_Test.yml]
 ignore=GR103
 
 # GR103 fails on SearchAlertsv2
