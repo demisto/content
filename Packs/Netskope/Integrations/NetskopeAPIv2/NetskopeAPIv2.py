@@ -1,9 +1,10 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import copy
+from collections.abc import Callable
 from http import HTTPStatus
 from typing import Any, NamedTuple
-from collections.abc import Callable
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 MAX_IDS_NUMBER = 289262
 DEFAULT_WAIT_TIME = 5
@@ -1410,7 +1411,7 @@ def fetch_dlp_incidents_as_incidents(
         # set the new incident IDs to avoid duplicates on next fetch
         set_demisto_integration_context("dlp_incident_ids", new_incident_ids,
                                         "append")
-        last_run_timestamp = max(new_incidents, key=lambda k: k["timestamp"]) + 1
+        last_run_timestamp = max(new_incidents, key=lambda k: k["timestamp"])["timestamp"] + 1
     else:
         last_run_timestamp = end_time_number
 
