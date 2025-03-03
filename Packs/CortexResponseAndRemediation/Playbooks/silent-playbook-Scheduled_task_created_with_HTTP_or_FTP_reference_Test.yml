@@ -1,0 +1,1045 @@
+description: 'This playbook is designed to handle the alert "Scheduled task created
+  with HTTP or FTP reference".
+
+
+  The playbook executes the following stages:
+
+
+  Investigation:
+
+  During the alert investigation, the playbook will perform the following:
+
+  - Checks the IP and the URL reputation.
+
+  - Checks the CGO process signature.
+
+  - Searches for related XDR agent alerts to determine if the creation of the scheduled
+  task is part of an attack pattern.
+
+
+  Remediation:
+
+  - Remediation actions will be taken if the CGO process is unsigned, the IP or URL
+  has a malicious reputation, or a related alert is detected. In these cases, the
+  playbook will disable the scheduled task, block the malicious indicators, and close
+  the alert.
+
+
+  Requires: To block the malicious URL and IP, configure ''Palo Alto Networks PAN-OS''
+  integration.
+
+  '
+fromversion: 8.9.0
+id: silent-Scheduled task created with HTTP or FTP reference Test
+inputs: []
+issilent: true
+marketplaces:
+- marketplacev2
+name: silent-Scheduled task created with HTTP or FTP reference Test
+outputs: []
+starttaskid: '0'
+tags:
+- TA0002 - Execution
+- T1053 - Scheduled Task/Job
+tasks:
+  '0':
+    continueonerrortype: ''
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: e27de70b-ada6-422e-81fe-6950a566b050
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: e27de70b-ada6-422e-81fe-6950a566b050
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 80\n  }\n}"
+  '1':
+    continueonerrortype: ''
+    id: '1'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 6f7359e7-6ace-48a6-8f72-c30dc8bce825
+      iscommand: false
+      name: Investigation
+      type: title
+      version: -1
+    taskid: 6f7359e7-6ace-48a6-8f72-c30dc8bce825
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 210\n  }\n}"
+  '10':
+    continueonerror: true
+    continueonerrortype: ''
+    id: '10'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '14'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: ExtractedTaskName
+      value:
+        complex:
+          accessor: targetprocesscmd
+          root: alert
+          transformers:
+          - args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (?i).*tn\s(.*?)\s\/
+              unpack_matches: {}
+            operator: RegexExtractAll
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Extract the name and path of the malicious scheduled task and sets
+        the value in context key 'ExtractedTaskName'.
+      id: f5deb02f-7086-4e3f-8672-40de9759ae36
+      iscommand: false
+      name: Extract the name and path of the malicious scheduled task
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: f5deb02f-7086-4e3f-8672-40de9759ae36
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 990\n  }\n}"
+  '13':
+    continueonerrortype: ''
+    id: '13'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '26'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeNotes:
+        simple: Malicious scheduled task detected
+      closeReason:
+        simple: Resolved - Handled by the playbook "Scheduled task created with HTTP
+          or FTP reference"
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Close the current alert.
+      id: 4189ee6f-1a2c-4ff7-8c0e-8d096e6ecf0e
+      iscommand: true
+      name: Close Alert - True Positive
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 4189ee6f-1a2c-4ff7-8c0e-8d096e6ecf0e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2690\n  }\n}"
+  '14':
+    continueonerror: true
+    continueonerrortype: errorPath
+    id: '14'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#error#':
+      - '22'
+      '#none#':
+      - '29'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      commands:
+        simple: powershell.exe schtasks /change /tn "${ExtractedTaskName}" /disable
+      endpoint_ids:
+        simple: ${alert.agentid}
+      timeout:
+        simple: '120'
+      timeout_in_seconds:
+        simple: '120'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Disable the malicious scheduled task by executing shell commands.
+      id: 5fb7fc6e-1bed-4e79-8ba3-b757fd583e94
+      iscommand: true
+      name: Disable the malicious scheduled task
+      script: '|||core-run-script-execute-commands'
+      type: regular
+      version: -1
+    taskid: 5fb7fc6e-1bed-4e79-8ba3-b757fd583e94
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1160\n  }\n}"
+  '17':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Score
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: DBotScore.Type
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: ip
+                root: DBotScore
+          operator: isEqualNumber
+          right:
+            value:
+              simple: '3'
+      label: 'yes'
+    continueonerrortype: ''
+    id: '17'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '13'
+      'yes':
+      - '20'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks whether a malicious IP is detected and requires blocking.
+      id: 47529ac8-a0ed-4d35-8019-a8b679181f22
+      iscommand: false
+      name: Is there a malicious IP to block?
+      type: condition
+      version: -1
+    taskid: 47529ac8-a0ed-4d35-8019-a8b679181f22
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 670,\n    \"y\": 2000\n  }\n}"
+  '18':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Score
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: DBotScore.Type
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: url
+                root: DBotScore
+          operator: isEqualNumber
+          right:
+            value:
+              simple: '3'
+      label: 'yes'
+    continueonerrortype: ''
+    id: '18'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '13'
+      'yes':
+      - '25'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks whether a malicious URL is detected and requires blocking.
+      id: 9b2696ef-df04-4496-8451-531d164d904c
+      iscommand: false
+      name: Is there a malicious URL to block?
+      type: condition
+      version: -1
+    taskid: 9b2696ef-df04-4496-8451-531d164d904c
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 230,\n    \"y\": 2000\n  }\n}"
+  '2':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: alert.cgosignature
+                    operator: isNotEmpty
+                root: alert.cgosignature
+          operator: isNotEqualString
+          right:
+            value:
+              simple: SIGNATURE_SIGNED
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Score
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: DBotScore.Type
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: url
+                root: DBotScore
+          operator: isEqualNumber
+          right:
+            value:
+              simple: '3'
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Score
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: DBotScore.Type
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: ip
+                root: DBotScore
+          operator: isEqualNumber
+          right:
+            value:
+              simple: '3'
+      label: 'yes'
+    continueonerrortype: ''
+    id: '2'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '6'
+      'yes':
+      - '3'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'Determines the appropriate verdict based on:
+
+        - Process Signature (CGO Process)
+
+        - IP Reputation
+
+        - URL Reputation'
+      id: 1726e203-af36-4ddf-88ea-b94006caadeb
+      iscommand: false
+      name: Check for unsigned CGO or malicious IP or URL
+      type: condition
+      version: -1
+    taskid: 1726e203-af36-4ddf-88ea-b94006caadeb
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 340\n  }\n}"
+  '20':
+    continueonerrortype: ''
+    id: '20'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '13'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      MaliciousIPs:
+        complex:
+          accessor: Indicator
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Type
+              operator: isEqualString
+              right:
+                value:
+                  simple: ip
+          - - left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Score
+              operator: isEqualNumber
+              right:
+                value:
+                  simple: '3'
+          root: DBotScore
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ''
+      description: 'This playbook blocks IP addresses with 2 optional actions:
+
+
+        - Block IP addresses using Static Address Groups in Palo Alto Networks Panorama
+        or Firewall. The playbook receives malicious IP addresses and an address group
+        name as inputs, verifies that the addresses are not already a part of the
+        address group, adds them and commits the configuration.
+
+
+
+        - Utilize the Dynamic Address Group (DAG) capability of PAN-OS. DAG enables
+        analysts to create a rule one time, where the group is the source/destination,
+        and adds IP addresses dynamically without the need to commit the configuration
+        every time.
+
+        The playbook checks if the given tag already exists. If the tag exists, then
+        the IP address is added to the tag.
+
+        If the tag does not exist, a new address group is created with the given tag
+        and a matching rule, and the configuration is committed.'
+      id: 53d9f3a4-a2b0-488e-8dc1-3ec51aea3c00
+      iscommand: false
+      name: PAN-OS - Block IP
+      playbookName: PAN-OS - Block IP
+      type: playbook
+      version: -1
+    taskid: 53d9f3a4-a2b0-488e-8dc1-3ec51aea3c00
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 670,\n    \"y\": 2190\n  }\n}"
+  '21':
+    continueonerrortype: ''
+    id: '21'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '13'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AutoCommit:
+        simple: 'Yes'
+      CustomURLCategory:
+        simple: XSIAM - Malicious URLs
+      URL:
+        complex:
+          accessor: Indicator
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Type
+              operator: isEqualString
+              right:
+                value:
+                  simple: url
+          - - left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Score
+              operator: isEqualNumber
+              right:
+                value:
+                  simple: '3'
+          root: DBotScore
+          transformers:
+          - operator: uniq
+      pre-post:
+        simple: pre-rulebase
+      type:
+        simple: URL List
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ''
+      description: 'This playbook blocks URLs using Palo Alto Networks Panorama or
+        Firewall through Custom URL Categories.
+
+        The playbook checks whether the input URL category already exists, and if
+        the URLs are a part of this category. Otherwise, it will create the category,
+        block the URLs, and commit the configuration.'
+      id: a7b4dd30-58d1-4e5a-8fae-e4079d446aae
+      iscommand: false
+      name: PAN-OS - Block URL - Custom URL Category
+      playbookName: PAN-OS - Block URL - Custom URL Category
+      type: playbook
+      version: -1
+    taskid: a7b4dd30-58d1-4e5a-8fae-e4079d446aae
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 30,\n    \"y\": 2520\n  }\n}"
+  '22':
+    continueonerrortype: ''
+    id: '22'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '23'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'Dear Analyst,
+
+
+        Please note that during the remediation process, the playbook failed to disable
+        the scheduled task ${ExtractedTaskName}
+
+
+        Please take manual action to disable the scheduled task. '
+      id: e5e0d51f-b834-47d0-81f2-326aaab123dc
+      iscommand: false
+      name: Disable the malicious scheduled task manually
+      type: regular
+      version: -1
+    taskid: e5e0d51f-b834-47d0-81f2-326aaab123dc
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 0,\n    \"y\": 1690\n  }\n}"
+  '23':
+    continueonerrortype: ''
+    id: '23'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '17'
+      - '18'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: c5219f31-047d-4cee-888e-f7c63909a296
+      iscommand: false
+      name: Block Malicious Indicators
+      type: title
+      version: -1
+    taskid: c5219f31-047d-4cee-888e-f7c63909a296
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1860\n  }\n}"
+  '24':
+    continueonerrortype: ''
+    id: '24'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body:
+        simple: 'Should Block the following malicious URL: ${BadUrl}   using PAN-OS?'
+      cc: null
+      format: ''
+      methods: []
+      replyOptions:
+      - 'Yes'
+      - 'No'
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      'No':
+      - '13'
+      'Yes':
+      - '21'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Analyst approval required for URL blocking.
+      id: e16a5d0b-f119-4691-811e-28c3d0221004
+      iscommand: false
+      name: Analyst approval for Block URL
+      type: condition
+      version: -1
+    taskid: e16a5d0b-f119-4691-811e-28c3d0221004
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 230,\n    \"y\": 2350\n  }\n}"
+  '25':
+    continueonerrortype: ''
+    id: '25'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '24'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: BadUrl
+      value:
+        complex:
+          accessor: Indicator
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Type
+              operator: isEqualString
+              right:
+                value:
+                  simple: url
+          - - left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Score
+              operator: isEqualNumber
+              right:
+                value:
+                  simple: '3'
+          root: DBotScore
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: "Set a value in context under the key you entered. If no value\
+        \ is entered, the script doesn't do anything.\n\nThis automation runs using\
+        \ the default Limited User role, unless you explicitly change the permissions.\n\
+        For more information, see the section about permissions here:\n- For Cortex\
+        \ XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations\
+        \ \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n\
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      id: 635dc7e9-df29-49fe-8218-dbf28d22be32
+      iscommand: false
+      name: Set malicious URL's
+      scriptName: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: 635dc7e9-df29-49fe-8218-dbf28d22be32
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 230,\n    \"y\": 2190\n  }\n}"
+  '26':
+    continueonerrortype: ''
+    id: '26'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: ff18f72c-0256-4776-823c-90dd05fdba39
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: ff18f72c-0256-4776-823c-90dd05fdba39
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2850\n  }\n}"
+  '28':
+    continueonerrortype: ''
+    id: '28'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '23'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: "Dear Analyst,\n\nPlease note that during the remediation process,\
+          \ the playbook executed a shell command to disable the following scheduled\
+          \ task: \n${ExtractedTaskName}"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Prints text to war room (Markdown supported)
+      id: 4ebfbf7e-b9c0-4ec7-86c5-b741ec7142fa
+      iscommand: false
+      name: Notify to War Room - Scheduled Task Disabled
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: 4ebfbf7e-b9c0-4ec7-86c5-b741ec7142fa
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1690\n  }\n}"
+  '29':
+    continueonerrortype: ''
+    id: '29'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '30'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action_id:
+        simple: ${Core.ScriptRun.action_id}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Retrieve the results of a script execution action.
+      id: 917a0b85-38b9-4f5a-86bf-2bc724829f8e
+      iscommand: true
+      name: Get script execution results
+      script: '|||core-get-script-execution-results'
+      type: regular
+      version: -1
+    taskid: 917a0b85-38b9-4f5a-86bf-2bc724829f8e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1325\n  }\n}"
+  '3':
+    continueonerrortype: ''
+    id: '3'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '10'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: ababf146-0f9f-4621-8323-18c3256738ee
+      iscommand: false
+      name: Remediation
+      type: title
+      version: -1
+    taskid: ababf146-0f9f-4621-8323-18c3256738ee
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 860\n  }\n}"
+  '30':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: Core.ScriptResult.results.standard_output
+          operator: AnyMatch
+          right:
+            value:
+              simple: SUCCESS
+      label: 'yes'
+    continueonerrortype: ''
+    id: '30'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '22'
+      'yes':
+      - '28'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Verify if the script successfully disabled the task.
+      id: 9bca942b-9378-49c2-85f9-1b04f168f8a3
+      iscommand: false
+      name: Has the script disabled the task successfully?
+      type: condition
+      version: -1
+    taskid: 9bca942b-9378-49c2-85f9-1b04f168f8a3
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1490\n  }\n}"
+  '31':
+    continueonerrortype: ''
+    id: '31'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: a3fc63d5-f57f-4e5b-89cb-9fcd435227fc
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: a3fc63d5-f57f-4e5b-89cb-9fcd435227fc
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 1210,\n    \"y\": 1150\n  }\n}"
+  '5':
+    continueonerrortype: ''
+    id: '5'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '9'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: d6cce08c-349e-44db-807d-b6348886db73
+      iscommand: false
+      name: No Results Found
+      type: title
+      version: -1
+    taskid: d6cce08c-349e-44db-807d-b6348886db73
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 1210,\n    \"y\": 860\n  }\n}"
+  '6':
+    continueonerrortype: ''
+    id: '6'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        complex:
+          accessor: parentXDRIncident
+          root: alert
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: '2'
+            operator: Cut
+          - args:
+              prefix:
+                value:
+                  simple: 'caseid:'
+              suffix: {}
+            operator: concat
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'This task searches for Cortex XSIAM related alerts to the current
+        incident.
+
+
+        '
+      id: a4828e36-f8a7-4072-8c5b-959194e04595
+      iscommand: false
+      name: Get Incident related alerts
+      scriptName: SearchAlertsV2
+      type: regular
+      version: -1
+    taskid: a4828e36-f8a7-4072-8c5b-959194e04595
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 840,\n    \"y\": 525\n  }\n}"
+  '8':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: foundIncidents.sourceBrand
+          operator: isEqualString
+          right:
+            value:
+              simple: TRAPS
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: foundIncidents.CustomFields.categoryname
+          operator: isEqualString
+          right:
+            value:
+              simple: Malware
+      label: 'yes'
+    continueonerrortype: ''
+    id: '8'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '5'
+      'yes':
+      - '3'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Determines whether the incident contains agent alerts indicating
+        that the alert was part of an attack pattern.
+      id: 7f8c3f22-69fa-442d-854f-b29ccb764512
+      iscommand: false
+      name: Found any alerts indicating this is a malicious scheduled task?
+      type: condition
+      version: -1
+    taskid: 7f8c3f22-69fa-442d-854f-b29ccb764512
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 840,\n    \"y\": 690\n  }\n}"
+  '9':
+    continueonerrortype: ''
+    id: '9'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '31'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeNotes:
+        simple: No Results Found
+      closeReason:
+        simple: Resolved - Handled by the playbook "Scheduled task created with HTTP
+          or FTP reference"
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 639bf5a9-68a5-4358-878e-9003fb370d6b
+      iscommand: true
+      name: Close Alert - No results returned
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 639bf5a9-68a5-4358-878e-9003fb370d6b
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1210,\n    \"y\": 990\n  }\n}"
+tests:
+- No tests (auto formatted)
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"14_22_#error#\": 0.55,\n    \"17_13_#default#\"\
+  : 0.18,\n    \"17_20_yes\": 0.43,\n    \"18_13_#default#\": 0.16,\n    \"18_25_yes\"\
+  : 0.46,\n    \"24_13_No\": 0.21,\n    \"24_21_Yes\": 0.55,\n    \"2_3_yes\": 0.28,\n\
+  \    \"2_6_#default#\": 0.42,\n    \"30_28_yes\": 0.53,\n    \"8_3_yes\": 0.47,\n\
+  \    \"8_5_#default#\": 0.48\n  },\n  \"paper\": {\n    \"dimensions\": {\n    \
+  \  \"height\": 2835,\n      \"width\": 1590,\n      \"x\": 0,\n      \"y\": 80\n\
+  \    }\n  }\n}"
