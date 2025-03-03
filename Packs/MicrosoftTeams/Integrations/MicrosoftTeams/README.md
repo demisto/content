@@ -359,10 +359,14 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### send-notification
+
 ***
 Sends a message to the specified teams.
-To mention a user in the message, add a semicolon ";" at the end of the user mention. For example: @Bruce Willis;
+To mention a user in the message, add a semicolon ";" at the end of the user mention. For example: @Bruce Willis;.
 
+If sending a reply to a message, the message ID must be provided and the reply will be sent via the Graph API which means
+the message will appear from the account used to authorize the integration instance and not the bot. Setting the account's name
+and picture to match the bot will make it appear to be from the same source.
 
 ##### Base Command
 
@@ -383,20 +387,22 @@ To mention a user in the message, add a semicolon ";" at the end of the user men
 
 ##### Input
 
-| **Argument Name** | **Description**                                                                                                                                                         | **Required** |
-|-------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| channel           | The channel to which to send messages. Supports only standard channels.                                                                                                 | Optional     | 
-| message           | The message to send to the channel or team member.                                                                                                                      | Optional     | 
-| team_member       | Display name or email address of the team member to send the message to.                                                                                                | Optional     | 
-| team              | The team in which the specified channel exists. The team must already exist, and this value will override the default channel configured in the integration parameters. | Optional     | 
-| adaptive_card     | The Microsoft Teams adaptive card to send.                                                                                                                              | Optional     | 
-| to                | The team member to which to send the message.                                                                                                                           | Optional     | 
-| external_form_url_header                | The header of an external form hyperlink.message.                                                                                                                           | Optional     | 
-
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| channel | The channel to which to send messages. Supports only standard channels. | Optional | 
+| message | The message to send to the channel or team member. | Optional | 
+| team_member | Display name or email address of the team member to send the message to. | Optional | 
+| team | The team in which the specified channel exists. The team must already exist, and this value will override the default channel configured in the integration parameters. | Optional | 
+| message_id | ID of the message to send the notification to as a reply when sending to a channel. | Optional | 
+| adaptive_card | The Microsoft Teams adaptive card to send. | Optional | 
+| to | The team member to which to send the message. | Optional | 
+| external_form_url_header | The header of an external form hyperlink. Default is Microsoft Teams Form. | Optional | 
 
 ##### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftTeams.Message.ID | String | ID of the message sent. | 
 
 ##### Command Example
 ```!send-notification channel=General message="hello world!" team=DemistoTeam```
@@ -1291,6 +1297,38 @@ There is no context output for this command.
 > The messaging endpoint should be added to the Demisto bot configuration in Microsoft Teams as part of the prerequisites of the integration's setup.
 > For more information see: [Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#create-the-demisto-bot-in-microsoft-teams)."
 
+### microsoft-teams-message-update
+
+***
+Updates a message.
+
+##### Base Command
+
+`microsoft-teams-message-update`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| message_id | ID of the message to update. Also referred to as Activity ID. | Required | 
+| team | The team in which the specified message exists. | Optional | 
+| channel | The channel in which the specified message exists. | Optional | 
+| message | The new message content. | Optional | 
+| team_member | The team member the message to be edited was sent to. | Optional | 
+| format_as_card | Whether or not an adaptive card is being updated. | Optional | 
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftTeams.Message.ID | String | ID of the message sent. | 
+
+
+##### Command Example
+```!microsoft-teams-message-update message_id=1737151779 team=MyTeam channel=General message="New message"```
+
+##### Human Readable Output
+Message was sent successfully.
 
 ## Running commands from Microsoft Teams
 You can run Cortex XSOAR/Cortex XSIAM commands, according to the user permissions, from Microsoft Teams in a mirrored investigation channel.
