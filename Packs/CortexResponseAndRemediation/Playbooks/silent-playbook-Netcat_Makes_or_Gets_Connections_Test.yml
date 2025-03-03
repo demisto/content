@@ -1,6 +1,6 @@
-id: Netcat Makes or Gets Connections Test
+id: silent-Netcat Makes or Gets Connections Test
 version: -1
-name: Netcat Makes or Gets Connections Test
+name: silent-Netcat Makes or Gets Connections Test
 description: "This playbook is designed to handle the following alerts:\n \n- Netcat makes or gets connections\n\nThe playbook executes the following stages:\n\nAnalysis:\n\n- Investigate the IP and Domain  reputation\n- Search previous similar alerts\n\nRemediation:\n \n- Handles malicious alerts by terminating the causality process."
 issilent: true
 tags:
