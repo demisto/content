@@ -3,7 +3,8 @@ import pytest
 from GoogleApigeeEventCollector import (
     Client,
     fetch_events,
-    get_events
+    get_events,
+    test_module,
 )
 
 
@@ -13,8 +14,8 @@ def mock_client():
 
 
 def test_get_events(requests_mock, mocker):
-    """Tests get-events command function.
-
+    """
+    Tests google-apigee-get-events command function.
     Checks the output of the command function with the expected output.
     """
     client = mock_client()
@@ -121,8 +122,11 @@ def generate_mocked_event(event_time: int):
 )
 def test_fetch_events(mocker, scenario, last_fetch, limit, events_amount, events_per_time, new_events_amount,
                       last_event_time, events_size):
-
-    def mock_get_events(from_date, to_time):
+    """
+    Tests fetch-events command function.
+    Checks the output of the command function with the expected output.
+    """
+    def mock_get_logs(from_date, to_time):
         events = [generate_mocked_event(event_time) for event_time in events_per_time]
         return {
             'auditRecord': events,
@@ -130,7 +134,7 @@ def test_fetch_events(mocker, scenario, last_fetch, limit, events_amount, events
         }
 
     mocked_client = mocker.Mock()
-    mocked_client.get_logs.side_effect = mock_get_events
+    mocked_client.get_logs.side_effect = mock_get_logs
     mocked_client.max_fetch = limit
 
     last_run = {'events_amount': events_amount, 'last_fetch': last_fetch}
@@ -144,3 +148,16 @@ def test_fetch_events(mocker, scenario, last_fetch, limit, events_amount, events
     if events:
         assert events[0].get('timeStamp') == last_event_time
         assert events[-1].get('timeStamp') >= last_fetch
+
+
+def test_test_module(requests_mock, mocker):
+    """
+    Tests test-module command function.
+    Checks the output of the command function with the expected output.
+    """
+    client = mock_client()
+    mocker.patch.object(Client, 'get_access_token', return_value={'access_token': 'access_token'})
+    requests_mock.get(f'https://test.com/v1/audits/organizations/{client.org_name}', json={})
+    res = test_module(client)
+
+    assert res == 'ok'
