@@ -2,32 +2,39 @@ This playbook is part of the 'Malware Investigation And Response' pack. For more
 This playbook handles incident ingestion from a SIEM. The user provides the incident fields containing the alert ID. This playbook also enables changing the severity according to a user-defined scale to override the default assigned severity.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-MicrosoftDefenderAdvancedThreatProtection
+
+* MicrosoftDefenderAdvancedThreatProtection
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
+
+* msg-get-alert-details
 * setIncident
-* microsoft-atp-get-alert-by-id
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | SIEMincidentFieldForID | The name of the incident field that contains the detection ID or incident ID. | ${incident.externalsystemid} | Optional |
-| ScaleToSetSeverity |The severity scale as represented in the EDR.<br/>For example, in Microsoft Defender for Endpoint the severity scale is Informational, Low, Medium, High. | Informational,Low,Medium,High | Optional |
-| SeverityValuesMapping | The mapping to Cortex XSOAR severity from the severity scale in the EDR (the ScaleToSetSeverity inputs).<br/>For example<br/>0.5, 1, 2, 3, 4<br/>Possible values to use are 0, 0.5, 1, 2, 3, 4<br/>Which represent Unknown, Informational, Low, Medium, High, Critical | 0.5, 1, 2, 3 | Optional |
-| OverrideSIEMSeverity | Whether to set the severity according to the ScaleToSetSeverity and SeverityValuesMapping settings (True) or keep the original severity as mapped by the SIEM (False). | False | Optional |
+| ScaleToSetSeverity | The severity scale as represented in the EDR. <br/>For example, in Microsoft Defender for Endpoint the severity scale is Informational, Low, Medium, High. | Informational,Low,Medium,High | Optional |
+| SeverityValuesMapping | "The mapping to Cortex XSOAR severity from the severity scale in the EDR \(the ScaleToSetSeverity inputs\).<br/>For example<br/>0.5, 1, 2, 3,4<br/>Possible values to use are 0,0.5, 1, 2, 3,4<br/>Which represent Unknown, Informational, Low, Medium, High, Critical | 0.5, 1, 2, 3 | Optional |
+| OverrideSIEMSeverity | Whether to set the severity according to the ScaleToSetSeverity and SeverityValuesMapping settings \(True\) or keep the original severity as mapped by the SIEM \(False\). | False | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -52,5 +59,7 @@ This playbook does not use any scripts.
 | Endpoint | The details of the endpoint. | string |
 
 ## Playbook Image
+
 ---
+
 ![MDE SIEM ingestion - Get Incident Data](../doc_files/MDE_SIEM_ingestion_-_Get_Incident_Data.png)
