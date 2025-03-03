@@ -4,7 +4,7 @@ commonfields:
 name: Proofpoint Server Protection
 display: Proofpoint Protection Server (Deprecated)
 deprecated: true
-category: Email Gateway
+category: Email
 description: Deprecated. The integration uses an unsupported scraping API. Use Proofpoint Protection Server v2 instead.
 configuration:
 - display: Server URL (e.g., https://192.168.0.1:10000)
