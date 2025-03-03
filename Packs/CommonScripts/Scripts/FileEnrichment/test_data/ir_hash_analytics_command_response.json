@@ -1,0 +1,44 @@
+[
+    {   
+        "Type": 1,
+        "HumanReadable": "### Hash Prevalence\n| Global Prevalence | Local Prevalence | Prevalence | File Global Prevalence By Global Process Sha256 | File Local Prevalence By File Sha256 | File Local Prevalence By Loaded Module Sha256 | File Local Prevalence By Process Sha256 |\n| --- | --- | --- | --- | --- | --- | --- |\n| 0 | 0.058823529411764705 | 0.058823529411764705 | 0 | 0 | 0.058823529411764705 | 0.058823529411764705 |",
+        "EntryContext": {
+            "Core.AnalyticsPrevalence.Hash": [
+                {
+                    "data": {
+                        "global_prevalence": {
+                            "description": "The global prevalence of the file.",
+                            "value": 0
+                        },
+                        "local_prevalence": {
+                            "description": "The local prevalence of the file.",
+                            "value": 0.058823529411764705
+                        },
+                        "prevalence": {
+                            "description": "The prevalence of the file.",
+                            "value": 0.058823529411764705
+                        }
+                    },
+                    "debug": {
+                        "file_global_prevalence_by_global_process_sha256": {
+                            "description": "The prevalence of the file according to global_process_sha256 profile.",
+                            "value": 0
+                        },
+                        "file_local_prevalence_by_file_sha256": {
+                            "description": "The prevalence of the file according to file_sha256 profile.",
+                            "value": 0
+                        },
+                        "file_local_prevalence_by_loaded_module_sha256": {
+                            "description": "The prevalence of the file according to loaded_module_sha256 profile.",
+                            "value": 0.058823529411764705
+                        },
+                        "file_local_prevalence_by_process_sha256": {
+                            "description": "The prevalence of the file according to process_sha256 profile.",
+                            "value": 0.058823529411764705
+                        }
+                    }
+                }
+            ]
+        }
+    }
+]

@@ -1,0 +1,19 @@
+{
+    "File": {
+        "Extension": "ZIP",
+        "Type": "application/zip",
+        "MD5": "4E76823C05048E92A4C0122D61000EDF",
+        "SHA1": "D8B426700C3C10413ABB8ACDCFECCAAEC8F06CD9",
+        "SHA256": "7AA15BD505A240A8BF62735A5389A530322945EEC6CE9D7B6AD299CA33B2B1B0",
+        "Size": 262291,
+        "SSDeep": "6144:WWEH6PCEYPX3DNGG+KFXLLRNR8M+FHAD2HNRG/U/:WWS6PCVLHT+KDR8/AD23Z",
+        "Tags": [
+            "jar",
+            "checks-cpu-name",
+            "sets-process-name",
+            "detect-debug-environment",
+            "checks-hostname"
+        ]
+    },
+    "HumanReadable": "#### Result for Search Indicators\n### Found Indicators\n|CustomFields|aggregatedReliability|cacheVersn|canvases|indicator_type|isDetectable|isPreventable|\n|---|---|---|---|---|---|---|\n| fileextension: ZIP<br>filetype: application/zip<br>md5: 4E76823C05048E92A4C0122D61000EDF<br>sha1: D8B426700C3C10413ABB8ACDCFECCAAEC8F06CD9<br>sha256: 7AA15BD505A240A8BF62735A5389A530322945EEC6CE9D7B6AD299CA33B2B1B0<br>size: 262291<br>ssdeep: 6144:WWEH6PCEYPX3DNGG+KFXLLRNR8M+FHAD2HNRG/U/:WWS6PCVLHT+KDR8/AD23Z<br>tags: jar,<br>checks-cpu-name,<br>sets-process-name,<br>detect-debug-environment,<br>checks-hostname | C - Fairly reliable | 0 |  | File | true | true |\n"
+}
