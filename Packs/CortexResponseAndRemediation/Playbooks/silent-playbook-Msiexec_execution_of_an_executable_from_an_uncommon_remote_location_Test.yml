@@ -1,0 +1,1176 @@
+description: "This playbook addresses the following alerts:\n \n- Msiexec execution\
+  \ of an executable from an uncommon remote location with a specific port\n- Msiexec\
+  \ execution of an executable from an uncommon remote location without properties\n\
+  \ \nPlaybook Stages:\n  \nAnalysis: \n \n- Check extracted URL reputation:\n  -\
+  \ Determine if the MSI package was installed from a malicious source\n  - If the\
+  \ URL is found to be malicious, the playbook will proceed directly to remediation\
+  \ steps\n \nInvestigation:\n\n- Check extracted domain's prevalence and causality\
+  \ process signature status:\n  - Evaluate the prevalence of the domain from which\
+  \ the MSI package was downloaded\n  - Verify if the causality process (CGO) is signed\
+  \ or unsigned\n  - If the domain is found malicious and the causality process is\
+  \ unsigned, the playbook will proceed directly to remediation steps\n\n- Check for\
+  \ the following related alerts: \n  - Local Analysis Malware\n  - Mitre Techniques:\n\
+  \    - T1140 - Deobfuscate/Decode Files or Information\n    - T1059 - Command and\
+  \ Scripting Interpreter \n\n- Analyze CGO command line for defense evasion techniques:\n\
+  \  - Evaluate the command line for suspicious patterns which indicates attempts\
+  \ to bypass security controls\n\n- If the command line contains suspicious patterns\
+  \ or related alerts are found, the playbook will proceed directly to remediation\
+  \ steps\n\nContainment:\n \n- Terminate causality process\n- Block maliciou URL\
+  \ (Manual approval)\n  - Implement URL blocking using PAN-OS through Custom URL\
+  \ Categories\n- Isolate endpoint (Manual approval)\n \nRequirements: \n \nFor any\
+  \ response action, you need the following integration:\n \n- PAN-OS."
+fromversion: 8.8.0
+id: silent-Msiexec execution of an executable from an uncommon remote location Test
+inputs: []
+issilent: true
+marketplaces:
+- marketplacev2
+name: silent-Msiexec execution of an executable from an uncommon remote location Test
+outputs: []
+starttaskid: '0'
+tags:
+- TA0005 - Defense Evasion
+- T1218 - System Binary Proxy Execution
+tasks:
+  '0':
+    continueonerrortype: ''
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 4ac8c300-a0ba-4b0f-8816-e8f4a9e451df
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 4ac8c300-a0ba-4b0f-8816-e8f4a9e451df
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 960,\n    \"y\": -1110\n  }\n}"
+  '1':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Score
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: DBotScore.Type
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: url
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: DBotScore.Score
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: '3'
+                root: DBotScore
+          operator: isEqualString
+          right:
+            value:
+              simple: '3'
+      label: Malicious
+    continueonerrortype: ''
+    id: '1'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '43'
+      Malicious:
+      - '32'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Check reputation of the remote URL from which the MSI was downloaded
+        and installed.
+      id: 95e1f313-a103-47b7-8d45-7c458de2dc48
+      iscommand: false
+      name: Check extracted remote URL's reputation
+      type: condition
+      version: -1
+    taskid: 95e1f313-a103-47b7-8d45-7c458de2dc48
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": -280\n  }\n}"
+  '11':
+    continueonerrortype: ''
+    id: '11'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      domain_name:
+        simple: ${Domain.Name}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Get the prevalence of a domain, identified by domain_name.
+      id: fd751959-f8ae-4ef0-8735-aaca8b0ee92b
+      iscommand: true
+      name: Check domain prevalence
+      script: '|||core-get-domain-analytics-prevalence'
+      type: regular
+      version: -1
+    taskid: fd751959-f8ae-4ef0-8735-aaca8b0ee92b
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 530,\n    \"y\": 100\n  }\n}"
+  '12':
+    continueonerrortype: ''
+    id: '12'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: c6614547-d98f-4f0c-84ec-7466f1b8ac41
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: c6614547-d98f-4f0c-84ec-7466f1b8ac41
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 1300,\n    \"y\": 2550\n  }\n}"
+  '13':
+    continueonerrortype: ''
+    id: '13'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '28'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        complex:
+          accessor: parentXDRIncident
+          root: alert
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: '2'
+            operator: Cut
+          - args:
+              prefix:
+                value:
+                  simple: '((mitreattcktechnique:*T1059* or mitreattcktechnique:*1140*
+                    or name:*Local Analysis Malware*) and caseid:'
+              suffix:
+                value:
+                  simple: )
+            operator: concat
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'This task searches for Cortex XSIAM suspicious alerts related
+        to the current alert by Mitre Technique, indicating that the alert is part
+        of an attack pattern.
+
+
+        Focus on identifying alerts associated with the following MITRE techniques:
+
+        - Any Agent Alerts within this alert.
+
+        - T1059 - Command and Scripting Interpreter.'
+      id: 62f69c52-5b95-41c1-83e5-a7b0822cc82d
+      iscommand: false
+      name: Search for suspicious-related alerts by MITRE Technique
+      scriptName: SearchIncidentsV2
+      type: regular
+      version: -1
+    taskid: 62f69c52-5b95-41c1-83e5-a7b0822cc82d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 940,\n    \"y\": 660\n  }\n}"
+  '14':
+    continueonerrortype: ''
+    id: '14'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '12'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeNotes:
+        simple: Malicious attempt to install .msi package from remote URL
+      closeReason:
+        simple: Resolved - Handled by the playbook "Suspicious msiexec execution"
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Close the current alert.
+      id: ee22533d-2819-4162-88a0-15379051d139
+      iscommand: true
+      name: Close Alert - True Positive
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: ee22533d-2819-4162-88a0-15379051d139
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 640,\n    \"y\": 2380\n  }\n}"
+  '21':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: value
+                root: Core.AnalyticsPrevalence.Domain
+                transformers:
+                - operator: uniq
+          operator: isEqualString
+          right:
+            value:
+              simple: 'False'
+        - left:
+            iscontext: true
+            value:
+              simple: Core.AnalyticsPrevalence.Ip.value
+          operator: isEqualString
+          right:
+            value:
+              simple: 'False'
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: alert.cgosignature
+          operator: isNotEqualString
+          right:
+            value:
+              simple: SIGNATURE_SIGNED
+      label: Malicious
+    continueonerrortype: ''
+    id: '21'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '13'
+      Malicious:
+      - '42'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: This condition checks if the domain prevalence is not False (i.e.,
+        the domain is prevalent) and if the causality process is signed. If both conditions
+        are met, the task is considered malicious.
+      id: b4037b3b-bc13-46d6-8bbf-3883cac5b0e5
+      iscommand: false
+      name: Check if domain is not prevalent AND CGO process is unsigned
+      type: condition
+      version: -1
+    taskid: b4037b3b-bc13-46d6-8bbf-3883cac5b0e5
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 940,\n    \"y\": 430\n  }\n}"
+  '22':
+    continueonerrortype: ''
+    id: '22'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '12'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 4366472d-cc91-4059-894c-59066b6611a1
+      iscommand: false
+      name: Inconclusive
+      type: title
+      version: -1
+    taskid: 4366472d-cc91-4059-894c-59066b6611a1
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 1300,\n    \"y\": 1390\n  }\n}"
+  '25':
+    continueonerrortype: ''
+    id: '25'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      url:
+        simple: ${URL.Data}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Returns a verdict for a hash.
+      id: f999a637-3507-4144-8eb8-3f0d871d4fb1
+      iscommand: true
+      name: Get Wildfire Verdict for URL
+      script: '|||wildfire-get-verdict'
+      type: regular
+      version: -1
+    taskid: f999a637-3507-4144-8eb8-3f0d871d4fb1
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": -440\n  }\n}"
+  '28':
+    continueonerrortype: ''
+    id: '28'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '31'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 036d604c-7aac-4e5a-8d47-399ea4ca6934
+      iscommand: false
+      name: Analyze CGO Commandline
+      type: title
+      version: -1
+    taskid: 036d604c-7aac-4e5a-8d47-399ea4ca6934
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 940,\n    \"y\": 840\n  }\n}"
+  '3':
+    continueonerrortype: ''
+    id: '3'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '21'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 08dd5d27-1e08-4e7e-8661-8b8801ab0883
+      iscommand: false
+      name: Investigation
+      type: title
+      version: -1
+    taskid: 08dd5d27-1e08-4e7e-8661-8b8801ab0883
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 940,\n    \"y\": 270\n  }\n}"
+  '30':
+    continueonerrortype: ''
+    id: '30'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '14'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      endpoint_id:
+        simple: ${alert.agentid}
+      incident_id:
+        complex:
+          accessor: parentXDRIncident
+          root: alert
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: '2'
+            operator: Cut
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Isolates the specified endpoint.
+      id: 0f6a3195-3710-4629-86cd-b810f988f805
+      iscommand: true
+      name: Isolate endpoint
+      script: '|||core-isolate-endpoint'
+      type: regular
+      version: -1
+    taskid: 0f6a3195-3710-4629-86cd-b810f988f805
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 410,\n    \"y\": 2210\n  }\n}"
+  '31':
+    continueonerrortype: ''
+    id: '31'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      command_line:
+        complex:
+          accessor: cgocmd
+          root: alert
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: '
+
+                    '
+            operator: splitAndTrim
+          - args:
+              empty_values: {}
+              remove_keys:
+                value:
+                  simple: 'true'
+            operator: RemoveEmpty
+          - args:
+              separator: {}
+            operator: join
+      custom_patterns:
+        simple: ((cmd|type)<?\s*\w+\.\w{1,3}(\|cmd)?(\:\w+)?)
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'This script evaluates command-line threats by analyzing both original
+        and decoded inputs. It assigns weighted scores to detected patterns, such
+        as AMSI bypass or credential dumping, and applies risk combination bonuses
+        for multiple detections. The total score is normalized to a 0-100 scale, with
+        risk levels categorized as follows:
+
+
+        * 0-25: Low Risk
+
+        * 26-50: Medium Risk
+
+        * 51-90: High Risk
+
+        * 91-100: Critical Risk
+
+
+        The scoring mechanism provides a comprehensive risk assessment, considering
+        both the severity and frequency of malicious behaviors.'
+      id: 738a3bfd-5567-4eeb-8377-64b943a6186f
+      iscommand: false
+      name: Check CGO command for defense evasion techniques
+      scriptName: CommandLineAnalysis
+      type: regular
+      version: -1
+    taskid: 738a3bfd-5567-4eeb-8377-64b943a6186f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 940,\n    \"y\": 1010\n  }\n}"
+  '32':
+    continueonerrortype: ''
+    id: '32'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '33'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 497e729b-f1d9-4ac3-8479-c00dd0325696
+      iscommand: false
+      name: Remediation
+      type: title
+      version: -1
+    taskid: 497e729b-f1d9-4ac3-8479-c00dd0325696
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 320,\n    \"y\": 250\n  }\n}"
+  '33':
+    continueonerror: true
+    continueonerrortype: ''
+    id: '33'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '35'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agent_id:
+        simple: ${alert.agentid}
+      causality_id:
+        simple: ${alert.cid}
+      timeout_in_seconds:
+        simple: '180'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Terminate a process tree by its causality ID. Available only for
+        Cortex XSIAM 2.4.
+      id: 2e180059-7e3a-4f31-869c-66b4ec03fc91
+      iscommand: true
+      name: Terminate Causality (CGO)
+      script: '|||core-terminate-causality'
+      type: regular
+      version: -1
+    taskid: 2e180059-7e3a-4f31-869c-66b4ec03fc91
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 640,\n    \"y\": 1535\n  }\n}"
+  '35':
+    continueonerrortype: ''
+    form:
+      description: "Endpoint Isolation is recommended since one of the following verdicts\
+        \ have been confirmed:\n\n - MSI package was installed from a  remote URL\
+        \ with malicious reputation\n- The causality process is unsigned and not prevalent\n\
+        - The causality process commandline contained suspicious behavior or other\
+        \ related alerts were found"
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ''
+        gridcolumns: []
+        id: '0'
+        label: ''
+        labelarg:
+          simple: Should Isolate the endpoint?
+        options: []
+        optionsarg:
+        - simple: 'No'
+        - simple: 'Yes'
+        placeholder: ''
+        readonly: false
+        required: false
+        tooltip: ''
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ''
+        gridcolumns: []
+        id: '1'
+        label: ''
+        labelarg:
+          simple: "Should Block the following malicious URL using PAN-OS? \n- ${URL.Data}\
+            \   "
+        options: []
+        optionsarg:
+        - simple: 'No'
+        - simple: 'Yes'
+        placeholder: ''
+        readonly: false
+        required: false
+        tooltip: This will block URLs using Palo Alto Networks Panorama or Firewall
+          through Custom URL Categories. The playbook checks whether the input URL
+          category already exists, and if the URLs are a part of this category. Otherwise,
+          it will create the category, block the URLs, and commit the configuration.
+        type: singleSelect
+      sender: Your SOC team
+      title: RemediationtApproval
+      totalanswers: 0
+    id: '35'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ''
+      methods: []
+      replyOptions:
+      - 'Yes'
+      - 'No'
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - '36'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: "Endpoint Isolation is recommended since the following verdicts\
+        \ have been confirmed:\n\n - MSI package was installed from a malicious remote\
+        \ URL"
+      id: e5fcf078-e4af-4da3-8da7-023395712e5d
+      iscommand: false
+      name: Approve the endpoint isolation & Block URL
+      type: collection
+      version: -1
+    taskid: e5fcf078-e4af-4da3-8da7-023395712e5d
+    timertriggers: []
+    type: collection
+    view: "{\n  \"position\": {\n    \"x\": 640,\n    \"y\": 1730\n  }\n}"
+  '36':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: RemediationApproval.Answers.0
+          operator: isEqualString
+          right:
+            value:
+              simple: 'Yes'
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: RemediationApproval.Answers.1
+          operator: isEqualString
+          right:
+            value:
+              simple: 'Yes'
+      label: Isolate & Block
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: RemediationApproval.Answers.0
+          operator: isEqualString
+          right:
+            value:
+              simple: 'Yes'
+      label: Isolate Only
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: RemediationApproval.Answers.1
+          operator: isEqualString
+          right:
+            value:
+              simple: 'Yes'
+      - - left:
+            iscontext: true
+            value:
+              simple: URL.Data
+          operator: isNotEmpty
+      label: Block URL Only
+    continueonerrortype: ''
+    id: '36'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '14'
+      Block URL Only:
+      - '40'
+      Isolate & Block:
+      - '38'
+      Isolate Only:
+      - '39'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Check the analyst's answers to the early containment approval form
+        and execute the appropriate actions based on the responses.
+      id: d77bfbd9-13b0-4b7e-81e1-62d5095b9223
+      iscommand: false
+      name: Check analyst answers
+      type: condition
+      version: -1
+    taskid: d77bfbd9-13b0-4b7e-81e1-62d5095b9223
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 640,\n    \"y\": 1890\n  }\n}"
+  '38':
+    continueonerrortype: ''
+    id: '38'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '30'
+      - '41'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 0375f467-db5e-4c75-8ffc-6752e828f353
+      iscommand: false
+      name: Isolate & Block
+      type: title
+      version: -1
+    taskid: 0375f467-db5e-4c75-8ffc-6752e828f353
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 640,\n    \"y\": 2065\n  }\n}"
+  '39':
+    continueonerrortype: ''
+    id: '39'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '30'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 56b8e1bc-bac8-4e9e-8fdb-32f0785a68e2
+      iscommand: false
+      name: Isolate Only
+      type: title
+      version: -1
+    taskid: 56b8e1bc-bac8-4e9e-8fdb-32f0785a68e2
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 210,\n    \"y\": 2065\n  }\n}"
+  '4':
+    continueonerrortype: ''
+    id: '4'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '46'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: fed458b4-5680-4956-8bcf-34690533738e
+      iscommand: false
+      name: Analysis
+      type: title
+      version: -1
+    taskid: fed458b4-5680-4956-8bcf-34690533738e
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 960,\n    \"y\": -965\n  }\n}"
+  '40':
+    continueonerrortype: ''
+    id: '40'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '41'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: ee85b3d2-ed9b-4a21-85f6-371f18d69a99
+      iscommand: false
+      name: Block URL Only
+      type: title
+      version: -1
+    taskid: ee85b3d2-ed9b-4a21-85f6-371f18d69a99
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 1070,\n    \"y\": 2065\n  }\n}"
+  '41':
+    continueonerrortype: ''
+    id: '41'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '14'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AutoCommit:
+        simple: 'Yes'
+      CustomURLCategory:
+        simple: XSIAM - Malicious URLs
+      URL:
+        complex:
+          accessor: Indicator
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Type
+              operator: isEqualString
+              right:
+                value:
+                  simple: url
+          - - left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Score
+              operator: isEqualNumber
+              right:
+                value:
+                  simple: '3'
+          root: DBotScore
+          transformers:
+          - operator: uniq
+      pre-post:
+        simple: pre-rulebase
+      type:
+        simple: URL List
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ''
+      description: 'This playbook blocks URLs using Palo Alto Networks Panorama or
+        Firewall through Custom URL categories.
+
+        The playbook checks whether the input URL category already exists, and if
+        the URLs are a part of this category. Otherwise, it will create the category,
+        block the URLs, and commit the configuration.'
+      id: 49b5b231-bb99-4eec-8674-20d72e089a98
+      iscommand: false
+      name: PAN-OS - Block URL - Custom URL Category
+      playbookName: PAN-OS - Block URL - Custom URL Category
+      type: playbook
+      version: -1
+    taskid: 49b5b231-bb99-4eec-8674-20d72e089a98
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 850,\n    \"y\": 2210\n  }\n}"
+  '42':
+    continueonerrortype: ''
+    id: '42'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '33'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 8b97b44e-6986-471d-8bba-9d011c66e3aa
+      iscommand: false
+      name: Remediation
+      type: title
+      version: -1
+    taskid: 8b97b44e-6986-471d-8bba-9d011c66e3aa
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 640,\n    \"y\": 1390\n  }\n}"
+  '43':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Domain.Name
+          operator: isNotEmpty
+      label: Domain
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: IP.Address
+                    operator: notIn
+                    right:
+                      iscontext: true
+                      value:
+                        simple: alert.hostip
+                root: IP.Address
+          operator: isNotEmpty
+      label: IP
+    continueonerrortype: ''
+    id: '43'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      Domain:
+      - '11'
+      IP:
+      - '44'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Check if prevalence information is available for the detected indicators
+      id: e33ea6f9-a566-42b0-808d-e7364394f1d9
+      iscommand: false
+      name: Check If prevalence can be run on
+      type: condition
+      version: -1
+    taskid: e33ea6f9-a566-42b0-808d-e7364394f1d9
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": -75\n  }\n}"
+  '44':
+    continueonerrortype: ''
+    id: '44'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ip_address:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: IP.Address
+              operator: notIn
+              right:
+                iscontext: true
+                value:
+                  simple: alert.hostip
+          root: IP.Address
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Get the prevalence of an IP, identified by ip_address.
+      id: 64a6d8a0-3ee8-4fec-8895-500c6d003d13
+      iscommand: true
+      name: Check IP prevalence
+      script: '|||core-get-IP-analytics-prevalence'
+      type: regular
+      version: -1
+    taskid: 64a6d8a0-3ee8-4fec-8895-500c6d003d13
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 940,\n    \"y\": 100\n  }\n}"
+  '45':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: URL.Data
+          operator: isNotEmpty
+      label: 'yes'
+    continueonerrortype: ''
+    id: '45'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '3'
+      'yes':
+      - '25'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Check if URL exist
+      id: 859e2ebb-410a-4f07-8711-75f7db2f8a0c
+      iscommand: false
+      name: Check if URL exist
+      type: condition
+      version: -1
+    taskid: 859e2ebb-410a-4f07-8711-75f7db2f8a0c
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 960,\n    \"y\": -610\n  }\n}"
+  '46':
+    continueonerrortype: ''
+    id: '46'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '45'
+    note: false
+    quietmode: 0
+    reputationcalc: 2
+    scriptarguments:
+      text:
+        simple: ${alert.targetprocesscmd}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.extract.indicators
+      id: 96eb6f8e-c262-48c1-8266-d485dcd2f86b
+      iscommand: true
+      name: Extract Indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      version: -1
+    taskid: 96eb6f8e-c262-48c1-8266-d485dcd2f86b
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 960,\n    \"y\": -790\n  }\n}"
+  '8':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: foundIncidents
+          operator: isNotEmpty
+          right:
+            value: {}
+        - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: CommandLineAnalysis.risk
+          operator: containsString
+          right:
+            value:
+              simple: High Risk
+      label: Malicious
+    continueonerrortype: ''
+    id: '8'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '22'
+      Malicious:
+      - '42'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Check if there are any related alerts that indicate malicious msiexec
+        activity or if the command line analysis indicates high risk.
+      id: a3147fef-e6c8-4e38-8248-1accf3ac738d
+      iscommand: false
+      name: 'Check if related alerts OR defense evasion techniques exist '
+      type: condition
+      version: -1
+    taskid: a3147fef-e6c8-4e38-8248-1accf3ac738d
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 940,\n    \"y\": 1220\n  }\n}"
+tests:
+- No tests (auto formatted)
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"1_43_#default#\": 0.64,\n    \"21_13_#default#\"\
+  : 0.54,\n    \"45_25_yes\": 0.52,\n    \"45_3_#default#\": 0.19,\n    \"8_22_#default#\"\
+  : 0.51,\n    \"8_42_Malicious\": 0.48\n  },\n  \"paper\": {\n    \"dimensions\"\
+  : {\n      \"height\": 3725,\n      \"width\": 1470,\n      \"x\": 210,\n      \"\
+  y\": -1110\n    }\n  }\n}"

@@ -1,0 +1,650 @@
+description: 'This playbook is designed to handle the alert
+
+  ''User added to local administrator group using a PowerShell command''
+
+
+  The playbook executes the following stages:
+
+
+  Investigation:
+
+  Check the following parameters to determine if remediation actions are needed:
+
+  - Cortex XSIAM alerts related to the hostname by MITRE tactics indicating malicious
+  activity.
+
+  - Whether the process is unsigned.
+
+
+  Remediation:
+
+  Handles malicious alerts by terminating the relevant processes and requesting the
+  analyst''s approval to remove the user from the local Administrators group.
+
+  Handles non-malicious alerts identified during the investigation.'
+fromversion: 8.8.0
+id: silent-User added to local administrator group using a PowerShell command Test
+inputSections:
+- description: Generic group for inputs.
+  inputs: []
+  name: General (Inputs group)
+inputs: []
+issilent: true
+name: silent-User added to local administrator group using a PowerShell command Test
+outputSections:
+- description: Generic group for outputs.
+  name: General (Outputs group)
+  outputs: []
+outputs: []
+starttaskid: '0'
+tags:
+- TA0003 - Persistence
+- T1098 - Account Manipulation
+tasks:
+  '0':
+    continueonerrortype: ''
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: bb220bb9-b474-4c84-85f3-dca73838520b
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: bb220bb9-b474-4c84-85f3-dca73838520b
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 420,\n    \"y\": 160\n  }\n}"
+  '1':
+    continueonerrortype: ''
+    id: '1'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: fc66d0b2-7618-4a38-8f04-e821aba4a989
+      iscommand: false
+      name: Investigation
+      type: title
+      version: -1
+    taskid: fc66d0b2-7618-4a38-8f04-e821aba4a989
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 420,\n    \"y\": 310\n  }\n}"
+  '21':
+    continueonerrortype: ''
+    id: '21'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '22'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeNotes:
+        simple: Suspicious activity detected
+      closeReason:
+        simple: Resolved - Handled by the playbook "User added to local administrator
+          group using a PowerShell command"
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 88be804e-5e38-4909-87d4-f83461f24630
+      iscommand: true
+      name: Close Alert - True Positive
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 88be804e-5e38-4909-87d4-f83461f24630
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 420,\n    \"y\": 2145\n  }\n}"
+  '22':
+    continueonerrortype: ''
+    id: '22'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 948acfa9-d0a3-42b0-8b06-ee6736be5f92
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 948acfa9-d0a3-42b0-8b06-ee6736be5f92
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 420,\n    \"y\": 2315\n  }\n}"
+  '24':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: foundIncidents.name
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: 'yes'
+    continueonerrortype: ''
+    id: '24'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '26'
+      'yes':
+      - '7'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Determines whether the incident contains related alerts by MITRE
+        Techniques, indicating that the alert was part of an attack pattern.
+      id: 2f745b02-269a-408e-8aec-c7f3a8bc5115
+      iscommand: false
+      name: Found any alerts indicating this is malicious activity?
+      type: condition
+      version: -1
+    taskid: 2f745b02-269a-408e-8aec-c7f3a8bc5115
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 740,\n    \"y\": 790\n  }\n}"
+  '26':
+    continueonerrortype: ''
+    id: '26'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '70'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 8018c8e4-2938-479d-8670-7801a8aff36c
+      iscommand: false
+      name: No Results Found
+      type: title
+      version: -1
+    taskid: 8018c8e4-2938-479d-8670-7801a8aff36c
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 1130,\n    \"y\": 980\n  }\n}"
+  '6':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: osparentsignature
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: alert.osparentsigner
+                    operator: isNotEmpty
+                root: alert
+          operator: isNotEqualString
+          right:
+            value:
+              simple: SIGNATURE_SIGNED
+        - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: alert.cgosignature
+                    operator: isNotEmpty
+                root: alert.cgosignature
+          operator: isNotEqualString
+          right:
+            value:
+              simple: SIGNATURE_SIGNED
+      label: 'yes'
+    continueonerrortype: ''
+    id: '6'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '77'
+      'yes':
+      - '7'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'Determines the appropriate verdict based on process signature.
+
+        '
+      id: 22756e65-c2a2-43a1-8192-b98244e84591
+      iscommand: false
+      name: Check for unsigned CGO or OS process
+      type: condition
+      version: -1
+    taskid: 22756e65-c2a2-43a1-8192-b98244e84591
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 420,\n    \"y\": 460\n  }\n}"
+  '7':
+    continueonerrortype: ''
+    id: '7'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '76'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: b6f76440-2eec-49c0-8dc0-ed49708da484
+      iscommand: false
+      name: Remediation
+      type: title
+      version: -1
+    taskid: b6f76440-2eec-49c0-8dc0-ed49708da484
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 420,\n    \"y\": 980\n  }\n}"
+  '70':
+    continueonerrortype: ''
+    id: '70'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '22'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeNotes:
+        simple: No Results Found
+      closeReason:
+        simple: Resolved - Handled by the playbook "User added to local administrator
+          group using a PowerShell command"
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: b2c25c91-84e4-4adc-852e-afceed01e5f1
+      iscommand: true
+      name: Close Alert - No results returned
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: b2c25c91-84e4-4adc-852e-afceed01e5f1
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1130,\n    \"y\": 1120\n  }\n}"
+  '76':
+    continueonerror: true
+    continueonerrortype: ''
+    id: '76'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '79'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agent_id:
+        simple: ${alert.agentid}
+      causality_id:
+        simple: ${alert.cid}
+      timeout_in_seconds:
+        simple: '180'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Terminate a process tree by its causality ID. Available only for
+        Cortex XSIAM 2.4.
+      id: 43d9acfc-9cd7-43f6-8675-484582c3ac4d
+      iscommand: true
+      name: Terminate Causality (CGO)
+      script: '|||core-terminate-causality'
+      type: regular
+      version: -1
+    taskid: 43d9acfc-9cd7-43f6-8675-484582c3ac4d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 420,\n    \"y\": 1110\n  }\n}"
+  '77':
+    continueonerrortype: ''
+    id: '77'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '24'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        complex:
+          accessor: parentXDRIncident
+          root: alert
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: '2'
+            operator: Cut
+          - args:
+              prefix:
+                value:
+                  simple: '(mitreattcktechnique:*T1001* or mitreattcktechnique:*T1140*
+                    or mitreattcktechnique:*T1059* or name:"Suspicious local user
+                    account creation") and caseid:'
+              suffix: {}
+            operator: concat
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'This task searches for Cortex XSIAM suspicious alerts related
+        to the current incident by Mitre Techniques that may indicate suspicious activity.
+
+
+        Focus on identifying alerts associated with the following MITRE techniques:
+
+        - T1001 - Data Obfuscation
+
+        - T1140 - Deobfuscate/Decode Files or Information
+
+        - T1059 - Command and Scripting Interpreter
+
+
+        And the following alert:
+
+        - "Suspicious local user account creation"
+
+        '
+      id: 94f27bbd-224a-47ef-8892-edb62f47292e
+      iscommand: false
+      name: Search for related alerts by MITRE Technique
+      scriptName: SearchIncidentsV2
+      type: regular
+      version: -1
+    taskid: 94f27bbd-224a-47ef-8892-edb62f47292e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 740,\n    \"y\": 630\n  }\n}"
+  '79':
+    continueonerrortype: ''
+    id: '79'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '82'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: ExtractedUsername
+      value:
+        complex:
+          accessor: targetprocesscmd
+          root: alert
+          transformers:
+          - args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (?i)Administrators[\\]?[\"|']?\s+-Member\s+([^\s;}]+)
+              unpack_matches: {}
+            operator: RegexExtractAll
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: 052a58a3-8922-40dd-851e-4212df94e9c2
+      iscommand: false
+      name: Extract Username
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 052a58a3-8922-40dd-851e-4212df94e9c2
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 420,\n    \"y\": 1270\n  }\n}"
+  '80':
+    continueonerrortype: ''
+    id: '80'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body:
+        simple: 'Remove the user: ${ExtractedUsername} from local admin group?'
+      cc: null
+      format: ''
+      methods: []
+      replyOptions:
+      - 'Yes'
+      - 'No'
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      'No':
+      - '21'
+      'Yes':
+      - '81'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Analyst approval is required to remove the user from the local
+        Administrator group.
+      id: 7d039298-b7e0-44c1-8f77-39e71f387d96
+      iscommand: false
+      name: Analyst approval to remove user from local Administrator group
+      type: condition
+      version: -1
+    taskid: 7d039298-b7e0-44c1-8f77-39e71f387d96
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 420,\n    \"y\": 1610\n  }\n}"
+  '81':
+    continueonerror: true
+    continueonerrortype: errorPath
+    id: '81'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#error#':
+      - '83'
+      '#none#':
+      - '21'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      commands:
+        simple: powershell.exe Remove-LocalGroupMember -Group "Administrators" -Member
+          ${ExtractedUsername}
+      endpoint_ids:
+        simple: ${alert.agentid}
+      timeout:
+        simple: '180'
+      timeout_in_seconds:
+        simple: '180'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Initiate a new endpoint script execution of shell commands.
+      id: 4861afe9-34c3-4415-8e53-ac6b0e3fbbba
+      iscommand: true
+      name: Remove user from local Administrator group
+      script: '|||core-run-script-execute-commands'
+      type: regular
+      version: -1
+    taskid: 4861afe9-34c3-4415-8e53-ac6b0e3fbbba
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 190,\n    \"y\": 1780\n  }\n}"
+  '82':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ExtractedUsername
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: 'yes'
+    continueonerrortype: ''
+    id: '82'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '83'
+      'yes':
+      - '80'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Check whether the extracted username is defined.
+      id: 24e90eb8-1d77-4ca6-80a9-f5020bff758c
+      iscommand: false
+      name: Is the extracted username defined?
+      type: condition
+      version: -1
+    taskid: 24e90eb8-1d77-4ca6-80a9-f5020bff758c
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 420,\n    \"y\": 1430\n  }\n}"
+  '83':
+    continueonerrortype: ''
+    id: '83'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '21'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'Dear Analyst,
+
+
+        Please note that during the remediation process, the playbook failed to remove
+        the user from the local administrator group on the host: ${alert.hostname}
+        .
+
+
+        Please take manual action to remove the user from the local administrator
+        group on the host: ${alert.hostname} .
+
+
+        The user can be found in the following PowerShell command:
+
+        ${alert.targetprocesscmd}
+
+        '
+      id: 45d20664-73f2-40b5-8f30-8d1ce01f51f1
+      iscommand: false
+      name: Remove the user from the local administrator group manually
+      type: regular
+      version: -1
+    taskid: 45d20664-73f2-40b5-8f30-8d1ce01f51f1
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -40,\n    \"y\": 1970\n  }\n}"
+tests:
+- No tests (auto formatted)
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"24_7_yes\": 0.23,\n    \"6_7_yes\": 0.35,\n\
+  \    \"80_21_No\": 0.48,\n    \"80_81_Yes\": 0.57,\n    \"81_83_#error#\": 0.5,\n\
+  \    \"82_80_yes\": 0.39,\n    \"82_83_#default#\": 0.66\n  },\n  \"paper\": {\n\
+  \    \"dimensions\": {\n      \"height\": 2220,\n      \"width\": 1550,\n      \"\
+  x\": -40,\n      \"y\": 160\n    }\n  }\n}"

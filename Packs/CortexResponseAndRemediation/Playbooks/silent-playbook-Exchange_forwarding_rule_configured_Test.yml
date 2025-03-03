@@ -1,0 +1,1605 @@
+description: "This playbook addresses the following alerts:\n\n- External Exchange\
+  \ inbox forwarding rule configured.\n- Suspicious Exchange inbox forwarding rule\
+  \ configured.\n- Suspicious Exchange email-hiding inbox rule.\n- Possible BEC Exchange\
+  \ email-hiding inbox rule.\n- Exchange email-hiding transport rule based on message\
+  \ keywords.\n- Suspicious Exchange email-hiding transport rule.\n- Exchange transport\
+  \ forwarding rule configured.\n- Suspicious Exchange transport forwarding rule configured.\n\
+  \nPlaybook Stages:\n \nTriage: \n\n- The playbook retrieves the caller's IP, the\
+  \ forwarding email address, and the domain.\n\nEarly Containment:\n\n- The playbook\
+  \ checks if the IP or domain of the forwarding email address is malicious. If so,\
+  \ it suggests blocking the IP using PAN-OS while continuing the investigation in\
+  \ parallel.\n\nInvestigation:\n\n- The playbook checks for suspicious behaviors,\
+  \ including whether an Exchange admin created the rule outside of working hours,\
+  \ from unusual geolocation, or if the user who created the rule has a high-risk\
+  \ score. It then aggregates all evidence collected during the investigation.\n\n\
+  Containment:\n\n- Soft Response Actions: If at least two suspicious pieces of evidence\
+  \ are identified, the playbook will execute soft response actions. These actions\
+  \ include signing the user out and disabling the forwarding rule configured in the\
+  \ user's account mailbox.\n- Hard Response Actions: If more than two suspicious\
+  \ pieces of evidence are identified, the playbook escalates to hard response actions.\
+  \ These actions include disabling the user account upon analyst decision and removing\
+  \ the forwarding rule from the user's account mailbox.\n\nRequirements: \n\nFor\
+  \ any response action, you need the following integrations:\n- EWS Extension Online\
+  \ Powershell v3 integration.\n- Azure Active Directory Users."
+fromversion: 6.10.0
+id: silent-Exchange forwarding rule configured Test
+inputSections:
+- description: Generic group for inputs.
+  inputs: []
+  name: General (Inputs group)
+inputs: []
+issilent: true
+marketplaces:
+- marketplacev2
+name: silent-Exchange forwarding rule configured Test
+outputSections:
+- description: Generic group for outputs.
+  name: General (Outputs group)
+  outputs: []
+outputs: []
+starttaskid: '0'
+tags:
+- TA0009 - Collection
+- TA0010 - Exfiltration
+- T1114 - Email Collection
+- T1020 - Automated Exfiltration
+- TA0005 - Defense Evasion
+- T1564.008 - Hide Artifacts
+tasks:
+  '0':
+    continueonerrortype: ''
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: d8b9f650-e109-4dd6-886d-da90aef71bff
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: d8b9f650-e109-4dd6-886d-da90aef71bff
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -310\n  }\n}"
+  '1':
+    continueonerrortype: ''
+    id: '1'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '2'
+      - '28'
+      - '6'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      alert_ids:
+        simple: ${alert.id}
+      filter_alert_fields:
+        simple: 'false'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Returns information about each alert ID.
+      id: 3fa5a92e-3b86-4a05-8b86-53cd466bb1cb
+      iscommand: true
+      name: Get caller IP and forwarding mail address
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      version: -1
+    taskid: 3fa5a92e-3b86-4a05-8b86-53cd466bb1cb
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -180\n  }\n}"
+  '10':
+    continueonerror: true
+    continueonerrortype: ''
+    id: '10'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '22'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: IsAbnormalGeolocation=
+      left:
+        simple: ${Core.OriginalAlert.event.saas_caller_ip_geolocation_days_seen_count},${Core.OriginalAlert.event.service_caller_ip_asn_days_seen_count}
+      right:
+        simple: '0'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'Returns all elements from the left side that have a substring
+        that is equal to an element from the right side. Note: This filter is case-insensitive.'
+      id: cdba5566-f4de-4815-85ba-46d04083adf2
+      iscommand: false
+      name: Analyze geolocation anomalies
+      scriptName: AnyMatch
+      type: regular
+      version: -1
+    taskid: cdba5566-f4de-4815-85ba-46d04083adf2
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 660\n  }\n}"
+  '14':
+    continueonerrortype: ''
+    id: '14'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '18'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeReason:
+        simple: Resolved - Handled by the playbook "Exchange forwarding rule configured"
+      id:
+        complex:
+          accessor: id
+          root: alert
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 2a5b29fd-1460-4830-819f-be57d5c524df
+      iscommand: true
+      name: Close Alert
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 2a5b29fd-1460-4830-819f-be57d5c524df
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2170\n  }\n}"
+  '17':
+    continueonerrortype: ''
+    id: '17'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '14'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      identity:
+        simple: ${Core.OriginalAlert.raw_abioc.event.exchange_rule_name}
+      mailbox:
+        simple: ${Core.OriginalAlert.raw_abioc.event.identity_name}
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ''
+      description: Disable an existing inbox rule in a given mailbox.
+      id: 08bbda77-f3ca-482f-83bb-6590a059f649
+      iscommand: true
+      name: Disable the Exchange forwarding inbox rule
+      script: '|||ews-rule-disable'
+      type: regular
+      version: -1
+    taskid: 08bbda77-f3ca-482f-83bb-6590a059f649
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 860,\n    \"y\": 2000\n  }\n}"
+  '18':
+    continueonerrortype: ''
+    id: '18'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 58ed5fd7-71b7-4865-8de2-a4b02de08967
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 58ed5fd7-71b7-4865-8de2-a4b02de08967
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2330\n  }\n}"
+  '2':
+    continueonerror: true
+    continueonerrortype: ''
+    id: '2'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ip:
+        complex:
+          accessor: caller_ip
+          root: Core.OriginalAlert.event
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ''
+      description: Checks the reputation of an IP address.
+      id: be117be2-af06-4d9e-8b01-19cc4b115d02
+      iscommand: true
+      name: 'Check caller IP reputation '
+      script: '|||ip'
+      type: regular
+      version: -1
+    taskid: be117be2-af06-4d9e-8b01-19cc4b115d02
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -160,\n    \"y\": -10\n  }\n}"
+  '20':
+    continueonerrortype: ''
+    id: '20'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '14'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ClearUserSessions:
+        simple: 'True'
+      Username:
+        simple: ${Core.OriginalAlert.event.identity_name}
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ''
+      description: '## Containment Plan - Clear User Sessions
+
+
+        This playbook is a sub-playbook within the containment plan playbook.
+
+        The playbook uses the ''Okta v2'' and ''MSGraph User'' integrations to clear
+        user sessions.'
+      id: 34930460-5127-496b-8e0c-3edcd48e29af
+      iscommand: false
+      name: Containment Plan - Clear User Sessions
+      playbookName: Containment Plan - Clear User Sessions
+      type: playbook
+      version: -1
+    taskid: 34930460-5127-496b-8e0c-3edcd48e29af
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 670,\n    \"y\": 1490\n  }\n}"
+  '21':
+    continueonerrortype: ''
+    id: '21'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '29'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: Evidences
+      value:
+        complex:
+          accessor: '}'
+          root: ${
+          transformers:
+          - args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else: {}
+              equals: {}
+              lhs:
+                iscontext: true
+                value:
+                  simple: Core.RiskyUser.risk_level
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: HIGH
+              rhsB: {}
+              then:
+                value:
+                  simple: The user risk level is high.
+            operator: If-Then-Else
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'Set a value in context under the key you entered. If no value
+        is entered, the script doesn''t do anything.
+
+
+        This script runs using the default Limited User role, unless you explicitly
+        change the permissions.
+
+        For more information, see the section about script permissions here:
+
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script'
+      id: 88f80ddf-8d28-480d-8c67-9bb233890c41
+      iscommand: false
+      name: Set risky user to aggregated evidences
+      scriptName: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: 88f80ddf-8d28-480d-8c67-9bb233890c41
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 840,\n    \"y\": 820\n  }\n}"
+  '22':
+    continueonerrortype: ''
+    id: '22'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '29'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: Evidences
+      value:
+        complex:
+          accessor: '}'
+          root: ${
+          transformers:
+          - args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else: {}
+              equals: {}
+              lhs:
+                iscontext: true
+                value:
+                  simple: IsAbnormalGeolocation.[0]
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: 'True'
+              rhsB: {}
+              then:
+                value:
+                  simple: The user connected from an unusual geolocation.
+            operator: If-Then-Else
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'Set a value in context under the key you entered. If no value
+        is entered, the script doesn''t do anything.
+
+
+        This script runs using the default Limited User role, unless you explicitly
+        change the permissions.
+
+        For more information, see the section about script permissions here:
+
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script'
+      id: 44ae1921-e62d-4ace-8ad6-604f750b32e0
+      iscommand: false
+      name: Set abnormal geolocation to aggregated evidences
+      scriptName: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: 44ae1921-e62d-4ace-8ad6-604f750b32e0
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 820\n  }\n}"
+  '23':
+    continueonerrortype: ''
+    id: '23'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '29'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: Evidences
+      value:
+        complex:
+          accessor: '}'
+          root: ${
+          transformers:
+          - args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else: {}
+              equals: {}
+              lhs:
+                iscontext: true
+                value:
+                  simple: IsOutOfWorkingHours
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: 'true'
+              rhsB: {}
+              then:
+                value:
+                  simple: User created forwarding rule outside of business hours.
+            operator: If-Then-Else
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'Set a value in context under the key you entered. If no value
+        is entered, the script doesn''t do anything.
+
+
+        This script runs using the default Limited User role, unless you explicitly
+        change the permissions.
+
+        For more information, see the section about script permissions here:
+
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script'
+      id: 347eeeb4-facc-4e53-8832-013274dac80f
+      iscommand: false
+      name: Set abnormal working hours to aggregated evidences
+      scriptName: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: 347eeeb4-facc-4e53-8832-013274dac80f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 60,\n    \"y\": 820\n  }\n}"
+  '25':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: Evidences
+                transformers:
+                - operator: count
+          operator: greaterThanOrEqual
+          right:
+            value:
+              simple: '2'
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Indicator
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: DBotScore.Type
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: domain
+                  - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: DBotScore.Type
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: ip
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: DBotScore.Score
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: '3'
+                root: DBotScore
+          operator: isNotEmpty
+      label: 'Yes'
+    continueonerrortype: ''
+    id: '25'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '14'
+      'Yes':
+      - '20'
+      - '43'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 627d5819-cb1e-4b21-8e88-8b6d82ae21ac
+      iscommand: false
+      name: Checking soft remediation conditions
+      type: condition
+      version: -1
+    taskid: 627d5819-cb1e-4b21-8e88-8b6d82ae21ac
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 670,\n    \"y\": 1270\n  }\n}"
+  '28':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Core.OriginalAlert.raw_abioc.event.forwarding_domain_with_tld
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: 'yes'
+    continueonerrortype: ''
+    id: '28'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '6'
+      'yes':
+      - '3'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: b09a9327-e34b-4f81-8782-e54ae932ca27
+      iscommand: false
+      name: Check if a forwarding address domain exists
+      type: condition
+      version: -1
+    taskid: b09a9327-e34b-4f81-8782-e54ae932ca27
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 240,\n    \"y\": -10\n  }\n}"
+  '29':
+    continueonerrortype: ''
+    id: '29'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '14'
+      - '37'
+      - '36'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 73936401-a8d4-4374-8d30-4c9bc55f590e
+      iscommand: false
+      name: Evaluate investigation results
+      type: title
+      version: -1
+    taskid: 73936401-a8d4-4374-8d30-4c9bc55f590e
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 990\n  }\n}"
+  '3':
+    continueonerror: true
+    continueonerrortype: ''
+    id: '3'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      domain:
+        complex:
+          accessor: forwarding_domain_with_tld
+          root: Core.OriginalAlert.raw_abioc.event
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ''
+      description: Checks the reputation of a domain.
+      id: b504ebe2-56d0-400e-8222-a7d57b546615
+      iscommand: true
+      name: Check forwarding email Domain reputation
+      script: '|||domain'
+      type: regular
+      version: -1
+    taskid: b504ebe2-56d0-400e-8222-a7d57b546615
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 240,\n    \"y\": 180\n  }\n}"
+  '30':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Core.OriginalAlert.severity
+          operator: isEqualString
+          right:
+            value:
+              simple: SEV_030_MEDIUM
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: Evidences
+                transformers:
+                - operator: count
+          operator: greaterThanOrEqual
+          right:
+            value:
+              simple: '2'
+      label: 'yes'
+    continueonerrortype: ''
+    id: '30'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '14'
+      'yes':
+      - '32'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 7a967a10-abda-42b5-8535-2b3502c52c05
+      iscommand: false
+      name: Checking medium severity conditions
+      type: condition
+      version: -1
+    taskid: 7a967a10-abda-42b5-8535-2b3502c52c05
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 230,\n    \"y\": 1270\n  }\n}"
+  '32':
+    continueonerrortype: ''
+    form:
+      description: The investigation revealed several suspicious indicators suggesting
+        the user who created the forwarding rule may be compromised. The associated
+        forwarding email and filters have been automatically removed. Please decide
+        whether to take any additional recommended actions.
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ''
+        gridcolumns: []
+        id: '0'
+        label: ''
+        labelarg:
+          simple: "The following evidence was found: \n\n${Evidences}\n\nWould you\
+            \ like to disable the account ${Core.OriginalAlert.raw_abioc.event.identity_name}?"
+        options: []
+        optionsarg:
+        - simple: 'Yes'
+        - simple: 'No'
+        placeholder: ''
+        readonly: false
+        required: false
+        tooltip: ''
+        type: singleSelect
+      sender: ''
+      title: Select user account containment steps
+      totalanswers: 0
+    id: '32'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ''
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - '34'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 6cc4ec9a-a36d-48e5-852b-a5c1bc1b782f
+      iscommand: false
+      name: Decide whether to disable the user account
+      type: collection
+      version: -1
+    taskid: 6cc4ec9a-a36d-48e5-852b-a5c1bc1b782f
+    timertriggers: []
+    type: collection
+    view: "{\n  \"position\": {\n    \"x\": 40,\n    \"y\": 1470\n  }\n}"
+  '33':
+    continueonerrortype: ''
+    id: '33'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '14'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      user:
+        simple: ${Core.OriginalAlert.event.identity_name}
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ''
+      description: 'Disables a user from all Office 365 applications, and prevents
+        sign in. Note: This command disables a user,
+
+        but does not terminate an existing session. Supported only in a self-deployed
+        app flow with the
+
+        Permission: Directory.AccessAsUser.All(Delegated).'
+      id: 008f1f26-4377-498c-8921-ddb3736ef0fa
+      iscommand: true
+      name: Disable user account via MS-Graph
+      script: '|||msgraph-user-account-disable'
+      type: regular
+      version: -1
+    taskid: 008f1f26-4377-498c-8921-ddb3736ef0fa
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 40,\n    \"y\": 1830\n  }\n}"
+  '34':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: Select user account containment steps.Answers.0
+          operator: isEqualString
+          right:
+            value:
+              simple: 'Yes'
+      label: 'yes'
+    continueonerrortype: ''
+    id: '34'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '14'
+      'yes':
+      - '33'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 65ab206a-9e3f-4b64-8efe-0ec2ba0d3e54
+      iscommand: false
+      name: Check analyst decision
+      type: condition
+      version: -1
+    taskid: 65ab206a-9e3f-4b64-8efe-0ec2ba0d3e54
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 40,\n    \"y\": 1660\n  }\n}"
+  '35':
+    continueonerrortype: ''
+    id: '35'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '14'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: ed34eb8f-329b-49f1-8f12-d0e979055d77
+      iscommand: false
+      name: Early Containment Complete
+      type: title
+      version: -1
+    taskid: ed34eb8f-329b-49f1-8f12-d0e979055d77
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": -450,\n    \"y\": 2015\n  }\n}"
+  '36':
+    continueonerrortype: ''
+    id: '36'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '30'
+      - '41'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: ec931801-d2f1-4042-84b4-0a7adf76ed05
+      iscommand: false
+      name: Hard Remediation
+      type: title
+      version: -1
+    taskid: ec931801-d2f1-4042-84b4-0a7adf76ed05
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 230,\n    \"y\": 1130\n  }\n}"
+  '37':
+    continueonerrortype: ''
+    id: '37'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '25'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: f6057cef-9260-4970-8b1d-88edb25b4059
+      iscommand: false
+      name: Soft Remediation
+      type: title
+      version: -1
+    taskid: f6057cef-9260-4970-8b1d-88edb25b4059
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 670,\n    \"y\": 1130\n  }\n}"
+  '4':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Indicator
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: DBotScore.Type
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: ip
+                  - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: DBotScore.Type
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: domain
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: DBotScore.Score
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: '3'
+                root: DBotScore
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: 'yes'
+    continueonerrortype: ''
+    id: '4'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '6'
+      'yes':
+      - '5'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 0b23837d-9e34-4468-8c26-2d54a9705b83
+      iscommand: false
+      name: Evaluate domain and IP address risk level
+      type: condition
+      version: -1
+    taskid: 0b23837d-9e34-4468-8c26-2d54a9705b83
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": -160,\n    \"y\": 350\n  }\n}"
+  '40':
+    continueonerrortype: ''
+    id: '40'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '29'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: Evidences
+      value:
+        complex:
+          accessor: '}'
+          root: ${
+          transformers:
+          - args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else: {}
+              equals: {}
+              lhs:
+                iscontext: true
+                value:
+                  simple: Core.OriginalAlert.event.service_sub_type
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: ExchangeAdmin
+              rhsB: {}
+              then:
+                value:
+                  simple: The user has admin privileges.
+            operator: If-Then-Else
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'Set a value in context under the key you entered. If no value
+        is entered, the script doesn''t do anything.
+
+
+        This script runs using the default Limited User role, unless you explicitly
+        change the permissions.
+
+        For more information, see the section about script permissions here:
+
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script'
+      id: 0ad3c032-8b63-40e8-8c30-edab2a540918
+      iscommand: false
+      name: Verify if user is an Exchange admin
+      scriptName: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: 0ad3c032-8b63-40e8-8c30-edab2a540918
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1230,\n    \"y\": 660\n  }\n}"
+  '41':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: Evidences
+                transformers:
+                - operator: count
+          operator: greaterThanOrEqual
+          right:
+            value:
+              simple: '3'
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Indicator
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: DBotScore.Type
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: ip
+                  - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: DBotScore.Type
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: domain
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: DBotScore.Score
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: '3'
+                root: DBotScore
+          operator: isNotEmpty
+      label: 'yes'
+    continueonerrortype: ''
+    id: '41'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '14'
+      'yes':
+      - '32'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: d4c540d3-adaf-4f1b-869f-32ddd550508f
+      iscommand: false
+      name: Checking hard remediation conditions
+      type: condition
+      version: -1
+    taskid: d4c540d3-adaf-4f1b-869f-32ddd550508f
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": -170,\n    \"y\": 1275\n  }\n}"
+  '43':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: EWS Extension Online Powershell v3
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: 'yes'
+    continueonerrortype: ''
+    id: '43'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '14'
+      'yes':
+      - '44'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 70e37f74-2f2f-41bf-88fc-463eaba78af7
+      iscommand: false
+      name: Check EWS Extension Online Powershell availability
+      type: condition
+      version: -1
+    taskid: 70e37f74-2f2f-41bf-88fc-463eaba78af7
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 1070,\n    \"y\": 1490\n  }\n}"
+  '44':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: alert.name
+          operator: isEqualString
+          right:
+            value:
+              simple: External Exchange inbox forwarding rule configured
+        - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: alert.name
+          operator: isEqualString
+          right:
+            value:
+              simple: Suspicious Exchange inbox forwarding rule configured
+        - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: alert.name
+          operator: isEqualString
+          right:
+            value:
+              simple: Possible BEC Exchange email-hiding inbox rule
+        - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: alert.name
+          operator: isEqualString
+          right:
+            value:
+              simple: Suspicious Exchange email-hiding inbox rule
+      label: Inbox Rule
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: alert.name
+          operator: isEqualString
+          right:
+            value:
+              simple: Exchange email-hiding transport rule based on message keywords
+        - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: alert.name
+          operator: isEqualString
+          right:
+            value:
+              simple: Suspicious Exchange email-hiding transport rule
+        - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: alert.name
+          operator: isEqualString
+          right:
+            value:
+              simple: Exchange transport forwarding rule configured
+        - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: alert.name
+          operator: isEqualString
+          right:
+            value:
+              simple: Suspicious Exchange transport forwarding rule configured
+      label: Transport Rule
+    continueonerrortype: ''
+    id: '44'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      Inbox Rule:
+      - '46'
+      Transport Rule:
+      - '47'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: f89e9955-3dd9-4670-8a5e-08f041d3414b
+      iscommand: false
+      name: Check Alert type
+      type: condition
+      version: -1
+    taskid: f89e9955-3dd9-4670-8a5e-08f041d3414b
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 1070,\n    \"y\": 1660\n  }\n}"
+  '45':
+    continueonerrortype: ''
+    id: '45'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '14'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      identity:
+        simple: ${Core.OriginalAlert.event.exchange_transport_rule_name}
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ''
+      description: Disable a mail flow rule (transport rule) in the organization.
+      id: cce63e53-a02d-4d25-89ec-3684f0de635e
+      iscommand: true
+      name: Disable the Exchange forwarding transport rule
+      script: '|||ews-mail-flow-rule-disable'
+      type: regular
+      version: -1
+    taskid: cce63e53-a02d-4d25-89ec-3684f0de635e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1280,\n    \"y\": 2000\n  }\n}"
+  '46':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Core.OriginalAlert.raw_abioc.event.exchange_rule_name}
+          operator: isNotEmpty
+      label: 'yes'
+    continueonerrortype: ''
+    id: '46'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '14'
+      'yes':
+      - '17'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 040c3bcd-4166-4768-847f-e4d09303d1f5
+      iscommand: false
+      name: Check if inbox rule name is not empty
+      type: condition
+      version: -1
+    taskid: 040c3bcd-4166-4768-847f-e4d09303d1f5
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 860,\n    \"y\": 1830\n  }\n}"
+  '47':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Core.OriginalAlert.raw_abioc.event.exchange_transport_rule_name
+          operator: isNotEmpty
+      label: 'yes'
+    continueonerrortype: ''
+    id: '47'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '14'
+      'yes':
+      - '45'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: a5bf70e3-c221-4511-8166-f205c7ee13b6
+      iscommand: false
+      name: Check if transport rule name is not empty
+      type: condition
+      version: -1
+    taskid: a5bf70e3-c221-4511-8166-f205c7ee13b6
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 1280,\n    \"y\": 1830\n  }\n}"
+  '5':
+    continueonerrortype: ''
+    id: '5'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 4592715d-e397-4035-8f6a-aa8adebe4d8b
+      iscommand: false
+      name: Early Containment
+      type: title
+      version: -1
+    taskid: 4592715d-e397-4035-8f6a-aa8adebe4d8b
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": -450,\n    \"y\": 520\n  }\n}"
+  '6':
+    continueonerrortype: ''
+    id: '6'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '10'
+      - '9'
+      - '8'
+      - '40'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 3147a19e-41fd-493f-823d-87582c61e37b
+      iscommand: false
+      name: Investigation
+      type: title
+      version: -1
+    taskid: 3147a19e-41fd-493f-823d-87582c61e37b
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 520\n  }\n}"
+  '7':
+    continueonerrortype: ''
+    id: '7'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '35'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      MaliciousIPs:
+        simple: ${Core.OriginalAlert.event.caller_ip}
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ''
+      description: 'This playbook blocks IP addresses with 2 optional actions:
+
+
+        - Block IP addresses using Static Address Groups in Palo Alto Networks Panorama
+        or Firewall. The playbook receives malicious IP addresses and an address group
+        name as inputs, verifies that the addresses are not already a part of the
+        address group, adds them and commits the configuration.
+
+
+
+        - Utilize the Dynamic Address Group (DAG) capability of PAN-OS. DAG enables
+        analysts to create a rule one time, where the group is the source/destination,
+        and adds IP addresses dynamically without the need to commit the configuration
+        every time.
+
+        The playbook checks if the given tag already exists. If the tag exists, then
+        the IP address is added to the tag.
+
+        If the tag does not exist, a new address group is created with the given tag
+        and a matching rule, and the configuration is committed.'
+      id: aa988d9d-9321-4428-8426-cdd5d7c15e5d
+      iscommand: false
+      name: PAN-OS - Block IP
+      playbookName: PAN-OS - Block IP
+      type: playbook
+      version: -1
+    taskid: aa988d9d-9321-4428-8426-cdd5d7c15e5d
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": -450,\n    \"y\": 660\n  }\n}"
+  '8':
+    continueonerror: true
+    continueonerrortype: ''
+    id: '8'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '21'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      user_id:
+        simple: ${Core.OriginalAlert.raw_abioc.event.identity_normalized.identity}
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ''
+      description: Retrieve the risk score of a specific user or list of users with
+        the highest risk score in the environment along with the reason affecting
+        each score.
+      id: 150bae48-03a8-495a-87b5-11b63bd85444
+      iscommand: true
+      name: Get user risk score
+      script: '|||core-list-risky-users'
+      type: regular
+      version: -1
+    taskid: 150bae48-03a8-495a-87b5-11b63bd85444
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 840,\n    \"y\": 660\n  }\n}"
+  '9':
+    continueonerror: true
+    continueonerrortype: ''
+    id: '9'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '23'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      begin_time:
+        simple: '22:00:00'
+      end_time:
+        simple: 06:00:00
+      extend-context:
+        simple: IsOutOfWorkingHours=
+      value:
+        complex:
+          accessor: event_timestamp
+          root: Core.OriginalAlert.event
+          transformers:
+          - operator: TimeStampToDate
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks whether the given value is within the specified time (hour)
+        range.
+      id: 146faa60-9405-4cf2-8f7c-7ce02160a0c4
+      iscommand: false
+      name: Check if rule creation occurred outside business hours
+      scriptName: BetweenHours
+      type: regular
+      version: -1
+    taskid: 146faa60-9405-4cf2-8f7c-7ce02160a0c4
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 60,\n    \"y\": 660\n  }\n}"
+tests:
+- No tests (auto formatted)
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"25_14_#default#\": 0.17,\n    \"25_20_Yes\"\
+  : 0.52,\n    \"25_43_Yes\": 0.51,\n    \"28_3_yes\": 0.43,\n    \"28_6_#default#\"\
+  : 0.25,\n    \"30_14_#default#\": 0.1,\n    \"30_32_yes\": 0.43,\n    \"34_14_#default#\"\
+  : 0.32,\n    \"34_33_yes\": 0.55,\n    \"41_14_#default#\": 0.16,\n    \"41_32_yes\"\
+  : 0.4,\n    \"43_14_#default#\": 0.24,\n    \"43_44_yes\": 0.47,\n    \"44_46_Inbox\
+  \ Rule\": 0.45,\n    \"44_47_Transport Rule\": 0.53,\n    \"46_14_#default#\": 0.45,\n\
+  \    \"47_14_#default#\": 0.22,\n    \"4_5_yes\": 0.38,\n    \"4_6_#default#\":\
+  \ 0.19\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 2705,\n \
+  \     \"width\": 2110,\n      \"x\": -450,\n      \"y\": -310\n    }\n  }\n}"

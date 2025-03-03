@@ -1,0 +1,616 @@
+description: "This playbook is designed to handle the following alerts:\n- A successful\
+  \ SSO sign-in from TOR\n- A successful SSO sign-in from TOR via a mobile device\n\
+  \nThe playbook executes the following stages:\n\nEarly Containment:\n- The playbooks\
+  \ will perform early containment actions by clearing\\revoking user sessions and\
+  \ enforcing re-authentication to terminate the connection from the Tor exit node\
+  \ and verify the user's identity. \nDepending on the alert source, the playbook\
+  \ will use either\nAzure Active Directory Users or Okta v2 integrations to clear\
+  \ the user sessions.\n\nInvestigation:\nDuring the alert investigation, the playbook\
+  \ will perform the following:\n- Checks the user's risk score.\n- Search for suspicious\
+  \ user agent usage within the alert.\n- Search for related XDR alerts using the\
+  \ following MITRE techniques to identify any malicious activity:\nT1566 - Phishing\
+  \ \nT1621 - Multi-Factor Authentication Request Generation\n T1110 - Brute Force\n\
+  \ T1556 - Modify Authentication Process\n\nRemediation:\n- Remediation actions will\
+  \ be taken if the user\u2019s risk score is high, a suspicious user agent is detected,\
+  \ or a related alert is found. In such cases, the playbook will disable the account.\n\
+  By default, account disabling requires analyst approval.\n\nRequires: \nFor any\
+  \ response action, you will need one of the following integrations: Azure Active\
+  \ Directory Users / Okta v2."
+fromversion: 6.10.0
+id: silent-A successful SSO sign-in from TOR Test
+inputSections:
+- description: Generic group for inputs
+  inputs: []
+  name: General (Inputs group)
+inputs: []
+issilent: true
+marketplaces:
+- marketplacev2
+name: silent-A successful SSO sign-in from TOR Test
+outputSections:
+- description: Generic group for outputs.
+  name: General (Outputs group)
+  outputs: []
+outputs: []
+starttaskid: '0'
+tags:
+- TA0011 - Command and Control
+- T1090 - Proxy
+- TA0001 - Initial Access
+- T1078 - Valid Accounts
+tasks:
+  '0':
+    continueonerrortype: ''
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '29'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 48d3588d-43e5-4b43-8b35-48ca384bcb15
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 48d3588d-43e5-4b43-8b35-48ca384bcb15
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -750\n  }\n}"
+  '11':
+    continueonerrortype: ''
+    id: '11'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '38'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: ff3d375d-21d5-461d-89f1-3afa5ba7f00b
+      iscommand: false
+      name: Remediation
+      type: title
+      version: -1
+    taskid: ff3d375d-21d5-461d-89f1-3afa5ba7f00b
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 820\n  }\n}"
+  '16':
+    continueonerrortype: ''
+    id: '16'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '27'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 8656afbe-1707-475f-8519-54e06e80f10a
+      iscommand: false
+      name: Early Containment
+      type: title
+      version: -1
+    taskid: 8656afbe-1707-475f-8519-54e06e80f10a
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -450\n  }\n}"
+  '18':
+    continueonerror: true
+    continueonerrortype: ''
+    id: '18'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '39'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      user_id:
+        complex:
+          accessor: username
+          root: alert
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ''
+      description: Retrieve the risk score of a specific user or list of users with
+        the highest risk score in the environment along with the reason affecting
+        each score.
+      id: 413c6747-9233-45db-864c-24c7e8cb1442
+      iscommand: true
+      name: Get User Risk Level
+      script: '|||core-list-risky-users'
+      type: regular
+      version: -1
+    taskid: 413c6747-9233-45db-864c-24c7e8cb1442
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -20\n  }\n}"
+  '20':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: foundIncidents.name
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: 'yes'
+    continueonerrortype: ''
+    id: '20'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '22'
+      'yes':
+      - '11'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks whether the number of related alerts found during the investigation
+        phase is greater than the 'RelatedAlertsThreshold' to determine if the activity
+        is malicious.
+      id: 87e8d6fa-ce8d-4b8b-80ae-5ab71367c73f
+      iscommand: false
+      name: Found related alerts requiring user disabling?
+      type: condition
+      version: -1
+    taskid: 87e8d6fa-ce8d-4b8b-80ae-5ab71367c73f
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 680,\n    \"y\": 650\n  }\n}"
+  '22':
+    continueonerrortype: ''
+    id: '22'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '34'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeReason:
+        simple: Resolved - Handled by the playbook "A successful SSO sign-in from
+          TOR"
+      id:
+        complex:
+          accessor: id
+          root: alert
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: b3fc0a7d-b1ae-43a6-8867-87863d43a19d
+      iscommand: true
+      name: Close Alert
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: b3fc0a7d-b1ae-43a6-8867-87863d43a19d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1120\n  }\n}"
+  '24':
+    continueonerrortype: ''
+    id: '24'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '18'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: c787ef1f-6b33-43ec-8f2b-ef107513f04a
+      iscommand: false
+      name: Investigation
+      type: title
+      version: -1
+    taskid: c787ef1f-6b33-43ec-8f2b-ef107513f04a
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -155\n  }\n}"
+  '27':
+    continueonerrortype: ''
+    id: '27'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '24'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ClearUserSessions:
+        simple: 'True'
+      IAMUserDomain:
+        complex:
+          accessor: username
+          root: alert
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: \
+              fields:
+                value:
+                  simple: '1'
+            operator: Cut
+      Username:
+        complex:
+          accessor: username
+          root: alert
+          transformers:
+          - args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
+                iscontext: true
+                value:
+                  simple: alert.username
+              equals: {}
+              lhs:
+                iscontext: true
+                value:
+                  simple: Core.OriginalAlert.raw_abioc.event.auth_server
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: Azure
+              rhsB: {}
+              then:
+                iscontext: true
+                value:
+                  simple: Core.OriginalAlert.raw_abioc.event.auth_identity
+            operator: If-Then-Else
+          - args:
+              delimiter:
+                value:
+                  simple: \
+            operator: split
+          - operator: LastArrayElement
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ''
+      description: '## Containment Plan - Clear User Sessions
+
+
+        This playbook is a sub-playbook within the containment plan playbook.
+
+        The playbook clears the users'' sessions using the Okta integration. (Currently,
+        the playbook supports only Okta.)'
+      id: 4e0e3028-bb27-43bd-84b8-37ea809825b6
+      iscommand: false
+      name: Containment Plan - Clear User Sessions
+      playbookName: Containment Plan - Clear User Sessions
+      type: playbook
+      version: -1
+    taskid: 4e0e3028-bb27-43bd-84b8-37ea809825b6
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -320\n  }\n}"
+  '29':
+    continueonerrortype: ''
+    id: '29'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '16'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      alert_ids:
+        complex:
+          accessor: id
+          root: alert
+          transformers:
+          - operator: uniq
+      filter_alert_fields:
+        simple: 'false'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Returns information about each alert ID.
+      id: 39e14077-fc34-4106-81a1-035728cbfcfc
+      iscommand: true
+      name: Get alert's extra data
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      version: -1
+    taskid: 39e14077-fc34-4106-81a1-035728cbfcfc
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -615\n  }\n}"
+  '31':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: Core.RiskyUser.risk_level
+          operator: isEqualString
+          right:
+            value:
+              simple: HIGH
+        - left:
+            iscontext: true
+            value:
+              simple: SuspiciousUserAgent
+          operator: isNotEmpty
+      label: 'yes'
+    continueonerrortype: ''
+    id: '31'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '37'
+      'yes':
+      - '11'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'Determines the appropriate remediation actions based on the following:
+
+        - User Risk Level
+
+        - Suspicious User Agent '
+      id: e5fd0cf2-e42d-4b66-8786-f2c339b80886
+      iscommand: false
+      name: Is the user high-risk or is the user agent suspicious?
+      type: condition
+      version: -1
+    taskid: e5fd0cf2-e42d-4b66-8786-f2c339b80886
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 320\n  }\n}"
+  '34':
+    continueonerrortype: ''
+    id: '34'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 3200a260-eb1d-4089-8bf7-6895ea662306
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 3200a260-eb1d-4089-8bf7-6895ea662306
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1290\n  }\n}"
+  '37':
+    continueonerrortype: ''
+    id: '37'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '20'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        complex:
+          accessor: parentXDRIncident
+          root: alert
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: '2'
+            operator: Cut
+          - args:
+              prefix:
+                value:
+                  simple: '(mitreattcktechnique:*T1566* or mitreattcktechnique:*T1110*
+                    or mitreattcktechnique:*T1621* or mitreattcktechnique:*T1556*
+                    or name:"SSO with an offensive user agent") and caseid:'
+              suffix: {}
+            operator: concat
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: "This task searches for suspicious alerts related to incident by\
+        \ MITRE techniques that may indicate a compromised user.\nFocus on identifying\
+        \ alerts associated with the following MITRE techniques:\n- T1566 - Phishing\
+        \ \n- T1621 - Multi-Factor Authentication Request Generation\n- T1110 - Brute\
+        \ Force\n- T1556 - Modify Authentication Process\n\nAnd the following alert:\n\
+        - \"SSO with an offensive user agent\"\n\n\n\n\n\n"
+      id: 721a81cb-bb5a-4a3d-8775-c5a03b5e52b3
+      iscommand: false
+      name: Search for related alerts by name and MITRE Technique
+      scriptName: SearchIncidentsV2
+      type: regular
+      version: -1
+    taskid: 721a81cb-bb5a-4a3d-8775-c5a03b5e52b3
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 680,\n    \"y\": 490\n  }\n}"
+  '38':
+    continueonerrortype: ''
+    id: '38'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '22'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Tag:
+        simple: Bad Account
+      UserVerification:
+        simple: 'True'
+      Username:
+        simple: ${alert.username}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'This playbook blocks malicious usernames using all integrations
+        that you have enabled.
+
+
+        Supported integrations for this playbook:
+
+        * Active Directory
+
+        * PAN-OS - This requires PAN-OS 9.1 or higher.
+
+        * SailPoint
+
+        * PingOne
+
+        * AWS IAM
+
+        * Clarizen IAM
+
+        * Envoy IAM
+
+        * ExceedLMS IAM
+
+        * Okta
+
+        * Microsoft Graph User (Azure Active Directory Users)
+
+        * Google Workspace Admin
+
+        * Slack IAM
+
+        * ServiceNow IAM
+
+        * Prisma Cloud IAM
+
+        * Zoom IAM
+
+        * Atlassian IAM
+
+        * GitHub IAM.'
+      id: 140c4681-a58a-421d-8d18-faf0e81b1313
+      iscommand: false
+      name: Block Account - Generic v2
+      playbookName: Block Account - Generic v2
+      type: playbook
+      version: -1
+    taskid: 140c4681-a58a-421d-8d18-faf0e81b1313
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 950\n  }\n}"
+  '39':
+    continueonerror: true
+    continueonerrortype: ''
+    id: '39'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '31'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      contextKey:
+        simple: SuspiciousUserAgent
+      data:
+        simple: ${Core.OriginalAlert.event.action_user_agent}
+      regex:
+        simple: \b(Python-urllib|libwww-perl|Scrapy|curl|Wget|sqlmap|Nikto|Xrumer|Hydra|JohnTheRipper|LOIC|HOIC|MJ12bot|Baiduspider|BlackWidow|HeadlessChrome|PhantomJS|Selenium|REST)\b
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Extracts regex data from the provided text. The script supports
+        groups and looping.
+      id: eb1d3c97-e1f0-409b-8c2e-fc00c0254b81
+      iscommand: false
+      name: Extract suspicious user agent
+      scriptName: MatchRegexV2
+      type: regular
+      version: -1
+    taskid: eb1d3c97-e1f0-409b-8c2e-fc00c0254b81
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 150\n  }\n}"
+tests:
+- No tests (auto formatted)
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"20_11_yes\": 0.36,\n    \"20_22_#default#\"\
+  : 0.23,\n    \"31_11_yes\": 0.3,\n    \"31_37_#default#\": 0.62\n  },\n  \"paper\"\
+  : {\n    \"dimensions\": {\n      \"height\": 2105,\n      \"width\": 610,\n   \
+  \   \"x\": 450,\n      \"y\": -750\n    }\n  }\n}"

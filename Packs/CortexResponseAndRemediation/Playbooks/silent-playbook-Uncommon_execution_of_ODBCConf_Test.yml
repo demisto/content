@@ -1,0 +1,634 @@
+contentitemexportablefields:
+  contentitemfields: {}
+description: "This playbook handles \"Uncommon execution of ODBCConf\" alerts.\n\n\
+  Playbook Stages:\n\nAnalysis:\nDuring the analysis, the playbook will perform the\
+  \ following:\n\n- Checks if the causality process (CGO) is signed and prevalent.\n\
+  - Checks for the host's risk score.\n\nIf the CGO process is not signed and not\
+  \ prevalent, or if either of these conditions is met in addition to having a high-risk\
+  \ score, the playbook proceeds with remediation actions. Otherwise, it will continue\
+  \ to the investigation phase.\n\nInvestigation:\nDuring the alert investigation,\
+  \ the playbook will perform the following:\n\nSearches for related Cortex XSIAM\
+  \ alerts and insights on the same causalities chains by specific alert names : \
+  \ \n- Evasion Technique - 3048798454\n- An uncommon LOLBIN added to startup-related\
+  \ Registry keys\n- Behavioral Threat\n- An uncommon file was created in the startup\
+  \ folder\n- Unsigned process running from a temporary directory\n- Execution From\
+  \ a Restricted Location\n- Execution of an uncommon process with a local/domain\
+  \ user SID at an early startup stage by Windows system binary - Explorer CGO\n\n\
+  The playbook determines the appropriate verdict. If related alerts are found, it\
+  \ proceeds to remediation actions. In case of related insights are found ,and one\
+  \ of the following is met: the host score is listed as high or the CGO process is\
+  \ not prevalent, it will proceed to remediation actions. Otherwise, it closes the\
+  \ alert with the following message: \"No indication of malicious activity was found\"\
+  .\n\n\nRemediation:  \n\n- Automatically terminate the causality process.\n- Automatically\
+  \ Close the alert."
+fromversion: 8.8.0
+id: silent-Uncommon execution of ODBCConf Test
+inputs: []
+issilent: true
+marketplaces:
+- marketplacev2
+name: silent-Uncommon execution of ODBCConf Test
+outputs: []
+starttaskid: '0'
+system: true
+tags:
+- 'T1218.008 - System Binary Proxy Execution: Odbcconf'
+- TA0005 - Defense Evasion
+tasks:
+  '0':
+    continueonerrortype: ''
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '1'
+      - '11'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: ccc98587-c43d-4666-8b85-c27092f73e1a
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: ccc98587-c43d-4666-8b85-c27092f73e1a
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -190\n  }\n}"
+  '1':
+    continueonerrortype: ''
+    id: '1'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      process_name:
+        simple: ${alert.cgoname}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Get the prevalence of a process, identified by the process_name.
+      id: d6d828b0-4213-478a-84e4-56ab20a4ce74
+      iscommand: true
+      name: Check if the causality process is prevalent
+      script: '|||core-get-process-analytics-prevalence'
+      type: regular
+      version: -1
+    taskid: d6d828b0-4213-478a-84e4-56ab20a4ce74
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 220,\n    \"y\": -52\n  }\n}"
+  '10':
+    continueonerror: true
+    continueonerrortype: errorPath
+    id: '10'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#error#':
+      - '7'
+      '#none#':
+      - '5'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agent_id:
+        simple: ${alert.agentid}
+      causality_id:
+        simple: ${alert.cid}
+      timeout_in_seconds:
+        simple: '180'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Terminate a process tree by its causality ID. Available for Cortex
+        XSIAM 2.4 and above.
+      id: 2f2ea69d-4ed3-404f-869e-8d0f824d82e6
+      iscommand: true
+      name: Terminate Causality (CGO)
+      script: '|||core-terminate-causality'
+      type: regular
+      version: -1
+    taskid: 2f2ea69d-4ed3-404f-869e-8d0f824d82e6
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1320\n  }\n}"
+  '11':
+    continueonerrortype: ''
+    id: '11'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      host_id:
+        simple: ${alert.hostname}
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ''
+      description: Retrieve the risk score of a specific host or list of hosts with
+        the highest risk score in the environment along with the reason affecting
+        each score.
+      id: 94c0909f-061e-47d4-88e4-82fd6440f9cd
+      iscommand: true
+      name: Get Host's Risk Score
+      script: '|||core-list-risky-hosts'
+      type: regular
+      version: -1
+    taskid: 94c0909f-061e-47d4-88e4-82fd6440f9cd
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 671,\n    \"y\": -52\n  }\n}"
+  '12':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Core.RiskyHost.risk_level
+          operator: isNotEmpty
+      label: 'yes'
+    continueonerrortype: ''
+    id: '12'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '14'
+      'yes':
+      - '13'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks if the host risk score was retrieved.
+      id: bcca051a-ab0b-4b59-8846-c6b7238fe153
+      iscommand: false
+      name: Is There a Host Risk Score?
+      type: condition
+      version: -1
+    taskid: bcca051a-ab0b-4b59-8846-c6b7238fe153
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 940,\n    \"y\": 240\n  }\n}"
+  '13':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: Core.AnalyticsPrevalence.Process.value
+          operator: isEqualString
+          right:
+            value:
+              simple: 'False'
+        - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: alert.cgosignature
+                    operator: isNotEmpty
+                root: alert.cgosignature
+          operator: isNotEqualString
+          right:
+            value:
+              simple: SIGNATURE_SIGNED
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: Core.RiskyHost.risk_level
+          operator: isEqualString
+          right:
+            value:
+              simple: High
+      label: Malicious
+    continueonerrortype: ''
+    id: '13'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '14'
+      Malicious:
+      - '4'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks if the host risk score is "High" and the CGO isn't prevalent
+        or unsigned.
+      id: e200ea58-debd-4d02-ad61-eef4808cce89
+      iscommand: false
+      name: Is the Host Risk Score High and is the CGO not prevalent or unsigned
+      type: condition
+      version: -1
+    taskid: e200ea58-debd-4d02-ad61-eef4808cce89
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 660,\n    \"y\": 420\n  }\n}"
+  '14':
+    continueonerrortype: ''
+    id: '14'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '15'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      fromdate:
+        simple: 5 Hours Ago
+      includeinformational:
+        simple: 'true'
+      query:
+        simple: "(cid:${alert.cid.[0]} or actorprocessinstanceid:${alert.cid.[0]}\
+          \ or actionprocessinstanceid:${alert.cid.[0]} or actorprocessinstanceid:${alert.actorprocessinstanceid.[0]}\
+          \ or actionprocessinstanceid:${alert.actorprocessinstanceid.[0]}) AND (name:\"\
+          Evasion Technique - 3048798454\" OR \nname:\"An uncommon LOLBIN added to\
+          \ startup-related Registry keys\" OR name:\"Behavioral Threat\" OR\nname:\"\
+          An uncommon file was created in the startup folder\" OR \nname:\"Unsigned\
+          \ process running from a temporary directory\" OR \nname:\"Execution From\
+          \ a Restricted Location\" OR name:\"Execution of an uncommon process with\
+          \ a local/domain user SID at an early startup stage by Windows system binary\
+          \ - Explorer CGO\")"
+      todate:
+        simple: now
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Searches Cortex XSIAM alerts. A summarized version of this scripts
+        is available with the summarizedversion argument.
+      id: 7ce3bc2a-81a0-42e7-8d82-c6f35d296cbf
+      iscommand: false
+      name: Check For Specific Alerts By CGO
+      scriptName: SearchIncidentsV2
+      type: regular
+      version: -1
+    taskid: 7ce3bc2a-81a0-42e7-8d82-c6f35d296cbf
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 940,\n    \"y\": 610\n  }\n}"
+  '15':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: foundIncidents.name
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: Related Alerts
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Insights.Contents.data.name
+          operator: isNotEmpty
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: risk_level
+                root: Core.RiskyHost
+                transformers:
+                - args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: 'false'
+                  operator: SetIfEmpty
+          operator: isEqualString
+          right:
+            value:
+              simple: High
+        - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: Core.AnalyticsPrevalence.Process.value
+          operator: isEqualString
+          right:
+            value:
+              simple: 'False'
+      label: Related Insights
+    continueonerrortype: ''
+    id: '15'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '9'
+      Related Alerts:
+      - '4'
+      Related Insights:
+      - '16'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: This task checks if any related alerts or Insights were found.
+      id: 479b74ff-7b0c-4e72-8abb-e037908adbc1
+      iscommand: false
+      name: Found any related alerts or Insights?
+      type: condition
+      version: -1
+    taskid: 479b74ff-7b0c-4e72-8abb-e037908adbc1
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 940,\n    \"y\": 790\n  }\n}"
+  '16':
+    continueonerrortype: ''
+    id: '16'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 07941cf5-7b9b-445c-8034-9f73fed3a7a7
+      iscommand: false
+      name: Related Insights
+      type: title
+      version: -1
+    taskid: 07941cf5-7b9b-445c-8034-9f73fed3a7a7
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 790,\n    \"y\": 1030\n  }\n}"
+  '2':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: alert.cgosignature
+                    operator: isNotEmpty
+                root: alert.cgosignature
+          operator: isNotEqualString
+          right:
+            value:
+              simple: SIGNATURE_SIGNED
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: Core.AnalyticsPrevalence.Process.value
+          operator: isEqualString
+          right:
+            value:
+              simple: 'False'
+      label: Malicious
+    continueonerrortype: ''
+    id: '2'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '12'
+      Malicious:
+      - '4'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks if the causality process is not prevalent and unsigned.
+      id: e4ef5f69-4552-4de2-b9fa-3c00f70a2e7f
+      iscommand: false
+      name: Check if the causality process is not prevalent and not signed
+      type: condition
+      version: -1
+    taskid: e4ef5f69-4552-4de2-b9fa-3c00f70a2e7f
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 70\n  }\n}"
+  '4':
+    continueonerror: true
+    continueonerrortype: errorPath
+    id: '4'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '10'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Terminate a process tree by its causality ID. Available for Cortex
+        XSIAM 2.4 and above.
+      id: 765fe8d2-bdd1-4be4-8a98-48c82c984a70
+      iscommand: false
+      name: Remediation
+      type: title
+      version: -1
+    taskid: 765fe8d2-bdd1-4be4-8a98-48c82c984a70
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1170\n  }\n}"
+  '5':
+    continueonerrortype: ''
+    id: '5'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeNotes:
+        simple: Malicious activity detected - Alert was remediated
+      closeReason:
+        simple: Resolved - True Positive
+      id:
+        complex:
+          accessor: id
+          root: alert
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Close the current alert as a True Positive.
+      id: bd9cacdf-4ffb-44e7-81b4-7d958cb76986
+      iscommand: true
+      name: Close Alert
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: bd9cacdf-4ffb-44e7-81b4-7d958cb76986
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1700\n  }\n}"
+  '6':
+    continueonerrortype: ''
+    id: '6'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: deab0d59-be1c-454b-8043-540b7456529e
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: deab0d59-be1c-454b-8043-540b7456529e
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1870\n  }\n}"
+  '7':
+    continueonerrortype: ''
+    id: '7'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: "Dear Analyst,\n\nDuring the remediation process, the playbook\
+        \ couldn\u2019t terminate the process: ${alert.cgoname}\n\nPlease terminate\
+        \ the process manually if possible."
+      id: 8d7bf580-9887-46c9-85bc-05eab9fad48f
+      iscommand: false
+      name: Terminate Process Manually
+      type: regular
+      version: -1
+    taskid: 8d7bf580-9887-46c9-85bc-05eab9fad48f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 220,\n    \"y\": 1482\n  }\n}"
+  '8':
+    continueonerrortype: ''
+    id: '8'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeNotes:
+        simple: No indication of malicious activity was found. Closed automatically
+          without any further action.
+      closeReason:
+        simple: Resolved - False Positive
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Close the current alert as a False Positive.
+      id: 5b00bf39-f41c-4580-8ee8-a7eb6546221f
+      iscommand: true
+      name: Close Alert - No malicious activity was found
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 5b00bf39-f41c-4580-8ee8-a7eb6546221f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1062,\n    \"y\": 1700\n  }\n}"
+  '9':
+    continueonerrortype: ''
+    id: '9'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 6bb015bc-9dc9-4669-8e89-17a7be7c0a70
+      iscommand: false
+      name: No malicious activity was found
+      type: title
+      version: -1
+    taskid: 6bb015bc-9dc9-4669-8e89-17a7be7c0a70
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 1062,\n    \"y\": 1170\n  }\n}"
+tests:
+- No tests (auto formatted)
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"10_7_#error#\": 0.45,\n    \"15_16_Related\
+  \ Insights\": 0.42,\n    \"15_4_Related Alerts\": 0.65\n  },\n  \"paper\": {\n \
+  \   \"dimensions\": {\n      \"height\": 2120,\n      \"width\": 1223,\n      \"\
+  x\": 220,\n      \"y\": -190\n    }\n  }\n}"

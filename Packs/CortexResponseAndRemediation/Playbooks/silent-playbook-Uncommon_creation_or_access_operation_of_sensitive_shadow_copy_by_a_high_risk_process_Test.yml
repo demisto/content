@@ -1,0 +1,840 @@
+description: "This playbook addresses the following alerts:\n \n- Uncommon creation\
+  \ or access operation of sensitive shadow copy by a high-risk process\n \nPlaybook\
+  \ Stages:\n  \nTriage: \n \n- Check if the causality process image (CGO) is signed\
+  \ or not\n \nInvestigation:\n \n- If CGO is unsigned:\n  - Check the CGO process\
+  \ prevalence\n  - Check if the process image path is common\n- If CGO is signed:\n\
+  \  - Check process image name\n  - Check initiating process image name\n  - Check\
+  \ if username is SYSTEM\n  - Check if host is a server\n  - Check for previous similar\
+  \ alert closed as False Positive\n \nContainment:\n \n- Terminate causality process\
+  \ (CGO) process - when a signed high-risk process or an unsigned process from an\
+  \ uncommon path attempting to create or access sensitive shadow copy data."
+fromversion: 8.8.0
+id: silent-Uncommon creation or access operation of sensitive shadow copy by a high-risk
+  process Test
+inputs: []
+issilent: true
+marketplaces:
+- marketplacev2
+name: silent-Uncommon creation or access operation of sensitive shadow copy by a high-risk
+  process Test
+outputs: []
+starttaskid: '0'
+tags:
+- T1003 - OS Credential Dumping
+- TA0006 - Credential Access
+tasks:
+  '0':
+    continueonerrortype: ''
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '31'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 702ceef5-880a-4344-8843-15c70b9f776f
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 702ceef5-880a-4344-8843-15c70b9f776f
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 705,\n    \"y\": -385\n  }\n}"
+  '10':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: alert.initiatedby
+          operator: isEqualString
+          right:
+            value:
+              simple: VSSVC.exe
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: alert.username
+          operator: containsString
+          right:
+            value:
+              simple: SYSTEM
+      label: 'yes'
+    continueonerrortype: ''
+    id: '10'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '12'
+      'yes':
+      - '11'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 94c093a8-954a-4f10-85ef-1d1d6722367c
+      iscommand: false
+      name: Check actor_process_image_name VSSVC.exe & username SYSTEM
+      type: condition
+      version: -1
+    taskid: 94c093a8-954a-4f10-85ef-1d1d6722367c
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 110,\n    \"y\": 555\n  }\n}"
+  '11':
+    continueonerrortype: ''
+    id: '11'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '26'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: d79d5426-6060-414b-8771-82dab80acfb8
+      iscommand: false
+      name: Remediation
+      type: title
+      version: -1
+    taskid: d79d5426-6060-414b-8771-82dab80acfb8
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 110,\n    \"y\": 1110\n  }\n}"
+  '12':
+    continueonerrortype: ''
+    id: '12'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '19'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: fa876d07-2376-4c1b-8c18-65a7cd3d512e
+      iscommand: false
+      name: Inconclusive
+      type: title
+      version: -1
+    taskid: fa876d07-2376-4c1b-8c18-65a7cd3d512e
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 915,\n    \"y\": 1090\n  }\n}"
+  '13':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: alert.cgoname
+          operator: isEqualString
+          right:
+            value:
+              simple: mmc.exe
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: alert.agentossubtype
+          operator: containsString
+          right:
+            value:
+              simple: Server
+      label: 'yes'
+    continueonerrortype: ''
+    id: '13'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '15'
+      'yes':
+      - '14'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: b6775c20-09f1-42a1-86dd-edcf030bf185
+      iscommand: false
+      name: Check CGO image name is mmc.exe & OS is server
+      type: condition
+      version: -1
+    taskid: b6775c20-09f1-42a1-86dd-edcf030bf185
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 512.5,\n    \"y\": 385\n  }\n}"
+  '14':
+    continueonerrortype: ''
+    id: '14'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '18'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 4e71e24a-0071-4d1c-8b0e-aba35683d33f
+      iscommand: false
+      name: Common False Positive behavior
+      type: title
+      version: -1
+    taskid: 4e71e24a-0071-4d1c-8b0e-aba35683d33f
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 512.5,\n    \"y\": 1090\n  }\n}"
+  '15':
+    continueonerrortype: ''
+    id: '15'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '29'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: e2cb2f95-a439-4b77-871b-5104add62100
+      iscommand: false
+      name: Inconclusive
+      type: title
+      version: -1
+    taskid: e2cb2f95-a439-4b77-871b-5104add62100
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 915,\n    \"y\": 555\n  }\n}"
+  '16':
+    continueonerrortype: ''
+    id: '16'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '11'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: a1588134-cd1e-4479-884a-66526f8f2604
+      iscommand: false
+      name: Remediation
+      type: title
+      version: -1
+    taskid: a1588134-cd1e-4479-884a-66526f8f2604
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 1330,\n    \"y\": 860\n  }\n}"
+  '17':
+    continueonerrortype: ''
+    id: '17'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '32'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Get the prevalence of a process, identified by process_name.
+      id: 4716fbae-6a4a-44ff-8abd-46cc28455231
+      iscommand: false
+      name: Investigation
+      type: title
+      version: -1
+    taskid: 4716fbae-6a4a-44ff-8abd-46cc28455231
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 1330,\n    \"y\": 70\n  }\n}"
+  '18':
+    continueonerrortype: ''
+    id: '18'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '19'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeNotes:
+        simple: Found common false positive behavior or previous similar alerts closed
+          as False Positive.
+      closeReason:
+        simple: Resolved - Handled by the playbook "Uncommon creation or access operation
+          of sensitive shadow copy by a high-risk process"
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 654152a7-b8e4-4d43-8a75-fc1153122d9f
+      iscommand: true
+      name: Close Alert - False Positive
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 654152a7-b8e4-4d43-8a75-fc1153122d9f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 512.5,\n    \"y\": 1230\n  }\n}"
+  '19':
+    continueonerrortype: ''
+    id: '19'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 483ab1ce-e4ce-4a97-8952-22d5be91e79e
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 483ab1ce-e4ce-4a97-8952-22d5be91e79e
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 512.5,\n    \"y\": 1760\n  }\n}"
+  '24':
+    continueonerrortype: ''
+    id: '24'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '19'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeNotes:
+        simple: Malicious Process attempted to create or access ShadowCopy
+      closeReason:
+        simple: Resolved - Handled by the playbook "Suspicious access to shadow file"
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Close the current alert.
+      id: 3dc743ae-6b2f-40e2-8186-3cc1c120a50d
+      iscommand: true
+      name: Close Alert - True Positive
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 3dc743ae-6b2f-40e2-8186-3cc1c120a50d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 110,\n    \"y\": 1590\n  }\n}"
+  '26':
+    continueonerror: true
+    continueonerrortype: errorPath
+    id: '26'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#error#':
+      - '27'
+      '#none#':
+      - '24'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agent_id:
+        simple: ${alert.agentid}
+      causality_id:
+        simple: ${alert.cid}
+      timeout_in_seconds:
+        simple: '180'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Terminate a process tree by its causality ID. Available only for
+        Cortex XSIAM 2.4.
+      id: 17338ce2-c9a1-4e55-89d8-c380573be240
+      iscommand: true
+      name: Terminate Causality (CGO)
+      script: '|||core-terminate-causality'
+      type: regular
+      version: -1
+    taskid: 17338ce2-c9a1-4e55-89d8-c380573be240
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 107.5,\n    \"y\": 1240\n  }\n}"
+  '27':
+    continueonerrortype: ''
+    id: '27'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '24'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'Dear Analyst,
+
+
+        During the remediation process, the playbook failed to terminate the causality
+        process: ${alert.cgoname}
+
+        Please investigate this before closing this alert.
+
+        '
+      id: 2ed915fc-31b3-4f83-84d2-e9a0e2f08c83
+      iscommand: false
+      name: Terminate Causality Process Manually
+      type: regular
+      version: -1
+    taskid: 2ed915fc-31b3-4f83-84d2-e9a0e2f08c83
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -110,\n    \"y\": 1420\n  }\n}"
+  '28':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: alert.initiatorpath
+          operator: notContainsString
+          right:
+            value:
+              simple: C:\Program Files
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: alert.initiatorpath
+          operator: notContainsString
+          right:
+            value:
+              simple: C:\Windows
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: Core.AnalyticsPrevalence.Process.value
+          operator: isEqualString
+          right:
+            value:
+              simple: 'False'
+      label: Uncommon-Path
+    continueonerrortype: ''
+    id: '28'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '15'
+      Uncommon-Path:
+      - '16'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: cf4eaf8d-b284-4184-82b0-c23a4e624c86
+      iscommand: false
+      name: Check if process path is common & causality process is prevalent
+      type: condition
+      version: -1
+    taskid: cf4eaf8d-b284-4184-82b0-c23a4e624c86
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 1330,\n    \"y\": 385\n  }\n}"
+  '29':
+    continueonerrortype: ''
+    id: '29'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '30'
+    note: false
+    quietmode: 2
+    scriptarguments:
+      fromdate:
+        simple: 30 days ago
+      name:
+        simple: ${alert.name}
+      query:
+        simple: name:"Uncommon creation or access operation of sensitive shadow copy
+          by a high-risk process" and resolution_status:*False*Positive* and cgo_name:${alert.cgoname.[0]}
+          and initiatedby:${alert.initiatedby.[0]}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'Finds past similar alerts based on alert fields'' similarity.
+
+        '
+      id: 9f7dc92f-e3a0-4293-83e8-9a3c8151ebc9
+      iscommand: false
+      name: Check if Previous Similar Alerts
+      scriptName: SearchIncidentsV2
+      type: regular
+      version: -1
+    taskid: 9f7dc92f-e3a0-4293-83e8-9a3c8151ebc9
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 915,\n    \"y\": 685\n  }\n}"
+  '30':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: foundIncidents
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: 'yes'
+    continueonerrortype: ''
+    id: '30'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '12'
+      'yes':
+      - '14'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 21611b1a-4209-446e-83c9-26a2765062b1
+      iscommand: false
+      name: Check if Previous Alerts Closed as False Positive
+      type: condition
+      version: -1
+    taskid: 21611b1a-4209-446e-83c9-26a2765062b1
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 915,\n    \"y\": 845\n  }\n}"
+  '31':
+    continueonerrortype: ''
+    id: '31'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: b9a90c8e-ca78-4778-80ff-a9d845994475
+      iscommand: false
+      name: Triage
+      type: title
+      version: -1
+    taskid: b9a90c8e-ca78-4778-80ff-a9d845994475
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 705,\n    \"y\": -240\n  }\n}"
+  '32':
+    continueonerrortype: ''
+    id: '32'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '28'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      process_name:
+        simple: ${alert.cgoname}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Get the prevalence of a process, identified by process_name.
+      id: fca6bd1f-3bac-4832-8590-38184d577db3
+      iscommand: true
+      name: Get Causality process prevalence
+      script: '|||core-get-process-analytics-prevalence'
+      type: regular
+      version: -1
+    taskid: fca6bd1f-3bac-4832-8590-38184d577db3
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1330,\n    \"y\": 210\n  }\n}"
+  '33':
+    continueonerrortype: ''
+    id: '33'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: b289c1f0-975c-4375-8359-6da2b9599a77
+      iscommand: false
+      name: Investigation
+      type: title
+      version: -1
+    taskid: b289c1f0-975c-4375-8359-6da2b9599a77
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 110,\n    \"y\": 70\n  }\n}"
+  '6':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: alert.osparentsignature
+          operator: isEqualString
+          right:
+            value:
+              simple: SIGNATURE_SIGNED
+      label: CGO-Signed
+    continueonerrortype: ''
+    id: '6'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '17'
+      CGO-Signed:
+      - '33'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 8c57cacd-97c2-424a-827d-c38fb9eaf53d
+      iscommand: false
+      name: Check if CGO is signed
+      type: condition
+      version: -1
+    taskid: 8c57cacd-97c2-424a-827d-c38fb9eaf53d
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 705,\n    \"y\": -105\n  }\n}"
+  '7':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: alert.cgoname
+          operator: isEqualString
+          right:
+            value:
+              simple: powershell.exe
+      label: powershell.exe
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: alert.cgoname
+          operator: isEqualString
+          right:
+            value:
+              simple: cmd.exe
+        - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: alert.cgoname
+          operator: isEqualString
+          right:
+            value:
+              simple: rundll32.exe
+      label: cmd.exe|rundll32.exe
+    continueonerrortype: ''
+    id: '7'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '13'
+      cmd.exe|rundll32.exe:
+      - '10'
+      powershell.exe:
+      - '9'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: a297376c-f25a-4276-8808-f4d82539a7a9
+      iscommand: false
+      name: Check CGO image name
+      type: condition
+      version: -1
+    taskid: a297376c-f25a-4276-8808-f4d82539a7a9
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 110,\n    \"y\": 210\n  }\n}"
+  '9':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: alert.initiatedby
+          operator: isEqualString
+          right:
+            value:
+              simple: powershell.exe
+        - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: alert.initiatedby
+          operator: isEqualString
+          right:
+            value:
+              simple: cmd.exe
+        - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: alert.initiatedby
+          operator: isEqualString
+          right:
+            value:
+              simple: esentutl.exe
+        - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: alert.initiatedby
+          operator: isEqualString
+          right:
+            value:
+              simple: ntdsutil.exe
+      label: powershell.exe|ntdsutil.exe|esentutl.exe|cmd.exe
+    continueonerrortype: ''
+    id: '9'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '10'
+      powershell.exe|ntdsutil.exe|esentutl.exe|cmd.exe:
+      - '11'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 972c8b30-67cc-4544-8206-347b4eae0170
+      iscommand: false
+      name: Check actor_process_image_name
+      type: condition
+      version: -1
+    taskid: 972c8b30-67cc-4544-8206-347b4eae0170
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": -210,\n    \"y\": 385\n  }\n}"
+tests:
+- No tests (auto formatted)
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"10_11_yes\": 0.38,\n    \"10_12_#default#\"\
+  : 0.4,\n    \"26_27_#error#\": 0.57,\n    \"30_12_#default#\": 0.33,\n    \"7_10_cmd.exe|rundll32.exe\"\
+  : 0.42,\n    \"7_13_#default#\": 0.51,\n    \"7_9_powershell.exe\": 0.65,\n    \"\
+  9_11_powershell.exe|ntdsutil.exe|esentutl.exe|cmd.exe\": 0.34\n  },\n  \"paper\"\
+  : {\n    \"dimensions\": {\n      \"height\": 2210,\n      \"width\": 1920,\n  \
+  \    \"x\": -210,\n      \"y\": -385\n    }\n  }\n}"

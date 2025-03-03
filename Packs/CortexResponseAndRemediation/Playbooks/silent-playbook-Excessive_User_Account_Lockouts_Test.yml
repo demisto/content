@@ -1,0 +1,1142 @@
+description: 'This playbook addresses the following alerts:
+
+
+  - Excessive user account lockouts
+
+  - Excessive account lockouts on suspicious users
+
+  - Excessive user account lockouts from a suspicious source
+
+
+  The playbook investigates and responds to excessive user account lockout alerts.
+  It gathers information about the alert, enriches relevant host data, and analyzes
+  event patterns. This analysis helps distinguish between benign lockouts and lockouts
+  caused by brute-force or password spray attacks.
+
+
+  Playbook Stages:
+
+
+  Triage:
+
+
+  - The playbook enriches the alert with details about the lockout events.
+
+
+  Investigation:
+
+
+  - Analyzes the lockout event timestamps to detect patterns.
+
+  - Checks for related medium severity brute-force alerts in the incident.
+
+  - Retrieves the Risk Score for the Caller Computer that caused the lockouts.
+
+
+  Containment:
+
+
+  - With analyst approval, the playbook can isolate the endpoint (either the Caller
+  Computer or the target host) if it''s determined to be a true positive and not a
+  server.
+
+
+  Requirements:
+
+
+  - For response actions, the following integration is required: Core - IR.'
+fromversion: 8.8.0
+id: silent-Excessive User Account Lockouts Test
+inputs: []
+issilent: true
+marketplaces:
+- marketplacev2
+name: silent-Excessive User Account Lockouts Test
+outputs: []
+starttaskid: '0'
+tags:
+- T1110 - Brute Force
+- TA0006 - Credential Access
+tasks:
+  '0':
+    continueonerrortype: ''
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: a6f8c311-b856-4f69-898f-31f3a2fa1068
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: a6f8c311-b856-4f69-898f-31f3a2fa1068
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '1':
+    continueonerrortype: ''
+    id: '1'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      alert_ids:
+        simple: ${alert.id}
+      filter_alert_fields:
+        simple: 'false'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Returns information about the lockout events, including timestamps
+        and the Caller Computer name.
+      id: 34a5e2bb-48fc-49e6-8942-973578d1a7a6
+      iscommand: true
+      name: Get more information about the lockout events
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      version: -1
+    taskid: 34a5e2bb-48fc-49e6-8942-973578d1a7a6
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 320\n  }\n}"
+  '11':
+    continueonerrortype: ''
+    id: '11'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '12'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: f6c847f4-93f0-4cce-89f1-79fd4f983858
+      iscommand: false
+      name: Verdict
+      type: title
+      version: -1
+    taskid: f6c847f4-93f0-4cce-89f1-79fd4f983858
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 1680\n  }\n}"
+  '12':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: alert.severity
+          operator: isEqualString
+          right:
+            value:
+              simple: '1'
+      label: Low
+    continueonerrortype: ''
+    id: '12'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '15'
+      Low:
+      - '13'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks the severity of the current alert. Different severity variations
+        have different conditions for verdict decision.
+      id: 8f3e49e5-3f1e-41bf-87ce-085572fb5519
+      iscommand: false
+      name: Check alert severity
+      type: condition
+      version: -1
+    taskid: 8f3e49e5-3f1e-41bf-87ce-085572fb5519
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 1810\n  }\n}"
+  '13':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: foundIncidents.id
+          operator: isNotEmpty
+          right:
+            value: {}
+      - - left:
+            iscontext: true
+            value:
+              simple: IntervalAnalysis.IsPatternLikelyAutomated
+          operator: isTrue
+      label: True Positive
+    continueonerrortype: ''
+    id: '13'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '46'
+      True Positive:
+      - '16'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks if there are medium severity brute-force alerts in the incident,
+        and if the lockouts seem to be the result of an automated process.
+      id: 8bd9e5e8-d9a9-4d99-8f3d-8a4e8661dd1e
+      iscommand: false
+      name: Check verdict - low severity alert
+      type: condition
+      version: -1
+    taskid: 8bd9e5e8-d9a9-4d99-8f3d-8a4e8661dd1e
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 260,\n    \"y\": 1980\n  }\n}"
+  '15':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: Core.RiskyHost.risk_level
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: HIGH
+                root: Core.RiskyHost
+          operator: isNotEmpty
+          right:
+            value: {}
+        - left:
+            iscontext: true
+            value:
+              simple: foundIncidents.id
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              simple: IntervalAnalysis.IsPatternLikelyAutomated
+          operator: isTrue
+      label: True Positive
+    continueonerrortype: ''
+    id: '15'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '38'
+      True Positive:
+      - '16'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks if the Caller Computer is risky, there are medium severity
+        brute-force alerts in the incident, or if the lockouts seem to be the result
+        of an automated process.
+      id: 94de6f92-b24f-47ce-8c6a-2b2bc2b3ddc5
+      iscommand: false
+      name: Check verdict - medium/high severity alert
+      type: condition
+      version: -1
+    taskid: 94de6f92-b24f-47ce-8c6a-2b2bc2b3ddc5
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 670,\n    \"y\": 1980\n  }\n}"
+  '16':
+    continueonerrortype: ''
+    id: '16'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '52'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 0052b546-df3b-4fbd-8c65-9c7cceba5164
+      iscommand: false
+      name: Containment
+      type: title
+      version: -1
+    taskid: 0052b546-df3b-4fbd-8c65-9c7cceba5164
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2320\n  }\n}"
+  '2':
+    continueonerrortype: ''
+    id: '2'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: b130c4f8-988f-41f5-83b2-c0d560e1749a
+      iscommand: false
+      name: Triage
+      type: title
+      version: -1
+    taskid: b130c4f8-988f-41f5-83b2-c0d560e1749a
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 180\n  }\n}"
+  '28':
+    continueonerrortype: ''
+    id: '28'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '48'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      endpoint_id:
+        complex:
+          accessor: endpoint_id
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: IsolationCandidate.endpoint_type
+              operator: isNotEqualString
+              right:
+                value:
+                  simple: AGENT_TYPE_SERVER
+          - - left:
+                iscontext: true
+                value:
+                  simple: IsolationCandidate.endpoint_name
+              operator: isNotEmpty
+          root: IsolationCandidate
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Isolates the specified endpoint.
+      id: 036c042d-4edd-4a67-81e7-4130eb342a38
+      iscommand: true
+      name: Isolate the endpoint
+      script: '|||core-isolate-endpoint'
+      type: regular
+      version: -1
+    taskid: 036c042d-4edd-4a67-81e7-4130eb342a38
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 230,\n    \"y\": 2800\n  }\n}"
+  '3':
+    continueonerrortype: ''
+    id: '3'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '9'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      hostname:
+        complex:
+          accessor: norm_evtlog_target_domain_name
+          root: Core.OriginalAlert.event
+          transformers:
+          - operator: uniq
+      ignore-outputs:
+        simple: 'false'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Retrieves agent information for the Caller Computer that caused
+        the lockouts (if managed).
+      id: e80f56bc-9b7f-4194-8a3b-b7da358e127a
+      iscommand: true
+      name: Enrich Caller Computer
+      script: '|||core-get-endpoints'
+      type: regular
+      version: -1
+    taskid: e80f56bc-9b7f-4194-8a3b-b7da358e127a
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 830\n  }\n}"
+  '31':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Core.OriginalAlert.event.norm_evtlog_target_domain_name
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: Available
+    continueonerrortype: ''
+    id: '31'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '4'
+      Available:
+      - '3'
+      - '5'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks if the name of the Caller Computer is available in the event,
+        in order to avoid cases where all computers are queried due to an empty filter
+        in the core-get-endpoints command.
+      id: b114af3d-b553-4a33-8652-3b88a888c6f1
+      iscommand: false
+      name: Check availability of Caller Computer Name
+      type: condition
+      version: -1
+    taskid: b114af3d-b553-4a33-8652-3b88a888c6f1
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 640\n  }\n}"
+  '38':
+    continueonerrortype: ''
+    id: '38'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '48'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: f824171c-912c-4559-83e3-9c6c3908db98
+      iscommand: false
+      name: False Positive
+      type: title
+      version: -1
+    taskid: f824171c-912c-4559-83e3-9c6c3908db98
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 860,\n    \"y\": 2320\n  }\n}"
+  '39':
+    continueonerrortype: ''
+    id: '39'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '48'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: c21218a5-d5ff-4fb6-84bb-cf1a0beb53cf
+      iscommand: false
+      name: False Positive
+      type: title
+      version: -1
+    taskid: c21218a5-d5ff-4fb6-84bb-cf1a0beb53cf
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": -170,\n    \"y\": 2815\n  }\n}"
+  '4':
+    continueonerrortype: ''
+    id: '4'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '40'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      hostname:
+        complex:
+          accessor: hostname
+          root: alert
+          transformers:
+          - operator: uniq
+      ignore-outputs:
+        simple: 'false'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Gets a list of endpoints, according to the passed filters. If there
+        are no filters, all endpoints are returned. Filtering by multiple fields will
+        be concatenated using AND condition (OR is not supported). Maximum result
+        set size is 100. Offset is the zero-based number of endpoint from the start
+        of the result set (start by counting from 0).
+      id: 83ff4126-8b59-42d1-80e7-492fa269b5d7
+      iscommand: true
+      name: Get endpoint details for the target host
+      script: '|||core-get-endpoints'
+      type: regular
+      version: -1
+    taskid: 83ff4126-8b59-42d1-80e7-492fa269b5d7
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -160,\n    \"y\": 1180\n  }\n}"
+  '40':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: endpoint_id
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Core.Endpoint.endpoint_type
+                    operator: isNotEqualString
+                    right:
+                      value:
+                        simple: AGENT_TYPE_SERVER
+                root: Core.Endpoint
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: Non-server
+    continueonerrortype: ''
+    id: '40'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '11'
+      Non-server:
+      - '43'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Retrieves agent information for the host where the lockouts were
+        logged.
+      id: cec099da-466d-4705-825f-5228bc8d77e0
+      iscommand: false
+      name: Ensure target host is not a server
+      type: condition
+      version: -1
+    taskid: cec099da-466d-4705-825f-5228bc8d77e0
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": -160,\n    \"y\": 1340\n  }\n}"
+  '41':
+    continueonerrortype: ''
+    id: '41'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '11'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: IsolationCandidate
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: Core.Endpoint.endpoint_id
+              operator: isNotEmpty
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: Core.Endpoint.endpoint_name
+              operator: isEqualString
+              right:
+                iscontext: true
+                value:
+                  simple: Core.OriginalAlert.event.norm_evtlog_target_domain_name
+          root: Core.Endpoint
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Saves the Caller Computer that caused the user lockouts as the
+        remediation target.
+      id: 054b82f0-47a5-4a50-82d3-42a7df367ebd
+      iscommand: false
+      name: Save Caller Computer as target for remediation
+      scriptName: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: 054b82f0-47a5-4a50-82d3-42a7df367ebd
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 250,\n    \"y\": 1180\n  }\n}"
+  '43':
+    continueonerrortype: ''
+    id: '43'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '11'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: IsolationCandidate
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: Core.Endpoint.endpoint_id
+              operator: isNotEmpty
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: Core.Endpoint.endpoint_name
+              operator: isEqualString
+              right:
+                iscontext: true
+                value:
+                  simple: alert.hostname
+          root: Core.Endpoint
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Saves the host on which the lockouts occurred as the remediation
+        target.
+      id: 62222607-7815-4c38-8775-1cfe01426421
+      iscommand: false
+      name: Save Target Host as target for remediation
+      scriptName: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: 62222607-7815-4c38-8775-1cfe01426421
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 240,\n    \"y\": 1510\n  }\n}"
+  '46':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: Core.RiskyHost.risk_level
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: HIGH
+                root: Core.RiskyHost
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: Risky
+    continueonerrortype: ''
+    id: '46'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '39'
+      Risky:
+      - '16'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks if the Caller Computer that caused the lockouts is risky
+        (if managed).
+      id: 0c636d74-3530-4485-8aab-eeb6b0a459e1
+      iscommand: false
+      name: Check Caller Computer risk level
+      type: condition
+      version: -1
+    taskid: 0c636d74-3530-4485-8aab-eeb6b0a459e1
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 70,\n    \"y\": 2150\n  }\n}"
+  '48':
+    continueonerrortype: ''
+    id: '48'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 648a9503-9122-44fe-8bea-2e326ca79107
+      iscommand: true
+      name: Close the alert
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 648a9503-9122-44fe-8bea-2e326ca79107
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2980\n  }\n}"
+  '49':
+    continueonerrortype: ''
+    id: '49'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '48'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'Automatic remediation was skipped due to one of the following
+        reasons:
+
+        - The Caller Computer is not managed, and the target host is a server.
+
+        - The Caller Computer and the Target Host are the same, and they are both
+        servers.
+
+
+        The analyst should take manual remediation steps such as fixing misconfigurations,
+        investigating lockout causes, etc.'
+      id: 7f81c1a1-0cf6-40e1-8d0a-66e9a2378131
+      iscommand: false
+      name: Manual - host server or unavailable
+      type: regular
+      version: -1
+    taskid: 7f81c1a1-0cf6-40e1-8d0a-66e9a2378131
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 640,\n    \"y\": 2630\n  }\n}"
+  '5':
+    continueonerror: true
+    continueonerrortype: ''
+    id: '5'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '11'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      host_id:
+        complex:
+          accessor: norm_evtlog_target_domain_name
+          root: Core.OriginalAlert.event
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Gets the risk level for the Caller Computer that caused the lockouts.
+      id: bba0b309-a23d-411c-8d5a-ac7bff8b971b
+      iscommand: true
+      name: Get Caller Computer risk level
+      script: '|||core-list-risky-hosts'
+      type: regular
+      version: -1
+    taskid: bba0b309-a23d-411c-8d5a-ac7bff8b971b
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 830\n  }\n}"
+  '52':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: IsolationCandidate.endpoint_name
+          operator: isEmpty
+          right:
+            value: {}
+      label: Host unavailable/server
+    continueonerrortype: ''
+    id: '52'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '54'
+      Host unavailable/server:
+      - '49'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'Checks if the Caller Computer or host where the lockouts occurred
+        can be remediated.
+
+
+        The IsolationCandidate key will hold the Caller Computer if it''s managed.
+        If not managed or a server, the key will hold the target hostname instead.
+        If the target host is a server, or is the same host as the Caller Computer
+        which happens to be a server, the IsolationCandidate key will be empty, requiring
+        analyst intervention.'
+      id: 8a3da735-27c1-40a2-814b-d8381a298c30
+      iscommand: false
+      name: Check remediation preconditions
+      type: condition
+      version: -1
+    taskid: 8a3da735-27c1-40a2-814b-d8381a298c30
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2455\n  }\n}"
+  '53':
+    continueonerrortype: ''
+    id: '53'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '11'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        complex:
+          accessor: parentXDRIncident
+          root: alert
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: '2'
+            operator: Cut
+          - args:
+              prefix:
+                value:
+                  simple: 'caseid:'
+              suffix:
+                value:
+                  simple: ' and mitreattcktechnique:*T1110* and -severity:LOW and
+                    -id:'
+            operator: concat
+          - args:
+              prefix: {}
+              suffix:
+                iscontext: true
+                value:
+                  simple: alert.id
+            operator: concat
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Searches for non-low severity alerts with the Brute Force MITRE
+        technique (T1110) in the same incident, which may be related to the excessive
+        lockouts.
+      id: 3979d50a-f78e-4979-8103-27797180092d
+      iscommand: false
+      name: Search for suspicious brute force alerts in the incident
+      scriptName: SearchAlertsV2
+      type: regular
+      version: -1
+    taskid: 3979d50a-f78e-4979-8103-27797180092d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 670,\n    \"y\": 630\n  }\n}"
+  '54':
+    continueonerrortype: ''
+    id: '54'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: {}
+      cc: null
+      format: ''
+      methods: []
+      replyOptions:
+      - 'Yes'
+      - 'No'
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      'No':
+      - '48'
+      'Yes':
+      - '28'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'Review the following findings and decide whether the host should
+        be isolated:
+
+        ${IsolationCandidate.endpoint_name}
+
+
+        Below are the findings of the investigation:
+
+
+
+        #### Current Alert Severity:
+
+        `${.=val.alert.severity > 1 ? "Medium or higher" : "Low"}`
+
+
+        ---
+
+
+        #### Pattern Likely Automated:
+
+        `${.=val.IntervalAnalysis.IsPatternLikelyAutomated ? "True" : "False"}`
+
+
+        ---
+
+
+        #### Related Brute-Force Alerts:
+
+        `${.=val.foundIncidents.id ? "True" : "False"}`
+
+
+        ---
+
+
+        #### Risky Caller Computer:
+
+        `${.=val.Core.RiskyHost && val.Core.RiskyHost.risk_level === "HIGH" ? "True"
+        : "False or unavailable"}`
+
+
+        '
+      id: 18e9d259-d6ef-4e2a-875b-a849d57f6d42
+      iscommand: false
+      name: Manual - decide whether to isolate the endpoint
+      type: condition
+      version: -1
+    taskid: 18e9d259-d6ef-4e2a-875b-a849d57f6d42
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 230,\n    \"y\": 2630\n  }\n}"
+  '6':
+    continueonerrortype: ''
+    id: '6'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '31'
+      - '53'
+      - '8'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 35501fc7-5bf8-4a0e-873b-5beec9d343ea
+      iscommand: false
+      name: Investigation
+      type: title
+      version: -1
+    taskid: 35501fc7-5bf8-4a0e-873b-5beec9d343ea
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 480\n  }\n}"
+  '8':
+    continueonerrortype: ''
+    id: '8'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '11'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      timestamps:
+        simple: ${Core.OriginalAlert._all_events.event_timestamp}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Analyze a list of Unix timestamps in milliseconds, to detect simple
+        patterns of consistency or high frequency. The script can aid in the investigation
+        of multi-event alerts that contain a list of timestamps.
+      id: bb054ce8-8cc5-4060-817d-dba6db2ffee1
+      iscommand: false
+      name: Analyze lockout timestamps
+      scriptName: AnalyzeTimestampIntervals
+      type: regular
+      version: -1
+    taskid: bb054ce8-8cc5-4060-817d-dba6db2ffee1
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1070,\n    \"y\": 630\n  }\n}"
+  '9':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: endpoint_id
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Core.Endpoint.endpoint_type
+                    operator: isNotEqualString
+                    right:
+                      value:
+                        simple: AGENT_TYPE_SERVER
+                root: Core.Endpoint
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: Non-server
+    continueonerrortype: ''
+    id: '9'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '4'
+      Non-server:
+      - '41'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks whether the Caller Computer is managed and identified is
+        a server.
+      id: 984a779e-940a-429c-8846-b1f832ce1f17
+      iscommand: false
+      name: Ensure Caller Computer is not a server
+      type: condition
+      version: -1
+    taskid: 984a779e-940a-429c-8846-b1f832ce1f17
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 990\n  }\n}"
+tests:
+- no tests
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"13_16_True Positive\": 0.46,\n    \"\
+  13_46_#default#\": 0.6,\n    \"15_16_True Positive\": 0.45,\n    \"15_38_#default#\"\
+  : 0.23,\n    \"31_3_Available\": 0.55,\n    \"31_4_#default#\": 0.16,\n    \"40_11_#default#\"\
+  : 0.2,\n    \"46_16_Risky\": 0.49,\n    \"46_39_#default#\": 0.49,\n    \"52_49_Host\
+  \ unavailable/server\": 0.68,\n    \"54_48_No\": 0.54,\n    \"9_41_Non-server\"\
+  : 0.58,\n    \"9_4_#default#\": 0.4\n  },\n  \"paper\": {\n    \"dimensions\": {\n\
+  \      \"height\": 3025,\n      \"width\": 1620,\n      \"x\": -170,\n      \"y\"\
+  : 50\n    }\n  }\n}"
