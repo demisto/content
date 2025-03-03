@@ -1,0 +1,39 @@
+{
+    "trigger_id": "16b8fde633a06edcc92b4f6aa7b52db2",
+    "playbook_id": "silent-Excessive User Account Lockouts Test",
+    "fromVersion": "8.8.0",
+    "suggestion_reason": "Recommended for Excessive User Account Lockouts alerts.",
+    "description": "This trigger is responsible for handling excessive user account lockouts.",
+    "trigger_name": "silent-Excessive User Account Lockouts Test",
+    "alerts_filter": {
+        "filter": {
+            "AND": [
+                {
+                    "OR": [
+                        {
+                            "SEARCH_FIELD": "alert_name",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "Excessive user account lockouts"
+                        },
+                        {
+                            "SEARCH_FIELD": "alert_name",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "Excessive account lockouts on suspicious users"
+                        },
+                        {
+                            "SEARCH_FIELD": "alert_name",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "Excessive user account lockouts from a suspicious source"
+                        }
+                    ]
+                },
+                {
+                    "SEARCH_FIELD": "alert_type",
+                    "SEARCH_TYPE": "NEQ",
+                    "SEARCH_VALUE": "Correlation"
+                }
+            ]
+        }
+    },
+    "issilent": true
+}

@@ -1,0 +1,29 @@
+{
+    "trigger_id": "66c14136957cd342e560cedc6e29d3c6",
+    "playbook_id": "silent-AppleScript Process Executed With Rare Command Line Test",
+    "suggestion_reason": "Recommended for 'AppleScript Process Executed With Rare Command Line' alerts",
+    "description": "This trigger is responsible for handling several the 'AppleScript Process Executed With Rare Command Line' alerts",
+    "trigger_name": "silent-AppleScript Process Executed With Rare Command Line Test",
+    "fromVersion": "8.8.0",
+    "alerts_filter": {
+        "filter": {
+            "AND": [
+                {
+                    "OR": [
+                        {
+                            "SEARCH_FIELD": "alert_name",
+                            "SEARCH_TYPE": "CONTAINS",
+                            "SEARCH_VALUE": "AppleScript executed with a rare command line possibly using Finder to perform operations"
+                        }
+                    ]
+                },
+                {
+                    "SEARCH_FIELD": "alert_type",
+                    "SEARCH_TYPE": "NEQ",
+                    "SEARCH_VALUE": "Correlation"
+                }
+            ]
+        }
+    },
+    "issilent": true
+}

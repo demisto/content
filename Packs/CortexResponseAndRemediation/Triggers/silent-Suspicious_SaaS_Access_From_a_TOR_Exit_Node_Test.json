@@ -1,0 +1,43 @@
+{
+    "trigger_id": "f316852d358f8de8192842f6a7156142",
+    "playbook_id": "silent-Suspicious SaaS Access From a TOR Exit Node Test",
+    "suggestion_reason": "Recommended for Suspicious SaaS Access From a TOR Exit Node alerts",
+    "description": "This trigger is responsible for handling Suspicious SaaS Access From a TOR Exit Node",
+    "trigger_name": "silent-Suspicious SaaS Access From a TOR Exit Node Test",
+    "alerts_filter": {
+        "filter": {
+            "AND": [
+                {
+                    "OR": [
+                        {
+                            "SEARCH_FIELD": "alert_name",
+                            "SEARCH_TYPE": "CONTAINS",
+                            "SEARCH_VALUE": "Suspicious SaaS API call from a Tor exit node"
+                        },
+                        {
+                            "SEARCH_FIELD": "alert_name",
+                            "SEARCH_TYPE": "CONTAINS",
+                            "SEARCH_VALUE": "Suspicious SaaS API call from a Tor exit node via Mobile Device"
+                        },
+                        {
+                            "SEARCH_FIELD": "alert_name",
+                            "SEARCH_TYPE": "CONTAINS",
+                            "SEARCH_VALUE": "Suspicious API call from a Tor exit node"
+                        },
+                        {
+                            "SEARCH_FIELD": "alert_name",
+                            "SEARCH_TYPE": "CONTAINS",
+                            "SEARCH_VALUE": "Suspicious Kubernetes API call from a Tor exit node"
+                        }
+                    ]
+                },
+                {
+                    "SEARCH_FIELD": "alert_type",
+                    "SEARCH_TYPE": "NEQ",
+                    "SEARCH_VALUE": "Correlation"
+                }
+            ]
+        }
+    },
+    "issilent": true
+}

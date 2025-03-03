@@ -1,0 +1,33 @@
+{
+    "trigger_id": "44d98a2f42036c1d90a3d45c23bb3282",
+    "playbook_id": "silent-SSO Authentication With Suspicious Characteristics Test",
+    "suggestion_reason": "Recommended for SSO Authentication With Suspicious Characteristics alerts",
+    "description": "This trigger is responsible for handling SSO Authentication With Suspicious Characteristics alerts",
+    "trigger_name": "silent-SSO Authentication With Suspicious Characteristics Test",
+    "alerts_filter": {
+        "filter": {
+            "AND": [
+                {
+                    "OR": [
+                        {
+                            "SEARCH_FIELD": "alert_name",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "SSO authentication attempt with suspicious characteristics"
+                        },
+                        {
+                            "SEARCH_FIELD": "alert_name",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "Successful SSO authentication with suspicious characteristics"
+                        }
+                    ]
+                },
+                {
+                    "SEARCH_FIELD": "alert_type",
+                    "SEARCH_TYPE": "NEQ",
+                    "SEARCH_VALUE": "Correlation"
+                }
+            ]
+        }
+    },
+    "issilent": true
+}

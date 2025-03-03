@@ -1,0 +1,25 @@
+{
+    "trigger_id": "41f9310d50c55b761fdc0aa5c48d6459",
+    "playbook_id": "silent-Uncommon creation or access operation of sensitive shadow copy by a high-risk process Test",
+    "suggestion_reason": "Recommended for the 'Uncommon creation or access operation of sensitive shadow copy by a high-risk process' alert",
+    "description": "This trigger is responsible for handling 'Uncommon creation or access operation of sensitive shadow copy by a high-risk process",
+    "trigger_name": "silent-Uncommon creation or access operation of sensitive shadow copy by a high-risk process Test",
+    "fromVersion": "8.8.0",
+    "alerts_filter": {
+        "filter": {
+            "AND": [
+                {
+                    "SEARCH_FIELD": "alert_name",
+                    "SEARCH_TYPE": "EQ",
+                    "SEARCH_VALUE": "Uncommon creation or access operation of sensitive shadow copy by a high-risk process"
+                },
+                {
+                    "SEARCH_FIELD": "alert_type",
+                    "SEARCH_TYPE": "NEQ",
+                    "SEARCH_VALUE": "Correlation"
+                }
+            ]
+        }
+    },
+    "issilent": true
+}

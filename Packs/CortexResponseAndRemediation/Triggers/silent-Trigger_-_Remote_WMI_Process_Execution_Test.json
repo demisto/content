@@ -1,0 +1,33 @@
+{
+    "trigger_id": "edbc72:e3551d463dc2e16d3838c9af3",
+    "playbook_id": "silent-Remote WMI Process Execution Test",
+    "suggestion_reason": "Recommended for Remote WMI Process Execution alerts",
+    "description": "This trigger is responsible for handling Remote WMI Process Execution alerts",
+    "trigger_name": "silent-Remote WMI Process Execution Test",
+    "alerts_filter": {
+        "filter": {
+            "AND": [
+                {
+                    "OR": [
+                        {
+                            "SEARCH_FIELD": "alert_name",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "Remote WMI process execution"
+                        },
+                        {
+                            "SEARCH_FIELD": "alert_name",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "Suspicious remote WMI process execution"
+                        }
+                    ]
+                },
+                {
+                    "SEARCH_FIELD": "alert_type",
+                    "SEARCH_TYPE": "NEQ",
+                    "SEARCH_VALUE": "Correlation"
+                }
+            ]
+        }
+    },
+    "issilent": true
+}

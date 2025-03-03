@@ -1,0 +1,24 @@
+{
+    "trigger_id": "a8782c70ecf48029bd6c6634f1c5beb5",
+    "playbook_id": "silent-Unprivileged process opened a registry hive Test",
+    "suggestion_reason": "Recommended for 'Unprivileged process opened a registry hive' alert",
+    "description": "This trigger is responsible for handling the 'Unprivileged process opened a registry hive' alert",
+    "trigger_name": "silent-Unprivileged process opened a registry hive Test",
+    "alerts_filter": {
+        "filter": {
+            "AND": [
+                {
+                    "SEARCH_FIELD": "alert_name",
+                    "SEARCH_TYPE": "EQ",
+                    "SEARCH_VALUE": "Unprivileged process opened a registry hive"
+                },
+                {
+                    "SEARCH_FIELD": "alert_type",
+                    "SEARCH_TYPE": "NEQ",
+                    "SEARCH_VALUE": "Correlation"
+                }
+            ]
+        }
+    },
+    "issilent": true
+}

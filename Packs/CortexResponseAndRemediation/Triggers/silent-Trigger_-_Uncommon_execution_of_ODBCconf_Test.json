@@ -1,0 +1,34 @@
+{
+    "trigger_id": "214d2812b0ffe67e5459g0ee54049d3a",
+    "playbook_id": "silent-Uncommon execution of ODBCConf Test",
+    "suggestion_reason": "Recommended for the 'Uncommon execution of ODBCConf' alert.",
+    "description": "This trigger is responsible for handling 'Uncommon execution of ODBCConf' alerts.",
+    "trigger_name": "silent-Uncommon execution of ODBCConf Test",
+    "fromVersion": "8.8.0",
+    "alerts_filter": {
+        "filter": {
+            "AND": [
+                {
+                    "OR": [
+                        {
+                            "SEARCH_FIELD": "alert_name",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "Uncommon execution of ODBCConf"
+                        },
+                        {
+                            "SEARCH_FIELD": "alert_name",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "Uncommon execution of ODBCConf to load dll directly"
+                        }
+                    ]
+                },
+                {
+                    "SEARCH_FIELD": "alert_type",
+                    "SEARCH_TYPE": "NEQ",
+                    "SEARCH_VALUE": "Correlation"
+                }
+            ]
+        }
+    },
+    "issilent": true
+}
