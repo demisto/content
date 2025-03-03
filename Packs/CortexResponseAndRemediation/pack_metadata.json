@@ -18,6 +18,8 @@
     "useCases": [],
     "keywords": [],
     "marketplaces": [
-        "marketplacev2"
-    ]
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": []
 }

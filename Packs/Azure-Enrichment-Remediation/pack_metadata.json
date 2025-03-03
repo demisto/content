@@ -15,7 +15,8 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "xpanse"
+        "xpanse",
+        "platform"
     ],
     "dependencies": {
         "AzureCompute": {
@@ -50,5 +51,6 @@
         "AzureLogAnalytics",
         "AzureNetworkSecurityGroups",
         "AzureResourceGraph"
-    ]
+    ],
+    "supportedModules": []
 }
