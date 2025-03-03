@@ -8,7 +8,9 @@ def get_username():
     return username
 
 
-def post_comment(alert_short_id: str, comment: Optional[str], author: str):  # pragma: no cover
+def post_comment(
+    alert_short_id: str, comment: Optional[str], author: str
+):  # pragma: no cover
     try:
         execute_command(
             "sekoia-xdr-post-comment-alert",
@@ -20,12 +22,18 @@ def post_comment(alert_short_id: str, comment: Optional[str], author: str):  # p
         )
 
 
-def update_status(new_status: str, mirror_status: str, is_mirror_out: bool, short_id: str):
+def update_status(
+    new_status: str, mirror_status: str, is_mirror_out: bool, short_id: str
+):
     if mirror_status == "In" and is_mirror_out:
-        execute_command("sekoia-xdr-update-status-alert", {"id": short_id, "status": new_status})
+        execute_command(
+            "sekoia-xdr-update-status-alert", {"id": short_id, "status": new_status}
+        )
     elif mirror_status is None and is_mirror_out:
         execute_command("setIncident", {"sekoiaxdralertstatus": new_status})
-        execute_command("sekoia-xdr-update-status-alert", {"id": short_id, "status": new_status})
+        execute_command(
+            "sekoia-xdr-update-status-alert", {"id": short_id, "status": new_status}
+        )
     else:
         execute_command("setIncident", {"sekoiaxdralertstatus": new_status})
 
