@@ -15,7 +15,9 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
-    "defaultDataSource": "Microsoft Defender for Cloud Apps Event Collector"
+    "defaultDataSource": "Microsoft Defender for Cloud Apps Event Collector",
+    "supportedModules": []
 }
