@@ -36,7 +36,7 @@ configuration:
   name: incidentType
   type: 13
   required: false
-  section: Connect
+  section: Collect
 - name: fetch_type
   display: Fetch incidents from type
   defaultvalue: Threats
