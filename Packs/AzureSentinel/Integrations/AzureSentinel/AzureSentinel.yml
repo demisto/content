@@ -2383,6 +2383,7 @@ script:
     arguments: []
   - arguments:
     - name: title
+      description: The incident's title.
       required: true
     - auto: PREDEFINED
       description: The incident severity.
