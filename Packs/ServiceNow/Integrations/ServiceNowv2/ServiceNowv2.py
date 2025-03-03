@@ -2797,7 +2797,7 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
     if parsed_args.delta:
         demisto.debug(f'Got the following delta {parsed_args.delta}')
         demisto.debug(f'Got the following data {parsed_args.data}')
-        demisto.debug('The following keys are shown in data but not in delta '
+        demisto.debug('The following keys appears in data but not in delta '
                       f'{set(parsed_args.data.keys())-set(parsed_args.delta.keys())}')
 
     ticket_type = client.ticket_type
