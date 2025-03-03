@@ -206,27 +206,6 @@
 				},
 				"CybelAngel NS Servers": {
 					"simple": "ns_servers"
-				},
-				"Report Content": {
-					"complex": {
-						"filters": [],
-						"root": "report_content",
-						"transformers": []
-					}
-				},
-				"name": {
-					"complex": {
-						"filters": [],
-						"root": "title",
-						"transformers": []
-					}
-				},
-				"severity": {
-					"complex": {
-						"filters": [],
-						"root": "severity",
-						"transformers": []
-					}
 				}
 			}
 		}
