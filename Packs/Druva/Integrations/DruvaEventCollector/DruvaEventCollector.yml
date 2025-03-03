@@ -50,7 +50,7 @@ script:
     description: Gets events from Druva API in one batch (max 500). If tracker is given, only its successive events will be fetched.
     execution: false
     name: druva-get-events
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetchevents: true
   runonce: false
   script: '-'
