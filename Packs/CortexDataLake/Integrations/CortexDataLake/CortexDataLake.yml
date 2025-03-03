@@ -151,7 +151,7 @@ configuration:
   type: 19
 description: Palo Alto Networks Strata Logging Service XSOAR Connector provides cloud-based, centralized log storage and aggregation for your organization on premise, virtual (private cloud and public cloud) firewalls, for Prisma Access, and for cloud-delivered services such as Cortex XDR.
 display: Cortex Data Lake
-name: Cortex Data Lake_copy
+name: Cortex Data Lake
 script:
   commands:
   - arguments:
@@ -2184,3 +2184,6 @@ script:
   subtype: python3
   type: python
 sourcemoduleid: Cortex Data Lake
+tests:
+- Cortex Data Lake Test
+fromversion: 5.0.0
