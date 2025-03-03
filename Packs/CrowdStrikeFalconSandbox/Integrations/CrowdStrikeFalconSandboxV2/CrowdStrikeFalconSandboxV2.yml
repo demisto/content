@@ -1,6 +1,9 @@
 commonfields:
   id: CrowdStrike Falcon Sandbox V2
   version: -1
+sectionOrder:
+- Connect
+- Collect
 name: CrowdStrike Falcon Sandbox V2
 display: CrowdStrike Falcon Sandbox v2 (Hybrid-Analysis)
 category: Forensics & Malware Analysis
@@ -11,12 +14,14 @@ configuration:
   defaultvalue: https://www.hybrid-analysis.com
   type: 0
   display: Server URL (e.g. https://www.hybrid-analysis.com)
+  section: Connect
 - name: credentials
   required: true
   defaultvalue:
   type: 9
   displaypassword: API Key
   hiddenusername: true
+  section: Connect
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -31,21 +36,24 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+  section: Collect
 - name: insecure
   display: Trust any certificate (not secure)
   type: 8
   additionalinfo:
   required: false
+  section: Connect
 - name: proxy
   display: Use system proxy settings
   type: 8
   additionalinfo:
   required: false
+  section: Connect
 script:
   script: "-"
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.1983910
   commands:
   - name: cs-falcon-sandbox-scan
     polling: true
