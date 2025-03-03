@@ -24,7 +24,8 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "devEmail": [
         "christiang@checkpoint.com"
@@ -33,5 +34,6 @@
         "chkp-christiang"
     ],
     "dependencies": {},
-    "displayedImages": []
+    "displayedImages": [],
+    "supportedModules": []
 }
