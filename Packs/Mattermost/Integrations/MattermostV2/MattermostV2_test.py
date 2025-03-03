@@ -3,7 +3,9 @@ from MattermostV2 import (get_team_command, list_channels_command, create_channe
                           remove_channel_member_command, list_users_command, close_channel_command, send_file_command,
                           get_channel_id_to_send_notif, event_handler, handle_text_received_from_mm, get_channel_id_from_context,
                           extract_entitlement, answer_question, handle_posts, create_incidents, get_war_room_url,
-                          mirror_investigation, send_notification, INCIDENT_NOTIFICATION_CHANNEL)
+                          mirror_investigation, send_notification, INCIDENT_NOTIFICATION_CHANNEL,
+                          list_private_channels_for_user_command, list_groups_command, list_group_members_command,
+                          add_group_member_command, remove_group_member_command, set_channel_role_command)
 import pytest
 import demistomock as demisto
 from unittest.mock import patch
@@ -28,6 +30,8 @@ def http_mock(method: str, url_suffix: str = "", full_url: str = "", params: dic
         return util_load_json("test_data/get_team_response.json")
     elif url_suffix == '/api/v4/teams/team_id/channels' or url_suffix == '/api/v4/teams/team_id/channels/private':
         return util_load_json("test_data/list_channels_response.json")
+    elif url_suffix == '/api/v4/users/user_id/teams/team_id/channels/members':
+        return util_load_json("test_data/list_channels_response.json")
     elif url_suffix == '/api/v4/channels':
         return util_load_json("test_data/create_channel_response.json")
     elif url_suffix == '/api/v4/users':
@@ -41,6 +45,12 @@ def http_mock(method: str, url_suffix: str = "", full_url: str = "", params: dic
         channel = util_load_json("test_data/create_channel_response.json")
         channel["type"] = 'D'
         return channel
+    elif url_suffix == '/api/v4/channels/group':
+        channel = util_load_json("test_data/create_channel_response.json")
+        channel["type"] = 'G'
+        return channel
+    elif url_suffix == '/api/v4/groups':
+        return util_load_json("test_data/list_groups_response.json")
     else:
         return {}
 
@@ -96,6 +106,19 @@ def test_list_channels_command(http_client):
     args = {'team_name': 'team_name',
             'include_private_channels': True}
     results = list_channels_command(http_client, args)
+    assert results.outputs[0].get('name') == 'name'
+    assert len(results.outputs) == 2
+
+
+def test_list_private_channels_for_user_command(http_client):
+    """
+    Given: A mock MatterMost client.
+    When: Running list_private_channels_for_user_command with a team name and user id.
+    Then: Ensure we get the result.
+    """
+    args = {'team_name': 'team_name',
+            'user_id': 'user_id'}
+    results = list_private_channels_for_user_command(http_client, args)
     assert results.outputs[0].get('name') == 'name'
     assert len(results.outputs) == 2
 
@@ -413,6 +436,60 @@ def test_send_notification_command(http_client, mocker):
                                )
 
     assert result.readable_output == 'Message sent to MatterMost successfully. Message ID is: message_id'
+
+
+def test_send_notification_to_two_users(http_client, mocker):
+    """
+    Given -
+        client
+    When -
+        send message to channel
+    Then -
+        Validate that
+    """
+    mocker.patch.object(http_client, "send_notification_request", return_value={'id': 'message_id'})
+    result = send_notification(http_client,
+                               user_id='user1',
+                               message='Hello',
+                               to='user1,user2',
+                               )
+
+    assert result.readable_output == 'Message sent to MatterMost successfully. Message ID is: message_id'
+
+
+def test_list_groups_command(http_client):
+    """
+    Given -
+        client
+        arguments
+    When -
+        list user group
+    Then -
+        Validate that the function returns the expected CommandResults.
+    """
+    args = {'group': 'user_group', }
+    results = list_groups_command(http_client, args)
+    assert results.outputs[0].get('id') == 'abc1234'
+
+
+def test_list_group_members_command(http_client):
+    """
+    Given -
+        client
+        arguments
+    When -
+        list user group
+    Then -
+        Validate that the function returns the expected CommandResults.
+    """
+    args = {'group': 'user_group', }
+    results = list_group_members_command(http_client, args)
+    assert results.outputs[0].get('name') == 'user_group'
+
+
+def test_add_group_member_command(http_client, mocker):
+
+    mocker.patch.object(http_client, "add_group_member_request", return_value={'id': 'message_id'})
 
 ######### async tests #########
 

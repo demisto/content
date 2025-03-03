@@ -1,0 +1,29 @@
+{
+    "id": "id123",
+    "members": [
+      {
+        "id": "id123",
+        "create_at": 0,
+        "update_at": 0,
+        "delete_at": 0,
+        "username": "username",
+        "first_name": "first_name",
+        "last_name": "last_name",
+        "nickname": "nickname",
+        "email": "email",
+        "email_verified": true,
+        "auth_service": "",
+        "roles": "system_user",
+        "locale": "en",
+        "props": {},
+        "last_password_update": 0,
+        "last_picture_update": 0,
+        "failed_attempts": 0,
+        "mfa_active": true,
+        "terms_of_service_id": "",
+        "terms_of_service_create_at": 0
+      }
+    ],
+    "name": "user_group",
+    "total_member_count": 1
+  }
