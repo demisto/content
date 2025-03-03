@@ -136,13 +136,14 @@ filter category = "FunctionAppLogs"
 filter category = "AppServiceAuditLogs"
 | call msft_azure_app_service_map_common_event_fields
 | alter
-        tmp_UserAddress = coalesce(properties -> UserDisplayName, UserAddress)
+        tmp_UserAddress = coalesce(properties -> UserAddress, UserAddress),
+        tmp_UserDisplayName = coalesce(properties -> UserDisplayName, UserDisplayName)
 | alter
         xdm.event.operation_sub_type = operationName,
         xdm.auth.service = coalesce(properties -> Protocol, Protocol),
         xdm.network.application_protocol = coalesce(properties -> Protocol, Protocol),
         xdm.source.user.username = coalesce(properties -> User, User),
-        xdm.source.user.upn = if(tmp_UserAddress contains "@", tmp_UserAddress, null),
+        xdm.source.user.upn = if(tmp_UserDisplayName contains "@", tmp_UserDisplayName, null),
         xdm.source.ipv4 = if(tmp_UserAddress ~= "(?:\d{1,3}\.){3}\d{1,3}", arrayindex(regextract(tmp_UserAddress, "((?:\d{1,3}\.){3}\d{1,3})"), 0), null),
 		xdm.source.ipv6 = if(tmp_UserAddress ~= "(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}", arrayindex(regextract(tmp_UserAddress, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0), null);
 

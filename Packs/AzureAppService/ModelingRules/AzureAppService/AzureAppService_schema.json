@@ -148,6 +148,10 @@
             "type": "string",
             "is_array": false
         },
+        "UserDisplayName": {
+            "type": "string",
+            "is_array": false
+        },
         "Code": {
             "type": "string",
             "is_array": false
