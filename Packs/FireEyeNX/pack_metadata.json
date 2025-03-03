@@ -2,7 +2,7 @@
     "name": "FireEye Network Security (NX)",
     "description": "FireEye Network Security is an effective cyber threat protection solution that helps organizations minimize the risk of costly breaches by accurately detecting and immediately stopping advanced, targeted, and other evasive attacks hiding in Internet traffic.",
     "support": "xsoar",
-    "currentVersion": "1.1.39",
+    "currentVersion": "1.1.40",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
