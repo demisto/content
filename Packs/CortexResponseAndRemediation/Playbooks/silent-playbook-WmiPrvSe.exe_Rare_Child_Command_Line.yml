@@ -286,7 +286,7 @@ tasks:
       version: -1
       name: Retrieve all incident alerts
       description: This task searches for Cortex XSIAM alerts related to the current incident.
-      scriptName: SearchAlertsV2
+      scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
       brand: ""
