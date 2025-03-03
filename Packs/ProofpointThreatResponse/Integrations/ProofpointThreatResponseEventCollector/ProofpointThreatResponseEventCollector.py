@@ -105,11 +105,17 @@ def pass_sources_list_filter(incident, sources_list):
     Returns:
         bool. Whether the incident has passed the filter or not
     """
+    log_prefix = "pass_sources_list_filter"
     if len(sources_list) == 0:
+        demisto.debug(f"{log_prefix}No sources_list to filter")
         return True
 
-    return any(source in incident.get('event_sources') for source in sources_list)
-
+    res = any(source in incident.get('event_sources') for source in sources_list)
+    if res:
+        demisto.debug(f"{log_prefix}{incident.get('event_sources')=}, {sources_list=}")
+    else:
+        demisto.debug(f"{log_prefix}No source found in incident.get('event_sources')")
+    return res
 
 def pass_abuse_disposition_filter(incident, abuse_disposition_values):
     """Checks whether the incident's 'Abuse Disposition' value is in the abuse_disposition_values list.
@@ -121,12 +127,16 @@ def pass_abuse_disposition_filter(incident, abuse_disposition_values):
     Returns:
         bool. Whether the incident has passed the filter or not
     """
+    log_prefix = "pass_abuse_disposition_filter"
     if len(abuse_disposition_values) == 0:
+        demisto.debug(f"{log_prefix}No abuse_disposition_values to filter")
         return True
 
     for incident_field in incident.get('incident_field_values', []):
         if incident_field['name'] == 'Abuse Disposition' and incident_field['value'] in abuse_disposition_values:
             return True
+        else:
+            demisto.debug(f"{log_prefix}Dropping do to {incident_field['value']=} not in {abuse_disposition_values=}")
 
     return False
 
@@ -140,6 +150,7 @@ def filter_incidents(incidents_list):
     Returns:
         list. The filtered incidents list
     """
+    log_prefix = "filter_incidents: "
     filtered_incidents_list = []
     params = demisto.params()
     sources_list = argToList(params.get('event_sources'))
@@ -153,7 +164,7 @@ def filter_incidents(incidents_list):
                                                                                               abuse_disposition_values):
             filtered_incidents_list.append(incident)
         else:
-            demisto.debug(f"Dropped incident with id= {incident.get('id')}.")
+            demisto.debug(f"{log_prefix}Dropped incident with id= {incident.get('id')}.")
 
     return filtered_incidents_list
 
@@ -199,14 +210,14 @@ def get_new_incidents(client, request_params, last_fetched_id):
     Returns:
         list. The incidents returned from after the necessary actions.
     """
-    # add logs
+    log_prefix = "get_new_incidents: "
     incidents = client.get_incidents_request(request_params)
-    demisto.debug(f"Got {len(incidents)} incidents from client: {[(incident['id'], incident['created_at']) for incident in incidents]}")
+    demisto.debug(f"{log_prefix}Got {len(incidents)} incidents from client: {[(incident['id'], incident['created_at']) for incident in incidents]}")
     filtered_incidents_list = filter_incidents(incidents)
-    demisto.debug(f"After filtering got {len(filtered_incidents_list)} incidents: {[(incident['id'], incident['created_at']) for incident in filtered_incidents_list]}")
+    demisto.debug(f"{log_prefix}After filtering got {len(filtered_incidents_list)} incidents: {[(incident['id'], incident['created_at']) for incident in filtered_incidents_list]}")
     ordered_incidents = sorted(filtered_incidents_list, key=lambda k: (k['created_at'], k['id']))
     events_lst = list(filter(lambda incident: int(incident.get('id')) > last_fetched_id, ordered_incidents))
-    demisto.debug(f"After filtering by id got {len(events_lst)} incidents: {[(incident['id'], incident['created_at']) for incident in events_lst]}")
+    demisto.debug(f"{log_prefix}After filtering by id got {len(events_lst)} incidents: {[(incident['id'], incident['created_at']) for incident in events_lst]}")
     return events_lst
 
 
@@ -221,6 +232,7 @@ def get_incidents_batch_by_time_request(client, params):
     Returns:
         list. The incidents returned from the API call
     """
+    log_prefix = "get_incidents_batch_by_time_request: "
     incidents_list = []  # type:list
 
     fetch_delta = params.get('fetch_delta', '6 hours')
@@ -243,13 +255,13 @@ def get_incidents_batch_by_time_request(client, params):
     # while loop relevant for fetching old incidents
     i = 0
     while created_before < current_time and len(incidents_list) < fetch_limit:  # type: ignore[operator]
-        demisto.debug(f"Entering pagination #{i} loop.")
-        demisto.debug(
-            f"Entered the batch loop of state {request_params.get('state')}, with fetch_limit {fetch_limit} and events list "
-            f"{[incident.get('id') for incident in incidents_list]} and event length {len(incidents_list)} \n"
+        demisto.debug(f"{log_prefix}Entering pagination #{i} loop.")
+        demisto.debug(f"{log_prefix}"
+            f"Entered the batch loop of state {request_params.get('state')}, with {fetch_limit=} and incidents list "
+            f"{[incident.get('id') for incident in incidents_list]} and incidents length {len(incidents_list)} \n"
             f"with created_after {request_params['created_after']} and "
             f"created_before {request_params['created_before']}")
-        demisto.debug(f"Calling get_new_incidents with {last_fetched_id=}")
+        demisto.debug(f"{log_prefix}Calling get_new_incidents with {last_fetched_id=}")
 
         new_incidents = get_new_incidents(client, request_params, last_fetched_id)
         incidents_list.extend(new_incidents)
@@ -261,22 +273,22 @@ def get_incidents_batch_by_time_request(client, params):
         # updating params according to the new times
         request_params['created_after'] = created_after.isoformat().split('.')[0] + 'Z'
         request_params['created_before'] = created_before.isoformat().split('.')[0] + 'Z'
-        demisto.debug(f"End of the current batch loop with {str(len(incidents_list))} events. "
+        demisto.debug(f"{log_prefix}End of the current batch loop with {str(len(incidents_list))} incidents. "
             f"Changing request_params['created_after']={request_params['created_after']}, request_params['created_before']={request_params['created_before']}")
         i += 1
 
     # fetching the last batch when created_before is bigger then current time = fetching new events
     if len(incidents_list) < fetch_limit:  # type: ignore[operator]
         # fetching the last batch
-        demisto.debug("Entering if statement (doing last pagination call)")
+        demisto.debug(f"{log_prefix}Entering if statement (last pagination call)")
         request_params['created_before'] = current_time.isoformat().split('.')[0] + 'Z'
-        demisto.debug(f"Calling get_new_incidents with {last_fetched_id=}, {request_params['created_before']=}, {request_params['created_after']=}")
+        demisto.debug(f"{log_prefix}Calling get_new_incidents with {last_fetched_id=}, {request_params['created_before']=}, {request_params['created_after']=}")
         new_incidents = get_new_incidents(client, request_params, last_fetched_id)
         incidents_list.extend(new_incidents)
 
-        demisto.debug(
-            f"Finished the last batch of state {params.get('state')}, with fetch_limit {fetch_limit} and events list:"
-            f" {[incident.get('id') for incident in incidents_list]} and event length {len(incidents_list)}."
+        demisto.debug(f"{log_prefix}"
+            f"Finished the last batch of state {params.get('state')}, with {fetch_limit=} and incidents list:"
+            f" {[incident.get('id') for incident in incidents_list]} and incidents length {len(incidents_list)}."
             f" Changing request_params['created_after']={request_params['created_after']}, request_params['created_before']={request_params['created_before']}")
 
     incidents_list_limit = incidents_list[:fetch_limit]
@@ -287,6 +299,7 @@ def fetch_events_command(client, first_fetch, last_run, fetch_limit, fetch_delta
     """
         Fetches incidents from the ProofPoint API.
     """
+    log_prefix = "fetch_events_command function- "
     last_fetch = last_run.get('last_fetch', {})
     last_fetched_id = last_run.get('last_fetched_incident_id', {})
 
@@ -295,7 +308,7 @@ def fetch_events_command(client, first_fetch, last_run, fetch_limit, fetch_delta
             last_fetch[state] = first_fetch
         if not last_fetched_id.get(state):
             last_fetched_id[state] = '0'
-    demisto.debug(f"Last fetch is set to {last_fetch=}, {last_fetched_id=}")
+    demisto.debug(f"{log_prefix}Last fetch is set to {last_fetch=}, {last_fetched_id=}")
 
     incidents = []
     for state in incidents_states:
@@ -316,11 +329,11 @@ def fetch_events_command(client, first_fetch, last_run, fetch_limit, fetch_delta
             last_fetch[state] = \
                 (datetime.strptime(last_fetch_time, TIME_FORMAT) - timedelta(minutes=1)).isoformat().split('.')[0] + 'Z'
             last_fetched_id[state] = id
-            demisto.debug(f"Got {len(incidents_list)} events. Last incident date: {id=}, {last_fetch_time=}, {last_fetch[state]=} of state {incidents_list[-1].get('state')}.")
+            demisto.debug(f"{log_prefix}Got {len(incidents_list)} incidents. Last incident date: {id=}, {last_fetch_time=}, {last_fetch[state]=} of state {incidents_list[-1].get('state')}.")
         else:
-            demisto.debug("No new events.")
+            demisto.debug(f"{log_prefix}No new events.")
 
-    demisto.debug(f"End of current fetch function with last_fetch {str(last_fetch)} and last_fetched_id"
+    demisto.debug(f"{log_prefix}End of current fetch function with last_fetch {str(last_fetch)} and last_fetched_id"
                   f" {str(last_fetched_id)}")
 
     last_run = {
@@ -328,9 +341,10 @@ def fetch_events_command(client, first_fetch, last_run, fetch_limit, fetch_delta
         'last_fetched_incident_id': last_fetched_id
     }
 
-    demisto.debug(f'Fetched {len(incidents)} events')
+    demisto.debug(f'{log_prefix}Fetched {len(incidents)} incidents.')
 
     events = get_events_from_incidents(incidents)
+    demisto.debug(f'{log_prefix}Got {len(events)} events from incidents.')
     return events, last_run
 
 
