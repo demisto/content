@@ -461,7 +461,7 @@ def camel_to_title(text: str) -> str:
 
 
 def format_date_to_iso_string(date: datetime | None) -> str:
-    return date.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'  # type: ignore
+    return date.isoformat(timespec='milliseconds') + 'Z'  # type: ignore
 
 
 def create_output(results: dict[str, str], endpoint: str, key_field: str = '') -> CommandResults:
