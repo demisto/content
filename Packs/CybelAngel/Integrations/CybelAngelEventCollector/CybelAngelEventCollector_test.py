@@ -574,12 +574,10 @@ def test_cybelangel_report_get_command(mocker):
 
     When:
      - Retrieving the details of the report.
-     - Optionally fetching the report as a PDF.
 
     Then:
      - Ensure the command returns the correct report details.
      - Validate that the readable output includes the report ID.
-     - Verify that requesting a PDF returns a file result.
     """
     from CybelAngelEventCollector import cybelangel_report_get_command
     client = mock_client()
@@ -596,7 +594,26 @@ def test_cybelangel_report_get_command(mocker):
     assert result.outputs_prefix == "CybelAngel.Report"
     assert result.outputs is not None
     assert "Report ID" in result.readable_output
+    
+    
+def test_cybelangel_report_get_command_to_pdf(mocker):
+    """
+    Given:
+     - A report ID and the 'pdf' flag set to true.
 
+    When:
+     - Requesting to export the report as a PDF.
+
+    Then:
+     - Ensure the command returns a valid file result in PDF format.
+    """
+    from CybelAngelEventCollector import cybelangel_report_get_command
+    client = mock_client()
+    mocker.patch.object(
+        client,
+        "_http_request",
+        return_results=load_test_data("report_list").get("reports")[0],
+    )
     # test get report to pdf
     args = {"report_id": "test", "pdf": "true"}
     mocker.patch(
@@ -612,20 +629,16 @@ def test_cybelangel_report_get_command(mocker):
     result = cybelangel_report_get_command(client, args)
     assert isinstance(result, dict)
 
-
 def test_cybelangel_mirror_report_get_command(mocker):
     """
     Given:
-     - A report ID and an option to retrieve the report as a CSV.
+     - A report ID with the 'csv' flag set to false.
 
     When:
-     - Fetching mirror details of a specific report.
-     - Optionally retrieving the report in CSV format.
+     - Fetching mirror report details.
 
     Then:
-     - Ensure the command returns the correct mirror details.
-     - Validate that the readable output contains the report ID.
-     - Verify that requesting a CSV returns a file result.
+     - Ensure the command returns a CommandResults object with the expected report data.
     """
     from CybelAngelEventCollector import cybelangel_mirror_report_get_command
     client = mock_client()
@@ -643,6 +656,25 @@ def test_cybelangel_mirror_report_get_command(mocker):
     assert result.outputs is not None
     assert "Mirror details for Report ID" in result.readable_output
 
+
+def test_cybelangel_mirror_report_get_command_to_csv(mocker):
+    """
+    Given:
+     - A report ID with the 'csv' flag set to true.
+
+    When:
+     - Requesting to export the mirror report as a CSV file.
+
+    Then:
+     - Ensure the command returns a valid file result in CSV format.
+    """
+    from CybelAngelEventCollector import cybelangel_mirror_report_get_command
+    client = mock_client()
+    mocker.patch.object(
+        client,
+        "_http_request",
+        return_results=load_test_data("mirror-report"),
+    )
     args = {"report_id": "test", "csv": "true"}
     mocker.patch(
         "CybelAngelEventCollector.fileResult",
@@ -656,6 +688,54 @@ def test_cybelangel_mirror_report_get_command(mocker):
     )
     result = cybelangel_mirror_report_get_command(client, args)
     assert isinstance(result, dict)
+
+
+def test_cybelangel_report_comment_create_command(mocker):
+    """
+    Given:
+     - A discussion ID, comment content, and additional metadata.
+
+    When:
+     - Creating a new comment for the report.
+
+    Then:
+     - Ensure the command successfully adds the comment and returns the expected output.
+    """
+    from CybelAngelEventCollector import cybelangel_report_comment_create_command, Client
+    client = mock_client()
+    report_id = "11223344"
+
+    mocker.patch.object(
+        Client,
+        "get_report_comment",
+        return_value=load_test_data("create_comment_result"),
+    )
+
+    args = {"discussion_id": f"{report_id}:tenant id", "content": "Test func", "parent_id": "55667788", "assigned": "true"}
+    response = cybelangel_report_comment_create_command(client, args)
+
+    assert f"Comment created successfully for report ID: {report_id}" in response.readable_output
+    
+    
+def test_cybelangel_report_comment_create_command_invalid(mocker):
+    """
+    Given:
+     - An invalid discussion ID that does not follow the 'report_id:tenant_id' format.
+
+    When:
+     - Attempting to create a comment with the invalid discussion ID.
+
+    Then:
+     - Ensure the command raises a ValueError with the correct error message.
+    """
+    from CybelAngelEventCollector import cybelangel_report_comment_create_command, Client
+    client = mock_client()
+    report_id = "11223344"
+
+    # Case: Invalid discussion_id format (no colon)
+    args_invalid = {"discussion_id": report_id, "content": "Test func"}
+    with pytest.raises(ValueError, match="Invalid discussion_id format. Expected format: 'report_id:tenant_id'."):
+        cybelangel_report_comment_create_command(client, args_invalid)
 
 
 def test_cybelangel_archive_report_by_id_get_command(mocker):
@@ -690,42 +770,6 @@ def test_cybelangel_archive_report_by_id_get_command(mocker):
     )
     result = cybelangel_archive_report_by_id_get_command(client, args)
     assert isinstance(result, dict)
-
-
-def test_cybelangel_report_comment_create_command(mocker):
-    """
-    Given:
-     - A report ID and comment content.
-     - A case where no previous comments exist for the report.
-     - A case where previous comments exist and a new comment is added.
-
-    When:
-     - Attempting to add a comment to the report.
-
-    Then:
-     - Ensure an error message is returned if no previous comments exist.
-     - Ensure the command successfully creates a new comment when previous comments exist.
-     - Validate that the returned outputs match the expected response.
-    """
-    from CybelAngelEventCollector import cybelangel_report_comment_create_command, Client
-    client = mock_client()
-    report_id = "11223344"
-
-    # Case: Invalid discussion_id format (no colon)
-    args_invalid = {"discussion_id": report_id, "content": "Test func"}
-    with pytest.raises(ValueError, match="Invalid discussion_id format. Expected format: 'report_id:tenant_id'."):
-        cybelangel_report_comment_create_command(client, args_invalid)
-
-    mocker.patch.object(
-        Client,
-        "get_report_comment",
-        return_value=load_test_data("create_comment_result"),
-    )
-
-    args = {"discussion_id": f"{report_id}:tenant id", "content": "Test func", "parent_id": "55667788", "assigned": "true"}
-    response = cybelangel_report_comment_create_command(client, args)
-
-    assert f"Comment created successfully for report ID: {report_id}" in response.readable_output
 
 
 def test_cybelangel_report_comments_get_command(mocker):

@@ -1,6 +1,6 @@
 CybelAngel receives reports from the CybelAngel platform, which specializes in external attack surface protection and management
 
-## Configure CybelAngel in XSOAR / XSIAM
+## Configure CybelAngel in </~XSIAM> / </~XSOAR>
 
 
 | **Parameter**                                                     | **Required** |
@@ -61,13 +61,7 @@ There is no context output for this command.
 ```!cybelangel-report-status-update report_ids=1234 status=open```
 #### Human Readable Output
 
->The status of report(s) 1234 has been successfully updated.
-
-#### Command example
-```!cybelangel-report-status-update report_ids=1234,5678 status=resolved```
-#### Human Readable Output
-
->The status of report(s) 1234,5678 has been successfully updated.
+>"The status of the following reports </report list> has been successfully updated to </report status>."
 
 ### cybelangel-report-get
 
@@ -231,6 +225,7 @@ Retrieve reports from CybelAngel.
 
 #### Human Readable Output
 
+>Returned file: cybelangel_report_1234.pdf
 
 
 ### cybelangel-report-remediation-request-create
