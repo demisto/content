@@ -1,0 +1,691 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: MISP - Set Attributes to Update
+inputs:
+- description: ""
+  key: misp_event_id
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: ""
+  key: indicator
+  playbookInputQuery:
+  required: false
+  value: {}
+name: MISP - Set Attributes to Update
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e9116fda-1569-41cd-8840-67e12c1a0bdf
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: e9116fda-1569-41cd-8840-67e12c1a0bdf
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 357.5,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      id: d04fcf03-f235-443e-8fdc-d7212ce464b4
+      iscommand: false
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: d04fcf03-f235-443e-8fdc-d7212ce464b4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 357.5,
+          "y": 195
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.indicator.indicator_type
+          operator: isEqualString
+          right:
+            value:
+              simple: IP
+      label: IP
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.indicator.indicator_type
+          operator: isEqualString
+          right:
+            value:
+              simple: Domain
+      label: Domain
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.indicator.indicator_type
+          operator: isEqualString
+          right:
+            value:
+              simple: URL
+      label: URL
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.indicator.indicator_type
+          operator: isEqualString
+          right:
+            value:
+              simple: File
+      label: File, SHA256 Hash
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.indicator.indicator_type
+          operator: isEqualString
+          right:
+            value:
+              simple: Email
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.indicator.value
+          operator: isEqualString
+          right:
+            value:
+              simple: "Yes"
+      label: Email Information
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "8"
+      Domain:
+      - "14"
+      Email Information:
+      - "24"
+      File, SHA256 Hash:
+      - "3"
+      IP:
+      - "4"
+      URL:
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6a726930-d193-4041-8bac-8fb9a80a8a27
+      iscommand: false
+      name: Check Indicator Type
+      type: condition
+      version: -1
+    taskid: 6a726930-d193-4041-8bac-8fb9a80a8a27
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 720
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      file_indicator:
+        simple: ${inputs.indicator}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: MISP V3
+      id: 0ca16440-d299-4458-8b35-96aacf4ff024
+      iscommand: false
+      name: MISP - Add File SHA256 to Event
+      scriptName: misp_setfile_atributes
+      type: regular
+      version: -1
+    taskid: 0ca16440-d299-4458-8b35-96aacf4ff024
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 895
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      event_id:
+        simple: ${inputs.misp_event_id}
+      ip:
+        simple: ${inputs.indicator.value}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: MISP V3
+      description: 'Adds an IP object to the MISP event. The following arguments are optional, but at least one must be supplied for the command to run successfully: "ip", "dst_port", "src_port", "domain", "hostname", "ip_src", and "ip_dst".'
+      id: 70f45d87-9ce2-45fa-8c06-a775885339b6
+      iscommand: true
+      name: MISP - Add IP Info to Event
+      script: MISP V3|||misp-add-ip-object
+      type: regular
+      version: -1
+    taskid: 70f45d87-9ce2-45fa-8c06-a775885339b6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1070
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b2ad7263-de43-4d39-8ae4-ecd3f27c5e0c
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+      description: ''
+    taskid: b2ad7263-de43-4d39-8ae4-ecd3f27c5e0c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 1245
+        }
+      }
+  "9":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.indicator
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 93c3f3e1-c00c-45b5-80ac-e23c1f14fd24
+      iscommand: false
+      name: Check if Input is filled
+      type: condition
+      version: -1
+    taskid: 93c3f3e1-c00c-45b5-80ac-e23c1f14fd24
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 357.5,
+          "y": 370
+        }
+      }
+  "11":
+    continueonerrortype: ""
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: IndicatorComment
+      value:
+        simple: ${inputs.indicator_comment}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      id: cae33d92-7482-42fd-8dcf-0826d96551c2
+      iscommand: false
+      name: Set comment to add to Indicator
+      scriptName: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: cae33d92-7482-42fd-8dcf-0826d96551c2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 545
+        }
+      }
+  "14":
+    continueonerrortype: ""
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      attributes:
+        simple: '{"domain":"${inputs.indicator.value}"}'
+      event_id:
+        simple: ${inputs.misp_event_id}
+      template:
+        simple: domain
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: MISP V3
+      description: Adds any other object to MISP.
+      id: 1794a42f-193d-4866-8c64-cd622bd4b810
+      iscommand: true
+      name: MISP - Add Domain Info to Event
+      script: MISP V3|||misp-add-object
+      type: regular
+      version: -1
+    taskid: 1794a42f-193d-4866-8c64-cd622bd4b810
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "15":
+    continueonerrortype: ""
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      event_id:
+        simple: ${inputs.misp_event_id}
+      url:
+        simple: ${inputs.indicator.value}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: MISP V3
+      description: Adds a URL object to an MISP event.
+      id: 34ea39df-5bf8-4ee8-89b6-2c369b656b37
+      iscommand: true
+      name: MISP - Add URL Info to Event
+      script: MISP V3|||misp-add-url-object
+      type: regular
+      version: -1
+    taskid: 34ea39df-5bf8-4ee8-89b6-2c369b656b37
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1070
+        }
+      }
+  "17":
+    continueonerrortype: ""
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      attributes:
+        simple: ${MispEmailAttribute}
+      event_id:
+        simple: ${inputs.misp_event_id}
+      template:
+        simple: email
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: MISP V3
+      description: Adds any other object to MISP.
+      id: 9784c5d2-c202-4ee7-846d-776f5ebd1028
+      iscommand: true
+      name: MISP - Add Email Sender Info to Event
+      script: MISP V3|||misp-add-object
+      type: regular
+      version: -1
+    taskid: 9784c5d2-c202-4ee7-846d-776f5ebd1028
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+  "18":
+    continueonerrortype: ""
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      attributes:
+        complex:
+          root: fileindicator
+          transformers:
+          - operator: Stringify
+      event_id:
+        simple: ${inputs.misp_event_id}
+      template:
+        simple: file
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: MISP V3
+      description: Adds any other object to MISP.
+      id: 23c8330e-c7ac-4657-8e42-9a94633a03cd
+      iscommand: true
+      name: MISP - Add File SHA256 to Event
+      script: MISP V3|||misp-add-object
+      type: regular
+      version: -1
+    taskid: 23c8330e-c7ac-4657-8e42-9a94633a03cd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1070
+        }
+      }
+  "24":
+    continueonerrortype: ""
+    id: "24"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      from:
+        simple: ${incident.reportedemailfrom}
+      from_display_name:
+        complex:
+          accessor: headervalue
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: incident.emailheaders.headername
+              operator: endWith
+              right:
+                value:
+                  simple: From
+          root: incident.emailheaders
+          transformers:
+          - operator: FirstArrayElement
+          - args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (.+?) <
+              unpack_matches: {}
+            operator: RegexExtractAll
+      from_domain:
+        complex:
+          accessor: headervalue
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: incident.emailheaders.headername
+              operator: endWith
+              right:
+                value:
+                  simple: Authentication-Results
+          root: incident.emailheaders
+          transformers:
+          - args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: header.from=(.+?);
+              unpack_matches: {}
+            operator: RegexExtractAll
+      ip_src:
+        complex:
+          accessor: headervalue
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: incident.emailheaders.headername
+              operator: isEqualString
+              right:
+                value:
+                  simple: Authentication-Results
+          root: incident.emailheaders
+          transformers:
+          - args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: '\(sender IP is (.*?)\) '
+              unpack_matches: {}
+            operator: RegexExtractAll
+      return_path:
+        simple: ${incident.emailreturnpath}
+      send_date:
+        complex:
+          accessor: headervalue
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: incident.emailheaders.headername
+              operator: isEqualString
+              right:
+                value:
+                  simple: X-MS-Exchange-Organization-OriginalArrivalTime
+            - left:
+                iscontext: true
+                value:
+                  simple: incident.emailheaders.headername
+              operator: isEqualString
+              right:
+                value:
+                  simple: X-MS-Exchange-CrossTenant-OriginalArrivalTime
+          root: incident.emailheaders
+      subject:
+        complex:
+          accessor: reportedemailsubject
+          root: incident
+          transformers:
+          - args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: \"
+              toReplace:
+                value:
+                  simple: '"'
+            operator: replace
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 313b2987-db7f-408f-8914-4923bc3f39ac
+      iscommand: false
+      name: Get Email Info
+      scriptName: misp_setmail_attributes
+      type: regular
+      version: -1
+    taskid: 313b2987-db7f-408f-8914-4923bc3f39ac
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 2100,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

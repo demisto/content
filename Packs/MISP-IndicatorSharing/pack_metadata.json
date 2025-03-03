@@ -1,0 +1,21 @@
+{
+    "name": "MISP - Indicator Sharing",
+    "description": "MISP Indicator Sharing - Boosting Portuguese Cybersecurity - Together, we can build a Safer Digital Future\n \nIn our ongoing efforts to enhance cybersecurity across Portugal, we are excited to share our comprehensive playbook designed to enable the sharing cybersecurity indicators via MISP. This playbook is a valuable resource for organizations of all sizes, providing standardized practices and actionable insights to improve incident response and overall cybersecurity posture.\n- This content pack incluides:\n\t\n\t- Introduction to Cybersecurity Indicator Sharing\n\tUnderstanding the importance of cybersecurity indicators and how they can help in identifying, managing, and mitigating cyber threats.\n\tThe concept of Predefinied Tags enables the default propagation of several tags that are consumed by MISP like Country, Company Sector, CSIRT-Aliance, this can be definied on the task.\n\t\n\t- Portuguese National Taxonomy: A playbook to classifiy the incident according to CNCS taxonomy\n\t\n\t- ENISA Taxonomy: A playbook to classify the incident according to the ENISA taxonomy\n\n\tThe previous playbooks ensure the incident classification to a format that enables a direct mapping to MISP tags via RSIT  aligning with international standards to ensure consistency and interoperability.\n\nEven though the main focus is the indicator sharing for Portuguese Companies the use of ENISA standards allows the use of this playbook for non portuguese companies.\nThis playbook builds from the \"Phishing\" content pack since it uses some of its incident fields allowing for an easier use in cases of phishing email information sharing. \nWe encourage all organizations to review and integrate these guidelines to strengthen our collective cybersecurity efforts.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "GALP-CSIRT",
+    "url": "",
+    "email": "",
+    "created": "2025-03-03T15:20:19Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "Galp-Csirt-Team"
+    ]
+}

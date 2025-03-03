@@ -1,0 +1,102 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ''
+    fromServerVersion: ''
+    itemVersion: ''
+    packID: 697f8e56-e615-42f7-8e9a-e8811531eba4
+    packName: MISP - Indicator Sharing
+    prevname: ''
+    propagationLabels:
+    - all
+    toServerVersion: ''
+description: 'This playbook helps organizations categorize the incidents according to the CNCS Incident Classification Taxonomy, enabling standardized communication and sharing of threat intelligence on a Local scale.  '
+id: CNCS - Incident Classification
+inputs: []
+name: CNCS - Incident Classification
+outputs: []
+starttaskid: '0'
+tasks:
+  '0':
+    continueonerrortype: ''
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '11'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 46143058-254c-4d56-883d-65e118ca0b45
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 46143058-254c-4d56-883d-65e118ca0b45
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '9':
+    continueonerrortype: ''
+    id: '9'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: c48cabcd-11fb-4ac0-8a7b-91660389ece8
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+    taskid: c48cabcd-11fb-4ac0-8a7b-91660389ece8
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '11':
+    continueonerrortype: ''
+    id: '11'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      builtincondition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Exit
+          operator: isTrue
+          right:
+            value: {}
+      exitCondition: ''
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '9'
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      id: b5375b05-efa7-44db-869b-1cd075d3895e
+      iscommand: false
+      name: CNCS - Create Incident Classification
+      playbookId: CNCS - Create Incident Classification
+      type: playbook
+      version: -1
+    taskid: b5375b05-efa7-44db-869b-1cd075d3895e
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 385,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n    }\n  }\n}"

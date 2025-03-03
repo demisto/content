@@ -1,0 +1,33 @@
+args:
+- description: Value to filter from either CNCS or ENISA codes.
+  name: classification
+- auto: PREDEFINED
+  description: Type of organization (non_pt or pt_org).
+  name: org_type
+  predefined:
+  - non_pt_org
+  - pt_org
+  required: true
+comment: This automation allows the definition of CNCS values (for portuguese organizations) or ENISA (for non portuguese organizations). It is used to populate the main options for a data collection task. If a main option is already present is used in classification arg and this automation will return all the specific values for that specific main option.
+commonfields:
+  id: set_incident_classification
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.12.8.1983910
+enabled: true
+engineinfo: {}
+name: set_incident_classification
+outputs:
+- contextPath: IncidentClassification
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
