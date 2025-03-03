@@ -1,7 +1,6 @@
 This playbook addresses the following alerts:
 
-* Remote WMI process execution
-* Suspicious remote WMI process execution
+* WmiPrvSe.exe Rare Child Command Line
 
 **Playbook Stages:**
 
@@ -9,7 +8,7 @@ This playbook addresses the following alerts:
 
 * Enrich the attacker’s IP address to identify any known malicious activity.
 
-* Retrieve all incident-related alerts to consolidate context for further analysis.
+* Retrieve all alert-related alerts to consolidate context for further analysis.
 
 **Investigation:**
 
@@ -21,7 +20,7 @@ This playbook addresses the following alerts:
 
 **Containment:**
 
-* Attempt to terminate the malicious process tree using its causality ID.
+* Attempt to terminate the malicious process.
 
 * Provide guidance for manual process termination if the automated action fails.
 
@@ -42,7 +41,7 @@ This playbook does not use any integrations.
 ### Scripts
 
 * CommandLineAnalysis
-* SearchIncidentsV2
+* SearchAlertsV2
 
 ### Commands
 
@@ -51,6 +50,7 @@ This playbook does not use any integrations.
 * core-get-endpoints
 * core-isolate-endpoint
 * core-terminate-causality
+* core-terminate-process
 * ip
 
 ## Playbook Inputs
@@ -67,4 +67,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Remote WMI Process Execution](../doc_files/Remote_WMI_Process_Execution.png)
+![WmiPrvSe.exe Rare Child Command Line](../doc_files/WmiPrvSe_exe_Rare_Child_Command_Line.png)
