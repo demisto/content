@@ -5665,6 +5665,27 @@ script:
     execution: false
     name: microsoft-atp-auth-reset
     arguments: []
+  - arguments:
+    - description: The machine ID. Can be retrieved by running the 'microsoft-atp-get-machines' command.
+      name: machine_id
+      required: true
+    description: Get the specific machine's software details.
+    name: microsoft-atp-get-machine-software
+    polling: true
+  - arguments:
+    - description: The machine ID. Can be retrieved by running the 'microsoft-atp-get-machines' command.
+      name: machine_id
+      required: true
+    description: Get the specific machine's missing security updates (KBs).
+    name: microsoft-atp-get-machine-missing-kbs
+    polling: true
+  - arguments:
+    - description: The machine ID. Can be retrieved by running the 'microsoft-atp-get-machines' command.
+      name: machine_id
+      required: true
+    description: Get the specific machine's vulnerabilities
+    name: microsoft-atp-get-machine-vulnerabilities
+    polling: true
   dockerimage: demisto/crypto:1.0.0.2005673
   isfetch: true
   runonce: false
