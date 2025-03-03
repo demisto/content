@@ -61,13 +61,13 @@ There is no context output for this command.
 ```!cybelangel-report-status-update report_ids=1234 status=open```
 #### Human Readable Output
 
->Status of 1234 was successfully updated.
+>The status of report(s) 1234 has been successfully updated.
 
 #### Command example
 ```!cybelangel-report-status-update report_ids=1234,5678 status=resolved```
 #### Human Readable Output
 
->Status of 1234,5678 was successfully updated.
+>The status of report(s) 1234,5678 has been successfully updated.
 
 ### cybelangel-report-get
 
@@ -427,10 +427,6 @@ Retrieve the mirror details for the specified report.
 ***
 Create a new comment on a report.
 
-**Note**:<br>
-This command will be supported only if at least one comment already exists in the report.
-
-
 #### Base Command
 
 `cybelangel-report-comment-create`
@@ -439,42 +435,17 @@ This command will be supported only if at least one comment already exists in th
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| report_id | The ID of the report. | Required | 
+| discussion_id | The discussion_id is made of report id and tenant id like uuid:uuid. Example: 3500bb64-6081-4cf5-8e6f-dca82dab4982:[your-tenant-id]. | Required | 
 | content | The content of the comment. | Required | 
 | parent_id | The ID of the parent comment (for replies). | Optional | 
 | assigned | Specifies if the comment is assigned to analysts (true/false). | Optional | 
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CybelAngel.Report.Comments | unknown | Updated comment list with the new comment included. | 
+There is no context output for this command.
 
 #### Command example
 ```!cybelangel-report-comment-create report_id=1234 content="Test Comment"```
-#### Context Example
-```json
-{
-    "CybelAngel": {
-        "Report": {
-            "Comments": {
-                "assigned": false,
-                "author": "example@clients",
-                "content": "Test Comment",
-                "created_at": "20200-02-26T10:20:32.453309",
-                "discussion_id": "1234:1234",
-                "external_author": null,
-                "id": "1234",
-                "last_updated_at": "2000-02-26T10:20:32.453309",
-                "parent_id": null,
-                "viewers": [
-                    "example@clients"
-                ]
-            }
-        }
-    }
-}
-```
 
 #### Human Readable Output
 
@@ -493,8 +464,8 @@ Retrieve reports from CybelAngel.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_date | Get reports from a specific start date formatted with ISO 8601. | Required | 
-| end_date | Get reports until a specific end date formatted with ISO 8601. | Required | 
+| start_date | Get reports from a specific start date formatted with ISO 8601. | Optional | 
+| end_date | Get reports until a specific end date formatted with ISO 8601. | Optional | 
 
 #### Context Output
 
@@ -753,7 +724,7 @@ Retrieve comments from a report.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CybelAngel.Report.Comments | unknown | The list of comments for the report. | 
+| CybelAngel.Report.Comment | unknown | The list of comments for the report. | 
 
 #### Command example
 ```!cybelangel-report-comments-get report_id=1234```
@@ -796,7 +767,8 @@ Retrieve comments from a report.
                     }
                 ],
                 "new": 0,
-                "total": 2
+                "total": 2,
+                "id": "1234"
             }
         }
     }
@@ -806,4 +778,3 @@ Retrieve comments from a report.
 #### Human Readable Output
 
 >Comments for Report ID 1234 retrieved.
-

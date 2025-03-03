@@ -564,7 +564,7 @@ def test_cybelangel_report_list_command(mocker):
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "CybelAngel.Report"
     assert result.outputs is not None
-    assert "Cybelangel Reports list" in result.readable_output
+    assert "Reports list" in result.readable_output
 
 
 def test_cybelangel_report_get_command(mocker):
@@ -595,7 +595,7 @@ def test_cybelangel_report_get_command(mocker):
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "CybelAngel.Report"
     assert result.outputs is not None
-    assert "Cybelangel Report ID" in result.readable_output
+    assert "Report ID" in result.readable_output
 
     # test get report to pdf
     args = {"report_id": "test", "pdf": "true"}
@@ -641,7 +641,7 @@ def test_cybelangel_mirror_report_get_command(mocker):
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "CybelAngel.ReportMirror"
     assert result.outputs is not None
-    assert "Cybelangel Mirror details for Report ID" in result.readable_output
+    assert "Mirror details for Report ID" in result.readable_output
 
     args = {"report_id": "test", "csv": "true"}
     mocker.patch(
@@ -709,17 +709,12 @@ def test_cybelangel_report_comment_create_command(mocker):
     """
     from CybelAngelEventCollector import cybelangel_report_comment_create_command, Client
     client = mock_client()
-    # case No previous comments exist in this report
-    mocker.patch.object(
-        Client,
-        "get_report_comment",
-        return_value={"comments": []},
-    )
     report_id = "11223344"
-    args = {'report_id': report_id,
-            "content": "Test Comments"}
-    response = cybelangel_report_comment_create_command(client, args)
-    assert f"No comments exist for {report_id} report." in response.readable_output
+
+    # Case: Invalid discussion_id format (no colon)
+    args_invalid = {"discussion_id": report_id, "content": "Test func"}
+    with pytest.raises(ValueError, match="Invalid discussion_id format. Expected format: 'report_id:tenant_id'."):
+        cybelangel_report_comment_create_command(client, args_invalid)
 
     mocker.patch.object(
         Client,
@@ -727,11 +722,10 @@ def test_cybelangel_report_comment_create_command(mocker):
         return_value=load_test_data("create_comment_result"),
     )
 
-    args = {"report_id": report_id, "content": "Test func", "parent_id": "55667788", "assigned": "true"}
+    args = {"discussion_id": f"{report_id}:tenant id", "content": "Test func", "parent_id": "55667788", "assigned": "true"}
     response = cybelangel_report_comment_create_command(client, args)
 
-    assert f"Comments created successfully for report ID: {report_id}." in response.readable_output
-    assert load_test_data("create_comment_result") == response.outputs
+    assert f"Comment created successfully for report ID: {report_id}" in response.readable_output
 
 
 def test_cybelangel_report_comments_get_command(mocker):
@@ -759,8 +753,8 @@ def test_cybelangel_report_comments_get_command(mocker):
     report_id = "11223344"
     args = {'report_id': report_id}
     response = cybelangel_report_comments_get_command(client, args)
-    assert response.outputs.get("Comments")[0].get("discussion_id").startswith(report_id)  # type: ignore
-    assert response.outputs.get("Comments")[0].get("discussion_id").endswith("Tenant id")  # type: ignore
+    assert response.outputs.get("Comment")[0].get("discussion_id").startswith(report_id)  # type: ignore
+    assert response.outputs.get("Comment")[0].get("discussion_id").endswith("Tenant id")  # type: ignore
 
 
 def test_cybelangel_report_attachment_get_command(mocker):

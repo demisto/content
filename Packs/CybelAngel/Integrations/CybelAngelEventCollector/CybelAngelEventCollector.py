@@ -19,7 +19,6 @@ DEFAULT_MAX_FETCH = 5000
 VENDOR = "cybelangel"
 PRODUCT = "platform"
 DEFAULT_FIRST_FETCH = "30 days"
-INTEGRATION = "Cybelangel"
 
 
 class LastRun(str, Enum):
@@ -410,7 +409,7 @@ def cybelangel_report_list_command(client: Client, args: dict) -> CommandResults
 
     response = client.get_reports_list({"start-date": start_date, "end-date": end_date})
     human_readable = tableToMarkdown(
-        f"{INTEGRATION} Reports list",
+        "Reports list",
         response,
         headers=[
             "id",
@@ -448,7 +447,7 @@ def cybelangel_report_get_command(client: Client, args: dict) -> CommandResults 
     if pdf:
         return fileResult(f"cybelangel_report_{report_id}.pdf", response.content, EntryType.ENTRY_INFO_FILE)  # type: ignore
     human_readable = tableToMarkdown(
-        f"{INTEGRATION} Report ID {report_id} details.",
+        f"Report ID {report_id} details",
         response,
         headers=[
             "id",
@@ -494,7 +493,7 @@ def cybelangel_mirror_report_get_command(client: Client, args: dict) -> CommandR
             response.content,  # type: ignore
             file_type=EntryType.ENTRY_INFO_FILE,
         )
-    human_readable = tableToMarkdown(f"{INTEGRATION} Mirror details for Report ID {report_id}.", response,
+    human_readable = tableToMarkdown(f"Mirror details for Report ID {report_id}", response,
                                      headers=["report_id", "created_at", "available_files_count", "updated_at"], removeNull=True)
     return CommandResults(
         outputs_prefix="CybelAngel.ReportMirror",
@@ -545,7 +544,7 @@ def cybelangel_report_status_update_command(client: Client, args: dict) -> Comma
     client.status_update(report_ids, status)
 
     return CommandResults(
-        readable_output=f"Total of {len(report_ids)} were successfully updated."
+        readable_output=f"The status of report(s) {report_ids} has been successfully updated"
     )
 
 
@@ -565,16 +564,16 @@ def cybelangel_report_comments_get_command(client: Client, args: dict) -> Comman
     response = client.get_report_comment(report_id)
 
     if not response.get("comments"):  # type: ignore
-        return CommandResults(readable_output=f"There are no comments for report ID: {report_id}.")
+        return CommandResults(readable_output=f"There are no comments for report ID: {report_id}")
     if isinstance(response, dict):
         response["id"] = report_id
-        response["Comments"] = response.pop("comments")
+        response["Comment"] = response.pop("comments")
     hr_response = [
         {**comment, "author_firstname": comment["author"]["firstname"], "author_lastname": comment["author"]["lastname"]}
-        for comment in response.get("comments", [])  # type: ignore
+        for comment in response.get("Comments", [])  # type: ignore
     ]
     human_readable = tableToMarkdown(
-        f"{INTEGRATION} Comments for Report ID {report_id}.",
+        f"Comments for Report ID {report_id}",
         hr_response,
         headers=[
             "content",
@@ -607,22 +606,14 @@ def cybelangel_report_comment_create_command(client: Client, args: dict) -> Comm
     Returns:
         CommandResults: Success message indicating comment creation.
     """
-    report_id = args.get("report_id", "")
+    discussion_id = args.get("discussion_id", "")
+    if ":" not in discussion_id:
+        raise ValueError("Invalid discussion_id format. Expected format: 'report_id:tenant_id'.")
+    report_id = discussion_id.split(":")[0]
     content = args.get("content")
     parent_id = args.get("parent_id")
     assigned = argToBoolean(args.get("assigned", "false"))
 
-    comments_response = client.get_report_comment(report_id).get("comments", [])  # type: ignore
-    discussion_id = ""
-    if comments_response:
-        discussion_id = comments_response[0].get("discussion_id")
-    else:
-        return CommandResults(
-            readable_output=f"""No comments exist for {report_id} report.
-            This command will be supported only if at least one comment already exists in the report"""
-        )
-    # return_error(f"""No comments exist for {report_id} report.
-    #                  This command will be supported only if at least one comment already exists in the report""")
     data = {
         "content": content,
         "discussion_id": discussion_id
@@ -632,13 +623,10 @@ def cybelangel_report_comment_create_command(client: Client, args: dict) -> Comm
     if assigned:
         data["assigned"] = assigned
 
-    response = client.get_report_comment(report_id, data=data)
+    client.get_report_comment(report_id, data=data)
 
     return CommandResults(
-        outputs_prefix="CybelAngel.Report.Comments",
-        outputs_key_field="id",
-        outputs=response,
-        readable_output=f"Comments created successfully for report ID: {report_id}.",
+        readable_output=f"Comment created successfully for report ID: {report_id}",
     )
 
 
@@ -694,7 +682,7 @@ def cybelangel_report_remediation_request_create_command(client: Client, args: d
         outputs_prefix="CybelAngel.RemediationRequest",
         outputs_key_field="report_id",
         outputs=response,
-        readable_output=f"Remediation request was created for {report_id}."
+        readable_output=f"Remediation request was created for {report_id}"
     )
 
 
