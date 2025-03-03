@@ -1,4 +1,4 @@
 [INGEST:vendor="Akamai", product="WAF", target_dataset="akamai_waf_raw", no_hit=keep]
 // Support only 10 digit epoch date time format. For example: "1669420445".
-alter _time = httpMessage -> start;
+alter _time = httpMessage -> start
 | alter haIntegrationEventID = httpMessage -> requestId;
