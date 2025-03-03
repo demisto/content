@@ -28,6 +28,9 @@ args:
   predefined:
   - 'true'
   - 'false'
+- description: Additional servers to isolate, in addition to the predefined list.
+  name: server_os
+  isArray: true
 comment: This script isolate endpoints using multiple integrations and returns a success or failure message.
 commonfields:
   id: isolate-endpoint
