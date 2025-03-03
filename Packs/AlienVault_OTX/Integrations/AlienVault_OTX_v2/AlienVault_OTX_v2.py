@@ -301,6 +301,30 @@ def lowercase_protocol_callback(pattern: re.Match) -> str:
     return pattern.group(0).lower()
 
 
+def reputation_with_handling_error(client, section, argument, sub_section=None):
+    """Query data while handling ReadTimeout errors.
+
+    Args:
+        client: The client object used to perform the query.
+        section: The section to query (e.g., 'domain', 'file', 'url', etc.).
+        argument: The argument for the query (e.g., domain name, file hash, URL, or IP).
+        sub_section: (Optional) A sub-section for more specific queries (e.g., 'analysis' for file reputation).
+
+    Returns:
+        The raw response from the query if successful, or an empty dictionary if a ReadTimeout occurs.
+    """
+    try:
+        if sub_section:
+            return client.query(section=section, argument=argument, sub_section=sub_section)
+        return client.query(section=section, argument=argument)
+    except requests.exceptions.ReadTimeout as e:
+        if client.should_error:
+            raise e
+        demisto.error(f"An error was raised {e=}")
+        return_warning(f"{e}")
+        return {}
+
+
 ''' COMMANDS '''
 
 
@@ -342,15 +366,7 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> List[Command
     command_results: List[CommandResults] = []
 
     for ip_ in ips_list:
-        try:
-            raw_response = client.query(section=ip_version,
-                                        argument=ip_)
-        except requests.exceptions.ReadTimeout as e:
-            if client.should_error:
-                raise e
-            demisto.error(f"An error was raised {e=}")
-            return_warning(f"{e}")
-            raw_response = {}
+        raw_response = reputation_with_handling_error(client=client, section=ip_version, argument=ip_)
 
         if raw_response and raw_response != 404:
             ip_version = FeedIndicatorType.IP if ip_version == 'IPv4' else FeedIndicatorType.IPv6
@@ -419,14 +435,7 @@ def domain_command(client: Client, domain: str) -> List[CommandResults]:
     command_results: List[CommandResults] = []
 
     for domain in domains_list:
-        try:
-            raw_response = client.query(section='domain', argument=domain)
-        except requests.exceptions.ReadTimeout as e:
-            if client.should_error:
-                raise e
-            demisto.error(f"An error was raised {e=}")
-            return_warning(f"{e}")
-            raw_response = {}
+        raw_response = reputation_with_handling_error(client=client, section='domain', argument=domain)
 
         if raw_response and raw_response != 404:
             relationships = relationships_manager(client, entity_a=domain, indicator_type='domain',
@@ -485,19 +494,13 @@ def file_command(client: Client, file: str) -> List[CommandResults]:
     command_results: List[CommandResults] = []
 
     for hash_ in hashes_list:
-        try:
-            raw_response_analysis = client.query(section='file',
-                                                 argument=hash_,
-                                                 sub_section='analysis')
-            raw_response_general = client.query(section='file',
-                                                argument=hash_)
-        except requests.exceptions.ReadTimeout as e:
-            if client.should_error:
-                raise e
-            demisto.error(f"An error was raised {e=}")
-            return_warning(f"{e}")
-            raw_response_analysis = {}
-            raw_response_general = {}
+        raw_response_analysis = reputation_with_handling_error(client=client,
+                                                               section='file',
+                                                               argument=hash_,
+                                                               sub_section='analysis')
+        raw_response_general = reputation_with_handling_error(client=client,
+                                                              section='file',
+                                                              argument=hash_)
 
         if raw_response_analysis and raw_response_general and (
                 shortcut := dict_safe_get(raw_response_analysis, ['analysis', 'info', 'results'],
@@ -569,14 +572,7 @@ def url_command(client: Client, url: str) -> List[CommandResults]:
 
     for url in urls_list:
         url = re.sub(r'(\w+)://', lowercase_protocol_callback, url)
-        try:
-            raw_response = client.query(section='url', argument=url)
-        except requests.exceptions.ReadTimeout as e:
-            if client.should_error:
-                raise e
-            demisto.error(f"An error was raised {e=}")
-            return_warning(f"{e}")
-            raw_response = 404
+        raw_response = reputation_with_handling_error(client=client, section='url', argument=url)
 
         if raw_response:
             if raw_response == 404:
