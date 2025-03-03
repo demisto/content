@@ -1320,3 +1320,90 @@ against. That is, log types must be fully qualified and the instance ID is a par
 However in this integration the instance ID is added automatically to the query so the name `firewall.traffic` is a valid table name
 * The SQL syntax supported for queries is `csql`
 * The provided authentication items ([configuration step 4](#configure-cortex-data-lake-on-cortex-xsoar)) can only be used once for each Strata Logging Service XSOAR Connector tenant (but can be shared for different Cortex XSOAR instances). Trying to re-generate those items will revoke any previously generated set of authentication items.
+
+### cdl-query-gp-logs
+***
+Searches the GlobalProtect VPN log table.
+
+#### Base Command
+
+`cdl-query-gp-logs`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The maximum number of logs to return. Default is 10. Default is 10. | Optional | 
+| page | Page to return. | Optional | 
+| page_size | Number of entries per page. Defaults to 50 (in case only page was provided). | Optional | 
+| transform_results | If set to false, query results are not mapped into the standard command context. Default is "true". Possible values are: true, false. Default is true. | Optional | 
+| fields | The fields selected in the query. Selection can be "all" (same as *) or a comma-separated list of specific fields. The list of fields can be found after viewing all the outputted fields with "all". Default is all. | Optional | 
+| end_time | The query end time. For example, end_time="2018-04-26 00:00:00". | Optional | 
+| start_time | The query start time. For example, start_time="2018-04-26 00:00:00". Default is 1970-01-01 00:00:00. Default is '1970-01-01 00:00:00'. | Optional | 
+| time_range | First log time (&lt;number&gt; &lt;time unit&gt;. For example, 12 minutes, 7 days, 3 weeks). | Optional | 
+| event_name | Event name for which to search. | Optional | 
+| gateway | GlobalProtect gateway for which to search. | Optional | 
+| private_ipv4 | Private IP address (v4) of the user that connected for which to search. | Optional | 
+| private_ipv6 | Private IP address (v6) of the user that connected for which to search. | Optional | 
+| public_ipv4 | Public IP address (v4) of the user that connected for which to search. | Optional | 
+| public_ipv6 | Public IP address (v6) of the user that connected for which to search. | Optional | 
+| source_user | The source username for which to search. | Optional | 
+| event_status | Event status (success or failure) for which to search. | Optional | 
+| portal | GlobalProtect portal for which to search. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CDL.Logging.GlobalProtect.AttemptedGateways | unknown | All gateways that were available and attempted for the client location. | 
+| CDL.Logging.GlobalProtect.AuthMethod | unknown | Authentication method used for the GlobalProtect connection. | 
+| CDL.Logging.GlobalProtect.ConnectMethod | unknown | Identifies how the GlobalProtect app connected to the the Gateway. | 
+| CDL.Logging.GlobalProtect.ConnectionErrorID | unknown | Enumeration integer assigned to the connection_error field value. | 
+| CDL.Logging.GlobalProtect.ConnectionErrorValue | unknown | Error information for unsuccessful connection. | 
+| CDL.Logging.GlobalProtect.CountOfRepeats | unknown | Number of sessions with same Source IP, Destination IP, Application, and Content/Threat Type seen for the summary interval. | 
+| CDL.Logging.GlobalProtect.CustomerID | unknown | The ID that uniquely identifies the Cortex Data Lake instance which received this log record. | 
+| CDL.Logging.GlobalProtect.EndpointDeviceName | unknown | Name of the device that the user used for the connection. | 
+| CDL.Logging.GlobalProtect.EndpointGPVersion | unknown | GlobalProtect client version number. | 
+| CDL.Logging.GlobalProtect.EndpointOSType | unknown | OS type of the endpoint on which the GlobalProtect client is deployed. | 
+| CDL.Logging.GlobalProtect.EndpointOSVersion | unknown | OS version of the endpoint on which the GlobalProtect client is deployed. | 
+| CDL.Logging.GlobalProtect.EndpointSN | unknown | ID that uniquely identifies the endpoint on which the GlobalProtect client is deployed. | 
+| CDL.Logging.GlobalProtect.EventID | unknown | The name of the event. | 
+| CDL.Logging.GlobalProtect.Gateway | unknown | Gateway for the connection. | 
+| CDL.Logging.GlobalProtect.GatewayPriority | unknown | Priority of gateway. | 
+| CDL.Logging.GlobalProtect.GatewaySelectionType | unknown | Gateway Selection Method i.e automatic, preferred or manual. | 
+| CDL.Logging.GlobalProtect.GPGatewayLocation | unknown | Location of the Global Protect Gateway. | 
+| CDL.Logging.GlobalProtect.HostID | unknown | Unique identifier GlobalProtect has assigned to the host. | 
+| CDL.Logging.GlobalProtect.IsDuplicateLog | unknown | Indicates whether this log data is available in multiple locations, such as from Strata Logging Service as well as from an on-premise log collector. | 
+| CDL.Logging.GlobalProtect.IsExported | unknown | Indicates if this log was exported from the firewall using the firewall's log export function. | 
+| CDL.Logging.GlobalProtect.IsForwarded | unknown | Internal-use field that indicates if the log is being forwarded. | 
+| CDL.Logging.GlobalProtect.IsPrismaBranch | unknown | Internal-use field. If set to 1, the log was generated on a cloud-based firewall. If 0, the firewall was running on-premise. | 
+| CDL.Logging.GlobalProtect.IsPrismaMobile | unknown | Internal use field. If set to 1, the log record was generated using a cloud-based GlobalProtect instance. If 0, GlobalProtect was hosted on-premise. | 
+| CDL.Logging.GlobalProtect.LogSource | unknown | Identifies the origin of the data. | 
+| CDL.Logging.GlobalProtect.LogSourceID | unknown | ID that uniquely identifies the source of the log. | 
+| CDL.Logging.GlobalProtect.LogSourceName | unknown | Name of the source of the log. | 
+| CDL.Logging.GlobalProtect.LogTime | unknown | Time the log was received in Strata Logging Service XSOAR Connector. | 
+| CDL.Logging.GlobalProtect.LogType | unknown | Identifies the log type. | 
+| CDL.Logging.GlobalProtect.LoginDuration | unknown | Duration for which the connected user was logged on. | 
+| CDL.Logging.GlobalProtect.Opaque | unknown | Additional information regarding the event. | 
+| CDL.Logging.GlobalProtect.PanoramaSN | unknown | Panorama Serial associated with CDL. | 
+| CDL.Logging.GlobalProtect.PlatformType | unknown | The platform type. | 
+| CDL.Logging.GlobalProtect.Portal | unknown | Global Protect Portal or Gateway that the user connected to. | 
+| CDL.Logging.GlobalProtect.PrivateIPv4 | unknown | Private IP address \(v4\) of the user that connected. | 
+| CDL.Logging.GlobalProtect.PrivateIPv6 | unknown | Private IP address \(v6\) of the user that connected. | 
+| CDL.Logging.GlobalProtect.ProjectName | unknown | Project name. | 
+| CDL.Logging.GlobalProtect.PublicIPv4 | unknown | Public IP address \(v4\) of the user that connected. | 
+| CDL.Logging.GlobalProtect.PublicIPv6 | unknown | Public IP address \(v6\) of the user that connected. | 
+| CDL.Logging.GlobalProtect.QuarantineReason | unknown | Quarantine reason. | 
+| CDL.Logging.GlobalProtect.SequenceNo | unknown | The log entry identifier, which is incremented sequentially. | 
+| CDL.Logging.GlobalProtect.SourceRegion | unknown | Region of the Gateway \(or User\) that connected. | 
+| CDL.Logging.GlobalProtect.SourceUser | unknown | The username that connected. | 
+| CDL.Logging.GlobalProtect.SourceUserDomain | unknown | Domain to which the Source User belongs. | 
+| CDL.Logging.GlobalProtect.SourceUserName | unknown | The Source User username. | 
+| CDL.Logging.GlobalProtect.SourceUserUUID | unknown | Unique identifier assigned to the Source User. | 
+| CDL.Logging.GlobalProtect.SSLResponseTime | unknown | SSL Response Time in milliseconds. | 
+| CDL.Logging.GlobalProtect.Stage | unknown | Name of the stage in the GlobalProtect connection workflow. | 
+| CDL.Logging.GlobalProtect.EventStatus | unknown | The status \(success or failure\) of the event. | 
+| CDL.Logging.GlobalProtect.Subtype | unknown | The log subtype. | 
+| CDL.Logging.GlobalProtect.TimeGenerated | unknown | Time when the log was generated on the firewall's data plane. | 
+| CDL.Logging.GlobalProtect.TunnelType | unknown | Tunnel Type i.e. SSL or VPN. | 
+| CDL.Logging.GlobalProtect.VendorName | unknown | The vendor that produced the data. | 
