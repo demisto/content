@@ -320,7 +320,7 @@ def reputation_with_handling_error(client, section, argument, sub_section=None):
     except requests.exceptions.ReadTimeout as e:
         if client.should_error:
             raise e
-        demisto.error(f"An error was raised {e=}")
+        demisto.info(f"An error was raised {e=}")
         return_warning(f"{e}")
         if section == 'url':
             return 404
