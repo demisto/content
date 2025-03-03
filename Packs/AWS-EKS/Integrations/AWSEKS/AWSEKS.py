@@ -13,8 +13,6 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-PARAMS = demisto.params()
-ROLE_NAME: str = PARAMS.get('access_role_name', '')
 
 ''' HELPER FUNCTIONS '''
 
@@ -61,15 +59,16 @@ def config_aws_session(args: dict, aws_client: AWSClient):
 
 
 def build_client(args: dict):
-    aws_default_region = PARAMS.get('defaultRegion')
-    aws_access_key_id = PARAMS.get('credentials', {}).get('identifier')
-    aws_secret_access_key = PARAMS.get('credentials', {}).get('password')
-    aws_role_arn = PARAMS.get('roleArn')
-    aws_role_session_name = PARAMS.get('roleSessionName')
-    aws_role_session_duration = PARAMS.get('sessionDuration')
-    verify_certificate = not PARAMS.get('insecure', False)
-    timeout = PARAMS.get('timeout')
-    retries = PARAMS.get('retries') or 5
+    params = demisto.params()
+    aws_default_region = params.get('defaultRegion')
+    aws_access_key_id = params.get('credentials', {}).get('identifier')
+    aws_secret_access_key = params.get('credentials', {}).get('password')
+    aws_role_arn = params.get('roleArn')
+    aws_role_session_name = params.get('roleSessionName')
+    aws_role_session_duration = params.get('sessionDuration')
+    verify_certificate = not params.get('insecure', False)
+    timeout = params.get('timeout')
+    retries = params.get('retries') or 5
 
     demisto.debug(f'Command being called is {demisto.command()}')
 
@@ -442,9 +441,11 @@ def test_module() -> str:  # pragma: no cover
     """
     aws_client = build_client({})
     message: str = ''
+    params = demisto.params()
+    role_name: str = params.get('access_role_name', '')
 
-    if ROLE_NAME:
-        if not PARAMS.get('accounts_to_access'):
+    if role_name:
+        if not params.get('accounts_to_access'):
             raise DemistoException("'AWS organization accounts' must not be empty when an access role is provided.")
 
         def test_account(args: dict) -> CommandResults:
@@ -461,7 +462,7 @@ def test_module() -> str:  # pragma: no cover
             #  extract the account ID form the readable_output encased in backticks
             fail_ids = ', '.join(res.split('`')[1] for res in fails)
             raise DemistoException(
-                f'AssumeRole with role name {ROLE_NAME!r} failed for the following accounts: {fail_ids}.'
+                f'AssumeRole with role name {role_name!r} failed for the following accounts: {fail_ids}.'
             )
 
     try:
