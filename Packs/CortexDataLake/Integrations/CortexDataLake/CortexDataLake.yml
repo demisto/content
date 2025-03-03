@@ -4,49 +4,49 @@ commonfields:
   version: -1
 configuration:
 - display: Token
-  hidden: true
   name: refresh_token
-  required: false
   type: 4
+  hidden: true
+  required: false
 - display: ID
-  hidden: true
   name: reg_id
-  required: false
   type: 4
-- display: Key
   hidden: true
+  required: false
+- display: Key
   name: auth_key
-  required: false
   type: 4
-- display: ""
-  displaypassword: Encryption Key
-  hiddenusername: true
+  hidden: true
+  required: false
+- displaypassword: Encryption Key
   name: credentials_auth_key
-  required: false
+  hiddenusername: true
   type: 9
-- additionalinfo: The API Key to use for connection
+  required: false
   display: ""
-  displaypassword: Authentication Token
-  hiddenusername: true
+- displaypassword: Authentication Token
+  additionalinfo: The API Key to use for connection
   name: credentials_refresh_token
-  required: false
-  type: 9
-- display: ""
-  displaypassword: Registration ID
   hiddenusername: true
-  name: credentials_reg_id
-  required: false
-  section: Connect
   type: 9
+  required: false
+  display: ""
+- displaypassword: Registration ID
+  name: credentials_reg_id
+  type: 9
+  hiddenusername: true
+  section: Connect
+  required: false
+  display: ""
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - defaultvalue: 24 hours
   display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: first_fetch_timestamp
-  required: false
   type: 0
+  required: false
 - additionalinfo: Choose which table incidents will be fetched from.
   defaultvalue: firewall.threat
   display: Fetch Table
@@ -65,8 +65,8 @@ configuration:
   - firewall.userid
   - log.system
   - log.config
-  required: false
   type: 15
+  required: false
 - display: Severity of events to fetch (Firewall)
   name: firewall_severity
   options:
@@ -77,8 +77,8 @@ configuration:
   - Low
   - Informational
   - Unused
-  required: false
   type: 16
+  required: false
 - display: Subtype of events to fetch (Firewall)
   name: firewall_subtype
   options:
@@ -111,39 +111,39 @@ configuration:
   - spyware-wpc-raven
   - wpc-virus
   - sctp
-  required: false
   type: 16
+  required: false
 - additionalinfo: Comma-separated fields that will be fetched with every incident, e.g., "pcap,session_id". Enter "*" for all possible fields.
   defaultvalue: '*'
   display: Fetch Fields
   name: fetch_fields
-  required: false
   type: 12
+  required: false
 - additionalinfo: 'Filter the fetched incidents according to the given query. Query example: "source_ip.value LIKE `192.168.1.*` AND dst = `192.168.1.12`" Note: Can not be used in combination with `Severity` and `Subtype` parameters.'
   display: Fetch Filter
   name: filter_query
-  required: false
   type: 12
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - additionalinfo: "The maximum number of incidents to fetch per query.\t\nCaution: A large number could create overload. Default is 10."
-  defaultvalue: "10"
+  defaultvalue: '10'
   display: Max. number of incidents fetched per query
   name: limit
-  required: false
   type: 0
-- defaultvalue: "false"
+  required: false
+- defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
-- defaultvalue: "false"
+  required: false
+- defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - defaultvalue: "1"
   display: Incidents Fetch Interval
   name: incidentFetchInterval
@@ -161,20 +161,20 @@ script:
         There are multiple tables in Loggings, for example: threat, traffic, and so on.
         Refer to the Cortex Logging service schema reference for the full list.
       name: query
-    - defaultValue: "10"
+    - defaultValue: '10'
       description: The maximum number of logs to return. Default is 10.
       name: limit
     - auto: PREDEFINED
-      defaultValue: "true"
+      defaultValue: 'true'
       description: If set to false, query results are not mapped into the standard command context. Default is "true".
       name: transform_results
       predefined:
-      - "true"
-      - "false"
-    - description: Page to return.
-      name: page
-    - description: Number of entries per page. Defaults to 50 (in case only page was provided).
-      name: page_size
+      - 'true'
+      - 'false'
+    - name: page
+      description: Page to return.
+    - name: page_size
+      description: Number of entries per page. Defaults to 50 (in case only page was provided).
     description: Runs a query on  any table or field.
     execution: true
     name: cdl-query-logs
@@ -239,22 +239,22 @@ script:
       name: start_time
     - description: The query end time. For example, end_time="2018-04-26 00:00:00".
       name: end_time
-    - defaultValue: "10"
+    - defaultValue: '10'
       description: The maximum number of logs to return. Default is 10.
       name: limit
     - description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days, 3 weeks).
       name: time_range
     - auto: PREDEFINED
-      defaultValue: "true"
+      defaultValue: 'true'
       description: If set to false, query results are not mapped into the standard command context. Default is "true".
       name: transform_results
       predefined:
-      - "true"
-      - "false"
-    - description: Page to return.
-      name: page
-    - description: Number of entries per page. Defaults to 50 (in case only page was provided).
-      name: page_size
+      - 'true'
+      - 'false'
+    - name: page
+      description: Page to return.
+    - name: page_size
+      description: Number of entries per page. Defaults to 50 (in case only page was provided).
     description: Runs a query on the threat table according to preset queries.
     name: cdl-get-critical-threat-logs
     outputs:
@@ -390,15 +390,15 @@ script:
       name: start_time
     - description: Query end time. For example, end_time="2018-04-26 00:00:00".
       name: end_time
-    - defaultValue: "10"
+    - defaultValue: '10'
       description: The maximum number of logs to return. Default is 10.
       name: limit
     - description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days, 3 weeks).
       name: time_range
-    - description: Page to return.
-      name: page
-    - description: Number of entries per page. Defaults to 50 (in case only page was provided).
-      name: page_size
+    - name: page
+      description: Page to return.
+    - name: page_size
+      description: Number of entries per page. Defaults to 50 (in case only page was provided).
     description: Runs a query on traffic table where app_sub_category = "social networking".
     name: cdl-get-social-applications
     outputs:
@@ -522,7 +522,7 @@ script:
       name: start_time
     - description: The query end time. For example, end_time="2018-04-26 00:00:00".
       name: end_time
-    - defaultValue: "10"
+    - defaultValue: '10'
       description: The maximum number of logs to return. Default is 10.
       name: limit
     - description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days, 3 weeks).
@@ -530,10 +530,10 @@ script:
     - description: The SHA256 hash of the file for the query. For example, SHA256="503ca1a4fc0d48b18c0336f544ba0f0abf305ae3a3f49b3c2b86b8645d6572dc" would return all logs associated with this file.
       name: SHA256
       required: true
-    - description: Page to return.
-      name: page
-    - description: Number of entries per page. Defaults to 50 (in case only page was provided).
-      name: page_size
+    - name: page
+      description: Page to return.
+    - name: page_size
+      description: Number of entries per page. Defaults to 50 (in case only page was provided).
     description: Runs a query on the threat table with the query 'SELECT * FROM `firewall.threat` WHERE file_sha_256 = <file_hash>'.
     name: cdl-search-by-file-hash
     outputs:
@@ -824,13 +824,13 @@ script:
       name: end_time
     - description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days, 3 weeks).
       name: time_range
-    - defaultValue: "5"
+    - defaultValue: '5'
       description: The maximum number of logs to return. Default is 5.
       name: limit
-    - description: Page to return.
-      name: page
-    - description: Number of entries per page. Defaults to 50 (in case only page was provided).
-      name: page_size
+    - name: page
+      description: Page to return.
+    - name: page_size
+      description: Number of entries per page. Defaults to 50 (in case only page was provided).
     - description: A destination IP address or an array of destination IPs addresses for which to search, for example 1.1.1.1,2.2.2.2.
       name: dest_ip
     - description: Destination port utilized by the session. Can be port number or an array of destination port numbers to search. For example '443' or '443,445'.
@@ -1149,13 +1149,13 @@ script:
       name: end_time
     - description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days, 3 weeks).
       name: time_range
-    - defaultValue: "5"
+    - defaultValue: '5'
       description: The maximum number of logs to return. Default is 5.
       name: limit
-    - description: Page to return.
-      name: page
-    - description: Number of entries per page. Defaults to 50 (in case only page was provided).
-      name: page_size
+    - name: page
+      description: Page to return.
+    - name: page_size
+      description: Number of entries per page. Defaults to 50 (in case only page was provided).
     - description: The IP address or an array of IP addresses for which to search. For example 1.1.1.1,2.2.2.2. Used instead of the source/destination IP address.
       name: ip
     - description: The port or array of ports to search. Used instead of the source/destination port.
@@ -1480,10 +1480,10 @@ script:
       name: time_range
     - description: The maximum number of logs to return. Default is 5.
       name: limit
-    - description: Page to return.
-      name: page
-    - description: Number of entries per page. Defaults to 50 (in case only page was provided).
-      name: page_size
+    - name: page
+      description: Page to return.
+    - name: page_size
+      description: Number of entries per page. Defaults to 50 (in case only page was provided).
     - description: The IP address or an array of IP addresses for which to search. For example 1.1.1.1,2.2.2.2. Used instead of the source/destination IP address.
       name: ip
     - description: The port or array of ports to search. Used instead of the source/destination port.
@@ -1775,13 +1775,13 @@ script:
       name: end_time
     - description: First log time (<number> <time unit>. For example, 12 minutes, 7 days, 3 weeks).
       name: time_range
-    - defaultValue: "5"
+    - defaultValue: '5'
       description: The maximum number of logs to return. Default is 5.
       name: limit
-    - description: Page to return.
-      name: page
-    - description: Number of entries per page. Defaults to 50 (in case only page was provided).
-      name: page_size
+    - name: page
+      description: Page to return.
+    - name: page_size
+      description: Number of entries per page. Defaults to 50 (in case only page was provided).
     description: Searches the Cortex firewall.file_data table.
     name: cdl-query-file-data
     outputs:
@@ -2024,9 +2024,9 @@ script:
     - contextPath: CDL.Logging.File.LogSource
       description: Identifies the origin of the data (the system that produced the data.
       type: String
-  - arguments: []
-    description: Use this command in case your authentication calls fail due to internal call-limit, the command will reset the limit cache.
+  - description: Use this command in case your authentication calls fail due to internal call-limit, the command will reset the limit cache.
     name: cdl-reset-authentication-timeout
+    arguments: []
   - arguments:
     - defaultValue: "10"
       description: The maximum number of logs to return. Default is 10.
@@ -2177,13 +2177,12 @@ script:
       description: Tunnel Type i.e. SSL or VPN.
     - contextPath: CDL.Logging.GlobalProtect.VendorName
       description: The vendor that produced the data.
-  dockerimage: demisto/python_pancloud_v2:1.0.0.117311
+  dockerimage: demisto/python_pancloud_v2:1.0.0.2027056
   isfetch: true
   runonce: false
   script: ''
   subtype: python3
   type: python
-sourcemoduleid: Cortex Data Lake
 tests:
 - Cortex Data Lake Test
 fromversion: 5.0.0
