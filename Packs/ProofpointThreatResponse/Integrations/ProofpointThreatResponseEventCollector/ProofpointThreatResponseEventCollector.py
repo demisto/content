@@ -331,7 +331,7 @@ def fetch_events_command(client, first_fetch, last_run, fetch_limit, fetch_delta
             last_fetched_id[state] = id
             demisto.debug(f"{log_prefix}Got {len(incidents_list)} incidents. Last incident date: {id=}, {last_fetch_time=}, {last_fetch[state]=} of state {incidents_list[-1].get('state')}.")
         else:
-            demisto.debug(f"{log_prefix}No new events.")
+            demisto.debug(f"{log_prefix}No new incidents.")
 
     demisto.debug(f"{log_prefix}End of current fetch function with last_fetch {str(last_fetch)} and last_fetched_id"
                   f" {str(last_fetched_id)}")
@@ -377,15 +377,20 @@ def get_events_from_incidents(incidents):
     fetched_events = []
     for incident in incidents:
         if events := incident.get('events'):
+            i = 0
             for event in events:
                 new_incident = copy.deepcopy(incident)
                 del new_incident['events']
                 new_incident['event'] = event
                 fetched_events.append(new_incident)
+                i+=1
+            demisto.debug(f"Created {i} events from {incident['id']} incident")
         else:
+            demisto.debug(f"No events for {incident['id']} incident, parsing it to a single event.")
             del incident['events']
             incident['event'] = {}
             fetched_events.append(incident)
+    
     return fetched_events
 
 
