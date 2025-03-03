@@ -151,7 +151,7 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
-  section: Connect
+  section: Collect
 - additionalinfo: When selected, closing the SentinelOne ticket is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
