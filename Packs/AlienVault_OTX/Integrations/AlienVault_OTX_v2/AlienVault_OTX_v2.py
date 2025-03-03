@@ -72,7 +72,6 @@ class Client(BaseClient):
             result = self._http_request('GET',
                                         url_suffix=suffix,
                                         params=params)
-            return result
         except DemistoException as e:
             if hasattr(e.res, 'status_code'):
                 if e.res.status_code == 404:
@@ -84,6 +83,7 @@ class Client(BaseClient):
                     raise
             else:
                 raise
+        return result
 
 
 ''' HELPER FUNCTIONS '''
