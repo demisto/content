@@ -1410,7 +1410,7 @@ def fetch_dlp_incidents_as_incidents(
         # set the new incident IDs to avoid duplicates on next fetch
         set_demisto_integration_context("dlp_incident_ids", new_incident_ids,
                                         "append")
-
+        last_run_timestamp = max(new_incidents, key=lambda k: k["timestamp"]) + 1
     else:
         last_run_timestamp = end_time_number
 
@@ -1547,10 +1547,7 @@ def get_last_run(
         last_run_time = ticket_last_run.get("time")
         last_run_id = ticket_last_run.get("id")
     else:
-        if incident_type == "dlp_incident":
-            last_run_time = "1 Day"
-        else:
-            last_run_time = args.get("first_fetch", "3 Days")
+        last_run_time = args.get("first_fetch", "3 Days")
 
     first_fetch = arg_to_datetime(arg=last_run_time,
                                   arg_name="First fetch time",
