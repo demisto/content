@@ -9,7 +9,7 @@ tags:
 enabled: true
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.8.1983910
 fromversion: 6.8.0
 comment: |-
   This script lists all possible statuses for a given Jira issue. Works only for Jira v3.
