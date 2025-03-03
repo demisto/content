@@ -2,7 +2,7 @@
     "name": "Gatewatcher AionIQ",
     "description": "This pack provide integration with Gatewatcher NDR solution : AIonIQ",
     "support": "partner",
-    "currentVersion": "1.2.0",
+    "currentVersion": "1.2.1",
     "author": "Gatewatcher",
     "url": "https://www.gatewatcher.com/",
     "email": "integration@gatewatcher.com",
@@ -20,7 +20,7 @@
         "FabienMht",
         "CesarGW",
         "ThibaultReboul",
-	"clement-lyonnet"
+        "clement-lyonnet"
     ],
     "defaultDataSource": "GCenter 103"
 }

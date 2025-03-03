@@ -2,7 +2,7 @@
     "name": "ThreatX",
     "description": "The ThreatX integration allows automated enforcement and intel gathering actions.",
     "support": "xsoar",
-    "currentVersion": "1.0.11",
+    "currentVersion": "1.0.12",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

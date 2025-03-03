@@ -2,7 +2,7 @@
     "name": "XSOAR Storage",
     "description": "XSOAR Storage provides a server-wide Key/Value store that allows values to be stored and retrieved; it supports namespaces to assist with key collisions.\n",
     "support": "community",
-    "currentVersion": "1.0.6",
+    "currentVersion": "1.0.7",
     "author": "D Masters",
     "url": "",
     "email": "",

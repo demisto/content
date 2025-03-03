@@ -2,7 +2,7 @@
     "name": "CimTrak - System Integrity Assurance",
     "description": "The CimTrak integration helps you detect unexpected system/device/config modifications and automatically respond/react to threats",
     "support": "partner",
-    "currentVersion": "1.0.17",
+    "currentVersion": "1.0.18",
     "author": "Cimcor",
     "url": "www.cimcor.com",
     "email": "support@cimcor.com",

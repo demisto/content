@@ -2,7 +2,7 @@
     "name": "Lumu",
     "description": "SecOps operation, reflect and manage the Lumu Incidents either from XSOAR Cortex or viceversa using the mirroring integration flow",
     "support": "partner",
-    "currentVersion": "1.0.24",
+    "currentVersion": "1.0.25",
     "author": "Lumu",
     "url": "https://lumu.io",
     "email": "support@lumu.io",

@@ -2,7 +2,7 @@
     "name": "XSOAR Summary Dashboard",
     "description": "Dashboard that shows overall platform performance as well as support links and cheat sheets for reference. The dashboard also pulls the most recent XSOAR live community blog posts.",
     "support": "community",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "emitchell",
     "url": "",
     "email": "",
