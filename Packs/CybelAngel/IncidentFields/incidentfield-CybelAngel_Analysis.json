@@ -1,0 +1,33 @@
+{
+	"id": "incident_cybelangelanalysis",
+	"version": -1,
+	"name": "CybelAngel Analysis",
+	"ownerOnly": false,
+	"type": "shortText",
+	"closeForm": false,
+	"editForm": true,
+	"required": false,
+	"neverSetAsRequired": false,
+	"isReadOnly": false,
+	"useAsKpi": false,
+	"caseInsensitive": true,
+	"sla": 0,
+	"associatedTypes": [
+		"CybelAngel"
+	],
+	"associatedToAll": false,
+	"unmapped": false,
+	"unsearchable": true,
+	"content": true,
+	"group": 0,
+	"hidden": false,
+	"openEnded": false,
+	"description": "Additional analysis of the incident in question",
+	"cliName": "cybelangelanalysis",
+	"threshold": 72,
+	"placeholder": "",
+	"selectValues": [],
+	"columns": null,
+	"defaultRows": null,
+	"fromVersion": "6.2.0"
+}

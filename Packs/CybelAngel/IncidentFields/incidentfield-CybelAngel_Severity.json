@@ -1,0 +1,35 @@
+{
+	"associatedToAll": false,
+	"associatedTypes": [
+		"CybelAngel"
+	],
+	"caseInsensitive": true,
+	"cliName": "cybelangelseverity",
+	"closeForm": false,
+	"content": true,
+	"description": "Severity of incident",
+	"editForm": true,
+	"hidden": false,
+	"id": "incident_cybelangelseverity",
+	"isReadOnly": false,
+	"locked": false,
+	"name": "CybelAngel Severity",
+	"neverSetAsRequired": false,
+	"openEnded": false,
+	"ownerOnly": false,
+	"propagationLabels": [
+		"all"
+	],
+	"required": false,
+	"selectValues": [],
+	"sla": 0,
+	"system": false,
+	"threshold": 72,
+	"type": "shortText",
+	"unmapped": false,
+	"unsearchable": true,
+	"useAsKpi": false,
+	"version": -1,
+	"group": 0,
+	"fromVersion": "6.2.0"
+}
