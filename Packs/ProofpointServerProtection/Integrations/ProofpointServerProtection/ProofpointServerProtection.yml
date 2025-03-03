@@ -51,22 +51,22 @@ script:
     - name: recipient
       description: Messages to recipient to quarantine.
     outputs:
-    - contextPath: Proofpoint.Quarantine.Message.ID.
+    - contextPath: Proofpoint.Quarantine.Message.ID
       description: Message ID.
       type: string
-    - contextPath: Proofpoint.Quarantine.Message.Date.
+    - contextPath: Proofpoint.Quarantine.Message.Date
       description: Message date.
       type: date
-    - contextPath: Proofpoint.Quarantine.Message.Recipient.
+    - contextPath: Proofpoint.Quarantine.Message.Recipient
       description: Message recipient.
       type: string
-    - contextPath: Proofpoint.Quarantine.Message.Sender.
+    - contextPath: Proofpoint.Quarantine.Message.Sender
       description: Message sender.
       type: string
-    - contextPath: Proofpoint.Quarantine.Message.Subject.
+    - contextPath: Proofpoint.Quarantine.Message.Subject
       description: Message subject.
       type: string
-    - contextPath: Proofpoint.Quarantine.Message.Folder.
+    - contextPath: Proofpoint.Quarantine.Message.Folder
       description: Message folder.
       type: string
     description: Retrieves quarantined email messages.
