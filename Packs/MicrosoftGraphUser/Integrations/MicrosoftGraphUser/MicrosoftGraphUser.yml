@@ -1,659 +1,647 @@
 category: Analytics & SIEM
 sectionOrder:
-  - Connect
-  - Collect
+- Connect
+- Collect
 commonfields:
   id: Microsoft Graph User
   version: -1
 configuration:
-  - defaultvalue: Worldwide
-    display: Azure Cloud
-    name: azure_cloud
-    required: false
-    type: 15
-    options:
-      - Worldwide
-      - US GCC
-      - US GCC-High
-      - DoD
-      - Germany
-      - China
-    additionalinfo: When selecting the Custom option, the Server URL parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
-    section: Connect
-    advanced: true
-  - defaultvalue: https://graph.microsoft.com
-    display: Server URL (e.g., https://graph.microsoft.com)
-    name: host
-    required: true
-    type: 0
-    section: Connect
-    additionalinfo: Use this option when required to customize the URL to the Microsoft Graph User endpoint. More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
-  - name: creds_auth_id
-    type: 9
-    displaypassword: ID / client ID
-    hiddenusername: true
-    section: Connect
-    required: false
-  - name: creds_tenant_id
-    type: 9
-    displaypassword: Token / Tenant ID
-    hiddenusername: true
-    section: Connect
-    required: false
-  - name: creds_enc_key
-    type: 9
-    displaypassword: Key / Client Secret
-    hiddenusername: true
-    section: Connect
-    required: false
-  - display: ID (received from the admin consent - see Detailed Instructions (?)
-    name: auth_id
-    type: 4
-    hidden: true
-    section: Connect
-    required: false
-  - display: Token (received from the admin consent - see Detailed Instructions (?) section)
-    name: tenant_id
-    type: 4
-    section: Connect
-    hidden: true
-    required: false
-  - display: Key (received from the admin consent - see Detailed Instructions (?)
-    name: enc_key
-    type: 4
-    section: Connect
-    hidden: true
-    required: false
-  - display: Certificate Thumbprint
-    name: creds_certificate
-    type: 9
-    displaypassword: Private Key
-    section: Connect
-    required: false
-  - display: Certificate Thumbprint
-    name: certificate_thumbprint
-    type: 4
-    section: Connect
-    advanced: true
-    additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
-    hidden: true
-    required: false
-  - display: Private Key
-    name: private_key
-    type: 14
-    additionalinfo: Used for certificate authentication. The private key of the registered certificate.
-    hidden: true
-    section: Connect
-    required: false
-  - additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
-    display: Use a self-deployed Azure application
-    name: self_deployed
-    type: 8
-    section: Connect
-    advanced: false
-    required: false
-  - display: Application redirect URI (for Self Deployed - Authorization Code Flow)
-    name: redirect_uri
-    type: 0
-    section: Connect
-    required: false
-  - name: creds_auth_code
-    type: 9
-    section: Connect
-    displaypassword: Authorization code (for Self Deployed - Authorization Code Flow)
-    hiddenusername: true
-    required: false
-  - display: Authorization code (for Authorization Code flow mode - received from the authorization step. see Detailed Instructions (?) section)
-    name: auth_code
-    type: 4
-    hidden: true
-    section: Connect
-    required: false
-  - additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
-    display: Use Azure Managed Identities
-    name: use_managed_identities
-    type: 8
-    section: Connect
-    required: false
-  - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
-    displaypassword: Azure Managed Identities Client ID
-    name: managed_identities_client_id
-    hiddenusername: true
-    type: 9
-    section: Connect
-    required: false
-  - defaultvalue: "false"
-    display: Trust any certificate (not secure)
-    name: insecure
-    type: 8
-    section: Connect
-    advanced: true
-    required: false
-  - defaultvalue: "false"
-    display: Use system proxy settings
-    name: proxy
-    type: 8
-    section: Connect
-    advanced: true
-    required: false
-  - display: Suppress Errors for Non Found Users
-    name: handle_error
-    defaultvalue: "true"
-    type: 8
-    section: Collect
-    advanced: true
-    required: false
+- defaultvalue: Worldwide
+  display: Azure Cloud
+  name: azure_cloud
+  required: false
+  type: 15
+  options:
+  - Worldwide
+  - US GCC
+  - US GCC-High
+  - DoD
+  - Germany
+  - China
+  additionalinfo: When selecting the Custom option, the Server URL parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
+  section: Connect
+  advanced: true
+- defaultvalue: https://graph.microsoft.com
+  display: Server URL (e.g., https://graph.microsoft.com)
+  name: host
+  required: true
+  type: 0
+  section: Connect
+  additionalinfo: Use this option when required to customize the URL to the Microsoft Graph User endpoint. More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
+- name: creds_auth_id
+  type: 9
+  displaypassword: ID / client ID
+  hiddenusername: true
+  section: Connect
+  required: false
+- name: creds_tenant_id
+  type: 9
+  displaypassword: Token / Tenant ID
+  hiddenusername: true
+  section: Connect
+  required: false
+- name: creds_enc_key
+  type: 9
+  displaypassword: Key / Client Secret
+  hiddenusername: true
+  section: Connect
+  required: false
+- display: ID (received from the admin consent - see Detailed Instructions (?)
+  name: auth_id
+  type: 4
+  hidden: true
+  section: Connect
+  required: false
+- display: Token (received from the admin consent - see Detailed Instructions (?) section)
+  name: tenant_id
+  type: 4
+  section: Connect
+  hidden: true
+  required: false
+- display: Key (received from the admin consent - see Detailed Instructions (?)
+  name: enc_key
+  type: 4
+  section: Connect
+  hidden: true
+  required: false
+- display: Certificate Thumbprint
+  name: creds_certificate
+  type: 9
+  displaypassword: Private Key
+  section: Connect
+  required: false
+- display: Certificate Thumbprint
+  name: certificate_thumbprint
+  type: 4
+  section: Connect
+  advanced: true
+  additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  hidden: true
+  required: false
+- display: Private Key
+  name: private_key
+  type: 14
+  additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  hidden: true
+  section: Connect
+  required: false
+- additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
+  display: Use a self-deployed Azure application
+  name: self_deployed
+  type: 8
+  section: Connect
+  advanced: false
+  required: false
+- display: Application redirect URI (for Self Deployed - Authorization Code Flow)
+  name: redirect_uri
+  type: 0
+  section: Connect
+  required: false
+- name: creds_auth_code
+  type: 9
+  section: Connect
+  displaypassword: Authorization code (for Self Deployed - Authorization Code Flow)
+  hiddenusername: true
+  required: false
+- display: Authorization code (for Authorization Code flow mode - received from the authorization step. see Detailed Instructions (?) section)
+  name: auth_code
+  type: 4
+  hidden: true
+  section: Connect
+  required: false
+- additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
+  display: Use Azure Managed Identities
+  name: use_managed_identities
+  type: 8
+  section: Connect
+  required: false
+- additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  name: managed_identities_client_id
+  hiddenusername: true
+  type: 9
+  section: Connect
+  required: false
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Suppress Errors for Non Found Users
+  name: handle_error
+  defaultvalue: 'true'
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
 description: Unified gateway to security insights - all from a unified Microsoft Graph User API.
 display: Azure Active Directory Users
 name: Microsoft Graph User
 script:
   commands:
-    - arguments:
-        - description: User ID or userPrincipalName.
-          name: user
-          required: true
-      deprecated: true
-      description: |-
-        Deprecated. Use the msgraph-user-account-disable command instead.
-      name: msgraph-user-terminate-session
-    - arguments:
-        - description: User ID or userPrincipalName.
-          name: user
-          required: true
-      description: |-
-        Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
-        but does not terminate an existing session. Supported only in a self deployed app flow with the
-        Permission: Directory.AccessAsUser.All(Delegated).
-      name: msgraph-user-account-disable
-    - arguments:
-        - description: User ID or userPrincipalName.
-          name: user
-          required: true
-      description: Unblock a user.
-      name: msgraph-user-unblock
-    - arguments:
-        - description: User ID or userPrincipalName to update properties for.
-          name: user
-          required: true
-        - description: "User fields to update (in a key=value format. Example: displayName=John."
-          name: updated_fields
-          required: true
-        - description: "Delimiter to use for passing multiple fields to the 'updated_fields' argument. Example using ',' as a delimiter: displayName=John,givenName=John,surname=Doe."
-          defaultValue: ","
-          name: updated_fields_delimiter
-      description: |-
-        Updates the properties of a user object.
-        Permissions: - User.ReadWrite (Delegated & Application).
-      name: msgraph-user-update
-      outputs:
-        - contextPath: MSGraphUser.ID
-          description: User's ID.
-          type: String
-        - contextPath: MSGraphUser.DisplayName
-          description: User's display name.
-          type: String
-        - contextPath: MSGraphUser.GivenName
-          description: User's given name.
-          type: String
-        - contextPath: MSGraphUser.BusinessPhones
-          description: User's business phone numbers.
-          type: String
-        - contextPath: MSGraphUser.JobTitle
-          description: User's job title.
-          type: String
-        - contextPath: MSGraphUser.Mail
-          description: User's mail address.
-          type: String
-        - contextPath: MSGraphUser.MobilePhone
-          description: User's mobile phone number.
-          type: String
-        - contextPath: MSGraphUser.OfficeLocation
-          description: User's office location.
-          type: String
-        - contextPath: MSGraphUser.PreferredLanguage
-          description: User's preferred language.
-          type: String
-        - contextPath: MSGraphUser.Surname
-          description: User's surname.
-          type: String
-        - contextPath: MSGraphUser.UserPrincipalName
-          description: User's principal name.
-          type: String
-    - arguments:
-        - description: User ID or userPrincipalName to delete.
-          name: user
-          required: true
-      description: |-
-        Deletes an existing user.
-        Permissions: - Directory.AccessAsUser.All (Delegated) - User.ReadWrite.All (Application).
-      execution: true
-      name: msgraph-user-delete
-    - arguments:
-        - auto: PREDEFINED
-          defaultValue: "true"
-          description: true if the account is enabled; otherwise, false.
-          name: account_enabled
-          predefined:
-            - "true"
-            - "false"
-        - description: The name to display in the address book.
-          name: display_name
-          required: true
-        - description: Only needs to be specified when creating a new user account if you are using a federated domain for the user's userPrincipalName (UPN) property.
-          name: on_premises_immutable_id
-        - description: The mail alias for the user.
-          name: mail_nickname
-          required: true
-        - description: The password profile for the user.
-          name: password
-          required: true
-        - description: " The user principal name, for example: foo@test.com. "
-          name: user_principal_name
-          required: true
-        - description: 'Optional properties for the user, for example: "displayName=name,mobilePhone=phone-num".'
-          name: other_properties
-      description: |-
-        Creates a new user.
-        Permissions: - User.ReadWrite.All (Delegated & Application).
-      name: msgraph-user-create
-      outputs:
-        - contextPath: MSGraphUser.ID
-          description: User's ID.
-          type: String
-        - contextPath: MSGraphUser.DisplayName
-          description: User's display name.
-          type: String
-        - contextPath: MSGraphUser.GivenName
-          description: User's given name.
-          type: String
-        - contextPath: MSGraphUser.BusinessPhones
-          description: User's business phone numbers.
-          type: String
-        - contextPath: MSGraphUser.JobTitle
-          description: User's job title.
-          type: String
-        - contextPath: MSGraphUser.Mail
-          description: User's mail address.
-          type: String
-        - contextPath: MSGraphUser.MobilePhone
-          description: User's mobile phone number.
-          type: String
-        - contextPath: MSGraphUser.OfficeLocation
-          description: User's office location.
-          type: String
-        - contextPath: MSGraphUser.PreferredLanguage
-          description: User's preferred language.
-          type: String
-        - contextPath: MSGraphUser.Surname
-          description: User's surname.
-          type: String
-        - contextPath: MSGraphUser.UserPrincipalName
-          description: User's principal name.
-          type: String
-        - contextPath: Account.ID
-          description: User’s ID.
-          type: String
-        - contextPath: Account.DisplayName
-          description: User’s display name.
-          type: String
-        - contextPath: Account.Username
-          description: User’s principal name.
-          type: String
-        - contextPath: Account.JobTitle
-          description: User’s job title.
-          type: String
-        - contextPath: Account.Email.Address
-          description: User’s mail address.
-          type: String
-        - contextPath: Account.TelephoneNumber
-          description: User’s mobile phone number.
-          type: String
-        - contextPath: Account.Office
-          description: User’s office location.
-          type: String
-        - contextPath: Account.Type
-          description: The account entity type.
-          type: String
-    - arguments:
-        - description: 'A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone".'
-          name: properties
-      deprecated: true
-      description: |-
-        Deprecated. This command only returns a single page. Use the msgraph-user-list command instead, which gets newly created, updated, or deleted users without performing a full read of the entire user collection.
-        Permissions: - User.Read (Delegated) - User.Read.All (Application).
-      name: msgraph-user-get-delta
-      outputs:
-        - contextPath: MSGraphUser.ID
-          description: User's ID.
-          type: String
-        - contextPath: MSGraphUser.DisplayName
-          description: User's display name.
-          type: String
-        - contextPath: MSGraphUser.GivenName
-          description: User's given name.
-          type: String
-        - contextPath: MSGraphUser.BusinessPhones
-          description: User's business phone numbers.
-          type: String
-        - contextPath: MSGraphUser.JobTitle
-          description: User's job title.
-          type: String
-        - contextPath: MSGraphUser.Mail
-          description: User's mail address.
-          type: String
-        - contextPath: MSGraphUser.MobilePhone
-          description: User's mobile phone.
-          type: String
-        - contextPath: MSGraphUser.OfficeLocation
-          description: User's office location.
-          type: String
-        - contextPath: MSGraphUser.PreferredLanguage
-          description: User's preferred language.
-          type: String
-        - contextPath: MSGraphUser.Surname
-          description: User's surname.
-          type: String
-        - contextPath: MSGraphUser.UserPrincipalName
-          description: User's principal name.
-          type: String
-    - arguments:
-        - description: User ID or userPrincipalName.
-          name: user
-          required: true
-        - description: 'A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone".'
-          name: properties
-      description: |-
-        Retrieves the properties and relationships of a user object. For more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).
-        Permissions: - User.Read (Delegated) - User.Read.All (Application).
-      name: msgraph-user-get
-      outputs:
-        - contextPath: MSGraphUser.ID
-          description: User's ID.
-          type: String
-        - contextPath: MSGraphUser.DisplayName
-          description: User's display name.
-          type: String
-        - contextPath: MSGraphUser.GivenName
-          description: User's given name.
-          type: String
-        - contextPath: MSGraphUser.BusinessPhones
-          description: User's business phone numbers.
-          type: String
-        - contextPath: MSGraphUser.JobTitle
-          description: User's job title.
-          type: String
-        - contextPath: MSGraphUser.Mail
-          description: User's mail address.
-          type: String
-        - contextPath: MSGraphUser.MobilePhone
-          description: User's mobile phone number.
-          type: String
-        - contextPath: MSGraphUser.OfficeLocation
-          description: User's office location.
-          type: String
-        - contextPath: MSGraphUser.PreferredLanguage
-          description: User's preferred language.
-          type: String
-        - contextPath: MSGraphUser.Surname
-          description: User's surname.
-          type: String
-        - contextPath: MSGraphUser.UserPrincipalName
-          description: User's principal name.
-          type: String
-        - contextPath: Account.ID
-          description: User’s ID.
-          type: String
-        - contextPath: Account.DisplayName
-          description: User’s display name.
-          type: String
-        - contextPath: Account.Username
-          description: User’s principal name.
-          type: String
-        - contextPath: Account.JobTitle
-          description: User’s job title.
-          type: String
-        - contextPath: Account.Email.Address
-          description: User’s mail address.
-          type: String
-        - contextPath: Account.TelephoneNumber
-          description: User’s mobile phone number.
-          type: String
-        - contextPath: Account.Office
-          description: User’s office location.
-          type: String
-        - contextPath: Account.Type
-          description: The account entity type.
-          type: String
-    - arguments:
-        - description: 'A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone".'
-          name: properties
-        - description: The URL for the next page in the list.
-          name: next_page
-        - description: "Filter to be plugged directly into the API. For more information about the Filter syntax, see the Microsoft documentation: https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http."
-          name: filter
-      description: |-
-        Retrieves the MFA methods for a user.
-        Permissions: - UserAuthenticationMethod.Read.All  (Delegated) - UserAuthenticationMethod.Read.All (Application).
-      name: msgraph-user-get-mfa-methods
-      outputs:
-        - contextPath: MSGraphUser.ID
-          description: User's ID.
-          type: String
-    - arguments:
-        - description: User ID or userPrincipalName.
-          name: user
-          required: true
-      description: |-
-        Retrieves a list of user objects.
-        Permissions: - User.ReadBasic.All (Delegated) - User.Read.All (Application).
-      name: msgraph-user-list
-      outputs:
-        - contextPath: MSGraphUser.ID
-          description: User's ID.
-          type: String
-        - contextPath: MSGraphUser.DisplayName
-          description: User's display name.
-          type: String
-        - contextPath: MSGraphUser.GivenName
-          description: User's given name.
-          type: String
-        - contextPath: MSGraphUser.BusinessPhones
-          description: User's business phone numbers.
-          type: String
-        - contextPath: MSGraphUser.JobTitle
-          description: User's job title.
-          type: String
-        - contextPath: MSGraphUser.Mail
-          description: User's mail address.
-          type: String
-        - contextPath: MSGraphUser.MobilePhone
-          description: User's mobile phone number.
-          type: String
-        - contextPath: MSGraphUser.OfficeLocation
-          description: User's office location.
-          type: String
-        - contextPath: MSGraphUser.PreferredLanguage
-          description: User's preferred language.
-          type: String
-        - contextPath: MSGraphUser.Surname
-          description: User's surname.
-          type: String
-        - contextPath: MSGraphUser.UserPrincipalName
-          description: User's principal name.
-          type: String
-        - contextPath: MSGraphUser.NextPage
-          description: A token to pass to the next list command to retrieve additional results.
-          type: String
-        - contextPath: Account.ID
-          description: User’s ID.
-          type: String
-        - contextPath: Account.DisplayName
-          description: User’s display name.
-          type: String
-        - contextPath: Account.Username
-          description: User’s principal name.
-          type: String
-        - contextPath: Account.JobTitle
-          description: User’s job title.
-          type: String
-        - contextPath: Account.Email.Address
-          description: User’s mail address.
-          type: String
-        - contextPath: Account.TelephoneNumber
-          description: User’s mobile phone number.
-          type: String
-        - contextPath: Account.Office
-          description: User’s office location.
-          type: String
-        - contextPath: Account.Type
-          description: The account entity type.
-          type: String
-    - arguments:
-        - description: The User ID or userPrincipalName of the user for which to retrieve direct reports.
-          name: user
-          required: true
-      description: Retrieves the direct reports for a user. Direct reports are the people who have that user configured as their manager.
-      name: msgraph-direct-reports
-      outputs:
-        - contextPath: MSGraphUserDirectReports.Manager
-          description: The manager's user principal name (UPN).
-          type: String
-        - contextPath: MSGraphUserDirectReports.Reports.@Odata.Type
-          description: A string value that can be used to classify user types in your directory, such as "Member" and "Guest".
-          type: String
-        - contextPath: MSGraphUserDirectReports.Reports.DisplayName
-          description: The name displayed in the address book for the user. This is usually the combination of the user's first name, middle initial and last name.
-          type: String
-        - contextPath: MSGraphUserDirectReports.Reports.GivenName
-          description: The given name (first name) of the user.
-          type: String
-        - contextPath: MSGraphUserDirectReports.Reports.ID
-          description: The user ID in Microsoft Graph User.
-          type: String
-        - contextPath: MSGraphUserDirectReports.Reports.JobTitle
-          description: The user's job title.
-          type: String
-        - contextPath: MSGraphUserDirectReports.Reports.Mail
-          description: The email address of the user.
-          type: String
-        - contextPath: MSGraphUserDirectReports.Reports.MobilePhone
-          description: The primary cellular telephone number for the user.
-          type: String
-        - contextPath: MSGraphUserDirectReports.Reports.OfficeLocation
-          description: The office location in the user's place of business.
-          type: String
-        - contextPath: MSGraphUserDirectReports.Reports.PreferredLanguage
-          description: "The preferred language for the user. Should follow ISO 639-1 Code; for example: en-US."
-          type: String
-        - contextPath: MSGraphUserDirectReports.Reports.Surname
-          description: The user's surname (family name or last name).
-          type: String
-        - contextPath: MSGraphUserDirectReports.Reports.UserPrincipalName
-          description: The user principal name (UPN) of the user. The UPN is an Internet-style login name for the user based on the Internet standard RFC 822. By convention, this should map to the user's email name. The general format is alias@domain, where domain must be present in the tenant’s collection of verified domains. This property is required when a user is created. The verified domains for the tenant can be accessed from the verifiedDomains property of organization.
-          type: String
-    - arguments:
-        - description: The User ID or userPrincipalName of the user for which to get the manager properties.
-          name: user
-          required: true
-      description: "Retrieves the properties from the manager of a user."
-      name: msgraph-user-get-manager
-      outputs:
-        - contextPath: MSGraphUserManager.ID
-          description: User's user ID.
-          type: String
-        - contextPath: MSGraphUserManager.Manager.ID
-          description: Manager's user ID.
-          type: String
-        - contextPath: MSGraphUserManager.Manager.DisplayName
-          description: User's display name.
-          type: String
-        - contextPath: MSGraphUserManager.Manager.GivenName
-          description: User's given name.
-          type: String
-        - contextPath: MSGraphUserManager.Manager.BusinessPhones
-          description: User's business phone numbers.
-          type: String
-        - contextPath: MSGraphUserManager.Manager.JobTitle
-          description: User's job title.
-          type: String
-        - contextPath: MSGraphUserManager.Manager.Mail
-          description: User's mail address.
-          type: String
-        - contextPath: MSGraphUserManager.Manager.MobilePhone
-          description: User's mobile phone number.
-          type: String
-        - contextPath: MSGraphUserManager.Manager.OfficeLocation
-          description: User's office location.
-          type: String
-        - contextPath: MSGraphUserManager.Manager.PreferredLanguage
-          description: User's preferred language.
-          type: String
-        - contextPath: MSGraphUserManager.Manager.Surname
-          description: User's surname.
-          type: String
-        - contextPath: MSGraphUserManager.Manager.UserPrincipalName
-          description: User's principal name.
-          type: String
-    - arguments:
-        - description: User ID or userPrincipalName of the user to which to assign a manager.
-          name: user
-          required: true
-        - description: User ID or userPrincipalName of the manager.
-          name: manager
-          required: true
-      description: |-
-        Assigns a manager to the specified user.
-        Permission: - User.ReadWrite (Delegated) or - User.ReadWrite (Application).
-      name: msgraph-user-assign-manager
-    - arguments:
-        - description: User ID or userPrincipalName to update password for.
-          name: user
-          required: true
-        - description: The new password.
-          name: password
-          required: true
-          secret: true
-        - auto: PREDEFINED
-          defaultValue: "true"
-          description: Whether the password will be changed on the next sign in.
-          name: force_change_password_next_sign_in
-          predefined:
-            - "true"
-            - "false"
-        - auto: PREDEFINED
-          defaultValue: "false"
-          description: Whether to change the password with MFA.
-          name: force_change_password_with_mfa
-          predefined:
-            - "true"
-            - "false"
-      description: |-
-        Changes the user password.
-        Supported only in a self deployed app flow with the Permission: Directory.AccessAsUser.All(Delegated).
-      execution: true
-      name: msgraph-user-change-password
-    - description: Tests connectivity to Microsoft Graph User.
-      name: msgraph-user-test
-    - arguments:
-        - description: User ID or userPrincipalName.
-          name: user
-          required: true
-      description: |-
-        Revoke a user session by invalidating all refresh tokens issued to applications for a user. 
-        This command requires an administrator role.
-        Permission required: Directory.AccessAsUser.All (Delegated).
-      name: msgraph-user-session-revoke
-    - description: Generate the login url used for Authorization code flow.
-      name: msgraph-user-generate-login-url
-      arguments: []
-    - description: Run this command if for some reason you need to rerun the authentication process.
-      name: msgraph-user-auth-reset
-      arguments: []
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    deprecated: true
+    description: |-
+      Deprecated. Use the msgraph-user-account-disable command instead.
+    name: msgraph-user-terminate-session
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    description: |-
+      Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
+      but does not terminate an existing session. Supported only in a self deployed app flow with the
+      Permission: Directory.AccessAsUser.All(Delegated).
+    name: msgraph-user-account-disable
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    description: Unblock a user.
+    name: msgraph-user-unblock
+  - arguments:
+    - description: User ID or userPrincipalName to update properties for.
+      name: user
+      required: true
+    - description: "User fields to update (in a key=value format. Example: displayName=John."
+      name: updated_fields
+      required: true
+    - description: "Delimiter to use for passing multiple fields to the 'updated_fields' argument. Example using ',' as a delimiter: displayName=John,givenName=John,surname=Doe."
+      defaultValue: ','
+      name: updated_fields_delimiter
+    description: |-
+      Updates the properties of a user object.
+      Permissions: - User.ReadWrite (Delegated & Application).
+    name: msgraph-user-update
+    outputs:
+    - contextPath: MSGraphUser.ID
+      description: User's ID.
+      type: String
+    - contextPath: MSGraphUser.DisplayName
+      description: User's display name.
+      type: String
+    - contextPath: MSGraphUser.GivenName
+      description: User's given name.
+      type: String
+    - contextPath: MSGraphUser.BusinessPhones
+      description: User's business phone numbers.
+      type: String
+    - contextPath: MSGraphUser.JobTitle
+      description: User's job title.
+      type: String
+    - contextPath: MSGraphUser.Mail
+      description: User's mail address.
+      type: String
+    - contextPath: MSGraphUser.MobilePhone
+      description: User's mobile phone number.
+      type: String
+    - contextPath: MSGraphUser.OfficeLocation
+      description: User's office location.
+      type: String
+    - contextPath: MSGraphUser.PreferredLanguage
+      description: User's preferred language.
+      type: String
+    - contextPath: MSGraphUser.Surname
+      description: User's surname.
+      type: String
+    - contextPath: MSGraphUser.UserPrincipalName
+      description: User's principal name.
+      type: String
+  - arguments:
+    - description: User ID or userPrincipalName to delete.
+      name: user
+      required: true
+    description: |-
+      Deletes an existing user.
+      Permissions: - Directory.AccessAsUser.All (Delegated) - User.ReadWrite.All (Application).
+    execution: true
+    name: msgraph-user-delete
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: true if the account is enabled; otherwise, false.
+      name: account_enabled
+      predefined:
+      - 'true'
+      - 'false'
+    - description: The name to display in the address book.
+      name: display_name
+      required: true
+    - description: Only needs to be specified when creating a new user account if you are using a federated domain for the user's userPrincipalName (UPN) property.
+      name: on_premises_immutable_id
+    - description: The mail alias for the user.
+      name: mail_nickname
+      required: true
+    - description: The password profile for the user.
+      name: password
+      required: true
+    - description: ' The user principal name, for example: foo@test.com. '
+      name: user_principal_name
+      required: true
+    - description: 'Optional properties for the user, for example: "displayName=name,mobilePhone=phone-num".'
+      name: other_properties
+    description: |-
+      Creates a new user.
+      Permissions: - User.ReadWrite.All (Delegated & Application).
+    name: msgraph-user-create
+    outputs:
+    - contextPath: MSGraphUser.ID
+      description: User's ID.
+      type: String
+    - contextPath: MSGraphUser.DisplayName
+      description: User's display name.
+      type: String
+    - contextPath: MSGraphUser.GivenName
+      description: User's given name.
+      type: String
+    - contextPath: MSGraphUser.BusinessPhones
+      description: User's business phone numbers.
+      type: String
+    - contextPath: MSGraphUser.JobTitle
+      description: User's job title.
+      type: String
+    - contextPath: MSGraphUser.Mail
+      description: User's mail address.
+      type: String
+    - contextPath: MSGraphUser.MobilePhone
+      description: User's mobile phone number.
+      type: String
+    - contextPath: MSGraphUser.OfficeLocation
+      description: User's office location.
+      type: String
+    - contextPath: MSGraphUser.PreferredLanguage
+      description: User's preferred language.
+      type: String
+    - contextPath: MSGraphUser.Surname
+      description: User's surname.
+      type: String
+    - contextPath: MSGraphUser.UserPrincipalName
+      description: User's principal name.
+      type: String
+    - contextPath: Account.ID
+      description: User’s ID.
+      type: String
+    - contextPath: Account.DisplayName
+      description: User’s display name.
+      type: String
+    - contextPath: Account.Username
+      description: User’s principal name.
+      type: String
+    - contextPath: Account.JobTitle
+      description: User’s job title.
+      type: String
+    - contextPath: Account.Email.Address
+      description: User’s mail address.
+      type: String
+    - contextPath: Account.TelephoneNumber
+      description: User’s mobile phone number.
+      type: String
+    - contextPath: Account.Office
+      description: User’s office location.
+      type: String
+    - contextPath: Account.Type
+      description: The account entity type.
+      type: String
+  - arguments:
+    - description: 'A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone".'
+      name: properties
+    deprecated: true
+    description: |-
+      Deprecated. This command only returns a single page. Use the msgraph-user-list command instead, which gets newly created, updated, or deleted users without performing a full read of the entire user collection.
+      Permissions: - User.Read (Delegated) - User.Read.All (Application).
+    name: msgraph-user-get-delta
+    outputs:
+    - contextPath: MSGraphUser.ID
+      description: User's ID.
+      type: String
+    - contextPath: MSGraphUser.DisplayName
+      description: User's display name.
+      type: String
+    - contextPath: MSGraphUser.GivenName
+      description: User's given name.
+      type: String
+    - contextPath: MSGraphUser.BusinessPhones
+      description: User's business phone numbers.
+      type: String
+    - contextPath: MSGraphUser.JobTitle
+      description: User's job title.
+      type: String
+    - contextPath: MSGraphUser.Mail
+      description: User's mail address.
+      type: String
+    - contextPath: MSGraphUser.MobilePhone
+      description: User's mobile phone.
+      type: String
+    - contextPath: MSGraphUser.OfficeLocation
+      description: User's office location.
+      type: String
+    - contextPath: MSGraphUser.PreferredLanguage
+      description: User's preferred language.
+      type: String
+    - contextPath: MSGraphUser.Surname
+      description: User's surname.
+      type: String
+    - contextPath: MSGraphUser.UserPrincipalName
+      description: User's principal name.
+      type: String
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    - description: 'A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone".'
+      name: properties
+    description: |-
+      Retrieves the properties and relationships of a user object. For more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).
+      Permissions: - User.Read (Delegated) - User.Read.All (Application).
+    name: msgraph-user-get
+    outputs:
+    - contextPath: MSGraphUser.ID
+      description: User's ID.
+      type: String
+    - contextPath: MSGraphUser.DisplayName
+      description: User's display name.
+      type: String
+    - contextPath: MSGraphUser.GivenName
+      description: User's given name.
+      type: String
+    - contextPath: MSGraphUser.BusinessPhones
+      description: User's business phone numbers.
+      type: String
+    - contextPath: MSGraphUser.JobTitle
+      description: User's job title.
+      type: String
+    - contextPath: MSGraphUser.Mail
+      description: User's mail address.
+      type: String
+    - contextPath: MSGraphUser.MobilePhone
+      description: User's mobile phone number.
+      type: String
+    - contextPath: MSGraphUser.OfficeLocation
+      description: User's office location.
+      type: String
+    - contextPath: MSGraphUser.PreferredLanguage
+      description: User's preferred language.
+      type: String
+    - contextPath: MSGraphUser.Surname
+      description: User's surname.
+      type: String
+    - contextPath: MSGraphUser.UserPrincipalName
+      description: User's principal name.
+      type: String
+    - contextPath: Account.ID
+      description: User’s ID.
+      type: String
+    - contextPath: Account.DisplayName
+      description: User’s display name.
+      type: String
+    - contextPath: Account.Username
+      description: User’s principal name.
+      type: String
+    - contextPath: Account.JobTitle
+      description: User’s job title.
+      type: String
+    - contextPath: Account.Email.Address
+      description: User’s mail address.
+      type: String
+    - contextPath: Account.TelephoneNumber
+      description: User’s mobile phone number.
+      type: String
+    - contextPath: Account.Office
+      description: User’s office location.
+      type: String
+    - contextPath: Account.Type
+      description: The account entity type.
+      type: String
+  - arguments:
+    - description: 'A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone".'
+      name: properties
+    - description: The URL for the next page in the list.
+      name: next_page
+    - description: 'Filter to be plugged directly into the API. For more information about the Filter syntax, see the Microsoft documentation: https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http.'
+      name: filter
+    description: |-
+      Retrieves a list of user objects.
+      Permissions: - User.ReadBasic.All (Delegated) - User.Read.All (Application).
+    name: msgraph-user-list
+    outputs:
+    - contextPath: MSGraphUser.ID
+      description: User's ID.
+      type: String
+    - contextPath: MSGraphUser.DisplayName
+      description: User's display name.
+      type: String
+    - contextPath: MSGraphUser.GivenName
+      description: User's given name.
+      type: String
+    - contextPath: MSGraphUser.BusinessPhones
+      description: User's business phone numbers.
+      type: String
+    - contextPath: MSGraphUser.JobTitle
+      description: User's job title.
+      type: String
+    - contextPath: MSGraphUser.Mail
+      description: User's mail address.
+      type: String
+    - contextPath: MSGraphUser.MobilePhone
+      description: User's mobile phone number.
+      type: String
+    - contextPath: MSGraphUser.OfficeLocation
+      description: User's office location.
+      type: String
+    - contextPath: MSGraphUser.PreferredLanguage
+      description: User's preferred language.
+      type: String
+    - contextPath: MSGraphUser.Surname
+      description: User's surname.
+      type: String
+    - contextPath: MSGraphUser.UserPrincipalName
+      description: User's principal name.
+      type: String
+    - contextPath: MSGraphUser.NextPage
+      description: A token to pass to the next list command to retrieve additional results.
+      type: String
+    - contextPath: Account.ID
+      description: User’s ID.
+      type: String
+    - contextPath: Account.DisplayName
+      description: User’s display name.
+      type: String
+    - contextPath: Account.Username
+      description: User’s principal name.
+      type: String
+    - contextPath: Account.JobTitle
+      description: User’s job title.
+      type: String
+    - contextPath: Account.Email.Address
+      description: User’s mail address.
+      type: String
+    - contextPath: Account.TelephoneNumber
+      description: User’s mobile phone number.
+      type: String
+    - contextPath: Account.Office
+      description: User’s office location.
+      type: String
+    - contextPath: Account.Type
+      description: The account entity type.
+      type: String
+  - arguments:
+    - description: The User ID or userPrincipalName of the user for which to retrieve direct reports.
+      name: user
+      required: true
+    description: Retrieves the direct reports for a user. Direct reports are the people who have that user configured as their manager.
+    name: msgraph-direct-reports
+    outputs:
+    - contextPath: MSGraphUserDirectReports.Manager
+      description: The manager's user principal name (UPN).
+      type: String
+    - contextPath: MSGraphUserDirectReports.Reports.@Odata.Type
+      description: A string value that can be used to classify user types in your directory, such as "Member" and "Guest".
+      type: String
+    - contextPath: MSGraphUserDirectReports.Reports.DisplayName
+      description: The name displayed in the address book for the user. This is usually the combination of the user's first name, middle initial and last name.
+      type: String
+    - contextPath: MSGraphUserDirectReports.Reports.GivenName
+      description: The given name (first name) of the user.
+      type: String
+    - contextPath: MSGraphUserDirectReports.Reports.ID
+      description: The user ID in Microsoft Graph User.
+      type: String
+    - contextPath: MSGraphUserDirectReports.Reports.JobTitle
+      description: The user's job title.
+      type: String
+    - contextPath: MSGraphUserDirectReports.Reports.Mail
+      description: The email address of the user.
+      type: String
+    - contextPath: MSGraphUserDirectReports.Reports.MobilePhone
+      description: The primary cellular telephone number for the user.
+      type: String
+    - contextPath: MSGraphUserDirectReports.Reports.OfficeLocation
+      description: The office location in the user's place of business.
+      type: String
+    - contextPath: MSGraphUserDirectReports.Reports.PreferredLanguage
+      description: 'The preferred language for the user. Should follow ISO 639-1 Code; for example: en-US.'
+      type: String
+    - contextPath: MSGraphUserDirectReports.Reports.Surname
+      description: The user's surname (family name or last name).
+      type: String
+    - contextPath: MSGraphUserDirectReports.Reports.UserPrincipalName
+      description: The user principal name (UPN) of the user. The UPN is an Internet-style login name for the user based on the Internet standard RFC 822. By convention, this should map to the user's email name. The general format is alias@domain, where domain must be present in the tenant’s collection of verified domains. This property is required when a user is created. The verified domains for the tenant can be accessed from the verifiedDomains property of organization.
+      type: String
+  - arguments:
+    - description: The User ID or userPrincipalName of the user for which to get the manager properties.
+      name: user
+      required: true
+    description: "Retrieves the properties from the manager of a user."
+    name: msgraph-user-get-manager
+    outputs:
+    - contextPath: MSGraphUserManager.ID
+      description: User's user ID.
+      type: String
+    - contextPath: MSGraphUserManager.Manager.ID
+      description: Manager's user ID.
+      type: String
+    - contextPath: MSGraphUserManager.Manager.DisplayName
+      description: User's display name.
+      type: String
+    - contextPath: MSGraphUserManager.Manager.GivenName
+      description: User's given name.
+      type: String
+    - contextPath: MSGraphUserManager.Manager.BusinessPhones
+      description: User's business phone numbers.
+      type: String
+    - contextPath: MSGraphUserManager.Manager.JobTitle
+      description: User's job title.
+      type: String
+    - contextPath: MSGraphUserManager.Manager.Mail
+      description: User's mail address.
+      type: String
+    - contextPath: MSGraphUserManager.Manager.MobilePhone
+      description: User's mobile phone number.
+      type: String
+    - contextPath: MSGraphUserManager.Manager.OfficeLocation
+      description: User's office location.
+      type: String
+    - contextPath: MSGraphUserManager.Manager.PreferredLanguage
+      description: User's preferred language.
+      type: String
+    - contextPath: MSGraphUserManager.Manager.Surname
+      description: User's surname.
+      type: String
+    - contextPath: MSGraphUserManager.Manager.UserPrincipalName
+      description: User's principal name.
+      type: String
+  - arguments:
+    - description: User ID or userPrincipalName of the user to which to assign a manager.
+      name: user
+      required: true
+    - description: User ID or userPrincipalName of the manager.
+      name: manager
+      required: true
+    description: |-
+      Assigns a manager to the specified user.
+      Permission: - User.ReadWrite (Delegated) or - User.ReadWrite (Application).
+    name: msgraph-user-assign-manager
+  - arguments:
+    - description: User ID or userPrincipalName to update password for.
+      name: user
+      required: true
+    - description: The new password.
+      name: password
+      required: true
+      secret: true
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Whether the password will be changed on the next sign in.
+      name: force_change_password_next_sign_in
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to change the password with MFA.
+      name: force_change_password_with_mfa
+      predefined:
+      - 'true'
+      - 'false'
+    description: |-
+      Changes the user password.
+      Supported only in a self deployed app flow with the Permission: Directory.AccessAsUser.All(Delegated).
+    execution: true
+    name: msgraph-user-change-password
+  - description: Tests connectivity to Microsoft Graph User.
+    name: msgraph-user-test
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    description: |-
+      Revoke a user session by invalidating all refresh tokens issued to applications for a user. 
+      This command requires an administrator role.
+      Permission required: Directory.AccessAsUser.All (Delegated).
+    name: msgraph-user-session-revoke
+  - description: Generate the login url used for Authorization code flow.
+    name: msgraph-user-generate-login-url
+    arguments: []
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    name: msgraph-user-auth-reset
+    arguments: []
   dockerimage: demisto/crypto:1.0.0.2005673
   runonce: false
-  script: "-"
+  script: '-'
   subtype: python3
   type: python
 tests:
-  - Microsoft Graph User - Test
+- Microsoft Graph User - Test
 fromversion: 5.0.0
