@@ -177,7 +177,7 @@ class ModuleManager:
 
 def check_conditions_cb_edr_quarantine_device(module_manager, verbose, pre_command, outputs, human_readable_outputs, args, endpoint_data) -> bool:
     if not check_validation_for_running_command(module_manager, verbose, pre_command, outputs, human_readable_outputs, args):
-        #insert an error
+        # insert an error
         return False
     # check another conditions for the endpoint_data - if false - insert an error and return False
     return True
@@ -185,29 +185,33 @@ def check_conditions_cb_edr_quarantine_device(module_manager, verbose, pre_comma
 
 def check_conditions_cybereason_isolate_machine(module_manager, verbose, pre_command, outputs, human_readable_outputs, args, endpoint_data):
     if not check_validation_for_running_command(module_manager, verbose, pre_command, outputs, human_readable_outputs, args):
-        #insert an error
+        # insert an error
         return False
+    # check the endpoint_data
     return True
 
 
 def check_conditions_fireeye_hx_host_containment(module_manager, verbose, pre_command, outputs, human_readable_outputs, args, endpoint_data) -> bool:
     if not check_validation_for_running_command(module_manager, verbose, pre_command, outputs, human_readable_outputs, args):
-        #insert an error
+        # insert an error
         return False
+    # check the endpoint_data
     return True
 
 
 def check_conditions_cs_falcon_contain_host(module_manager, verbose, pre_command, outputs, human_readable_outputs, args, endpoint_data) -> bool:
     if not check_validation_for_running_command(module_manager, verbose, pre_command, outputs, human_readable_outputs, args):
-        #insert an error
+        # insert an error
         return False
+    # check the endpoint_data
     return True
 
 
 def check_conditions_microsoft_atp_isolate_machine(module_manager, verbose, pre_command, outputs, human_readable_outputs, args, endpoint_data) -> bool:
     if not check_validation_for_running_command(module_manager, verbose, pre_command, outputs, human_readable_outputs, args):
-        #insert an error
+        # insert an error
         return False
+    # check the endpoint_data
     return True
 
 
@@ -219,7 +223,7 @@ def check_validation_for_running_command(module_manager, verbose, command, outpu
         create_message_to_context_and_hr(endpoint_data=args,
                                          result='Fail',
                                          brand=command.brand,
-                                         message='Brand is not available.',
+                                         message=f'{command.brand} integration is available.',
                                          outputs=outputs,
                                          human_readable_outputs=human_readable_outputs,
                                          verbose=verbose)
@@ -238,7 +242,7 @@ def check_validation_for_running_command(module_manager, verbose, command, outpu
 
 
 def check_endpoint_data_results(endpoint_data: dict, force: bool, server_os: list) -> bool:
-    server = endpoint_data.get('os_environment_display_string', {}).get('Value')
+    server = endpoint_data.get('OSVersion', {}).get('Value')
     is_isolated = endpoint_data.get('is_isolating', {}).get('Value')
     server_status = endpoint_data.get('Status', {}).get('Value')
 
@@ -305,85 +309,94 @@ def do_args_exist_in_valid(zipped_args, valid_args):
 def main():
     # results = execute_command('cb-edr-sensors-list', {})
     # demisto.debug(f'these are the results from executeCommandBatch {results}')
-    # get_endpoint_data_results = execute_command(command="get-endpoint-data",
-    # args={'agent_hostname': 'WIN-SOSSKVTTQAB,justesting'})
-    # demisto.debug(f'these are the results from get_endpoint_data_results execute_command {get_endpoint_data_results}')
+    get_endpoint_data_results = execute_command(command="get-endpoint-data", args={'agent_hostname': 'DC1ENV11ADC01,'
+                                                                                                     'DC1ENV11ADC02'})
+    demisto.debug(f'these are the results from get_endpoint_data_results execute_command {get_endpoint_data_results}')
     # get_endpoint_data_results = demisto.executeCommand(command="get-endpoint-data",
     # args={'agent_hostname': 'WIN-SOSSKVTTQAB,justesting'})
     # demisto.debug(f'these are the results from get_endpoint_data_results demisto.executeCommand {get_endpoint_data_results}')
-    crowstrike = execute_command(command="cs-falcon-search-device",
-                                 args={'ids': '8ed44198a6f64f9fabd0479c3098f303'})
-    demisto.debug(f'these are the results from crowstrike execute_command {crowstrike}')
+    # crowstrike = execute_command(command="cs-falcon-search-device",
+    #                              args={'ids': '8ed44198a6f64f9fabd0479c3098f303'})
+    # demisto.debug(f'these are the results from crowstrike execute_command {crowstrike}')
 
-    try:
-        args = demisto.args()
-        agent_ids = argToList(args.get("agent_id", []))
-        agent_ips = argToList(args.get("agent_ip", []))
-        agent_hostnames = argToList(args.get("agent_hostname", []))
-        force = argToBoolean(args.get("force", False))
-        verbose = argToBoolean(args.get("verbose", False))
-        brands_to_run = argToList(args.get('brands', []))
-        server_os = argToList(args.get('server_os', []))
-
-        command_manager = CommandsManager()
-        module_manager = ModuleManager(brands_to_run)
-
-        zipped_args = map_zipped_args(agent_ids, agent_ips, agent_hostnames)
-
-        get_endpoint_data_results = execute_command(command="get-endpoint-data", args=args)
-        if not isinstance(get_endpoint_data_results, list):
-            get_endpoint_data_results = [get_endpoint_data_results]
-
-        outputs = []
-        human_readable_outputs = []
-        args_returned_in_get_endpoint_data_results = []
-        for endpoint_data in get_endpoint_data_results:
-            agent_hostname = endpoint_data.get('Hostname', {}).get('Value')
-            agent_id = endpoint_data.get('ID', {}).get('Value')
-            agent_ip = endpoint_data.get('IPAddress', {}).get('Value')  # Maybe network_adapters?
-            args = {'agent_id': agent_id, 'agent_hostname': agent_hostname, 'agent_ip': agent_ip}
-
-            if not check_endpoint_data_results(endpoint_data, force, server_os):
-                create_message_to_context_and_hr(endpoint_data=args,
-                                                 result='Fail',
-                                                 brand='GetEndpointData',
-                                                 message='Failed to execute GetEndpointData script.',
-                                                 outputs=outputs,
-                                                 human_readable_outputs=human_readable_outputs,
-                                                 verbose=verbose)
-                continue
-
-            for command in command_manager.commands:
-                pre_command = command_manager.get_pre_command(command.pre_command_name)
-                if not command.pre_command_check(module_manager, verbose, pre_command, outputs, human_readable_outputs, args, endpoint_data):
-                    continue
-                if not check_validation_for_running_command(module_manager, verbose, command, outputs, human_readable_outputs, args):
-                    continue
-                mapped_args = map_args(command.args_mapping, args)
-                raw_response = execute_command(command.name, mapped_args)
-                if not raw_response:
-                    create_message_to_context_and_hr(endpoint_data=args,
-                                                     result='Fail',
-                                                     brand=command.brand,
-                                                     message=f'Failed to execute command {command.name}.',
-                                                     outputs=outputs,
-                                                     human_readable_outputs=human_readable_outputs,
-                                                     verbose=verbose)
-                    continue
-                else:
-                    create_message_to_context_and_hr(endpoint_data=args,
-                                                     result='Success',
-                                                     brand=command.brand,
-                                                     message=f'Command {command.name} was executed successfully.',
-                                                     outputs=outputs,
-                                                     human_readable_outputs=human_readable_outputs,
-                                                     verbose=verbose)
-
-
-        # TODO to check which (id, ip, hostname) don't appear in get_endpoint_data results
-
-    except Exception as e:
-        return_error(f"Failed to execute isolate-endpoint. Error: {str(e)}")
+    # try:
+    #     args = demisto.args()
+    #     agent_ids = argToList(args.get("agent_id", []))
+    #     agent_ips = argToList(args.get("agent_ip", []))
+    #     agent_hostnames = argToList(args.get("agent_hostname", []))
+    #     force = argToBoolean(args.get("force", False))
+    #     verbose = argToBoolean(args.get("verbose", False))
+    #     brands_to_run = argToList(args.get('brands', []))
+    #     server_os = argToList(args.get('server_os', []))
+    #
+    #     command_manager = CommandsManager()
+    #     module_manager = ModuleManager(brands_to_run)
+    #
+    #     zipped_args = map_zipped_args(agent_ids, agent_ips, agent_hostnames)
+    #
+    #     get_endpoint_data_results = execute_command(command="get-endpoint-data", args=args)
+    #     if not isinstance(get_endpoint_data_results, list):
+    #         get_endpoint_data_results = [get_endpoint_data_results]
+    #
+    #     outputs = []
+    #     human_readable_outputs = []
+    #     args_from_endpoint_data = []
+    #     for endpoint_data in get_endpoint_data_results:
+    #         agent_hostname = endpoint_data.get('Hostname', {}).get('Value', '')
+    #         agent_id = endpoint_data.get('ID', {}).get('Value', '')
+    #         agent_ip = endpoint_data.get('IPAddress', {}).get('Value', '')
+    #         args = {'agent_id': agent_id, 'agent_hostname': agent_hostname, 'agent_ip': agent_ip}
+    #         args_from_endpoint_data.append(args)
+    #
+    #         if not check_endpoint_data_results(endpoint_data, force, server_os):
+    #             create_message_to_context_and_hr(endpoint_data=args,
+    #                                              result='Fail',
+    #                                              brand='IsolateEndpoint',
+    #                                              message='Failed to execute IsolateEndpoint script:'
+    #                                                      ' Endpoint does not meet the required conditions.',
+    #                                              outputs=outputs,
+    #                                              human_readable_outputs=human_readable_outputs,
+    #                                              verbose=verbose)
+    #             continue
+    #
+    #         for command in command_manager.commands:
+    #             pre_command = command_manager.get_pre_command(command.pre_command_name)
+    #             if pre_command and not command.pre_command_check(module_manager, verbose, pre_command, outputs, human_readable_outputs, args, endpoint_data):
+    #                 continue
+    #             if not check_validation_for_running_command(module_manager, verbose, command, outputs, human_readable_outputs, args):
+    #                 continue
+    #             mapped_args = map_args(command.args_mapping, args)
+    #             raw_response = execute_command(command.name, mapped_args)
+    #             if not raw_response:
+    #                 create_message_to_context_and_hr(endpoint_data=args,
+    #                                                  result='Fail',
+    #                                                  brand=command.brand,
+    #                                                  message=f'Failed to execute command {command.name}.',
+    #                                                  outputs=outputs,
+    #                                                  human_readable_outputs=human_readable_outputs,
+    #                                                  verbose=verbose)
+    #                 continue
+    #             else:
+    #                 create_message_to_context_and_hr(endpoint_data=args,
+    #                                                  result='Success',
+    #                                                  brand=command.brand,
+    #                                                  message=f'Command {command.name} was executed successfully.',
+    #                                                  outputs=outputs,
+    #                                                  human_readable_outputs=human_readable_outputs,
+    #                                                  verbose=verbose)
+    #
+    #     for args in zipped_args:
+    #         if not do_args_exist_in_valid(args, args_from_endpoint_data):
+    #             create_message_to_context_and_hr(endpoint_data=args,
+    #                                              result='Fail',
+    #                                              brand='GetEndpointData',
+    #                                              message=f'Failed to execute GetEndpointData script for {args}.',
+    #                                              outputs=outputs,
+    #                                              human_readable_outputs=human_readable_outputs,
+    #                                              verbose=verbose)
+    #
+    # except Exception as e:
+    #     return_error(f"Failed to execute isolate-endpoint. Error: {str(e)}")
 
 
 """ ENTRY POINT """
