@@ -435,7 +435,7 @@ Create a new comment on a report.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| discussion_id | The discussion_id is made of report id and tenant id like uuid:uuid. Example: 3500bb64-6081-4cf5-8e6f-dca82dab4982:[your-tenant-id]. | Required | 
+| discussion_id | The discussion_id is made of report id and tenant id like uuid:uuid. Example: [report_id]:[your-tenant-id]. | Required | 
 | content | The content of the comment. | Required | 
 | parent_id | The ID of the parent comment (for replies). | Optional | 
 | assigned | Specifies if the comment is assigned to analysts (true/false). | Optional | 
