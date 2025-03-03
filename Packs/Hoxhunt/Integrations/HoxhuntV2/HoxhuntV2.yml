@@ -1,3 +1,6 @@
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Hoxhunt v2
   version: -1
@@ -232,6 +235,3 @@ tests:
 defaultclassifier: Hoxhunt-classifier
 defaultmapperin: Hoxhunt-mapper-incoming
 defaultmapperout: Hoxhunt-mapper-outgoing
-sectionOrder:
-- Connect
-- Collect
