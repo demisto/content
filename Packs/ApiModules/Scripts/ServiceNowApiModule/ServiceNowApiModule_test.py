@@ -1,5 +1,6 @@
 from ServiceNowApiModule import *
 import demistomock as demisto
+import pytest
 
 PARAMS = {
     'insecure': False,
@@ -113,6 +114,7 @@ def test_get_jwt_access_token(mocker):
     }
 
     from requests.models import Response
+    import jwt
     new_token_response = Response()
     new_token_response._content = b'{"access_token": "new_token", "expires_in": 1}'
     new_token_response.status_code = 200
