@@ -246,7 +246,7 @@ script:
     - contextPath: Druva.Resource.resourceType
       description: The type of the Resource.
     description: Finds shared drives resources specific to share drive name
-  dockerimage: demisto/python3:3.11.10.116439
+  dockerimage: demisto/python3:3.12.8.1983910
   runonce: false
   subtype: python3
   longRunningPort: true

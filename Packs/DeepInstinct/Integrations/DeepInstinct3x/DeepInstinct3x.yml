@@ -470,7 +470,7 @@ script:
       required: true
     description: Remove agent from device at next check-in.
     name: deepinstinctv3-remove-device
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   script: '-'
   type: python

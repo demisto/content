@@ -361,7 +361,7 @@ script:
     - contextPath: KasperskySecurityCenter.Policy.KLPOL_ID
       description: Policy ID.
       type: Number
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   runonce: false
   script: '-'
   subtype: python3

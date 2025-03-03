@@ -6,7 +6,7 @@ comment: The script will enumerate any provided role names and output the list o
 commonfields:
   id: EnumerateRoles
   version: -1
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.8.1983910
 enabled: true
 name: EnumerateRoles
 outputs:

@@ -343,7 +343,7 @@ script:
     - contextPath: MicroFocus.SMAX.Entities.properties.completion_status
       description: Query result status.
       type: String
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   runonce: false
   script: '-'

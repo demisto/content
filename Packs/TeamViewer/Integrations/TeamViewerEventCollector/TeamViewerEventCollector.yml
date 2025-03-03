@@ -56,7 +56,7 @@ script:
       name: limit
     description: Gets events from TeamViewer.
     name: teamviewer-get-events
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetchevents: true
   script: '-'
   subtype: python3

@@ -17,7 +17,7 @@ args:
   defaultValue: '100'
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.11.10.116439
+dockerimage: demisto/python3:3.12.8.1983910
 runas: DBotWeakRole
 comment: The widget returns the number of the connected endpoints using xdr-get-endpoints command.
 fromversion: 6.0.0

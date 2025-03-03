@@ -2,7 +2,7 @@ comment: Health Check dynamic section, showing the top ten categories of the fai
 commonfields:
   id: InstancesCheck-FailedCategories
   version: -1
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.8.1983910
 enabled: true
 name: InstancesCheck-FailedCategories
 runas: DBotWeakRole

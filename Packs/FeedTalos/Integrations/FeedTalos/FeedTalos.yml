@@ -99,7 +99,7 @@ script:
       description: The maximum number of results to return. The default value is 10.
       defaultValue: '10'
     description: Gets indicators from the feed.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   feed: true
   subtype: python3
 fromversion: 5.5.0

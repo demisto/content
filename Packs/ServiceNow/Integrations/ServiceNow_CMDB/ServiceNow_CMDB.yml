@@ -255,7 +255,7 @@ script:
     name: servicenow-cmdb-oauth-login
   - description: Test the instance configuration when using OAuth authorization.
     name: servicenow-cmdb-oauth-test
-  dockerimage: demisto/python3:3.11.10.113941
+  dockerimage: demisto/python3:3.12.8.1983910
   runonce: false
   script: '-'
   subtype: python3

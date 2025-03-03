@@ -56,7 +56,7 @@ script:
       required: true
       description: The severity level helps in extracting latest incident of a specific severity.
     description: Fetch a single incident of your choice of severity level to study the incidents structure before you start continously fecthing incidents.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   subtype: python3
 fromversion: 5.0.0

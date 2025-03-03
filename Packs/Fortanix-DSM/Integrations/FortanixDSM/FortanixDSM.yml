@@ -199,7 +199,7 @@ script:
     - contextPath: Fortanix.Data.Plain
       description: Decryption output
     description: Reveal data using key configured in Fortanix DSM
-  dockerimage: demisto/python3:3.11.10.116439
+  dockerimage: demisto/python3:3.12.8.1983910
   runonce: true
   subtype: python3
 tests:

@@ -114,7 +114,7 @@ script:
     name: mongodb-get-keys-number
   - description: Lists all incidents in the collection.
     name: mongodb-list-incidents
-  dockerimage: demisto/py3-tools:1.0.0.114656
+  dockerimage: demisto/py3-tools:1.0.0.2072021
   runonce: false
   script: '-'
   type: python

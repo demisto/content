@@ -5447,7 +5447,7 @@ script:
     - contextPath: Linux.GetUrl.url
       description: the actual URL used for the request
       type: string
-  dockerimage: demisto/ansible-runner:1.0.0.2024530
+  dockerimage: demisto/ansible-runner:1.0.0.2084661
   script: ''
   subtype: python3
   type: python

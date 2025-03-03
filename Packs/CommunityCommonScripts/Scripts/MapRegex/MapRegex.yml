@@ -8,7 +8,7 @@ comment: "This transformer will take in a value and transform it based on multip
 commonfields:
   id: MapRegex
   version: -1
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.8.1983910
 enabled: true
 name: MapRegex
 runas: DBotWeakRole

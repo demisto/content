@@ -1445,7 +1445,7 @@ script:
   - name: get-modified-remote-data
     arguments: []
     description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available from version 6.1.
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   subtype: python3
   ismappable: true

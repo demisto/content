@@ -271,7 +271,7 @@ script:
       name: expires
     description: Reports a malicious email address to EmailRepIO.  You tag the type of malicious activity associated with the email address. The date of the malicious activity defaults to the current time unless otherwise specified.
     name: emailrepio-email-address-report
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   runonce: false
   script: '-'
   subtype: python3

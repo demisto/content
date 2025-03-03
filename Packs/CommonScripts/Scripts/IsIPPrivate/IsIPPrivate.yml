@@ -32,7 +32,7 @@ outputs:
   description: Any tags that were added to the indicator. The tags are added by this script if they were specified for the IP or IP range in the Cortex XSOAR list.
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.11.10.113941
+dockerimage: demisto/python3:3.12.8.1983910
 runas: DBotWeakRole
 fromversion: 6.5.0
 marketplaces:

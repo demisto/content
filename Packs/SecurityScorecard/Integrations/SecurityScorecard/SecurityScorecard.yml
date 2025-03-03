@@ -76,7 +76,7 @@ script:
   subtype: python3
   isFetchSamples: true
   isfetch: true
-  dockerimage: demisto/python3:3.11.11.1940698
+  dockerimage: demisto/python3:3.12.8.1983910
   commands:
   - name: securityscorecard-portfolios-list
     description: List all Portfolios.

@@ -10,7 +10,7 @@ comment: Present or parse Disk usage stats.
 commonfields:
   id: HealthCheckDiskUsage
   version: -1
-dockerimage: demisto/python3:3.11.10.111526
+dockerimage: demisto/python3:3.12.8.1983910
 enabled: true
 name: HealthCheckDiskUsage
 runas: DBotWeakRole

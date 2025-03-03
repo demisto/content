@@ -866,7 +866,7 @@ script:
       description: If this domain is expired.
       type: boolean
     description: Return domain whois information.
-  dockerimage: demisto/python3:3.11.10.111526
+  dockerimage: demisto/python3:3.12.8.1983910
   runonce: false
   subtype: python3
 fromversion: 5.0.0

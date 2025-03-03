@@ -932,7 +932,7 @@ script:
     - contextPath: CyberArkPAS.SecurityEvents.type
       description: The type of the security events.
       type: String
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   runonce: false
   script: '-'

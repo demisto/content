@@ -198,7 +198,7 @@ script:
       description: Description.
       type: String
     description: Gets indicators from the feed.
-  dockerimage: demisto/python3:3.11.11.1940698
+  dockerimage: demisto/python3:3.12.8.1983910
   feed: true
   subtype: python3
 tests:

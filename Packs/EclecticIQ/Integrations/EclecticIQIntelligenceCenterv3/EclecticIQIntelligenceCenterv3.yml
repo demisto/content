@@ -765,7 +765,7 @@ script:
   - arguments: []
     name: eclecticiq-get-indicators
     description: Get last block of Indicators from configured to fetch Outgoing feed.
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.1983910
   feed: true
   isFetchSamples: true
   runonce: false

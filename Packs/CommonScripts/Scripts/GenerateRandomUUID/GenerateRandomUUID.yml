@@ -12,5 +12,5 @@ script: ''
 subtype: python3
 tags: []
 type: python
-dockerimage: demisto/python3:3.11.10.113941
+dockerimage: demisto/python3:3.12.8.1983910
 fromversion: 5.0.0

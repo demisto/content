@@ -2,7 +2,7 @@ comment: This widget displays the incident verdict based on the 'Verdict' field.
 commonfields:
   id: CortexXDRInvestigationVerdict
   version: -1
-dockerimage: demisto/python3:3.11.10.116439
+dockerimage: demisto/python3:3.12.8.1983910
 enabled: true
 engineinfo: {}
 name: CortexXDRInvestigationVerdict

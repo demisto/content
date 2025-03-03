@@ -133,7 +133,7 @@ script:
       description: Query string to search.
     description: Perform a general search against incidents, threats closed sources, etc.
     name: ds-search
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   runonce: false
   script: ''

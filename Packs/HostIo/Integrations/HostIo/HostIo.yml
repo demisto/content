@@ -143,7 +143,7 @@ script:
       description: Name of the server where the domain exists.
       type: String
     description: Returns domain information.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   subtype: python3
 fromversion: 5.0.0
 tests:

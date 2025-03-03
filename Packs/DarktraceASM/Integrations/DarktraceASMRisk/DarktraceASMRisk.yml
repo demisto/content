@@ -295,7 +295,7 @@ script:
       description: All tags assigned to asset.
     description: Unassign an existing tag to a Darktrace ASM Asset within the Darktrace
       UI.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   runonce: false
   subtype: python3

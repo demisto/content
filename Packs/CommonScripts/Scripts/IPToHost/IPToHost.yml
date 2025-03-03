@@ -24,6 +24,6 @@ outputs:
   type: string
 scripttarget: 0
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.11.11.1940698
+dockerimage: demisto/python3:3.12.8.1983910
 tests:
 - IPToHost - Test

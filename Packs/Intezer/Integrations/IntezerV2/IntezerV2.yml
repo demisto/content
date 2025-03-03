@@ -594,7 +594,7 @@ script:
     - contextPath: Endpoint.Metadata
       description: Metadata returned from Intezer analysis (endpoint analysis id, endpoint analysis url, families,  verdict, host_name).
       type: Unknown
-  dockerimage: demisto/py3-tools:1.0.0.114656
+  dockerimage: demisto/py3-tools:1.0.0.2072021
   runonce: false
   script: '-'
   type: python

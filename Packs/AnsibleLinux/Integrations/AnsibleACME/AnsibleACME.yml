@@ -468,7 +468,7 @@ script:
     - contextPath: ACME.AcmeInspect.output_json
       description: The output parsed as JSON
       type: unknown
-  dockerimage: demisto/ansible-runner:1.0.0.2024530
+  dockerimage: demisto/ansible-runner:1.0.0.2084661
   script: ''
   subtype: python3
   type: python

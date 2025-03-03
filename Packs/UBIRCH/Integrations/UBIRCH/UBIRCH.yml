@@ -42,7 +42,7 @@ script:
   commands:
   - description: Create a list of sample incidents.
     name: create-sample-incidents
-  dockerimage: demisto/py3-tools:1.0.0.114656
+  dockerimage: demisto/py3-tools:1.0.0.2072021
   longRunning: true
   runonce: false
   script: '-'

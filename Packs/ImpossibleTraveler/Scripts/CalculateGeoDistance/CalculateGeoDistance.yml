@@ -22,7 +22,7 @@ outputs:
 - contextPath: Geo.Coordinates
   description: List of coordinates used in the calculation.
 scripttarget: 0
-dockerimage: demisto/py3-tools:1.0.0.114656
+dockerimage: demisto/py3-tools:1.0.0.2072021
 runas: DBotWeakRole
 tests:
 - Impossible Traveler - Test
