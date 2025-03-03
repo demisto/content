@@ -56,6 +56,7 @@ script:
   longRunning: true
 marketplaces:
 - marketplacev2
+- platform
 fromversion: 6.9.0
 tests:
 - No tests
