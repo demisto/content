@@ -22,3 +22,4 @@
        xdm.event.outcome = if(action = "accept" or action = "continue", XDM_CONST.OUTCOME_SUCCESS, action = "reject" or action = "discard", XDM_CONST.OUTCOME_FAILED, to_string(action)),
        xdm.event.operation_sub_type = parsed_fields -> cmd,
        xdm.email.recipients = arraymap(split(parsed_fields -> to,","),ltrim(rtrim("@element","\>"),"\<"));
+       //test
