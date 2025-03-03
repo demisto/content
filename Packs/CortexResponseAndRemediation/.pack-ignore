@@ -22,7 +22,7 @@ ignore=RM104,RM106
 ignore=GR103
 
 # See CIAC-7711, CIAC-11954
-[file:playbook-Suspicious_Hidden_User_Created_Test.yml]
+[file:silent-playbook-Suspicious_Hidden_User_Created_Test.yml]
 ignore=GR103
 
 # See CIAC-7711, CIAC-11954
@@ -30,7 +30,7 @@ ignore=GR103
 ignore=GR103
 
 # See CIAC-7711, CIAC-11954
-[file:playbook-Suspicious_Local_Administrator_Login_Test.yml]
+[file:silent-playbook-Suspicious_Local_Administrator_Login_Test.yml]
 ignore=GR103
 
 # See CIAC-7711, CIAC-11954
@@ -42,7 +42,7 @@ ignore=GR103
 ignore=GR103
 
 # See CIAC-7711, CIAC-11954
-[file:playbook-Excessive_User_Account_Lockouts_Test.yml]
+[file:silent-playbook-Excessive_User_Account_Lockouts_Test.yml]
 ignore=GR103
 
 # GR103 is temporary, see CIAC-11954
@@ -50,7 +50,7 @@ ignore=GR103
 ignore=GR103
 
 # GR103 is temporary, see CIAC-11954
-[file:playbook-Scheduled_task_created_with_HTTP_or_FTP_reference_Test.yml]
+[file:silent-playbook-Scheduled_task_created_with_HTTP_or_FTP_reference_Test.yml]
 ignore=GR103
 
 # GR103 fails on SearchAlertsv2
@@ -58,7 +58,7 @@ ignore=GR103
 ignore=GR103
 
 # GR103 fails on SearchAlertsv2
-[file:playbook-A_user_executed_multiple_LDAP_enumeration_queries_Test.yml]
+[file:silent-playbook-A_user_executed_multiple_LDAP_enumeration_queries_Test.yml]
 ignore=GR103
 
 # GR103 fails on SearchAlertsv2
@@ -66,7 +66,7 @@ ignore=GR103
 ignore=GR103
 
 # GR103 fails on SearchAlertsv2
-[file:playbook-SSO_Authentication_With_Suspicious_Characteristics_Test.yml]
+[file:silent-playbook-SSO_Authentication_With_Suspicious_Characteristics_Test.yml]
 ignore=GR103
 
 # GR103 fails on SearchAlertsv2
