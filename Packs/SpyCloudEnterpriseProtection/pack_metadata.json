@@ -14,7 +14,8 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "itemPrefix": [
         "SpyCloud Enterprise Protection",
@@ -23,5 +24,6 @@
     "devEmail": [
         "integrations@spycloud.com"
     ],
-    "githubUser": []
+    "githubUser": [],
+    "supportedModules": []
 }
