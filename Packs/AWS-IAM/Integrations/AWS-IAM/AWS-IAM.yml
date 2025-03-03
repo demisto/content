@@ -1609,7 +1609,7 @@ script:
       required: false
     description: Deletes a virtual MFA device.
     name: aws-iam-delete-mfa-devices
-  dockerimage: demisto/boto3py3:1.0.0.1894954
+  dockerimage: demisto/boto3py3:1.0.0.2449603
   runonce: false
   script: '-'
   subtype: python3

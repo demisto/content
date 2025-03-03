@@ -18,7 +18,7 @@ scripttarget: 0
 subtype: python3
 timeout: 100800h0m0s
 runonce: false
-dockerimage: demisto/google-cloud-storage:1.0.0.117186
+dockerimage: demisto/google-cloud-storage:1.0.0.2113590
 runas: DBotWeakRole
 engineinfo: {}
 fromversion: 6.10.0

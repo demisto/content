@@ -1068,7 +1068,7 @@ script:
     - contextPath: Datadog.TimeSeriesPoint.to_date
       description: End of requested time window in milliseconds since Unix epoch.
       type: Date
-  dockerimage: demisto/datadog-api-client:1.0.0.1832460
+  dockerimage: demisto/datadog-api-client:1.0.0.2155864
   isfetch: true
   runonce: false
   script: '-'

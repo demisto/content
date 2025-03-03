@@ -231,7 +231,7 @@ script:
     - contextPath: TAXII.Indicator.Rawjson
       description: The indicator rawJSON value.
       type: Unknown
-  dockerimage: demisto/taxii:1.0.0.117607
+  dockerimage: demisto/taxii:1.0.0.2130943
   feed: true
   runonce: false
   script: ''
