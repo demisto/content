@@ -5,7 +5,7 @@ from http import HTTPStatus
 from datetime import datetime, timedelta
 from dataclasses import dataclass, field
 from requests import Response
-from typing import get_type_hints, Union, Any, Optional, get_origin, get_args, Callable
+from typing import get_type_hints, Union, Any, Optional, get_origin, get_args, Callable, TypeVar
 import inspect
 
 import demistomock as demisto  # noqa: F401
@@ -30,7 +30,7 @@ DATEPARSER_SETTINGS = {
     "TIMEZONE": "UTC",
 }
 DATE_TIME_FORMAT = "%d/%m/%Y %H:%M:%S"
-
+DictOrList = TypeVar("DictOrList", list, dict)
 
 """ CLIENT CLASS """
 
@@ -1138,7 +1138,7 @@ def list_exception_rule_command(client: Client, args: dict) -> CommandResults:
             rule_name=rule_name,
         )
 
-        outputs: dict[str, Any] = transform_keys(
+        outputs = transform_keys(
             response,
             {
                 "classifier_details": "Classifier",
@@ -1194,7 +1194,7 @@ def get_rule_severity_action_command(client: Client, args: dict) -> list[Command
     policy_name = args["policy_name"]
 
     response = client.get_rule_severity_action(policy_name=policy_name)
-    outputs: dict[str, Any] = transform_keys(
+    outputs = transform_keys(
         response,
         {
             "classifier_details": "ClassifierDetail",
@@ -1247,7 +1247,7 @@ def get_rule_source_destination_command(client: Client, args: dict) -> CommandRe
     # Call the API
     response = client.get_rule_source_destination(policy_name=policy_name)
 
-    outputs: dict[str, Any] = transform_keys(
+    outputs = transform_keys(
         response,
         {
             "rules": "Rule",
@@ -2122,7 +2122,7 @@ def get_paginated_data(data: list, limit: int, all_results: bool):
     return data if all_results else data[:limit]
 
 
-def transform_keys(data: dict | list, key_map: dict[str, str] = {}) -> dict | list:
+def transform_keys(data: DictOrList, key_map: dict[str, str] = {}) -> DictOrList:
     if isinstance(data, list):
         return [transform_keys(item, key_map) for item in data]
 
