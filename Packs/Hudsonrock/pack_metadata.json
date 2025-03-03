@@ -14,10 +14,12 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "devEmail": [
         "hruuttila@paloaltonetworks.com"
     ],
-    "githubUser": []
+    "githubUser": [],
+    "supportedModules": []
 }
