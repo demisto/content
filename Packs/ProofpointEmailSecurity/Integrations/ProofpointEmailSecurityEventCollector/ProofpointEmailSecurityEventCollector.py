@@ -179,7 +179,7 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
     demisto.debug("The fetched events ids are: " + ", ".join([str(event_id) for event_id in event_ids]))
     set_the_integration_context("last_run_results",
                                 f"Got from connection {num_events} events starting\
-                                    at {str(fetch_start_time)} untill {datetime.now().astimezone(timezone.utc)}")
+                                    at {str(fetch_start_time)} until {datetime.now().astimezone(timezone.utc)}")
 
     return events
 
