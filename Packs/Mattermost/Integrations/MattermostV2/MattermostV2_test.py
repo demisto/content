@@ -478,7 +478,7 @@ def test_list_group_members_command(http_client):
         client
         arguments
     When -
-        list user group
+        list user group members
     Then -
         Validate that the function returns the expected CommandResults.
     """
@@ -488,8 +488,53 @@ def test_list_group_members_command(http_client):
 
 
 def test_add_group_member_command(http_client, mocker):
+    """
+    Given -
+        client
+        arguments
+    When -
+        add user group member
+    Then -
+        Validate that the function returns the expected CommandResults.
+    """
+    args = {'group': 'user_group', "user_ids": "user_id"}
+    mocker.patch.object(http_client, "add_group_member_request", return_value=[{"group_id":"group_id", "create_at": 0,
+                                                                                "delete_at": 0, "user_id": "user_id"}])
+    results = add_group_member_command(http_client, args)
+    assert results.readable_output == 'The member username was added to the user group successfully, with group ID: group_id'
 
-    mocker.patch.object(http_client, "add_group_member_request", return_value={'id': 'message_id'})
+
+def test_remove_group_member_command(http_client, mocker):
+    """
+    Given -
+        client
+        arguments
+    When -
+        remove user group member
+    Then -
+        Validate that the function returns the expected CommandResults.
+    """
+    args = {'group': 'user_group', "user_ids": "user_id"}
+    mocker.patch.object(http_client, "remove_group_member_request", return_value=[{"group_id":"group_id", "create_at": 0,
+                                                                                "delete_at": 0, "user_id": "user_id"}])
+    results = add_group_member_command(http_client, args)
+    assert results.readable_output == 'The member username was removed from the channel successfully, with group ID: group_id'
+
+
+def test_set_channel_role_command(http_client, mocker):
+    """
+    Given -
+        client
+        arguments
+    When -
+        remove user group member
+    Then -
+        Validate that the function returns the expected CommandResults.
+    """
+    args = {'channel_id': 'channel_id', "user_id": "user_id", "role": "admin"}
+    mocker.patch.object(http_client, "remove_group_member_request", return_value={"status": "ok"})
+    results = set_channel_role_command(http_client, args)
+    assert results.readable_output == 'Set channel role for username successfully to Admin.'
 
 ######### async tests #########
 
