@@ -1,4 +1,7 @@
 fromversion: 5.0.0
+sectionOrder:
+- Connect
+- Collect
 category: Analytics & SIEM
 commonfields:
   id: Uptycs
