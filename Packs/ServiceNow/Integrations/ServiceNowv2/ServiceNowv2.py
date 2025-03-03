@@ -2795,7 +2795,10 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
     """
     parsed_args = UpdateRemoteSystemArgs(args)
     if parsed_args.delta:
-        demisto.debug(f'Got the following delta keys {str(list(parsed_args.delta.keys()))}')
+        demisto.debug(f'Got the following delta {parsed_args.delta}')
+        demisto.debug(f'Got the following data {parsed_args.data}')
+        demisto.debug('The following keys are shown in data but not in delta '
+                      f'{set(parsed_args.data.keys())-set(parsed_args.delta.keys())}')
 
     ticket_type = client.ticket_type
     ticket_id = parsed_args.remote_incident_id
