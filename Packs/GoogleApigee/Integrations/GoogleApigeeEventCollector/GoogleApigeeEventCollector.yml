@@ -17,7 +17,7 @@ configuration:
 - display: Client ID
   displaypassword: Password
   name: client
-  required: true
+  required: false
   type: 9
   section: Connect
 - display: Organization Name

@@ -4,7 +4,6 @@ from GoogleApigeeEventCollector import (
     Client,
     fetch_events,
     get_events,
-    test_module,
 )
 
 
@@ -155,6 +154,7 @@ def test_test_module(requests_mock, mocker):
     Tests test-module command function.
     Checks the output of the command function with the expected output.
     """
+    from GoogleApigeeEventCollector import test_module
     client = mock_client()
     mocker.patch.object(Client, 'get_access_token', return_value={'access_token': 'access_token'})
     requests_mock.get(f'https://test.com/v1/audits/organizations/{client.org_name}', json={})
