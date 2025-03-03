@@ -143,3 +143,4 @@ def test_fetch_events(mocker, scenario, last_fetch, limit, events_amount, events
     assert next_run.get('events_amount') == new_events_amount, f'{scenario} - set last run does not match expected value'
     if events:
         assert events[0].get('timeStamp') == last_event_time
+        assert events[-1].get('timeStamp') >= last_fetch
