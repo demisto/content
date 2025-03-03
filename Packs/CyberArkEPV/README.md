@@ -16,7 +16,7 @@ the XML event records must be converted to suitable [CEF](https://www.microfocus
 
 ### Set up the XSL Translator
 This transformation from XML event records to CEF messages is done though a suitable [XSL](https://en.wikipedia.org/wiki/XSL) translator file. 
-MAYA TEST An example of an XSL file can be found doc_files/XSIAM.xsl. This file can be used directly within the target vault.
+MAYA TEST An example of an XSL file can be found https://raw.githubusercontent.com/demisto/content/fcf4535d373df78bded4b1bedacdd505d25cc095/Packs/CyberArkEPV/doc_files/XSIAM.xsl. This file can be used directly within the target vault.
 
 #### Set up the Syslog Configuration
 1. Navigate to the *Conf* subfolder under the CyberArk Vault server installation folder (*PrivateArk\Server\Conf*).
