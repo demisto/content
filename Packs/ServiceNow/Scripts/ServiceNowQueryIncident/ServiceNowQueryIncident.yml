@@ -40,6 +40,6 @@ dependson:
   must:
   - servicenow-query-table
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.11.10.116949
+dockerimage: demisto/python3:3.12.8.1983910
 skipprepare:
 - script-name-incident-to-alert
