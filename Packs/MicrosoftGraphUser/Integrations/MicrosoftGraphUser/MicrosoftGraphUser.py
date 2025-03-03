@@ -201,19 +201,19 @@ class MsGraphClient:
         except Exception as e:
             raise e
 
-    def get_user_mfa_methods(self, user):
+    def get_user_authentication_methods(self, user):
         try:
             user_mfa_methods = self.ms_client.http_request(
-            method='GET',
-            url_suffix=f'users/{quote(user)}/authentication/methods')
+                method='GET',
+                url_suffix=f'users/{quote(user)}/authentication/methods')
             return user_mfa_methods
         except NotFoundError as e:
             LOG(f'User {user} was not found')
             return {'NotFound': e.message}
         except Exception as e:
             raise e
-        
-        return 
+        return None
+
     def list_users(self, properties, page_url, filters):
         if page_url:
             response = self.ms_client.http_request(method='GET', url_suffix='users', full_url=page_url)
@@ -423,14 +423,16 @@ def get_user_command(client: MsGraphClient, args: dict):
     }
     return human_readable, outputs, user_data
 
-def get_user_mfa_methods_command(client: MsGraphClient, args: dict):
+
+def get_user_authentication_methods_command(client: MsGraphClient, args: dict):
     user = args.get('user')
-    user_mfa_methods = client.get_user_mfa_methods(user)
+    user_mfa_methods = client.get_user_authentication_methods(user)
     human_readable = tableToMarkdown(name=f"{user} MFA Methods", t=user_mfa_methods, removeNull=True)
     outputs = {
         'MSGraphUserMfaMethods(val.ID == obj.ID)': user_mfa_methods
     }
     return human_readable, outputs, user_mfa_methods
+
 
 def list_users_command(client: MsGraphClient, args: dict):
     properties = args.get('properties', 'id,displayName,jobTitle,mobilePhone,mail')
@@ -547,7 +549,7 @@ def main():
         'msgraph-user-create': create_user_command,
         'msgraph-user-get-delta': get_delta_command,
         'msgraph-user-get': get_user_command,
-        'msgraph-user-get-mfa-methods': get_user_mfa_methods_command,
+        'msgraph-user-get-authentication-methods': get_user_authentication_methods_command,
         'msgraph-user-list': list_users_command,
         'msgraph-direct-reports': get_direct_reports_command,
         'msgraph-user-get-manager': get_manager_command,
