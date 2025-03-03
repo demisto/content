@@ -1,16 +1,18 @@
 {
     "File": {
-        "Verdict": {
-            "value": 1,
-            "source": "WildFire-v2"
-        },
-        "VerdictDescription": {
-            "value": "malware",
-            "source": "WildFire-v2"
-        },
-        "Type": {
-            "value": "JAVA JAR",
-            "source": "WildFire-v2"
+        "Verdicts": {
+            "Verdict": {
+                "Value": 1,
+                "Source": "WildFire-v2"
+            },
+            "VerdictDescription": {
+                "Value": "malware",
+                "Source": "WildFire-v2"
+            },
+            "Type": {
+                "Value": "JAVA JAR",
+                "Source": "WildFire-v2"
+            }
         }
     },
     "DBotScore": [

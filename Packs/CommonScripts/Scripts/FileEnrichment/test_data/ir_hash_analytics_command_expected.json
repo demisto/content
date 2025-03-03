@@ -1,42 +1,80 @@
 {
     "File": {
-        "data": {
-            "value": {
+        "AnalyticsPrevalence": {
+            "data": {
                 "global_prevalence": {
-                    "description": "The global prevalence of the file.",
-                    "value": 0
+                    "description": {
+                        "Value": "The global prevalence of the file.",
+                        "Source": "Cortex Core - IR"
+                    },
+                    "value": {
+                        "Value": 0,
+                        "Source": "Cortex Core - IR"
+                    }
                 },
                 "local_prevalence": {
-                    "description": "The local prevalence of the file.",
-                    "value": 0.058823529411764705
+                    "description": {
+                        "Value": "The local prevalence of the file.",
+                        "Source": "Cortex Core - IR"
+                    },
+                    "value": {
+                        "Value": 0.058823529411764705,
+                        "Source": "Cortex Core - IR"
+                    }
                 },
                 "prevalence": {
-                    "description": "The prevalence of the file.",
-                    "value": 0.058823529411764705
+                    "description": {
+                        "Value": "The prevalence of the file.",
+                        "Source": "Cortex Core - IR"
+                    },
+                    "value": {
+                        "Value": 0.058823529411764705,
+                        "Source": "Cortex Core - IR"
+                    }
                 }
             },
-            "source": "Cortex Core - IR"
-        },
-        "debug": {
-            "value": {
+            "debug": {
                 "file_global_prevalence_by_global_process_sha256": {
-                    "description": "The prevalence of the file according to global_process_sha256 profile.",
-                    "value": 0
+                    "description": {
+                        "Value": "The prevalence of the file according to global_process_sha256 profile.",
+                        "Source": "Cortex Core - IR"
+                    },
+                    "value": {
+                        "Value": 0,
+                        "Source": "Cortex Core - IR"
+                    }
                 },
                 "file_local_prevalence_by_file_sha256": {
-                    "description": "The prevalence of the file according to file_sha256 profile.",
-                    "value": 0
+                    "description": {
+                        "Value": "The prevalence of the file according to file_sha256 profile.",
+                        "Source": "Cortex Core - IR"
+                    },
+                    "value": {
+                        "Value": 0,
+                        "Source": "Cortex Core - IR"
+                    }
                 },
                 "file_local_prevalence_by_loaded_module_sha256": {
-                    "description": "The prevalence of the file according to loaded_module_sha256 profile.",
-                    "value": 0.058823529411764705
+                    "description": {
+                        "Value": "The prevalence of the file according to loaded_module_sha256 profile.",
+                        "Source": "Cortex Core - IR"
+                    },
+                    "value": {
+                        "Value": 0.058823529411764705,
+                        "Source": "Cortex Core - IR"
+                    }
                 },
                 "file_local_prevalence_by_process_sha256": {
-                    "description": "The prevalence of the file according to process_sha256 profile.",
-                    "value": 0.058823529411764705
+                    "description": {
+                        "Value": "The prevalence of the file according to process_sha256 profile.",
+                        "Source": "Cortex Core - IR"
+                    },
+                    "value": {
+                        "Value": 0.058823529411764705,
+                        "Source": "Cortex Core - IR"
+                    }
                 }
-            },
-            "source": "Cortex Core - IR"
+            }
         }
     },
     "HumanReadable": "#### Result for !core-get-hash-analytics-prevalence sha256=\"7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0\"\n### Hash Prevalence\n| Global Prevalence | Local Prevalence | Prevalence | File Global Prevalence By Global Process Sha256 | File Local Prevalence By File Sha256 | File Local Prevalence By Loaded Module Sha256 | File Local Prevalence By Process Sha256 |\n| --- | --- | --- | --- | --- | --- | --- |\n| 0 | 0.058823529411764705 | 0.058823529411764705 | 0 | 0 | 0.058823529411764705 | 0.058823529411764705 |"

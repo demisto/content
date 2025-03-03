@@ -226,27 +226,28 @@ def test_add_source_brand_to_values():
         - Calling `add_source_brand_to_values`.
 
     Assert:
-        - Ensure the dictionary is transformed with the correct key prefix and the values nested in dictionaries that also
-          contain the source brand field.
+        - Ensure the dictionary is transformed with the correct nested dictionaries.
     """
     from FileEnrichment import add_source_brand_to_values
 
     original_context = {
-        "Key1": ["ValA", "ValB"],
-        "Key2": "ValC",
+        "Key0": ["ValA"],
+        "Key1": ["ValB", "ValC"],
+        "Key2": "ValD",
         "Key3": 4,
-        "Key4": {"KeyD": "InnerValE"},
+        "Key4": {"KeyE": "InnerValE"},
         "Key5": "ValF",
     }
-
-    updated_context = add_source_brand_to_values(original_context, Brands.TIM, key_prefix="Source", excluded_keys=["Key5"])
+    brand = Brands.CORE_IR
+    updated_context = add_source_brand_to_values(original_context, brand, excluded_keys=["Key5"])
 
     assert "Key5" not in updated_context
     assert updated_context == {
-        "SourceKey1": {"value": original_context["Key1"], "source": Brands.TIM.value},
-        "SourceKey2": {"value": original_context["Key2"], "source": Brands.TIM.value},
-        "SourceKey3": {"value": original_context["Key3"], "source": Brands.TIM.value},
-        "SourceKey4": {"value": original_context["Key4"], "source": Brands.TIM.value},
+        "Key0": {"Value": original_context["Key0"][0], "Source": brand.value},
+        "Key1": {"Value": original_context["Key1"], "Source": brand.value},
+        "Key2": {"Value": original_context["Key2"], "Source": brand.value},
+        "Key3": {"Value": original_context["Key3"], "Source": brand.value},
+        "Key4": {"KeyE": {"Value": original_context["Key4"]["KeyE"], "Source": brand.value}},
     }
 
 
@@ -438,6 +439,30 @@ def test_enrich_with_command_cannot_run(mocker: MockerFixture):
     )
 
     assert mock_execution_function.call_count == 0
+
+
+def test_search_file_indicator(mocker: MockerFixture):
+    """
+    Given:
+        - A file indicator in the Threat Intelligence Module (TIM).
+
+    When:
+        - Calling `search_file_indicator`.
+
+    Assert:
+        - Ensure correct context output and human-readable output.
+    """
+    from FileEnrichment import search_file_indicator
+
+    indicator_search_results = util_load_json("test_data/search_file_indicator_response.json")
+    mocker.patch("FileEnrichment.IndicatorsSearcher.__iter__", return_value=iter(indicator_search_results))
+
+    per_command_context, verbose_command_results = {}, []
+    search_file_indicator(SHA_256_HASH, per_command_context, verbose_command_results)
+
+    expected_output = util_load_json("test_data/search_file_indicator_expected.json")
+    assert per_command_context["findIndicators"]["_File"] == expected_output["File"]
+    assert verbose_command_results[0].readable_output == expected_output["HumanReadable"]
 
 
 def test_run_external_enrichment(mocker: MockerFixture):

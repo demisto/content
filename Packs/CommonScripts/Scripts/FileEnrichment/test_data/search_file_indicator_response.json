@@ -1,0 +1,30 @@
+[
+    {
+        "iocs": [
+            {
+                "CustomFields": {
+                    "fileextension": "ZIP",
+                    "filetype": "application/zip",
+                    "md5": "4E76823C05048E92A4C0122D61000EDF",
+                    "sha1": "D8B426700C3C10413ABB8ACDCFECCAAEC8F06CD9",
+                    "sha256": "7AA15BD505A240A8BF62735A5389A530322945EEC6CE9D7B6AD299CA33B2B1B0",
+                    "size": 262291,
+                    "ssdeep": "6144:WWEH6PCEYPX3DNGG+KFXLLRNR8M+FHAD2HNRG/U/:WWS6PCVLHT+KDR8/AD23Z",
+                    "tags": [
+                        "jar",
+                        "checks-cpu-name",
+                        "sets-process-name",
+                        "detect-debug-environment",
+                        "checks-hostname"
+                    ]
+                },
+                "aggregatedReliability": "C - Fairly reliable",
+                "cacheVersn": 0,
+                "canvases": null,
+                "indicator_type": "File",
+                "isDetectable": true,
+                "isPreventable": true
+            }
+        ]
+    }
+]

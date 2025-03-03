@@ -11,23 +11,19 @@ import itertools
 
 
 class Brands(Enum):
-    TIM = "TIM"  # Threat Intelligence Module
     VIRUS_TOTAL_V3 = "VirusTotal (API v3)"  # VirusTotal (API v3) (Partner Contribution)
     WILDFIRE_V2 = "WildFire-v2"  # Palo Alto Networks WildFire v2
     CORE_IR = "Cortex Core - IR"  # Core - Investigation & Response
 
     @classmethod
-    def values(cls, brands_to_exclude: tuple[str] = ("TIM",)) -> list[str]:
+    def values(cls) -> list[str]:
         """
         Returns a list of brand names (values of the enum members).
-
-        Args:
-            brands_to_exclude (tuple[str], optional): Brand names to exclude from the list.
 
         Returns:
             list[str]: List of string brand names.
         """
-        return [member.value for member in cls if member.value not in brands_to_exclude]
+        return [member.value for member in cls]
 
 
 class ContextPaths(Enum):
@@ -37,7 +33,6 @@ class ContextPaths(Enum):
         "WildFire.Report(val.SHA256 && val.SHA256 == obj.SHA256 || "
         "val.MD5 && val.MD5 == obj.MD5 || val.URL && val.URL == obj.URL)"
     )
-    WILDFIRE_V2_INFO_FILE = "InfoFile"
     WILDFIRE_V2_VERDICT = "WildFire.Verdicts(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5)"
     CORE_IR_HASH_ANALYTICS = "Core.AnalyticsPrevalence.Hash"
     VIRUS_TOTAL_FILE = "VirusTotal.File(val.id && val.id == obj.id)"
@@ -291,32 +286,35 @@ def flatten_list(nested_list: list) -> list:
     return list(itertools.chain.from_iterable(nested_list))
 
 
-def add_source_brand_to_values(
-    mapping: dict[str, Any],
-    brand: Brands,
-    key_prefix: str = "",
-    excluded_keys: list[str] | None = None
-) -> dict:
+def add_source_brand_to_values(mapping: dict[str, Any], brand: Brands, excluded_keys: list[str] | None = None) -> dict:
     """
-    Creates nested dictionaries under the mapping key and an optional prefix, where each dictionary has `value` and `source`
-    keys.
+    Recursively creates nested dictionaries under the mapping key where each dictionary has `Value` and `Source` keys.
 
     Args:
         mapping (dict[str, Any]): Dictionary containing key-value pairs that need to be transformed.
-        brand (Brands): The source brand to be added under the `source` key in the nested dictionaries.
-        key_prefix (str): Optional string to be prefixed to the keys of the output dictionary.
+        brand (Brands): The source brand to be added under the `Source` key in the nested dictionaries.
         excluded_keys (list[str] | None): Optional list of keys to be excluded from the transformed output.
 
     Returns:
-        dict: Dictionary where each key appears with the optional prefix (unless the key is excluded), and each value is a
-        dictionary containing `value` (holding the original value from `mapping`) and `source` (holding the brand's value).
+        dict: Dictionary without excluded keys where each key has a dictionary value that contains:
+            `Value` - holding the original value from `mapping`
+            `Source` - holding the source brand's name.
     """
-    excluded_keys = excluded_keys or []
-    return {
-        f"{key_prefix}{key}": {"value": value, "source": brand.value}
-        for key, value in list(mapping.items())
-        if key not in excluded_keys and value is not None
-    }
+    result: dict = {}
+
+    for key, value in mapping.items():
+        if excluded_keys and key in excluded_keys:
+            continue
+
+        if isinstance(value, list) and len(value) == 1:
+            value = value[0]
+
+        if isinstance(value, dict):
+            result[key] = add_source_brand_to_values(value, brand)
+        else:
+            result[key] = {"Value": value, "Source": brand.value}
+
+    return result
 
 
 """ COMMAND EXECUTION FUNCTIONS """
@@ -384,10 +382,10 @@ def execute_wildfire_report(command: Command) -> tuple[dict, list[CommandResults
 
         # Add additional brand fields to "_File" object
         wild_fire_report: dict = context_item.get(ContextPaths.WILDFIRE_V2_REPORT.value, {})
-        wild_fire_info_file: dict = context_item.get(ContextPaths.WILDFIRE_V2_INFO_FILE.value, {})
-
-        context_output["_File"].update(add_source_brand_to_values(wild_fire_report, brand, excluded_keys=report_excluded_keys))
-        context_output["_File"].update(add_source_brand_to_values(wild_fire_info_file, brand, key_prefix="Info"))
+        if wild_fire_report:
+            context_output["_File"]["Report"] = add_source_brand_to_values(
+                mapping=wild_fire_report, brand=brand, excluded_keys=report_excluded_keys
+            )
 
     return assign_params(**context_output), readable_command_results
 
@@ -414,7 +412,10 @@ def execute_wildfire_verdict(command: Command) -> tuple[dict, list[CommandResult
         context_output["_File"].update(get_file_from_context(context_item))
 
         wild_fire_verdict: dict = context_item.get(ContextPaths.WILDFIRE_V2_VERDICT.value, {})
-        context_output["_File"].update(add_source_brand_to_values(wild_fire_verdict, brand, excluded_keys=verdict_excluded_keys))
+        if wild_fire_verdict:
+            context_output["_File"]["Verdicts"] = add_source_brand_to_values(
+                mapping=wild_fire_verdict, brand=brand, excluded_keys=verdict_excluded_keys
+            )
 
     return assign_params(**context_output), readable_command_results
 
@@ -435,11 +436,13 @@ def execute_ir_hash_analytics(command: Command) -> tuple[dict, list[CommandResul
     brand = command.brand
     context_output: dict[str, Any] = {"_File": {}}
     for context_item in entry_context:
+        # Add additional brand fields to "_File" object
         hash_analytics = context_item.get(ContextPaths.CORE_IR_HASH_ANALYTICS.value, [])
-        hash_analytics = hash_analytics[0] if hash_analytics and isinstance(hash_analytics, list) else hash_analytics
-        context_output["_File"].update(add_source_brand_to_values(hash_analytics, brand))
+        hash_analytics: dict = hash_analytics[0] if hash_analytics and isinstance(hash_analytics, list) else hash_analytics
+        if hash_analytics:
+            context_output["_File"]["AnalyticsPrevalence"] = add_source_brand_to_values(hash_analytics, brand)
 
-    return context_output, readable_command_results
+    return assign_params(**context_output), readable_command_results
 
 
 def enrich_with_command(
@@ -484,11 +487,7 @@ def enrich_with_command(
 """ FLOW STAGES FUNCTIONS """
 
 
-def search_file_indicator(
-    file_hash: str,
-    per_command_context: dict[str, Any],
-    verbose_command_results: list,
-) -> None:
+def search_file_indicator(file_hash: str, per_command_context: dict[str, Any], verbose_command_results: list) -> None:
     """
     Searches for the file indicator using the file hash value in the Thread Intelligence Module (TIM). If found, it transforms
     the Indicator of Compromise (IOC) into a standard context output by extracting the `File` dictionary. It also adds source
@@ -512,19 +511,11 @@ def search_file_indicator(
         verbose_command_results.append(readable_command_results)
         return
 
-    brand = Brands.TIM
-    ioc_excluded_keys = [
-        "cacheVersn", "insightCache", "moduleToFeedMap", "source", "sourceBrands",
-        "sourceInstances", "CustomFields", "indicator_type", "value"
-    ]
-
-    context_output: dict[str, Any] = {"_File": {}}
     iocs = flatten_list([result.get('iocs') or [] for result in search_results])
 
-    for ioc in iocs:
-        file_indicator = get_file_from_ioc_custom_fields(ioc.get("CustomFields", {}))
-        context_output["_File"].update(file_indicator)
-        context_output["_File"].update(add_source_brand_to_values(ioc, brand, excluded_keys=ioc_excluded_keys))
+    context_output: dict[str, Any] = {"_File": {}}
+    if iocs:
+        context_output["_File"] = get_file_from_ioc_custom_fields(iocs[0].get("CustomFields", {}))
 
     per_command_context["findIndicators"] = assign_params(**context_output)
 
