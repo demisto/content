@@ -1,6 +1,6 @@
-from ServiceNowApiModule import *
+from Packs.Base.Scripts.CommonServerPython.CommonServerPython import BaseClient
+from ServiceNowApiModule import ServiceNowClient
 import demistomock as demisto
-import pytest
 
 PARAMS = {
     'insecure': False,
