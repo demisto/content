@@ -37,8 +37,8 @@ display: Aha
 name: Aha
 script:
   commands:
-  - name: aha-itamar-test-command
-    description: itamar test command for testing rm110
+#  - name: aha-itamar-test-command
+#    description: itamar test command for testing rm110
   - name: aha-get-features
     description: Lists all features from service, unless a specific feature is specified.
     arguments:
