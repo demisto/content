@@ -100,7 +100,8 @@ class TestDTClient:
             "_get_dt_feeds",
             return_value=feed_mock_response.NOD_FEED_RESPONSE,
         )
-        indicators = list(dt_feeds_client.build_iterator(feed_type="nod", top=5))
+
+        indicators = list(dt_feeds_client.build_iterator(feed_type="nod", dt_feed_kwargs={"top": 5}))
         [indicator.get("value") for indicator in indicators]
 
         assert len(indicators) == 5
@@ -163,7 +164,7 @@ def test_get_indicators_command(mocker, dt_feeds_client, feed_type):
         return_value=mock_feed_response[feed_type],
     )
     results = get_indicators_command(
-        dt_feeds_client, args={"feed_type": feed_type, "top": "1"}, params={}
+        dt_feeds_client, args={"feed_type": feed_type, "top": "10"}, params={}
     )
 
     expected_indicator_results = {
@@ -177,7 +178,6 @@ def test_get_indicators_command(mocker, dt_feeds_client, feed_type):
         headers=["value", "type", "fields", "rawJSON"],
         removeNull=True,
     )
-
     assert results.readable_output == human_readable
 
 
@@ -197,7 +197,7 @@ def test_fetch_indicators_command(mocker, dt_feeds_client):
         return_value=feed_mock_response.NAD_FEED_RESPONSE
         + feed_mock_response.NOD_FEED_RESPONSE,
     )
-    results = fetch_indicators_command(dt_feeds_client, params={"top": "1"})
+    results = fetch_indicators_command(dt_feeds_client, params={"top": "20"})
 
     assert len(results) == 40
 
@@ -207,7 +207,7 @@ def test_calling_command_using_main(mocker, dt_feeds_client):
     mocker.patch.object(
         demisto,
         "params",
-        return_value={"api_username": "test_username", "api_key": "test_key"},
+        return_value={"credentials": {"identifier": "test_username", "password": "test_key"}},
     )
     mocker.patch(
         "FeedDomainTools.DomainToolsClient._get_dt_feeds",

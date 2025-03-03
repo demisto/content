@@ -101,7 +101,7 @@ class DomainToolsClient(BaseClient):
         return value
 
     def build_iterator(
-        self, feed_type: str = "nod", **dt_feed_kwargs
+        self, feed_type: str = "nod", dt_feed_kwargs: dict = {}
     ) -> Iterator:
         """
         Retrieves all entries from the feed.
@@ -194,7 +194,7 @@ def fetch_indicators(
     indicators = []
     try:
         # extract values from iterator
-        for idx, item in enumerate(client.build_iterator(feed_type=feed_type, **dt_feed_kwargs), start=1):
+        for idx, item in enumerate(client.build_iterator(feed_type=feed_type, dt_feed_kwargs=dt_feed_kwargs), start=1):
             value_ = item.get("value")
             type_ = item.get("type")
             timestamp_ = item.get("timestamp")
@@ -319,8 +319,12 @@ def test_module(client: DomainToolsClient, args: dict[str, str], params: dict[st
     Returns:
         Outputs.
     """
+    dt_feed_kwargs = {
+        "top": 1,
+        "after": None
+    }
     try:
-        next(client.build_iterator(top=1, after=None))
+        next(client.build_iterator(dt_feed_kwargs=dt_feed_kwargs))
     except Exception as e:
         raise Exception(
             "Could not fetch DomainTools Feed\n"
