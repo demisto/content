@@ -1,12 +1,12 @@
 from contextlib import ExitStack, contextmanager
 from enum import Enum
 from functools import partial
-import threading
 
-from websockets import Data
+from websockets import Data, exceptions
 from CommonServerPython import *  # noqa: F401
 from websockets.sync.client import connect
 from websockets.sync.connection import Connection
+from threading import Lock, Thread
 from dateutil import tz
 import traceback
 
@@ -29,13 +29,17 @@ class EventType(str, Enum):
 
 
 class EventConnection:
-    def __init__(self, event_type: EventType, connection: Connection, fetch_interval: int = FETCH_INTERVAL_IN_SECONDS,
+    def __init__(self, event_type: str, connection: Connection, url: str, headers: dict, fetch_interval: int = FETCH_INTERVAL_IN_SECONDS,
                  idle_timeout: int = SERVER_IDLE_TIMEOUT - 20):
         self.event_type = event_type
         self.connection = connection
-        self.lock = threading.Lock()
+        self.url = url
+        self.headers = headers
+        self.lock = Lock()
         self.idle_timeout = idle_timeout
         self.fetch_interval = fetch_interval
+        self.heartbeat_thread = Thread(target=self.heartbeat, daemon=True)
+        self.heartbeat_thread.start()
 
     def recv(self, timeout: float | None = None) -> Data:
         """
@@ -52,15 +56,35 @@ class EventConnection:
             event = self.connection.recv(timeout=timeout)
         return event
 
+    def reconnect(self):
+        """
+        Reconnect logic for the WebSocket connection.
+        """
+        with self.lock:
+            try:
+                self.connection = connect(self.url, additional_headers=self.headers)
+                demisto.info(f"[{self.event_type}] Successfully reconnected to WebSocket")
+            except Exception as e:
+                demisto.error(f"[{self.event_type}] Reconnection failed: {str(e)} {traceback.format_exc()}")
+                raise
+
     def heartbeat(self):
         """
-        Heartbeat thread function to periodically send keep-alives to the server.
-        For the sake of simplicity and error prevention, keep-alives are sent regardless of the actual connection activity.
+        Heartbeat thread function to periodically send keep-alives (pong) to the server.
+        Keep-alives are sent regardless of the actual connection activity to ensure the connection remains open.
         """
         while True:
-            with self.lock:
-                self.connection.pong()
-            time.sleep(self.idle_timeout)
+            try:
+                with self.lock:
+                    self.connection.pong()
+                demisto.info(f"[{self.event_type}] Sent heartbeat pong")
+                time.sleep(self.idle_timeout)
+            except exceptions.ConnectionClosedError as e:
+                demisto.warning(f"[{self.event_type}] Connection closed error in heartbeat: {str(e)}")
+                self.reconnect()
+            except Exception as e:
+                demisto.error(f"[{self.event_type}] Unexpected error in heartbeat: {str(e)} {traceback.format_exc()}")
+                self.reconnect()
 
 
 def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
@@ -118,6 +142,8 @@ def websocket_connections(
             connections = [EventConnection(
                 event_type=event_type,
                 connection=stack.enter_context(connect(url(type=event_type.value), additional_headers=extra_headers)),
+                url=url(type=event_type.value),
+                headers=extra_headers,
                 fetch_interval=fetch_interval,
             ) for event_type in EventType]
 
@@ -152,7 +178,7 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
         try:
             event = json.loads(connection.recv(timeout=recv_timeout))
         except TimeoutError:
-            # if we didn't receive an event for `fetch_interval` seconds, finish fetching
+            demisto.debug(f"Timeout while waiting for the event on {connection.event_type.value}")
             continue
         except Exception as e:
             set_the_integration_context("last_run_results",
@@ -242,11 +268,6 @@ def long_running_execution_command(host: str, cluster_id: str, api_key: str, fet
     with websocket_connections(host, cluster_id, api_key, fetch_interval=fetch_interval) as connections:
         demisto.info("Connected to websocket")
         fetch_interval = max(1, fetch_interval // len(EventType))  # Divide the fetch interval equally among all event types
-
-        # The Proofpoint server will close connections if they are idle for 5 minutes
-        # Setting up heartbeat daemon threads to send keep-alives if needed
-        for connection in connections:
-            threading.Thread(target=connection.heartbeat, daemon=True).start()
 
         while True:
             perform_long_running_loop(connections, fetch_interval)
