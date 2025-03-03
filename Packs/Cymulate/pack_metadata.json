@@ -17,7 +17,9 @@
     "certification": "certified",
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
-    "defaultDataSource": "cymulate_v2"
+    "defaultDataSource": "cymulate_v2",
+    "supportedModules": []
 }

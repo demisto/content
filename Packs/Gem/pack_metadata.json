@@ -75,7 +75,8 @@
     },
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "devEmail": [
         "support@gem.security"
@@ -83,5 +84,6 @@
     "githubUser": [
         "dorkauf",
         "liormgem"
-    ]
+    ],
+    "supportedModules": []
 }

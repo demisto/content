@@ -14,10 +14,12 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "devEmail": [
         "team-integration@sekoia.io"
     ],
-    "githubUser": []
+    "githubUser": [],
+    "supportedModules": []
 }
