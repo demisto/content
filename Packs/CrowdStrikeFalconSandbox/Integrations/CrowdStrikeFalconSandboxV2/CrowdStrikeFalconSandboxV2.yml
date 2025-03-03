@@ -419,7 +419,7 @@ script:
       required: true
       defaultValue: ""
     - name: environmentID
-      description: 'The environment ID. Available environment IDs: 300: "Linux (Ubuntu 16.04, 64 bit)"", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit".'
+      description: 'The environment ID. Available environment IDs: 310: "Linux (Ubuntu 20, 64-bit)", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit".'
       required: true
       auto: PREDEFINED
       defaultValue: "100"
@@ -428,7 +428,7 @@ script:
       - "110"
       - "120"
       - "200"
-      - "300"
+      - "310"
     - name: polling
       description: Whether the command should poll until the result is ready.
       auto: PREDEFINED
@@ -693,7 +693,7 @@ script:
       required: true
       defaultValue: ""
     - name: environmentID
-      description: 'The environment ID. Available environment IDs: 300: "Linux (Ubuntu 16.04, 64 bit)"", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit".'
+      description: 'The environment ID. Available environment IDs: 310: "Linux (Ubuntu 20, 64-bit)", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit".'
       required: true
       auto: PREDEFINED
       defaultValue: "100"
@@ -702,7 +702,7 @@ script:
       - "110"
       - "120"
       - "200"
-      - "300"
+      - "310"
     - name: environmentId
       deprecated: true
       description: 'The environment ID.'
@@ -1124,7 +1124,7 @@ script:
       deprecated: true
       description: ''
     - name: environmentID
-      description: 'The environment ID. Available environment IDs: 300: "Linux (Ubuntu 16.04, 64 bit)"", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit".'
+      description: 'The environment ID. Available environment IDs: 310: "Linux (Ubuntu 20, 64-bit)", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit".'
       auto: PREDEFINED
       defaultValue: ""
       predefined:
@@ -1132,7 +1132,7 @@ script:
       - "110"
       - "120"
       - "200"
-      - "300"
+      - "310"
     - name: JobID
       description: The file job ID to generate a report for.
       defaultValue: ""
@@ -1323,7 +1323,7 @@ script:
       deprecated: true
       description: ''
     - name: environmentID
-      description: 'The environment ID. Available environment IDs: 300: "Linux (Ubuntu 16.04, 64 bit)"", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit".'
+      description: 'The environment ID. Available environment IDs: 310: "Linux (Ubuntu 20, 64-bit)", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit".'
       auto: PREDEFINED
       defaultValue: ""
       predefined:
@@ -1331,7 +1331,7 @@ script:
       - "110"
       - "120"
       - "200"
-      - "300"
+      - "310"
     - name: environmentId
       deprecated: true
       description: 'The environment ID.'
@@ -1516,7 +1516,7 @@ script:
       required: true
       defaultValue: ""
     - name: environmentID
-      description: 'The environment ID. Available environment IDs: 300: "Linux (Ubuntu 16.04, 64 bit)"", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit".'
+      description: 'The environment ID. Available environment IDs: 310: "Linux (Ubuntu 20, 64-bit)", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit".'
       required: true
       auto: PREDEFINED
       defaultValue: "100"
@@ -1525,7 +1525,7 @@ script:
       - "110"
       - "120"
       - "200"
-      - "300"
+      - "310"
     - name: polling
       description: Whether the command should poll until the result is ready.
       auto: PREDEFINED
@@ -1793,7 +1793,7 @@ script:
       required: true
       defaultValue: ""
     - name: environmentID
-      description: 'The environment ID. Available environment IDs: 300: "Linux (Ubuntu 16.04, 64 bit)"", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit".'
+      description: 'The environment ID. Available environment IDs: 310: "Linux (Ubuntu 20, 64-bit)", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit".'
       required: true
       auto: PREDEFINED
       defaultValue: "100"
@@ -1802,7 +1802,7 @@ script:
       - "110"
       - "120"
       - "200"
-      - "300"
+      - "310"
     - name: polling
       description: Whether the command should poll until the result is ready.
       auto: PREDEFINED
@@ -1932,7 +1932,7 @@ script:
       description: The sha256 hash of a file.
       defaultValue: ""
     - name: environmentID
-      description: 'The environment ID. Available environment IDs: 300: "Linux (Ubuntu 16.04, 64 bit)"", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit".'
+      description: 'The environment ID. Available environment IDs: 310: "Linux (Ubuntu 20, 64-bit)", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit".'
       auto: PREDEFINED
       defaultValue: ""
       predefined:
@@ -1940,7 +1940,7 @@ script:
       - "110"
       - "120"
       - "200"
-      - "300"
+      - "310"
     - name: JobID
       description: The file job ID.
       defaultValue: ""
@@ -1971,7 +1971,7 @@ script:
       description: The SHA256 hash of a file.
       defaultValue: ""
     - name: environmentID
-      description: 'The environment ID. Available environment IDs: 300: "Linux (Ubuntu 16.04, 64 bit)"", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit".'
+      description: 'The environment ID. Available environment IDs: 310: "Linux (Ubuntu 20, 64-bit)", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit".'
       auto: PREDEFINED
       defaultValue: ""
       predefined:
@@ -1979,7 +1979,7 @@ script:
       - "110"
       - "120"
       - "200"
-      - "300"
+      - "310"
     - name: JobID
       description: The file job ID.
       defaultValue: ""
@@ -2302,7 +2302,7 @@ script:
       description: The file job ID.
       defaultValue: ""
     - name: environmentID
-      description: 'The environment ID. Available environment IDs: 300: "Linux (Ubuntu 16.04, 64 bit)"", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit".'
+      description: 'The environment ID. Available environment IDs: 310: "Linux (Ubuntu 20, 64-bit)", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit".'
       auto: PREDEFINED
       defaultValue: ""
       predefined:
@@ -2310,7 +2310,7 @@ script:
       - "110"
       - "120"
       - "200"
-      - "300"
+      - "310"
     - name: file
       description: The hash of the file.
     outputs:
