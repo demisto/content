@@ -278,7 +278,7 @@ script:
       required: true
       description: Email to remove from safe senders list.
     description: Removes an email address from safe senders list.
-  dockerimage: bs4-py3
+  dockerimage: demisto/bs4-py3:1.0.0.117152
   subtype: python3
 beta: true
 tests:
