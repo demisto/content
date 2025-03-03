@@ -1,3 +1,5 @@
+import datetime
+from time import sleep
 from typing import Any, Dict
 
 import demistomock as demisto
@@ -169,6 +171,30 @@ def prepare_context_and_hr(response: list[dict], verbose, ip_list: list[str]) ->
     return results
 
 
+def check_tag_exist(res_list_tags: dict, tag_name: str) -> bool:
+    tag_list = res_list_tags.get('Contents', {}).get('response', {}).get('result', {}).get('tag', {}).get('entry', [])
+    demisto.debug(f"The {tag_list=}")
+    for tag_dict in tag_list:
+        cur_tag_name = tag_dict.get('name', '')
+        if tag_name == cur_tag_name:
+            demisto.debug(f"The tag exists {tag_name=} == {cur_tag_name=}")
+            return True
+    return False
+
+# TODO consider combining
+# TODO check outbound
+def check_rule_exist(res_list_rules: dict, rule_name:str) -> bool:
+    rules_list = res_list_rules.get('Contents', [])
+    demisto.debug(f"The {rules_list=}")
+    for rule in rules_list:
+        cur_rule_name = rule.get('@name', '')
+        if cur_rule_name == rule_name:
+            demisto.debug(f"The rule exists {cur_rule_name=} == {rule_name=}")
+            return True
+    demisto.debug(f"The rule {rule_name} doesn't exist")
+    return False
+
+
 """ COMMAND FUNCTION """
 
 
@@ -241,15 +267,204 @@ def prisma_sase_block_ip(ip_list_arr: list, address_group: str, verbose: bool, r
     return command_results_list
 
 
-def pan_os_block_ip(module: Module) -> list[CommandResults]:
+def pan_os_block_ip(module: Module) -> list[CommandResults | PollResult]:
     responses = []
-    res_list_address_group = demisto.executeCommand('pan-os-list-address-groups', {})
-    demisto.debug(f"The response of pan-os-list-address-groups is {res_list_address_group}")
-    responses.append(res_list_address_group)
-    res_list_tags = demisto.executeCommand('pan-os-list-tags', {})
-    demisto.debug(f"The response of pan-os-list-tags is {res_list_tags}")
+    res_list_tags = demisto.executeCommand('pan-os-list-tag', {})
+    demisto.debug(f"The response of pan-os-list-tag is {res_list_tags}")
     responses.append(res_list_tags)
-    return [CommandResults()]
+    if check_tag_exist(res_list_tags[0], module.tag):
+        res_register_ip_tag = demisto.executeCommand("pan-os-register-ip-tag", {'tag': module.tag, 'IPs': module.ip_list})
+        demisto.debug(f"The response of pan-os-register-ip-tag is {res_register_ip_tag}")
+        responses.append(res_register_ip_tag)
+    else:
+        demisto.debug(f"The tag {module.tag} doesn't exit. Creating it.")
+        args = {
+            'name': module.address_group,
+            'tags': module.tag,
+            'match': module.ip_list
+        }
+        res_create_address_group = demisto.executeCommand("pan-os-create-address-group", args)
+        demisto.debug(f"The response from pan-os-create-address-group is {res_create_address_group}")
+        responses.append(res_create_address_group)
+    res_list_rules = demisto.executeCommand("pan-os-list-rules", {'pre_post': 'pre-rulebase'})
+    demisto.debug(f"The response from pan-os-list-rules is {res_list_rules}")
+    responses.append(res_list_rules)
+    # TODO add the inbound
+    if check_rule_exist(res_list_rules[0], module.rule_name):
+        args = {
+            'rulename': module.rule_name,
+            'element_value': module.address_group,
+            'element_to_change': 'destination',
+            'pre_post': 'pre-rulebase'
+        }
+        res_edit_rule = demisto.executeCommand("pan-os-edit-rule", args)
+        demisto.debug(f"The result of pan-os-edit-rule is {res_edit_rule}")
+        responses.append(res_edit_rule)
+    else:
+        args_create_rule = {'rulename': module.rule_name, 'action': 'deny', 'pre_post': 'pre-rulebase'}
+        res_create_rule = demisto.executeCommand("pan-os-create-rule", args_create_rule)
+        demisto.debug(f"The result of pan-os-create-rule is {res_create_rule}")
+        responses.append(res_create_rule)
+        args = {
+            'rulename': module.rule_name,
+            'where': 'top',
+            'pre_post': 'pre-rulebase'
+        }
+        res_move_rule = demisto.executeCommand("pan-os-move-rule", args)
+        demisto.debug(f"The result of pan-os-move-rule is {res_move_rule}")
+        responses.append(res_move_rule)
+        return [pan_os_commit({'polling': True, 'timeout': 600, 'interval_in_seconds': 60, 'ip_list': module.ip_list, 'brands': module.brand})]
+
+    return [CommandResults()]  # TODO
+
+
+@polling_function(
+    name='block-external-ip',
+    interval=60,
+    timeout=600,
+    requires_polling_arg=True,
+)
+def pan_os_commit(args: dict) -> PollResult:
+    # commit the changes
+    demisto.debug(f"The arguments to the pan_os_commit are {args=}")
+    ip_list = args.pop('ip_list')
+    brand = args.pop('brands')
+    demisto.debug(f"The ip_list in pan_os_commit {ip_list} and {brand=}")
+    if job_id := args.get('commit_job_id'):
+        res_commit_status = demisto.executeCommand("pan-os-commit-status", {'job_id': job_id})
+        demisto.debug(f"The response of pan-os-commit-status is {res_commit_status}")
+        job_result = res_commit_status[0].get('Contents', {}).get('response', {}).get('result', {}).get('job', {}).get('result')
+        demisto.debug(f"The result is {job_result=}")
+        commit_output = {
+            'JobID': job_id,
+            'Status': 'Success' if job_result == 'OK' else 'Failure',
+        }
+        continue_to_poll = res_commit_status[0].get('Contents', {}).get('response', {}).get('result', {}).get('job', {}).get('status') != 'FIN'
+        demisto.debug(f"after pan-os-commit-status {continue_to_poll=} {job_id=}")
+        if not continue_to_poll and job_result == 'OK':
+            call_pan_os_cmd({})
+        return PollResult(
+            response=CommandResults(
+                outputs=commit_output,
+                outputs_key_field='JobID',
+                readable_output=tableToMarkdown('Commit Status:', commit_output, removeNull=True)
+            ),
+            args_for_next_run={
+                'commit_job_id': job_id,
+                'interval_in_seconds': arg_to_number(args.get('interval_in_seconds')),
+                'timeout': arg_to_number(args.get('timeout')),
+                'ip_list': ip_list,
+                'brands': brand,
+            },
+            continue_to_poll=continue_to_poll,  # continue polling if job isn't done
+        )
+    else:
+        res_commit = demisto.executeCommand("pan-os-commit", args)
+        demisto.debug(f"The response of pan-os-commit is {res_commit}")
+        polling_args = res_commit[0].get('Metadata', {}).get('pollingArgs', {})
+        job_id = polling_args.get('commit_job_id')
+        if job_id:
+            context_output = {
+                'JobID': job_id,
+                'Status': 'Pending'
+            }
+            continue_to_poll = True
+            commit_output = CommandResults(
+                outputs=context_output,
+                readable_output=tableToMarkdown('Commit Status:', context_output, removeNull=True)
+            )
+        else:  # nothing to commit in pan-os, hence even if polling=true, no reason to poll anymore.
+            commit_output = res_commit[0].get('Contents') or 'There are no changes to commit.'  # type: ignore[assignment]
+            continue_to_poll = False
+        demisto.debug(f"Initiated a commit execution {continue_to_poll=} {job_id=}")
+        args_for_next_run = {
+            'commit_job_id': job_id,
+            'interval_in_seconds': arg_to_number(args.get('interval_in_seconds')),
+            'timeout': arg_to_number(args.get('timeout')),
+            'ip_list': ip_list,
+            'brands': brand,
+        }
+        return PollResult(
+            response=commit_output,
+            continue_to_poll=continue_to_poll,
+            args_for_next_run=args_for_next_run,
+            partial_result=CommandResults(
+                readable_output=f'Waiting for commit job ID {job_id} to finish...'
+            )
+        )
+
+
+@polling_function(
+    name='block-external-ip',
+    interval=60,
+    timeout=600,
+    requires_polling_arg=True,
+)
+def call_pan_os_cmd(args: dict):
+    if not args:
+        res_pan_os = demisto.executeCommand("pan-os", {'cmd': '<show><system><info></info></system></show>'})
+        demisto.debug(f"The response from pan-os is {res_pan_os}")
+        # TODO if panorama
+        res_push_to_device = demisto.executeCommand("pan-os-push-to-device-group", {'polling': True, 'timeout': 600, 'interval_in_seconds': 60})
+        demisto.debug(f"The response of pan-os-push-to-device-group {res_push_to_device}")
+        polling_args = res_push_to_device[0].get('Metadata', {}).get('pollingArgs', {})
+        job_id = polling_args.get('push_job_id')
+        device_group = polling_args.get('device-group')
+        demisto.debug(f"The polling args are {job_id=} {device_group=}")
+        if job_id:
+            context_output = {
+                'DeviceGroup': device_group,
+                'JobID': job_id,
+                'Status': 'Pending'
+            }
+            continue_to_poll = True
+            push_output = CommandResults(
+                outputs_key_field='JobID',
+                outputs=context_output,
+                readable_output=tableToMarkdown('Push to Device Group:', context_output, removeNull=True)
+            )
+        else:
+            push_output = CommandResults(
+                readable_output=res_push_to_device[0].get('Contents') or 'There are no changes to push.'
+            )
+            continue_to_poll = False
+
+        args_for_next_run = {
+            'push_job_id': job_id,
+            'polling': True,
+            'interval_in_seconds': 60,
+            'device_group': device_group
+        }
+        demisto.debug(f"The args for the next run of pan-os-push-to-device-group {args_for_next_run}")
+        return PollResult(
+            response=push_output,
+            continue_to_poll=continue_to_poll,
+            args_for_next_run=args_for_next_run,
+            partial_result=CommandResults(
+                readable_output=f'Waiting for Job-ID {job_id} to finish push changes to device-group {device_group}...'
+            )
+        )
+    else:
+        demisto.debug(f"The polling {args=}")
+        push_job_id = args.get('push_job_id')
+        device_group = args.get('device_group')
+        res_push_to_device = demisto.executeCommand("pan-os-push-to-device-group", {'push_job_id': push_job_id})
+        demisto.debug(f"The response from pan-os-push-to-device-group with {push_job_id=} is {res_push_to_device}")
+        args_for_next_run = {
+            'push_job_id': push_job_id,
+            'polling': True,
+            'interval_in_seconds': 60,
+            'device_group': device_group
+        }
+
+        return PollResult(
+            response={},
+            continue_to_poll=False,
+            args_for_next_run=args_for_next_run,
+            partial_result=CommandResults(
+                readable_output=f'Waiting for Job-ID {push_job_id} to finish push changes to device-group {device_group}...'
+            )
+        )
 
 
 def run_execute_command(command_name: str, args: dict[str, Any], verbose : bool, ip_list: list) -> list[CommandResults]:
@@ -277,6 +492,7 @@ def run_execute_command(command_name: str, args: dict[str, Any], verbose : bool,
 def main():
     try:
         args = demisto.args()
+        demisto.debug(f"The script block-external-ip was called with the arguments {args=}")
         ip_list_arg = args.get("ip_list", [])
         ip_list_arr = argToList(ip_list_arg)
         rule_name = args.get("rule_name", "XSIAM - Block IP")
@@ -340,8 +556,15 @@ def main():
                     results.append(prisma_sase_block_ip(ip_list_arr, address_group, verbose, rule_name, auto_commit))
 
                 elif brand == "Panorama":
-                    module = Module(ip_list_arr, rule_name, log_forwarding_name, address_group, tag, custom_block_rule, auto_commit, verbose, brand)
-                    results.append(pan_os_block_ip(module))
+                    commit_job_id = args.get('commit_job_id')
+                    push_job_id = args.get('push_job_id')
+                    if commit_job_id:
+                        demisto.debug(f"In Panorama recurring polling {commit_job_id=}")
+                        return_results(pan_os_commit(args))
+                    else:
+                        demisto.debug("No polling running for Panorama")
+                        module = Module(ip_list_arr, rule_name, log_forwarding_name, address_group, tag, custom_block_rule, auto_commit, verbose, brand)
+                        return_results(pan_os_block_ip(module))
 
                 else:
                     return_error(f"The brand {brand} isn't a part of the supported integration for 'block-external-ip'. "

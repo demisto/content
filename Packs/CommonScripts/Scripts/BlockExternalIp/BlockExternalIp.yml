@@ -63,6 +63,20 @@ args:
   predefined:
   - 'true'
   - 'false'
+- description: The arguments to use in the next polling iteration.
+  isArray: false
+  name: args_for_next_run
+  required: false
+  hidden: true
+- description: commit job ID to use in polling commands. (automatically filled by polling).
+  name: commit_job_id
+  hidden: true
+- description: push job ID to use in polling commands. (automatically filled by polling).
+  name: push_job_id
+  hidden: true
+- description: The device group to use in polling commands. (automatically filled by polling).
+  name: device_group
+  hidden: true
 comment: The scrip blocks a list of IPs in supported integrations.
 commonfields:
   id: block-external-ip
@@ -95,3 +109,4 @@ fromversion: 6.1.0
 marketplaces:
 - xsoar
 - marketplacev2
+polling: true
