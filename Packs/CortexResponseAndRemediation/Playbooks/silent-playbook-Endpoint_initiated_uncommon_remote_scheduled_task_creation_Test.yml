@@ -40,7 +40,7 @@ description: 'This playbook handles "Uncommon remote scheduled task creation" al
   - Automatically terminate the causality process.
 
   - Automatically close the alert.'
-fromversion: 8.8.0
+fromversion: 8.9.0
 id: silent-Endpoint initiated uncommon remote scheduled task creation Test
 inputs: []
 issilent: true

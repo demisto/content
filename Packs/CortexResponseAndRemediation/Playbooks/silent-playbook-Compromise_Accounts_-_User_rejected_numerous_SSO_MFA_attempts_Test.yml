@@ -20,7 +20,7 @@ description: "This playbook addresses the following alerts:\n\n- User rejected n
   \ on further action.\n\nRequirements:\nFor any response actions, the following integration\
   \ is required:\n- Okta v2\n\nFor early containment actions, the following integration\
   \ is required:\n- Palo Alto Networks PAN-OS."
-fromversion: 8.8.0
+fromversion: 8.9.0
 id: silent-Compromise Accounts - User rejected numerous SSO MFA attempts Test
 inputs: []
 issilent: true

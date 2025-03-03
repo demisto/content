@@ -19,7 +19,7 @@ description: "This playbook addresses the following alerts:\n \n- Msiexec execut
   \ (Manual approval)\n  - Implement URL blocking using PAN-OS through Custom URL\
   \ Categories\n- Isolate endpoint (Manual approval)\n \nRequirements: \n \nFor any\
   \ response action, you need the following integration:\n \n- PAN-OS."
-fromversion: 8.8.0
+fromversion: 8.9.0
 id: silent-Msiexec execution of an executable from an uncommon remote location Test
 inputs: []
 issilent: true

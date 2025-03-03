@@ -12,7 +12,7 @@ description: "This playbook handles \"Uncommon remote scheduled task created\" a
   \ disable the malicious scheduled task.\n- Block the malicious IP (requires analyst\
   \ approval).\n- Automatically Close the alert.\n\nRequirements:\n\nFor response\
   \ actions, the following integrations are required: \n\n- PAN-OS."
-fromversion: 6.10.0
+fromversion: 8.9.0
 id: silent-Uncommon remote scheduled task created Test
 inputs: []
 issilent: true

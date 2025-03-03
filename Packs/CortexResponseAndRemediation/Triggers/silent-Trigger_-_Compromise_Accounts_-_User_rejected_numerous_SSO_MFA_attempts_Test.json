@@ -4,7 +4,7 @@
     "suggestion_reason": "Recommended for Compromise Accounts alerts triggered by multiple MFA rejections.",
     "description": "This trigger is responsible for handling Compromise Accounts alerts where user rejected MFA attempts.",
     "trigger_name": "silent-Compromise Accounts - User has rejected numerous SSO MFA attempts Test",
-    "fromVersion": "8.8.0",
+    "fromVersion": "8.9.0",
     "alerts_filter": {
         "filter": {
             "AND": [

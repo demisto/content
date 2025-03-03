@@ -16,7 +16,7 @@ description: "This playbook is designed to handle the following alerts:\n- A suc
   By default, account disabling requires analyst approval.\n\nRequires: \nFor any\
   \ response action, you will need one of the following integrations: Azure Active\
   \ Directory Users / Okta v2."
-fromversion: 6.10.0
+fromversion: 8.9.0
 id: silent-A successful SSO sign-in from TOR Test
 inputSections:
 - description: Generic group for inputs

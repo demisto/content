@@ -4,7 +4,7 @@
     "suggestion_reason": "Recommended for the 'Uncommon execution of ODBCConf' alert.",
     "description": "This trigger is responsible for handling 'Uncommon execution of ODBCConf' alerts.",
     "trigger_name": "silent-Uncommon execution of ODBCConf Test",
-    "fromVersion": "8.8.0",
+    "fromVersion": "8.9.0",
     "alerts_filter": {
         "filter": {
             "AND": [

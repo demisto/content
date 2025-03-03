@@ -4,7 +4,7 @@
     "suggestion_reason": "Recommended for A user executed suspicious LDAP enumeration queries alerts.",
     "description": "This trigger is responsible for handling alerts where a user executes suspicious LDAP enumeration queries.",
     "trigger_name": "silent-A user executed multiple LDAP enumeration queries Test",
-    "fromVersion": "8.8.0",
+    "fromVersion": "8.9.0",
     "alerts_filter": {
         "filter": {
             "AND": [

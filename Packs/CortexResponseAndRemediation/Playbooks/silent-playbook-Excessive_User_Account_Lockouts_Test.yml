@@ -45,7 +45,7 @@ description: 'This playbook addresses the following alerts:
 
 
   - For response actions, the following integration is required: Core - IR.'
-fromversion: 8.8.0
+fromversion: 8.9.0
 id: silent-Excessive User Account Lockouts Test
 inputs: []
 issilent: true

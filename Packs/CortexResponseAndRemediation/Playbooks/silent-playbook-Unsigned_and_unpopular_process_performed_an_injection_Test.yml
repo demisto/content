@@ -25,7 +25,7 @@ description: "This playbook addresses the following alerts:\n\n- Unsigned and un
   \ high-risk scenarios to prevent further compromise.\n\nRequirements:\n\nFor response\
   \ actions, you need the following integrations:\n\n- Cortex Core - Investigation\
   \ and Response."
-fromversion: 8.0.0
+fromversion: 8.9.0
 id: silent-Unsigned and unpopular process performed an injection Test
 inputs: []
 issilent: true

@@ -29,7 +29,7 @@ description: 'This playbook is designed to handle the alert "Scheduled task crea
   integration.
 
   '
-fromversion: 6.10.0
+fromversion: 8.9.0
 id: silent-Scheduled task created with HTTP or FTP reference Test
 inputs: []
 issilent: true

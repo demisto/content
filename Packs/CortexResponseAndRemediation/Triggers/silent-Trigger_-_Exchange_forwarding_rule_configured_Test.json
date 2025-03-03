@@ -1,7 +1,7 @@
 {
     "trigger_id": "4402083915accc60f72e10bb59224616",
     "playbook_id": "silent-Exchange forwarding rule configured Test",
-    "fromVersion": "8.8.0",
+    "fromVersion": "8.9.0",
     "suggestion_reason": "Recommended for External Exchange inbox forwarding rule configured, Suspicious Exchange inbox forwarding rule configured and Suspicious Exchange email-hiding inbox rule",
     "description": "This trigger runs the Exchange forwarding rule alerts playbook, which handles the External Exchange inbox forwarding rule configured, Suspicious Exchange inbox forwarding rule configured and Suspicious Exchange email-hiding inbox rule alerts.",
     "trigger_name": "silent-Exchange forwarding rule configured Test",

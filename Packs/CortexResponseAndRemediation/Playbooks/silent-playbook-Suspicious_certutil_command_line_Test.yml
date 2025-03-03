@@ -69,7 +69,7 @@ description: 'This playbook handles "Suspicious certutil command line" alerts.
   - Palo Alto Networks PAN-OS
 
   - XQL Query Engine.'
-fromversion: 8.8.0
+fromversion: 8.9.0
 id: silent-Suspicious certutil command line Test
 inputs: []
 issilent: true

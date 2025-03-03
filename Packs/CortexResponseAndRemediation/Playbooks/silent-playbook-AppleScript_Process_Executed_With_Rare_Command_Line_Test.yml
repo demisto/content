@@ -28,7 +28,7 @@ description: 'This playbook handles "AppleScript Process Executed With Rare Comm
   - Quarantine the causality|actor image (requires analyst approval).
 
   - Automatically Close the alert.'
-fromversion: 8.8.0
+fromversion: 8.9.0
 id: silent-AppleScript Process Executed With Rare Command Line Test
 inputs: []
 issilent: true

@@ -30,7 +30,7 @@ description: 'This playbook handles "Suspicious process execution by scheduled t
   - Terminate the malicious process.
 
   - Automatically Close the alert.'
-fromversion: 8.8.0
+fromversion: 8.9.0
 id: silent-Suspicious process execution by scheduled task on a sensitive server Test
 inputs: []
 issilent: true

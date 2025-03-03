@@ -15,7 +15,7 @@ description: "This playbook is designed to handle the following alerts:\n\n- Sus
   \ Tor exit nodes. The goal is to prevent the use of Tor within the organization.\n\
   \nRequirements:\n\nFor any response action, you will need one of the following integrations:\
   \ \n- Microsoft Graph User\n- G-Suite Admin\n- AWS-IAM."
-fromversion: 6.10.0
+fromversion: 8.9.0
 id: silent-Suspicious SaaS Access From a TOR Exit Node Test
 inputs: []
 issilent: true

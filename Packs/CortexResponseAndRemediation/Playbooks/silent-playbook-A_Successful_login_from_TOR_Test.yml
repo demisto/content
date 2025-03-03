@@ -8,7 +8,7 @@ description: "This playbook is designed to handle the following alert:\n\n- A su
   \ multiple actions, which will then be executed by the playbook based on the analyst's\
   \ choices.\n\nRequirements: \nFor any response action, you will need one of the\
   \ following integrations: Azure Active Directory Users / Active Directory Users."
-fromversion: 6.10.0
+fromversion: 8.9.0
 id: silent-A Successful login from TOR Test
 inputs: []
 issilent: true

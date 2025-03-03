@@ -16,7 +16,7 @@ description: "**This playbook addresses the following alert**:\n- Rare successfu
   \ evaluation.\n- `Azure Risky Users` for retrieving user risk scores.\n- `Microsoft\
   \ 365 Defender` for advanced hunting queries and Azure security alerts.\n- `Microsoft\
   \ Graph User` for disabling accounts and revoking sessions."
-fromversion: 6.10.0
+fromversion: 8.9.0
 id: silent-Successful guest user invitation Test
 inputs: []
 issilent: true

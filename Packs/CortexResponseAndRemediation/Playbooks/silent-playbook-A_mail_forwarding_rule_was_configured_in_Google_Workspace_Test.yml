@@ -16,7 +16,7 @@ description: "This playbook addresses the following alerts:\n\n- A mail forwardi
   \nRequirements: \n\nFor any response action, you need one of the following integrations:\n\
   - Gmail integration to fetch filters and remove the forwarding email address.\n\
   - Google Workspace Admin access to sign out and suspend the user account.\n"
-fromversion: 6.10.0
+fromversion: 8.9.0
 id: silent-A mail forwarding rule was configured in Google Workspace Test
 inputSections:
 - description: Generic group for inputs

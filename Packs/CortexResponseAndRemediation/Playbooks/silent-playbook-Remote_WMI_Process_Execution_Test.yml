@@ -10,7 +10,7 @@ description: "This playbook addresses the following alerts:\n\n* Remote WMI proc
   * Attempt to terminate the malicious process tree using its causality ID.\n\n* Provide\
   \ guidance for manual process termination if the automated action fails.\n\n* Propose\
   \ endpoint isolation to prevent further compromise if malicious activity is confirmed."
-fromversion: 8.0.0
+fromversion: 8.9.0
 id: silent-Remote WMI Process Execution Test
 inputs: []
 issilent: true

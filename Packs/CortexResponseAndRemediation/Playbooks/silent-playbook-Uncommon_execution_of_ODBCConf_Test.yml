@@ -21,7 +21,7 @@ description: "This playbook handles \"Uncommon execution of ODBCConf\" alerts.\n
   \ alert with the following message: \"No indication of malicious activity was found\"\
   .\n\n\nRemediation:  \n\n- Automatically terminate the causality process.\n- Automatically\
   \ Close the alert."
-fromversion: 8.8.0
+fromversion: 8.9.0
 id: silent-Uncommon execution of ODBCConf Test
 inputs: []
 issilent: true

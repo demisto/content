@@ -6,7 +6,7 @@ description: "This playbook addresses the following alerts:\n \n- Suspicious loc
   \ and decide the next steps.\n- Possible actions:\n - Disable User.\n - Take no\
   \ action.\n \nRequirements: \n\n- For response actions, the following integration\
   \ is required: Core - IR."
-fromversion: 6.10.0
+fromversion: 8.9.0
 id: silent-Suspicious Local Administrator Login Test
 inputs: []
 issilent: true

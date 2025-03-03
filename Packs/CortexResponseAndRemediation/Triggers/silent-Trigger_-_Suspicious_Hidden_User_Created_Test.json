@@ -4,7 +4,7 @@
     "suggestion_reason": "Recommended for Suspicious Hidden User Created alerts.",
     "description": "This trigger is responsible for handling alerts where a suspicious hidden user is created.",
     "trigger_name": "silent-Alert Trigger - Suspicious Hidden User Created Test",
-    "fromVersion": "8.8.0",
+    "fromVersion": "8.9.0",
     "alerts_filter": {
         "filter": {
             "AND": [

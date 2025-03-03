@@ -61,7 +61,7 @@ description: 'This playbook addresses the following alerts:
   - Core - IR
 
   - Active Directory Query v2.'
-fromversion: 6.10.0
+fromversion: 8.9.0
 id: silent-A user executed multiple LDAP enumeration queries Test
 inputs: []
 issilent: true

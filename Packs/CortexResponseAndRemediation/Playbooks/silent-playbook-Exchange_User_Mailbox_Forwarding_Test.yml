@@ -26,7 +26,7 @@ description: "**This playbook addresses the following alerts**:\n- Exchange user
   \ user accounts and revoking active sessions.\n- `Exchange Online EWS` for disabling\
   \ mailbox forwarding.\n- `Security And Compliance V2` for fetching email interaction\
   \ statistics."
-fromversion: 6.10.0
+fromversion: 8.9.0
 id: silent-Exchange User Mailbox Forwarding Test
 inputs: []
 issilent: true

@@ -50,7 +50,7 @@ description: 'This playbook handles "Office process creates a scheduled task via
   - Quarantine the Office file (requires analyst approval).
 
   - Automatically close the alert.'
-fromversion: 8.8.0
+fromversion: 8.9.0
 id: silent-Office process creates a scheduled task via file access Test
 inputs: []
 issilent: true

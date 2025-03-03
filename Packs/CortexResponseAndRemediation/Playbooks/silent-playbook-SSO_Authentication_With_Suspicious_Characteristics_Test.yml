@@ -21,7 +21,7 @@ description: "**This playbook addresses the following alerts**:\n- SSO authentic
   - **Okta v2** integration for analyzing authentication logs, clearing sessions,\
   \ and user suspension.\n- Any IP reputation integration that supports the `!ip`\
   \ command for checking IP address reputation."
-fromversion: 6.10.0
+fromversion: 8.9.0
 id: silent-SSO Authentication With Suspicious Characteristics Test
 inputs: []
 issilent: true

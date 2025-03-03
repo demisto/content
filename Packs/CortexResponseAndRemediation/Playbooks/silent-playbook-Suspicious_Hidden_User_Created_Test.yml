@@ -49,7 +49,7 @@ description: 'This playbook addresses the following alerts:
   - Cortex Core - Investigation and Response
 
   - Active Directory Query v2 (for domain user actions).'
-fromversion: 8.8.0
+fromversion: 8.9.0
 id: silent-Suspicious Hidden User Created Test
 inputs: []
 issilent: true

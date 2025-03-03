@@ -21,7 +21,7 @@ description: "This playbook addresses the following alerts:\n\n- External Exchan
   \ the forwarding rule from the user's account mailbox.\n\nRequirements: \n\nFor\
   \ any response action, you need the following integrations:\n- EWS Extension Online\
   \ Powershell v3 integration.\n- Azure Active Directory Users."
-fromversion: 6.10.0
+fromversion: 8.9.0
 id: silent-Exchange forwarding rule configured Test
 inputSections:
 - description: Generic group for inputs.

@@ -10,7 +10,7 @@ description: "This playbook is designed to handle the following alerts:  \n- Win
   \ the CGO or the OSParent process is unsigned.\n- The prevalence of the OSParent\
   \ process.\n\nRemediation:\n- Handles malicious alerts by terminating the relevant\
   \ processes.\n- Handles non-malicious alerts identified during the investigation."
-fromversion: 8.8.0
+fromversion: 8.9.0
 id: silent-Event Log Was Cleared Test
 inputSections:
 - description: Generic group for inputs.

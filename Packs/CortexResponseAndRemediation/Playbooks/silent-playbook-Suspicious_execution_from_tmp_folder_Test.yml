@@ -15,7 +15,7 @@ description: "This playbook addresses the following alerts for linux os:\n\n- Su
   \n- Terminate causality process\n- Quarantine the Suspicious process image file\
   \ (requires manual approval).\n- Disable the suspicious cron job task (requires\
   \ manual action)."
-fromversion: 8.8.0
+fromversion: 8.9.0
 id: silent-Suspicious execution from tmp folder Test
 inputs: []
 issilent: true

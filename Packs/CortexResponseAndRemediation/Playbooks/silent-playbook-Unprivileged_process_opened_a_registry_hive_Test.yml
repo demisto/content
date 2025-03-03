@@ -24,7 +24,7 @@ description: 'This playbook is designed to handle the ''Unprivileged process ope
 
   - To prevent malicious activity from continuing, the playbook terminates the causality
   processes that triggered the alert.'
-fromversion: 8.0.0
+fromversion: 8.9.0
 id: silent-Unprivileged process opened a registry hive Test
 inputSections:
 - description: Generic group for inputs.

@@ -22,7 +22,7 @@ description: 'This playbook is designed to handle the alert
   analyst''s approval to remove the user from the local Administrators group.
 
   Handles non-malicious alerts identified during the investigation.'
-fromversion: 8.8.0
+fromversion: 8.9.0
 id: silent-User added to local administrator group using a PowerShell command Test
 inputSections:
 - description: Generic group for inputs.
