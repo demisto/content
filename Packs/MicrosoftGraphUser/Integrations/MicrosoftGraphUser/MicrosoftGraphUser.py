@@ -426,12 +426,13 @@ def get_user_command(client: MsGraphClient, args: dict):
 
 def get_user_authentication_methods_command(client: MsGraphClient, args: dict):
     user = args.get('user')
-    user_mfa_methods = client.get_user_authentication_methods(user)
-    human_readable = tableToMarkdown(name=f"{user} MFA Methods", t=user_mfa_methods, removeNull=True)
+    user_authentication_methods = client.get_user_authentication_methods(user)
+    authentication_methods = user_authentication_methods.get('value', [])
+    human_readable = tableToMarkdown(name=f"{user} Authentication Methods", t=authentication_methods, removeNull=True)
     outputs = {
-        'MSGraphUserMfaMethods(val.ID == obj.ID)': user_mfa_methods
+        'MSGraphUserMfaMethods(val.ID == obj.ID)': user_authentication_methods
     }
-    return human_readable, outputs, user_mfa_methods
+    return human_readable, outputs, user_authentication_methods
 
 
 def list_users_command(client: MsGraphClient, args: dict):
