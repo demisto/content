@@ -180,6 +180,7 @@ configuration:
   type: 8
   required: false
   additionalinfo: Save Hunting Query result to the Microsoft 365 Defender context. path
+  section: Collect
 description: Unified gateway to security insights - all from a unified Microsoft Graph Security API.
 display: Microsoft Graph Security
 name: Microsoft Graph
