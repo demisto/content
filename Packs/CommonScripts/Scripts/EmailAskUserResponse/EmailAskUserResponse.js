@@ -1,6 +1,6 @@
 var res = executeCommand("getEntry", {"id":args.responseEntryId});
 var prefix = args.prefix;
-var suffix = ars.suffix;
+var suffix = args.suffix;
 
 if (res[0].Type==entryTypes.note || res[0].Type==entryTypes.file) {
     text = res[0].Contents;

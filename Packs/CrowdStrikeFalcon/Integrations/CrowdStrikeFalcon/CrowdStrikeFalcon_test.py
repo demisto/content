@@ -2674,7 +2674,7 @@ def test_get_ioc_command_does_not_exist(requests_mock):
     )
     with pytest.raises(DemistoException) as excinfo:
         get_ioc_command(ioc_type='md5', value='testmd5')
-    assert [{'code': 404, 'message': 'md5:testmd5 - Resource Not Found'}] == excinfo.value.args[0]
+    assert excinfo.value.args[0] == [{'code': 404, 'message': 'md5:testmd5 - Resource Not Found'}]
 
 
 def test_get_ioc_command_exists(requests_mock):
@@ -2962,7 +2962,7 @@ def test_get_custom_ioc_command_does_not_exist(requests_mock):
     )
     with pytest.raises(DemistoException) as excinfo:
         get_custom_ioc_command(ioc_type='md5', value='testmd5')
-    assert [{'code': 404, 'message': 'md5:testmd5 - Resource Not Found'}] == excinfo.value.args[0]
+    assert excinfo.value.args[0] == [{'code': 404, 'message': 'md5:testmd5 - Resource Not Found'}]
 
 
 def test_get_custom_ioc_command_by_id(requests_mock):
