@@ -6420,7 +6420,8 @@
         "LogRhythmRest V2": "Submits a file - tests that send files shouldn't be mocked.",
         "Cortex XDR - IR": "internal product, no need to mock",
         "Microsoft Teams via Webhook": "message sent contains random hostname of server",
-        "TeamCymru": "Mocks does not support sockets"
+        "TeamCymru": "Mocks does not support sockets",
+        "CrowdStrike Falcon X": "Testing is inconsistent behind proxy"
     },
     "parallel_integrations": [
         "AWS - ACM",
