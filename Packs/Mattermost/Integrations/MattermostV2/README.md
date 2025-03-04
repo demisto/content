@@ -1,7 +1,8 @@
 Mattermost is an open-source, self-hostable online chat service with file sharing, search, and integrations. It is designed as an internal chat for organizations and companies.
+This integration was integrated and tested with version 4.0.0 of Mattermost API.
 
 Some changes have been made that might affect your existing content. 
-If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration---mattermost-v2).
+If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-mattermost-v2).
 
 ## Configure Mattermost v2 in Cortex
 
@@ -19,8 +20,6 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 | Long running instance. Required for investigation mirroring and direct messages. |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-
-
 
 ## Commands
 
@@ -105,7 +104,6 @@ Must be authenticated and have the view_team permission.
 >|allow_open_invite|allowed_domains|cloud_limits_archived|company_name|create_at|delete_at|description|display_name|email|group_constrained|id|invite_id|name|policy_id|scheme_id|type|update_at|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| false |  | false |  | 1696486762638 | 0 |  | PANW | email | false | id | id | panw |  |  | O | 1696486762638 |
-
 
 ### mattermost-list-channels
 
@@ -218,6 +216,61 @@ manage_system
 >| name | Display_Name | O | id |
 >| off-topic | Off-Topic | O | id |
 
+### mattermost-list-channels-for-user
+
+***
+Get all private channel memberships for a user on a specific team.
+
+#### Base Command
+
+`mattermost-list-channels-for-user`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| team_name | The name of the team to list channels from. Default is the team name from the integration configuration. | Optional | 
+| user_id | User id to get channel memberships for. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Mattermost.User.Channels | Unknown | List of channels where the user is member of. | 
+| Mattermost.User.id | String | The ID of the user. | 
+
+#### Command example
+
+```!mattermost-list-channels-for-user user_id=user_id team_name=panw```
+
+#### Context Example
+
+```json
+{
+    "Mattermost": {
+        "User": [
+            {
+                "channel_id": "channel_id",
+                "user_id": "user_id",
+                "roles": "Admin",
+                "last_viewed_at": 0,
+                "msg_count": 0,
+                "mention_count": 0,
+                "notify_props": {},
+                "last_update_at": 0
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Channels for UserName:
+
+>|name|display_name|type|id|
+>|---|---|---|---|
+>| name | Display_Name | O | channel_id |
 
 ### mattermost-create-channel
 
@@ -463,7 +516,6 @@ Requires an active session and (if specified) membership to the channel or team 
 >| admin | admin@admin.com |  | 8a6t7whumbdbxrawretujh6rre |
 >| dev | admin@ddev.com |  | o9hpcwz73fdwxe9adue8jxo16o |
 
-
 ### mattermost-send-file
 
 ***
@@ -646,6 +698,217 @@ No permissions channel.
 | channel | The name of the channel. The default is "incident-&lt;incidentID&gt;". | Optional | 
 | kickAdmin | Whether to remove the admin from the newly created channel. Default value is false. Possible values are: true, false. Default is false. | Optional | 
 | mirrorTo | Mirrors the investigation to a group (private channel) or a public channel. Possible values are: group, channel. Default is group. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+### mattermost-list-usergroups
+
+***
+Lists user groups.
+
+#### Required Permissions
+
+No permissions required.
+
+#### Base Command
+
+`mattermost-list-usergroups`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| page | The page number to retrieve. Default value is 0. | Optional | 
+| page_size | The size of the page to retrieve. Default value is 50. | Optional | 
+| limit | How many results to retrieve. Will override the page and page_size arguments if given. | Optional | 
+| group | Search for a specific user group by this pattern. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Mattermost.Groups.id | String | The ID of the user group. | 
+| Mattermost.Groups.create_at | Unknown | When was the user group created. | 
+| Mattermost.Groups.update_at | Unknown | When was the user group updated. | 
+| Mattermost.Groups.delete_at | Unknown | When was the user group deleted. | 
+| Mattermost.Groups.display_name | String | The display name of the user group. | 
+| Mattermost.Groups.name | String | The name of the user group. | 
+| Mattermost.Groups.description | String | The description of the user group. | 
+| Mattermost.Groups.source | String | The source of the user group. | 
+| Mattermost.Groups.remote_id | String | The remote id of the user group. | 
+| Mattermost.Groups.has_syncables | boolean | If the user group has any syncables. | 
+
+#### Command example
+
+```!mattermost-list-usergroups```
+
+#### Context Example
+
+```json
+{
+    "Mattermost": {
+        "Groups": [
+            {
+                "id": "0815xyz",
+                "name": "name",
+                "display_name": "display name",
+                "description": "description",
+                "source": "custom",
+                "remote_id": null,
+                "create_at": 0,
+                "update_at": 0,
+                "delete_at": 0,
+                "has_syncables": false
+            },
+            {
+                "id": "0815abc",
+                "name": "name",
+                "display_name": "display name",
+                "description": "",
+                "source": "custom",
+                "remote_id": null,
+                "create_at": 0,
+                "update_at": 0,
+                "delete_at": 0,
+                "has_syncables": false
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### User groups:
+
+>|name|display_name|description|id|
+>|---|---|---|---|
+>| name | display name |  | 0815abc |
+>| name | display name | description | 0815xyz |
+
+### mattermost-list-usergroup-members
+
+***
+Lists user group members.
+
+#### Required Permissions
+
+Must have manage_system permission.
+
+#### Base Command
+
+`mattermost-list-usergroup-members`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group | The group name of the user group to add the user to. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Mattermost.Groups.name | String | The name of the user group. | 
+| Mattermost.Groups.id | String | The ID of the user group. | 
+| Mattermost.Groups.total_member_count | Unknown | The total count of members in the user group. | 
+| Mattermost.Groups.members | Unknown | Detailed list of the user group members. | 
+
+#### Command example
+
+```!mattermost-list-usergroup-members group=usergroup```
+
+#### Human Readable Output
+
+>### User group members:
+
+>|username|email|id|
+>|---|---|---|
+>| username1 | admin@admin.com | 8a6t7whumbdbxrawretujh6rre |
+>| username2 | admin@ddev.com | o9hpcwz73fdwxe9adue8jxo16o |
+
+### mattermost-add-usergroup-member
+
+***
+Add user group member(s).
+
+#### Required Permissions
+
+Must have custom_group_manage_members permission for the given group.
+
+#### Base Command
+
+`mattermost-add-usergroup-member`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group | The group name of the user group to add the user to. | Required | 
+| user_ids | The ID(s) of the user(s) to add. Use the command 'mattermost-list-users' to fetch the user ID(s). | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!mattermost-add-usergroup-member group=usergroup user_ids=user_ids```
+
+#### Human Readable Output
+
+>The member username was added to the user group successfully, with group ID: moi9ygz8qby1pr1xgkcfuqww9r
+
+### mattermost-remove-usergroup-member
+
+***
+Remove user group member(s).
+
+#### Required Permissions
+
+Must have custom_group_manage_members permission for the given group.
+
+#### Base Command
+
+`mattermost-remove-usergroup-member`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group | The group name of the user group to remove the user from. | Required | 
+| user_ids | The ID(s) of the user(s) to remove. Use the command 'mattermost-list-users' to fetch the user ID(s). | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!mattermost-remove-usergroup-member group=usergroup user_ids=user_ids```
+
+#### Human Readable Output
+
+The member username was removed from user group successfully, with group ID: moi9ygz8qby1pr1xgkcfuqww9r
+
+### mattermost-set-channel-role
+
+***
+Update a user's roles for a channel.
+
+#### Base Command
+
+`mattermost-set-channel-role`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| channel_id | The channel id to set the role in. | Required | 
+| user_id | The ID of the user to set role for. Use the command 'mattermost-list-users' to fetch the user ID. | Required | 
+| role | The role to set for the user. Possible values are: Admin, Member. Default is Member. | Optional | 
 
 #### Context Output
 
