@@ -851,7 +851,7 @@ Creates a single incident in Azure Sentinel.
 
 #### Command Example
 
-```!azure-sentinel-create-incident severity=Low status=New title=test description=testing labels=[{\"name\":\"value\"}]```
+```!azure-sentinel-create-incident severity=Low status=New title=test description=testing labels=[{\"labelName\":\"value\"}]```
 
 #### Context Example
 
@@ -859,32 +859,38 @@ Creates a single incident in Azure Sentinel.
 {
     "AzureSentinel": {
         "Incident": {
-            "AlertProductNames": [
-                "Azure Sentinel"
-            ],
-            "AlertsCount": 1,
-            "AssigneeEmail": "test@test.com",
-            "AssigneeName": null,
-            "BookmarksCount": 0,
-            "CommentsCount": 4,
-            "CreatedTimeUTC": "2020-01-15T09:29:14Z",
-            "Deleted": false,
-            "Description": "testing",
-            "Etag": "\"27002845-0000-0100-0000-6123a3090000\"",
-            "FirstActivityTimeGenerated": null,
-            "FirstActivityTimeUTC": null,
             "ID": "8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742",
             "IncidentNumber": 2,
-            "Label": [
-               	{"Name": "value", "Type": "User"}
-            ],
-            "LastActivityTimeGenerated": null,
-            "LastActivityTimeUTC": null,
-            "LastModifiedTimeUTC": "2021-08-23T13:30:49Z",
+            "IncidentUrl": "https://portal.azure.com/#asset/Microsoft_Azure_Security_Insights/Incident/subscriptions/xxxxxx/resourceGroups/xxxxxx/providers/Microsoft.OperationalInsights/workspaces/xxxxxx/providers/Microsoft.SecurityInsights/Incidents/8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742",
+            "Title": "test",
+            "Description": "testing",
             "Severity": "Low",
             "Status": "New",
-            "Tactics": null,
-            "Title": "test"
+            "AssigneeName": null,
+            "AssigneeEmail": null,
+            "AssigneeObjectID": null,
+            "AssigneeUPN": null,
+            "Label": [
+                {
+                    "Name": "value",
+                    "Type": "User"
+                }
+            ],
+            "FirstActivityTimeUTC": null,
+            "LastActivityTimeUTC": null,
+            "LastModifiedTimeUTC": "2021-08-23T13:30:49Z",
+            "CreatedTimeUTC": "2021-08-23T13:30:49Z",
+            "AlertsCount": 0,
+            "BookmarksCount": 0,
+            "CommentsCount": 0,
+            "AlertProductNames": [],
+            "ProviderIncidentUrl": null,
+            "Tactics": [],
+            "Techniques": [],
+            "FirstActivityTimeGenerated": null,
+            "LastActivityTimeGenerated": null,
+            "Etag": "\"3700fdde-0000-3d00-0000-67c6dadc0000\"",
+            "Deleted": false
         }
     }
 }
@@ -892,11 +898,11 @@ Creates a single incident in Azure Sentinel.
 
 #### Human Readable Output
 
->### Updated incidents 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 details
+>### Created incidents 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 details
 >
->|ID|Incident Number|Title|Description|Severity|Status|Assignee Email|Label|Last Modified Time UTC|Created Time UTC|Alerts Count|Bookmarks Count|Comments Count|Alert Product Names|Etag|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 | 2 | test |testing | Low | New | <test@test.com> | {'Name': 'value', 'Type': 'User'} | 2021-08-23T13:30:49Z | 2020-01-15T09:29:14Z | 1 | 0 | 4 | Azure Sentinel | "27002845-0000-0100-0000-6123a3090000" |
+>|ID|Incident Number|Title|Description|Severity|Status|Incident Url|Label|Last Modified Time UTC|Created Time UTC|Alerts Count|Bookmarks Count|Comments Count|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 | 2 | test |testing | Low | New |https://portal.azure.com/#asset/Microsoft_Azure_Security_Insights/Incident/subscriptions/xxxxxx/resourceGroups/xxxxxx/providers/Microsoft.OperationalInsights/workspaces/xxxxxx/providers/Microsoft.SecurityInsights/Incidents/2b43defc-6c4b-434f-a152-6bdca46b6ef3| {'Name': 'value', 'Type': 'User'} | 2021-08-23T13:30:49Z | 2021-08-23T13:30:49Z | 0 | 0 | 0 | 
 
 ### azure-sentinel-delete-incident
 
