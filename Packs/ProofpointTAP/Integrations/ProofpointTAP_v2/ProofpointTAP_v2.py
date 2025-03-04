@@ -600,7 +600,8 @@ def fetch_incidents(
             incident = {
                 "name": f"Proofpoint - Message Delivered - {event_guid}",
                 "rawJSON": raw_json,
-                "occurred": raw_event["messageTime"]
+                "occurred": raw_event["messageTime"],
+                "haIntegrationEventID": str(event_guid)
             }
             demisto.debug(f'Event Time: {incident.get("occurred")}')
             incidents.append(incident)
