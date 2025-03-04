@@ -28,162 +28,321 @@ commonfields:
   version: -1
 name: file-enrichment
 outputs:
-  - contextPath: DBotScore.Indicator
+  - contextPath: DBotScore.Indicator.Value
     description: The value of the file indicator.
     type: String
-  - contextPath: DBotScore.Score
+  - contextPath: DBotScore.Indicator.Source
+    description: The vendor from which the file indicator value was retrieved.
+    type: String
+  - contextPath: DBotScore.Score.Value
     description: The risk score associated with the file.
     type: Number
-  - contextPath: DBotScore.Reliability
+  - contextPath: DBotScore.Score.Source
+    description: The vendor from which the risk score was retrieved.
+    type: String
+  - contextPath: DBotScore.Reliability.Value
     description: The reliability level of the score, for example, "C - Fairly Reliable".
     type: String
-  - contextPath: DBotScore.Type
+  - contextPath: DBotScore.Reliability.Source
+    description: The vendor from which the reliability level was retrieved.
+    type: String
+  - contextPath: DBotScore.Type.Value
     description: The type of the indicator.
     type: String
-  - contextPath: DBotScore.Vendor
+  - contextPath: DBotScore.Type.Source
+    description: The vendor from which the indicator type was retrieved.
+    type: String
+  - contextPath: DBotScore.Vendor.Value
     description: The vendor (source brand) that provided the score.
     type: String
-  - contextPath: File.Name
+  - contextPath: DBotScore.Vendor.Source
+    description: The vendor from which the vendor information was retrieved.
+    type: String
+  - contextPath: File.Name.Value
     description: The name of the file including its extension.
     type: String
-  - contextPath: File.EntryID
+  - contextPath: File.Name.Source
+    description: The vendor from which the file name was retrieved.
+    type: String
+  - contextPath: File.EntryID.Value
     description: The identifier used to locate the file in the Incident War Room.
     type: String
-  - contextPath: File.Size
+  - contextPath: File.EntryID.Source
+    description: The vendor from which the identifier was retrieved.
+    type: String
+  - contextPath: File.Size.Value
     description: The file size measured in bytes.
     type: Number
-  - contextPath: File.MD5
+  - contextPath: File.Size.Source
+    description: The vendor from which the file size was retrieved.
+    type: String
+  - contextPath: File.MD5.Value
     description: The MD5 hash of the file.
     type: String
-  - contextPath: File.SHA1
+  - contextPath: File.MD5.Source
+    description: The vendor from which the MD5 hash was retrieved.
+    type: String
+  - contextPath: File.SHA1.Value
     description: The SHA1 hash of the file.
     type: String
-  - contextPath: File.SHA256
+  - contextPath: File.SHA1.Source
+    description: The vendor from which the SHA1 hash was retrieved.
+    type: String
+  - contextPath: File.SHA256.Value
     description: The SHA256 hash of the file.
     type: String
-  - contextPath: File.SHA512
+  - contextPath: File.SHA256.Source
+    description: The vendor from which the SHA256 hash was retrieved.
+    type: String
+  - contextPath: File.SHA512.Value
     description: The SHA512 hash of the file.
     type: String
-  - contextPath: File.SSDeep
+  - contextPath: File.SHA512.Source
+    description: The vendor from which the SHA512 hash was retrieved.
+    type: String
+  - contextPath: File.SSDeep.Value
     description: The ssdeep hash of the file, used to track versions or alterations.
     type: String
-  - contextPath: File.Extension
+  - contextPath: File.SSDeep.Source
+    description: The vendor from which the ssdeep hash was retrieved.
+    type: String
+  - contextPath: File.Extension.Value
     description: The file extension, indicating the type of file format, for example, 'exe'.
     type: String
-  - contextPath: File.Type
+  - contextPath: File.Extension.Source
+    description: The vendor from which the file extension was retrieved.
+    type: String
+  - contextPath: File.Type.Value
     description: The file type determined by libmagic.
     type: String
-  - contextPath: File.Hostname
+  - contextPath: File.Type.Source
+    description: The vendor from which the file type was retrieved.
+    type: String
+  - contextPath: File.Hostname.Value
     description: The hostname of the device where the file was found.
     type: String
-  - contextPath: File.Path
+  - contextPath: File.Hostname.Source
+    description: The vendor from which the hostname was retrieved.
+    type: String
+  - contextPath: File.Path.Value
     description: The directory path where the file is located.
     type: String
-  - contextPath: File.Company
+  - contextPath: File.Path.Source
+    description: The vendor from which the directory path was retrieved.
+    type: String
+  - contextPath: File.Company.Value
     description: The name of the company that released a binary.
     type: String
-  - contextPath: File.ProductName
+  - contextPath: File.Company.Source
+    description: The vendor from which the company name was retrieved.
+    type: String
+  - contextPath: File.ProductName.Value
     description: The product title to which the file belongs.
     type: String
-  - contextPath: File.DigitalSignature.Publisher
+  - contextPath: File.ProductName.Source
+    description: The vendor from which the product title was retrieved.
+    type: String
+  - contextPath: File.DigitalSignature.Publisher.Value
     description: The entity that issued the digital signature of the file.
     type: String
-  - contextPath: File.Actor
+  - contextPath: File.DigitalSignature.Publisher.Source
+    description: The vendor from which the digital signature was retrieved.
+    type: String
+  - contextPath: File.Actor.Value
     description: The threat actor associated with the file, if applicable.
     type: String
-  - contextPath: File.Tags
+  - contextPath: File.Actor.Source
+    description: The vendor from which the threat actor information was retrieved.
+    type: String
+  - contextPath: File.Tags.Value
     description: Tags assigned to the file for categorization or identification.
     type: Array
-  - contextPath: File.FeedRelatedIndicators.value
+  - contextPath: File.Tags.Source
+    description: The vendor from which the tags were retrieved.
+    type: String
+  - contextPath: File.FeedRelatedIndicators.Value.Value
     description: Shows other indicators associated with the file.
     type: String
-  - contextPath: File.FeedRelatedIndicators.type
+  - contextPath: File.FeedRelatedIndicators.Value.Source
+    description: The vendor from which the related indicators were retrieved.
+    type: String
+  - contextPath: File.FeedRelatedIndicators.type.Value
     description: Identifies the types of associated indicators.
     type: String
-  - contextPath: File.FeedRelatedIndicators.description
+  - contextPath: File.FeedRelatedIndicators.type.Source
+    description: The vendor from which the types of associated indicators were retrieved.
+    type: String
+  - contextPath: File.FeedRelatedIndicators.description.Value
     description: Describes the associated indicators providing context or relevance.
     type: String
-  - contextPath: File.MalwareFamily
+  - contextPath: File.FeedRelatedIndicators.description.Source
+    description: The vendor from which the description of the associated indicators was retrieved.
+    type: String
+  - contextPath: File.MalwareFamily.Value
     description: Names the malware family associated with the file, if known.
     type: String
-  - contextPath: File.Signature.Authentihash
+  - contextPath: File.MalwareFamily.Source
+    description: The vendor from which the malware family name was retrieved.
+    type: String
+  - contextPath: File.Signature.Authentihash.Value
     description: The Authentihash, a cryptographic hash, used for verifying the file's authenticity.
     type: String
-  - contextPath: File.Signature.Description
+  - contextPath: File.Signature.Authentihash.Source
+    description: The vendor from which the Authentihash was retrieved.
+    type: String
+  - contextPath: File.Signature.Description.Value
     description: Describes the file signature data relevant to identification.
     type: String
-  - contextPath: File.Signature.FileVersion
+  - contextPath: File.Signature.Description.Source
+    description: The vendor from which the signature description was retrieved.
+    type: String
+  - contextPath: File.Signature.FileVersion.Value
     description: Indicates the version number of the file.
     type: String
-  - contextPath: File.Signature.InternalName
+  - contextPath: File.Signature.FileVersion.Source
+    description: The vendor from which the file version was retrieved.
+    type: String
+  - contextPath: File.Signature.InternalName.Value
     description: The internal name of the file as designated by the creators.
     type: String
-  - contextPath: File.Signature.OriginalName
+  - contextPath: File.Signature.InternalName.Source
+    description: The vendor from which the internal name was retrieved.
+    type: String
+  - contextPath: File.Signature.OriginalName.Value
     description: The original name of the file before any changes or renames.
     type: String
-  - contextPath: File.Malicious.Vendor
+  - contextPath: File.Signature.OriginalName.Source
+    description: The vendor from which the original name was retrieved.
+    type: String
+  - contextPath: File.Malicious.Vendor.Value
     description: Specifies the vendor that identified the file as malicious.
     type: String
-  - contextPath: File.Malicious.Description
+  - contextPath: File.Malicious.Vendor.Source
+    description: The vendor from which the information identifying the file as malicious was retrieved.
+    type: String
+  - contextPath: File.Malicious.Description.Value
     description: Provides details on why the file was deemed malicious.
     type: String
-  - contextPath: File.Relationships.EntityA
+  - contextPath: File.Malicious.Description.Source
+    description: The vendor from which the malicious description was retrieved.
+    type: String
+  - contextPath: File.Relationships.EntityA.Value
     description: The initiating entity in a relationship involving the file.
     type: String
-  - contextPath: File.Relationships.EntityB
+  - contextPath: File.Relationships.EntityA.Source
+    description: The vendor from which the initiating entity information was retrieved.
+    type: String
+  - contextPath: File.Relationships.EntityB.Value
     description: The recipient or target entity in a relationship involving the file.
     type: String
-  - contextPath: File.Relationships.Relationship
+  - contextPath: File.Relationships.EntityB.Source
+    description: The vendor from which the recipient or target entity information was retrieved.
+    type: String
+  - contextPath: File.Relationships.Relationship.Value
     description: Defines the type or nature of the relationship between entities.
     type: String
-  - contextPath: File.Relationships.EntityAType
+  - contextPath: File.Relationships.Relationship.Source
+    description: The vendor from which the relationship type was retrieved.
+    type: String
+  - contextPath: File.Relationships.EntityAType.Value
     description: The type or classification of the initiating entity.
     type: String
-  - contextPath: File.Relationships.EntityBType
+  - contextPath: File.Relationships.EntityAType.Source
+    description: The vendor from which the initiating entity type was retrieved.
+    type: String
+  - contextPath: File.Relationships.EntityBType.Value
     description: The type or classification of the recipient entity.
     type: String
-  - contextPath: File.Campaign
+  - contextPath: File.Relationships.EntityBType.Source
+    description: The vendor from which the recipient entity type was retrieved.
+    type: String
+  - contextPath: File.Campaign.Value
     description: The identified campaign associated with the file, if applicable.
     type: String
-  - contextPath: File.TrafficLightProtocol
+  - contextPath: File.Campaign.Source
+    description: The vendor from which the campaign information was retrieved.
+    type: String
+  - contextPath: File.TrafficLightProtocol.Value
     description: Specifies the TLP color designation suitable for handling the file.
     type: String
-  - contextPath: File.CommunityNotes.note
+  - contextPath: File.TrafficLightProtocol.Source
+    description: The vendor from which the TLP color designation was retrieved.
+    type: String
+  - contextPath: File.CommunityNotes.note.Value
     description: Community-contributed notes regarding observations or findings related to the file.
     type: String
-  - contextPath: File.CommunityNotes.timestamp
+  - contextPath: File.CommunityNotes.note.Source
+    description: The vendor from which the community-contributed notes were retrieved.
+    type: String
+  - contextPath: File.CommunityNotes.timestamp.Value
     description: The timestamp when the community note was added.
     type: Date
-  - contextPath: File.Publications.source
+  - contextPath: File.CommunityNotes.timestamp.Source
+    description: The vendor from which the timestamp of the community note was retrieved.
+    type: String
+  - contextPath: File.Publications.source.Value
     description: Identifies the publishing source of an article relating to the file.
     type: String
-  - contextPath: File.Publications.title
+  - contextPath: File.Publications.source.Source
+    description: The vendor from which the publishing source information was retrieved.
+    type: String
+  - contextPath: File.Publications.title.Value
     description: The title of the publication discussing aspects of the file.
     type: String
-  - contextPath: File.Publications.link
+  - contextPath: File.Publications.title.Source
+    description: The vendor from which the publication title was retrieved.
+    type: String
+  - contextPath: File.Publications.link.Value
     description: Provides a hyperlink to the full article or publication for detailed information.
     type: String
-  - contextPath: File.Publications.timestamp
+  - contextPath: File.Publications.link.Source
+    description: The vendor from which the publication link was retrieved.
+    type: String
+  - contextPath: File.Publications.timestamp.Value
     description: The publication date and time of the related article.
     type: Date
-  - contextPath: File.Behavior.details
+  - contextPath: File.Publications.timestamp.Source
+    description: The vendor from which the publication date and time was retrieved.
+    type: String
+  - contextPath: File.Behavior.details.Value
     description: Detailed technical information describing the file's behavior.
     type: String
-  - contextPath: File.Behavior.title
+  - contextPath: File.Behavior.details.Source
+    description: The vendor from which the detailed technical information was retrieved.
+    type: String
+  - contextPath: File.Behavior.title.Value
     description: A brief description of the behavior exhibited by the file.
     type: String
-  - contextPath: File.Imphash
+  - contextPath: File.Behavior.title.Source
+    description: The vendor from which the behavior title was retrieved.
+    type: String
+  - contextPath: File.Imphash.Value
     description: The import hash (imphash) of the file, specific to the imports used within an executable.
     type: String
-  - contextPath: File.Quarantined
+  - contextPath: File.Imphash.Source
+    description: The vendor from which the imphash was retrieved.
+    type: String
+  - contextPath: File.Quarantined.Value
     description: Indicates whether the file has been quarantined to prevent potential harm.
     type: Bool
-  - contextPath: File.Organization
+  - contextPath: File.Quarantined.Source
+    description: The vendor from which the quarantine status was retrieved.
+    type: String
+  - contextPath: File.Organization.Value
     description: The organization to which the file is attributed.
     type: String
-  - contextPath: File.AssociatedFileNames
-    description: Lists other file names associated with this file.
+  - contextPath: File.Organization.Source
+    description: The vendor from which the organization information was retrieved.
+    type: String
+  - contextPath: File.AssociatedFileNames.Value
+    description: The names of other files associated with this file.
     type: Array
+  - contextPath: File.AssociatedFileNames.Source
+    description: The vendor from which the associated file names were retrieved.
+    type: String
+  - contextPath: File.VTFileVerdict
+    description: The VirusTotal verdict. A file is considered Malicious if it has more than 5 malicious detections.
+    type: String
 script: '-'
 timeout: '0'
 type: python
