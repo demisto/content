@@ -180,7 +180,7 @@ select = [
     "G201", # logging-exc-info
     "G202", # logging-redundant-exc-info
 
-    "ISC001", # single-line-implicit-string-concatenation
+#    "ISC001", # single-line-implicit-string-concatenation
 
     "N804", # invalid-first-argument-name-for-class-method
     "N805", # invalid-first-argument-name-for-method
