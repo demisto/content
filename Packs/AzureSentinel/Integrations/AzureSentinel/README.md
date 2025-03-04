@@ -797,6 +797,112 @@ Updates a single incident in Azure Sentinel.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 | 2 | SharePointFileOperation via previously unseen IPs | Identifies when the volume of documents uploaded to or downloaded from Sharepoint by new IP addresses<br/>exceeds a threshold (default is 100). | Informational | New | <test@test.com> | {'Name': 'label_a', 'Type': 'User'},<br/>{'Name': 'label_b', 'Type': 'User'} | 2021-08-23T13:30:49Z | 2020-01-15T09:29:14Z | 1 | 0 | 4 | Azure Sentinel | "27002845-0000-0100-0000-6123a3090000" |
 
+### azure-sentinel-create-incident
+
+***
+Creates a single incident in Azure Sentinel.
+
+
+#### Base Command
+
+`azure-sentinel-create-incident`
+
+#### Input
+
+| **Argument Name**      | **Description**                                                                                                                                                                                                                                | **Required** |
+|------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| title                  | The incident's title. | Required | 
+| severity               | The incident severity. Possible values are: High, Medium, Low, Informational.| Required | 
+| status                 | The incident status. Possible values are: New, Active, Closed.| Required | 
+| description            | Description of the incident. | Optional | 
+| labels                 | Incident labels. Note that all labels will be set as labelType='User'.| Optional | 
+
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSentinel.Incident.ID | String | The incident ID. | 
+| AzureSentinel.Incident.Title | String | The incident's title. | 
+| AzureSentinel.Incident.Description | String | Description of the incident. | 
+| AzureSentinel.Incident.Severity | String | The incident severity. | 
+| AzureSentinel.Incident.Status | String | The incident status. | 
+| AzureSentinel.Incident.AssigneeName | String | The name of the incident assignee. | 
+| AzureSentinel.Incident.AssigneeEmail | String | The email address of the incident assignee. | 
+| AzureSentinel.Incident.AssigneeObjectID | String | The object ID of the incident assignee. | 
+| AzureSentinel.Incident.AssigneeUPN | String | The user principal name of the incident assignee. | 
+| AzureSentinel.Incident.Label.Name | String | The name of the incident label. | 
+| AzureSentinel.Incident.Label.Type | String | The incident label type. | 
+| AzureSentinel.Incident.FirstActivityTimeUTC | Date | The date and time of the incident's first activity. | 
+| AzureSentinel.Incident.LastActivityTimeUTC | Date | The date and time of the incident's last activity. | 
+| AzureSentinel.Incident.LastModifiedTimeUTC | Date | The date and time the incident was last modified. | 
+| AzureSentinel.Incident.CreatedTimeUTC | Date | The date and time the incident was created. | 
+| AzureSentinel.Incident.IncidentNumber | Number | The incident number. | 
+| AzureSentinel.Incident.AlertsCount | Number | The number of the alerts in the incident. | 
+| AzureSentinel.Incident.BookmarkCount | Number | The number of bookmarks in the incident. | 
+| AzureSentinel.Incident.CommentCount | Number | The number of comments in the incident. | 
+| AzureSentinel.Incident.AlertProductNames | String | The alert product names of the incident. | 
+| AzureSentinel.Incident.Tactics | String | The incident's tactics. | 
+| AzureSentinel.Incident.FirstActivityTimeGenerated | Date | The incident's generated first activity time. | 
+| AzureSentinel.Incident.LastActivityTimeGenerated | Date | The incident's generated last activity time. | 
+| AzureSentinel.Incident.Etag | String | The Etag of the incident. | 
+
+
+#### Command Example
+
+```!azure-sentinel-create-incident severity=Low status=New title=test description=testing labels=[{\"labelName\":\"value\"}]```
+
+#### Context Example
+
+```json
+{
+    "AzureSentinel": {
+        "Incident": {
+            "ID": "8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742",
+            "IncidentNumber": 2,
+            "IncidentUrl": "https://portal.azure.com/#asset/Microsoft_Azure_Security_Insights/Incident/subscriptions/xxxxxx/resourceGroups/xxxxxx/providers/Microsoft.OperationalInsights/workspaces/xxxxxx/providers/Microsoft.SecurityInsights/Incidents/8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742",
+            "Title": "test",
+            "Description": "testing",
+            "Severity": "Low",
+            "Status": "New",
+            "AssigneeName": null,
+            "AssigneeEmail": null,
+            "AssigneeObjectID": null,
+            "AssigneeUPN": null,
+            "Label": [
+                {
+                    "Name": "value",
+                    "Type": "User"
+                }
+            ],
+            "FirstActivityTimeUTC": null,
+            "LastActivityTimeUTC": null,
+            "LastModifiedTimeUTC": "2021-08-23T13:30:49Z",
+            "CreatedTimeUTC": "2021-08-23T13:30:49Z",
+            "AlertsCount": 0,
+            "BookmarksCount": 0,
+            "CommentsCount": 0,
+            "AlertProductNames": [],
+            "ProviderIncidentUrl": null,
+            "Tactics": [],
+            "Techniques": [],
+            "FirstActivityTimeGenerated": null,
+            "LastActivityTimeGenerated": null,
+            "Etag": "\"3700fdde-0000-3d00-0000-67c6dadc0000\"",
+            "Deleted": false
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Created incidents 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 details
+>
+>|ID|Incident Number|Title|Description|Severity|Status|Incident Url|Label|Last Modified Time UTC|Created Time UTC|Alerts Count|Bookmarks Count|Comments Count|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 | 2 | test |testing | Low | New |https://portal.azure.com/#asset/Microsoft_Azure_Security_Insights/Incident/subscriptions/xxxxxx/resourceGroups/xxxxxx/providers/Microsoft.OperationalInsights/workspaces/xxxxxx/providers/Microsoft.SecurityInsights/Incidents/2b43defc-6c4b-434f-a152-6bdca46b6ef3| {'Name': 'value', 'Type': 'User'} | 2021-08-23T13:30:49Z | 2021-08-23T13:30:49Z | 0 | 0 | 0 | 
 
 ### azure-sentinel-delete-incident
 
