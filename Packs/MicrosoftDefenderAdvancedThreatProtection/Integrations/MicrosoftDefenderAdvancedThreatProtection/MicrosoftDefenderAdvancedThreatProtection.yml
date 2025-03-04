@@ -5672,6 +5672,43 @@ script:
     description: Get the specific machine's software details.
     name: microsoft-atp-get-machine-software
     polling: true
+    outputs:
+    - contextPath: MicrosoftATP.Software.id
+      description: The software ID.
+      type: String
+    - contextPath: MicrosoftATP.Software.name
+      description: The software name.
+      type: String
+    - contextPath: MicrosoftATP.Software.vendor
+      description: The software vendor name.
+      type: String
+    - contextPath: MicrosoftATP.Software.weaknesses
+      description: The amount of weaknesses present in the software.
+      type: Number
+    - contextPath: MicrosoftATP.Software.publicExploit
+      description: Does this software have a public exploit?
+      type: Boolean
+    - contextPath: MicrosoftATP.Software.activeAlert
+      description: Does this software have an active alert?
+      type: Boolean
+    - contextPath: MicrosoftATP.Software.exposedMachines
+      description: The amount of machines exposed to this software.
+      type: Number
+    - contextPath: MicrosoftATP.Software.installedMachines
+      description: The amount of machines with this software installed.
+      type: Number
+    - contextPath: MicrosoftATP.Software.impactScore
+      description: The impact score of the software.
+      type: Number
+    - contextPath: MicrosoftATP.Software.isNormalized
+      description: Is the software value normalized?
+      type: Boolean
+    - contextPath: MicrosoftATP.Software.category
+      description: The software category.
+      type: String
+    - contextPath: MicrosoftATP.Software.distributions
+      description: The distributions on which this software is present.
+      type: String
   - arguments:
     - description: The machine ID. Can be retrieved by running the 'microsoft-atp-get-machines' command.
       name: machine_id
@@ -5679,6 +5716,28 @@ script:
     description: Get the specific machine's missing security updates (KBs).
     name: microsoft-atp-get-machine-missing-kbs
     polling: true
+    outputs:
+    - contextPath: MicrosoftATP.MissingKB.id
+      description: The missing KB ID.
+      type: String
+    - contextPath: MicrosoftATP.MissingKB.name
+      description: The missing KB name.
+      type: String
+    - contextPath: MicrosoftATP.MissingKB.productsNames
+      description: The product names.
+      type: String
+    - contextPath: MicrosoftATP.MissingKB.url
+      description: The KB URL.
+      type: String
+    - contextPath: MicrosoftATP.MissingKB.machineMissedOn
+      description: The amount of machines that is missing this KB.
+      type: Number
+    - contextPath: MicrosoftATP.MissingKB.cveAddressed
+      description: The CVE addressed by this KB.
+      type: Number
+    - contextPath: MicrosoftATP.MissingKB.osBuild
+      description: The OS build.
+      type: String
   - arguments:
     - description: The machine ID. Can be retrieved by running the 'microsoft-atp-get-machines' command.
       name: machine_id
@@ -5686,6 +5745,61 @@ script:
     description: Get the specific machine's vulnerabilities
     name: microsoft-atp-get-machine-vulnerabilities
     polling: true
+    outputs:
+    - contextPath: MicrosoftATP.Vulnerability.id
+      description: The vulnerability ID.
+      type: String
+    - contextPath: MicrosoftATP.Vulnerability.name
+      description: The vulnerability name.
+      type: String
+    - contextPath: MicrosoftATP.Vulnerability.cveSupportability
+      description: The CVE supportability.
+      type: String
+    - contextPath: MicrosoftATP.Vulnerability.cvssV3
+      description: The CVSS V3.
+      type: Number
+    - contextPath: MicrosoftATP.Vulnerability.cvssVector
+      description: The CVSS vector.
+      type: String
+    - contextPath: MicrosoftATP.Vulnerability.description
+      description: A description of this vulnerability.
+      type: String
+    - contextPath: MicrosoftATP.Vulnerability.epss
+      description: The EPSS.
+      type: Number
+    - contextPath: MicrosoftATP.Vulnerability.exploitInKit
+      description: Is this vulnerability in an exploit kit?
+      type: Boolean
+    - contextPath: MicrosoftATP.Vulnerability.exploitTypes
+      description: The type(s) of exploit(s).
+      type: String
+    - contextPath: MicrosoftATP.Vulnerability.exploitUris
+      description: The exploit URIs.
+      type: String
+    - contextPath: MicrosoftATP.Vulnerability.exploitVerified
+      description: Is this exploit verified?
+      type: Boolean
+    - contextPath: MicrosoftATP.Vulnerability.exposedMachines
+      description: The amount of machines exposed to this vulnerability.
+      type: Number
+    - contextPath: MicrosoftATP.Vulnerability.firstDetected
+      description: The date and time when this vulnerability was first detected.
+      type: String
+    - contextPath: MicrosoftATP.Vulnerability.publicExploit
+      description: Does this vulnerability have a public exploit?
+      type: Boolean
+    - contextPath: MicrosoftATP.Vulnerability.publishedOn
+      description: The date and time when this vulnerability was published.
+      type: String
+    - contextPath: MicrosoftATP.Vulnerability.severity
+      description: The severity of this vulnerability.
+      type: String
+    - contextPath: MicrosoftATP.Vulnerability.tags
+      description: The tags associated with this vulnerability.
+      type: String
+    - contextPath: MicrosoftATP.Vulnerability.updatedOn
+      description: The date and time when this vulnerability was last updated.
+      type: String
   dockerimage: demisto/crypto:1.0.0.2005673
   isfetch: true
   runonce: false
