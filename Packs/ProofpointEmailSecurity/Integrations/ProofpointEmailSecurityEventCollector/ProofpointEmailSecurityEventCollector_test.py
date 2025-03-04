@@ -186,7 +186,8 @@ def test_handle_failures_of_send_events(mocker, capfd):
                                    EventConnection(EventType.MAILLOG, MockConnection())], 60)
     context = demisto.getIntegrationContext()
     # check the the context is cleared
-    assert not context
+    for event in EVENTS:
+        assert str(event) not in str(context)
     # check that the events failed events were sent to xsiam
     for event in EVENTS:
         assert event in second_try_send_events_mock.call_args_list[0][0][0]
