@@ -424,13 +424,13 @@ script:
     arguments:
     - name: resource
       isArray: false
-      description: The resource to query (domain/IP).
+      description: Type of resource for which information needs to be retrieved {e.g. domain}.
       required: true
       secret: false
       default: false
     - name: value
       isArray: false
-      description: Type of resource (domain/ipv4/ipv6).
+      description: Value corresponding to the selected "resource" for which information needs to be retrieved{e.g. silentpush.com}.
       required: true
       secret: false
       default: false
@@ -447,129 +447,195 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: SilentPush.Enrichment.ip_is_dsl_dynamic
-      description: Indicates if the IP is DSL dynamic.
-      type: Boolean
-    - contextPath: SilentPush.Enrichment.ip_has_expired_certificate
-      description: Indicates if the IP has an expired certificate.
-      type: Boolean
-    - contextPath: SilentPush.Enrichment.subnet_allocation_age
-      description: Age of the subnet allocation.
+    - contextPath: SilentPush.Enrichment.domain_string_frequency_probability.avg_probability
+      description: Average probability score of the domain string.
+      type: Number
+    - contextPath: SilentPush.Enrichment.domain_string_frequency_probability.dga_probability_score
+      description: Probability score indicating likelihood of being a DGA domain.
+      type: Number
+    - contextPath: SilentPush.Enrichment.domain_string_frequency_probability.domain
+      description: Domain name analyzed.
       type: String
-    - contextPath: SilentPush.Enrichment.asn_rank_score
-      description: Score of the ASN rank.
+    - contextPath: SilentPush.Enrichment.domain_string_frequency_probability.domain_string_freq_probabilities
+      description: List of frequency probabilities for different domain string components.
+      type: Unknown
+    - contextPath: SilentPush.Enrichment.domain_string_frequency_probability.query
+      description: Domain name queried.
+      type: String
+    - contextPath: SilentPush.Enrichment.domain_urls.results_summary.alexa_rank
+      description: Alexa rank of the domain.
       type: Number
-    - contextPath: SilentPush.Enrichment.asn_allocation_age
-      description: Age of the ASN allocation.
+    - contextPath: SilentPush.Enrichment.domain_urls.results_summary.alexa_top10k
+      description: Indicates if the domain is in the Alexa top 10k.
+      type: Boolean
+    - contextPath: SilentPush.Enrichment.domain_urls.results_summary.alexa_top10k_score
+      description: Score indicating domain’s Alexa top 10k ranking.
       type: Number
+    - contextPath: SilentPush.Enrichment.domain_urls.results_summary.dynamic_domain_score
+      description: Score indicating likelihood of domain being dynamically generated.
+      type: Number
+    - contextPath: SilentPush.Enrichment.domain_urls.results_summary.is_dynamic_domain
+      description: Indicates if the domain is dynamic.
+      type: Boolean
+    - contextPath: SilentPush.Enrichment.domain_urls.results_summary.is_url_shortener
+      description: Indicates if the domain is a known URL shortener.
+      type: Boolean
+    - contextPath: SilentPush.Enrichment.domain_urls.results_summary.results
+      description: Number of results found for the domain.
+      type: Number
+    - contextPath: SilentPush.Enrichment.domaininfo.domain
+      description: Domain name analyzed.
+      type: String
+    - contextPath: SilentPush.Enrichment.domaininfo.error
+      description: Error message if no data is available for the domain.
+      type: String
+    - contextPath: SilentPush.Enrichment.domaininfo.zone
+      description: TLD zone of the domain.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip_diversity.asn_diversity
+      description: Number of different ASNs associated with the domain.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip_diversity.ip_diversity_all
+      description: Total number of unique IPs observed for the domain.
+      type: String
+    - contextPath: SilentPush.Enrichment.ns_reputation.is_expired
+      description: Indicates if the domain’s nameserver is expired.
+      type: Boolean
+    - contextPath: SilentPush.Enrichment.ns_reputation.ns_reputation_max
+      description: Maximum reputation score for nameservers.
+      type: Number
+    - contextPath: SilentPush.Enrichment.ns_reputation.ns_reputation_score
+      description: Reputation score of the domain’s nameservers.
+      type: Number
+    - contextPath: SilentPush.Enrichment.scan_data.certificates.*.domain
+      description: Domain for which the SSL certificate was issued.
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.certificates.*.issuer_organization
+      description: Issuer organization of the SSL certificate.
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.headers.*.response
+      description: HTTP response code for the domain scan.
+      type: String
     - contextPath: SilentPush.Enrichment.sp_risk_score
-      description: Risk score for the service provider.
+      description: Overall risk score for the domain.
       type: Number
-    - contextPath: SilentPush.Enrichment.ip_reputation_score
-      description: Reputation score of the IP.
-      type: Number
-    - contextPath: SilentPush.Enrichment.ip
-      description: The IP address.
+    - contextPath: SilentPush.Enrichment.sp_risk_score_explain.sp_risk_score_decider
+      description: Factor that determined the final risk score.
       type: String
-    - contextPath: SilentPush.Enrichment.density
-      description: Density value for the IP address.
+    - contextPath: SilentPush.Enrichment.ip2asn.*.asn
+      description: Autonomous System Number (ASN) associated with the IP.
       type: Number
-    - contextPath: SilentPush.Enrichment.benign_info.actor
-      description: Actor associated with the benign information.
-      type: String
-    - contextPath: SilentPush.Enrichment.benign_info.known_benign
-      description: Indicates if the resource is known to be benign.
-      type: Boolean
-    - contextPath: SilentPush.Enrichment.benign_info.tags
-      description: Tags associated with the benign information.
-      type: Unknown
-    - contextPath: SilentPush.Enrichment.asn_allocation_date
-      description: Date of ASN allocation in YYYYMMDD format.
+    - contextPath: SilentPush.Enrichment.ip2asn.*.asn_allocation_age
+      description: Age of ASN allocation in days.
       type: Number
-    - contextPath: SilentPush.Enrichment.subnet_allocation_date
-      description: Date of subnet allocation or UNKNOWN if unavailable.
-      type: String
-    - contextPath: SilentPush.Enrichment.asn_takedown_reputation
-      description: Reputation score for ASN takedown.
-      type: Number
-    - contextPath: SilentPush.Enrichment.ip_location.continent_code
-      description: Continent code where the IP is located.
-      type: String
-    - contextPath: SilentPush.Enrichment.ip_location.continent_name
-      description: Continent name where the IP is located.
-      type: String
-    - contextPath: SilentPush.Enrichment.ip_location.country_code
-      description: Country code of the IP location.
-      type: String
-    - contextPath: SilentPush.Enrichment.ip_location.country_is_in_european_union
-      description: Indicates if the country is in the European Union.
-      type: Boolean
-    - contextPath: SilentPush.Enrichment.ip_location.country_name
-      description: Country name where the IP is located.
-      type: String
-    - contextPath: SilentPush.Enrichment.date
-      description: Date of the record in YYYYMMDD format.
-      type: Number
-    - contextPath: SilentPush.Enrichment.subnet_reputation_score
-      description: Reputation score of the subnet.
-      type: Number
-    - contextPath: SilentPush.Enrichment.asn_rank
-      description: Rank of the ASN.
-      type: Number
-    - contextPath: SilentPush.Enrichment.asn_reputation_score
+    - contextPath: SilentPush.Enrichment.ip2asn.*.asn_reputation
       description: Reputation score of the ASN.
       type: Number
-    - contextPath: SilentPush.Enrichment.ip_is_ipfs_node
-      description: Indicates if the IP is an IPFS node.
-      type: Boolean
-    - contextPath: SilentPush.Enrichment.value
-      description: The value associated with the IP or subnet.
+    - contextPath: SilentPush.Enrichment.ip2asn.*.asn_reputation_explain.ips_in_asn
+      description: Total number of IPs in the ASN.
+      type: Number
+    - contextPath: SilentPush.Enrichment.ip2asn.*.asn_reputation_explain.ips_num_active
+      description: Number of active IPs in the ASN.
+      type: Number
+    - contextPath: SilentPush.Enrichment.ip2asn.*.asn_reputation_explain.ips_num_listed
+      description: Number of listed IPs in the ASN.
+      type: Number
+    - contextPath: SilentPush.Enrichment.ip2asn.*.asn_takedown_reputation
+      description: Takedown reputation score of the ASN.
+      type: Number
+    - contextPath: SilentPush.Enrichment.ip2asn.*.asn_takedown_reputation_explain.ips_in_asn
+      description: Total number of IPs in the ASN with takedown reputation.
+      type: Number
+    - contextPath: SilentPush.Enrichment.ip2asn.*.asn_takedown_reputation_explain.ips_num_listed
+      description: Number of listed IPs in the ASN with takedown reputation.
+      type: Number
+    - contextPath: SilentPush.Enrichment.ip2asn.*.asn_takedown_reputation_explain.items_num_listed
+      description: Number of flagged items in the ASN with takedown reputation.
+      type: Number
+    - contextPath: SilentPush.Enrichment.ip2asn.*.asn_takedown_reputation_explain.listings_max_age
+      description: Maximum age of listings for the ASN with takedown reputation.
+      type: Number
+    - contextPath: SilentPush.Enrichment.ip2asn.*.asname
+      description: Name of the Autonomous System (AS).
       type: String
-    - contextPath: SilentPush.Enrichment.ip_reputation
-      description: Reputation score of the IP address.
+    - contextPath: SilentPush.Enrichment.ip2asn.*.date
+      description: Date of the scan data (YYYYMMDD format).
       type: Number
-    - contextPath: SilentPush.Enrichment.ip_is_dsl_dynamic_score
-      description: Score indicating if the IP is DSL dynamic.
-      type: Number
-    - contextPath: SilentPush.Enrichment.ip_has_open_directory
-      description: Indicates if the IP has an open directory.
-      type: Boolean
-    - contextPath: SilentPush.Enrichment.ip_ptr
-      description: Pointer record (PTR) of the IP address.
+    - contextPath: SilentPush.Enrichment.ip2asn.*.ip
+      description: IP address associated with the ASN.
       type: String
-    - contextPath: SilentPush.Enrichment.listing_score
-      description: Listing score of the IP address or resource.
-      type: Number
-    - contextPath: SilentPush.Enrichment.malscore
-      description: Malware score for the IP address.
-      type: Number
-    - contextPath: SilentPush.Enrichment.sinkhole_info.known_sinkhole_ip
-      description: Indicates if the IP is associated with a known sinkhole.
-      type: Boolean
-    - contextPath: SilentPush.Enrichment.sinkhole_info.tags
-      description: Tags associated with the sinkhole information.
-      type: Unknown
-    - contextPath: SilentPush.Enrichment.subnet_reputation
-      description: Reputation score of the subnet.
-      type: Number
-    - contextPath: SilentPush.Enrichment.asn_reputation
-      description: Reputation score of the ASN.
-      type: Number
-    - contextPath: SilentPush.Enrichment.asn
-      description: Autonomous System Number (ASN) of the IP or subnet.
-      type: Number
-    - contextPath: SilentPush.Enrichment.asname
-      description: Name of the ASN associated with the IP or subnet.
+    - contextPath: SilentPush.Enrichment.ip2asn.*.ip_location.country_name
+      description: Country where the IP is located.
       type: String
-    - contextPath: SilentPush.Enrichment.subnet
-      description: Subnet associated with the IP address.
-      type: String
-    - contextPath: SilentPush.Enrichment.ip_is_tor_exit_node
-      description: Indicates if the IP is a TOR exit node.
-      type: Boolean
-    - contextPath: SilentPush.Enrichment.asn_takedown_reputation_score
-      description: Reputation score for ASN takedown.
+    - contextPath: SilentPush.Enrichment.ip2asn.*.malscore
+      description: Malicious activity score for the IP.
       type: Number
+    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.certificates.*.hostname
+      description: Hostname associated with the SSL certificate.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.certificates.*.domain
+      description: Domain for which the SSL certificate was issued.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.certificates.*.fingerprint_sha1
+      description: SHA-1 fingerprint of the SSL certificate.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.certificates.*.issuer_common_name
+      description: Common name of the certificate issuer.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.certificates.*.issuer_organization
+      description: Organization that issued the SSL certificate.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.certificates.*.not_before
+      description: Start date of SSL certificate validity.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.certificates.*.not_after
+      description: Expiration date of SSL certificate validity.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.favicon.*.favicon2_md5
+      description: MD5 hash of the second favicon.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.favicon.*.favicon2_mmh3
+      description: MurmurHash3 value of the second favicon.
+      type: Number
+    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.favicon.*.favicon_md5
+      description: MD5 hash of the favicon.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.favicon.*.favicon_mmh3
+      description: MurmurHash3 value of the favicon.
+      type: Number
+    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.favicon.*.favicon2_path
+      description: Path to the second favicon file.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.headers.*.response
+      description: HTTP response code from the scan.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.headers.*.headers.server
+      description: Server header from the HTTP response.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.headers.*.headers.content-type
+      description: Content-Type header from the HTTP response.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.html.*.html_title
+      description: Title of the scanned HTML page.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.html.*.html_body_murmur3
+      description: MurmurHash3 of the HTML body content.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.html.*.html_body_ssdeep
+      description: SSDEEP fuzzy hash of the HTML body content.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.jarm.*.jarm_hash
+      description: JARM fingerprint hash for TLS analysis.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip2asn.*.sp_risk_score
+      description: Security risk score for the IP.
+      type: Number
+    - contextPath: SilentPush.Enrichment.ip2asn.*.sp_risk_score_explain.sp_risk_score_decider
+      description: Factor that determined the final risk score.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip2asn.*.subnet
+      description: Subnet associated with the IP.
+      type: String
   - deprecated: false
     description: This command fetch indicators of potential future attacks using a feed UUID.
     name: silentpush-get-future-attack-indicators
