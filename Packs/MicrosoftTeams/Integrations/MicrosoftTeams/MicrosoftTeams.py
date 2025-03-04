@@ -2415,7 +2415,15 @@ def mirror_investigation():
     else:
         channel_name: str = demisto.args().get('channel_name', '') or f'incident-{investigation_id}'
         channel_description: str = f'Channel to mirror incident {investigation_id}'
-        channel_id: str = create_channel(team_aad_id, channel_name, channel_description)
+        try:
+            channel_id: str = create_channel(team_aad_id, channel_name, channel_description)
+
+        except ValueError as e:
+            if "Channel name already existed" in str(e):
+                channel_id = get_channel_id(channel_name, team_aad_id)
+            else:
+                raise e
+
         service_url: str = integration_context.get('service_url', '')
         server_links: dict = demisto.demistoUrls()
         server_link: str = server_links.get('server', '')
