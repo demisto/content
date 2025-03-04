@@ -11237,97 +11237,22 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
     return dec
 
 
-def get_pack_version(pack_name=''):
+def get_pack_version(pack_name):
     """
-    Get a pack version.
-    The version can be retrieved either by a pack name or by the calling script/integration in which
-    script/integration is part of.
-
-    To get the version of the pack in which the calling script/integration is part of,
-    just call the function without pack_name.
+    Get the pack version.
+    The version can be retrieved only for the pack that contains the running script or integration.
 
     :type pack_name: ``str``
     :param pack_name: the pack name as mentioned in the pack metadata file to query its version.
-            use only if querying by a pack name.
 
-    :return: The pack version in which the integration/script is part of / the version of the requested pack name in
-        case provided. in case not found returns empty string.
+    :return: The pack version in which the integration/script is part of, in case not found returns empty string.
     :rtype: ``str``
     """
-
-    def _get_packs_by_query(_body_request):
-        packs_body_response = demisto.internalHttpRequest(
-            'POST', uri='/contentpacks/marketplace/search', body=json.dumps(body_request)
-        )
-        return _load_response(_response=packs_body_response.get('body')).get('packs') or []
-
-    def _load_response(_response):
-        try:
-            return json.loads(_response)
-        except json.JSONDecodeError:  # type: ignore[attr-defined]
-            demisto.debug('Unable to load response {response}'.format(response=_response))
-            return {}
-
-    def _extract_current_pack_version(_packs, _query_type, _entity_name):
-        # in case we have more than 1 pack returned from the search, need to make sure to retrieve the correct pack
-        if query_type == 'automation' or query_type == 'integration':
-            for pack in _packs:
-                for content_entity in (pack.get('contentItems') or {}).get(_query_type) or []:
-                    if (content_entity.get('name') or '') == _entity_name:
-                        return pack.get('currentVersion') or ''
-        else:
-            for pack in _packs:
-                if pack.get('name') == _entity_name:
-                    return pack.get('currentVersion') or ''
-        return ''
-
-    def _extract_integration_display_name(_integration_brand):
-        integrations_body_response = demisto.internalHttpRequest(
-            'POST', uri='/settings/integration/search', body=json.dumps({})
-        )
-        integrations_body_response = _load_response(_response=integrations_body_response.get('body'))
-        integrations = integrations_body_response.get('configurations') or []
-
-        for integration in integrations:
-            integration_display_name = integration.get('display')
-            if integration.get('id') == _integration_brand and integration_display_name:
-                return integration_display_name
-        return ''
-
-    # query by pack name
-    if pack_name:
-        entity_name = pack_name
-        body_request = {'packsQuery': entity_name}
-        query_type = 'pack'
-    # query by integration name
-    elif demisto.callingContext.get('integration'):  # True means its integration, False means its script/automation.
-        entity_name = (demisto.callingContext.get('context') or {}).get('IntegrationBrand') or ''
-        body_request = {'integrationsQuery': entity_name}
-        query_type = 'integration'
-    # query by script/automation name
+    global_name = f"{pack_name.replace(' ', '_').upper()}_PACK_VERSION"
+    if global_name in globals():
+        return globals()[global_name]
     else:
-        entity_name = (demisto.callingContext.get('context') or {}).get('ScriptName') or ''
-        body_request = {'automationQuery': entity_name}
-        query_type = 'automation'
-
-    pack_version = _extract_current_pack_version(
-        _packs=_get_packs_by_query(_body_request=body_request),
-        _query_type=query_type,
-        _entity_name=entity_name
-    )
-    if not pack_version and query_type == 'integration':
-        # handle the case where the display name of the integration is not the same as the integration brand
-        integration_display = _extract_integration_display_name(_integration_brand=entity_name)
-        if integration_display and integration_display != entity_name:
-            body_request['integrationsQuery'] = integration_display
-
-            return _extract_current_pack_version(
-                _packs=_get_packs_by_query(_body_request=body_request),
-                _query_type=query_type,
-                _entity_name=integration_display
-            )
         return ''
-    return pack_version
 
 
 def create_indicator_result_with_dbotscore_unknown(indicator, indicator_type, reliability=None,
