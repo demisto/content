@@ -38,7 +38,8 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "githubUser": [],
     "dependencies": {
@@ -59,5 +60,6 @@
         "CommonTypes",
         "CoreAlertFields",
         "CommonScripts"
-    ]
+    ],
+    "supportedModules": []
 }
