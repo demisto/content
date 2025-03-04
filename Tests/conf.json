@@ -6253,7 +6253,8 @@
         "Aha": "No instance",
         "SlackV2": "Integration slackV2 is deprecated.",
         "DSPM": "No instance",
-        "Symantec Email Security Cloud": "No instance"
+        "Symantec Email Security Cloud": "No instance",
+        "Mail Sender (New)": "Creds not working CRTX-160174"
     },
     "native_nightly_packs":[
         "Palo_Alto_Networks_WildFire",
