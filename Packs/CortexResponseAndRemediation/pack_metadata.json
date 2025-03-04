@@ -2,7 +2,7 @@
     "name": "Cortex Response And Remediation",
     "description": "The Cortex Response & Remediation Pack delivers a powerful collection of automated playbooks designed to streamline incident response and remediation processes. Built to support an Autonomous SOC vision.",
     "support": "xsoar",
-    "currentVersion": "1.1.14",
+    "currentVersion": "1.1.19",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
