@@ -272,8 +272,7 @@ def test_execute_file_reputation(mocker: MockerFixture):
     context_output, readable_command_results = execute_file_reputation(command)
 
     expected_output = util_load_json("test_data/file_reputation_command_expected.json")
-    assert context_output["_DBotScore"] == expected_output["DBotScore"]
-    assert context_output["_File"] == expected_output["File"]
+    assert context_output == expected_output["Context"]
     assert readable_command_results[0].readable_output == expected_output["HumanReadable"]
 
 
@@ -298,8 +297,7 @@ def test_execute_wildfire_report(mocker: MockerFixture):
     context_output, readable_command_results = execute_wildfire_report(command)
 
     expected_output = util_load_json("test_data/wildfire_report_command_expected.json")
-    assert context_output["_DBotScore"] == expected_output["DBotScore"]
-    assert context_output["_File"] == expected_output["File"]
+    assert context_output == expected_output["Context"]
     assert readable_command_results[0].readable_output == expected_output["HumanReadable"]
 
 
@@ -324,8 +322,7 @@ def test_execute_wildfire_verdict(mocker: MockerFixture):
     context_output, readable_command_results = execute_wildfire_verdict(command)
 
     expected_output = util_load_json("test_data/wildfire_verdict_command_expected.json")
-    assert context_output["_DBotScore"] == expected_output["DBotScore"]
-    assert context_output["_File"] == expected_output["File"]
+    assert context_output == expected_output["Context"]
     assert readable_command_results[0].readable_output == expected_output["HumanReadable"]
 
 
@@ -350,7 +347,7 @@ def test_execute_ir_hash_analytics(mocker: MockerFixture):
     context_output, readable_command_results = execute_ir_hash_analytics(command)
 
     expected_output = util_load_json("test_data/ir_hash_analytics_command_expected.json")
-    assert context_output["_File"] == expected_output["File"]
+    assert context_output == expected_output["Context"]
     assert readable_command_results[0].readable_output == expected_output["HumanReadable"]
 
 
@@ -461,7 +458,7 @@ def test_search_file_indicator(mocker: MockerFixture):
     search_file_indicator(SHA_256_HASH, per_command_context, verbose_command_results)
 
     expected_output = util_load_json("test_data/search_file_indicator_expected.json")
-    assert per_command_context["findIndicators"]["_File"] == expected_output["File"]
+    assert per_command_context["findIndicators"] == expected_output["Context"]
     assert verbose_command_results[0].readable_output == expected_output["HumanReadable"]
 
 
@@ -526,7 +523,7 @@ def test_run_external_enrichment(mocker: MockerFixture):
 def test_summarize_command_results_successful_commands(mocker: MockerFixture):
     """
     Given:
-        - Per-command entry context with "_File" and "_DBotScores" keys and verbose command results with "NOTE" entry type.
+        - Per-command entry context and verbose command results with "NOTE" entry type.
 
     When:
         - Calling `summarize_command_results`.
@@ -539,18 +536,9 @@ def test_summarize_command_results_successful_commands(mocker: MockerFixture):
 
     mock_table_to_markdown = mocker.patch("FileEnrichment.tableToMarkdown")
 
-    vt_score = {"Indicator": SHA_256_HASH, "Score": 1, "Reliability": "B - Reliable", "Vendor": Brands.VIRUS_TOTAL_V3.value}
-    wf_score = {"Indicator": SHA_256_HASH, "Score": 3, "Reliability": "B - Reliable", "Vendor": Brands.WILDFIRE_V2.value}
-
     per_command_context = {
-        "file": {
-            "_File": {"SHA256": SHA_256_HASH, "VTVerdict": "Benign"},
-            "_DBotScore": [vt_score]
-        },
-        "wildfire-report": {
-            "_File": {"SHA256": SHA_256_HASH, "WFReport": "Success"},
-            "_DBotScore": [wf_score]
-        }
+        "file": {"SHA256": SHA_256_HASH, "VTVerdict": "Benign"},
+        "wildfire-report": {"SHA256": SHA_256_HASH, "WFReport": "Success"}
     }
 
     summary_command_results = summarize_command_results(
@@ -573,7 +561,6 @@ def test_summarize_command_results_successful_commands(mocker: MockerFixture):
 
     assert summary_command_results.outputs == {
         ContextPaths.FILE.value: {"SHA256": SHA_256_HASH, "VTVerdict": "Benign", "WFReport": "Success"},
-        ContextPaths.DBOT_SCORE.value: [vt_score, wf_score]
     }
 
 
@@ -611,7 +598,7 @@ def test_summarize_command_results_failed_commands(mocker: MockerFixture):
         "Message": "Could not find data on file. Consider setting external_enrichment=true.",
     }
 
-    assert summary_command_results.outputs == {}
+    assert summary_command_results.outputs == {ContextPaths.FILE.value: {}}
 
 
 def test_main_invalid_hash(mocker: MockerFixture):

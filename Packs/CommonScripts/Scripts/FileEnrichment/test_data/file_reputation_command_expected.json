@@ -1,15 +1,28 @@
 {
-    "DBotScore": [
-        {
-            "Indicator": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
-            "Reliability": "C - Fairly reliable",
-            "Score": 3,
-            "Type": "file",
-            "Vendor": "VirusTotal (API v3)"
-        }
-    ],
-    "File": {
+    "Context": {
         "Extension": "zip",
+        "DBotScore": {
+            "Indicator": {
+                "Value": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
+                "Source": "VirusTotal (API v3)"
+            },
+            "Reliability": {
+                "Value": "C - Fairly reliable",
+                "Source": "VirusTotal (API v3)"
+            },
+            "Score": {
+                "Value": 3,
+                "Source": "VirusTotal (API v3)"
+            },
+            "Type": {
+                "Value": "file",
+                "Source": "VirusTotal (API v3)"
+            },
+            "Vendor": {
+                "Value": "VirusTotal (API v3)",
+                "Source": "VirusTotal (API v3)"
+            }
+        },
         "Hashes": [
             {
                 "type": "MD5",

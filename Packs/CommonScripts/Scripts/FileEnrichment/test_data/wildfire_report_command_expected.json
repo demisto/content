@@ -1,14 +1,5 @@
 {
-    "DBotScore": [
-        {
-            "Indicator": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
-            "Reliability": "B - Usually reliable",
-            "Score": 3,
-            "Type": "file",
-            "Vendor": "WildFire-v2"
-        }
-    ],
-    "File": {
+    "Context": {
         "DigitalSignature": {
             "Published": "None"
         },
@@ -26,6 +17,28 @@
                 "value": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0"
             }
         ],
+        "DBotScore": {
+            "Indicator": {
+                "Value": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
+                "Source": "WildFire-v2"
+            },
+            "Reliability": {
+                "Value": "B - Usually reliable",
+                "Source": "WildFire-v2"
+            },
+            "Score": {
+                "Value": 3,
+                "Source": "WildFire-v2"
+            },
+            "Type": {
+                "Value": "file",
+                "Source": "WildFire-v2"
+            },
+            "Vendor": {
+                "Value": "WildFire-v2",
+                "Source": "WildFire-v2"
+            }
+        },
         "MD5": "4e76823c05048e92a4c0122d61000edf",
         "Malicious": {
             "Description": null,
@@ -41,6 +54,10 @@
         "Report": {
             "Status": {
                 "Value": "Success",
+                "Source": "WildFire-v2"
+            },
+            "SHA256": {
+                "Value": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
                 "Source": "WildFire-v2"
             }
         }
