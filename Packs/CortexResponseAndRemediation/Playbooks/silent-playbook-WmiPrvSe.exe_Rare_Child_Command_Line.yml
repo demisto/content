@@ -1,1193 +1,1355 @@
+id: silent-WmiPrvSe.exe Rare Child Command Line
+version: -1
 contentitemexportablefields:
   contentitemfields: {}
-description: "This playbook addresses the following alerts:\n\n* WmiPrvSe.exe Rare\
-  \ Child Command Line\n\n**Playbook Stages:**\n\n**Analysis:**\n\n* Enrich the attacker\u2019\
-  s IP address to identify any known malicious activity.\n\n* Retrieve all alert-related\
-  \ alerts to consolidate context for further analysis.\n\n**Investigation:**\n\n\
-  * Analyze command-line activity to assess risks based on suspicious patterns.\n\n\
-  * Check for high-confidence evidence, such as malicious IP addresses or suspicious\
-  \ command-line activity, to determine the next course of action.\n\n* Evaluate medium-confidence\
-  \ detections and request analyst approval for further containment if required.\n\
-  \n**Containment:**\n\n* Attempt to terminate the malicious process.\n\n* Provide\
-  \ guidance for manual process termination if the automated action fails.\n\n* Propose\
-  \ endpoint isolation to prevent further compromise if malicious activity is confirmed."
-fromversion: 8.9.0
-id: silent-WmiPrvSe.exe Rare Child Command Line
-inputs: []
-issilent: true
 name: silent-WmiPrvSe.exe Rare Child Command Line
-outputs: []
-starttaskid: '0'
+issilent: true
+description: |-
+  This playbook addresses the following alerts:
+
+  * WmiPrvSe.exe Rare Child Command Line
+
+  **Playbook Stages:**
+
+  **Analysis:**
+
+  * Enrich the attacker’s IP address to identify any known malicious activity.
+
+  * Retrieve all alert-related alerts to consolidate context for further analysis.
+
+  **Investigation:**
+
+  * Analyze command-line activity to assess risks based on suspicious patterns.
+
+  * Check for high-confidence evidence, such as malicious IP addresses or suspicious command-line activity, to determine the next course of action.
+
+  * Evaluate medium-confidence detections and request analyst approval for further containment if required.
+
+  **Containment:**
+
+  * Attempt to terminate the malicious process.
+
+  * Provide guidance for manual process termination if the automated action fails.
+
+  * Propose endpoint isolation to prevent further compromise if malicious activity is confirmed.
 tags:
 - TA0008 - Lateral Movement
 - T1021 - Remote Services
+starttaskid: "0"
 tasks:
-  '0':
-    continueonerrortype: ''
-    id: '0'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - '22'
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: ''
-      id: d0d9e83a-eb37-4c5e-8669-4610c07f402f
-      iscommand: false
-      name: ''
-      version: -1
+  "0":
+    id: "0"
     taskid: d0d9e83a-eb37-4c5e-8669-4610c07f402f
-    timertriggers: []
     type: start
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -150\n  }\n}"
-  '1':
-    continueonerrortype: ''
-    id: '1'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    task:
+      id: d0d9e83a-eb37-4c5e-8669-4610c07f402f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - '4'
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -150
+        }
+      }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 3dea1ef1-2e15-40b1-8043-d23c49082ae9
+    type: regular
+    task:
+      id: 3dea1ef1-2e15-40b1-8043-d23c49082ae9
+      version: -1
+      name: Enrich attacker's IP address
+      description: Checks the specified IP address against the AbuseIP database.
+      script: '|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
     scriptarguments:
       ip:
         complex:
-          accessor: actor_remote_ip
           root: Core.OriginalAlert.event
+          accessor: actor_remote_ip
           transformers:
-          - args:
+          - operator: SetIfEmpty
+            args:
               applyIfEmpty: {}
               defaultValue:
-                iscontext: true
                 value:
                   simple: alert.hostip
-            operator: SetIfEmpty
+                iscontext: true
     separatecontext: false
-    skipunavailable: true
-    task:
-      brand: ''
-      description: Checks the specified IP address against the AbuseIP database.
-      id: 3dea1ef1-2e15-40b1-8043-d23c49082ae9
-      iscommand: true
-      name: Enrich attacker's IP address
-      script: '|||ip'
-      type: regular
-      version: -1
-    taskid: 3dea1ef1-2e15-40b1-8043-d23c49082ae9
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 663,
+          "y": 221
+        }
+      }
+    note: false
     timertriggers: []
-    type: regular
-    view: "{\n  \"position\": {\n    \"x\": 663,\n    \"y\": 221\n  }\n}"
-  '10':
-    continueonerrortype: ''
-    id: '10'
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: true
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: e6a68fa1-07fe-477e-839b-e34f1ea94317
+    type: regular
+    task:
+      id: e6a68fa1-07fe-477e-839b-e34f1ea94317
+      version: -1
+      name: Analyze command line
+      description: |-
+        This script evaluates command-line threats by analyzing both original and decoded inputs. It assigns weighted scores to detected patterns, such as AMSI bypass or credential dumping, and applies risk combination bonuses for multiple detections. The total score is normalized to a 0-100 scale, with risk levels categorized as follows:
+
+        * 0-25: Low Risk
+        * 26-50: Medium Risk
+        * 51-90: High Risk
+        * 91-100: Critical Risk
+
+        The scoring mechanism provides a comprehensive risk assessment, considering both the severity and frequency of malicious behaviors.
+      scriptName: CommandLineAnalysis
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      command_line:
+        complex:
+          root: alert
+          accessor: targetprocesscmd
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: alert.initiatorcmd
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 478
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 2bc56cd9-7962-499b-8b89-2c1019c24e51
+    type: title
+    task:
+      id: 2bc56cd9-7962-499b-8b89-2c1019c24e51
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: e3a5f626-810e-4be2-814a-4e7e39a901b6
+    type: condition
+    task:
+      id: e3a5f626-810e-4be2-814a-4e7e39a901b6
+      version: -1
+      name: Check for high-confidence evidence or malicious IP address
+      description: |-
+        This task evaluates the command line analysis results and checks if the profile matches one or more high-risk categories or if the overall score indicates a critical risk.
+
+        **Conditions:**
+
+        - A profile matches one or more of the following categories: **mixed case PowerShell, reversed command, PowerShell suspicious patterns, credential dumping, double encoding, AMSI techniques, or malicious commands.**
+        - OR the score is **greater than or equal to 25**.
+        - OR an **IP address** involved in the alert is flagged as **malicious**.
+
+        If any condition is met, mark the result as **Malicious**.
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       '#default#':
-      - '16'
-      Approved:
-      - '11'
-    note: false
-    quietmode: 0
+      - "8"
+      Malicious:
+      - "11"
     separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: AnyMatch
+          left:
+            value:
+              simple: CommandLineAnalysis.findings
+            iscontext: true
+          right:
+            value:
+              simple: mixed case powershell, reversed command, powershell suspicious patterns, credential dumping, double encoding, amsi techniques, malicious commands
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: IP
+                    ignorecase: true
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+        - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: CommandLineAnalysis.score
+            iscontext: true
+          right:
+            value:
+              simple: "25"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 602
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 19cbb840-f9a2-4334-8050-ea85ec73736a
+    type: regular
     task:
-      brand: ''
-      description: '**Approval Required: Suspicious Activity Detection**
+      id: 19cbb840-f9a2-4334-8050-ea85ec73736a
+      version: -1
+      name: Retrieve all incident alerts
+      description: This task searches for Cortex XSIAM alerts related to the current incident.
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      query:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'caseid:'
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 221
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 80d9b967-a4d6-46a5-814a-06d806805237
+    type: condition
+    task:
+      id: 80d9b967-a4d6-46a5-814a-06d806805237
+      version: -1
+      name: Check for medium-confidence threshold with a prevention alert
+      description: |
+        This task identifies the risk level by considering the score and whether a prevention rule is present in the same alert.
 
+        **Conditions:**
 
-        The detection does not meet the thresholds for a definitive malicious verdict.
-        It falls into a suspicious category based on the following conditions:
+        - If Score is **greater than or equal to 15** AND a **prevention rule exists** in the same alert, classify the result as **Malicious**.
+        - Else, if Score is **less than 15** AND a **prevention rule exists** in the same alert, classify the result as **Suspicious**.
 
+        High-risk behavior with prevention rule: **Malicious**.
+        Low-risk behavior with prevention rule: **Suspicious**.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      Malicious:
+      - "11"
+      Medium Confidence:
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: CommandLineAnalysis.score
+            iscontext: true
+          right:
+            value:
+              simple: "15"
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: foundIncidents.CustomFields.action
+            iscontext: true
+          right:
+            value:
+              simple: BLOCKED
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: foundIncidents.CustomFields.action
+            iscontext: true
+          right:
+            value:
+              simple: REPORTED
+    - label: Medium Confidence
+      condition:
+      - - operator: lessThan
+          left:
+            value:
+              simple: CommandLineAnalysis.score
+            iscontext: true
+          right:
+            value:
+              simple: "15"
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: foundIncidents.CustomFields.action
+            iscontext: true
+          right:
+            value:
+              simple: BLOCKED
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: foundIncidents.CustomFields.action
+            iscontext: true
+          right:
+            value:
+              simple: REPORTED
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: d7ea9ec9-e8b0-4c5f-8ecf-84dcbb2b422a
+    type: condition
+    task:
+      id: d7ea9ec9-e8b0-4c5f-8ecf-84dcbb2b422a
+      version: -1
+      name: Check for medium-confidence and request remediation approval
+      description: |-
+        This task identifies medium-risk cases based on the score received from the command line analysis script.
+
+        **Conditions:**
+
+        If the score is in the range of **10–25**, mark the result as **Suspicious**.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: InRange
+          left:
+            value:
+              simple: CommandLineAnalysis.score
+            iscontext: true
+          right:
+            value:
+              simple: 10,25
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: b5b70f92-16a9-4883-ba8c-720d18105221
+    type: condition
+    task:
+      id: b5b70f92-16a9-4883-ba8c-720d18105221
+      version: -1
+      name: 'Approval Required: Medium Confidence Detection'
+      description: |-
+        **Approval Required: Suspicious Activity Detection**
+
+        The detection does not meet the thresholds for a definitive malicious verdict. It falls into a suspicious category based on the following conditions:
 
         **One of the following supporting evidences**
 
-
         * Command Line Analysis score is in range 10 to 25
-
-        * Command Line Analysis score below 15 with a prevention rule in the same
-        incident.
-
+        * Command Line Analysis score below 15 with a prevention rule in the same incident.
         * Suspicious process tree detected
 
-
         **Unmatched Verdicts:**
-
         * No matches for high-risk command line analysis profiles.
-
         * No malicious IP address detected.
-
         * The command line analysis score is below 15 with high-confidence indicators.
 
-
-        Analyst approval is required to proceed with further containment or escalation.'
-      id: b5b70f92-16a9-4883-ba8c-720d18105221
-      iscommand: false
-      name: 'Approval Required: Medium Confidence Detection'
+        Analyst approval is required to proceed with further containment or escalation.
       type: condition
-      version: -1
-    taskid: b5b70f92-16a9-4883-ba8c-720d18105221
-    timertriggers: []
-    type: condition
-    view: "{\n  \"position\": {\n    \"x\": 830,\n    \"y\": 1350\n  }\n}"
-  '11':
-    continueonerrortype: ''
-    id: '11'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - '28'
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: ''
-      id: 0a1c5a5b-8df2-4b95-8fbe-d1d655f55346
       iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      Approved:
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 0a1c5a5b-8df2-4b95-8fbe-d1d655f55346
+    type: title
+    task:
+      id: 0a1c5a5b-8df2-4b95-8fbe-d1d655f55346
+      version: -1
       name: Containment
       type: title
-      version: -1
-    taskid: 0a1c5a5b-8df2-4b95-8fbe-d1d655f55346
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1530
+        }
+      }
+    note: false
     timertriggers: []
-    type: title
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1530\n  }\n}"
-  '12':
-    continueonerror: true
-    continueonerrortype: errorPath
-    id: '12'
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: cd768fe6-4308-492c-8f3f-02d4d77daf5d
+    type: regular
+    task:
+      id: cd768fe6-4308-492c-8f3f-02d4d77daf5d
+      version: -1
+      name: Terminate target process
+      description: Terminate a process by its instance ID. Available only for Cortex XSIAM 2.4 and above.
+      script: '|||core-terminate-process'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#error#':
-      - '13'
+      - "13"
       '#none#':
-      - '27'
-    note: false
-    quietmode: 0
+      - "27"
     scriptarguments:
       agent_id:
         simple: ${alert.agentid}
       instance_id:
         simple: ${alert.actionprocessinstanceid}
       timeout_in_seconds:
-        simple: '180'
+        simple: "180"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Terminate a process by its instance ID. Available only for Cortex
-        XSIAM 2.4 and above.
-      id: cd768fe6-4308-492c-8f3f-02d4d77daf5d
-      iscommand: true
-      name: Terminate target process
-      script: '|||core-terminate-process'
-      type: regular
-      version: -1
-    taskid: cd768fe6-4308-492c-8f3f-02d4d77daf5d
-    timertriggers: []
-    type: regular
-    view: "{\n  \"position\": {\n    \"x\": 70,\n    \"y\": 1840\n  }\n}"
-  '13':
-    continueonerrortype: ''
-    id: '13'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - '27'
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 1840
+        }
+      }
     note: false
-    quietmode: 0
-    separatecontext: false
+    timertriggers: []
+    ignoreworker: false
     skipunavailable: false
-    task:
-      brand: ''
-      description: "Dear Analyst,\n\nDuring the containment phase, the playbook couldn\u2019\
-        t terminate the process: ${Core.OriginalAlert.event.action_process_image_name}\n\
-        \nPlease terminate the process manually if possible."
-      id: be6e0678-b817-46a9-8a0d-f6b2ac546436
-      iscommand: false
-      name: Terminate Process Manually
-      type: regular
-      version: -1
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
     taskid: be6e0678-b817-46a9-8a0d-f6b2ac546436
-    timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2007\n  }\n}"
-  '14':
-    continueonerrortype: ''
-    id: '14'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    task:
+      id: be6e0678-b817-46a9-8a0d-f6b2ac546436
+      version: -1
+      name: Terminate Process Manually
+      description: |-
+        Dear Analyst,
+
+        During the containment phase, the playbook couldn’t terminate the process: ${Core.OriginalAlert.event.action_process_image_name}
+
+        Please terminate the process manually if possible.
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
-      - '15'
+      - "27"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2007
+        }
+      }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: b9bddcb7-e2bf-4cb6-8ccf-9a10b71ffb8a
+    type: regular
+    task:
+      id: b9bddcb7-e2bf-4cb6-8ccf-9a10b71ffb8a
+      version: -1
+      name: Close the Alert as True Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "15"
     scriptarguments:
       closeNotes:
-        simple: The alert has been resolved. Confirmed as a True Positive by the playbook
-          "WmiPrvSe.exe Rare Child Command Line"
+        simple: The alert has been resolved. Confirmed as a True Positive by the playbook "WmiPrvSe.exe Rare Child Command Line"
       closeReason:
         simple: Resolved - True Positive
       id:
         simple: ${alert.id}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: commands.local.cmd.close.inv
-      id: b9bddcb7-e2bf-4cb6-8ccf-9a10b71ffb8a
-      iscommand: true
-      name: Close the Alert as True Positive
-      script: Builtin|||closeInvestigation
-      type: regular
-      version: -1
-    taskid: b9bddcb7-e2bf-4cb6-8ccf-9a10b71ffb8a
-    timertriggers: []
-    type: regular
-    view: "{\n  \"position\": {\n    \"x\": 172,\n    \"y\": 3007\n  }\n}"
-  '15':
-    continueonerrortype: ''
-    id: '15'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 172,
+          "y": 3007
+        }
+      }
     note: false
-    quietmode: 0
-    separatecontext: false
+    timertriggers: []
+    ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 7f02a14e-8ff0-4bb6-860b-17d2471ce868
+    type: title
     task:
-      brand: ''
-      description: ''
       id: 7f02a14e-8ff0-4bb6-860b-17d2471ce868
-      iscommand: false
+      version: -1
       name: Done
       type: title
-      version: -1
-    taskid: 7f02a14e-8ff0-4bb6-860b-17d2471ce868
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 172,
+          "y": 3177
+        }
+      }
+    note: false
     timertriggers: []
-    type: title
-    view: "{\n  \"position\": {\n    \"x\": 172,\n    \"y\": 3177\n  }\n}"
-  '16':
-    continueonerrortype: ''
-    id: '16'
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 7122a5a1-429a-4ba1-8069-c7d736845fa1
+    type: regular
+    task:
+      id: 7122a5a1-429a-4ba1-8069-c7d736845fa1
+      version: -1
+      name: Close the Alert as False Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
-      - '15'
-    note: false
-    quietmode: 0
+      - "15"
     scriptarguments:
       closeNotes:
-        simple: The alert has been resolved. Confirmed as a False Positive by the
-          playbook "WmiPrvSe.exe Rare Child Command Line"
+        simple: The alert has been resolved. Confirmed as a False Positive by the playbook "WmiPrvSe.exe Rare Child Command Line"
       closeReason:
         simple: Resolved - False Positive
       id:
         simple: ${alert.id}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: commands.local.cmd.close.inv
-      id: 7122a5a1-429a-4ba1-8069-c7d736845fa1
-      iscommand: true
-      name: Close the Alert as False Positive
-      script: Builtin|||closeInvestigation
-      type: regular
-      version: -1
-    taskid: 7122a5a1-429a-4ba1-8069-c7d736845fa1
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 3007
+        }
+      }
+    note: false
     timertriggers: []
-    type: regular
-    view: "{\n  \"position\": {\n    \"x\": 1140,\n    \"y\": 3007\n  }\n}"
-  '17':
-    continueonerrortype: ''
-    id: '17'
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
-    message:
-      bcc: null
-      body: null
-      cc: null
-      format: ''
-      methods: []
-      replyOptions:
-      - Isolate
-      subject: null
-      timings:
-        completeafterreplies: 1
-        completeaftersla: false
-        completeafterv2: true
-        retriescount: 2
-        retriesinterval: 360
-      to: null
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 095c11b6-e83f-49f8-8761-24fe79b5d968
+    type: condition
+    task:
+      id: 095c11b6-e83f-49f8-8761-24fe79b5d968
+      version: -1
+      name: Approval Required – Malicious Activity Detected
+      description: |-
+        **Recommendation: Isolation Required – Malicious Activity Detected**
+
+        The detection meets high-confidence criteria for malicious activity based on the following conditions:
+
+        **Matched Verdicts:**
+        * Matches for high-risk command line analysis profiles: mixed_case_powershell, double_encoding, amsi_techniques, malicious_commands, or powershell_suspicious_network_patterns.
+
+        * Score >= 25, indicating high confidence probability for malicious behavior.
+
+        **Action Required:**
+
+        * Isolate the remote host: ${Endpoint.Hostname}
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       '#default#':
-      - '14'
+      - "14"
       Isolate:
-      - '18'
-    note: false
-    quietmode: 0
+      - "18"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: "**Recommendation: Isolation Required \u2013 Malicious Activity\
-        \ Detected**\n\nThe detection meets high-confidence criteria for malicious\
-        \ activity based on the following conditions:\n\n**Matched Verdicts:**\n*\
-        \ Matches for high-risk command line analysis profiles: mixed_case_powershell,\
-        \ double_encoding, amsi_techniques, malicious_commands, or powershell_suspicious_network_patterns.\n\
-        \n* Score >= 25, indicating high confidence probability for malicious behavior.\n\
-        \n**Action Required:**\n\n* Isolate the remote host: ${Endpoint.Hostname}"
-      id: 095c11b6-e83f-49f8-8761-24fe79b5d968
-      iscommand: false
-      name: "Approval Required \u2013 Malicious Activity Detected"
-      type: condition
-      version: -1
-    taskid: 095c11b6-e83f-49f8-8761-24fe79b5d968
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 451,
+          "y": 2670
+        }
+      }
+    note: false
     timertriggers: []
-    type: condition
-    view: "{\n  \"position\": {\n    \"x\": 451,\n    \"y\": 2670\n  }\n}"
-  '18':
-    continueonerrortype: ''
-    id: '18'
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Isolate
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 7df12c62-a960-428c-8e0f-dccf404b63e0
+    type: regular
+    task:
+      id: 7df12c62-a960-428c-8e0f-dccf404b63e0
+      version: -1
+      name: Isolate endpoint
+      description: Isolates the specified endpoint.
+      script: '|||core-isolate-endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
-      - '14'
-    note: false
-    quietmode: 0
+      - "14"
     scriptarguments:
       endpoint_id:
         simple: ${Endpoint.ID}
       incident_id:
         complex:
-          accessor: parentXDRIncident
           root: alert
+          accessor: parentXDRIncident
           transformers:
-          - args:
+          - operator: Cut
+            args:
               delimiter:
                 value:
                   simple: '-'
               fields:
                 value:
-                  simple: '2'
-            operator: Cut
+                  simple: "2"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Isolates the specified endpoint.
-      id: 7df12c62-a960-428c-8e0f-dccf404b63e0
-      iscommand: true
-      name: Isolate endpoint
-      script: '|||core-isolate-endpoint'
-      type: regular
-      version: -1
-    taskid: 7df12c62-a960-428c-8e0f-dccf404b63e0
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 451,
+          "y": 2865
+        }
+      }
+    note: false
     timertriggers: []
-    type: regular
-    view: "{\n  \"position\": {\n    \"x\": 451,\n    \"y\": 2865\n  }\n}"
-  '19':
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: aa59de8b-dca5-485b-90db-49fc8bad71dc
+    type: condition
+    task:
+      id: aa59de8b-dca5-485b-90db-49fc8bad71dc
+      version: -1
+      name: Should proceed to isolate the endpoint?
+      description: If the condition "Check for high-confidence evidence" was matched and the endpoint ID is available, an endpoint isolation is suggested.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "Yes":
+      - "23"
+    separatecontext: false
     conditions:
-    - condition:
-      - - ignorecase: true
+    - label: "Yes"
+      condition:
+      - - operator: AnyMatch
           left:
-            iscontext: true
             value:
               simple: CommandLineAnalysis.findings
-          operator: AnyMatch
+            iscontext: true
           right:
             value:
-              simple: mixed case powershell, reversed command, powershell suspicious
-                patterns, credential dumping, double encoding, amsi techniques, malicious
-                commands
-        - left:
-            iscontext: true
+              simple: mixed case powershell, reversed command, powershell suspicious patterns, credential dumping, double encoding, amsi techniques, malicious commands
+          ignorecase: true
+        - operator: greaterThanOrEqual
+          left:
             value:
               simple: CommandLineAnalysis.score
-          operator: greaterThanOrEqual
+            iscontext: true
           right:
             value:
-              simple: '25'
-      - - ignorecase: true
+              simple: "25"
+      - - operator: isEqualString
           left:
-            iscontext: true
             value:
               simple: Core.Endpoint.is_isolated
-          operator: isEqualString
+            iscontext: true
           right:
             value:
               simple: AGENT_UNISOLATED
-      label: 'Yes'
-    continueonerrortype: ''
-    id: '19'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#default#':
-      - '14'
-      'Yes':
-      - '23'
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 451,
+          "y": 2310
+        }
+      }
     note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: If the condition "Check for high-confidence evidence" was matched
-        and the endpoint ID is available, an endpoint isolation is suggested.
-      id: aa59de8b-dca5-485b-90db-49fc8bad71dc
-      iscommand: false
-      name: Should proceed to isolate the endpoint?
-      type: condition
-      version: -1
-    taskid: aa59de8b-dca5-485b-90db-49fc8bad71dc
     timertriggers: []
-    type: condition
-    view: "{\n  \"position\": {\n    \"x\": 451,\n    \"y\": 2310\n  }\n}"
-  '22':
-    continueonerrortype: ''
-    id: '22'
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - '26'
-    note: false
-    quietmode: 0
-    separatecontext: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 7ae38b7e-4c38-4c10-8cd6-1e935e4e0e4f
+    type: title
     task:
-      brand: ''
-      description: ''
       id: 7ae38b7e-4c38-4c10-8cd6-1e935e4e0e4f
-      iscommand: false
+      version: -1
       name: Analysis
       type: title
-      version: -1
-    taskid: 7ae38b7e-4c38-4c10-8cd6-1e935e4e0e4f
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -20
+        }
+      }
+    note: false
     timertriggers: []
-    type: title
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -20\n  }\n}"
-  '23':
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: c5470fce-c24b-4768-844b-ce10abd9c6ba
+    type: condition
+    task:
+      id: c5470fce-c24b-4768-844b-ce10abd9c6ba
+      version: -1
+      name: Check if the endpoint is workstation or a server
+      description: Checks whether the endpoint is a workstation or a server.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      WORKSTATION:
+      - "17"
+    separatecontext: false
     conditions:
-    - condition:
-      - - ignorecase: true
+    - label: WORKSTATION
+      condition:
+      - - operator: containsString
           left:
-            iscontext: true
             value:
               simple: Core.Endpoint.endpoint_type
-          operator: containsString
+            iscontext: true
           right:
             value:
               simple: WORKSTATION
-      - - ignorecase: true
+          ignorecase: true
+      - - operator: isEqualString
           left:
-            iscontext: true
             value:
               simple: Core.Endpoint.endpoint_status
-          operator: isEqualString
+            iscontext: true
           right:
             value:
               simple: CONNECTED
-      label: WORKSTATION
-    continueonerrortype: ''
-    id: '23'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#default#':
-      - '24'
-      WORKSTATION:
-      - '17'
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 451,
+          "y": 2490
+        }
+      }
     note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Checks whether the endpoint is a workstation or a server.
-      id: c5470fce-c24b-4768-844b-ce10abd9c6ba
-      iscommand: false
-      name: Check if the endpoint is workstation or a server
-      type: condition
-      version: -1
-    taskid: c5470fce-c24b-4768-844b-ce10abd9c6ba
     timertriggers: []
-    type: condition
-    view: "{\n  \"position\": {\n    \"x\": 451,\n    \"y\": 2490\n  }\n}"
-  '24':
-    continueonerrortype: ''
-    id: '24'
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: dc9a785d-392b-4233-89ad-b308d3412477
+    type: regular
+    task:
+      id: dc9a785d-392b-4233-89ad-b308d3412477
+      version: -1
+      name: Manual remediation actions for a server or a disconnected endpoint
+      description: "Dear Analyst,\n\nPlease note that during the remediation process, the playbook didn't isolate the following host: ${Endpoint.Hostname} \n\nThis is due to one of the following reasons:\n- The device disconnected.\n- The device has been identified as a server.\n\nPlease take manual action to contain the attack and prevent the attacker from executing lateral movement before closing this alert."
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
-      - '14'
-    note: false
-    quietmode: 0
+      - "14"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: "Dear Analyst,\n\nPlease note that during the remediation process,\
-        \ the playbook didn't isolate the following host: ${Endpoint.Hostname} \n\n\
-        This is due to one of the following reasons:\n- The device disconnected.\n\
-        - The device has been identified as a server.\n\nPlease take manual action\
-        \ to contain the attack and prevent the attacker from executing lateral movement\
-        \ before closing this alert."
-      id: dc9a785d-392b-4233-89ad-b308d3412477
-      iscommand: false
-      name: Manual remediation actions for a server or a disconnected endpoint
-      type: regular
-      version: -1
-    taskid: dc9a785d-392b-4233-89ad-b308d3412477
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 891,
+          "y": 2670
+        }
+      }
+    note: false
     timertriggers: []
-    type: regular
-    view: "{\n  \"position\": {\n    \"x\": 891,\n    \"y\": 2670\n  }\n}"
-  '25':
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: d5bfd9fb-9daf-442c-8107-77255db16b94
+    type: condition
+    task:
+      id: d5bfd9fb-9daf-442c-8107-77255db16b94
+      version: -1
+      name: Check for suspicious process tree
+      description: Checks if a suspicious process execution chain was detected. This Indicates a high probability of malicious behavior.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "10"
+    separatecontext: false
     conditions:
-    - condition:
-      - - ignorecase: true
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
           left:
-            iscontext: true
             value:
               simple: alert.initiatedby
-          operator: containsGeneral
+            iscontext: true
           right:
             value:
               simple: WmiPrvSE.exe
-        - ignorecase: true
+          ignorecase: true
+        - operator: containsGeneral
           left:
-            iscontext: true
             value:
               simple: alert.initiatedby
-          operator: containsGeneral
+            iscontext: true
           right:
             value:
               simple: WMIC.exe
-        - ignorecase: true
+          ignorecase: true
+        - operator: containsGeneral
           left:
-            iscontext: true
             value:
               simple: alert.initiatedby
-          operator: containsGeneral
+            iscontext: true
           right:
             value:
               simple: WMICodeCreator.exe
-      - - ignorecase: true
+          ignorecase: true
+      - - operator: containsGeneral
           left:
-            iscontext: true
             value:
               simple: alert.targetprocessname
-          operator: containsGeneral
+            iscontext: true
           right:
             value:
               simple: powershell.exe
-        - ignorecase: true
+          ignorecase: true
+        - operator: containsGeneral
           left:
-            iscontext: true
             value:
               simple: alert.targetprocessname
-          operator: containsGeneral
+            iscontext: true
           right:
             value:
               simple: cmd.exe
-        - ignorecase: true
+          ignorecase: true
+        - operator: containsGeneral
           left:
-            iscontext: true
             value:
               simple: alert.targetprocessname
-          operator: containsGeneral
+            iscontext: true
           right:
             value:
               simple: ntdsutil.exe
-        - ignorecase: true
+          ignorecase: true
+        - operator: containsGeneral
           left:
-            iscontext: true
             value:
               simple: alert.targetprocessname
-          operator: containsGeneral
+            iscontext: true
           right:
             value:
               simple: rundll32.exe
-      - - ignorecase: true
+          ignorecase: true
+      - - operator: notContainsGeneral
           left:
-            iscontext: true
             value:
               simple: alert.targetprocesscmd
-          operator: notContainsGeneral
+            iscontext: true
           right:
             value:
               simple: C:\Windows\CCM
-      label: 'yes'
-    continueonerrortype: ''
-    id: '25'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#default#':
-      - '16'
-      'yes':
-      - '10'
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 1150
+        }
+      }
     note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Checks if a suspicious process execution chain was detected. This
-        Indicates a high probability of malicious behavior.
-      id: d5bfd9fb-9daf-442c-8107-77255db16b94
-      iscommand: false
-      name: Check for suspicious process tree
-      type: condition
-      version: -1
-    taskid: d5bfd9fb-9daf-442c-8107-77255db16b94
     timertriggers: []
-    type: condition
-    view: "{\n  \"position\": {\n    \"x\": 1140,\n    \"y\": 1150\n  }\n}"
-  '26':
-    continueonerrortype: ''
-    id: '26'
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: f0b93f7f-3f2c-4141-8de9-78fa361a7597
+    type: regular
+    task:
+      id: f0b93f7f-3f2c-4141-8de9-78fa361a7597
+      version: -1
+      name: Get the attacker's remote host IP address
+      description: Returns information about each alert ID.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
-      - '1'
-      - '6'
-    note: false
-    quietmode: 0
+      - "1"
+      - "6"
     scriptarguments:
       alert_ids:
         simple: ${alert.id}
       filter_alert_fields:
-        simple: 'false'
+        simple: "false"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Returns information about each alert ID.
-      id: f0b93f7f-3f2c-4141-8de9-78fa361a7597
-      iscommand: true
-      name: Get the attacker's remote host IP address
-      script: '|||core-get-cloud-original-alerts'
-      type: regular
-      version: -1
-    taskid: f0b93f7f-3f2c-4141-8de9-78fa361a7597
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 93
+        }
+      }
+    note: false
     timertriggers: []
-    type: regular
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 93\n  }\n}"
-  '27':
-    continueonerrortype: ''
-    id: '27'
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: de317f0e-4b02-4628-81fa-134576939a13
+    type: regular
+    task:
+      id: de317f0e-4b02-4628-81fa-134576939a13
+      version: -1
+      name: Get endpoint status
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of the endpoint from the start of the result set (start by counting from 0).
+      script: '|||core-get-endpoints'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
-      - '19'
-    note: false
-    quietmode: 0
+      - "19"
     scriptarguments:
       endpoint_id_list:
         simple: ${alert.agentid}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Gets a list of endpoints, according to the passed filters. If there
-        are no filters, all endpoints are returned. Filtering by multiple fields will
-        be concatenated using AND condition (OR is not supported). Maximum result
-        set size is 100. Offset is the zero-based number of the endpoint from the
-        start of the result set (start by counting from 0).
-      id: de317f0e-4b02-4628-81fa-134576939a13
-      iscommand: true
-      name: Get endpoint status
-      script: '|||core-get-endpoints'
-      type: regular
-      version: -1
-    taskid: de317f0e-4b02-4628-81fa-134576939a13
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 451,
+          "y": 2140
+        }
+      }
+    note: false
     timertriggers: []
-    type: regular
-    view: "{\n  \"position\": {\n    \"x\": 451,\n    \"y\": 2140\n  }\n}"
-  '28':
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 894c36a0-db47-468b-887c-79316156c692
+    type: condition
+    task:
+      id: 894c36a0-db47-468b-887c-79316156c692
+      version: -1
+      name: Check if the causality is WMI
+      description: Check if the causality process image name is WMI.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      WMI:
+      - "12"
+    separatecontext: false
     conditions:
-    - condition:
-      - - ignorecase: true
+    - label: WMI
+      condition:
+      - - operator: containsGeneral
           left:
-            iscontext: true
             value:
               simple: alert.cgoname
-          operator: containsGeneral
+            iscontext: true
           right:
             value:
               simple: WmiPrvSE.exe
-        - ignorecase: true
+          ignorecase: true
+        - operator: containsGeneral
           left:
-            iscontext: true
             value:
               simple: alert.cgoname
-          operator: containsGeneral
+            iscontext: true
           right:
             value:
               simple: WMIC.exe
-        - ignorecase: true
+          ignorecase: true
+        - operator: containsGeneral
           left:
-            iscontext: true
             value:
               simple: alert.cgoname
-          operator: containsGeneral
+            iscontext: true
           right:
             value:
               simple: WMICodeCreator.exe
-      label: WMI
-    continueonerrortype: ''
-    id: '28'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#default#':
-      - '29'
-      WMI:
-      - '12'
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1643
+        }
+      }
     note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Check if the causality process image name is WMI.
-      id: 894c36a0-db47-468b-887c-79316156c692
-      iscommand: false
-      name: Check if the causality is WMI
-      type: condition
-      version: -1
-    taskid: 894c36a0-db47-468b-887c-79316156c692
     timertriggers: []
-    type: condition
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1643\n  }\n}"
-  '29':
-    continueonerror: true
-    continueonerrortype: errorPath
-    id: '29'
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 2aabb75e-d911-4d92-8974-0891c6156934
+    type: regular
+    task:
+      id: 2aabb75e-d911-4d92-8974-0891c6156934
+      version: -1
+      name: Terminate causality process
+      description: Terminate a process tree by its causality ID. Available only for Cortex XSIAM 2.4 and above.
+      script: '|||core-terminate-causality'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#error#':
-      - '13'
+      - "13"
       '#none#':
-      - '27'
-    note: false
-    quietmode: 0
+      - "27"
     scriptarguments:
       agent_id:
         simple: ${alert.agentid}
       causality_id:
         simple: ${alert.cid}
       timeout_in_seconds:
-        simple: '180'
+        simple: "180"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Terminate a process tree by its causality ID. Available only for
-        Cortex XSIAM 2.4 and above.
-      id: 2aabb75e-d911-4d92-8974-0891c6156934
-      iscommand: true
-      name: Terminate causality process
-      script: '|||core-terminate-causality'
-      type: regular
-      version: -1
-    taskid: 2aabb75e-d911-4d92-8974-0891c6156934
-    timertriggers: []
-    type: regular
-    view: "{\n  \"position\": {\n    \"x\": 819,\n    \"y\": 1840\n  }\n}"
-  '3':
-    continueonerrortype: ''
-    id: '3'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - '5'
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 819,
+          "y": 1840
+        }
+      }
     note: false
-    quietmode: 0
-    scriptarguments:
-      command_line:
-        complex:
-          accessor: targetprocesscmd
-          root: alert
-          transformers:
-          - args:
-              item:
-                iscontext: true
-                value:
-                  simple: alert.initiatorcmd
-            operator: append
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: 'This script evaluates command-line threats by analyzing both original
-        and decoded inputs. It assigns weighted scores to detected patterns, such
-        as AMSI bypass or credential dumping, and applies risk combination bonuses
-        for multiple detections. The total score is normalized to a 0-100 scale, with
-        risk levels categorized as follows:
-
-
-        * 0-25: Low Risk
-
-        * 26-50: Medium Risk
-
-        * 51-90: High Risk
-
-        * 91-100: Critical Risk
-
-
-        The scoring mechanism provides a comprehensive risk assessment, considering
-        both the severity and frequency of malicious behaviors.'
-      id: e6a68fa1-07fe-477e-839b-e34f1ea94317
-      iscommand: false
-      name: Analyze command line
-      scriptName: CommandLineAnalysis
-      type: regular
-      version: -1
-    taskid: e6a68fa1-07fe-477e-839b-e34f1ea94317
     timertriggers: []
-    type: regular
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 478\n  }\n}"
-  '4':
-    continueonerrortype: ''
-    id: '4'
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - '3'
-    note: false
-    quietmode: 0
-    separatecontext: false
     skipunavailable: false
-    task:
-      brand: ''
-      description: ''
-      id: 2bc56cd9-7962-499b-8b89-2c1019c24e51
-      iscommand: false
-      name: Investigation
-      type: title
-      version: -1
-    taskid: 2bc56cd9-7962-499b-8b89-2c1019c24e51
-    timertriggers: []
-    type: title
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 365\n  }\n}"
-  '5':
-    conditions:
-    - condition:
-      - - ignorecase: true
-          left:
-            iscontext: true
-            value:
-              simple: CommandLineAnalysis.findings
-          operator: AnyMatch
-          right:
-            value:
-              simple: mixed case powershell, reversed command, powershell suspicious
-                patterns, credential dumping, double encoding, amsi techniques, malicious
-                commands
-        - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: Score
-                filters:
-                - - ignorecase: true
-                    left:
-                      iscontext: true
-                      value:
-                        simple: DBotScore.Type
-                    operator: isEqualString
-                    right:
-                      value:
-                        simple: IP
-                root: DBotScore
-          operator: isEqualString
-          right:
-            value:
-              simple: '3'
-        - left:
-            iscontext: true
-            value:
-              simple: CommandLineAnalysis.score
-          operator: greaterThanOrEqual
-          right:
-            value:
-              simple: '25'
-      label: Malicious
-    continueonerrortype: ''
-    id: '5'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#default#':
-      - '8'
-      Malicious:
-      - '11'
-    note: false
     quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: 'This task evaluates the command line analysis results and checks
-        if the profile matches one or more high-risk categories or if the overall
-        score indicates a critical risk.
-
-
-        **Conditions:**
-
-
-        - A profile matches one or more of the following categories: **mixed case
-        PowerShell, reversed command, PowerShell suspicious patterns, credential dumping,
-        double encoding, AMSI techniques, or malicious commands.**
-
-        - OR the score is **greater than or equal to 25**.
-
-        - OR an **IP address** involved in the alert is flagged as **malicious**.
-
-
-        If any condition is met, mark the result as **Malicious**.'
-      id: e3a5f626-810e-4be2-814a-4e7e39a901b6
-      iscommand: false
-      name: Check for high-confidence evidence or malicious IP address
-      type: condition
-      version: -1
-    taskid: e3a5f626-810e-4be2-814a-4e7e39a901b6
-    timertriggers: []
-    type: condition
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 602\n  }\n}"
-  '6':
-    continueonerrortype: ''
-    id: '6'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
     isoversize: false
-    nexttasks:
-      '#none#':
-      - '4'
-    note: false
-    quietmode: 0
-    scriptarguments:
-      query:
-        complex:
-          accessor: parentXDRIncident
-          root: alert
-          transformers:
-          - args:
-              delimiter:
-                value:
-                  simple: '-'
-              fields:
-                value:
-                  simple: '2'
-            operator: Cut
-          - args:
-              prefix:
-                value:
-                  simple: 'caseid:'
-              suffix: {}
-            operator: concat
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: This task searches for Cortex XSIAM alerts related to the current
-        incident.
-      id: 19cbb840-f9a2-4334-8050-ea85ec73736a
-      iscommand: false
-      name: Retrieve all incident alerts
-      scriptName: SearchIncidentsV2
-      type: regular
-      version: -1
-    taskid: 19cbb840-f9a2-4334-8050-ea85ec73736a
-    timertriggers: []
-    type: regular
-    view: "{\n  \"position\": {\n    \"x\": 230,\n    \"y\": 221\n  }\n}"
-  '8':
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: CommandLineAnalysis.score
-          operator: greaterThanOrEqual
-          right:
-            value:
-              simple: '15'
-      - - ignorecase: true
-          left:
-            iscontext: true
-            value:
-              simple: foundIncidents.CustomFields.action
-          operator: containsGeneral
-          right:
-            value:
-              simple: BLOCKED
-        - left:
-            iscontext: true
-            value:
-              simple: foundIncidents.CustomFields.action
-          operator: isEqualString
-          right:
-            value:
-              simple: REPORTED
-      label: Malicious
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: CommandLineAnalysis.score
-          operator: lessThan
-          right:
-            value:
-              simple: '15'
-      - - ignorecase: true
-          left:
-            iscontext: true
-            value:
-              simple: foundIncidents.CustomFields.action
-          operator: containsGeneral
-          right:
-            value:
-              simple: BLOCKED
-        - left:
-            iscontext: true
-            value:
-              simple: foundIncidents.CustomFields.action
-          operator: isEqualString
-          right:
-            value:
-              simple: REPORTED
-      label: Medium Confidence
-    continueonerrortype: ''
-    id: '8'
-    ignoreworker: false
     isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#default#':
-      - '9'
-      Malicious:
-      - '11'
-      Medium Confidence:
-      - '10'
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: 'This task identifies the risk level by considering the score and
-        whether a prevention rule is present in the same alert.
-
-
-        **Conditions:**
-
-
-        - If Score is **greater than or equal to 15** AND a **prevention rule exists**
-        in the same alert, classify the result as **Malicious**.
-
-        - Else, if Score is **less than 15** AND a **prevention rule exists** in the
-        same alert, classify the result as **Suspicious**.
-
-
-        High-risk behavior with prevention rule: **Malicious**.
-
-        Low-risk behavior with prevention rule: **Suspicious**.
-
-        '
-      id: 80d9b967-a4d6-46a5-814a-06d806805237
-      iscommand: false
-      name: Check for medium-confidence threshold with a prevention alert
-      type: condition
-      version: -1
-    taskid: 80d9b967-a4d6-46a5-814a-06d806805237
-    timertriggers: []
-    type: condition
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 780\n  }\n}"
-  '9':
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: CommandLineAnalysis.score
-          operator: InRange
-          right:
-            value:
-              simple: 10,25
-      label: 'yes'
-    continueonerrortype: ''
-    id: '9'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#default#':
-      - '25'
-      'yes':
-      - '10'
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: "This task identifies medium-risk cases based on the score received\
-        \ from the command line analysis script.\n\n**Conditions:**\n\nIf the score\
-        \ is in the range of **10\u201325**, mark the result as **Suspicious**."
-      id: d7ea9ec9-e8b0-4c5f-8ecf-84dcbb2b422a
-      iscommand: false
-      name: Check for medium-confidence and request remediation approval
-      type: condition
-      version: -1
-    taskid: d7ea9ec9-e8b0-4c5f-8ecf-84dcbb2b422a
-    timertriggers: []
-    type: condition
-    view: "{\n  \"position\": {\n    \"x\": 830,\n    \"y\": 960\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_11_Approved": 0.38,
+      "10_16_#default#": 0.1,
+      "12_13_#error#": 0.64,
+      "17_14_#default#": 0.43,
+      "17_18_Isolate": 0.4,
+      "19_14_#default#": 0.21,
+      "19_23_Yes": 0.37,
+      "23_17_WORKSTATION": 0.46,
+      "23_24_#default#": 0.62,
+      "25_10_yes": 0.55,
+      "25_16_#default#": 0.1,
+      "28_12_WMI": 0.59,
+      "28_29_#default#": 0.6,
+      "29_13_#error#": 0.63,
+      "5_11_Malicious": 0.4,
+      "5_8_#default#": 0.42,
+      "8_10_Medium Confidence": 0.82,
+      "8_11_Malicious": 0.8,
+      "8_9_#default#": 0.64,
+      "9_10_yes": 0.25,
+      "9_25_#default#": 0.48
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3387,
+        "width": 1451,
+        "x": 70,
+        "y": -150
+      }
+    }
+  }
+inputs: []
+outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 8.9.0
