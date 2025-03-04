@@ -33,6 +33,13 @@ configuration:
   - trending
   - vulnerability-weaponization
   section: Connect
+- name: filter
+  display: Filter
+  type: 0
+  additionalinfo: Filter your Threat Lists (e.g., "gti_score:70+ positives:10- has:campaigns"). Leave empty to receive all.
+  required: false
+  advanced: true
+  section: Connect
 - display: The maximum number of results to return. If 0 all results will be returned.
   name: limit
   defaultvalue: 10
@@ -97,13 +104,6 @@ configuration:
   required: false
   section: Collect
   advanced: true
-- name: feedMinimumGTIScore
-  type: 0
-  display: Feed Minimum GTI Score
-  required: true
-  defaultvalue: 80
-  additionalinfo: The minimum GTI score to import as part of the feed
-  section: Collect
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
@@ -129,7 +129,7 @@ configuration:
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
   required: false
   section: Collect
-description: Use this feed integration to fetch Google Threat Intelligence Threat Lists matches.
+description: Use this feed integration to fetch Google Threat Intelligence Threat Lists matches as indicators.
 display: Google Threat Intelligence Threat Lists
 name: Google Threat Intelligence Threat Lists
 script:
@@ -139,6 +139,8 @@ script:
       description: Feed type.
     - name: package
       description: Package in '%Y%m%d%H' format. If not given, the latest package is taken.
+    - description: Filter your Threat Lists (e.g., "gti_score:70+ positives:10- has:campaigns"). Leave empty to receive all.
+      name: filter
     - name: limit
       defaultValue: '10'
       description: The maximum number of results to return. If 0 all results will be returned.

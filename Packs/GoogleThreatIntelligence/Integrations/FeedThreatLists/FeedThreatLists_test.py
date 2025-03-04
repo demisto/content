@@ -42,114 +42,98 @@ def _mock_ip(gti_score=None):
 def test_fetch_indicators_command(mocker):
     """Tests fetch indicators command."""
     client = Client('https://fake')
-    for gti_score, len_response in [
-        (0, 4),
-        (1, 3),
-        (50, 2),
-        (95, 1),
-        (100, 0),
-    ]:
-        mocker.patch.object(
-            client,
-            'get_threat_list',
-            return_value={
-                'iocs': [
-                    _mock_file(),
-                    _mock_domain(),
-                    _mock_url(),
-                    _mock_ip(),
-                ],
-            },
-        )
 
-        indicators = fetch_indicators_command(client, 'malware', limit=10, minimum_score=gti_score)
+    mocker.patch.object(
+        client,
+        'get_threat_list',
+        return_value={
+            'iocs': [
+                _mock_file(),
+                _mock_domain(),
+                _mock_url(),
+                _mock_ip(),
+            ],
+        },
+    )
 
-        assert len(indicators) == len_response
+    indicators = fetch_indicators_command(client, 'malware', limit=10)
 
-        for indicator in indicators:
-            if indicator['type'] == FeedIndicatorType.File:
-                assert set(indicator['fields'].keys()) == {
-                    'md5', 'sha1', 'sha256', 'ssdeep', 'fileextension', 'filetype', 'imphash',
-                    'tags', 'firstseenbysource', 'lastseenbysource', 'creationdate', 'updateddate',
-                    'detectionengines', 'positivedetections', 'displayname', 'name', 'size',
-                    'gtithreatscore', 'gtiseverity', 'gtiverdict', 'actor', 'malwarefamily',
-                }
-                assert indicator['value'] == '<sha256>'
-                assert indicator['value'] == indicator['fields']['sha256']
-                assert indicator['fields']['gtiverdict'] == 'VERDICT_MALICIOUS'
-                assert indicator['score'] == 3
-            elif indicator['type'] == FeedIndicatorType.Domain:
-                assert set(indicator['fields'].keys()) == {
-                    'admincountry', 'adminname', 'adminemail', 'adminphone', 'registrantcountry',
-                    'registrantemail', 'registrantname', 'registrantphone', 'registrarabusephone',
-                    'registrarabuseemail', 'registrarname', 'firstseenbysource', 'lastseenbysource',
-                    'tags', 'creationdate', 'updateddate', 'detectionengines', 'positivedetections',
-                    'gtithreatscore', 'gtiseverity', 'gtiverdict', 'actor', 'malwarefamily',
-                }
-                assert indicator['value'] == '<domain>'
-                assert indicator['fields']['adminemail'] == '<admin_email>@google.com'
-                assert indicator['fields']['registrantcountry'] == 'US'
-                assert indicator['fields']['registrarabusephone'] == '+34 600 000 000'
-                assert indicator['fields']['gtiverdict'] == 'VERDICT_MALICIOUS'
-                assert indicator['score'] == 3
-            elif indicator['type'] == FeedIndicatorType.URL:
-                assert set(indicator['fields'].keys()) == {
-                    'tags', 'firstseenbysource', 'lastseenbysource', 'updateddate',
-                    'detectionengines', 'positivedetections',
-                    'gtithreatscore', 'gtiseverity', 'gtiverdict', 'actor', 'malwarefamily',
-                }
-                assert indicator['value'] == '<url>'
-                assert indicator['fields']['firstseenbysource'] == 1722360511
-                assert indicator['fields']['gtiverdict'] == 'VERDICT_UNDETECTED'
-                assert indicator['score'] == 0
-            elif indicator['type'] == FeedIndicatorType.IP:
-                assert set(indicator['fields'].keys()) == {
-                    'tags', 'firstseenbysource', 'lastseenbysource', 'updateddate',
-                    'detectionengines', 'positivedetections', 'countrycode',
-                    'gtithreatscore', 'gtiseverity', 'gtiverdict', 'actor', 'malwarefamily',
-                }
-                assert indicator['value'] == 'X.X.X.X'
-                assert indicator['fields']['countrycode'] == 'US'
-                assert indicator['fields']['gtiverdict'] == 'VERDICT_BENIGN'
-                assert indicator['score'] == 1
-            else:
-                raise ValueError(f'Unknown type: {indicator["type"]}')
+    assert len(indicators) == 4
+
+    for indicator in indicators:
+        if indicator['type'] == FeedIndicatorType.File:
+            assert set(indicator['fields'].keys()) == {
+                'md5', 'sha1', 'sha256', 'ssdeep', 'fileextension', 'filetype', 'imphash',
+                'tags', 'firstseenbysource', 'lastseenbysource', 'creationdate', 'updateddate',
+                'detectionengines', 'positivedetections', 'displayname', 'name', 'size',
+                'gtithreatscore', 'gtiseverity', 'gtiverdict', 'actor', 'malwarefamily',
+            }
+            assert indicator['value'] == '<sha256>'
+            assert indicator['value'] == indicator['fields']['sha256']
+            assert indicator['fields']['gtiverdict'] == 'VERDICT_MALICIOUS'
+            assert indicator['score'] == 3
+        elif indicator['type'] == FeedIndicatorType.Domain:
+            assert set(indicator['fields'].keys()) == {
+                'admincountry', 'adminname', 'adminemail', 'adminphone', 'registrantcountry',
+                'registrantemail', 'registrantname', 'registrantphone', 'registrarabusephone',
+                'registrarabuseemail', 'registrarname', 'firstseenbysource', 'lastseenbysource',
+                'tags', 'creationdate', 'updateddate', 'detectionengines', 'positivedetections',
+                'gtithreatscore', 'gtiseverity', 'gtiverdict', 'actor', 'malwarefamily',
+            }
+            assert indicator['value'] == '<domain>'
+            assert indicator['fields']['adminemail'] == '<admin_email>@google.com'
+            assert indicator['fields']['registrantcountry'] == 'US'
+            assert indicator['fields']['registrarabusephone'] == '+34 600 000 000'
+            assert indicator['fields']['gtiverdict'] == 'VERDICT_MALICIOUS'
+            assert indicator['score'] == 3
+        elif indicator['type'] == FeedIndicatorType.URL:
+            assert set(indicator['fields'].keys()) == {
+                'tags', 'firstseenbysource', 'lastseenbysource', 'updateddate',
+                'detectionengines', 'positivedetections',
+                'gtithreatscore', 'gtiseverity', 'gtiverdict', 'actor', 'malwarefamily',
+            }
+            assert indicator['value'] == '<url>'
+            assert indicator['fields']['firstseenbysource'] == 1722360511
+            assert indicator['fields']['gtiverdict'] == 'VERDICT_UNDETECTED'
+            assert indicator['score'] == 0
+        elif indicator['type'] == FeedIndicatorType.IP:
+            assert set(indicator['fields'].keys()) == {
+                'tags', 'firstseenbysource', 'lastseenbysource', 'updateddate',
+                'detectionengines', 'positivedetections', 'countrycode',
+                'gtithreatscore', 'gtiseverity', 'gtiverdict', 'actor', 'malwarefamily',
+            }
+            assert indicator['value'] == 'X.X.X.X'
+            assert indicator['fields']['countrycode'] == 'US'
+            assert indicator['fields']['gtiverdict'] == 'VERDICT_BENIGN'
+            assert indicator['score'] == 1
+        else:
+            raise ValueError(f'Unknown type: {indicator["type"]}')
 
 
 def test_get_indicators_command(mocker):
     """Tests get indicators command."""
     client = Client('https://fake')
 
-    for gti_score, len_response in [
-        (None, 2),
-        (0, 4),
-        (1, 3),
-        (50, 2),
-        (95, 1),
-        (100, 0),
-    ]:
-        mocker.patch.object(
-            client,
-            'get_threat_list',
-            return_value={
-                'iocs': [
-                    _mock_file(),
-                    _mock_domain(),
-                    _mock_url(),
-                    _mock_ip(),
-                ],
-            },
-        )
-        params = {
-            'tlp_color': None,
-            'feedTags': [],
-        }
-        if gti_score is not None:
-            params['feedMinimumGTIScore'] = gti_score
+    mocker.patch.object(
+        client,
+        'get_threat_list',
+        return_value={
+            'iocs': [
+                _mock_file(),
+                _mock_domain(),
+                _mock_url(),
+                _mock_ip(),
+            ],
+        },
+    )
+    params = {
+        'tlp_color': None,
+        'feedTags': [],
+    }
 
-        result = get_indicators_command(client, params, {})
+    result = get_indicators_command(client, params, {})
 
-        assert len(result.raw_response) == len_response
+    assert len(result.raw_response) == 4
 
 
 def test_main_manual_command(mocker):
@@ -158,12 +142,12 @@ def test_main_manual_command(mocker):
         'tlp_color': None,
         'feedTags': [],
         'credentials': {'password': 'xxx'},
-        'feedMinimumGTIScore': 95,
     }
 
     args = {
         'limit': 7,
         'feed_type': 'malware',
+        'filter': 'gti_score:95+',
     }
 
     mocker.patch.object(demisto, 'params', return_value=params)
@@ -185,8 +169,8 @@ def test_main_manual_command(mocker):
 
     main()
 
-    assert get_threat_list_mock.call_args == mock.call('malware', mock.ANY, 7)
-    assert len(return_results_mock.call_args[0][0]['Contents']) == 1
+    assert get_threat_list_mock.call_args == mock.call('malware', mock.ANY, 'gti_score:95+', 7)
+    assert len(return_results_mock.call_args[0][0]['Contents']) == 4
 
 
 def test_main_default_command(mocker):
@@ -197,7 +181,7 @@ def test_main_default_command(mocker):
         'credentials': {'password': 'xxx'},
         'limit': 7,
         'feed_type': 'malware',
-        'feedMinimumGTIScore': 1,
+        'filter': 'gti_score:1+',
     }
 
     mocker.patch.object(demisto, 'params', return_value=params)
@@ -218,8 +202,8 @@ def test_main_default_command(mocker):
 
     main()
 
-    assert get_threat_list_mock.call_args == mock.call('malware', mock.ANY, 7)
-    assert len(create_indicators_mock.call_args[0][0]) == 3
+    assert get_threat_list_mock.call_args == mock.call('malware', mock.ANY, 'gti_score:1+', 7)
+    assert len(create_indicators_mock.call_args[0][0]) == 4
 
 
 def test_main_test_command(mocker):

@@ -26,7 +26,7 @@ FEED_STR = {
 
 
 def _get_current_package():
-    """Gets current package for Threat feeds."""
+    """Gets current package for Threat Lists."""
     time_obj = datetime.utcnow() - timedelta(hours=2)
     package = time_obj.strftime('%Y%m%d%H')
     return package
@@ -51,12 +51,14 @@ class Client(BaseClient):
     def get_threat_list(self,
                         feed_type: str,
                         package: str,
+                        filter_query: str = None,
                         limit: int = 10) -> dict:
         """Get indicators from GTI API."""
         return self._http_request(
             'GET',
             f'threat_lists/{feed_type}/{package}',
             params=assign_params(
+                query=filter_query,
                 limit=limit,
             )
         )
@@ -64,16 +66,18 @@ class Client(BaseClient):
     def fetch_indicators(self,
                          feed_type: str,
                          package: str = None,
+                         filter_query: str = None,
                          limit: int = 10,
                          fetch_command: bool = False) -> list:
         """Retrieves matches for a given feed type."""
         package = package or _get_current_package()
+        filter_query = filter_query or ''
 
         if fetch_command:
             if self.get_last_run() == package:
                 return []
 
-        response = self.get_threat_list(feed_type, package, limit)
+        response = self.get_threat_list(feed_type, package, filter_query.strip(), limit)
 
         if fetch_command:
             self.set_last_run(package)
@@ -322,24 +326,31 @@ def _create_indicator(item: dict) -> dict:
 def fetch_indicators_command(client: Client,
                              feed_type: str,
                              package: str = None,
+                             filter_query: str = None,
                              limit: int = 10,
                              tlp_color: str = None,
                              feed_tags: list = None,
-                             minimum_score: int = 0,
                              fetch_command: bool = False) -> list[dict]:
     """Retrieves indicators from the feed.
     Args:
         client (Client): Client object with request
+        feed_type (str): Feed type
+        package (string): Package in '%Y%m%d%H' format
+        filter_query (string): filter query
+        limit (int): Limit the results
         tlp_color (str): Traffic Light Protocol color
         feed_tags (list): Tags to assign fetched indicators
-        limit (int): Limit the results
+        fetch_command (bool): Whether command is used as fetch command.
     Returns:
         Indicators.
     """
     indicators = []
 
-    raw_indicators = client.fetch_indicators(
-        feed_type, package=package, limit=limit, fetch_command=fetch_command)
+    raw_indicators = client.fetch_indicators(feed_type,
+                                             package=package,
+                                             filter_query=filter_query,
+                                             limit=limit,
+                                             fetch_command=fetch_command)
 
     # extract values from iterator
     for item in raw_indicators:
@@ -355,16 +366,7 @@ def fetch_indicators_command(client: Client,
         if tlp_color:
             indicator_obj['fields']['trafficlightprotocol'] = tlp_color
 
-        if int(indicator_obj['fields'].get('gtithreatscore') or 0) >= minimum_score:
-            indicators.append(indicator_obj)
-        else:
-            try:
-                existing_indicators = list(IndicatorsSearcher(value=indicator_obj['value']))
-            except SystemExit as exc:
-                demisto.debug(exc)
-                existing_indicators = []
-            if len(existing_indicators) > 0 and int(existing_indicators[0].get('total', 0)) > 0:
-                indicators.append(indicator_obj)
+        indicators.append(indicator_obj)
 
     return indicators
 
@@ -384,17 +386,17 @@ def get_indicators_command(client: Client,
     feed_tags = argToList(params.get('feedTags', ''))
     feed_type = args.get('feed_type', 'malware')
     package = args.get('package')
+    filter_query = args.get('filter')
     limit = int(args.get('limit', 10))
-    minimum_score = int(params.get('feedMinimumGTIScore', 80))
 
     indicators = fetch_indicators_command(
         client,
         feed_type,
         package=package,
+        filter_query=filter_query,
         limit=limit,
         tlp_color=tlp_color,
         feed_tags=feed_tags,
-        minimum_score=minimum_score,
     )
 
     human_readable = tableToMarkdown(
@@ -427,10 +429,10 @@ def main():
     params = demisto.params()
 
     feed_type = params.get('feed_type', 'malware')
+    filter_query = params.get('filter')
     limit = int(params.get('limit', 10))
     tlp_color = params.get('tlp_color')
     feed_tags = argToList(params.get('feedTags', ''))
-    minimum_score = int(params.get('feedMinimumGTIScore', 80))
 
     # If your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
@@ -473,10 +475,10 @@ def main():
             # interval.
             indicators = fetch_indicators_command(client,
                                                   feed_type,
+                                                  filter_query=filter_query,
                                                   limit=limit,
                                                   tlp_color=tlp_color,
                                                   feed_tags=feed_tags,
-                                                  minimum_score=minimum_score,
                                                   fetch_command=True)
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)

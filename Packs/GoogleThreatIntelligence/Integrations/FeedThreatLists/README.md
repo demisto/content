@@ -1,4 +1,4 @@
-Use this feed integration to fetch Google Threat Intelligence Threat Lists matches. It processes the latest finished job retrieving its matches based on the limit parameter (40 by default) in every fetch until there are no more matches for that job.
+Use this feed integration to fetch Google Threat Intelligence Threat Lists matches as indicators. It processes the latest finished job retrieving its matches based on the limit parameter (10 by default) in every fetch until there are no more matches for that job.
 
 ## Configure Google Threat Intelligence Threat Lists on Cortex XSOAR
 
@@ -11,13 +11,13 @@ Use this feed integration to fetch Google Threat Intelligence Threat Lists match
 | feed | The fetch indicators. | False |
 | credentials | API Key. | True |
 | feed_type | Feed type. | True |
+| filter | Filter your Threat Lists (e.g., "gti_score:70+ positives:10- has:campaigns"). Leave empty to receive all. | False |
 | limit | The maximum number of results to return. Default is 10. | False | 
 | feedReputation | The indicator reputation. | False |
 | feedReliability | The source's reliability. | True |
 | tlp_color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp | False |
 | feedExpirationPolicy | The feed's expiration policy. | False |
 | feedFetchInterval | The feed fetch interval. | False |
-| feedMinimumGTIScore | The minimum GTI score to import as part of the feed. | True |
 | feedBypassExclusionList | Whether to bypass exclusion list. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -39,6 +39,7 @@ Gets the matches from Google Threat Intelligence Threat Lists.
 | --- | --- | --- |
 | feed_type | Feed type. | Required | 
 | package | Package in '%Y%m%d%H' format. If not given, the latest package is taken. | Optional | 
+| filter | Filter your Threat Lists (e.g., "gti_score:70+ positives:10- has:campaigns"). Leave empty to receive all. | Optional | 
 | limit | The maximum number of results to return. Default is 10. | Optional | 
 
 
@@ -48,7 +49,7 @@ There is no context output for this command.
 
 #### Command Example
 ```!gti-threatlists-get-indicators```
-```!gti-threatlists-get-indicators feed=malware package=2025021910 limit=10```
+```!gti-threatlists-get-indicators feed=malware package=2025021910 filter="gti_score:70+" limit=10```
 
 #### Human Readable Output
 
