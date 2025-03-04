@@ -1,4 +1,4 @@
-''' IMPORTS '''
+"""IMPORTS"""
 
 from typing import List
 
@@ -10,7 +10,7 @@ from CommonServerPython import *
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
 
 class AccessToken:
@@ -30,7 +30,7 @@ class Client(BaseClient):
     def __init__(self, secret: str, base_url: str, verify: bool, proxy):
         super().__init__(base_url, verify=verify, proxy=proxy)
         self._secret = secret
-        self._token: AccessToken = AccessToken('', datetime.now())
+        self._token: AccessToken = AccessToken("", datetime.now())
 
     def _get_token(self, force_new: bool = False):
         """
@@ -41,20 +41,16 @@ class Client(BaseClient):
             AccessToken: A valid Access Token to authorize requests
         """
         if self._token is None or force_new or self._token.expired:
-            response = self._http_request('POST', '/access_token/', data={'secret_key': self._secret})
-            token = response.get('data', {}).get('access_token')
-            expiration = response.get('data', {}).get('expiration_utc')
+            response = self._http_request("POST", "/access_token/", data={"secret_key": self._secret})
+            token = response.get("data", {}).get("access_token")
+            expiration = response.get("data", {}).get("expiration_utc")
             expiration_date = dateparser.parse(expiration)
-            assert expiration_date is not None, f'failed parsing {expiration}'
+            assert expiration_date is not None, f"failed parsing {expiration}"
 
             self._token = AccessToken(token, expiration_date)
         return self._token
 
-    def search_by_aql_string(self,
-                             aql_string: str,
-                             order_by: str = None,
-                             max_results: int = None,
-                             page_from: int = None):
+    def search_by_aql_string(self, aql_string: str, order_by: str = None, max_results: int = None, page_from: int = None):
         """
         Search with an AQL string and return the results.
         This function exists to allow a more advanced search than is provided for
@@ -68,39 +64,43 @@ class Client(BaseClient):
             dict: A JSON containing a list of results represented by JSON objects
         """
         token = self._get_token()
-        params = {'aql': aql_string}
+        params = {"aql": aql_string}
         if order_by is not None:
-            params['orderBy'] = order_by
+            params["orderBy"] = order_by
         if max_results is not None:
-            params['length'] = str(max_results)
+            params["length"] = str(max_results)
         if page_from is not None:
-            params['from'] = str(page_from)
+            params["from"] = str(page_from)
 
-        response = self._http_request('GET', '/search/', params=params,
-                                      headers={'accept': 'application/json', 'Authorization': str(token)})
+        response = self._http_request(
+            "GET", "/search/", params=params, headers={"accept": "application/json", "Authorization": str(token)}
+        )
         if max_results is None:
             # if max results was not specified get all results.
-            results: list = response.get('data', {}).get('results')
-            while response.get('data', {}).get('next') is not None:
+            results: list = response.get("data", {}).get("results")
+            while response.get("data", {}).get("next") is not None:
                 # while the response says there are more results use the 'page from' parameter to get the next results
-                params['from'] = str(len(results))
-                response = self._http_request('GET', '/search/', params=params,
-                                              headers={'accept': 'application/json', 'Authorization': str(token)})
-                results.extend(response.get('data', {}).get('results', []))
+                params["from"] = str(len(results))
+                response = self._http_request(
+                    "GET", "/search/", params=params, headers={"accept": "application/json", "Authorization": str(token)}
+                )
+                results.extend(response.get("data", {}).get("results", []))
 
-            response['data']['results'] = results
+            response["data"]["results"] = results
 
-        return response['data']
+        return response["data"]
 
-    def search_alerts(self,
-                      severity: List[str] = None,
-                      status: List[str] = None,
-                      alert_type: List[str] = None,
-                      alert_id: str = None,
-                      time_frame: str = None,
-                      order_by: str = None,
-                      max_results: int = None,
-                      page_from: int = None):
+    def search_alerts(
+        self,
+        severity: List[str] = None,
+        status: List[str] = None,
+        alert_type: List[str] = None,
+        alert_id: str = None,
+        time_frame: str = None,
+        order_by: str = None,
+        max_results: int = None,
+        page_from: int = None,
+    ):
         """
         Search Alerts based on commonly used parameters
         Args:
@@ -115,28 +115,24 @@ class Client(BaseClient):
         Returns:
             dict: A JSON containing a list of matching Alerts represented by JSON objects
         """
-        time_frame = '3 Days' if time_frame is None else time_frame
-        aql_string = ['in:alerts', f'timeFrame:"{time_frame}"']
+        time_frame = "3 Days" if time_frame is None else time_frame
+        aql_string = ["in:alerts", f'timeFrame:"{time_frame}"']
         if severity:
-            severity_string = ','.join([severity_option for severity_option in severity])
-            aql_string.append(f'riskLevel:{severity_string}')
+            severity_string = ",".join([severity_option for severity_option in severity])
+            aql_string.append(f"riskLevel:{severity_string}")
         if status:
-            status_string = ','.join([status_option for status_option in status])
-            aql_string.append(f'status:{status_string}')
+            status_string = ",".join([status_option for status_option in status])
+            aql_string.append(f"status:{status_string}")
         if alert_type:
-            alert_string = ','.join([f'"{alert_option}"' for alert_option in alert_type])
-            aql_string.append(f'type:{alert_string}')
+            alert_string = ",".join([f'"{alert_option}"' for alert_option in alert_type])
+            aql_string.append(f"type:{alert_string}")
         if alert_id:
-            aql_string.append(f'alertId:({alert_id})')
+            aql_string.append(f"alertId:({alert_id})")
 
-        aql_string = ' '.join(aql_string)  # type: ignore
-        return self.search_by_aql_string(aql_string, order_by=order_by, max_results=max_results,
-                                         page_from=page_from)  # type: ignore
+        aql_string = " ".join(aql_string)  # type: ignore
+        return self.search_by_aql_string(aql_string, order_by=order_by, max_results=max_results, page_from=page_from)  # type: ignore
 
-    def free_string_search_alerts(self, aql_string: str,
-                                  order_by: str = None,
-                                  max_results: int = None,
-                                  page_from: int = None):
+    def free_string_search_alerts(self, aql_string: str, order_by: str = None, max_results: int = None, page_from: int = None):
         """
         Search Alerts using a custom AQL String
         Args:
@@ -148,10 +144,8 @@ class Client(BaseClient):
             dict: A JSON containing a list of matching Alerts represented by JSON objects
         """
         return self.search_by_aql_string(
-            f'in:alerts {aql_string}',
-            order_by=order_by,
-            max_results=max_results,
-            page_from=page_from)
+            f"in:alerts {aql_string}", order_by=order_by, max_results=max_results, page_from=page_from
+        )
 
     def update_alert_status(self, alert_id: str, status: str):
         """
@@ -161,13 +155,16 @@ class Client(BaseClient):
             alert_id (str): The Id of the Alert
         """
         token = self._get_token()
-        return self._http_request('PATCH', f'/alerts/{alert_id}/',
-                                  headers={
-                                      'accept': 'application/json',
-                                      'Authorization': str(token),
-                                      'content-type': 'application/x-www-form-urlencoded'
-                                  },
-                                  data={'status': status})
+        return self._http_request(
+            "PATCH",
+            f"/alerts/{alert_id}/",
+            headers={
+                "accept": "application/json",
+                "Authorization": str(token),
+                "content-type": "application/x-www-form-urlencoded",
+            },
+            data={"status": status},
+        )
 
     def tag_device(self, device_id: str, tags: List[str]):
         """
@@ -177,8 +174,12 @@ class Client(BaseClient):
             device_id (str): The Id of the Device
         """
         token = self._get_token()
-        return self._http_request('POST', f'/devices/{device_id}/tags/', json_data={'tags': tags},
-                                  headers={'accept': 'application/json', 'Authorization': str(token)})
+        return self._http_request(
+            "POST",
+            f"/devices/{device_id}/tags/",
+            json_data={"tags": tags},
+            headers={"accept": "application/json", "Authorization": str(token)},
+        )
 
     def untag_device(self, device_id: str, tags: List[str]):
         """
@@ -188,19 +189,25 @@ class Client(BaseClient):
             device_id (str): The Id of the Device
         """
         token = self._get_token()
-        return self._http_request('DELETE', f'/devices/{device_id}/tags/', json_data={'tags': tags},
-                                  headers={'accept': 'application/json', 'Authorization': str(token)})
+        return self._http_request(
+            "DELETE",
+            f"/devices/{device_id}/tags/",
+            json_data={"tags": tags},
+            headers={"accept": "application/json", "Authorization": str(token)},
+        )
 
-    def search_devices(self,
-                       name: str = None,
-                       device_id: str = None,
-                       mac_address: str = None,
-                       risk_level: List[str] = None,
-                       ip_address: str = None,
-                       device_type: List[str] = None,
-                       time_frame: str = None,
-                       order_by: str = None,
-                       max_results: int = None):
+    def search_devices(
+        self,
+        name: str = None,
+        device_id: str = None,
+        mac_address: str = None,
+        risk_level: List[str] = None,
+        ip_address: str = None,
+        device_type: List[str] = None,
+        time_frame: str = None,
+        order_by: str = None,
+        max_results: int = None,
+    ):
         """
         Search Devices using commonly used search parameters
         Args:
@@ -217,24 +224,24 @@ class Client(BaseClient):
             dict: A JSON containing a list of matching Devices represented by JSON objects
         """
 
-        time_frame = '3 Days' if time_frame is None else time_frame
-        aql_string = ['in:devices', f'timeFrame:"{time_frame}"']
+        time_frame = "3 Days" if time_frame is None else time_frame
+        aql_string = ["in:devices", f'timeFrame:"{time_frame}"']
         if name is not None:
-            aql_string.append(f'name:({name})')
+            aql_string.append(f"name:({name})")
         if device_type is not None:
-            type_string = ','.join([f'"{type_option}"' for type_option in device_type])
-            aql_string.append(f'type:{type_string}')
+            type_string = ",".join([f'"{type_option}"' for type_option in device_type])
+            aql_string.append(f"type:{type_string}")
         if mac_address is not None:
-            aql_string.append(f'macAddress:({mac_address})')
+            aql_string.append(f"macAddress:({mac_address})")
         if ip_address is not None:
-            aql_string.append(f'ipAddress:({ip_address})')
+            aql_string.append(f"ipAddress:({ip_address})")
         if device_id is not None:
-            aql_string.append(f'deviceId:({device_id})')
+            aql_string.append(f"deviceId:({device_id})")
         if risk_level is not None:
-            risk_level_string = ','.join([risk_level_option for risk_level_option in risk_level])
-            aql_string.append(f'riskLevel:{risk_level_string}')
+            risk_level_string = ",".join([risk_level_option for risk_level_option in risk_level])
+            aql_string.append(f"riskLevel:{risk_level_string}")
 
-        aql_string = ' '.join(aql_string)  # type: ignore
+        aql_string = " ".join(aql_string)  # type: ignore
         return self.search_by_aql_string(aql_string, order_by=order_by, max_results=max_results)  # type: ignore
 
     def free_string_search_devices(self, aql_string: str, order_by: str = None, max_results: int = None):
@@ -247,7 +254,7 @@ class Client(BaseClient):
         Returns:
             dict: A JSON containing a list of matching Devices represented by JSON objects
         """
-        return self.search_by_aql_string(f'in:devices {aql_string}', order_by=order_by, max_results=max_results)
+        return self.search_by_aql_string(f"in:devices {aql_string}", order_by=order_by, max_results=max_results)
 
 
 def test_module(client: Client):
@@ -263,9 +270,9 @@ def test_module(client: Client):
 
     try:
         client._get_token(force_new=True)
-        return 'ok'
+        return "ok"
     except Exception as e:
-        return f'Test failed with the following error: {repr(e)}'
+        return f"Test failed with the following error: {repr(e)}"
 
 
 def _ensure_timezone(date: datetime):
@@ -293,18 +300,20 @@ def _create_time_frame_string(last_fetch: datetime):
     """
     current_time = _ensure_timezone(datetime.now())
     time_frame_seconds = round((current_time - last_fetch).total_seconds())
-    time_frame_string = f'{time_frame_seconds} seconds'
+    time_frame_string = f"{time_frame_seconds} seconds"
     return time_frame_string
 
 
-def fetch_incidents(client: Client,
-                    last_run: dict,
-                    first_fetch_time: str,
-                    minimum_severity: str,
-                    alert_type: List[str],
-                    alert_status: List[str],
-                    free_search_string: str,
-                    max_results: int):
+def fetch_incidents(
+    client: Client,
+    last_run: dict,
+    first_fetch_time: str,
+    minimum_severity: str,
+    alert_type: List[str],
+    alert_status: List[str],
+    free_search_string: str,
+    max_results: int,
+):
     """
     This function will execute each interval (default is 1 minute).
     Args:
@@ -321,18 +330,18 @@ def fetch_incidents(client: Client,
         incidents: Incidents that will be created in Demisto
     """
     # Get the last fetch time, if exists
-    last_fetch = last_run.get('last_fetch')
-    latest_alert_fetch = last_run.get('latest_alert_fetch')
+    last_fetch = last_run.get("last_fetch")
+    latest_alert_fetch = last_run.get("latest_alert_fetch")
     if latest_alert_fetch:
         latest_alert_fetch_date = dateparser.parse(latest_alert_fetch)
         assert latest_alert_fetch_date is not None
         latest_alert_fetch = _ensure_timezone(latest_alert_fetch_date)
-    incomplete_fetches = last_run.get('incomplete_fetches', 0)
+    incomplete_fetches = last_run.get("incomplete_fetches", 0)
 
     # Handle first time fetch
     if last_fetch:
         last_fetch_date = dateparser.parse(last_fetch)
-        assert last_fetch_date is not None, f'failed parsing {last_fetch}'
+        assert last_fetch_date is not None, f"failed parsing {last_fetch}"
 
         last_fetch = _ensure_timezone(last_fetch_date)
     else:
@@ -347,8 +356,8 @@ def fetch_incidents(client: Client,
 
     # get a list of severities from the minimum specified and upward
     # for example if min_severity is Medium requested_severities will be ['Medium', 'High']
-    severities_in_order = ['Low', 'Medium', 'High']
-    requested_severities = severities_in_order[severities_in_order.index(minimum_severity):]
+    severities_in_order = ["Low", "Medium", "High"]
+    requested_severities = severities_in_order[severities_in_order.index(minimum_severity) :]
     incidents = []
 
     # when the previous fetch returned more than max_results alerts, the same query is made again and max_results alerts
@@ -357,23 +366,21 @@ def fetch_incidents(client: Client,
     page_from = max_results * incomplete_fetches or None
     if free_search_string:
         data = client.free_string_search_alerts(
-            f'{free_search_string} timeFrame:{time_frame}',
-            order_by='time',
-            max_results=max_results,
-            page_from=page_from)
+            f"{free_search_string} timeFrame:{time_frame}", order_by="time", max_results=max_results, page_from=page_from
+        )
     else:
         data = client.search_alerts(
             status=alert_status,
             severity=requested_severities,
             alert_type=alert_type,
             time_frame=time_frame,
-            order_by='time',
+            order_by="time",
             max_results=max_results,
-            page_from=page_from
+            page_from=page_from,
         )
 
-    for alert in data.get('results', []):
-        time_date = dateparser.parse(alert.get('time'))
+    for alert in data.get("results", []):
+        time_date = dateparser.parse(alert.get("time"))
         assert time_date is not None
         incident_created_time = _ensure_timezone(time_date)
 
@@ -382,9 +389,9 @@ def fetch_incidents(client: Client,
             continue
 
         incident = {
-            'name': alert.get('description'),
-            'occurred': incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
-            'rawJSON': json.dumps(alert)
+            "name": alert.get("description"),
+            "occurred": incident_created_time.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "rawJSON": json.dumps(alert),
         }
 
         incidents.append(incident)
@@ -395,14 +402,20 @@ def fetch_incidents(client: Client,
             latest_created_time = incident_created_time
 
     latest_alert_fetch_iso_format = latest_created_time.isoformat()
-    if data.get('next'):
+    if data.get("next"):
         # if more than max_results alerts were returned, this fetch is incomplete and the extra results must be fetched
         # next time
-        next_run = {'last_fetch': last_fetch.isoformat(), 'incomplete_fetches': incomplete_fetches + 1,
-                    'latest_alert_fetch': latest_alert_fetch_iso_format}
+        next_run = {
+            "last_fetch": last_fetch.isoformat(),
+            "incomplete_fetches": incomplete_fetches + 1,
+            "latest_alert_fetch": latest_alert_fetch_iso_format,
+        }
     else:
-        next_run = {'last_fetch': latest_alert_fetch_iso_format, 'incomplete_fetches': 0,
-                    'latest_alert_fetch': latest_alert_fetch_iso_format}
+        next_run = {
+            "last_fetch": latest_alert_fetch_iso_format,
+            "incomplete_fetches": 0,
+            "latest_alert_fetch": latest_alert_fetch_iso_format,
+        }
     return next_run, incidents
 
 
@@ -414,10 +427,10 @@ def untag_device_command(client: Client, args: dict):
         args (dict): A dict object containing the arguments for this command
     """
 
-    device_id = str(args.get('device_id'))
-    tags = argToList(args.get('tags'))
+    device_id = str(args.get("device_id"))
+    tags = argToList(args.get("tags"))
     client.untag_device(device_id, tags)
-    return f'Successfully Untagged device: {device_id} with tags: {tags}'
+    return f"Successfully Untagged device: {device_id} with tags: {tags}"
 
 
 def tag_device_command(client: Client, args: dict):
@@ -427,10 +440,10 @@ def tag_device_command(client: Client, args: dict):
         client (Client): An Armis client object
         args (dict): A dict object containing the arguments for this command
     """
-    device_id = str(args.get('device_id'))
-    tags = argToList(args.get('tags'))
+    device_id = str(args.get("device_id"))
+    tags = argToList(args.get("tags"))
     client.tag_device(device_id, tags)
-    return f'Successfully Tagged device: {device_id} with tags: {tags}'
+    return f"Successfully Tagged device: {device_id} with tags: {tags}"
 
 
 def update_alert_status_command(client: Client, args: dict):
@@ -440,10 +453,10 @@ def update_alert_status_command(client: Client, args: dict):
         client (Client): An Armis client object
         args (dict): A dict object containing the arguments for this command
     """
-    alert_id = str(args.get('alert_id'))
-    status = str(args.get('status'))
+    alert_id = str(args.get("alert_id"))
+    status = str(args.get("status"))
     client.update_alert_status(alert_id, status)
-    return f'Successfully Updated Alert: {alert_id} to status: {status}'
+    return f"Successfully Updated Alert: {alert_id} to status: {status}"
 
 
 def search_alerts_command(client: Client, args: dict):
@@ -455,50 +468,51 @@ def search_alerts_command(client: Client, args: dict):
     Returns:
         CommandResults: A CommandResults object containing the matching alerts
     """
-    severity = args.get('severity')
+    severity = args.get("severity")
     if severity is not None:
         severity = argToList(severity)
 
-    status = args.get('status')
+    status = args.get("status")
     if status is not None:
         status = argToList(status)
 
-    alert_type = args.get('alert_type')
+    alert_type = args.get("alert_type")
     if alert_type is not None:
         alert_type = argToList(alert_type)
 
-    alert_id = args.get('alert_id')
-    max_results = int(args.get('max_results', 50))
-    time_frame = args.get('time_frame')
+    alert_id = args.get("alert_id")
+    max_results = int(args.get("max_results", 50))
+    time_frame = args.get("time_frame")
 
     response = client.search_alerts(severity, status, alert_type, alert_id, time_frame, max_results=max_results)
-    results = response.get('results')
+    results = response.get("results")
     if results:
         return CommandResults(
-            outputs_prefix='Armis.Alert',
-            outputs_key_field='alertId',
+            outputs_prefix="Armis.Alert",
+            outputs_key_field="alertId",
             outputs=results,
             raw_response=response,
             readable_output=tableToMarkdown(
-                'Alerts',
+                "Alerts",
                 results,
                 headers=[
-                    'severity',
-                    'type',
-                    'time',
-                    'status',
-                    'title',
-                    'description',
-                    'activityIds',
-                    'activityUUIDs',
-                    'alertId',
-                    'connectionIds',
-                    'deviceIds'
+                    "severity",
+                    "type",
+                    "time",
+                    "status",
+                    "title",
+                    "description",
+                    "activityIds",
+                    "activityUUIDs",
+                    "alertId",
+                    "connectionIds",
+                    "deviceIds",
                 ],
                 removeNull=True,
-                headerTransform=pascalToSpace)
+                headerTransform=pascalToSpace,
+            ),
         )
-    return 'No results found'
+    return "No results found"
 
 
 def search_devices_command(client: Client, args: dict):
@@ -508,55 +522,49 @@ def search_devices_command(client: Client, args: dict):
         client (Client): An Armis client object
         args (dict): A dict object containing the arguments for this command
     """
-    risk_level = args.get('risk_level')
+    risk_level = args.get("risk_level")
     if risk_level is not None:
         risk_level = argToList(risk_level)
 
-    device_type = args.get('device_type')
+    device_type = args.get("device_type")
     if device_type is not None:
         device_type = argToList(device_type)
 
-    name = args.get('name')
-    device_id = args.get('device_id')
-    mac_address = args.get('mac_address')
-    ip_address = args.get('ip_address')
-    time_frame = args.get('time_frame')
-    max_results = int(args.get('max_results', 50))
+    name = args.get("name")
+    device_id = args.get("device_id")
+    mac_address = args.get("mac_address")
+    ip_address = args.get("ip_address")
+    time_frame = args.get("time_frame")
+    max_results = int(args.get("max_results", 50))
 
-    response = client.search_devices(name,
-                                     device_id,
-                                     mac_address,
-                                     risk_level,
-                                     ip_address,
-                                     device_type,
-                                     time_frame,
-                                     max_results=max_results)
-    results = response.get('results')
+    response = client.search_devices(
+        name, device_id, mac_address, risk_level, ip_address, device_type, time_frame, max_results=max_results
+    )
+    results = response.get("results")
     if results:
         headers = [
-            'riskLevel',
-            'id',
-            'name',
-            'type',
-            'ipAddress',
-            'ipv6',
-            'macAddress',
-            'operatingSystem',
-            'operatingSystemVersion',
-            'manufacturer',
-            'model',
-            'tags',
-            'user'
+            "riskLevel",
+            "id",
+            "name",
+            "type",
+            "ipAddress",
+            "ipv6",
+            "macAddress",
+            "operatingSystem",
+            "operatingSystemVersion",
+            "manufacturer",
+            "model",
+            "tags",
+            "user",
         ]
         return CommandResults(
-            outputs_prefix='Armis.Device',
-            outputs_key_field='deviceId',
+            outputs_prefix="Armis.Device",
+            outputs_key_field="deviceId",
             outputs=results,
             raw_response=response,
-            readable_output=tableToMarkdown('Devices', results, headers=headers, removeNull=True,
-                                            headerTransform=pascalToSpace)
+            readable_output=tableToMarkdown("Devices", results, headers=headers, removeNull=True, headerTransform=pascalToSpace),
         )
-    return 'No devices found'
+    return "No devices found"
 
 
 def search_devices_by_aql_command(client: Client, args: dict):
@@ -566,107 +574,107 @@ def search_devices_by_aql_command(client: Client, args: dict):
         client (Client): An Armis client object
         args (dict): A dict object containing the arguments for this command
     """
-    aql_string = str(args.get('aql_string'))
-    max_results = int(args.get('max_results', 50))
+    aql_string = str(args.get("aql_string"))
+    max_results = int(args.get("max_results", 50))
 
     response = client.free_string_search_devices(aql_string, max_results=max_results)
-    results = response.get('results')
+    results = response.get("results")
     if results:
         headers = [
-            'riskLevel',
-            'name',
-            'type',
-            'ipAddress',
-            'tags',
-            'user',
-            'id',
+            "riskLevel",
+            "name",
+            "type",
+            "ipAddress",
+            "tags",
+            "user",
+            "id",
         ]
         return CommandResults(
-            outputs_prefix='Armis.Device',
-            outputs_key_field='deviceId',
+            outputs_prefix="Armis.Device",
+            outputs_key_field="deviceId",
             outputs=results,
             raw_response=response,
-            readable_output=tableToMarkdown('Devices', results, headers=headers, removeNull=True,
-                                            headerTransform=pascalToSpace)
+            readable_output=tableToMarkdown("Devices", results, headers=headers, removeNull=True, headerTransform=pascalToSpace),
         )
-    return 'No devices found'
+    return "No devices found"
 
 
 def search_alerts_by_aql_command(client: Client, args: dict):
     """
-   armis-search-alerts-by-aql command: Returns results for searching Alerts using a free AQL string
-    Args:
-        client (Client): An Armis client object
-        args (dict): A dict object containing the arguments for this command
+    armis-search-alerts-by-aql command: Returns results for searching Alerts using a free AQL string
+     Args:
+         client (Client): An Armis client object
+         args (dict): A dict object containing the arguments for this command
     """
-    aql_string = str(args.get('aql_string'))
-    max_results = int(args.get('max_results', 50))
+    aql_string = str(args.get("aql_string"))
+    max_results = int(args.get("max_results", 50))
 
     response = client.free_string_search_alerts(aql_string, max_results=max_results)
-    results = response.get('results')
+    results = response.get("results")
     if results:
         return CommandResults(
-            outputs_prefix='Armis.Alert',
-            outputs_key_field='alertId',
+            outputs_prefix="Armis.Alert",
+            outputs_key_field="alertId",
             outputs=results,
             raw_response=response,
             readable_output=tableToMarkdown(
-                'Alerts',
+                "Alerts",
                 results,
                 headers=[
-                    'alertId',
-                    'description',
-                    'type',
-                    'title',
-                    'severity',
-                    'status',
-                    'time',
-                    'activityIds',
-                    'activityUUIDs',
-                    'connectionIds',
-                    'deviceIds',
+                    "alertId",
+                    "description",
+                    "type",
+                    "title",
+                    "severity",
+                    "status",
+                    "time",
+                    "activityIds",
+                    "activityUUIDs",
+                    "connectionIds",
+                    "deviceIds",
                 ],
                 removeNull=True,
-                headerTransform=pascalToSpace)
+                headerTransform=pascalToSpace,
+            ),
         )
-    return 'No alerts found'
+    return "No alerts found"
 
 
 def main():
     """
-        PARSE AND VALIDATE INTEGRATION PARAMS
+    PARSE AND VALIDATE INTEGRATION PARAMS
     """
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()
 
-    secret = params.get('secret')
+    secret = params.get("secret")
 
     # get the service API url
-    base_url = params.get('url')
-    if 'api/v1' not in base_url:
-        base_url = urljoin(base_url, '/api/v1/')
-    verify = not params.get('insecure', False)
+    base_url = params.get("url")
+    if "api/v1" not in base_url:
+        base_url = urljoin(base_url, "/api/v1/")
+    verify = not params.get("insecure", False)
 
     # How much time before the first fetch to retrieve incidents
-    first_fetch_time = params.get('fetch_time', '3 days').strip()
+    first_fetch_time = params.get("fetch_time", "3 days").strip()
 
-    proxy = params.get('proxy', False)
+    proxy = params.get("proxy", False)
 
-    demisto.info(f'Command being called is {command}')
+    demisto.info(f"Command being called is {command}")
     try:
         client = Client(secret, base_url=base_url, verify=verify, proxy=proxy)
 
-        if command == 'test-module':
+        if command == "test-module":
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
 
-        elif command == 'fetch-incidents':
-            minimum_severity = params.get('min_severity')
-            alert_status = params.get('alert_status')
-            alert_type = params.get('alert_type')
-            free_search_string = params.get('free_fetch_string')
+        elif command == "fetch-incidents":
+            minimum_severity = params.get("min_severity")
+            alert_status = params.get("alert_status")
+            alert_type = params.get("alert_type")
+            free_search_string = params.get("free_fetch_string")
 
             # Set and define the fetch incidents command to run after activated via integration settings.
             next_run, incidents = fetch_incidents(
@@ -677,37 +685,37 @@ def main():
                 alert_status=alert_status,
                 minimum_severity=minimum_severity,
                 free_search_string=free_search_string,
-                max_results=int(params.get('max_fetch'))
+                max_results=int(params.get("max_fetch")),
             )
 
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
-        elif command == 'armis-search-alerts':
+        elif command == "armis-search-alerts":
             return_results(search_alerts_command(client, args))
 
-        elif command == 'armis-update-alert-status':
+        elif command == "armis-update-alert-status":
             return_results(update_alert_status_command(client, args))
 
-        elif command == 'armis-tag-device':
+        elif command == "armis-tag-device":
             return_results(tag_device_command(client, args))
 
-        elif command == 'armis-untag-device':
+        elif command == "armis-untag-device":
             return_results(untag_device_command(client, args))
 
-        elif command == 'armis-search-devices':
+        elif command == "armis-search-devices":
             return_results(search_devices_command(client, args))
 
-        elif command == 'armis-search-devices-by-aql':
+        elif command == "armis-search-devices-by-aql":
             return_results(search_devices_by_aql_command(client, args))
 
-        elif command == 'armis-search-alerts-by-aql-string':
+        elif command == "armis-search-alerts-by-aql-string":
             return_results(search_alerts_by_aql_command(client, args))
 
     # Log exceptions
     except Exception as e:
-        return_error(f'Failed to execute {command} command. Error: {str(e)}')
+        return_error(f"Failed to execute {command} command. Error: {str(e)}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

@@ -56,10 +56,10 @@ API_ENDPOINT = demisto.params().get("api_endpoint", "api")
 
 
 class FilterConditionTypes(Enum):
-    date = 'DateComparisonFilterCondition'
-    numeric = 'NumericFilterCondition'
-    text = 'TextFilterCondition'
-    content = 'ContentFilterCondition'
+    date = "DateComparisonFilterCondition"
+    numeric = "NumericFilterCondition"
+    text = "TextFilterCondition"
+    content = "ContentFilterCondition"
 
 
 def parser(
@@ -79,9 +79,7 @@ def parser(
         region=region,
         settings=settings,
     )
-    assert isinstance(
-        date_obj, datetime
-    ), f"Could not parse date {date_str}"  # MYPY Fix
+    assert isinstance(date_obj, datetime), f"Could not parse date {date_str}"  # MYPY Fix
     return date_obj.replace(tzinfo=UTC)
 
 
@@ -147,9 +145,7 @@ def get_reports_soap_request(token):
     # Create the soap:Body element
     body = ET.SubElement(root, "soap:Body")
     # Create the GetReports element
-    get_reports = ET.SubElement(
-        body, "GetReports", {"xmlns": "http://archer-tech.com/webservices/"}
-    )
+    get_reports = ET.SubElement(body, "GetReports", {"xmlns": "http://archer-tech.com/webservices/"})
     # Add the sessionToken element
     ET.SubElement(get_reports, "sessionToken").text = token
     return ET.tostring(root)
@@ -194,9 +190,7 @@ def get_search_options_soap_request(token, report_guid):
     # Create the soap:Body element
     body = ET.SubElement(root, "soap:Body")
     # Create the GetSearchOptionsByGuid element
-    get_search_options_by_grid = ET.SubElement(
-        body, "GetSearchOptionsByGuid", {"xmlns": "http://archer-tech.com/webservices/"}
-    )
+    get_search_options_by_grid = ET.SubElement(body, "GetSearchOptionsByGuid", {"xmlns": "http://archer-tech.com/webservices/"})
     # Add the sessionToken and searchReportGuid elements
     ET.SubElement(get_search_options_by_grid, "sessionToken").text = token
     ET.SubElement(get_search_options_by_grid, "searchReportGuid").text = report_guid
@@ -217,9 +211,7 @@ def search_records_by_report_soap_request(token, report_guid):
     # Create the soap:Body element
     body = ET.SubElement(root, "soap:Body")
     # Create the SearchRecordsByReport element
-    search_records_by_report = ET.SubElement(
-        body, "SearchRecordsByReport", {"xmlns": "http://archer-tech.com/webservices/"}
-    )
+    search_records_by_report = ET.SubElement(body, "SearchRecordsByReport", {"xmlns": "http://archer-tech.com/webservices/"})
     # Add the sessionToken, reportIdOrGuid and pageNumber elements
     ET.SubElement(search_records_by_report, "sessionToken").text = token
     ET.SubElement(search_records_by_report, "reportIdOrGuid").text = report_guid
@@ -234,7 +226,7 @@ def construct_generic_filter_condition(
     field_name: str,
     field_id: str,
     search_value: str,
-    sub_elements_tags_values: dict[str, Any] | None = None
+    sub_elements_tags_values: dict[str, Any] | None = None,
 ) -> str:
     """
     Constructs an XML string representing any generic filter condition for searching records.
@@ -256,14 +248,14 @@ def construct_generic_filter_condition(
     """
     root = ET.Element(condition_type.value)
 
-    ET.SubElement(root, 'Operator').text = operator
-    ET.SubElement(root, 'Field', attrib={'name': field_name}).text = field_id
-    ET.SubElement(root, 'Value').text = search_value
+    ET.SubElement(root, "Operator").text = operator
+    ET.SubElement(root, "Field", attrib={"name": field_name}).text = field_id
+    ET.SubElement(root, "Value").text = search_value
 
     for tag_name, tag_text in (sub_elements_tags_values or {}).items():
         ET.SubElement(root, tag_name).text = tag_text
 
-    return ET.tostring(root, encoding='unicode')
+    return ET.tostring(root, encoding="unicode")
 
 
 def construct_content_filter_condition(operator: str, level_id: str, search_value: str) -> str:
@@ -285,13 +277,13 @@ def construct_content_filter_condition(operator: str, level_id: str, search_valu
     """
     root = ET.Element(FilterConditionTypes.content.value)
 
-    ET.SubElement(root, 'Level').text = level_id
-    ET.SubElement(root, 'Operator').text = operator
+    ET.SubElement(root, "Level").text = level_id
+    ET.SubElement(root, "Operator").text = operator
 
-    values_element = ET.SubElement(root, 'Values')
-    ET.SubElement(values_element, 'Value').text = search_value
+    values_element = ET.SubElement(root, "Values")
+    ET.SubElement(values_element, "Value").text = search_value
 
-    return ET.tostring(root, encoding='unicode')
+    return ET.tostring(root, encoding="unicode")
 
 
 def search_records_soap_request(
@@ -311,8 +303,7 @@ def search_records_soap_request(
 ):
     # CDATA is not supported in Element Tree, therefore keeping original structure.
     request_body = (
-        '<?xml version="1.0" encoding="UTF-8"?>'
-        + '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" '
+        '<?xml version="1.0" encoding="UTF-8"?>' + '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" '
         'xmlns:xsd="http://www.w3.org/2001/XMLSchema"'
         ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">'
         + "    <soap:Body>"
@@ -342,7 +333,7 @@ def search_records_soap_request(
                     field_name=field_name,
                     field_id=field_id,
                     search_value=search_value,
-                    sub_elements_tags_values={'TimeZoneId': 'UTC Standard Time', 'IsTimeIncluded': 'TRUE'},
+                    sub_elements_tags_values={"TimeZoneId": "UTC Standard Time", "IsTimeIncluded": "TRUE"},
                 )
             )
 
@@ -357,13 +348,10 @@ def search_records_soap_request(
                 )
             )
 
-        elif (
-            field_to_search_by_id
-            and field_to_search_by_id.lower() == field_name.lower()
-        ):
+        elif field_to_search_by_id and field_to_search_by_id.lower() == field_name.lower():
             filter_conditions.append(
                 construct_content_filter_condition(
-                    operator='Equals',
+                    operator="Equals",
                     level_id=level_id,
                     search_value=search_value,
                 )
@@ -373,16 +361,16 @@ def search_records_soap_request(
             filter_conditions.append(
                 construct_generic_filter_condition(
                     FilterConditionTypes.text,
-                    operator='Contains',
+                    operator="Contains",
                     field_name=field_name,
                     field_id=field_id,
-                    search_value=search_value
+                    search_value=search_value,
                 )
             )
 
     if filter_conditions:
-        filter_conditions_xml = '\n'.join(filter_conditions)
-        request_body += f'<Filter><Conditions>{filter_conditions_xml}</Conditions></Filter>'
+        filter_conditions_xml = "\n".join(filter_conditions)
+        request_body += f"<Filter><Conditions>{filter_conditions_xml}</Conditions></Filter>"
 
     if field_id:
         request_body += (
@@ -417,8 +405,7 @@ SOAP_COMMANDS = {
         "soapAction": "http://archer-tech.com/webservices/ExecuteStatisticSearchByReport",
         "urlSuffix": "ws/search.asmx",
         "soapBody": get_statistic_search_report_soap_request,
-        "outputPath": "Envelope.Body.ExecuteStatisticSearchByReportResponse.ExecuteStatistic"
-        "SearchByReportResult",
+        "outputPath": "Envelope.Body.ExecuteStatisticSearchByReportResponse.ExecuteStatistic" "SearchByReportResult",
     },
     "archer-get-search-options-by-guid": {
         "soapAction": "http://archer-tech.com/webservices/GetSearchOptionsByGuid",
@@ -467,9 +454,7 @@ def get_occurred_time(fields: List[dict] | dict, field_id: str) -> str:
             for field in fields:
                 if str(field["@id"]) == field_id:  # In a rare case @id is an integer
                     return str(field["@xmlConvertedValue"])
-        raise KeyError(
-            "Could not find @xmlConvertedValue in record."
-        )  # No xmlConvertedValue
+        raise KeyError("Could not find @xmlConvertedValue in record.")  # No xmlConvertedValue
     except KeyError as exc:
         raise DemistoException(
             f"Could not find the property @xmlConvertedValue in field id {field_id}. Is that a date field?"
@@ -477,9 +462,7 @@ def get_occurred_time(fields: List[dict] | dict, field_id: str) -> str:
 
 
 class Client(BaseClient):
-    def __init__(
-        self, base_url, username, password, instance_name, domain, timeout, **kwargs
-    ):
+    def __init__(self, base_url, username, password, instance_name, domain, timeout, **kwargs):
         self.username = username
         self.password = password
         self.instance_name = instance_name
@@ -503,11 +486,7 @@ class Client(BaseClient):
         time.sleep(random.uniform(0, 5))
         headers = REQUEST_HEADERS
         context_session_id = get_integration_context().get("session_id")
-        session_id = (
-            self.create_session()
-            if create_new_session or not context_session_id
-            else context_session_id
-        )
+        session_id = self.create_session() if create_new_session or not context_session_id else context_session_id
         headers["Authorization"] = f"Archer session-id={session_id}"
         return headers
 
@@ -570,9 +549,7 @@ class Client(BaseClient):
         Returns:
             dict: the response json object
         """
-        res = self.try_rest_request(
-            method=method, url_suffix=url_suffix, data=data, params=params, attempts=2
-        )
+        res = self.try_rest_request(method=method, url_suffix=url_suffix, data=data, params=params, attempts=2)
         if res.status_code == 401:
             demisto.debug("trying rest with new session")
             res = self.try_rest_request(
@@ -593,14 +570,10 @@ class Client(BaseClient):
             "Password": self.password,
         }
         try:
-            res = self._http_request(
-                "POST", f"{API_ENDPOINT}/core/security/login", json_data=body
-            )
+            res = self._http_request("POST", f"{API_ENDPOINT}/core/security/login", json_data=body)
         except DemistoException as e:
             if "<html>" in str(e):
-                raise DemistoException(
-                    f"Check the given URL, it can be a redirect issue. Failed with error: {str(e)}"
-                )
+                raise DemistoException(f"Check the given URL, it can be a redirect issue. Failed with error: {str(e)}")
             raise e
         is_successful_response = res.get("IsSuccessful")
         if not is_successful_response:
@@ -610,31 +583,19 @@ class Client(BaseClient):
         return session
 
     def generate_token(self):
-        endpoint = (
-            "CreateDomainUserSessionFromInstance"
-            if self.domain
-            else "CreateUserSessionFromInstance"
-        )
+        endpoint = "CreateDomainUserSessionFromInstance" if self.domain else "CreateUserSessionFromInstance"
 
-        body = get_token_soap_request(
-            self.username, self.password, self.instance_name, self.domain
-        )
+        body = get_token_soap_request(self.username, self.password, self.instance_name, self.domain)
         headers = {
             "SOAPAction": f"http://archer-tech.com/webservices/{endpoint}",
             "Content-Type": "text/xml; charset=utf-8",
         }
-        res = self._http_request(
-            "POST", "ws/general.asmx", headers=headers, data=body, resp_type="content"
-        )
-        token = extract_from_xml(
-            res, f"Envelope.Body.{endpoint}Response.{endpoint}Result"
-        )
+        res = self._http_request("POST", "ws/general.asmx", headers=headers, data=body, resp_type="content")
+        token = extract_from_xml(res, f"Envelope.Body.{endpoint}Response.{endpoint}Result")
         merge_integration_context({"token": token})
         return token
 
-    def update_body_with_token(
-        self, request_body_builder_function, create_new_token: bool = False, **kwargs
-    ):
+    def update_body_with_token(self, request_body_builder_function, create_new_token: bool = False, **kwargs):
         """
         This function returns the updated body dict which also contains api token. In case the token doesn't exist in
         context or the create_new_token flag is given, the token will be re-generated using generate_token().
@@ -651,17 +612,11 @@ class Client(BaseClient):
         """
         time.sleep(random.uniform(0, 5))
         context_token = get_integration_context().get("token")
-        token = (
-            self.generate_token()
-            if create_new_token or not context_token
-            else context_token
-        )
+        token = self.generate_token() if create_new_token or not context_token else context_token
         body = request_body_builder_function(token, **kwargs)
         return body
 
-    def try_soap_request(
-        self, req_data, method, create_new_token=False, attempts=1, **kwargs
-    ):
+    def try_soap_request(self, req_data, method, create_new_token=False, attempts=1, **kwargs):
         """
         This function perform several attempts to read/generate api token and call the Base client http request
         function. If the create_new_token flag is given it will enforce the creation of a new token, otherwise it
@@ -720,9 +675,7 @@ class Client(BaseClient):
             bytes: res.content
         """
         req_data = SOAP_COMMANDS[command]
-        res = self.try_soap_request(
-            req_data=req_data, method="POST", attempts=2, **kwargs
-        )
+        res = self.try_soap_request(req_data=req_data, method="POST", attempts=2, **kwargs)
         if res.status_code == 500:
             demisto.debug("trying soap with new session")
             res = self.try_soap_request(
@@ -741,9 +694,7 @@ class Client(BaseClient):
         if cache.get(app_id):
             levels = cache[app_id]
         else:
-            all_levels_res = self.do_rest_request(
-                "GET", f"{API_ENDPOINT}/core/system/level/module/{app_id}"
-            )
+            all_levels_res = self.do_rest_request("GET", f"{API_ENDPOINT}/core/system/level/module/{app_id}")
             for level in all_levels_res:
                 if level.get("RequestedObject") and level.get("IsSuccessful"):
                     level_id = level.get("RequestedObject").get("Id")
@@ -762,9 +713,7 @@ class Client(BaseClient):
                                 "Name": field_item.get("Name"),
                                 "FieldId": field_id,
                                 "IsRequired": field_item.get("IsRequired", False),
-                                "RelatedValuesListId": field_item.get(
-                                    "RelatedValuesListId"
-                                ),
+                                "RelatedValuesListId": field_item.get("RelatedValuesListId"),
                             }
 
                     levels.append({"level": level_id, "mapping": fields})
@@ -775,20 +724,14 @@ class Client(BaseClient):
         level_data = None
         if specify_level_id:
             level_data = next(
-                (
-                    level
-                    for level in levels
-                    if level.get("level") == int(specify_level_id)
-                ),
+                (level for level in levels if level.get("level") == int(specify_level_id)),
                 None,
             )
         elif levels:
             level_data = levels[0]
 
         if not level_data:
-            raise DemistoException(
-                "Got no level by app id. You might be using the wrong application id or level id."
-            )
+            raise DemistoException("Got no level by app id. You might be using the wrong application id or level id.")
 
         return level_data
 
@@ -817,38 +760,24 @@ class Client(BaseClient):
                 if field_type == 19:
                     field_value = field.get("IpAddressBytes")
                 # when field type is Values List
-                elif (
-                    field_type == 4
-                    and field.get("Value")
-                    and field["Value"].get("ValuesListIds")
-                ):
+                elif field_type == 4 and field.get("Value") and field["Value"].get("ValuesListIds"):
                     list_data = self.get_field_value_list(_id, depth)
                     list_ids = field["Value"]["ValuesListIds"]
-                    list_ids = list(
-                        filter(lambda x: x["Id"] in list_ids, list_data["ValuesList"])
-                    )
+                    list_ids = list(filter(lambda x: x["Id"] in list_ids, list_data["ValuesList"]))
                     field_value = [x["Name"] for x in list_ids]
                 else:
                     field_value = field.get("Value")
 
                 if field_value:
                     if not field_data.get("Name"):
-                        demisto.debug(
-                            f"{field_data.get('Name')=}\n{field_data.get('Value')=}"
-                        )
-                    record[
-                        field_data.get("Name")
-                        or self.get_field_value_name(_id)
-                        or f"None-{i}"
-                    ] = field_value
+                        demisto.debug(f"{field_data.get('Name')=}\n{field_data.get('Value')=}")
+                    record[field_data.get("Name") or self.get_field_value_name(_id) or f"None-{i}"] = field_value
 
             record["Id"] = content_obj.get("Id")
         return record, res, errors
 
     @staticmethod
-    def record_to_incident(
-        record_item, app_id, fetch_param_id
-    ) -> tuple[dict, datetime]:
+    def record_to_incident(record_item, app_id, fetch_param_id) -> tuple[dict, datetime]:
         """Transform a record to incident
 
         Args:
@@ -865,9 +794,7 @@ class Client(BaseClient):
         try:
             occurred_time = get_occurred_time(raw_record["Field"], fetch_param_id)
         except KeyError as exc:
-            raise DemistoException(
-                f'Could not find occurred time in record {record_item.get("Id")=}'
-            ) from exc
+            raise DemistoException(f'Could not find occurred time in record {record_item.get("Id")=}') from exc
         # Will convert value to strs
         for k, v in record_item.items():
             if isinstance(v, str):
@@ -915,12 +842,9 @@ class Client(BaseClient):
         for field in fields_mapping:
             field_name = fields_mapping[field]["Name"]
             if field_name in fields_to_display:
-                fields_xml += (
-                    f'<DisplayField name="{field_name}">{field}</DisplayField>'
-                )
+                fields_xml += f'<DisplayField name="{field_name}">{field}</DisplayField>'
             if (field_to_search and field_name.lower() == field_to_search.lower()) or (
-                field_to_search_by_id
-                and field_name.lower() == field_to_search_by_id.lower()
+                field_to_search_by_id and field_name.lower() == field_to_search_by_id.lower()
             ):
                 search_field_name = field_name
                 search_field_id = field
@@ -970,9 +894,7 @@ class Client(BaseClient):
                         field_value = field.get("@xmlConvertedValue")
                     elif field_type == "4":
                         if field.get("ListValues"):
-                            field_value = field["ListValues"]["ListValue"][
-                                "@displayName"
-                            ]
+                            field_value = field["ListValues"]["ListValue"]["@displayName"]
                     elif field_type == "8":
                         field_value = json.dumps(field)
                     else:
@@ -995,9 +917,7 @@ class Client(BaseClient):
         depth -= 1
         if depth > -1:
             for grandchild in child.get("Children", []):
-                self.get_field_value_list_helper(
-                    grandchild, values_list, depth, child["Data"]["Name"]
-                )
+                self.get_field_value_list_helper(grandchild, values_list, depth, child["Data"]["Name"])
 
     def get_field_value_list(self, field_id, depth=0):
         cache = get_integration_context()
@@ -1005,9 +925,7 @@ class Client(BaseClient):
         if cache["fieldValueList"].get(field_id):
             return cache.get("fieldValueList").get(field_id)
 
-        res = self.do_rest_request(
-            "GET", f"{API_ENDPOINT}/core/system/fielddefinition/{field_id}"
-        )
+        res = self.do_rest_request("GET", f"{API_ENDPOINT}/core/system/fielddefinition/{field_id}")
 
         errors = get_errors_from_res(res)
         if errors:
@@ -1015,18 +933,14 @@ class Client(BaseClient):
 
         if res.get("RequestedObject") and res.get("IsSuccessful"):
             if res.get("RequestedObject").get("Type") != 4:
-                raise Exception(
-                    'The command returns values only for fields of type "Values List".\n'
-                )
+                raise Exception('The command returns values only for fields of type "Values List".\n')
 
             list_id = res["RequestedObject"]["RelatedValuesListId"]
             values_list_res = self.do_rest_request(
                 "GET",
                 f"{API_ENDPOINT}/core/system/valueslistvalue/valueslist/{list_id}",
             )
-            if values_list_res.get("RequestedObject") and values_list_res.get(
-                "IsSuccessful"
-            ):
+            if values_list_res.get("RequestedObject") and values_list_res.get("IsSuccessful"):
                 values_list: List[dict[str, Any]] = []
                 for value in values_list_res["RequestedObject"].get("Children", ()):
                     self.get_field_value_list_helper(value, values_list, depth)
@@ -1042,9 +956,7 @@ class Client(BaseClient):
 
         if cache["fieldValueNames"].get(field_id):
             return cache.get("fieldValueNames").get(field_id)
-        res = self.do_rest_request(
-            "GET", f"{API_ENDPOINT}/core/system/fielddefinition/{field_id}"
-        )
+        res = self.do_rest_request("GET", f"{API_ENDPOINT}/core/system/fielddefinition/{field_id}")
         errors = get_errors_from_res(res)
         if errors:
             return_error(errors)
@@ -1087,9 +999,7 @@ class Client(BaseClient):
         Returns:
             fields, raw response
         """
-        res = self.do_rest_request(
-            "GET", f"{API_ENDPOINT}/core/system/fielddefinition/application/{app_id}"
-        )
+        res = self.do_rest_request("GET", f"{API_ENDPOINT}/core/system/fielddefinition/application/{app_id}")
 
         fields = []
         for field in res:
@@ -1143,9 +1053,7 @@ def generate_field_contents(client, fields_values, level_fields, depth):
                 break
 
         if field_data:
-            field_key, field_value = generate_field_value(
-                client, field_name, field_data, fields_values[field_name], depth
-            )
+            field_key, field_value = generate_field_value(client, field_name, field_data, fields_values[field_name], depth)
 
             field_content[_id] = {
                 "Type": field_data["Type"],
@@ -1164,23 +1072,19 @@ def generate_field_value(client, field_name, field_data, field_val, depth):
         field_data = client.get_field_value_list(field_data["FieldId"], depth)
         list_ids = []
         other_text = None
-        if isinstance(field_val, dict) and (other_text := field_val.get('OtherText', None)):
-            field_val = field_val.get('ValuesList')
+        if isinstance(field_val, dict) and (other_text := field_val.get("OtherText", None)):
+            field_val = field_val.get("ValuesList")
         if not isinstance(field_val, list):
             field_val = [field_val]
         for item in field_val:
-            tmp_id = next(
-                (f for f in field_data["ValuesList"] if f["Name"] == item), None
-            )
+            tmp_id = next((f for f in field_data["ValuesList"] if f["Name"] == item), None)
             if tmp_id:
                 list_ids.append(tmp_id["Id"])
             else:
-                raise Exception(
-                    f"Failed to create the field: {field_name} with the value: {item}"
-                )
+                raise Exception(f"Failed to create the field: {field_name} with the value: {item}")
         res = {"ValuesListIds": list_ids}
         if other_text:
-            res['OtherText'] = other_text
+            res["OtherText"] = other_text
         return "Value", res
 
     # when field type is External Links
@@ -1254,19 +1158,11 @@ def get_file(entry_id):
 
 def test_module(client: Client, params: dict) -> str:
     if params.get("isFetch", False):
-        last_run = {
-            FETCH_PARAM_ID_KEY: get_fetch_param_id(
-                client, {}, params["applicationId"], params["applicationDateField"]
-            )
-        }
+        last_run = {FETCH_PARAM_ID_KEY: get_fetch_param_id(client, {}, params["applicationId"], params["applicationDateField"])}
         fetch_incidents_command(client, params, last_run)
         return "ok"
 
-    return (
-        "ok"
-        if client.do_rest_request("GET", f"{API_ENDPOINT}/core/system/application")
-        else "Connection failed."
-    )
+    return "ok" if client.do_rest_request("GET", f"{API_ENDPOINT}/core/system/application") else "Connection failed."
 
 
 def search_applications_command(client: Client, args: dict[str, str]):
@@ -1316,18 +1212,14 @@ def get_application_fields_command(client: Client, args: dict[str, str]):
     fields, res = client.get_application_fields(app_id)
 
     markdown = tableToMarkdown("Application fields", fields)
-    context: dict = {
-        "Archer.ApplicationField(val.FieldId && val.FieldId == obj.FieldId)": fields
-    }
+    context: dict = {"Archer.ApplicationField(val.FieldId && val.FieldId == obj.FieldId)": fields}
     return_outputs(markdown, context, res)
 
 
 def get_field_command(client: Client, args: dict[str, str]):
     field_id = args.get("fieldID")
 
-    res = client.do_rest_request(
-        "GET", f"{API_ENDPOINT}/core/system/fielddefinition/{field_id}"
-    )
+    res = client.do_rest_request("GET", f"{API_ENDPOINT}/core/system/fielddefinition/{field_id}")
 
     errors = get_errors_from_res(res)
     if errors:
@@ -1346,27 +1238,21 @@ def get_field_command(client: Client, args: dict[str, str]):
         }
 
     markdown = tableToMarkdown("Application field", field)
-    context: dict = {
-        "Archer.ApplicationField(val.FieldId && val.FieldId == obj.FieldId)": field
-    }
+    context: dict = {"Archer.ApplicationField(val.FieldId && val.FieldId == obj.FieldId)": field}
     return_outputs(markdown, context, res)
 
 
 def get_mapping_by_level_command(client: Client, args: dict[str, str]):
     level = args.get("level")
 
-    res = client.do_rest_request(
-        "GET", f"{API_ENDPOINT}/core/system/fielddefinition/level/{level}"
-    )
+    res = client.do_rest_request("GET", f"{API_ENDPOINT}/core/system/fielddefinition/level/{level}")
 
     items = []
     for item in res:
         if item.get("RequestedObject") and item.get("IsSuccessful"):
             item_obj = item["RequestedObject"]
             item_type = item_obj.get("Type")
-            item_type = (
-                FIELD_TYPE_DICT.get(item_type, "Unknown") if item_type else "Unknown"
-            )
+            item_type = FIELD_TYPE_DICT.get(item_type, "Unknown") if item_type else "Unknown"
             items.append(
                 {
                     "Id": item_obj.get("Id"),
@@ -1405,13 +1291,9 @@ def create_record_command(client: Client, args: dict[str, str]):
     level_id = args.get("levelId")
     level_data = client.get_level_by_app_id(app_id, level_id)
     depth = arg_to_number(args.get("depth", "0"))
-    field_contents = generate_field_contents(
-        client, fields_values, level_data["mapping"], depth
-    )
+    field_contents = generate_field_contents(client, fields_values, level_data["mapping"], depth)
 
-    body = {
-        "Content": {"LevelId": level_data["level"], "FieldContents": field_contents}
-    }
+    body = {"Content": {"LevelId": level_data["level"], "FieldContents": field_contents}}
 
     res = client.do_rest_request("Post", f"{API_ENDPOINT}/core/content", data=body)
 
@@ -1445,9 +1327,7 @@ def update_record_command(client: Client, args: dict[str, str]):
     level_id = args.get("levelId")
     level_data = client.get_level_by_app_id(app_id, level_id)
     depth = arg_to_number(args.get("depth", "0"))
-    field_contents = generate_field_contents(
-        client, fields_values, level_data["mapping"], depth
-    )
+    field_contents = generate_field_contents(client, fields_values, level_data["mapping"], depth)
 
     body = {
         "Content": {
@@ -1486,17 +1366,13 @@ def get_reports_command(client: Client, args: dict[str, str]):
     res = json.loads(xml2json(res))
     ec = res.get("ReportValues").get("ReportValue")
 
-    context: dict = {
-        "Archer.Report(val.ReportGUID && val.ReportGUID == obj.ReportGUID)": ec
-    }
+    context: dict = {"Archer.Report(val.ReportGUID && val.ReportGUID == obj.ReportGUID)": ec}
     return_outputs(ec, context, json.loads(xml2json(raw_res)))
 
 
 def search_options_command(client: Client, args: dict[str, str]):
     report_guid = args.get("reportGuid")
-    res, raw_res = client.do_soap_request(
-        "archer-get-search-options-by-guid", report_guid=report_guid
-    )
+    res, raw_res = client.do_soap_request("archer-get-search-options-by-guid", report_guid=report_guid)
     if res.startswith("<"):
         res = json.loads(xml2json(res))
     return_outputs(res, {}, {})
@@ -1512,13 +1388,9 @@ def get_value_list_command(client: Client, args: dict[str, str]):
     depth = arg_to_number(args.get("depth", "0"))
     field_data = client.get_field_value_list(field_id, depth)
 
-    markdown = tableToMarkdown(
-        f"Value list for field {field_id}", field_data["ValuesList"]
-    )
+    markdown = tableToMarkdown(f"Value list for field {field_id}", field_data["ValuesList"])
 
-    context: dict = {
-        "Archer.ApplicationField(val.FieldId && val.FieldId == obj.FieldId)": field_data
-    }
+    context: dict = {"Archer.ApplicationField(val.FieldId && val.FieldId == obj.FieldId)": field_data}
     return_outputs(markdown, context, field_data)
 
 
@@ -1536,9 +1408,7 @@ def upload_file_command(client: Client, args: dict[str, str]) -> str:
     file_name, file_bytes = get_file(entry_id)
     body = {"AttachmentName": file_name, "AttachmentBytes": file_bytes}
 
-    res = client.do_rest_request(
-        "POST", f"{API_ENDPOINT}/core/content/attachment", data=body
-    )
+    res = client.do_rest_request("POST", f"{API_ENDPOINT}/core/content/attachment", data=body)
 
     errors = get_errors_from_res(res)
     if errors:
@@ -1549,9 +1419,7 @@ def upload_file_command(client: Client, args: dict[str, str]) -> str:
     else:
         raise DemistoException("Upload file failed")
 
-    return_outputs(
-        f"File uploaded successfully, attachment ID: {attachment_id}", {}, res
-    )
+    return_outputs(f"File uploaded successfully, attachment ID: {attachment_id}", {}, res)
     return attachment_id
 
 
@@ -1565,15 +1433,13 @@ def upload_and_associate_command(client: Client, args: dict[str, str]):
     if not should_associate_to_record and (
         app_id or content_id
     ):  # If both app_id and content_id and one of app_id or content_id, raise error. User's mistake
-        raise DemistoException(
-            "Found arguments to associate an attachment to a record, but not all required arguments supplied"
-        )
+        raise DemistoException("Found arguments to associate an attachment to a record, but not all required arguments supplied")
 
     entry_ids: list = argToList(args.get("entryId"))
     attachment_ids: list = []
     for entry_id in entry_ids:
         attachment_ids.append(upload_file_command(client, {"entryId": entry_id}))
-    demisto.debug(f'All new uploaded {attachment_ids=}')
+    demisto.debug(f"All new uploaded {attachment_ids=}")
 
     if should_associate_to_record:
         # Check if there are already attachments associated with this record.
@@ -1581,18 +1447,16 @@ def upload_and_associate_command(client: Client, args: dict[str, str]):
         if errors:
             return_error(errors)
         record_attachments = record.get("Attachments", [])
-        demisto.debug(f'Record id {content_id} already has {record_attachments=} will add the new {attachment_ids=} as well')
+        demisto.debug(f"Record id {content_id} already has {record_attachments=} will add the new {attachment_ids=} as well")
         attachment_ids.extend(record_attachments)
-        demisto.debug(f'All {attachment_ids=}')
+        demisto.debug(f"All {attachment_ids=}")
         args["fieldsToValues"] = json.dumps({associate_field: attachment_ids})
         update_record_command(client, args)
 
 
 def download_file_command(client: Client, args: dict[str, str]):
     attachment_id = args.get("fileId")
-    res = client.do_rest_request(
-        "GET", f"{API_ENDPOINT}/core/content/attachment/{attachment_id}"
-    )
+    res = client.do_rest_request("GET", f"{API_ENDPOINT}/core/content/attachment/{attachment_id}")
 
     errors = get_errors_from_res(res)
     if errors:
@@ -1610,9 +1474,7 @@ def download_file_command(client: Client, args: dict[str, str]):
 def list_users_command(client: Client, args: dict[str, str]):
     user_id = args.get("userId")
     if user_id:
-        res = client.do_rest_request(
-            "GET", f"{API_ENDPOINT}/core/system/user/{user_id}"
-        )
+        res = client.do_rest_request("GET", f"{API_ENDPOINT}/core/system/user/{user_id}")
     else:
         res = client.do_rest_request("GET", f"{API_ENDPOINT}/core/system/user")
 
@@ -1658,9 +1520,9 @@ def validate_xml_conditions(xml_conditions: str, blacklisted_tags: list[str] | N
     blacklisted_tags = blacklisted_tags or []
 
     try:
-        root = ET.fromstring(f'<Conditions>{xml_conditions}</Conditions>')
+        root = ET.fromstring(f"<Conditions>{xml_conditions}</Conditions>")
     except ET.ParseError:
-        raise ValueError('Invalid XML filter condition syntax')
+        raise ValueError("Invalid XML filter condition syntax")
 
     for blacklisted_tag in blacklisted_tags:
         if root.find(blacklisted_tag) is not None:
@@ -1678,9 +1540,7 @@ def search_records_command(client: Client, args: dict[str, str]):
     fields_to_display = argToList(args.get("fieldsToDisplay"))
     fields_to_get = argToList(args.get("fieldsToGet"))
     full_data = argToBoolean(args.get("fullData"))
-    sort_type = (
-        "Descending" if argToBoolean(args.get("isDescending", "false")) else "Ascending"
-    )
+    sort_type = "Descending" if argToBoolean(args.get("isDescending", "false")) else "Ascending"
     level_id = args.get("levelId")
 
     if xml_filter_conditions := args.get("xmlForFiltering"):
@@ -1690,9 +1550,7 @@ def search_records_command(client: Client, args: dict[str, str]):
         fields_to_get.append("Id")
 
     if not all(f in fields_to_get for f in fields_to_display):
-        return_error(
-            "fields-to-display param should have only values from fields-to-get"
-        )
+        return_error("fields-to-display param should have only values from fields-to-get")
 
     if full_data:
         level_data = client.get_level_by_app_id(app_id, level_id)
@@ -1738,9 +1596,7 @@ def search_records_command(client: Client, args: dict[str, str]):
 
 def search_records_by_report_command(client: Client, args: dict[str, str]):
     report_guid = args.get("reportGuid")
-    res, raw_res = client.do_soap_request(
-        "archer-search-records-by-report", report_guid=report_guid
-    )
+    res, raw_res = client.do_soap_request("archer-search-records-by-report", report_guid=report_guid)
     if not res:
         return_outputs(
             f"No records found for report {report_guid}",
@@ -1758,9 +1614,7 @@ def search_records_by_report_command(client: Client, args: dict[str, str]):
         else:
             level_id = raw_records["Records"]["Record"]["@levelId"]
 
-        level_res = client.do_rest_request(
-            "GET", f"{API_ENDPOINT}/core/system/fielddefinition/level/{level_id}"
-        )
+        level_res = client.do_rest_request("GET", f"{API_ENDPOINT}/core/system/fielddefinition/level/{level_id}")
         fields = {}
         for field in level_res:
             if field.get("RequestedObject") and field.get("IsSuccessful"):
@@ -1781,9 +1635,7 @@ def search_records_by_report_command(client: Client, args: dict[str, str]):
         }
 
     markdown = tableToMarkdown("Search records by report results", records)
-    context: dict = {
-        "Archer.SearchByReport(val.ReportGUID && val.ReportGUID == obj.ReportGUID)": ec
-    }
+    context: dict = {"Archer.SearchByReport(val.ReportGUID && val.ReportGUID == obj.ReportGUID)": ec}
 
     return_outputs(markdown, context, json.loads(xml2json(raw_res)))
 
@@ -1793,9 +1645,7 @@ def print_cache_command(client: Client, args: dict[str, str]):
     return_outputs(cache, {}, {})
 
 
-def fetch_incidents(
-    client: Client, params: dict, from_time: datetime, fetch_param_id: str
-) -> tuple[list, datetime]:
+def fetch_incidents(client: Client, params: dict, from_time: datetime, fetch_param_id: str) -> tuple[list, datetime]:
     """Fetches incidents.
 
     Args:
@@ -1836,9 +1686,7 @@ def fetch_incidents(
     last_fetch_time = from_time.replace(tzinfo=UTC)
     next_fetch = last_fetch_time
     for record in records:
-        incident, incident_created_time = client.record_to_incident(
-            record, app_id, fetch_param_id
-        )
+        incident, incident_created_time = client.record_to_incident(record, app_id, fetch_param_id)
         # Encountered that sometimes, somehow, incident_created_time is not UTC.
         incident_created_time = incident_created_time.replace(tzinfo=UTC)
         if last_fetch_time < incident_created_time:
@@ -1846,9 +1694,7 @@ def fetch_incidents(
             if next_fetch < incident_created_time:
                 next_fetch = incident_created_time
         else:
-            demisto.debug(
-                f"The newly fetched incident is older than last fetch. {incident_created_time=} {next_fetch=}"
-            )
+            demisto.debug(f"The newly fetched incident is older than last fetch. {incident_created_time=} {next_fetch=}")
     demisto.debug(f"Going out fetch incidents with {next_fetch=}, {len(incidents)=}")
     return incidents, next_fetch
 
@@ -1872,9 +1718,7 @@ def get_fetch_time(last_fetch: dict, first_fetch_time: str) -> datetime:
     return start_fetch
 
 
-def get_fetch_param_id(
-    client: Client, last_run: dict, app_id: str, app_date_field: str
-) -> str:
+def get_fetch_param_id(client: Client, last_run: dict, app_id: str, app_date_field: str) -> str:
     """Get the from lastRun if available. Else ask the instance for the ID
     Args:
         client: Archer's client
@@ -1892,9 +1736,7 @@ def get_fetch_param_id(
     return fetch_param_id
 
 
-def fetch_incidents_command(
-    client: Client, params: dict, last_run: dict
-) -> tuple[list, datetime]:
+def fetch_incidents_command(client: Client, params: dict, last_run: dict) -> tuple[list, datetime]:
     """Fetches incidents
     Arguments:
         client: Archer's client
@@ -1906,9 +1748,7 @@ def fetch_incidents_command(
     from_time = get_fetch_time(last_run, params.get("fetch_time", "3 days"))
     fetch_param_id = last_run[FETCH_PARAM_ID_KEY]
     demisto.debug(f"Starting fetch incidents with {from_time=} and {fetch_param_id=}")
-    return fetch_incidents(
-        client=client, params=params, from_time=from_time, fetch_param_id=fetch_param_id
-    )
+    return fetch_incidents(client=client, params=params, from_time=from_time, fetch_param_id=fetch_param_id)
 
 
 def main():
