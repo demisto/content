@@ -25,11 +25,11 @@ FEED_STR = {
 }
 
 
-def _get_current_hour():
-    """Gets current hour for Threat feeds."""
+def _get_current_package():
+    """Gets current package for Threat feeds."""
     time_obj = datetime.utcnow() - timedelta(hours=2)
-    hour = time_obj.strftime('%Y%m%d%H')
-    return hour
+    package = time_obj.strftime('%Y%m%d%H')
+    return package
 
 
 class DetectionRatio:
@@ -48,31 +48,67 @@ class DetectionRatio:
 class Client(BaseClient):
     """Client for Google Threat Intelligence API."""
 
-    def fetch_indicators(self, feed_type: str = 'malware', hour: str = None) -> dict:
-        """Fetches indicators given a feed type and an hour."""
-        if not hour:
-            hour = _get_current_hour()
+    def get_threat_list(self,
+                        feed_type: str,
+                        package: str,
+                        limit: int = 10) -> dict:
+        """Get indicators from GTI API."""
         return self._http_request(
             'GET',
-            f'threat_lists/{feed_type}/{hour}',
+            f'threat_lists/{feed_type}/{package}',
+            params=assign_params(
+                limit=limit,
+            )
         )
 
-    def get_threat_feed(self, feed_type: str) -> list:
+    def fetch_indicators(self,
+                         feed_type: str,
+                         package: str = None,
+                         limit: int = 10,
+                         fetch_command: bool = False) -> list:
         """Retrieves matches for a given feed type."""
-        last_threat_feed = demisto.getIntegrationContext().get('last_threat_feed')
-        hour = _get_current_hour()
+        package = package or _get_current_package()
 
-        if last_threat_feed == hour:
-            return []
+        if fetch_command:
+            if self.get_last_run() == package:
+                return []
 
-        response = self.fetch_indicators(feed_type, hour)
-        demisto.setIntegrationContext({'last_threat_feed': hour})
+        response = self.get_threat_list(feed_type, package, limit)
+
+        if fetch_command:
+            self.set_last_run(package)
+
         return response.get('iocs', [])
 
+    @staticmethod
+    def set_last_run(package: str = None):
+        """Sets last threat feed."""
+        current_package = package or _get_current_package()
+        demisto.setLastRun({'last_threat_feed': current_package})
 
-def test_module(client: Client) -> str:
-    client.fetch_indicators()
+    @staticmethod
+    def get_last_run() -> str:
+        """Gets last threat feed, or '' if no last run."""
+        return (demisto.getLastRun() or {}).get('last_threat_feed', '')
+
+
+def test_module(client: Client, args: dict) -> str:
+    """Tests module."""
+    try:
+        client.fetch_indicators('malware')
+    except Exception:
+        raise Exception("Could not fetch Google Threat Intelligence IoC Threat Lists\n"
+                        "\nCheck your API key and your connection to Google Threat Intelligence.")
     return 'ok'
+
+
+def _gti_verdict_to_dbot_score(gti_verdict: str):
+    """Parses GTI verdict to DBotScore."""
+    return {
+        'VERDICT_BENIGN': 1,
+        'VERDICT_SUSPICIOUS': 2,
+        'VERDICT_MALICIOUS': 3,
+    }.get(gti_verdict, 0)
 
 
 def _add_gti_attributes(indicator_obj: dict, item: dict):
@@ -106,6 +142,7 @@ def _add_gti_attributes(indicator_obj: dict, item: dict):
         'actor': threat_actors,
     })
     indicator_obj.update({
+        'score': _gti_verdict_to_dbot_score(gti_verdict),
         'gti_threat_score': gti_threat_score,
         'gti_severity': gti_severity,
         'gti_verdict': gti_verdict,
@@ -178,8 +215,33 @@ def _add_file_attributes(indicator_obj: dict, attributes: dict) -> dict:
 
 def _add_domain_attributes(indicator_obj: dict, attributes: dict) -> dict:
     """Adds domain attributes."""
+    whois: str = attributes.get('whois', '')
+
+    admin_country = re.search(r'Admin Country:\s*([^\n]+)', whois)
+    admin_email = re.search(r'Admin Email:\s*([^\n]+)', whois)
+    admin_name = re.search(r'Admin Name:\s*([^\n]+)', whois)
+    admin_phone = re.search(r'Admin Phone:\s*([^\n]+)', whois)
+
+    registrant_country = re.search(r'Registrant Country:\s*([^\n]+)', whois)
+    registrant_email = re.search(r'Registrant Email:\s*([^\n]+)', whois)
+    registrant_name = re.search(r'Registrant Name:\s*([^\n]+)', whois)
+    registrant_phone = re.search(r'Registrant Phone:\s*([^\n]+)', whois)
+
+    registrar_abuse_email = re.search(r'Registrar Abuse Contact Email:\s*([^\n]+)', whois)
+    registrar_abuse_phone = re.search(r'Registrar Abuse Contact Phone:\s*([^\n]+)', whois)
+
     indicator_obj['fields'].update({
         'creationdate': attributes.get('creation_date'),
+        'admincountry': admin_country.group(1) if admin_country else None,
+        'adminemail': admin_email.group(1) if admin_email else None,
+        'adminname': admin_name.group(1) if admin_name else None,
+        'adminphone': admin_phone.group(1) if admin_phone else None,
+        'registrantcountry': registrant_country.group(1) if registrant_country else None,
+        'registrantemail': registrant_email.group(1) if registrant_email else None,
+        'registrantname': registrant_name.group(1) if registrant_name else None,
+        'registrantphone': registrant_phone.group(1) if registrant_phone else None,
+        'registrarabuseemail': registrar_abuse_email.group(1) if registrar_abuse_email else None,
+        'registrarabusephone': registrar_abuse_phone.group(1) if registrar_abuse_phone else None,
         'registrarname': attributes.get('registrar'),
         'firstseenbysource': attributes.get('first_seen_itw_date'),
         'lastseenbysource': attributes.get('last_seen_itw_date'),
@@ -259,10 +321,12 @@ def _create_indicator(item: dict) -> dict:
 
 def fetch_indicators_command(client: Client,
                              feed_type: str,
+                             package: str = None,
+                             limit: int = 10,
                              tlp_color: str = None,
                              feed_tags: list = None,
-                             limit: int = None,
-                             minimum_score: int = 0) -> list[dict]:
+                             minimum_score: int = 0,
+                             fetch_command: bool = False) -> list[dict]:
     """Retrieves indicators from the feed.
     Args:
         client (Client): Client object with request
@@ -272,14 +336,13 @@ def fetch_indicators_command(client: Client,
     Returns:
         Indicators.
     """
-    iterator = client.get_threat_feed(feed_type)
     indicators = []
 
-    if limit:
-        iterator = iterator[:limit]
+    raw_indicators = client.fetch_indicators(
+        feed_type, package=package, limit=limit, fetch_command=fetch_command)
 
     # extract values from iterator
-    for item in iterator:
+    for item in raw_indicators:
         try:
             indicator_obj = _create_indicator(item['data'])
         except ValueError as exc:
@@ -317,26 +380,29 @@ def get_indicators_command(client: Client,
     Returns:
         Outputs.
     """
-    feed_type = params.get('feed_type', 'apt')
     tlp_color = params.get('tlp_color')
     feed_tags = argToList(params.get('feedTags', ''))
-    limit = int(args.get('limit', 0))
+    feed_type = args.get('feed_type')
+    package = args.get('package')
+    limit = int(args.get('limit', 10))
     minimum_score = int(params.get('feedMinimumGTIScore', 80))
+
     indicators = fetch_indicators_command(
         client,
         feed_type,
-        tlp_color,
-        feed_tags,
-        limit,
-        minimum_score,
+        package=package,
+        limit=limit,
+        tlp_color=tlp_color,
+        feed_tags=feed_tags,
+        minimum_score=minimum_score,
     )
 
     human_readable = tableToMarkdown(
-        f'Indicators from Google Threat Intelligence {FEED_STR.get(feed_type, feed_type)} Feeds:',
+        f'Indicators from Google Threat Intelligence {FEED_STR.get(feed_type, feed_type)} Threat List:',
         indicators,
         headers=[
-            'sha256',
-            'fileType',
+            'id',
+            'detections',
             'gti_threat_score',
             'gti_severity',
             'gti_verdict',
@@ -356,15 +422,15 @@ def get_indicators_command(client: Client,
     )
 
 
-def reset_last_threat_feed():
-    """Reset last threat feed from the integration context."""
-    demisto.setIntegrationContext({})
-    return CommandResults(readable_output='Fetch history deleted successfully')
-
-
 def main():
     """main function, parses params and runs command functions."""
     params = demisto.params()
+
+    feed_type = params.get('feed_type')
+    limit = int(params.get('limit', 10))
+    tlp_color = params.get('tlp_color')
+    feed_tags = argToList(params.get('feedTags', ''))
+    minimum_score = int(params.get('feedMinimumGTIScore', 80))
 
     # If your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
@@ -376,7 +442,6 @@ def main():
     proxy = params.get('proxy', False)
 
     command = demisto.command()
-    args = demisto.args()
 
     demisto.debug(f'Command being called is {command}')
 
@@ -393,26 +458,26 @@ def main():
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            return_results(test_module(client))
+            return_results(test_module(client, {}))
 
-        elif command == 'gti-feed-get-indicators':
+        elif command == 'gti-threatlists-get-indicators':
             # This is the command that fetches a limited number of indicators
             # from the feed source and displays them in the war room.
-            return_results(get_indicators_command(client, params, args))
-
-        elif command == 'gti-feed-reset-fetch-indicators':
-            return_results(reset_last_threat_feed())
+            return_results(get_indicators_command(client, params, demisto.args()))
 
         elif command == 'fetch-indicators':
             # This is the command that initiates a request to the feed endpoint
             # and create new indicators objects from the data fetched. If the
             # integration instance is configured to fetch indicators, then this
-            # is the commandthat will be executed at the specified feed fetch
+            # is the command that will be executed at the specified feed fetch
             # interval.
-            feed_type = params.get('feed_type', 'apt')
-            tlp_color = params.get('tlp_color')
-            feed_tags = argToList(params.get('feedTags'))
-            indicators = fetch_indicators_command(client, feed_type, tlp_color, feed_tags)
+            indicators = fetch_indicators_command(client,
+                                                  feed_type,
+                                                  limit=limit,
+                                                  tlp_color=tlp_color,
+                                                  feed_tags=feed_tags,
+                                                  minimum_score=minimum_score,
+                                                  fetch_command=True)
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
 

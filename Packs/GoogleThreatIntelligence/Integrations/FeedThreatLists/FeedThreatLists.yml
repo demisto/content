@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Google Threat Intelligence Feeds
+  id: Google Threat Intelligence Threat Lists
   version: -1
 configuration:
 - display: API Key (leave empty. Fill in the API key in the password field.)
@@ -9,7 +9,7 @@ configuration:
   type: 9
   required: true
   hiddenusername: true
-- display: Feed type
+- display: Feed type.
   name: feed_type
   defaultvalue: malware
   type: 15
@@ -28,6 +28,11 @@ configuration:
   - threat-actor
   - trending
   - vulnerability-weaponization
+- display: The maximum number of results to return. If 0 all results will be returned.
+  name: limit
+  defaultvalue: 10
+  type: 0
+  required: false
 - display: Fetch indicators
   name: feed
   defaultvalue: "true"
@@ -110,19 +115,21 @@ configuration:
   name: feedIncremental
   required: false
   type: 8
-description: Use this feed integration to fetch Google Threat Intelligence Feeds matches.
-display: Google Threat Intelligence Feeds
-name: Google Threat Intelligence Feeds
+description: Use this feed integration to fetch Google Threat Intelligence Threat Lists matches.
+display: Google Threat Intelligence Threat Lists
+name: Google Threat Intelligence Threat Lists
 script:
   commands:
   - arguments:
+    - name: feed_type
+      description: Feed type.
+    - name: package
+      description: Package in '%Y%m%d%H' format. If not given, the latest package is taken.
     - name: limit
-      defaultValue: "0"
+      defaultValue: '10'
       description: The maximum number of results to return. If 0 all results will be returned.
     description: Gets the matches from the latest Feed.
-    name: gti-feed-get-indicators
-  - description: "This command will reset your fetch history."
-    name: gti-feed-reset-fetch-indicators
+    name: gti-threatlists-get-indicators
   dockerimage: demisto/python3:3.11.9.101916
   feed: true
   runonce: false
