@@ -94,7 +94,7 @@ script:
       description: Sandbox environment used for analysis. Relevant if the submit_file parameter is set to true.
       name: environment_id
       predefined:
-      - '300: Linux Ubuntu 16.04'
+      - '310: Linux Ubuntu 20'
       - 64-bit
       - '200: Android (static analysis)'
       - '160: Windows 10'
@@ -340,7 +340,7 @@ script:
       description: Sandbox environment used for analysis.
       name: environment_id
       predefined:
-      - '300: Linux Ubuntu 16.04'
+      - '310: Linux Ubuntu 20'
       - 64-bit
       - '200: Android (static analysis)'
       - '160: Windows 10'
@@ -1442,7 +1442,7 @@ script:
       name: environment_id
       auto: PREDEFINED
       predefined:
-      - '300: Linux Ubuntu 16.04'
+      - '310: Linux Ubuntu 20'
       - 64-bit
       - '200: Android (static analysis)'
       - '160: Windows 10'
