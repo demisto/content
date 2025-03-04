@@ -1,0 +1,17 @@
+{
+    "id": "Identity_Analytics_Alerts_layout_rule",
+    "layout_id": "Identity Analytics Alerts",
+    "name": "Identity Analytics Alerts Layout Rule",
+    "alerts_filter": {
+        "filter": {
+            "AND": [
+                {
+                    "SEARCH_FIELD": "tags",
+                    "SEARCH_TYPE": "EQ",
+                    "SEARCH_VALUE": "DT:Identity Analytics"
+                }
+            ]
+        }
+    },
+    "fromVersion": "6.10.0"
+}
