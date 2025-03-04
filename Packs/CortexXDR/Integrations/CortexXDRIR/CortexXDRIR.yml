@@ -3877,7 +3877,7 @@ script:
       Update one or more alerts with the provided arguments.
       Required license: Cortex XDR Prevent, Cortex XDR Pro per Endpoint, or Cortex XDR Pro per GB.
     name: xdr-update-alert
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   isfetch:xpanse: false
   script: ''
