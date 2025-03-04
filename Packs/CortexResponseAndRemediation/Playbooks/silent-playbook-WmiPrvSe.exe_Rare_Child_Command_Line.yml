@@ -1190,14 +1190,4 @@ tasks:
     view: "{\n  \"position\": {\n    \"x\": 830,\n    \"y\": 960\n  }\n}"
 tests:
 - No tests (auto formatted)
-version: -1
-view: "{\n  \"linkLabelsPosition\": {\n    \"10_11_Approved\": 0.38,\n    \"10_16_#default#\"\
-  : 0.1,\n    \"12_13_#error#\": 0.64,\n    \"17_14_#default#\": 0.43,\n    \"17_18_Isolate\"\
-  : 0.4,\n    \"19_14_#default#\": 0.21,\n    \"19_23_Yes\": 0.37,\n    \"23_17_WORKSTATION\"\
-  : 0.46,\n    \"23_24_#default#\": 0.62,\n    \"25_10_yes\": 0.55,\n    \"25_16_#default#\"\
-  : 0.1,\n    \"28_12_WMI\": 0.59,\n    \"28_29_#default#\": 0.6,\n    \"29_13_#error#\"\
-  : 0.63,\n    \"5_11_Malicious\": 0.4,\n    \"5_8_#default#\": 0.42,\n    \"8_10_Medium\
-  \ Confidence\": 0.82,\n    \"8_11_Malicious\": 0.8,\n    \"8_9_#default#\": 0.64,\n\
-  \    \"9_10_yes\": 0.25,\n    \"9_25_#default#\": 0.48\n  },\n  \"paper\": {\n \
-  \   \"dimensions\": {\n      \"height\": 3387,\n      \"width\": 1451,\n      \"\
-  x\": 70,\n      \"y\": -150\n    }\n  }\n}"
+fromversion: 8.9.0
