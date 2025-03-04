@@ -179,8 +179,7 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-  additionalinfo: Save Hunting Query result to the Microsoft 365 Defender context.
-    path
+  additionalinfo: Save Hunting Query result to the Microsoft 365 Defender context. path
 description: Unified gateway to security insights - all from a unified Microsoft Graph Security API.
 display: Microsoft Graph Security
 name: Microsoft Graph
@@ -2256,7 +2255,7 @@ script:
     - contextPath: MsGraph.Incident.systemTags
       description: The system tags associated with the incident.
       type: String collection
-  dockerimage: demisto/crypto:1.0.0.114611
+  dockerimage: demisto/crypto:1.0.0.2005673
   isfetch: true
   runonce: false
   script: '-'
@@ -2272,4 +2271,4 @@ tests:
 - Microsoft Graph Security Test self deployed v2
 - MSG-ediscovery-tpb
 - MSG-Threat-Assessment-test
-fromversion: 5.0.0 
+fromversion: 5.0.0
