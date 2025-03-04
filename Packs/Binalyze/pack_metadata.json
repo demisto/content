@@ -16,12 +16,14 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "devEmail": [
         "murat.alagoz@binalyze.com"
     ],
     "githubUser": [
         "binalyze-murat"
-    ]
+    ],
+    "supportedModules": []
 }

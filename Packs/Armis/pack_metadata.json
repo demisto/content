@@ -16,7 +16,9 @@
     "dependencies": {},
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
-    "defaultDataSource": "ArmisEventCollector"
+    "defaultDataSource": "ArmisEventCollector",
+    "supportedModules": []
 }

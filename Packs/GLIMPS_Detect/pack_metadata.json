@@ -21,12 +21,14 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "devEmail": [
         "contact@glimps.re"
     ],
     "githubUser": [
         "tdidailler"
-    ]
+    ],
+    "supportedModules": []
 }

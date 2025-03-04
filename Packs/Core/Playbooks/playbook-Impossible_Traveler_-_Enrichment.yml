@@ -813,5 +813,5 @@ outputs:
   type: unknown
 tests:
 - Test Playbook - Impossible Traveler - Enrichment
-marketplaces: ["marketplacev2"]
+marketplaces: ["marketplacev2", "platform"]
 fromversion: 6.6.0
