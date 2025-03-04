@@ -1721,7 +1721,7 @@ def test_get_container_scan_results_command(requests_mock):
     args = {}
 
     assert get_container_scan_results(client, args).raw_response == response
-    
+
 
 def test_get_container_scan_results_command_with_all_results(mocker):
     """
