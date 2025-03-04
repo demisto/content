@@ -14,16 +14,18 @@ This integration was integrated and tested with version 2.0 of Lansweeper
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ls-site-list
+
 ***
 Retrieve a list of all sites to which an application has access.
-
 
 #### Base Command
 
 `ls-site-list`
+
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 
 #### Context Output
 
@@ -31,37 +33,6 @@ There are no input arguments for this command.
 | --- | --- | --- |
 | Lansweeper.Site.id | String | Site ID. | 
 | Lansweeper.Site.name | String | Site name. | 
-
-
-#### Command Example
-```!ls-site-list```
-
-#### Context Example
-```json
-{
-    "Lansweeper": {
-        "Site": [
-            {
-                "id": "401d153d-2a59-45eb-879a-c291390448ca",
-                "name": "api-demo-data"
-            },
-            {
-                "id": "56d4ed4f-b2ad-4587-91b5-07bd453c5c76",
-                "name": "api-demo-data-v2"
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### Authorized Site(s)
->|Site ID|Site Name|
->|---|---|
->| 401d153d-2a59-45eb-879a-c291390448ca | api-demo-data |
->| 56d4ed4f-b2ad-4587-91b5-07bd453c5c76 | api-demo-data-v2 |
-
 
 ### ls-ip-hunt
 ***
