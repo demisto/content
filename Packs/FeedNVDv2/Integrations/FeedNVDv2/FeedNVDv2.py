@@ -364,7 +364,7 @@ def retrieve_cves(client, start_date: Any, end_date: Any, publish_date: bool):
 
             if total_results:
                 demisto.debug(f'Fetching {param["startIndex"]}-{int(param["startIndex"])+results_per_page}'
-                              'out of {total_results} results.')
+                              f'out of {total_results} results.')
 
                 raw_cves += res.get('vulnerabilities')
 
