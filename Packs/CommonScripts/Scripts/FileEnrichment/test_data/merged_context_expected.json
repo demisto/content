@@ -1,0 +1,278 @@
+{
+    "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": {
+        "Extension": "zip",
+        "Type": "JAVA JAR",
+        "MD5": "4e76823c05048e92a4c0122d61000edf",
+        "SHA1": "d8b426700c3c10413abb8acdcfeccaaec8f06cd9",
+        "SHA256": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
+        "Size": "262291",
+        "SSDeep": "6144:WWEH6pcEypX3dNGGkfxlLrnR8mfhAd2HNRg/U/:WWs6pcVlHtkDR8/Ad23z",
+        "Tags": [
+            "malware"
+        ],
+        "DBotScore": {
+            "Indicator": [
+                {
+                    "Value": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
+                    "Source": "VirusTotal (API v3)"
+                },
+                {
+                    "Value": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
+                    "Source": "WildFire-v2"
+                },
+                {
+                    "Value": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
+                    "Source": "WildFire-v2"
+                }
+            ],
+            "Reliability": [
+                {
+                    "Value": "C - Fairly reliable",
+                    "Source": "VirusTotal (API v3)"
+                },
+                {
+                    "Value": "B - Usually reliable",
+                    "Source": "WildFire-v2"
+                },
+                {
+                    "Value": "B - Usually reliable",
+                    "Source": "WildFire-v2"
+                }
+            ],
+            "Score": [
+                {
+                    "Value": 3,
+                    "Source": "VirusTotal (API v3)"
+                },
+                {
+                    "Value": 3,
+                    "Source": "WildFire-v2"
+                },
+                {
+                    "Value": 3,
+                    "Source": "WildFire-v2"
+                }
+            ],
+            "Type": [
+                {
+                    "Value": "file",
+                    "Source": "VirusTotal (API v3)"
+                },
+                {
+                    "Value": "file",
+                    "Source": "WildFire-v2"
+                },
+                {
+                    "Value": "file",
+                    "Source": "WildFire-v2"
+                }
+            ],
+            "Vendor": [
+                {
+                    "Value": "VirusTotal (API v3)",
+                    "Source": "VirusTotal (API v3)"
+                },
+                {
+                    "Value": "WildFire-v2",
+                    "Source": "WildFire-v2"
+                },
+                {
+                    "Value": "WildFire-v2",
+                    "Source": "WildFire-v2"
+                }
+            ]
+        },
+        "Hashes": [
+            {
+                "type": "MD5",
+                "value": "4e76823c05048e92a4c0122d61000edf"
+            },
+            {
+                "type": "SHA1",
+                "value": "d8b426700c3c10413abb8acdcfeccaaec8f06cd9"
+            },
+            {
+                "type": "SHA256",
+                "value": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0"
+            }
+        ],
+        "Relationships": [
+            {
+                "EntityA": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
+                "EntityAType": "File",
+                "EntityB": "jmcoru.alcatelupd.xyz",
+                "EntityBType": "Domain",
+                "Relationship": "communicates-with"
+            }
+        ],
+        "VTVendors": {
+            "EngineDetectionNames": [
+                "Trojan.ZIP.Java.m!c",
+                "Malicious (score: 99)"
+            ],
+            "EngineDetections": 43,
+            "EngineVendors": [
+                "CTX",
+                "AVG"
+            ]
+        },
+        "VTFileVerdict": "Malicious",
+        "DigitalSignature": {
+            "Published": "None"
+        },
+        "Malicious": {
+            "Description": null,
+            "Vendor": "WildFire-v2"
+        },
+        "Report": {
+            "Status": [
+                {
+                    "Value": "Success",
+                    "Source": "WildFire-v2"
+                }
+            ],
+            "SHA256": [
+                {
+                    "Value": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
+                    "Source": "WildFire-v2"
+                }
+            ]
+        },
+        "Verdicts": {
+            "Verdict": [
+                {
+                    "Value": 1,
+                    "Source": "WildFire-v2"
+                }
+            ],
+            "VerdictDescription": [
+                {
+                    "Value": "malware",
+                    "Source": "WildFire-v2"
+                }
+            ],
+            "Type": [
+                {
+                    "Value": "JAVA JAR",
+                    "Source": "WildFire-v2"
+                }
+            ],
+            "MD5": [
+                {
+                    "Value": "4e76823c05048e92a4c0122d61000edf",
+                    "Source": "WildFire-v2"
+                }
+            ],
+            "SHA1": [
+                {
+                    "Value": "d8b426700c3c10413abb8acdcfeccaaec8f06cd9",
+                    "Source": "WildFire-v2"
+                }
+            ]
+        },
+        "Hash": {
+            "data": {
+                "global_prevalence": {
+                    "description": [
+                        {
+                            "Value": "The global prevalence of the file.",
+                            "Source": "Cortex Core - IR"
+                        }
+                    ],
+                    "value": [
+                        {
+                            "Value": 0,
+                            "Source": "Cortex Core - IR"
+                        }
+                    ]
+                },
+                "local_prevalence": {
+                    "description": [
+                        {
+                            "Value": "The local prevalence of the file.",
+                            "Source": "Cortex Core - IR"
+                        }
+                    ],
+                    "value": [
+                        {
+                            "Value": 0.058823529411764705,
+                            "Source": "Cortex Core - IR"
+                        }
+                    ]
+                },
+                "prevalence": {
+                    "description": [
+                        {
+                            "Value": "The prevalence of the file.",
+                            "Source": "Cortex Core - IR"
+                        }
+                    ],
+                    "value": [
+                        {
+                            "Value": 0.058823529411764705,
+                            "Source": "Cortex Core - IR"
+                        }
+                    ]
+                }
+            },
+            "debug": {
+                "file_global_prevalence_by_global_process_sha256": {
+                    "description": [
+                        {
+                            "Value": "The prevalence of the file according to global_process_sha256 profile.",
+                            "Source": "Cortex Core - IR"
+                        }
+                    ],
+                    "value": [
+                        {
+                            "Value": 0,
+                            "Source": "Cortex Core - IR"
+                        }
+                    ]
+                },
+                "file_local_prevalence_by_file_sha256": {
+                    "description": [
+                        {
+                            "Value": "The prevalence of the file according to file_sha256 profile.",
+                            "Source": "Cortex Core - IR"
+                        }
+                    ],
+                    "value": [
+                        {
+                            "Value": 0,
+                            "Source": "Cortex Core - IR"
+                        }
+                    ]
+                },
+                "file_local_prevalence_by_loaded_module_sha256": {
+                    "description": [
+                        {
+                            "Value": "The prevalence of the file according to loaded_module_sha256 profile.",
+                            "Source": "Cortex Core - IR"
+                        }
+                    ],
+                    "value": [
+                        {
+                            "Value": 0.058823529411764705,
+                            "Source": "Cortex Core - IR"
+                        }
+                    ]
+                },
+                "file_local_prevalence_by_process_sha256": {
+                    "description": [
+                        {
+                            "Value": "The prevalence of the file according to process_sha256 profile.",
+                            "Source": "Cortex Core - IR"
+                        }
+                    ],
+                    "value": [
+                        {
+                            "Value": 0.058823529411764705,
+                            "Source": "Cortex Core - IR"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

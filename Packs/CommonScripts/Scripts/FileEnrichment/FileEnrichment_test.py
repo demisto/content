@@ -251,6 +251,32 @@ def test_add_source_brand_to_values():
     }
 
 
+def test_merge_context_outputs():
+    """
+    Given:
+        - The per-command entry context from 5 commands.
+
+    When:
+        - Calling `merge_context_outputs`.
+
+    Assert:
+        - Ensure merged correct context output.
+    """
+    from FileEnrichment import merge_context_outputs
+
+    per_command_context = {
+        "findIndicators": util_load_json("test_data/search_file_indicator_expected.json")["Context"],
+        "file": util_load_json("test_data/file_reputation_command_expected.json")["Context"],
+        "wildfire-report": util_load_json("test_data/wildfire_report_command_expected.json")["Context"],
+        "wildfire-get-verdict": util_load_json("test_data/wildfire_verdict_command_expected.json")["Context"],
+        "core-get-hash-analytics-prevalence": util_load_json("test_data/ir_hash_analytics_command_expected.json")["Context"],
+    }
+
+    expected_merged_context = util_load_json("test_data/merged_context_expected.json")
+
+    assert merge_context_outputs(per_command_context) == expected_merged_context
+
+
 def test_execute_file_reputation(mocker: MockerFixture):
     """
     Given:
