@@ -467,22 +467,29 @@ def delete_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 @logger
-def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch: int = 50,
-                    info_level: str = 'concise') -> Tuple[dict, list]:
-    if not last_run:  # if first time fetching
-        next_run = {
-            'time': to_fe_datetime_converter(first_fetch),
-            'last_alert_ids': []
-        }
-    else:
-        next_run = last_run
+def fetch_incidents(
+    client: Client, last_run: dict, first_fetch: str,
+    max_fetch: int = 50, info_level: str = 'concise',
+    timeout: int = 120
+) -> Tuple[dict, list]:
+
+    next_run = last_run or {
+        'time': to_fe_datetime_converter(first_fetch),
+        'last_alert_ids': []
+    }
 
     demisto.info(f'{INTEGRATION_NAME} executing fetch with: {str(next_run.get("time"))}')
-    raw_response = client.fe_client.get_alerts_request(request_params={
-        'start_time': to_fe_datetime_converter(next_run['time']),  # type: ignore
-        'info_level': info_level,
-        'duration': '48_hours'
-    })
+    request_parameters = {
+        'request_params': {
+            'start_time': to_fe_datetime_converter(next_run['time']),  # type: ignore
+            'info_level': info_level,
+            'duration': '48_hours'
+        },
+        'timeout': timeout
+    }
+
+    demisto.debug(f'{request_parameters=}')
+    raw_response = client.fe_client.get_alerts_request(**request_parameters)
     all_alerts = raw_response.get('alert')
 
     ten_minutes_date = dateparser.parse('10 minutes')
@@ -503,6 +510,9 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
         demisto.info(f'{INTEGRATION_NAME} setting next run to: {str(next_run)}')
         return next_run, []
 
+    if any(len(alert) < 10 for alert in all_alerts):
+        demisto.debug(f'SHORT INCIDENT FOUND IN RESP: {raw_response}')
+
     alerts = all_alerts[:max_fetch]
     last_alert_ids = last_run.get('last_alert_ids', [])
     incidents = []
@@ -519,6 +529,8 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
             }
             incidents.append(incident)
             last_alert_ids.append(alert_id)
+        
+        demisto.debug(f'ingest: {alert_id=}, {list(alert)=}')
 
     if not incidents:
         demisto.info(f'{INTEGRATION_NAME} no new alerts were collected at: {str(next_run)}.')
@@ -586,7 +598,8 @@ def main() -> None:
                 last_run=demisto.getLastRun(),
                 first_fetch=first_fetch,
                 max_fetch=max_fetch,
-                info_level=info_level
+                info_level=info_level,
+                timeout=arg_to_number(params.get('timeout', 120))
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
