@@ -441,7 +441,7 @@ Returns:
 '''
 
 
-def vulndb_get_vuln_report_command(args: dict, client: Client) -> fileResult:
+def vulndb_get_vuln_report_command(args: dict, client: Client):
     vulndb_id = args['vuln_id']
     res = client.http_file_request(f'/vulnerabilities/{vulndb_id}.pdf')
 
@@ -462,7 +462,7 @@ Returns:
 '''
 
 
-def vulndb_get_cpe_command(args: dict, client: Client) -> CommandResults:
+def vulndb_get_cpe_command(args: dict, client: Client):
     vulndb_id = args['vuln_id']
 
     res = client.http_request(f'/vulnerabilities/{vulndb_id}?show_cpe=true')
