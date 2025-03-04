@@ -31,7 +31,7 @@ def http_mock(method: str, url_suffix: str = "", full_url: str = "", params: dic
     elif url_suffix == '/api/v4/teams/team_id/channels' or url_suffix == '/api/v4/teams/team_id/channels/private':
         return util_load_json("test_data/list_channels_response.json")
     elif url_suffix == '/api/v4/users/user_id/teams/team_id/channels/members':
-        return util_load_json("test_data/list_channels_response.json")
+        return util_load_json("test_data/list_channel_memberships_for_user.json")
     elif url_suffix == '/api/v4/channels':
         return util_load_json("test_data/create_channel_response.json")
     elif url_suffix == '/api/v4/users':
@@ -119,8 +119,8 @@ def test_list_private_channels_for_user_command(http_client):
     args = {'team_name': 'team_name',
             'user_id': 'user_id'}
     results = list_private_channels_for_user_command(http_client, args)
-    assert results.outputs[0].get('name') == 'name'
-    assert len(results.outputs) == 2
+    assert results.outputs["channels"][0].get('name') == 'name'
+    assert len(results.outputs["channels"]) == 1
 
 
 def test_create_channel_command(http_client):
@@ -469,7 +469,7 @@ def test_list_groups_command(http_client):
     """
     args = {'group': 'user_group', }
     results = list_groups_command(http_client, args)
-    assert results.outputs[0].get('id') == 'abc1234'
+    assert results.outputs[0].get('id') == 'group_id'
 
 
 def test_list_group_members_command(http_client):
@@ -484,10 +484,10 @@ def test_list_group_members_command(http_client):
     """
     args = {'group': 'user_group', }
     results = list_group_members_command(http_client, args)
-    assert results.outputs[0].get('name') == 'user_group'
+    assert results.outputs.get('name') == 'user_group'
 
 
-def test_add_group_member_command(http_client, mocker):
+def test_add_group_member_command(http_client):
     """
     Given -
         client
@@ -498,13 +498,11 @@ def test_add_group_member_command(http_client, mocker):
         Validate that the function returns the expected CommandResults.
     """
     args = {'group': 'user_group', "user_ids": "user_id"}
-    mocker.patch.object(http_client, "add_group_member_request", return_value=[{"group_id":"group_id", "create_at": 0,
-                                                                                "delete_at": 0, "user_id": "user_id"}])
     results = add_group_member_command(http_client, args)
     assert results.readable_output == 'The member username was added to the user group successfully, with group ID: group_id'
 
 
-def test_remove_group_member_command(http_client, mocker):
+def test_remove_group_member_command(http_client):
     """
     Given -
         client
@@ -515,10 +513,8 @@ def test_remove_group_member_command(http_client, mocker):
         Validate that the function returns the expected CommandResults.
     """
     args = {'group': 'user_group', "user_ids": "user_id"}
-    mocker.patch.object(http_client, "remove_group_member_request", return_value=[{"group_id":"group_id", "create_at": 0,
-                                                                                "delete_at": 0, "user_id": "user_id"}])
-    results = add_group_member_command(http_client, args)
-    assert results.readable_output == 'The member username was removed from the channel successfully, with group ID: group_id'
+    results = remove_group_member_command(http_client, args)
+    assert results.readable_output == 'The member username was removed from the user group successfully, with group ID: group_id'
 
 
 def test_set_channel_role_command(http_client, mocker):

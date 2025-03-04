@@ -233,7 +233,8 @@ class HTTPClient(BaseClient):
     def set_channel_role_request(self, channel_id: str, user_id: str, roles: str) -> dict[str, str]:
         """Set a channel role for channel member"""
         data = {"roles": roles}
-        response = self._http_request(method='PUT', url_suffix=f'/api/v4/channels/{channel_id}/members/{user_id}/roles', json_data=data)
+        response = self._http_request(
+            method='PUT', url_suffix=f'/api/v4/channels/{channel_id}/members/{user_id}/roles', json_data=data)
 
         return response
 
@@ -348,7 +349,7 @@ class HTTPClient(BaseClient):
 
     def list_groups_request(self, params: dict) -> list[dict[str, Any]]:
         """lists groups in a specific team"""
-        response = self._http_request(method='GET', url_suffix=f'/api/v4/groups', params=params)
+        response = self._http_request(method='GET', url_suffix='/api/v4/groups', params=params)
 
         return response
 
@@ -725,7 +726,6 @@ def get_channel_id_to_send_notif(client: HTTPClient, to: list, channel_name: str
         channel_object = client.create_direct_channel_request(users, bot_id)
         channel_id = channel_object.get('id', '')
         demisto.debug(f'MM: Created a new direct channel to: {users} with channel_id: {channel_id}')
-
 
     elif channel_name:  # if channel name provided and the channel was mirrored
         channel_id = get_channel_id_from_context(channel_name, investigation_id)
@@ -1253,20 +1253,21 @@ def list_private_channels_for_user_command(client: HTTPClient, args: dict[str, A
 
     user_channels = client.list_channels_for_user_request(team_details.get('id', ''), user_id)
 
-    params = {}
+    params: dict[Any, Any] = {}
     channels = client.list_channel_request(team_details.get('id', ''), params, get_private=True)
     channels = [channel for channel in channels if channel['id'] in [c['channel_id'] for c in user_channels]]
 
     user_details = client.get_user_request(user_id)
 
-    hr = tableToMarkdown(f'Channels for {user_details.get("username", user_id)}:', channels, headers=['name', 'display_name', 'type', 'id'])
+    hr = tableToMarkdown(f'Channels for {user_details.get("username", user_id)}:',
+                         channels, headers=['name', 'display_name', 'type', 'id'])
     return CommandResults(
         outputs_prefix='Mattermost.User',
         outputs_key_field='id',
         outputs={
             'id': user_id,
-            'channels':channels
-            },
+            'channels': channels
+        },
         readable_output=hr,
     )
 
@@ -1615,7 +1616,7 @@ def send_notification(client: HTTPClient, **args):
     Sends notification for a MatterMost channel
     """
     demisto.debug(f'MM: Sending notification with {args=}')
-    to =  argToList(args.get('to', ''))
+    to = argToList(args.get('to', ''))
     entry = args.get('entry')
     channel_name = args.get('channel', '')
     message_to_send = args.get("message", "")
@@ -1697,16 +1698,14 @@ def list_groups_command(client: HTTPClient, args: dict[str, Any]) -> CommandResu
     page = arg_to_number(args.get('page', DEFAULT_PAGE_NUMBER))
     page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE))
     limit = args.get('limit', '')
-    q = args.get('group','')
-    group_details = {}
+    q = args.get('group', '')
+    group_details: list[Any] = []
     if limit:
         page = DEFAULT_PAGE_NUMBER
         page_size = limit
 
-
     params = {'page': page, 'per_page': page_size, 'q': q}
     group_details = client.list_groups_request(params)
-
 
     hr = tableToMarkdown('User groups:', group_details, headers=['name', 'display_name', 'description', 'id'])
     return CommandResults(
@@ -1726,15 +1725,15 @@ def list_group_members_command(client: HTTPClient, args: dict[str, Any]) -> Comm
     group_details = client.list_groups_request(params)
 
     if len(group_details) == 1:
-        group_details = group_details[0]
+        group_detail = group_details[0]
     elif len(group_details) == 0:
         raise DemistoException('No matching user group found')
     else:
         raise DemistoException('User group pattern is not unique:\n' + '\n'.join([x['name'] for x in group_details]))
 
-    member_details = client.list_group_members_request(group_details.get('id', ''))
-    member_details['id'] = group_details.get('id', '')
-    member_details['name'] = group_details.get('name', group_name)
+    member_details = client.list_group_members_request(group_detail.get('id', ''))
+    member_details['id'] = group_detail.get('id', '')
+    member_details['name'] = group_detail.get('name', group_name)
 
     hr = tableToMarkdown('User group members:', member_details.get("members"), headers=['username', 'email', 'id'])
     return CommandResults(
@@ -1754,19 +1753,19 @@ def add_group_member_command(client: HTTPClient, args: dict[str, Any]) -> Comman
     group_details = client.list_groups_request(params)
 
     if len(group_details) == 1:
-        group_details = group_details[0]
+        group_detail = group_details[0]
     elif len(group_details) == 0:
         raise DemistoException('No matching user group found')
     else:
         raise DemistoException('User group pattern is not unique:\n' + '\n'.join([x['name'] for x in group_details]))
 
     data = {'user_ids': user_ids}
-    response = client.add_group_member_request(group_details.get('id', ''), data)
+    response = client.add_group_member_request(group_detail.get('id', ''), data)
 
     hr = []
     for user in user_ids:
         user_details = client.get_user_request(user)
-        hr.append(f'The member {user_details.get("username", user)} was added to the user group successfully, with group ID: {group_details.get("id")}')   # noqa: E501
+        hr.append(f'The member {user_details.get("username", user)} was added to the user group successfully, with group ID: {group_detail.get("id")}')   # noqa: E501
 
     return CommandResults(
         readable_output="\n".join(hr),
@@ -1783,19 +1782,19 @@ def remove_group_member_command(client: HTTPClient, args: dict[str, Any]) -> Com
     group_details = client.list_groups_request(params)
 
     if len(group_details) == 1:
-        group_details = group_details[0]
+        group_detail = group_details[0]
     elif len(group_details) == 0:
         raise DemistoException('No matching user group found')
     else:
         raise DemistoException('User group pattern is not unique:\n' + '\n'.join([x['name'] for x in group_details]))
 
     data = {'user_ids': user_ids}
-    response = client.remove_group_member_request(group_details.get('id', ''), data)
+    response = client.remove_group_member_request(group_detail.get('id', ''), data)
 
     hr = []
     for user in user_ids:
         user_details = client.get_user_request(user)
-        hr.append(f'The member {user_details.get("username", user)} was removed from the channel successfully, with group ID: {group_details.get("id")}')   # noqa: E501
+        hr.append(f'The member {user_details.get("username", user)} was removed from the user group successfully, with group ID: {group_detail.get("id")}')   # noqa: E501
 
     return CommandResults(
         readable_output="\n".join(hr),
@@ -1812,11 +1811,12 @@ def set_channel_role_command(client: HTTPClient, args: dict[str, Any]) -> Comman
     client.set_channel_role_request(channel_id, user_id, channel_role)
 
     user_details = client.get_user_request(user_id)
-    hr =f'Set channel role for {user_details.get("username", user_id)} successfully to {"Admin" if args.get("role", "admin").lower() == "admin" else "Member"}.'   # noqa: E501
+    hr = f'Set channel role for {user_details.get("username", user_id)} successfully to {"Admin" if args.get("role", "admin").lower() == "admin" else "Member"}.'   # noqa: E501
 
     return CommandResults(
         readable_output=hr
     )
+
 
 ''' MAIN FUNCTION '''
 

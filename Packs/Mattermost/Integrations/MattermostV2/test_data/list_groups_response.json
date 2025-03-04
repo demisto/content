@@ -1,6 +1,6 @@
 [
     {
-        "id": "abc1234",
+        "id": "group_id",
         "name": "user_group",
         "display_name": "user_group",
         "description": "This is a user group",
