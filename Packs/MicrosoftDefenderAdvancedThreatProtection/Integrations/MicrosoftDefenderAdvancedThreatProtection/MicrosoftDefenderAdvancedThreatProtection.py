@@ -2733,7 +2733,7 @@ def get_machine_vulnerabilities_command(client: MsClient, args: dict) -> Command
                                      vulns_outputs, headers=headers, removeNull=True)
 
     return CommandResults(
-        outputs_prefix='MicrosoftATP.Vulnerability',
+        outputs_prefix='MicrosoftATP.PublicVulnerability',
         outputs_key_field='id',
         outputs=vulns_outputs,
         readable_output=human_readable,
@@ -2765,7 +2765,7 @@ def get_machine_missing_kbs_command(client: MsClient, args: dict) -> CommandResu
     # assert 0
 
     return CommandResults(
-        outputs_prefix="MicrosoftATP.MissingKB",
+        outputs_prefix="MicrosoftATP.PublicProductFix",
         outputs=missing_kbs_output,
         outputs_key_field='id',
         readable_output=human_readable,

@@ -5717,25 +5717,25 @@ script:
     name: microsoft-atp-get-machine-missing-kbs
     polling: true
     outputs:
-    - contextPath: MicrosoftATP.MissingKB.id
+    - contextPath: MicrosoftATP.PublicProductFix.id
       description: The missing KB ID.
       type: String
-    - contextPath: MicrosoftATP.MissingKB.name
+    - contextPath: MicrosoftATP.PublicProductFix.name
       description: The missing KB name.
       type: String
-    - contextPath: MicrosoftATP.MissingKB.productsNames
+    - contextPath: MicrosoftATP.PublicProductFix.productsNames
       description: The product names.
       type: String
-    - contextPath: MicrosoftATP.MissingKB.url
+    - contextPath: MicrosoftATP.PublicProductFix.url
       description: The KB URL.
       type: String
-    - contextPath: MicrosoftATP.MissingKB.machineMissedOn
+    - contextPath: MicrosoftATP.PublicProductFix.machineMissedOn
       description: The amount of machines that is missing this KB.
       type: Number
-    - contextPath: MicrosoftATP.MissingKB.cveAddressed
+    - contextPath: MicrosoftATP.PublicProductFix.cveAddressed
       description: The CVE addressed by this KB.
       type: Number
-    - contextPath: MicrosoftATP.MissingKB.osBuild
+    - contextPath: MicrosoftATP.PublicProductFix.osBuild
       description: The OS build.
       type: String
   - arguments:
@@ -5746,58 +5746,58 @@ script:
     name: microsoft-atp-get-machine-vulnerabilities
     polling: true
     outputs:
-    - contextPath: MicrosoftATP.Vulnerability.id
+    - contextPath: MicrosoftATP.PublicVulnerability.id
       description: The vulnerability ID.
       type: String
-    - contextPath: MicrosoftATP.Vulnerability.name
+    - contextPath: MicrosoftATP.PublicVulnerability.name
       description: The vulnerability name.
       type: String
-    - contextPath: MicrosoftATP.Vulnerability.cveSupportability
+    - contextPath: MicrosoftATP.PublicVulnerability.cveSupportability
       description: The CVE supportability.
       type: String
-    - contextPath: MicrosoftATP.Vulnerability.cvssV3
+    - contextPath: MicrosoftATP.PublicVulnerability.cvssV3
       description: The CVSS V3.
       type: Number
-    - contextPath: MicrosoftATP.Vulnerability.cvssVector
+    - contextPath: MicrosoftATP.PublicVulnerability.cvssVector
       description: The CVSS vector.
       type: String
-    - contextPath: MicrosoftATP.Vulnerability.description
+    - contextPath: MicrosoftATP.PublicVulnerability.description
       description: A description of this vulnerability.
       type: String
-    - contextPath: MicrosoftATP.Vulnerability.epss
+    - contextPath: MicrosoftATP.PublicVulnerability.epss
       description: The EPSS.
       type: Number
-    - contextPath: MicrosoftATP.Vulnerability.exploitInKit
+    - contextPath: MicrosoftATP.PublicVulnerability.exploitInKit
       description: Is this vulnerability in an exploit kit?
       type: Boolean
-    - contextPath: MicrosoftATP.Vulnerability.exploitTypes
+    - contextPath: MicrosoftATP.PublicVulnerability.exploitTypes
       description: The type(s) of exploit(s).
       type: String
-    - contextPath: MicrosoftATP.Vulnerability.exploitUris
+    - contextPath: MicrosoftATP.PublicVulnerability.exploitUris
       description: The exploit URIs.
       type: String
-    - contextPath: MicrosoftATP.Vulnerability.exploitVerified
+    - contextPath: MicrosoftATP.PublicVulnerability.exploitVerified
       description: Is this exploit verified?
       type: Boolean
-    - contextPath: MicrosoftATP.Vulnerability.exposedMachines
+    - contextPath: MicrosoftATP.PublicVulnerability.exposedMachines
       description: The amount of machines exposed to this vulnerability.
       type: Number
-    - contextPath: MicrosoftATP.Vulnerability.firstDetected
+    - contextPath: MicrosoftATP.PublicVulnerability.firstDetected
       description: The date and time when this vulnerability was first detected.
       type: String
-    - contextPath: MicrosoftATP.Vulnerability.publicExploit
+    - contextPath: MicrosoftATP.PublicVulnerability.publicExploit
       description: Does this vulnerability have a public exploit?
       type: Boolean
-    - contextPath: MicrosoftATP.Vulnerability.publishedOn
+    - contextPath: MicrosoftATP.PublicVulnerability.publishedOn
       description: The date and time when this vulnerability was published.
       type: String
-    - contextPath: MicrosoftATP.Vulnerability.severity
+    - contextPath: MicrosoftATP.PublicVulnerability.severity
       description: The severity of this vulnerability.
       type: String
-    - contextPath: MicrosoftATP.Vulnerability.tags
+    - contextPath: MicrosoftATP.PublicVulnerability.tags
       description: The tags associated with this vulnerability.
       type: String
-    - contextPath: MicrosoftATP.Vulnerability.updatedOn
+    - contextPath: MicrosoftATP.PublicVulnerability.updatedOn
       description: The date and time when this vulnerability was last updated.
       type: String
   dockerimage: demisto/crypto:1.0.0.2005673
