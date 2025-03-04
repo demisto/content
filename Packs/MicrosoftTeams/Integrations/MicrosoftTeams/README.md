@@ -58,21 +58,6 @@ Refer to the [Setup Video](#setup-video) and the [Prerequisites](#prerequisites)
 - The steps should be performed in order to ensure no communication between the services is lost.
 - Refer to the [Setup Examples](#setup-examples) for information regarding advanced setups.
 
-## Migration from Cortex XSOAR 6 to Cortex XSOAR 8 and Cortex XSIAM.
-
-### Using Cortex XSOAR or Cortex XSIAM rerouting
-1. For Cortex XSOAR 8, set the messaging endpoint in the Azure bot to be `https://ext-<CORTEXT-XSOAR-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., `https://ext-my.demisto.live/xsoar/instance/execute/teams`.
-2. For Cortex XSIAM, set the messaging endpoint in the Azure bot to be `https://ext-<CORTEXT-XSIAM-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, and replace the `xdr` in the url to `crtx`.
-3. Check the **long running instance** parameter in the integration instance configuration.
-4. Set the **port** parameter. It's under the Connect section in the integration instance configuration.
-5. If using the same bot from the XSOAR 6 instance, make sure to remove the bot from the team and to add it back:
-    1. Go to the Microsoft Teams app.
-    2. Go to your team, and click the three dots next to the name.
-    3. Go to **manage team** > **apps**.
-    4. Find your bot, and click the three dots in the same row.
-    5. Click **remove**.
-    6. Add the bot to the team.
-
 ## Setup Examples
 
 ### 1. Using Cortex XSOAR or Cortex XSIAM rerouting
@@ -137,20 +122,12 @@ The proxy intercepts HTTPS traffic, presents a public CA certificate, then proxi
 All HTTPS traffic that will hit the selected messaging endpoint will be directed to the HTTPS web server the integration spins up, and will then be processed.
 
 ## Setup Video
-The information in this video is for Cortex XSOAR 6 only.
+The information in this video is for Cortex XSOAR 6 but mostly still applies to XSOAR 8, refer to the [Prerequisites](#prerequisites) section for the latest instructions.
 
 <video controls>
     <source src="https://github.com/demisto/content-assets/blob/master/Assets/MicrosoftTeams/FullConfigVideo.mp4?raw=true"
             type="video/mp4"/>
     Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content-assets/blob/master/Assets/MicrosoftTeams/FullConfigVideo.mov?raw=true
-</video>
-
-
-## Old Setup Video (Use the above video)
-<video controls>
-    <source src="https://github.com/demisto/content-assets/raw/845c0d790ceb4fbac08c5c7852b2a3bed0829778/Assets/MicrosoftTeams/config.mp4"
-            type="video/mp4"/>
-    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content-assets/raw/845c0d790ceb4fbac08c5c7852b2a3bed0829778/Assets/MicrosoftTeams/config.mp4
 </video>
 
 ## Prerequisites
@@ -219,7 +196,7 @@ Perform the following steps to add the needed permissions:
 
     Alternatively, check each relevant command section below for the minimum permissions it requires.
 
-5. Verify that all the needed permissions were added, and click **Grant admin consent for Demisto**.
+5. Verify that all the needed permissions were added, and click **Grant admin consent**.
 6. When prompted to verify granting permissions, click **Yes**, and verify that permissions were successfully added.
 
 #### Authorization Code Flow
@@ -242,21 +219,20 @@ Perform the following steps to add the needed permissions:
     - `Channel.Create`
     - `Channel.Delete.All`
     - `OnlineMeetings.ReadWrite.All`
-    - `Chat.ReadBasic`
-    - `Chat.Create`
-    - `ChatMessage.Send`
-    - `ChatMember.ReadWrite`
+    - `Chat.ReadWrite`
     - `AppCatalog.Read.All`
     - `TeamsAppInstallation.ReadWriteSelfForChat`
 
     Alternatively, check each relevant command section below for the minimum permissions it requires.
 
-5. Verify that all permissions were added, and click **Grant admin consent for Demisto**.
+5. Verify that all permissions were added, and click **Grant admin consent**.
 6. When prompted to verify granting permissions, click **Yes**, and verify that permissions were successfully added.
 7. Click **Expose an API** and add **Application ID URI**
 8. Click **Authentication > Platform configurations > Add a platform.** Choose **Web** and add Redirect URIs: <https://login.microsoftonline.com/common/oauth2/nativeclient>
 
 ### Configure Microsoft Teams on Cortex XSOAR
+
+For more detailed instructions, refer to the [Configuring the instance with the chosen authentication flow](#configuring-the-instance-with-the-chosen-authentication-flow) section.
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Microsoft Teams.
@@ -343,6 +319,22 @@ Perform the following steps to add the needed permissions:
 13. In the search box, type the name of the team to which you want to add the bot.
 14. Click the **Add** button on the wanted team and then click the **Apply** button.
 
+## Migration from Cortex XSOAR 6 to Cortex XSOAR 8 and Cortex XSIAM
+
+### Using Cortex XSOAR or Cortex XSIAM rerouting
+
+1. For Cortex XSOAR 8, set the messaging endpoint in the Azure bot to be `https://ext-<CORTEXT-XSOAR-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., `https://ext-my.demisto.live/xsoar/instance/execute/teams`.
+2. For Cortex XSIAM, set the messaging endpoint in the Azure bot to be `https://ext-<CORTEXT-XSIAM-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, and replace the `xdr` in the url to `crtx`.
+3. Check the **long running instance** parameter in the integration instance configuration.
+4. Set the **port** parameter. It's under the Connect section in the integration instance configuration.
+5. If using the same bot from the XSOAR 6 instance, make sure to remove the bot from the team and to add it back:
+    1. Go to the Microsoft Teams app.
+    2. Go to your team, and click the three dots next to the name.
+    3. Go to **manage team** > **apps**.
+    4. Find your bot, and click the three dots in the same row.
+    5. Click **remove**.
+    6. Add the bot to the team.
+
 ## Known Limitations
 ---
 - In some cases, you might encounter a problem, where no communication is created between Teams and the messaging endpoint, when adding a bot to the team. You can work around this problem by adding any member to the team the bot was added to. It will trigger a communication and solve the issue.
@@ -374,16 +366,9 @@ and picture to match the bot will make it appear to be from the same source.
 
 ##### Required Permissions
 
-`GroupMember.Read.All`
+`GroupMember.Read.All` - *Application (Client Credentials) / Delegated (Authorization Code)*
 
-`Channel.ReadBasic.All`
-
-*Note: The required permission type depends on the authentication method used:*
-
-|||
-|-------------|-------------|
-|*Client Credentials*|*Application permissions*|
-|*Authorization Code*|*Delegated permissions*|
+`Channel.ReadBasic.All` - *Application (Client Credentials) / Delegated (Authorization Code)*
 
 ##### Input
 
@@ -423,18 +408,11 @@ Mirrors the Cortex XSOAR/Cortex XSIAM investigation to the specified Microsoft T
 
 ##### Required Permissions
 
-`GroupMember.Read.All`
+`GroupMember.Read.All` - *Application (Client Credentials) / Delegated (Authorization Code)*
 
-`Channel.ReadBasic.All`
+`Channel.ReadBasic.All` - *Application (Client Credentials) / Delegated (Authorization Code)*
 
-`Channel.Create`
-
-*Note: The required permission type depends on the authentication method used:*
-
-|||
-|-------------|-------------|
-|*Client Credentials*|*Application permissions*|
-|*Authorization Code*|*Delegated permissions*|
+`Channel.Create` - *Application (Client Credentials) / Delegated (Authorization Code)*
 
 ##### Input
 
@@ -469,18 +447,11 @@ Deletes the specified Microsoft Teams channel.
 
 ##### Required Permissions
 
-`GroupMember.Read.All`
+`GroupMember.Read.All` - *Application (Client Credentials) / Delegated (Authorization Code)*
 
-`Channel.ReadBasic.All`
+`Channel.ReadBasic.All` - *Application (Client Credentials) / Delegated (Authorization Code)*
 
-`Channel.Delete.All`
-
-*Note: The required permission type depends on the authentication method used:*
-
-|||
-|-------------|-------------|
-|*Client Credentials*|*Application permissions*|
-|*Authorization Code*|*Delegated permissions*|
+`Channel.Delete.All` - *Application (Client Credentials) / Delegated (Authorization Code)*
 
 ##### Input
 
@@ -537,11 +508,11 @@ Rings a user's Teams account. Note: This is a ring only! no media will play in c
 
 `microsoft-teams-ring-user`
 
-##### Required Permissions (Application)
+##### Required Permissions
 
-`User.Read.All`
+`User.Read.All` - *Application*
 
-`Calls.Initiate.All`
+`Calls.Initiate.All` - *Application*
 
 ##### Input
 
@@ -573,20 +544,13 @@ For a comparison of Teams features for each channel type, see the Microsoft docu
 
 ##### Required Permissions
 
-`User.Read.All`
+`User.Read.All` - *Application (Client Credentials) / Delegated (Authorization Code)*
 
-`ChannelMember.ReadWrite.All`
+`ChannelMember.ReadWrite.All` - *Application (Client Credentials) / Delegated (Authorization Code)*
 
-`Channel.ReadBasic.All`
+`Channel.ReadBasic.All` - *Application (Client Credentials) / Delegated (Authorization Code)*
 
-`GroupMember.Read.All`
-
-*Note: The required permission type depends on the authentication method used:*
-
-|||
-|-------------|-------------|
-|*Client Credentials*|*Application permissions*|
-|*Authorization Code*|*Delegated permissions*|
+`GroupMember.Read.All` - *Application (Client Credentials) / Delegated (Authorization Code)*
 
 ##### Input
 
@@ -621,18 +585,11 @@ See also [Channel feature comparison](https://learn.microsoft.com/en-us/Microsof
 
 ##### Required Permissions
 
-`User.Read.All`
+`User.Read.All` - *Application (Client Credentials) / Delegated (Authorization Code)*
 
-`GroupMember.Read.All`
+`GroupMember.Read.All` - *Application (Client Credentials) / Delegated (Authorization Code)*
 
-`Channel.Create`
-
-*Note: The required permission type depends on the authentication method used:*
-
-|||
-|-------------|-------------|
-|*Client Credentials*|*Application permissions*|
-|*Authorization Code*|*Delegated permissions*|
+`Channel.Create` - *Application (Client Credentials) / Delegated (Authorization Code)*
 
 ##### Input
 
@@ -721,18 +678,11 @@ Removes a member (user) from a private/shared channel.
 
 ##### Required Permissions
 
-`GroupMember.Read.All`
+`GroupMember.Read.All` - *Application (Client Credentials) / Delegated (Authorization Code)*
 
-`Channel.ReadBasic.All`
+`Channel.ReadBasic.All` - *Application (Client Credentials) / Delegated (Authorization Code)*
 
-`ChannelMember.ReadWrite.All`
-
-*Note: The required permission type depends on the authentication method used:*
-
-|||
-|-------------|-------------|
-|*Client Credentials*|*Application permissions*|
-|*Authorization Code*|*Delegated permissions*|
+`ChannelMember.ReadWrite.All` - *Application (Client Credentials) / Delegated (Authorization Code)*
 
 ##### Input
 
@@ -764,18 +714,11 @@ Retrieves a list of members from a channel.
 
 ##### Required Permissions
 
-`GroupMember.Read.All`
+`GroupMember.Read.All` - *Application (Client Credentials) / Delegated (Authorization Code)*
 
-`Channel.ReadBasic.All`
+`Channel.ReadBasic.All` - *Application (Client Credentials) / Delegated (Authorization Code)*
 
-`ChannelMember.Read.All`
-
-*Note: The required permission type depends on the authentication method used:*
-
-|||
-|-------------|-------------|
-|*Client Credentials*|*Application permissions*|
-|*Authorization Code*|*Delegated permissions*|
+`ChannelMember.Read.All` - *Application (Client Credentials) / Delegated (Authorization Code)*
 
 ##### Input
 
@@ -819,21 +762,22 @@ Creates a new chat.
 Notes:
 - Only one oneOnOne chat can exist between two members. If a oneOnOne chat already exists, it will be returned.
 - This command works with the consent user, not with the bot. Which means, the chat is created between the consent user and the user provided in the command's argument.
+- This command may fail if the bot app has not yet appeared in the "built for your org" section in teams.
 
 
 ##### Base Command
 
 `microsoft-teams-chat-create`
 
-##### Required Permissions (Delegated)
+##### Required Permissions
 
-`User.Read.All`
+`User.Read.All` - *Delegated*
 
-`Chat.Create`
+`Chat.Create` - *Delegated*
 
-`AppCatalog.Read.All`
+`AppCatalog.Read.All` - *Delegated*
 
-`TeamsAppInstallation.ReadWriteSelfForChat`
+`TeamsAppInstallation.ReadWriteSelfForChat` - *Delegated*
 
 ##### Input
 
@@ -871,25 +815,28 @@ Notes:
 ***
 Sends a new chat message in the specified chat.
 
-Note:
+Notes:
 
-This command works with the consent user, not with the bot. Which means, the message is sent to the given chat by the consent user, not the bot.
+- This command works with the consent user, not with the bot. Which means, the message is sent to the given chat by the consent user, not the bot.
+- This command may fail if the bot app has not yet appeared in the "built for your org" section in teams.
 
 ##### Base Command
 
 `microsoft-teams-message-send-to-chat`
 
-##### Required Permissions (Delegated)
+##### Required Permissions
 
-`User.Read.All`
+`User.Read.All` - *Delegated*
 
-`Chat.Create`
+`Chat.Create` - *Delegated*
 
-`ChatMessage.Send`
+`ChatMessage.Send` - *Delegated*
 
-`AppCatalog.Read.All`
+`AppCatalog.Read.All` - *Delegated*
 
-`TeamsAppInstallation.ReadWriteSelfForChat`
+`TeamsAppInstallation.ReadWriteSelfForChat` - *Delegated*
+
+Note: Chat.Create is needed only when sending to one-on-one chats.
 
 ##### Input
 
@@ -947,11 +894,11 @@ Adds a member (user) to a group chat.
 
 `microsoft-teams-chat-add-user`
 
-##### Required Permissions (Delegated)
+##### Required Permissions
 
-`Chat.ReadBasic`
+`Chat.ReadBasic` - *Delegated*
 
-`ChatMember.ReadWrite`
+`ChatMember.ReadWrite` - *Delegated*
 
 #### Input
 
@@ -981,13 +928,15 @@ Retrieves a list of members from a chat.
 
 `microsoft-teams-chat-member-list`
 
-##### Required Permissions (Delegated)
+##### Required Permissions
 
-`User.Read.All`
+`User.Read.All` - *Delegated*
 
-`Chat.ReadBasic`
+`Chat.ReadBasic` - *Delegated*
 
-`Chat.Create`
+`Chat.Create` - *Delegated*
+
+Note: Chat.Create is needed only when listing one-on-one chats.
 
 #### Input
 
@@ -1028,13 +977,15 @@ Retrieves a list of chats that the user is part of. If 'chat' is specified - ret
 
 `microsoft-teams-chat-list`
 
-##### Required Permissions (Delegated)
+##### Required Permissions
 
-`User.Read.All`
+`User.Read.All` - *Delegated*
 
-`Chat.ReadBasic`
+`Chat.ReadBasic` - *Delegated*
 
-`Chat.Create`
+`Chat.Create` - *Delegated*
+
+Note: Chat.Create is needed only when listing one-on-one chats.
 
 #### Input
 
@@ -1082,13 +1033,15 @@ Retrieves a list of messages in a chat.
 
 `microsoft-teams-chat-message-list`
 
-##### Required Permissions (Delegated)
+##### Required Permissions
 
-`User.Read.All`
+`User.Read.All` - *Delegated*
 
-`Chat.Read`
+`Chat.Read` - *Delegated*
 
-`Chat.Create`
+`Chat.Create` - *Delegated*
+
+Note: Chat.Create is needed only when listing one-on-one chats.
 
 #### Input
 
@@ -1148,11 +1101,11 @@ Updates the chat name. It can only be set for group chats.
 
 `microsoft-teams-chat-update`
 
-##### Required Permissions (Delegated)
+##### Required Permissions
 
-`User.Read.All`
+`User.Read.All` - *Delegated*
 
-`Chat.ReadWrite`
+`Chat.ReadWrite` - *Delegated*
 
 #### Input
 
