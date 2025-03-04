@@ -70,7 +70,7 @@ configuration:
   advanced: true
   required: false
   additionalinfo: Whether to replace special characters to underscore when parsing the raw data of the Notables, or not.
-- display: Timezone of the Splunk server, in minutes. For example, if GMT is gmt +3, set timezone to +180. For UTC, set the timezone to 0. This is relevant only for fetching and mirroring notable events. It must be specified when mirroring is enabled.
+- display: Timezone of the Splunk server, in minutes. For example, if GMT is gmt +3, set timezone to +180. For UTC, set the timezone to 0. When the Splunk server and the XSOAR     server are on the same timezone, set the timezone to 0. This is relevant only for fetching and mirroring notable events. It must be specified when mirroring is enabled.
   name: timezone
   type: 0
   section: Collect
