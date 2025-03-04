@@ -167,6 +167,11 @@ script:
     - contextPath: AHA.Idea.created_at
       description: The idea creation date.
       type: Date
+  - name: aha-test
+    description: test command.
+    arguments:
+    - name: test_arg
+      description: test_arg.
   runonce: false
   script: "-"
   type: python
