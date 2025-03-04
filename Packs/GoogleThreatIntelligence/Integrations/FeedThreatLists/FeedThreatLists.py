@@ -382,7 +382,7 @@ def get_indicators_command(client: Client,
     """
     tlp_color = params.get('tlp_color')
     feed_tags = argToList(params.get('feedTags', ''))
-    feed_type = args.get('feed_type')
+    feed_type = args.get('feed_type', 'malware')
     package = args.get('package')
     limit = int(args.get('limit', 10))
     minimum_score = int(params.get('feedMinimumGTIScore', 80))
@@ -426,7 +426,7 @@ def main():
     """main function, parses params and runs command functions."""
     params = demisto.params()
 
-    feed_type = params.get('feed_type')
+    feed_type = params.get('feed_type', 'malware')
     limit = int(params.get('limit', 10))
     tlp_color = params.get('tlp_color')
     feed_tags = argToList(params.get('feedTags', ''))
