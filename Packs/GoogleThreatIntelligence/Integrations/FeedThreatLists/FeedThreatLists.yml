@@ -2,6 +2,9 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Google Threat Intelligence Threat Lists
   version: -1
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - display: API Key (leave empty. Fill in the API key in the password field.)
   displaypassword: API Key
@@ -9,6 +12,7 @@ configuration:
   type: 9
   required: true
   hiddenusername: true
+  section: Connect
 - display: Feed type.
   name: feed_type
   defaultvalue: malware
@@ -28,16 +32,19 @@ configuration:
   - threat-actor
   - trending
   - vulnerability-weaponization
+  section: Connect
 - display: The maximum number of results to return. If 0 all results will be returned.
   name: limit
   defaultvalue: 10
   type: 0
   required: false
+  section: Collect
 - display: Fetch indicators
   name: feed
   defaultvalue: "true"
   type: 8
   required: false
+  section: Collect
 - display: Indicator Reputation
   name: feedReputation
   defaultvalue: feedInstanceReputationNotSet
@@ -49,6 +56,7 @@ configuration:
   - Bad
   additionalinfo: Indicators from this integration instance will be marked with this reputation.
   required: false
+  section: Collect
 - display: Source Reliability
   name: feedReliability
   defaultvalue: F - Reliability cannot be judged
@@ -62,6 +70,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   additionalinfo: Reliability of the source providing the intelligence data.
+  section: Collect
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: indicatorType
@@ -72,32 +81,43 @@ configuration:
   - indicatorType
   - suddenDeath
   required: false
+  section: Collect
+  advanced: true
 - display: ""
   name: feedExpirationInterval
   defaultvalue: "20160"
   type: 1
   required: false
+  section: Collect
+  advanced: true
 - display: Feed Fetch Interval
   name: feedFetchInterval
   defaultvalue: "60"
   type: 19
   required: false
+  section: Collect
+  advanced: true
 - name: feedMinimumGTIScore
   type: 0
   display: Feed Minimum GTI Score
   required: true
   defaultvalue: 80
   additionalinfo: The minimum GTI score to import as part of the feed
+  section: Collect
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
   additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   required: false
+  section: Collect
+  advanced: true
 - name: feedTags
   display: Tags
   type: 0
   additionalinfo: Supports CSV values.
   required: false
+  section: Collect
+  advanced: true
 - name: tlp_color
   display: Traffic Light Protocol Color
   options:
@@ -108,13 +128,7 @@ configuration:
   type: 15
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
   required: false
-- additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. The determination if the indicator is new or modified happens on the 3rd-party vendor's side, so only indicators that are new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds are labeled new or modified.
-  defaultvalue: 'true'
-  display: Incremental feed
-  hidden: true
-  name: feedIncremental
-  required: false
-  type: 8
+  section: Collect
 description: Use this feed integration to fetch Google Threat Intelligence Threat Lists matches.
 display: Google Threat Intelligence Threat Lists
 name: Google Threat Intelligence Threat Lists
@@ -130,7 +144,7 @@ script:
       description: The maximum number of results to return. If 0 all results will be returned.
     description: Gets the matches from the latest Feed.
     name: gti-threatlists-get-indicators
-  dockerimage: demisto/python3:3.11.9.101916
+  dockerimage: demisto/python3:3.11.10.111526
   feed: true
   runonce: false
   script: "-"
