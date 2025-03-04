@@ -26,7 +26,6 @@ configuration:
   - us-gov-west-1
   type: 15
   section: Connect
-  advanced: true
   required: true
 - display: Role Arn
   name: roleArn
@@ -4130,7 +4129,7 @@ script:
       type: String
     description: Creates a VPC endpoint.
     name: aws-ec2-create-vpc-endpoint
-  dockerimage: demisto/boto3py3:1.0.0.115129
+  dockerimage: demisto/boto3py3:1.0.0.2587407
   runonce: false
   script: '-'
   subtype: python3
