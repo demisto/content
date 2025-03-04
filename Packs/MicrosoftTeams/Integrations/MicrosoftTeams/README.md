@@ -414,6 +414,8 @@ Mirrors the Cortex XSOAR/Cortex XSIAM investigation to the specified Microsoft T
 
 `Channel.Create` - *Application (Client Credentials) / Delegated (Authorization Code)*
 
+`Channel.Delete.All` - *Application (Client Credentials) / Delegated (Authorization Code)*
+
 ##### Input
 
 | **Argument Name** | **Description**                                                                                                                                                                                          | **Required** |

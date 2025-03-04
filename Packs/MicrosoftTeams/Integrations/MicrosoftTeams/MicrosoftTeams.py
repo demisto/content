@@ -112,7 +112,7 @@ COMMANDS_REQUIRED_PERMISSIONS: dict[str, list] = {
     # Note: at the moment, the required permission names between credentials and auth code are the same.
     # Credentials require Application permissions while auth code requires delegated permissions
     'send-notification': ['GroupMember.Read.All', 'Channel.ReadBasic.All'],
-    'mirror-investigation': ['GroupMember.Read.All', 'Channel.ReadBasic.All', 'Channel.Create'],
+    'mirror-investigation': ['GroupMember.Read.All', 'Channel.ReadBasic.All', 'Channel.Create', 'Channel.Delete.All'],
     'close-channel': ['GroupMember.Read.All', 'Channel.ReadBasic.All', 'Channel.Delete.All'],
     'microsoft-teams-ring-user': ['User.Read.All', 'Calls.Initiate.All'],
     'microsoft-teams-add-user-to-channel': ['GroupMember.Read.All', 'User.Read.All', 'Channel.ReadBasic.All',
