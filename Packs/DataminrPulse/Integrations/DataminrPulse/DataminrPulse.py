@@ -299,7 +299,7 @@ class DataminrPulseClient(BaseClient):
         """
         params = {'num': num, 'alertversion': ALERT_VERSION, 'from': _from, 'to': to, 'query': query,
                   'application': 'palo_alto_cortex_xsoar', 'application_version': get_demisto_version_as_str(),
-                  'integration_version': get_pack_version('')}
+                  'integration_version': get_pack_version('Dataminr Pulse')}
         remove_nulls_from_dictionary(params)
         if watchlist_ids:
             params['lists'] = ','.join(map(str, watchlist_ids))  # type: ignore

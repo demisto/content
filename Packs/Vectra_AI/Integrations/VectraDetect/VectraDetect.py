@@ -35,7 +35,7 @@ STATUS_CODE_TO_RETRY = (429, *(
     status_code for status_code in requests.status_codes._codes if status_code >= 500))  # type: ignore
 OK_CODES = (200, 201, 204)
 BACKOFF_FACTOR = 7.5  # Sleep for [0s, 15s, 30s, 60s] between retries.
-PACK_VERSION = get_pack_version(pack_name='Vectra AI') or '2.0.0'
+PACK_VERSION = get_pack_version(pack_name='Vectra AI') or '2.0.3'
 UTM_PIVOT = f"?pivot=Vectra_AI-XSOAR-{PACK_VERSION}"
 DATE_FORMAT: str = '%Y-%m-%dT%H:%M:%S.000Z'
 USER_AGENT = f"Vectra_AI-XSOAR-{PACK_VERSION}"
