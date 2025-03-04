@@ -1,0 +1,21 @@
+{
+    "name": "LINE_WEBHOOK_DEMO",
+    "description": "It's a easy demo for line message api. It can easy integrator with Generic Webhook.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Roy Wang",
+    "url": "",
+    "email": "",
+    "created": "2025-03-04T17:47:23Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "JJNet-RoyWang"
+    ]
+}
