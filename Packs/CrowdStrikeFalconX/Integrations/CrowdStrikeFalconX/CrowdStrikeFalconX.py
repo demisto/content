@@ -216,10 +216,10 @@ class Client:
             # Get originating Exception in Exception chain
             error_class = str(exception.__class__)
             err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
-            err_msg = '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
-                      'Verify that the server URL parameter' \
-                      ' is correct and that you have access to the server from your host.' \
-                .format(err_type, exception.errno, exception.strerror)
+            err_msg = f'\nError Type: {err_type}\nError Number: [{exception.errno}]\nMessage: {exception.strerror}\n' \
+                'Verify that the server URL parameter' \
+                ' is correct and that you have access to the server from your host.' \
+
             raise DemistoException(err_msg, exception)
 
     def _get_access_token(self) -> str:
@@ -283,7 +283,7 @@ class Client:
         file_name = quote(file_name or get_file_path_res.get('name', ''))
 
         url_suffix = f"/samples/entities/samples/v2?file_name={file_name}&is_confidential={is_confidential}" \
-                     f"&comment={comment}"
+            f"&comment={comment}"
         self._headers['Content-Type'] = 'application/octet-stream'
         file_data = open(file_path, 'rb')
         res = self._http_request("POST", url_suffix, data=file_data)
@@ -551,10 +551,10 @@ def file_command(client: Client, **args: dict) -> List[CommandResults]:
         command_results = [
             CommandResults(
                 readable_output=f'There are no results yet for the any of the {file_hashes=}, '
-                                'analysis might not have been completed. '
-                                'Please wait to download the report.\n'
-                                'You can use cs-fx-get-analysis-status to check the status '
-                                'of a sandbox analysis.'
+                'analysis might not have been completed. '
+                'Please wait to download the report.\n'
+                'You can use cs-fx-get-analysis-status to check the status '
+                'of a sandbox analysis.'
             )
         ]
     return command_results
@@ -598,9 +598,9 @@ def parse_file_results(report_to_results: Dict[str, RawCommandResults]) -> List[
 
         else:  # no output for this report_id
             readable_output = f'There are no results yet for {report_id=}, ' \
-                              f'its analysis might not have been completed. ' \
-                              'Please wait to download the report.\n' \
-                              'You can use cs-fx-get-analysis-status to check the status of a sandbox analysis.',
+                f'its analysis might not have been completed. ' \
+                'Please wait to download the report.\n' \
+                'You can use cs-fx-get-analysis-status to check the status of a sandbox analysis.',
 
         command_results.append(
             CommandResults(
@@ -1049,10 +1049,10 @@ def get_full_report_command(
     if not command_results:
         command_results = [
             CommandResults(readable_output=f'There are no results yet for the any of the queried samples ({ids}), '
-                                           'analysis might not have been completed. '
-                                           'Please wait to download the report.\n'
-                                           'You can use cs-fx-get-analysis-status to check the status '
-                                           'of a sandbox analysis.')
+                           'analysis might not have been completed. '
+                           'Please wait to download the report.\n'
+                           'You can use cs-fx-get-analysis-status to check the status '
+                           'of a sandbox analysis.')
         ]
     return command_results, is_command_finished
 
