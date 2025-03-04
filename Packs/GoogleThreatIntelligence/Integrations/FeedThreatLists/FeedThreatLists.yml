@@ -144,7 +144,7 @@ script:
       description: The maximum number of results to return. If 0 all results will be returned.
     description: Gets the matches from the latest Feed.
     name: gti-threatlists-get-indicators
-  dockerimage: demisto/python3:3.11.10.111526
+  dockerimage: demisto/python3:3.12.8.1983910
   feed: true
   runonce: false
   script: "-"
