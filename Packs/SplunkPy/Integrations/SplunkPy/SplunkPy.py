@@ -1835,7 +1835,8 @@ def update_remote_system_command(args, params, service: client.Service, auth_tok
     delta = parsed_args.delta
     notable_id = parsed_args.remote_incident_id
     entries = parsed_args.entries
-    base_url = f"https://{params['host'].replace('https://', '')}:{params['port']}/"
+    connection_args = get_connection_args(params)
+    base_url = f"https://{connection_args['host']}:{connection_args['port']}/"
     demisto.debug(f"mirroring args: entries:{parsed_args.entries} delta:{parsed_args.delta}")
     if parsed_args.incident_changed and delta:
         demisto.debug(
@@ -2683,10 +2684,8 @@ def splunk_search_command(service: client.Service, args: dict) -> CommandResults
 
 
 def splunk_job_create_command(service: client.Service, args: dict):
-    query = args['query']
     app = args.get('app', '')
-    if not query.startswith('search'):
-        query = f'search {query}'
+    query = build_search_query(args)
     search_kwargs = {
         "exec_mode": "normal",
         "app": app
@@ -3352,7 +3351,6 @@ def main():  # pragma: no cover
 
     connection_args = get_connection_args(params)
 
-    base_url = f"https://{params['host'].replace('https://', '')}:{params['port']}/"
     auth_token = None
     username = params['authentication']['identifier']
     password = params['authentication']['password']
@@ -3404,6 +3402,7 @@ def main():  # pragma: no cover
     elif command == 'splunk-submit-event':
         splunk_submit_event_command(service, args)
     elif command == 'splunk-notable-event-edit':
+        base_url = f"https://{connection_args['host']}:{connection_args['port']}/"
         token = get_auth_session_key(service)
         splunk_edit_notable_event_command(base_url, token, auth_token, args)
     elif command == 'splunk-submit-event-hec':
@@ -3444,12 +3443,15 @@ def main():  # pragma: no cover
         raise NotImplementedError(f'the {command} command is not implemented, use get-modified-remote-data instead.')
     elif command == 'get-modified-remote-data':
         demisto.info('########### MIRROR IN #############')
-        get_modified_remote_data_command(service=service, args=args,
-                                         close_incident=params.get('close_incident'),
-                                         close_end_statuses=params.get('close_end_status_statuses'),
-                                         close_extra_labels=argToList(params.get('close_extra_labels', '')),
-                                         mapper=mapper,
-                                         comment_tag_from_splunk=comment_tag_from_splunk)
+        try:
+            get_modified_remote_data_command(service=service, args=args,
+                                             close_incident=params.get('close_incident'),
+                                             close_end_statuses=params.get('close_end_status_statuses'),
+                                             close_extra_labels=argToList(params.get('close_extra_labels', '')),
+                                             mapper=mapper,
+                                             comment_tag_from_splunk=comment_tag_from_splunk)
+        except Exception as e:
+            return_error(f"An error occurred during the Mirror In - in get_modified_remote_data_command: {e}")
     elif command == 'update-remote-system':
         demisto.info('########### MIRROR OUT #############')
         return_results(update_remote_system_command(args, params, service, auth_token, mapper, comment_tag_to_splunk))

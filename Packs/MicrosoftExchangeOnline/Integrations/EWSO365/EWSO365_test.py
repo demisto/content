@@ -87,6 +87,7 @@ class TestNormalCommands:
             self.protocol = ""
             self.mark_as_read = False
             self.folder_name = ""
+            self.version = 'O365'
 
         def get_account(self, target_mailbox=None, access_type=None):
             return self.account
@@ -155,8 +156,8 @@ class TestNormalCommands:
         mocker.patch.object(GetSearchableMailboxes, "call", return_value=raw_response)
         client = self.MockClient()
         res = get_searchable_mailboxes(client)
-        actual_ec = res[1]
-        assert expected == actual_ec
+        actual_ec = res.outputs
+        assert expected.get(res.outputs_prefix) == actual_ec
 
     def test_expand_group(self, mocker):
         """
@@ -182,8 +183,8 @@ class TestNormalCommands:
         res = get_expanded_group(
             client, email_address="testgroup-1@demistodev.onmicrosoft.com"
         )
-        actual_ec = res[1]
-        assert expected == actual_ec
+        actual_ec = res.outputs
+        assert expected.get(res.outputs_prefix) == actual_ec
 
 
 MESSAGES = [
@@ -914,14 +915,13 @@ class TestEmailModule(unittest.TestCase):
         subject = "Test Subject"
         html_body = "<p>Test HTML Body</p>"
         attachments = [{"name": "file.txt", "data": "data", "cid": "12345"}]
-
         mock_message.return_value = MagicMock()
         mock_html_body.return_value = MagicMock()
         mock_file_attachment.return_value = MagicMock(spec=FileAttachment)
 
         # Call the function
         result = create_message(
-            to, subject, html_body=html_body, attachments=attachments
+            to, True, subject, html_body=html_body, attachments=attachments
         )
 
         # Assertions
@@ -936,7 +936,13 @@ class TestEmailModule(unittest.TestCase):
     @patch('EWSO365.HTMLBody')
     @patch('EWSO365.Body')
     @patch('EWSO365.Message')
-    def test_create_message_with_html_body_inline_image(self, mock_message, mock_body, mock_html_body, mock_file_attachment):
+    def test_create_message_with_html_body_inline_image_with_handle_html(
+        self,
+        mock_message,
+        mock_body,
+        mock_html_body,
+        mock_file_attachment
+    ):
         """
         Test create_message function with an HTML body.
         """
@@ -944,8 +950,8 @@ class TestEmailModule(unittest.TestCase):
         # Setup
         to = ["recipient@example.com"]
         subject = "Test Subject"
-        html_body = '<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA"/></p>'
-        original_html_body = '<p><img src="cid:image0@11111111_11111111"/></p>'
+        original_html_body = '<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA"/></p>'
+        new_html_body = '<p><img src="cid:image0@11111111_11111111"/></p>'
         attachments = [{"name": "file.txt", "data": "data", "cid": "12345"}]
 
         mock_message.return_value = MagicMock()
@@ -956,11 +962,49 @@ class TestEmailModule(unittest.TestCase):
                 patch.object(uuid, 'uuid4', return_value="111111111"):  # noqa: F821
             # Call the function
             result = create_message(
-                to, subject, html_body=html_body, attachments=attachments
+                to, True, subject, html_body=original_html_body, attachments=attachments
             )
 
             # Assertions
-            mock_html_body.assert_called_once_with(original_html_body)
+            mock_html_body.assert_called_once_with(new_html_body)
+            mock_message.assert_called_once()
+            assert isinstance(result[0], MagicMock)
+
+    @patch('EWSO365.FileAttachment.__new__')
+    @patch('EWSO365.HTMLBody')
+    @patch('EWSO365.Body')
+    @patch('EWSO365.Message')
+    def test_create_message_with_html_body_inline_image_no_handle_html(
+        self,
+        mock_message,
+        mock_body,
+        mock_html_body,
+        mock_file_attachment
+    ):
+        """
+        Test create_message function with an HTML body.
+        The handle_inline_image parameter is set to False, so the HTML body containing an inline image should be left as is.
+        """
+        import EWSO365
+        # Setup
+        to = ["recipient@example.com"]
+        subject = "Test Subject"
+        html_body = '<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA"/></p>'
+        attachments = [{"name": "file.txt", "data": "data", "cid": "12345"}]
+
+        mock_message.return_value = MagicMock()
+        mock_html_body.return_value = MagicMock()
+        mock_file_attachment.return_value = MagicMock(spec=FileAttachment)
+        with patch.object(EWSO365.demisto, 'uniqueFile', return_value="1234567"), \
+                patch.object(EWSO365.demisto, 'getFilePath', return_value={"path": "", "name": ""}), \
+                patch.object(uuid, 'uuid4', return_value="111111111"):  # noqa: F821
+            # Call the function
+            result = create_message(
+                to, False, subject, html_body=html_body, attachments=attachments
+            )
+
+            # Assertions
+            mock_html_body.assert_called_once_with(html_body)
             mock_message.assert_called_once()
             assert isinstance(result[0], MagicMock)
 
