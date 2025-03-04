@@ -1,26 +1,3 @@
-"""DomainTools Feed Integration for Cortex XSOAR - Unit Tests file
-
-This file contains the Unit Tests for the DomainTools Integration based
-on pytest. Cortex XSOAR contribution requirements mandate that every
-integration, as well as a feed integration, should have a proper set of unit
-tests to automatically verify that the integration is behaving as expected
-during CI/CD pipeline.
-
-Test Execution
---------------
-
-Unit tests can be checked in 3 ways:
-- Using the command `lint` of demisto-sdk. The command will build a dedicated
-  docker instance for your feed integration locally and use the docker instance to
-  execute your tests in a dedicated docker instance.
-- From the command line using `pytest -v` or `pytest -vv`
-
-Example with demisto-sdk (from the content root directory):
-demisto-sdk lint -i Packs/FeedDomainTools/Integrations/FeedDomainTools
-
-
-"""
-
 import pytest
 
 from CommonServerPython import *
@@ -203,6 +180,15 @@ def test_fetch_indicators_command(mocker, dt_feeds_client):
 
 
 def test_calling_command_using_main(mocker, dt_feeds_client):
+    """
+    Given:
+        - A command
+    When:
+        - test-module is called
+    Then:
+        - should have the "ok" result
+    """
+
     mocker.patch.object(demisto, "command", return_value="test-module")
     mocker.patch.object(
         demisto,

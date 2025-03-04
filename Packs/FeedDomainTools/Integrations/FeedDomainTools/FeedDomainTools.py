@@ -9,10 +9,6 @@ from collections.abc import Callable, Iterator
 # disable insecure warnings
 urllib3.disable_warnings()
 
-"""
-GLOBALS
-"""
-
 
 class DomainToolsClient(BaseClient):
     """
@@ -189,7 +185,7 @@ def fetch_indicators(
         feed_type (str): The feed type to fetch.
 
     Returns:
-        Indicators.
+        list: indicators.
     """
     indicators = []
     try:
@@ -239,7 +235,7 @@ def get_indicators_command(client: DomainToolsClient, args: dict[str, str], para
         client: DomainToolsClient object with request
         args: demisto.args()
     Returns:
-        Outputs.
+        CommandResults.
     """
     feed_type = args.get("feed_type", "nod")
     session_id = args.get("session_id")
@@ -270,10 +266,7 @@ def get_indicators_command(client: DomainToolsClient, args: dict[str, str], para
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix="",
-        outputs_key_field="",
         raw_response=indicators,
-        outputs={}
     )
 
 
@@ -284,7 +277,7 @@ def fetch_indicators_command(client: DomainToolsClient, params: dict[str, Any] =
     Args:
         client: DomainToolsClient object with request
     Returns:
-        Indicators.
+        list: indicators.
     """
 
     session_id = params.get("session_id")
@@ -317,7 +310,7 @@ def test_module(client: DomainToolsClient, args: dict[str, str], params: dict[st
     Args:
         client: DomainToolsClient object.
     Returns:
-        Outputs.
+        str.
     """
     dt_feed_kwargs = {
         "top": 1,
@@ -335,10 +328,6 @@ def test_module(client: DomainToolsClient, args: dict[str, str], params: dict[st
 
 
 def main():
-    """
-    main function, parses params and runs command functions
-    """
-
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()
