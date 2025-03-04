@@ -1,4 +1,5 @@
 [INGEST:vendor="MSFT", product="Azure", target_dataset="msft_azure_app_service_raw", no_hit = drop]
 filter category in("AppServiceHTTPLogs", "AppServiceConsoleLogs", "AppServiceAppLogs", "AppServiceIPSecAuditLogs", "AppServicePlatformLogs", "AppServiceAntivirusScanAuditLogs", "AppServiceFileAuditLogs", "FunctionAppLogs", "AppServiceAuditLogs", "WorkflowRuntime", "AppServiceEnvironmentPlatformLogs")
 // zulu time suffix notation, e.g. "2024-09-24T16:41:59.698Z
-| alter _time = parse_timestamp("%FT%H:%M:%E*SZ", to_string(time));
+| alter tmp_time = if(time != null and time != "", time, TimeGenerated != null and TimeGenerated != "", TimeGenerated)
+| alter _time = parse_timestamp("%FT%H:%M:%E*SZ", to_string(tmp_time));

@@ -3,6 +3,8 @@
    ------------------------------- */
 [RULE: msft_azure_app_service_map_common_event_fields]
 alter
+        tmp_resource_id = if(resourceId != null and resourceId != "", resourceId, _ResourceId != null and _ResourceId != "", _ResourceId, null)
+| alter
 		xdm.event.original_event_type = category,
 		xdm.event.type = if(
                 category = "AppServiceHTTPLogs", "App Service HTTP Logs",
@@ -17,11 +19,11 @@ alter
                 category = "AppServiceEnvironmentPlatformLogs", "App Service Environment Platform Logs",
                 category),
         xdm.source.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AZURE,
-        xdm.source.cloud.project_id = arrayindex(split(resourceId, "/"), 2),
+        xdm.source.cloud.project_id = arrayindex(split(tmp_resource_id, "/"), 2),
         xdm.source.cloud.region = location,
-        xdm.target.resource.name = arrayindex(regextract(resourceId, "/([^\/]+)$"), -1),
-        xdm.target.resource.id = resourceId,
-        xdm.target.resource.type = concat(arrayindex(split(resourceId, "/"), -3), "/", arrayindex(split(resourceId, "/"), -2));
+        xdm.target.resource.name = arrayindex(regextract(tmp_resource_id, "/([^\/]+)$"), -1),
+        xdm.target.resource.id = tmp_resource_id,
+        xdm.target.resource.type = concat(arrayindex(split(tmp_resource_id, "/"), -3), "/", arrayindex(split(tmp_resource_id, "/"), -2));
 
 [RULE: msft_azure_app_service_map_common_app_fields]
 alter
@@ -35,15 +37,17 @@ alter
             null),
         xdm.source.host.hostname = Host,
         xdm.event.operation_sub_type = operationName,
-        xdm.event.description = if(resultDescription != null and resultDescription != "", resultDescription, properties -> message),
+        xdm.event.description = if(resultDescription != null and resultDescription != "", resultDescription, properties -> message != null, properties -> message, Message),
         xdm.source.process.container_id = containerId;
 
 [RULE: msft_azure_app_service_map_common_http_fields]
 alter
-		xdm.target.host.hostname = properties -> CsHost,
-		xdm.source.ipv4 = if(properties -> CIp ~= "(?:\d{1,3}\.){3}\d{1,3}", arrayindex(regextract(properties -> CIp, "((?:\d{1,3}\.){3}\d{1,3})"), 0), null),
-		xdm.source.ipv6 = if(properties -> CIp ~= "(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}", arrayindex(regextract(properties -> CIp, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0), null),
-		xdm.source.port = to_number(if(properties -> CIp ~= "(?:\d{1,3}\.){3}\d{1,3}", arrayindex(regextract(properties -> CIp, "(?:\d{1,3}\.){3}\d{1,3}:(\d+)"), 0), properties -> CIp ~= "(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}", arrayindex(regextract(properties -> CIp, "(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}\]:(\d+)"), 0), null));
+        tmp_source_ip = coalesce(properties -> CIp, CIp)
+| alter
+		xdm.target.host.hostname = coalesce(properties -> CsHost, CsHost),
+		xdm.source.ipv4 = if(tmp_source_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", arrayindex(regextract(tmp_source_ip, "((?:\d{1,3}\.){3}\d{1,3})"), 0), null),
+		xdm.source.ipv6 = if(tmp_source_ip ~= "(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}", arrayindex(regextract(tmp_source_ip, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0), null),
+		xdm.source.port = to_number(if(tmp_source_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", arrayindex(regextract(tmp_source_ip, "(?:\d{1,3}\.){3}\d{1,3}:(\d+)"), 0), tmp_source_ip ~= "(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}", arrayindex(regextract(tmp_source_ip, "(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}\]:(\d+)"), 0), null));
 
 /*-------------------------------
    ----------- MODEL -------------
@@ -56,20 +60,21 @@ filter category = "AppServiceHTTPLogs"
 | call msft_azure_app_service_map_common_event_fields
 | call msft_azure_app_service_map_common_http_fields
 | alter
-        http_request_method = properties -> CsMethod,
-        http_status = properties -> ScStatus
+        tmp_http_request_method = coalesce(properties -> CsMethod, CsMethod),
+        tmp_http_status = coalesce(properties -> ScStatus, ScStatus),
+        tmp_result = lowercase(coalesce(properties -> Result, Result))
 | alter
-        xdm.event.duration = to_integer(properties -> TimeTaken),
-        xdm.event.outcome = if(lowercase(properties -> Result) = "success", XDM_CONST.OUTCOME_SUCCESS, lowercase(properties -> Result) = "failure", XDM_CONST.OUTCOME_FAILED, null),
-        xdm.observer.name = properties -> ComputerName,
-        xdm.network.http.method = if(http_request_method = "ACL", XDM_CONST.HTTP_METHOD_ACL, http_request_method = "BASELINE_CONTROL", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL, http_request_method = "BIND", XDM_CONST.HTTP_METHOD_BIND, http_request_method = "CHECKIN", XDM_CONST.HTTP_METHOD_CHECKIN, http_request_method = "CHECKOUT", XDM_CONST.HTTP_METHOD_CHECKOUT, http_request_method = "CONNECT", XDM_CONST.HTTP_METHOD_CONNECT, http_request_method = "COPY", XDM_CONST.HTTP_METHOD_COPY, http_request_method = "DELETE", XDM_CONST.HTTP_METHOD_DELETE, http_request_method = "GET", XDM_CONST.HTTP_METHOD_GET, http_request_method = "HEAD", XDM_CONST.HTTP_METHOD_HEAD, http_request_method = "LABEL", XDM_CONST.HTTP_METHOD_LABEL, http_request_method = "LINK", XDM_CONST.HTTP_METHOD_LINK, http_request_method = "LOCK", XDM_CONST.HTTP_METHOD_LOCK, http_request_method = "MERGE", XDM_CONST.HTTP_METHOD_MERGE, http_request_method = "MKACTIVITY", XDM_CONST.HTTP_METHOD_MKACTIVITY, http_request_method = "MKCALENDAR", XDM_CONST.HTTP_METHOD_MKCALENDAR, http_request_method = "MKCOL", XDM_CONST.HTTP_METHOD_MKCOL, http_request_method = "MKREDIRECTREF", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, http_request_method = "MKWORKSPACE", XDM_CONST.HTTP_METHOD_MKWORKSPACE, http_request_method = "MOVE", XDM_CONST.HTTP_METHOD_MOVE, http_request_method = "OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS, http_request_method = "ORDERPATCH", XDM_CONST.HTTP_METHOD_ORDERPATCH, http_request_method = "PATCH", XDM_CONST.HTTP_METHOD_PATCH, http_request_method = "POST", XDM_CONST.HTTP_METHOD_POST, http_request_method = "PRI", XDM_CONST.HTTP_METHOD_PRI, http_request_method = "PROPFIND", XDM_CONST.HTTP_METHOD_PROPFIND, http_request_method = "PROPPATCH", XDM_CONST.HTTP_METHOD_PROPPATCH, http_request_method = "PUT", XDM_CONST.HTTP_METHOD_PUT, http_request_method = "REBIND", XDM_CONST.HTTP_METHOD_REBIND, http_request_method = "REPORT", XDM_CONST.HTTP_METHOD_REPORT, http_request_method = "SEARCH", XDM_CONST.HTTP_METHOD_SEARCH, http_request_method = "TRACE", XDM_CONST.HTTP_METHOD_TRACE, http_request_method = "UNBIND", XDM_CONST.HTTP_METHOD_UNBIND, http_request_method = "UNCHECKOUT", XDM_CONST.HTTP_METHOD_UNCHECKOUT, http_request_method = "UNLINK", XDM_CONST.HTTP_METHOD_UNLINK, http_request_method = "UNLOCK", XDM_CONST.HTTP_METHOD_UNLOCK, http_request_method = "UPDATE", XDM_CONST.HTTP_METHOD_UPDATE, http_request_method = "UPDATEREDIRECTREF", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, http_request_method = "VERSION_CONTROL", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, to_string(http_request_method)),
-        xdm.network.http.response_code = if(http_status = null, null, http_status = "200", XDM_CONST.HTTP_RSP_CODE_OK, http_status = "201", XDM_CONST.HTTP_RSP_CODE_CREATED, http_status = "302", XDM_CONST.HTTP_RSP_CODE_FOUND, http_status = "401", XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED, http_status = "403", XDM_CONST.HTTP_RSP_CODE_FORBIDDEN, http_status = "404", XDM_CONST.HTTP_RSP_CODE_NOT_FOUND, http_status = "500", XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR, http_status = "501", XDM_CONST.HTTP_RSP_CODE_NOT_IMPLEMENTED, http_status = "502", XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY, http_status = "503", XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE, http_status = "504", XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT, http_status = "505", XDM_CONST.HTTP_RSP_CODE_HTTP_VERSION_NOT_SUPPORTED, http_status = "506", XDM_CONST.HTTP_RSP_CODE_VARIANT_ALSO_NEGOTIATES, http_status = "507", XDM_CONST.HTTP_RSP_CODE_INSUFFICIENT_STORAGE, http_status = "508", XDM_CONST.HTTP_RSP_CODE_LOOP_DETECTED, http_status = "511", XDM_CONST.HTTP_RSP_CODE_NETWORK_AUTHENTICATION_REQUIRED, http_status = "100", XDM_CONST.HTTP_RSP_CODE_CONTINUE, http_status = "101", XDM_CONST.HTTP_RSP_CODE_SWITCHING_PROTOCOLS, http_status = "102", XDM_CONST.HTTP_RSP_CODE_PROCESSING, http_status = "103", XDM_CONST.HTTP_RSP_CODE_EARLY_HINTS, http_status = "202", XDM_CONST.HTTP_RSP_CODE_ACCEPTED, http_status = "203", XDM_CONST.HTTP_RSP_CODE_NON__AUTHORITATIVE_INFORMATION, http_status = "204", XDM_CONST.HTTP_RSP_CODE_NO_CONTENT, http_status = "205", XDM_CONST.HTTP_RSP_CODE_RESET_CONTENT, http_status = "206", XDM_CONST.HTTP_RSP_CODE_PARTIAL_CONTENT, http_status = "207", XDM_CONST.HTTP_RSP_CODE_MULTI__STATUS, http_status = "208", XDM_CONST.HTTP_RSP_CODE_ALREADY_REPORTED, http_status = "226", XDM_CONST.HTTP_RSP_CODE_IM_USED, http_status = "300", XDM_CONST.HTTP_RSP_CODE_MULTIPLE_CHOICES, http_status = "301", XDM_CONST.HTTP_RSP_CODE_MOVED_PERMANENTLY, http_status = "303", XDM_CONST.HTTP_RSP_CODE_SEE_OTHER, http_status = "304", XDM_CONST.HTTP_RSP_CODE_NOT_MODIFIED, http_status = "305", XDM_CONST.HTTP_RSP_CODE_USE_PROXY, http_status = "307", XDM_CONST.HTTP_RSP_CODE_TEMPORARY_REDIRECT, http_status = "308", XDM_CONST.HTTP_RSP_CODE_PERMANENT_REDIRECT, http_status = "400", XDM_CONST.HTTP_RSP_CODE_BAD_REQUEST, http_status = "402", XDM_CONST.HTTP_RSP_CODE_PAYMENT_REQUIRED, http_status = "405", XDM_CONST.HTTP_RSP_CODE_METHOD_NOT_ALLOWED, http_status = "406", XDM_CONST.HTTP_RSP_CODE_NOT_ACCEPTABLE, http_status = "407", XDM_CONST.HTTP_RSP_CODE_PROXY_AUTHENTICATION_REQUIRED, http_status = "408", XDM_CONST.HTTP_RSP_CODE_REQUEST_TIMEOUT, http_status = "409", XDM_CONST.HTTP_RSP_CODE_CONFLICT, http_status = "410", XDM_CONST.HTTP_RSP_CODE_GONE, http_status = "411", XDM_CONST.HTTP_RSP_CODE_LENGTH_REQUIRED, http_status = "412", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_FAILED, http_status = "413", XDM_CONST.HTTP_RSP_CODE_CONTENT_TOO_LARGE, http_status = "414", XDM_CONST.HTTP_RSP_CODE_URI_TOO_LONG, http_status = "415", XDM_CONST.HTTP_RSP_CODE_UNSUPPORTED_MEDIA_TYPE, http_status = "416", XDM_CONST.HTTP_RSP_CODE_RANGE_NOT_SATISFIABLE, http_status = "417", XDM_CONST.HTTP_RSP_CODE_EXPECTATION_FAILED, http_status = "421", XDM_CONST.HTTP_RSP_CODE_MISDIRECTED_REQUEST, http_status = "422", XDM_CONST.HTTP_RSP_CODE_UNPROCESSABLE_CONTENT, http_status = "423", XDM_CONST.HTTP_RSP_CODE_LOCKED, http_status = "424", XDM_CONST.HTTP_RSP_CODE_FAILED_DEPENDENCY, http_status = "425", XDM_CONST.HTTP_RSP_CODE_TOO_EARLY, http_status = "426", XDM_CONST.HTTP_RSP_CODE_UPGRADE_REQUIRED, http_status = "428", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_REQUIRED, http_status = "429", XDM_CONST.HTTP_RSP_CODE_TOO_MANY_REQUESTS, http_status = "431", XDM_CONST.HTTP_RSP_CODE_REQUEST_HEADER_FIELDS_TOO_LARGE, http_status = "451", XDM_CONST.HTTP_RSP_CODE_UNAVAILABLE_FOR_LEGAL_REASONS),
-        xdm.network.http.referrer = properties -> Referer,
-        xdm.source.user_agent = properties -> UserAgent,
-        xdm.source.user.username = properties -> CsUsername,
-        xdm.source.sent_bytes = to_number(properties -> CsBytes),
-        xdm.target.sent_bytes = to_number(properties -> ScBytes),
-        xdm.target.port = to_number(properties -> SPort);
+        xdm.event.duration = to_integer(coalesce(properties -> TimeTaken, to_string(TimeTaken))),
+        xdm.event.outcome = if(tmp_result = "success", XDM_CONST.OUTCOME_SUCCESS, tmp_result = "failure", XDM_CONST.OUTCOME_FAILED, null),
+        xdm.observer.name = coalesce(properties -> ComputerName, ComputerName),
+        xdm.network.http.method = if(tmp_http_request_method = "ACL", XDM_CONST.HTTP_METHOD_ACL, tmp_http_request_method = "BASELINE_CONTROL", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL, tmp_http_request_method = "BIND", XDM_CONST.HTTP_METHOD_BIND, tmp_http_request_method = "CHECKIN", XDM_CONST.HTTP_METHOD_CHECKIN, tmp_http_request_method = "CHECKOUT", XDM_CONST.HTTP_METHOD_CHECKOUT, tmp_http_request_method = "CONNECT", XDM_CONST.HTTP_METHOD_CONNECT, tmp_http_request_method = "COPY", XDM_CONST.HTTP_METHOD_COPY, tmp_http_request_method = "DELETE", XDM_CONST.HTTP_METHOD_DELETE, tmp_http_request_method = "GET", XDM_CONST.HTTP_METHOD_GET, tmp_http_request_method = "HEAD", XDM_CONST.HTTP_METHOD_HEAD, tmp_http_request_method = "LABEL", XDM_CONST.HTTP_METHOD_LABEL, tmp_http_request_method = "LINK", XDM_CONST.HTTP_METHOD_LINK, tmp_http_request_method = "LOCK", XDM_CONST.HTTP_METHOD_LOCK, tmp_http_request_method = "MERGE", XDM_CONST.HTTP_METHOD_MERGE, tmp_http_request_method = "MKACTIVITY", XDM_CONST.HTTP_METHOD_MKACTIVITY, tmp_http_request_method = "MKCALENDAR", XDM_CONST.HTTP_METHOD_MKCALENDAR, tmp_http_request_method = "MKCOL", XDM_CONST.HTTP_METHOD_MKCOL, tmp_http_request_method = "MKREDIRECTREF", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, tmp_http_request_method = "MKWORKSPACE", XDM_CONST.HTTP_METHOD_MKWORKSPACE, tmp_http_request_method = "MOVE", XDM_CONST.HTTP_METHOD_MOVE, tmp_http_request_method = "OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS, tmp_http_request_method = "ORDERPATCH", XDM_CONST.HTTP_METHOD_ORDERPATCH, tmp_http_request_method = "PATCH", XDM_CONST.HTTP_METHOD_PATCH, tmp_http_request_method = "POST", XDM_CONST.HTTP_METHOD_POST, tmp_http_request_method = "PRI", XDM_CONST.HTTP_METHOD_PRI, tmp_http_request_method = "PROPFIND", XDM_CONST.HTTP_METHOD_PROPFIND, tmp_http_request_method = "PROPPATCH", XDM_CONST.HTTP_METHOD_PROPPATCH, tmp_http_request_method = "PUT", XDM_CONST.HTTP_METHOD_PUT, tmp_http_request_method = "REBIND", XDM_CONST.HTTP_METHOD_REBIND, tmp_http_request_method = "REPORT", XDM_CONST.HTTP_METHOD_REPORT, tmp_http_request_method = "SEARCH", XDM_CONST.HTTP_METHOD_SEARCH, tmp_http_request_method = "TRACE", XDM_CONST.HTTP_METHOD_TRACE, tmp_http_request_method = "UNBIND", XDM_CONST.HTTP_METHOD_UNBIND, tmp_http_request_method = "UNCHECKOUT", XDM_CONST.HTTP_METHOD_UNCHECKOUT, tmp_http_request_method = "UNLINK", XDM_CONST.HTTP_METHOD_UNLINK, tmp_http_request_method = "UNLOCK", XDM_CONST.HTTP_METHOD_UNLOCK, tmp_http_request_method = "UPDATE", XDM_CONST.HTTP_METHOD_UPDATE, tmp_http_request_method = "UPDATEREDIRECTREF", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, tmp_http_request_method = "VERSION_CONTROL", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, to_string(tmp_http_request_method)),
+        xdm.network.http.response_code = if(tmp_http_status = null, null, tmp_http_status = "200", XDM_CONST.HTTP_RSP_CODE_OK, tmp_http_status = "201", XDM_CONST.HTTP_RSP_CODE_CREATED, tmp_http_status = "302", XDM_CONST.HTTP_RSP_CODE_FOUND, tmp_http_status = "401", XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED, tmp_http_status = "403", XDM_CONST.HTTP_RSP_CODE_FORBIDDEN, tmp_http_status = "404", XDM_CONST.HTTP_RSP_CODE_NOT_FOUND, tmp_http_status = "500", XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR, tmp_http_status = "501", XDM_CONST.HTTP_RSP_CODE_NOT_IMPLEMENTED, tmp_http_status = "502", XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY, tmp_http_status = "503", XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE, tmp_http_status = "504", XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT, tmp_http_status = "505", XDM_CONST.HTTP_RSP_CODE_HTTP_VERSION_NOT_SUPPORTED, tmp_http_status = "506", XDM_CONST.HTTP_RSP_CODE_VARIANT_ALSO_NEGOTIATES, tmp_http_status = "507", XDM_CONST.HTTP_RSP_CODE_INSUFFICIENT_STORAGE, tmp_http_status = "508", XDM_CONST.HTTP_RSP_CODE_LOOP_DETECTED, tmp_http_status = "511", XDM_CONST.HTTP_RSP_CODE_NETWORK_AUTHENTICATION_REQUIRED, tmp_http_status = "100", XDM_CONST.HTTP_RSP_CODE_CONTINUE, tmp_http_status = "101", XDM_CONST.HTTP_RSP_CODE_SWITCHING_PROTOCOLS, tmp_http_status = "102", XDM_CONST.HTTP_RSP_CODE_PROCESSING, tmp_http_status = "103", XDM_CONST.HTTP_RSP_CODE_EARLY_HINTS, tmp_http_status = "202", XDM_CONST.HTTP_RSP_CODE_ACCEPTED, tmp_http_status = "203", XDM_CONST.HTTP_RSP_CODE_NON__AUTHORITATIVE_INFORMATION, tmp_http_status = "204", XDM_CONST.HTTP_RSP_CODE_NO_CONTENT, tmp_http_status = "205", XDM_CONST.HTTP_RSP_CODE_RESET_CONTENT, tmp_http_status = "206", XDM_CONST.HTTP_RSP_CODE_PARTIAL_CONTENT, tmp_http_status = "207", XDM_CONST.HTTP_RSP_CODE_MULTI__STATUS, tmp_http_status = "208", XDM_CONST.HTTP_RSP_CODE_ALREADY_REPORTED, tmp_http_status = "226", XDM_CONST.HTTP_RSP_CODE_IM_USED, tmp_http_status = "300", XDM_CONST.HTTP_RSP_CODE_MULTIPLE_CHOICES, tmp_http_status = "301", XDM_CONST.HTTP_RSP_CODE_MOVED_PERMANENTLY, tmp_http_status = "303", XDM_CONST.HTTP_RSP_CODE_SEE_OTHER, tmp_http_status = "304", XDM_CONST.HTTP_RSP_CODE_NOT_MODIFIED, tmp_http_status = "305", XDM_CONST.HTTP_RSP_CODE_USE_PROXY, tmp_http_status = "307", XDM_CONST.HTTP_RSP_CODE_TEMPORARY_REDIRECT, tmp_http_status = "308", XDM_CONST.HTTP_RSP_CODE_PERMANENT_REDIRECT, tmp_http_status = "400", XDM_CONST.HTTP_RSP_CODE_BAD_REQUEST, tmp_http_status = "402", XDM_CONST.HTTP_RSP_CODE_PAYMENT_REQUIRED, tmp_http_status = "405", XDM_CONST.HTTP_RSP_CODE_METHOD_NOT_ALLOWED, tmp_http_status = "406", XDM_CONST.HTTP_RSP_CODE_NOT_ACCEPTABLE, tmp_http_status = "407", XDM_CONST.HTTP_RSP_CODE_PROXY_AUTHENTICATION_REQUIRED, tmp_http_status = "408", XDM_CONST.HTTP_RSP_CODE_REQUEST_TIMEOUT, tmp_http_status = "409", XDM_CONST.HTTP_RSP_CODE_CONFLICT, tmp_http_status = "410", XDM_CONST.HTTP_RSP_CODE_GONE, tmp_http_status = "411", XDM_CONST.HTTP_RSP_CODE_LENGTH_REQUIRED, tmp_http_status = "412", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_FAILED, tmp_http_status = "413", XDM_CONST.HTTP_RSP_CODE_CONTENT_TOO_LARGE, tmp_http_status = "414", XDM_CONST.HTTP_RSP_CODE_URI_TOO_LONG, tmp_http_status = "415", XDM_CONST.HTTP_RSP_CODE_UNSUPPORTED_MEDIA_TYPE, tmp_http_status = "416", XDM_CONST.HTTP_RSP_CODE_RANGE_NOT_SATISFIABLE, tmp_http_status = "417", XDM_CONST.HTTP_RSP_CODE_EXPECTATION_FAILED, tmp_http_status = "421", XDM_CONST.HTTP_RSP_CODE_MISDIRECTED_REQUEST, tmp_http_status = "422", XDM_CONST.HTTP_RSP_CODE_UNPROCESSABLE_CONTENT, tmp_http_status = "423", XDM_CONST.HTTP_RSP_CODE_LOCKED, tmp_http_status = "424", XDM_CONST.HTTP_RSP_CODE_FAILED_DEPENDENCY, tmp_http_status = "425", XDM_CONST.HTTP_RSP_CODE_TOO_EARLY, tmp_http_status = "426", XDM_CONST.HTTP_RSP_CODE_UPGRADE_REQUIRED, tmp_http_status = "428", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_REQUIRED, tmp_http_status = "429", XDM_CONST.HTTP_RSP_CODE_TOO_MANY_REQUESTS, tmp_http_status = "431", XDM_CONST.HTTP_RSP_CODE_REQUEST_HEADER_FIELDS_TOO_LARGE, tmp_http_status = "451", XDM_CONST.HTTP_RSP_CODE_UNAVAILABLE_FOR_LEGAL_REASONS, to_string(tmp_http_status)),
+        xdm.network.http.referrer = coalesce(properties -> Referer, Referer),
+        xdm.source.user_agent = coalesce(properties -> UserAgent, userAgent),
+        xdm.source.user.username = coalesce(properties -> CsUsername, CsUsername),
+        xdm.source.sent_bytes = to_number(coalesce(properties -> CsBytes, to_string(CsBytes))),
+        xdm.target.sent_bytes = to_number(coalesce(properties -> ScBytes, to_string(ScBytes))),
+        xdm.target.port = to_number(coalesce(properties -> SPort, SPort));
 
 // Azure App Service - "App Service Console Logs", "App Service App Logs", "App Service Platform Logs"
 filter category in ("AppServiceConsoleLogs", "AppServiceAppLogs", "AppServicePlatformLogs")
@@ -81,29 +86,31 @@ filter (category = "AppServiceIPSecAuditLogs")
 | call msft_azure_app_service_map_common_event_fields
 | call msft_azure_app_service_map_common_http_fields
 | alter
-        xdm.event.description = properties -> Details,
-        xdm.observer.action = properties -> Result,
+        xdm.event.description = coalesce(properties -> Details, Details),
+        xdm.observer.action = coalesce(properties -> Result, Result),
         xdm.event.operation_sub_type = operationName;
 
 // Azure App Service - "App Service Antivirus Scan Audit Logs"
 filter category = "AppServiceAntivirusScanAuditLogs"
 | call msft_azure_app_service_map_common_event_fields
 | alter
-        infected_files = arraystring(properties -> ListOfInfectedFiles[], ", ")
+        tmp_infected_files = arraystring(coalesce(properties -> ListOfInfectedFiles[], ListOfInfectedFiles -> []), ", "),
+        tmp_ScanStatus = lowercase(coalesce(properties -> ScanStatus, ScanStatus))
 | alter
-        xdm.event.outcome = if(lowercase(properties -> ScanStatus) contains "succ", XDM_CONST.OUTCOME_SUCCESS, lowercase(properties -> ScanStatus) contains "fail", XDM_CONST.OUTCOME_FAILED, null),
-        xdm.target.file.filename = if(infected_files != "" and infected_files != null, infected_files, null);
+        xdm.event.outcome = if(tmp_ScanStatus contains "succ", XDM_CONST.OUTCOME_SUCCESS, tmp_ScanStatus contains "fail", XDM_CONST.OUTCOME_FAILED, null),
+        xdm.target.file.filename = if(tmp_infected_files != "" and tmp_infected_files != null, tmp_infected_files, null);
 
 // Azure App Service - "App Service File AuditLogs"
 filter category = "AppServiceFileAuditLogs"
 | call msft_azure_app_service_map_common_event_fields
 | alter
-        lower_operationName = lowercase(operationName)
+        lower_operationName = lowercase(operationName),
+        tmp_path = coalesce(properties -> Path, Path)
 | alter
-        xdm.target.file.path = properties -> Path,
-        xdm.target.file.filename = arrayindex(regextract(properties -> Path, "[\\\/]([^\\\/]+)$"), 0),
+        xdm.target.file.path = tmp_path,
+        xdm.target.file.filename = arrayindex(regextract(tmp_path, "[\\\/]([^\\\/]+)$"), 0),
         xdm.event.operation = if(lower_operationName contains "rename", XDM_CONST.OPERATION_TYPE_FILE_RENAME, lower_operationName contains "delete", XDM_CONST.OPERATION_TYPE_FILE_REMOVE, lower_operationName contains "create", XDM_CONST.OPERATION_TYPE_FILE_CREATE, operationName),
-        xdm.source.process.name = properties -> Process;
+        xdm.source.process.name = coalesce(properties -> Process, Process);
 
 // Azure App Service - "Function App Logs"
 filter category = "FunctionAppLogs"
@@ -119,23 +126,26 @@ filter category = "FunctionAppLogs"
             log_level in ("INFO*"), XDM_CONST.LOG_LEVEL_INFORMATIONAL,
             log_level in ("DEBUG"), XDM_CONST.LOG_LEVEL_DEBUG,
             to_string(log_level)),
-        xdm.source.application.name = properties_json -> appName,
-        xdm.event.operation_sub_type = properties_json -> eventName,
-        xdm.source.host.hostname = if(Host != "" and Host != null, Host, properties -> hostInstanceId),
-        xdm.event.description = properties -> message,
-        xdm.source.process.pid = to_integer(properties -> processId);
+        xdm.source.application.name = coalesce(properties_json -> appName, AppName),
+        xdm.event.operation_sub_type = coalesce(properties_json -> eventName, EventName),
+        xdm.source.host.hostname = if(Host != "" and Host != null, Host, properties -> hostInstanceId != null, properties -> hostInstanceId, HostInstanceId),
+        xdm.event.description = coalesce(properties -> message, Message),
+        xdm.source.process.pid = to_integer(coalesce(properties -> processId, ProcessId));
 
 // Azure App Service - "App Service Audit Logs"
 filter category = "AppServiceAuditLogs"
 | call msft_azure_app_service_map_common_event_fields
 | alter
+        tmp_UserAddress = coalesce(properties -> UserAddress, UserAddress),
+        tmp_UserDisplayName = coalesce(properties -> UserDisplayName, UserDisplayName)
+| alter
         xdm.event.operation_sub_type = operationName,
-        xdm.auth.service = properties -> Protocol,
-        xdm.network.application_protocol = properties -> Protocol,
-        xdm.source.user.username = properties -> User,
-        xdm.source.user.upn = if(properties -> UserDisplayName contains "@", properties -> UserDisplayName, null),
-        xdm.source.ipv4 = if(properties -> UserAddress ~= "(?:\d{1,3}\.){3}\d{1,3}", arrayindex(regextract(properties -> UserAddress, "((?:\d{1,3}\.){3}\d{1,3})"), 0), null),
-		xdm.source.ipv6 = if(properties -> UserAddress ~= "(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}", arrayindex(regextract(properties -> UserAddress, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0), null);
+        xdm.auth.service = coalesce(properties -> Protocol, Protocol),
+        xdm.network.application_protocol = coalesce(properties -> Protocol, Protocol),
+        xdm.source.user.username = coalesce(properties -> User, User),
+        xdm.source.user.upn = if(tmp_UserDisplayName contains "@", tmp_UserDisplayName, null),
+        xdm.source.ipv4 = if(tmp_UserAddress ~= "(?:\d{1,3}\.){3}\d{1,3}", arrayindex(regextract(tmp_UserAddress, "((?:\d{1,3}\.){3}\d{1,3})"), 0), null),
+		xdm.source.ipv6 = if(tmp_UserAddress ~= "(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}", arrayindex(regextract(tmp_UserAddress, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0), null);
 
 // Azure App Service - "Workflow Runtime"
 config case_sensitive = true
@@ -148,8 +158,14 @@ config case_sensitive = true
         xdm.source.cloud.project_id = arrayindex(split(resourceId, "/"), 2),
         xdm.source.cloud.region = location
 | alter
+        tmp_code = coalesce(properties -> code, Code),
+        tmp_actionName = coalesce(properties -> resource.actionName, ActionName),
+        tmp_status = lowercase(coalesce(properties -> status, Status)),
+        tmp_startTime = to_string(coalesce(properties -> startTime, StartTime)),
+        tmp_endTime = to_string(coalesce(properties -> startTime, EndTime))
+| alter
         log_level = uppercase(Level),
-        code = uppercase(replex(properties -> code, "([A-Z][a-z]+)([A-Z][a-z]+)", "\1_\2"))
+        code = uppercase(replex(tmp_code, "([A-Z][a-z]+)([A-Z][a-z]+)", "\1_\2"))
 | alter
         xdm.event.log_level = if(
             log_level in ("CRITICAL"), XDM_CONST.LOG_LEVEL_CRITICAL,
@@ -157,16 +173,16 @@ config case_sensitive = true
             log_level in ("WARNING"), XDM_CONST.LOG_LEVEL_WARNING,
             log_level in ("INFO*"), XDM_CONST.LOG_LEVEL_INFORMATIONAL,
             null),
-        xdm.event.operation_sub_type = if(properties -> resource.actionName != null and properties -> resource.actionName != "", concat(operationName, " - ", properties -> resource.actionName), operationName),
-        xdm.event.outcome = if(lowercase(properties -> status) contains "succ", XDM_CONST.OUTCOME_SUCCESS, lowercase(properties -> status) contains "fail", XDM_CONST.OUTCOME_FAILED, to_string(properties -> status)),
+        xdm.event.operation_sub_type = if(tmp_actionName != null and tmp_actionName != "", concat(operationName, " - ", tmp_actionName), operationName),
+        xdm.event.outcome = if(tmp_status contains "succ", XDM_CONST.OUTCOME_SUCCESS, tmp_status contains "fail", XDM_CONST.OUTCOME_FAILED, tmp_status),
         xdm.network.http.response_code = if(code = "CONTINUE", XDM_CONST.HTTP_RSP_CODE_CONTINUE, code = "SWITCHING_PROTOCOLS", XDM_CONST.HTTP_RSP_CODE_SWITCHING_PROTOCOLS, code = "PROCESSING", XDM_CONST.HTTP_RSP_CODE_PROCESSING, code = "EARLY_HINTS", XDM_CONST.HTTP_RSP_CODE_EARLY_HINTS, code = "OK", XDM_CONST.HTTP_RSP_CODE_OK, code = "CREATED", XDM_CONST.HTTP_RSP_CODE_CREATED, code = "ACCEPTED", XDM_CONST.HTTP_RSP_CODE_ACCEPTED, code = "NON__AUTHORITATIVE_INFORMATION", XDM_CONST.HTTP_RSP_CODE_NON__AUTHORITATIVE_INFORMATION, code = "NO_CONTENT", XDM_CONST.HTTP_RSP_CODE_NO_CONTENT, code = "RESET_CONTENT", XDM_CONST.HTTP_RSP_CODE_RESET_CONTENT, code = "PARTIAL_CONTENT", XDM_CONST.HTTP_RSP_CODE_PARTIAL_CONTENT, code = "MULTI__STATUS", XDM_CONST.HTTP_RSP_CODE_MULTI__STATUS, code = "ALREADY_REPORTED", XDM_CONST.HTTP_RSP_CODE_ALREADY_REPORTED, code = "IM_USED", XDM_CONST.HTTP_RSP_CODE_IM_USED, code = "MULTIPLE_CHOICES", XDM_CONST.HTTP_RSP_CODE_MULTIPLE_CHOICES, code = "MOVED_PERMANENTLY", XDM_CONST.HTTP_RSP_CODE_MOVED_PERMANENTLY, code = "FOUND", XDM_CONST.HTTP_RSP_CODE_FOUND, code = "SEE_OTHER", XDM_CONST.HTTP_RSP_CODE_SEE_OTHER, code = "NOT_MODIFIED", XDM_CONST.HTTP_RSP_CODE_NOT_MODIFIED, code = "USE_PROXY", XDM_CONST.HTTP_RSP_CODE_USE_PROXY, code = "TEMPORARY_REDIRECT", XDM_CONST.HTTP_RSP_CODE_TEMPORARY_REDIRECT, code = "PERMANENT_REDIRECT", XDM_CONST.HTTP_RSP_CODE_PERMANENT_REDIRECT, code = "BAD_REQUEST", XDM_CONST.HTTP_RSP_CODE_BAD_REQUEST, code = "UNAUTHORIZED", XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED, code = "PAYMENT_REQUIRED", XDM_CONST.HTTP_RSP_CODE_PAYMENT_REQUIRED, code = "FORBIDDEN", XDM_CONST.HTTP_RSP_CODE_FORBIDDEN, code = "NOT_FOUND", XDM_CONST.HTTP_RSP_CODE_NOT_FOUND, code = "METHOD_NOT_ALLOWED", XDM_CONST.HTTP_RSP_CODE_METHOD_NOT_ALLOWED, code = "NOT_ACCEPTABLE", XDM_CONST.HTTP_RSP_CODE_NOT_ACCEPTABLE, code = "PROXY_AUTHENTICATION_REQUIRED", XDM_CONST.HTTP_RSP_CODE_PROXY_AUTHENTICATION_REQUIRED, code = "REQUEST_TIMEOUT", XDM_CONST.HTTP_RSP_CODE_REQUEST_TIMEOUT, code = "CONFLICT", XDM_CONST.HTTP_RSP_CODE_CONFLICT, code = "GONE", XDM_CONST.HTTP_RSP_CODE_GONE, code = "LENGTH_REQUIRED", XDM_CONST.HTTP_RSP_CODE_LENGTH_REQUIRED, code = "PRECONDITION_FAILED", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_FAILED, code = "CONTENT_TOO_LARGE", XDM_CONST.HTTP_RSP_CODE_CONTENT_TOO_LARGE, code = "URI_TOO_LONG", XDM_CONST.HTTP_RSP_CODE_URI_TOO_LONG, code = "UNSUPPORTED_MEDIA_TYPE", XDM_CONST.HTTP_RSP_CODE_UNSUPPORTED_MEDIA_TYPE, code = "RANGE_NOT_SATISFIABLE", XDM_CONST.HTTP_RSP_CODE_RANGE_NOT_SATISFIABLE, code = "EXPECTATION_FAILED", XDM_CONST.HTTP_RSP_CODE_EXPECTATION_FAILED, code = "MISDIRECTED_REQUEST", XDM_CONST.HTTP_RSP_CODE_MISDIRECTED_REQUEST, code = "UNPROCESSABLE_CONTENT", XDM_CONST.HTTP_RSP_CODE_UNPROCESSABLE_CONTENT, code = "LOCKED", XDM_CONST.HTTP_RSP_CODE_LOCKED, code = "FAILED_DEPENDENCY", XDM_CONST.HTTP_RSP_CODE_FAILED_DEPENDENCY, code = "TOO_EARLY", XDM_CONST.HTTP_RSP_CODE_TOO_EARLY, code = "UPGRADE_REQUIRED", XDM_CONST.HTTP_RSP_CODE_UPGRADE_REQUIRED, code = "PRECONDITION_REQUIRED", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_REQUIRED, code = "TOO_MANY_REQUESTS", XDM_CONST.HTTP_RSP_CODE_TOO_MANY_REQUESTS, code = "REQUEST_HEADER_FIELDS_TOO_LARGE", XDM_CONST.HTTP_RSP_CODE_REQUEST_HEADER_FIELDS_TOO_LARGE, code = "UNAVAILABLE_FOR_LEGAL_REASONS", XDM_CONST.HTTP_RSP_CODE_UNAVAILABLE_FOR_LEGAL_REASONS, code = "INTERNAL_SERVER_ERROR", XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR, code = "NOT_IMPLEMENTED", XDM_CONST.HTTP_RSP_CODE_NOT_IMPLEMENTED, code = "BAD_GATEWAY", XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY, code = "SERVICE_UNAVAILABLE", XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE, code = "GATEWAY_TIMEOUT", XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT, code = "HTTP_VERSION_NOT_SUPPORTED", XDM_CONST.HTTP_RSP_CODE_HTTP_VERSION_NOT_SUPPORTED, code = "VARIANT_ALSO_NEGOTIATES", XDM_CONST.HTTP_RSP_CODE_VARIANT_ALSO_NEGOTIATES, code = "INSUFFICIENT_STORAGE", XDM_CONST.HTTP_RSP_CODE_INSUFFICIENT_STORAGE, code = "LOOP_DETECTED", XDM_CONST.HTTP_RSP_CODE_LOOP_DETECTED, code = "NETWORK_AUTHENTICATION_REQUIRED", XDM_CONST.HTTP_RSP_CODE_NETWORK_AUTHENTICATION_REQUIRED, to_string(code)),
-        xdm.event.outcome_reason = properties -> error.message,
-        xdm.target.resource.id = properties -> resource.workflowId,
-        xdm.target.resource.name = properties -> resource.workflowName,
-        xdm.source.process.identifier = properties -> resource.runId,
-        xdm.source.process.parent_id = properties -> resource.originRunId,
-        xdm.target.resource.type = properties -> resource.actionName,
-        xdm.event.duration = to_integer(timestamp_diff(parse_timestamp("%FT%H:%M:%E*SZ", properties -> endTime), parse_timestamp("%FT%H:%M:%E*SZ", properties -> startTime), "MILLISECOND"));
+        xdm.event.outcome_reason = coalesce(properties -> error.message, Message),
+        xdm.target.resource.id = coalesce(properties -> resource.workflowId, WorkflowId),
+        xdm.target.resource.name = coalesce(properties -> resource.workflowName, WorkflowName),
+        xdm.source.process.identifier = coalesce(properties -> resource.runId, RunId),
+        xdm.source.process.parent_id = coalesce(properties -> resource.originRunId, OriginRunId),
+        xdm.target.resource.type = tmp_actionName,
+        xdm.event.duration = to_integer(timestamp_diff(parse_timestamp("%FT%H:%M:%E*SZ", tmp_endTime), parse_timestamp("%FT%H:%M:%E*SZ", tmp_startTime), "MILLISECOND"));
 
 // Azure App Service - "App Service Environment Platform Logs"
 filter category = "AppServiceEnvironmentPlatformLogs"

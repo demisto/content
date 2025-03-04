@@ -39,6 +39,154 @@
         "resultType": {
             "type": "string",
             "is_array": false
+        },
+        "_ResourceId": {
+            "type": "string",
+            "is_array": false
+        },
+        "CIp": {
+            "type": "string",
+            "is_array": false
+        },
+        "CsHost": {
+            "type": "string",
+            "is_array": false
+        },
+        "CsMethod": {
+            "type": "string",
+            "is_array": false
+        },
+        "ScStatus": {
+            "type": "string",
+            "is_array": false
+        },
+        "Result": {
+            "type": "string",
+            "is_array": false
+        },
+        "TimeTaken": {
+            "type": "int",
+            "is_array": false
+        },
+        "ComputerName": {
+            "type": "string",
+            "is_array": false
+        },
+        "Referer": {
+            "type": "string",
+            "is_array": false
+        },
+        "userAgent": {
+            "type": "string",
+            "is_array": false
+        },
+        "CsUsername": {
+            "type": "string",
+            "is_array": false
+        },
+        "CsBytes": {
+            "type": "int",
+            "is_array": false
+        },
+        "ScBytes": {
+            "type": "int",
+            "is_array": false
+        },
+        "SPort": {
+            "type": "string",
+            "is_array": false
+        },
+        "Details": {
+            "type": "string",
+            "is_array": false
+        },
+        "ListOfInfectedFiles": {
+            "type": "string",
+            "is_array": false
+        },
+        "ScanStatus": {
+            "type": "string",
+            "is_array": false
+        },
+        "Path": {
+            "type": "string",
+            "is_array": false
+        },
+        "Process": {
+            "type": "string",
+            "is_array": false
+        },
+        "AppName": {
+            "type": "string",
+            "is_array": false
+        },
+        "EventName": {
+            "type": "string",
+            "is_array": false
+        },
+        "Message": {
+            "type": "string",
+            "is_array": false
+        },
+        "ProcessId": {
+            "type": "string",
+            "is_array": false
+        },
+        "HostInstanceId": {
+            "type": "string",
+            "is_array": false
+        },
+        "Protocol": {
+            "type": "string",
+            "is_array": false
+        },
+        "User": {
+            "type": "string",
+            "is_array": false
+        },
+        "UserAddress": {
+            "type": "string",
+            "is_array": false
+        },
+        "UserDisplayName": {
+            "type": "string",
+            "is_array": false
+        },
+        "Code": {
+            "type": "string",
+            "is_array": false
+        },
+        "ActionName": {
+            "type": "string",
+            "is_array": false
+        },
+        "Status": {
+            "type": "string",
+            "is_array": false
+        },
+        "WorkflowId": {
+            "type": "string",
+            "is_array": false
+        },
+        "WorkflowName": {
+            "type": "string",
+            "is_array": false
+        },
+        "RunId": {
+            "type": "string",
+            "is_array": false
+        },
+        "OriginRunId": {
+            "type": "string",
+            "is_array": false
+        },
+        "StartTime": {
+            "type": "string",
+            "is_array": false
+        },
+        "EndTime": {
+            "type": "string",
+            "is_array": false
         }
     }
 }
