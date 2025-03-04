@@ -2,3 +2,9 @@
 !mattermost-list-users limit=2 team_name=panw
 !mattermost-create-channel display_name=channel_name name=channel_name type=Private
 !mattermost-list-channels limit=2 include_private_channels=true
+!mattermost-list-channels-for-user user_id=user_id team_name=panw
+!mattermost-list-usergroups group=usergroup
+!mattermost-list-usergroup-members group=usergroup
+!mattermost-add-usergroup-member group=usergroup user_ids=user_ids
+!mattermost-remove-usergroup-member group=usergroup user_ids=user_ids
+!mattermost-set-channel-role channel_id=channel_id user_id=user_id role=Admin
