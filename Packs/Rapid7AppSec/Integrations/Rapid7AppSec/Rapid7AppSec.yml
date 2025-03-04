@@ -9,7 +9,8 @@ configuration:
   required: true
   type: 0
 - display: API Key
-  hiddenpassword: true
+  displaypassword: API Key
+  hiddenusername: true
   name: api_key
   required: true
   type: 9
