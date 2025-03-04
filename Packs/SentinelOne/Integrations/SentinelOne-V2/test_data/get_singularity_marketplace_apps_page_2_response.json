@@ -1,0 +1,37 @@
+{
+    "data": [
+        {
+            "applicationCatalogId": "90909090909090",
+            "hasAlert": false,
+            "icon": "data:image/png;base64,iVBORw0KGgoAAAAN",
+            "lastInstalledAt": "2025-01-23T13:11:23.12758",
+            "name": "SentinelOne Threat Intelligence IOC Ingestion",
+            "applicationCatalogIsHidden": true,
+            "scopes": [
+                {
+                    "account": "SentinelOne",
+                    "accountId": "1234567890",
+                    "alertMessage": "",
+                    "createdAt": "2025-01-23T13:11:23.12758",
+                    "creator": "admin@user.sentinelone.net",
+                    "creatorId": "212212121211212",
+                    "desiredStatus": "active",
+                    "hasAlert": false,
+                    "id": "123457",
+                    "lastEntityCreatedAt": "2025-01-23T13:11:23.127579",
+                    "modifier": "admin@user.sentinelone.net",
+                    "modifierId": "212212121211212",
+                    "scopeId": "1230123012301230",
+                    "scopeLevel": "account",
+                    "status": "active",
+                    "updatedAt": "2025-01-23T13:11:25.96604",
+                    "applicationInstanceName": "SentinelOne Threat Intelligence IOC Ingestion"
+                }
+            ]
+        }
+    ],
+    "pagination": {
+        "nextCursor": "",
+        "totalItems": 1
+    }
+}

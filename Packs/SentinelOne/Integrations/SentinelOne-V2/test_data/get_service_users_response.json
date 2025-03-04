@@ -1,0 +1,41 @@
+{
+	"data": [
+		{
+			"apiToken": {
+				"createdAt": "2025-01-30T10:12:09.458490Z",
+				"expiresAt": "2025-03-01T10:12:08Z"
+			},
+			"createdAt": "2025-01-30T10:12:09.407923Z",
+			"createdBy": {
+				"id": "123456789099",
+				"name": "sentinelone"
+			},
+			"description": null,
+			"id": "123456",
+			"lastActivation": "2025-02-04T10:00:07.637184Z",
+			"name": "Service user for SentinelOne Alert Ingestion app for 0101010101010 site id",
+			"scope": "site",
+			"scopeRoles": [
+				{
+					"accountName": "SentinelOne",
+					"id": "0101010101010",
+					"name": "Default site",
+					"roleId": "999999999",
+					"roleName": "Admin",
+					"roles": [
+						"Admin"
+					]
+				}
+			],
+			"updatedAt": "2025-01-30T10:12:09.405748Z",
+			"updatedBy": {
+				"id": "2323232323232323",
+				"name": "sentinelone"
+			}
+		}
+	],
+	"pagination": {
+		"nextCursor": "",
+		"totalItems": 1
+	}
+}
