@@ -2,7 +2,7 @@
     "name": "AlienVault OTX",
     "description": "Query Indicators of Compromise in AlienVault OTX.",
     "support": "xsoar",
-    "currentVersion": "1.1.43",
+    "currentVersion": "1.1.44",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
