@@ -36,8 +36,21 @@ TO_DEMISTO_STATUS = {
 }
 VERIFY = not demisto.params().get("insecure", True)
 SESSION = requests.Session()
+CACHE_DICT: Dict[Optional[tuple[str, str]], Optional[Dict[Any, Any]]] = {}
 
 ''' HELPER FUNCTIONS '''
+
+
+def alerts_content_cached(sixgill_alerts_client, alert_id, organization_id, cache=CACHE_DICT):
+    if (alert_id, organization_id) in cache:
+        return cache[(alert_id, organization_id)]
+    content = sixgill_alerts_client.get_actionable_alert_content(actionable_alert_id=alert_id,
+                                                                 fetch_only_current_item=True,
+                                                                 organization_id=organization_id)
+    if len(cache) >= 2:
+        cache.clear()
+    cache[(alert_id, organization_id)] = content
+    return content
 
 
 def get_incident_init_params():
@@ -134,9 +147,7 @@ def get_alert_content(content_item, item_info, incident, sixgill_alerts_client):
         attributes = '\n\n-----------\n\n'.join(attributes)
         incident['CustomFields']['cybersixgillattributes'] = attributes
     elif es_id == "Not Applicable":
-        content = sixgill_alerts_client.get_actionable_alert_content(actionable_alert_id=item_info.get('id'),
-                                                                     fetch_only_current_item=True,
-                                                                     organization_id=demisto.params().get('org_id', None))
+        content = alerts_content_cached(sixgill_alerts_client, item_info.get("id"), demisto.params().get('org_id', None))
         content_items = content.get('items')
         if content_items:
             for item in content_items:

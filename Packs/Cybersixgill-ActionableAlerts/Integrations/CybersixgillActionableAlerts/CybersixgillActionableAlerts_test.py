@@ -461,3 +461,12 @@ def test_get_alert_content_es_id_na(mocker):
     )
     assert alert_content is None
     assert incident == expected_alert_output_es_id_na
+
+
+def test_alerts_content_cached(mocker):
+
+    from CybersixgillActionableAlerts import alerts_content_cached
+
+    CACHE_DICT = {(1, 2): "content"}
+
+    assert CACHE_DICT[(1, 2)] == alerts_content_cached(None, 1, 2, cache=CACHE_DICT)
