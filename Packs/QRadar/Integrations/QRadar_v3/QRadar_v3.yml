@@ -512,7 +512,7 @@ script:
   - name: qradar-rules-list
     outputs:
     - contextPath: QRadar.Rule.Owner
-      description: Owner of the rule
+      description: Owner of the rule.
       type: String
     - contextPath: QRadar.Rule.BaseHostID
       description: ID of the host from which the rule's base capacity was determined.
