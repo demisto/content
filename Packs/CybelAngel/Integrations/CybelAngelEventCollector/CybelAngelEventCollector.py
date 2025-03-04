@@ -544,7 +544,7 @@ def cybelangel_report_status_update_command(client: Client, args: dict) -> Comma
     client.status_update(report_ids, status)
 
     return CommandResults(
-        readable_output=f"The status of report(s) {report_ids} has been successfully updated"
+        readable_output=f"The status of the following reports {report_ids} has been successfully updated to {status}"
     )
 
 
@@ -570,7 +570,7 @@ def cybelangel_report_comments_get_command(client: Client, args: dict) -> Comman
         response["Comment"] = response.pop("comments")
     hr_response = [
         {**comment, "author_firstname": comment["author"]["firstname"], "author_lastname": comment["author"]["lastname"]}
-        for comment in response.get("Comments", [])  # type: ignore
+        for comment in response.get("Comment", [])  # type: ignore
     ]
     human_readable = tableToMarkdown(
         f"Comments for Report ID {report_id}",

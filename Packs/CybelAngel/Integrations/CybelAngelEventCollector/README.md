@@ -1,6 +1,6 @@
 CybelAngel receives reports from the CybelAngel platform, which specializes in external attack surface protection and management
 
-## Configure CybelAngel in </~XSIAM> / </~XSOAR>
+## Configure CybelAngel in Cortex
 
 
 | **Parameter**                                                     | **Required** |
@@ -205,7 +205,12 @@ Retrieve reports from CybelAngel.
 
 #### Human Readable Output
 
->Report ID 1234 retrieved.
+### Report ID example-id-6 details
+|id|report_type|sender|severity|status|updated_at|
+|---|---|---|---|---|---|
+| example-id-6 | incident_detection | example@example.com | 1 | in_progress | 2025-03-03T09:13:33.253781 |
+
+
 
 #### Command example
 ```!cybelangel-report-get report_id=1234 pdf=true```
@@ -395,7 +400,11 @@ Retrieve the mirror details for the specified report.
 
 #### Human Readable Output
 
->Mirror details for Report ID 1234 retrieved.
+### Mirror details for Report ID example-id-7
+|report_id|created_at|available_files_count|updated_at|
+|---|---|---|---|
+| example-id-7 | 2024-07-11T12:50:20Z | 1 | 2025-01-12T03:26:49Z |
+
 
 #### Command example
 ```!cybelangel-mirror-report-get report_id=1234 csv=true```
@@ -698,7 +707,20 @@ Retrieve reports from CybelAngel.
 
 #### Human Readable Output
 
->All reports retrieved.
+### Reports list
+|id|url|report_type|sender|severity|status|updated_at|report_content|
+|---|---|---|---|---|---|---|---|
+| example-id-1 | https://platform.example.com/reports/example-id-1 | incident_detection | example@example.com | 1 | open | 2025-02-25T13:06:06.821922 | ### Sample content… Example |
+| example-id-2 | https://platform.example.com/reports/example-id-2 | incident_detection | example@example.com | 1 | resolved | 2025-02-26T18:58:50.303598 | ### Sample content… Example |
+| example-id-3 | https://platform.example.com/reports/example-id-3 | incident_detection | example@example.com | 1 | in_progress | 2025-02-26T12:17:42.241832 | ### Sample content… Example |
+| example-id-4 | https://platform.example.com/reports/example-id-4 | incident_detection | example@example.com | 1 | open | 2025-02-26T13:29:54.520708 | ### Sample content… Example |
+| example-id-5 | https://platform.example.com/reports/example-id-5 | incident_detection | example@example.com | 2 | open | 2025-02-25T16:29:32.696281 | ### Sample content… Example |
+| example-id-6 | https://platform.example.com/reports/example-id-6 | incident_detection | example@example.com | 1 | in_progress | 2025-03-03T09:13:33.253781 | ### Sample content… Example |
+| example-id-7 | https://platform.example.com/reports/example-id-7 | incident_detection | example@example.com | 1 | in_progress | 2025-03-03T09:13:33.253781 | ### Sample content… Example |
+| example-id-8 | https://platform.example.com/reports/example-id-8 | incident_detection | example@example.com | 1 | open | 2025-03-03T14:26:11.424002 | ### Sample content… Example |
+| example-id-9 | https://platform.example.com/reports/example-id-9 | incident_detection | example@example.com | 1 | open | 2025-03-03T14:22:14.184243 | ### Sample content… Example |
+| example-id-10 | https://platform.example.com/reports/example-id-10 | incident_detection | example@example.com | 1 | open | 2025-03-03T14:28:22.089922 | ### Sample content… Example |
+
 
 ### cybelangel-report-comments-get
 
@@ -772,4 +794,7 @@ Retrieve comments from a report.
 
 #### Human Readable Output
 
->Comments for Report ID 1234 retrieved.
+### Comments for Report ID example-id-8
+|content|created_at|discussion_id|assigned|author_firstname|author_lastname|last_updated_at|
+|---|---|---|---|---|---|---|
+| This is a comment message | 2025-02-27T11:04:05Z | example-id-8:example-tenant-id | false | ExampleFirst | ExampleLast | 2025-02-27T11:04:05Z |
