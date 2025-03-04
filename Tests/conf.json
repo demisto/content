@@ -3838,7 +3838,8 @@
                 "Core REST API"
             ],
             "playbookID": "FeedZoom_Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "timeout": 500
         },
         {
             "playbookID": "PCAP Analysis Test",
