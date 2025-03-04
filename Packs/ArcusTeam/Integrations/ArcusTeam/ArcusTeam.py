@@ -16,7 +16,6 @@ VERSION = "1.0.0"
 
 
 class Client(BaseClient):
-
     def __init__(self, base_url: str, verify: bool, proxy: bool, authentication_url: str, client_id: str, api_key: str):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         payload = {
@@ -30,24 +29,23 @@ class Client(BaseClient):
         self.headers = headers
 
     def get_devices(self, vendor, model, series, firmware_version):
-
         return self._http_request(
-            method='POST',
-            url_suffix='/get_devices',
+            method="POST",
+            url_suffix="/get_devices",
             headers=self.headers,
             json_data={
                 "vendor": vendor,
                 "model": model,
                 "series": series,
                 "firmware_version": firmware_version,
-                "version": VERSION
-            })
+                "version": VERSION,
+            },
+        )
 
     def get_vulnerabities(self, firmwareId, deviceId, pageSize, page, sortField, sortOrder, returnFields):
-
         return self._http_request(
-            method='POST',
-            url_suffix='/get_vulnerabilities',
+            method="POST",
+            url_suffix="/get_vulnerabilities",
             headers=self.headers,
             json_data={
                 "firmwareId": firmwareId,
@@ -58,19 +56,15 @@ class Client(BaseClient):
                 "sortOrder": sortOrder,
                 "sortField": sortField,
                 "returnFields": returnFields,
-            })
+            },
+        )
 
     def get_authentication_token(self, authentication_url: str, headers: dict, payload: dict):
-        return self._http_request(
-            method='POST',
-            full_url=authentication_url,
-            headers=headers,
-            json_data=payload
-        )
+        return self._http_request(method="POST", full_url=authentication_url, headers=headers, json_data=payload)
 
 
 def deviceToMarkdown(device):
-    nl = '\n'
+    nl = "\n"
     markdown = f"---{nl}### Device {device.get('model')}{nl}"
     markdown += f"**Model Name**: {device.get('model')}{nl}"
     markdown += f"**Vendor**: {device.get('vendor')}{nl}"
@@ -78,12 +72,8 @@ def deviceToMarkdown(device):
     markdown += f"**Categories**: {','.join(device.get('categories'))}{nl}"
     markdown += f"**DeviceID**: {device.get('device_key')}{nl}"
     markdown += f"**Match Score**: {round(device.get('score')*100,2)}%{nl}"
-    firmwares = device.get('firmware')
-    markdown += tableToMarkdown(
-        "Firmwares",
-        firmwares,
-        headers=['firmwareid', 'version', 'name']
-    )
+    firmwares = device.get("firmware")
+    markdown += tableToMarkdown("Firmwares", firmwares, headers=["firmwareid", "version", "name"])
     return markdown
 
 
@@ -92,15 +82,16 @@ def getEditIssue(returnFields):
         if not isinstance(issue, dict):
             key = returnFields[0]
             if key == "risk":
-                issue = str(round(issue * 100, 2)) + '%'
+                issue = str(round(issue * 100, 2)) + "%"
             data = {}
             data[key] = issue
             return data
         else:
-            field = issue.get('risk')
+            field = issue.get("risk")
             if field is not None:
-                issue['risk'] = str(round(float(field) * 100, 2)) + '%'
+                issue["risk"] = str(round(float(field) * 100, 2)) + "%"
             return issue
+
     return editIssue
 
 
@@ -110,21 +101,21 @@ def arcusteam_get_devices(client: Client, args: dict[str, Any]):
     :param device_name: device name to search for in the DB.
     :return: List of matching devices for the given device.
     """
-    result = client.get_devices(vendor=args.get("vendor", ""), model=args.get("model", ""),
-                                series=args.get("series", ""), firmware_version=args.get("firmware_version", ""))
-    markdown = '## Found ' + str(len(result)) + ' devices\n'
+    result = client.get_devices(
+        vendor=args.get("vendor", ""),
+        model=args.get("model", ""),
+        series=args.get("series", ""),
+        firmware_version=args.get("firmware_version", ""),
+    )
+    markdown = "## Found " + str(len(result)) + " devices\n"
     markdown += "".join(list(map(deviceToMarkdown, result)))
     return CommandResults(
-        readable_output=markdown,
-        outputs_prefix="ArcusTeamDevices",
-        outputs_key_field="",
-        outputs={'devices': result}
+        readable_output=markdown, outputs_prefix="ArcusTeamDevices", outputs_key_field="", outputs={"devices": result}
     )
 
 
 def arcusteam_get_vulnerabilities(client: Client, args: dict[str, Any]) -> CommandResults:
-
-    returnFields = str(args.get("return_fields", 'risk,cve')).split(',')
+    returnFields = str(args.get("return_fields", "risk,cve")).split(",")
     firmwareId = args.get("firmware_id", "")
     deviceId = args.get("device_id", "")
     pageSize = int(args.get("page_size", 10))
@@ -133,16 +124,16 @@ def arcusteam_get_vulnerabilities(client: Client, args: dict[str, Any]) -> Comma
     sortField = args.get("sort_field", "risk")
 
     result = client.get_vulnerabities(firmwareId, deviceId, pageSize, page, sortField, sortOrder, returnFields)
-    if len(result.get('code', '')) > 0:
-        raise Exception(result.get('message'))
-    result['results'] = list(map(getEditIssue(returnFields), result.get("results")))
-    markdown = '## Scan results\n'
+    if len(result.get("code", "")) > 0:
+        raise Exception(result.get("message"))
+    result["results"] = list(map(getEditIssue(returnFields), result.get("results")))
+    markdown = "## Scan results\n"
 
-    if len(result.get('results')) > 0:
+    if len(result.get("results")) > 0:
         markdown += tableToMarkdown(
-            'Number of CVE\'s found: ' + str(result.get("max_items")),
-            result.get('results'),
-            headers=list(result.get('results')[0].keys())
+            "Number of CVE's found: " + str(result.get("max_items")),
+            result.get("results"),
+            headers=list(result.get("results")[0].keys()),
         )
     else:
         markdown += "No results"
@@ -180,8 +171,12 @@ def main() -> None:
 
     try:
         client = Client(
-            base_url=base_url, verify=verify_certificate, proxy=proxy, authentication_url=authentication_url,
-            client_id=client_id, api_key=api_key
+            base_url=base_url,
+            verify=verify_certificate,
+            proxy=proxy,
+            authentication_url=authentication_url,
+            client_id=client_id,
+            api_key=api_key,
         )
         if demisto.command() == "arcusteam-get-devices":
             return_results(arcusteam_get_devices(client, demisto.args()))
@@ -195,9 +190,7 @@ def main() -> None:
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(
-            f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}"
-        )
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
 
 
 """ ENTRY POINT """
