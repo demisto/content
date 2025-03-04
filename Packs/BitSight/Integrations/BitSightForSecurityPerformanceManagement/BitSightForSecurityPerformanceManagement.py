@@ -68,7 +68,7 @@ RISK_VECTOR_MAPPING = {
     'dmarc': 'dmarc'
 
 }
-PACK_VERSION = get_pack_version(pack_name='Bitsight') or '1.1.22'
+PACK_VERSION = get_pack_version(pack_name='Bitsight') or '1.1.23'
 CALLING_PLATFORM_VERSION = 'XSOAR'
 CONNECTOR_NAME_VERSION = f'Bitsight - {PACK_VERSION}'
 # Disable insecure warnings
