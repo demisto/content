@@ -78,7 +78,8 @@
     },
     "marketplaces": [
         "xsoar",
-        "xpanse"
+        "xpanse",
+        "platform"
     ],
     "displayedImages": [
         "ServiceNow",
@@ -92,5 +93,6 @@
         "MalwareInvestigationAndResponse",
         "AutoFocus",
         "Jira"
-    ]
+    ],
+    "supportedModules": []
 }
