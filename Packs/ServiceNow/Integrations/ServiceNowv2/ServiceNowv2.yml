@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: ServiceNow v2-test
+  id: ServiceNow v2-b633fcd
   version: -1
 configuration:
 - display: ServiceNow URL, in the format https://company.service-now.com/
@@ -290,8 +290,8 @@ configuration:
   required: false
   section: Collect
 description: Use The ServiceNow IT Service Management (ITSM) solution to modernize the way you manage and deliver services to your users.
-display: ServiceNow v2-test
-name: ServiceNow v2-test
+display: ServiceNow v2-b633fcd
+name: ServiceNow v2-b633fcd
 script:
   commands:
   - arguments:
