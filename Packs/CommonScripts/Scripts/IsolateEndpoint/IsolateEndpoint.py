@@ -34,12 +34,12 @@ class Command:
         self,
         brand: str,
         name: str,
-        args_mapping: dict,
+        arg_mapping: dict,
         pre_command_check: Callable = None
     ):
         self.brand = brand
         self.name = name
-        self.args_mapping = args_mapping
+        self.arg_mapping = arg_mapping
         self.pre_command_check = pre_command_check
 
 
@@ -48,21 +48,21 @@ def initialize_commands() -> list:
     #     PreCommand(
     #         brand='Cybereason',
     #         name='cybereason-is-probe-connected',
-    #         args_mapping={'machine': 'agent_hostname'},
+    #         arg_mapping={'machine': 'agent_hostname'},
     #         post_cmd_name='cybereason-is-probe-connected',
     #     ),
     #     PreCommand(
     #         # TODO to add to get-endpoint-data
     #         brand='FireEyeHX v2',
     #         name='fireeye-hx-get-host-information',
-    #         args_mapping={'agentId': 'agent_id', 'hostName': 'agent_hostname'},
+    #         arg_mapping={'agentId': 'agent_id', 'hostName': 'agent_hostname'},
     #         post_cmd_name='fireeye-hx-host-containment',
     #     ),
     #     PreCommand(
     #         # TODO to add to get-endpoint-data
     #         brand='Microsoft Defender Advanced Threat Protection',
     #         name='endpoint',
-    #         args_mapping={},
+    #         arg_mapping={},
     #         post_cmd_name='microsoft-atp-isolate-machine',
     #     )
     # ]
@@ -71,31 +71,31 @@ def initialize_commands() -> list:
         # Command(
         #     brand='Cortex Core - IR',
         #     name='core-isolate-endpoint',
-        #     args_mapping={'endpoint_id': 'agent_id'},
+        #     arg_mapping={'endpoint_id': 'agent_id'},
         #     pre_command_check=None
         # ),
         # Command(
         #     brand='Cybereason',
         #     name='cybereason-isolate-machine',
-        #     args_mapping={'machine': 'agent_hostname'},
+        #     arg_mapping={'machine': 'agent_hostname'},
         #     pre_command_check=check_conditions_cybereason_isolate_machine
         # ),
         Command(
             brand='CrowdstrikeFalcon',
             name='cs-falcon-contain-host',
-            args_mapping={'ids': 'agent_id'},
+            arg_mapping={'ids': 'agent_id'},
             pre_command_check=check_conditions_cs_falcon_contain_host,
         ),
-        # Command(
-        #     brand='FireEyeHX v2',
-        #     name='fireeye-hx-host-containment',
-        #     args_mapping={'agentId': 'agent_id', 'hostName': 'agent_hostname'},
-        #     pre_command_check=check_conditions_fireeye_hx_host_containment,
-        # ),
+        Command(
+            brand='FireEyeHX v2',
+            name='fireeye-hx-host-containment',
+            arg_mapping={'agentId': 'agent_id', 'hostName': 'agent_hostname'},  # command can have or agentId or hostName
+            pre_command_check=check_conditions_fireeye_hx_host_containment,
+        ),
         Command(
             brand='VMware Carbon Black EDR v2',
             name='cb-edr-quarantine-device',
-            args_mapping={'sensor_id': 'agent_id'},
+            arg_mapping={'sensor_id': 'agent_id'},
             pre_command_check=check_conditions_cb_edr_quarantine_device,
         ),
         #     Command(
@@ -240,9 +240,11 @@ def create_message_to_context_and_hr(endpoint_data, result, brand, message, outp
         human_readable_outputs.append(hr)
 
 
-def check_missing_args(args_mapping: dict, args: dict) -> list[str]:
+def check_missing_args(args_mapping: dict, args: dict) -> bool:
     missing_keys = [key for key in args_mapping.values() if key not in args]
-    return missing_keys
+    if len(missing_keys) == len(args_mapping):  # checks if all args are missing
+        return True
+    return False
 
 
 def map_args(args_mapping: dict, args: dict) -> dict:
@@ -285,7 +287,8 @@ def main():
 
     try:
         # args = demisto.args()
-        args = {'agent_hostname': 'DC1ENV11ADC01,DC1ENV11ADC02,falcon-crowdstrike-sensor-centos7,Arts-MacBook-Pro'}
+        # args = {'agent_hostname': 'DC1ENV11ADC01,DC1ENV11ADC02,falcon-crowdstrike-sensor-centos7,Arts-MacBook-Pro,WIN10X64'}
+        args = {'agent_hostname': 'falcon-crowdstrike-sensor-centos7,Arts-MacBook-Pro,WIN10X64'}
         agent_ids = argToList(args.get("agent_id", []))
         agent_ips = argToList(args.get("agent_ip", []))
         agent_hostnames = argToList(args.get("agent_hostname", []))
