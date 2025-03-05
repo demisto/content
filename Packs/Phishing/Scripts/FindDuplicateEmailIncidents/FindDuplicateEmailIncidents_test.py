@@ -200,14 +200,14 @@ def test_slightly_different_texts(mocker):
 def test_html_text(mocker):
     global RESULTS, EXISTING_INCIDENT_ID, DUP_INCIDENT_ID, text, text2
     EXISTING_INCIDENT_ID = DUP_INCIDENT_ID = None
-    html = '<!DOCTYPE html>\
+    html = f'<!DOCTYPE html>\
             <html>\
             <body>\
-            <h1>{}</h1>\
-            <p>{}</p>\
+            <h1>{text}</h1>\
+            <p>{text2}</p>\
             </body>\
             </html>\
-            '.format(text, text2)
+            '
     clean_text = f'{text}\n{text2}'
     existing_incident = create_incident(body=clean_text, emailfrom='mt.kb.user@gmail.com')
     set_existing_incidents_list([existing_incident])
