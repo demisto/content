@@ -47,6 +47,9 @@ MAP_INDICATORS = {
 
 MAP_TYPE_TO_ATTACKPATTERN_KEY = {"Actors": "threat-actors", "Malware": "malware"}
 
+DEFAULT_TIMEOUT = 60
+ENRICHMENT_TIMEOUT = 10
+
 """ CLIENT CLASS """
 
 
@@ -81,6 +84,9 @@ class MandiantClient(BaseClient):
             "Authorization": f"Bearer {self._get_token()}",
         }
         self.timeout = timeout
+        if is_time_sensitive():
+            # For reputation commands which run during an enrichment we limit the timeout
+            self.timeout = ENRICHMENT_TIMEOUT
         self.first_fetch = first_fetch
         self.limit = limit
         self.types = types
@@ -1441,7 +1447,7 @@ def main() -> None:
     api_key = params.get("api_key", "")
     secret_key = params.get("secret_key", "")
     base_url = params.get("api_base_url", "")
-    timeout = int(params.get("timeout", 60))
+    timeout = int(params.get("timeout", DEFAULT_TIMEOUT))
     tlp_color = params.get("tlp_color")
     feedTags = argToList(params.get("feedTags"))
     first_fetch = params.get("first_fetch", "3 days ago")
