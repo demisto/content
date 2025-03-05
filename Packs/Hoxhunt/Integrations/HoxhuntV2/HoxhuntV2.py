@@ -457,12 +457,6 @@ def camel_to_title(text: str) -> str:
         result.append(char)
     return ''.join(result).strip().title()
 
-# Hoxhunt GQL API expects dates in ISO format
-
-
-def format_date_to_iso_string(date: datetime | None) -> str:
-    return date.isoformat(timespec='milliseconds') + 'Z'  # type: ignore
-
 
 def create_output(results: dict[str, str], endpoint: str, key_field: str = '') -> CommandResults:
     human_readable = tableToMarkdown(name='Hoxhunt results', t=results, headerTransform=camel_to_title, removeNull=True)
@@ -508,7 +502,7 @@ def fetch_incidents(
 
     max_fetch_parsed = min(int(max_fetch), 100)
 
-    timefrom = format_date_to_iso_string(first_fetch_parsed)
+    timefrom = first_fetch_parsed.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
     last_run = demisto.getLastRun()
     start_time = last_run.get('start_time') if last_run and 'start_time' in last_run else timefrom
 
@@ -583,7 +577,7 @@ def get_remote_data_command(client: Client, args: dict, params: dict):
     incident_id = parsed_args.remote_incident_id
     last_update = parsed_args.last_update
     last_update_parsed = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})
-    last_update_utc = format_date_to_iso_string(last_update_parsed)
+    last_update_utc = last_update_parsed.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'  # type: ignore
     new_incident_data: dict = client.get_incident_by_id(incident_id, last_update_utc)
 
     if '_id' in new_incident_data:
@@ -645,7 +639,7 @@ def get_modified_remote_data_command(client: Client, args: dict, params: dict):
     remote_args = GetModifiedRemoteDataArgs(args)
     last_update = remote_args.last_update
     last_update_parsed = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})
-    last_update_utc = format_date_to_iso_string(last_update_parsed)
+    last_update_utc = last_update_parsed.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'  # type: ignore
 
     result = client.get_modified_incidents(last_update_utc)
 
@@ -748,10 +742,12 @@ def hoxhunt_send_incident_soc_feedback_command(client: Client, args: dict, param
     incident_id = args.get('incident_id')
     custom_message = args.get('custom_message')
     threat_feedback_reported_at_limit = args.get('threat_feedback_reported_at_limit')
-    threat_feedback_reported_at_limit_parsed = dateparser.parse(threat_feedback_reported_at_limit)  # type: ignore
-    date_limit = format_date_to_iso_string(threat_feedback_reported_at_limit_parsed)
 
-    response = client.send_incident_soc_feedback(incident_id, custom_message, date_limit)
+    threat_feedback_reported_at_limit_parsed = arg_to_datetime(arg=threat_feedback_reported_at_limit, is_utc=True)
+    date_limit_as_iso_string = threat_feedback_reported_at_limit_parsed.strftime(
+        '%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'  # type: ignore
+
+    response = client.send_incident_soc_feedback(incident_id, custom_message, date_limit_as_iso_string)
 
     if response.has_errors():
         raise Exception(response.errors)
