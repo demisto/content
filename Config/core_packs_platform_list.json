@@ -4,13 +4,15 @@
         "CommonPlaybooks",
         "CommonScripts",
         "Core",
-        "FiltersAndTransformers"
+        "FiltersAndTransformers",
+        "rasterize"
     ],
     "update_core_packs_list": [
         "Base",
         "CommonPlaybooks",
         "CommonScripts",
         "Core",
-        "FiltersAndTransformers"
+        "FiltersAndTransformers",
+        "rasterize"
     ]
   }
