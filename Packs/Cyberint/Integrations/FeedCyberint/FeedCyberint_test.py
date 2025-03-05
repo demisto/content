@@ -9,7 +9,7 @@ from CommonServerPython import DemistoException
 
 date_time = str(datetime.now().strftime(FeedCyberint.DATE_FORMAT))
 
-BASE_URL = "https://feed-example.com/ioc"
+BASE_URL = "https://feed-example.com"
 REQUEST_URL1 = f"{BASE_URL}{date_time}?limit=1000&offset=0"
 REQUEST_URL2 = f"{BASE_URL}{date_time}?limit=1000&offset=1000"
 REQUEST_URL3 = f"{BASE_URL}{date_time}?limit=20000&offset=0"
