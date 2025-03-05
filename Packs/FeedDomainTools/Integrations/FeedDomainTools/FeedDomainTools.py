@@ -212,6 +212,7 @@ def fetch_indicators(
                 "fields": {
                     "tags": indicator_tags,
                     "service": "DomainTools Feeds",
+                    "firstseenbysource": timestamp_
                 },
                 "rawJSON": raw_data,
             }
