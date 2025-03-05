@@ -86,7 +86,7 @@ ignore=IF113
 ignore=IF113
 
 [file:README.md]
-ignore=RM100
+ignore=RM100,RM108
 
 [file:classifier-VeeamONERESTAPI.json]
 ignore=GR103
