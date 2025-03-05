@@ -25,7 +25,7 @@ ALERT_STATUSES = {
     "OTHER",
     "SUPPRESSED",
 }
-ASSET_SEARCH_FIELDS = ((
+ASSET_SEARCH_FIELDS = (
     "endpoint_type",
     "host_id",
     "hostname",
@@ -36,7 +36,7 @@ ASSET_SEARCH_FIELDS = ((
     "os_version",
     "sensor_version",
     "username",
-))
+)
 COMMENT_TYPES = {
     "investigation",
 }
@@ -96,6 +96,7 @@ class Client(BaseClient):
     """
     Secureworks Taegis XDR Client class for implementing API logic with Taegis
     """
+
     _auth_header = {"access_token": "None"}
 
     def __init__(
@@ -298,11 +299,13 @@ def create_investigation_command(client: Client, env: str, args=None):
     if variables["input"]["status"] not in INVESTIGATION_STATUSES:
         raise ValueError(
             f"The provided status, {variables['input']['status']}, is not valid for updating an investigation. "
-            f"Supported Status Values: {INVESTIGATION_STATUSES}")
+            f"Supported Status Values: {INVESTIGATION_STATUSES}"
+        )
     if variables["input"]["type"] not in INVESTIGATION_TYPES:
         raise ValueError(
             f"The provided type, {variables['input']['type']}, is not valid for updating an investigation. "
-            f"Supported Type Values: {INVESTIGATION_TYPES}")
+            f"Supported Type Values: {INVESTIGATION_TYPES}"
+        )
     if not variables["input"]["title"]:
         raise ValueError("Title must be defined")
 
@@ -342,7 +345,8 @@ def create_sharelink_command(client: Client, env: str, args=None):
     if args["type"] not in SHARELINK_TYPES:
         raise ValueError(
             f"The provided ShareLink type, {args['type']}, is not valid for creating a ShareLink. "
-            f"Supported Type Values: {SHARELINK_TYPES}")
+            f"Supported Type Values: {SHARELINK_TYPES}"
+        )
 
     variables: dict = {
         "sharelink": {
@@ -448,7 +452,9 @@ def fetch_alerts_command(client: Client, env: str, args=None):
         "offset": arg_to_number(args.get("offset", 0)),
         "ids": args.get("ids", []),  # ["alert://id1", "alert://id2"]
     }
-    fields: str = args.get("fields") or """
+    fields: str = (
+        args.get("fields")
+        or """
         status
         reason
         alerts {
@@ -505,6 +511,7 @@ def fetch_alerts_command(client: Client, env: str, args=None):
             }
         }
     """
+    )
 
     if args.get("ids"):
         field = "alertsServiceRetrieveAlertsById"
@@ -568,7 +575,7 @@ def fetch_assets_command(client: Client, env: str, args=None):
         "pagination_input": {
             "limit": page_size,
             "offset": page_size * page,
-        }
+        },
     }
 
     # Loop over allowed search fields and add valid search options to the query variables
@@ -576,7 +583,9 @@ def fetch_assets_command(client: Client, env: str, args=None):
         if args.get(field):
             variables["input"][field] = args.get(field).strip()
 
-    fields: str = args.get("fields") or """
+    fields: str = (
+        args.get("fields")
+        or """
         id
         ingestTime
         createdAt
@@ -608,6 +617,7 @@ def fetch_assets_command(client: Client, env: str, args=None):
         hostId
         sensorId
         """
+    )
     query = """
     query searchAssetsV2($input: SearchAssetsInput!, $pagination_input: SearchAssetsPaginationInput!) {
          searchAssetsV2(input: $input, paginationInput:$pagination_input) {
@@ -644,7 +654,9 @@ def fetch_comment_command(client: Client, env: str, args=None):
     if not comment_id:
         raise ValueError("Cannot fetch comment, missing comment_id")
 
-    fields: str = args.get("fields") or """
+    fields: str = (
+        args.get("fields")
+        or """
         author_user {
             id
             family_name
@@ -659,6 +671,7 @@ def fetch_comment_command(client: Client, env: str, args=None):
         parent_id
         parent_type
         """
+    )
 
     query = """
     query comment ($comment_id: ID!) {
@@ -696,7 +709,9 @@ def fetch_comments_command(client: Client, env: str, args=None):
     if not args.get("id"):
         raise ValueError("Cannot fetch comments, missing id")
 
-    fields: str = args.get("fields") or """
+    fields: str = (
+        args.get("fields")
+        or """
         author {
             id
             family_name
@@ -709,6 +724,7 @@ def fetch_comments_command(client: Client, env: str, args=None):
         createdAt
         updatedAt
         """
+    )
 
     query = """
     query commentsV2 ($arguments: CommentsV2Arguments!) {
@@ -725,7 +741,7 @@ def fetch_comments_command(client: Client, env: str, args=None):
             "investigationId": args.get("id"),
             "page": arg_to_number(args.get("page", 0)),
             "perPage": arg_to_number(args.get("page_size", 10)),
-            "orderBy": args.get("order_direction", "DESCENDING")
+            "orderBy": args.get("order_direction", "DESCENDING"),
         }
     }
 
@@ -755,11 +771,11 @@ def fetch_endpoint_command(client: Client, env: str, args=None):
     if not args.get("id"):
         raise ValueError("Cannot fetch endpoint information, missing id")
 
-    variables: dict[str, Any] = {
-        "id": args.get("id")
-    }
+    variables: dict[str, Any] = {"id": args.get("id")}
 
-    fields: str = args.get("fields") or """
+    fields: str = (
+        args.get("fields")
+        or """
         hostId
         hostName
         actualIsolationStatus
@@ -775,6 +791,7 @@ def fetch_endpoint_command(client: Client, env: str, args=None):
         lastConnectTime
         sensorVersion
         """
+    )
 
     query = """
     query assetEndpointInfo($id: ID!) {
@@ -986,7 +1003,7 @@ def fetch_incidents(
             "orderDirection": "asc",
             "page": 0,
             "perPage": arg_to_number(max_fetch),
-            "query": f"status in ('Open', 'Active', 'Awaiting Action') AND earliest = '{start_time}'"
+            "query": f"status in ('Open', 'Active', 'Awaiting Action') AND earliest = '{start_time}'",
         }
     else:
         query = ""
@@ -998,17 +1015,22 @@ def fetch_incidents(
         raise DemistoException(f"Error when fetching incidents: {result['errors'][0]['message']}")
 
     try:
-        results = result["data"]["investigationsSearch"]["investigations"] \
-            if fetch_type == "investigations" \
+        results = (
+            result["data"]["investigationsSearch"]["investigations"]
+            if fetch_type == "investigations"
             else result["data"]["alertsServiceSearch"]["alerts"]["list"]
+        )
     except (TypeError, KeyError):
         results = []
 
     incidents = []
     for incident in results:
         # createdAfter really means createdAtOrAfter so skip the duplicate
-        created_date = incident["created_at"] if fetch_type == "investigations" else \
-            datetime.fromtimestamp(int(incident["metadata"]["created_at"]["seconds"])).strftime("%Y-%m-%d %H:%M:%S.%f")
+        created_date = (
+            incident["created_at"]
+            if fetch_type == "investigations"
+            else datetime.fromtimestamp(int(incident["metadata"]["created_at"]["seconds"])).strftime("%Y-%m-%d %H:%M:%S.%f")
+        )
         if start_time == created_date:
             continue
 
@@ -1017,16 +1039,18 @@ def fetch_incidents(
             demisto.debug(f"Skipping Archived Investigation: {incident['description']} ({incident['id']})")
             continue
 
-        incident_name: str = incident['description'] if fetch_type == "investigations" else incident['metadata']['title']
+        incident_name: str = incident["description"] if fetch_type == "investigations" else incident["metadata"]["title"]
         demisto.debug(f"Found New Incident: [{incident['id']}] {incident_name}")
 
         incident.update({"url": generate_id_url(env, fetch_type, incident["id"])})
-        incidents.append({
-            "name": incident_name,
-            "occured": created_date,
-            "dbotMirrorId": incident["id"],
-            "rawJSON": json.dumps(incident),
-        })
+        incidents.append(
+            {
+                "name": incident_name,
+                "occured": created_date,
+                "dbotMirrorId": incident["id"],
+                "rawJSON": json.dumps(incident),
+            }
+        )
 
     demisto.debug(f"Located {len(incidents)} Incidents")
 
@@ -1046,7 +1070,9 @@ def fetch_investigation_alerts_command(client: Client, env: str, args=None):
     if not investigation_id:
         raise ValueError("Cannot fetch investigation, missing investigation_id")
 
-    fields: str = args.get("fields") or """
+    fields: str = (
+        args.get("fields")
+        or """
         alerts {
             id
         }
@@ -1055,6 +1081,7 @@ def fetch_investigation_alerts_command(client: Client, env: str, args=None):
         }
         totalCount
         """
+    )
 
     query = """
     query investigationAlerts($investigation_id: ID!, $page: Int, $perPage: Int) {
@@ -1096,7 +1123,9 @@ def fetch_investigation_command(client: Client, env: str, args=None):
     variables: Dict[str, Any] = {}
     if args.get("id"):
         # alerts, assets, and assignee to be deprecated in the future
-        fields = args.get("fields") or """
+        fields = (
+            args.get("fields")
+            or """
             id
             shortId
             title
@@ -1121,6 +1150,7 @@ def fetch_investigation_command(client: Client, env: str, args=None):
             archivedAt
             tags
             """
+        )
 
         query = """
         query investigationV2($arguments: InvestigationV2Arguments!) {
@@ -1130,15 +1160,13 @@ def fetch_investigation_command(client: Client, env: str, args=None):
         }
         """ % (fields)
 
-        variables = {
-            "arguments": {
-                "id": args.get("id")
-            }
-        }
+        variables = {"arguments": {"id": args.get("id")}}
         result = client.graphql_run(query=query, variables=variables)
     else:
         # assignee {} to be deprecated in the future
-        fields = args.get("fields") or """
+        fields = (
+            args.get("fields")
+            or """
             id
             tenant_id
             description
@@ -1216,6 +1244,7 @@ def fetch_investigation_command(client: Client, env: str, args=None):
             assetsEvidence {id assetId}
             tags
             """
+        )
 
         query = """
         query investigationsSearch(
@@ -1244,13 +1273,14 @@ def fetch_investigation_command(client: Client, env: str, args=None):
             "perPage": arg_to_number(args.get("page_size", 10)),
             "query": args.get("query", "deleted_at is null"),
             "orderByField": args.get("order_by", "created_at"),
-            "orderDirection": args.get("order_direction", "desc")
+            "orderDirection": args.get("order_direction", "desc"),
         }
         result = client.graphql_run(query=query, variables=variables)
 
     try:
-        investigations = [result["data"]["investigationV2"]] if args.get("id") \
-            else result["data"]["investigationsSearch"]["investigations"]
+        investigations = (
+            [result["data"]["investigationV2"]] if args.get("id") else result["data"]["investigationsSearch"]["investigations"]
+        )
     except (KeyError, TypeError):
         investigations = []
 
@@ -1282,7 +1312,9 @@ def fetch_playbook_execution_command(client: Client, env: str, args=None):
     if not execution_id:
         raise ValueError("Cannot fetch playbook execution, missing execution id")
 
-    fields: str = args.get("fields") or """
+    fields: str = (
+        args.get("fields")
+        or """
         id
         state
         instance {
@@ -1297,6 +1329,7 @@ def fetch_playbook_execution_command(client: Client, env: str, args=None):
         executionTime
         outputs
         """
+    )
 
     query = """
     query playbookExecution($playbookExecutionId: ID!) {
@@ -1306,14 +1339,12 @@ def fetch_playbook_execution_command(client: Client, env: str, args=None):
     }
     """ % (fields)
 
-    variables = {
-        "playbookExecutionId": execution_id
-    }
+    variables = {"playbookExecutionId": execution_id}
 
     result = client.graphql_run(query=query, variables=variables)
 
     try:
-        execution = result['data']["playbookExecution"]
+        execution = result["data"]["playbookExecution"]
         execution["url"] = generate_id_url(env, "automations/playbook-executions", execution["id"])
     except (KeyError, TypeError):
         raise ValueError(f"Failed to fetch playbook execution: {result['errors'][0]['message']}")
@@ -1403,10 +1434,7 @@ def isolate_asset_command(client: Client, env: str, args=None):
     if not args.get("reason"):
         raise ValueError("Cannot isolate asset, missing reason")
 
-    variables: dict[str, Any] = {
-        "id": args.get("id"),
-        "reason": args.get("reason")
-    }
+    variables: dict[str, Any] = {"id": args.get("id"), "reason": args.get("reason")}
 
     fields: str = args.get("fields") or "id"
 
@@ -1449,7 +1477,8 @@ def update_alert_status_command(client: Client, env: str, args=None):
     if args.get("status").upper() not in ALERT_STATUSES:
         raise ValueError(
             f"The provided status, {args['status']}, is not valid for updating an alert. "
-            f"Supported Status Values: {ALERT_STATUSES}")
+            f"Supported Status Values: {ALERT_STATUSES}"
+        )
 
     variables = {
         "alert_ids": argToList(args.get("ids")),
@@ -1566,11 +1595,13 @@ def update_investigation_command(client: Client, env: str, args=None):
         if field == "status" and args.get("status") not in INVESTIGATION_STATUSES:
             raise ValueError(
                 f"The provided status, {args['status']}, is not valid for updating an investigation. "
-                f"Supported Status Values: {INVESTIGATION_STATUSES}")
+                f"Supported Status Values: {INVESTIGATION_STATUSES}"
+            )
         if field == "type" and args.get("type") not in INVESTIGATION_TYPES:
             raise ValueError(
                 f"The provided type, {args['type']}, is not valid for updating an investigation. "
-                f"Supported Type Values: {INVESTIGATION_TYPES}")
+                f"Supported Type Values: {INVESTIGATION_TYPES}"
+            )
 
         if field == "tags":
             variables["input"]["tags"] = argToList(args["tags"])
@@ -1715,7 +1746,7 @@ def test_module(client: Client) -> str:
 
 
 def generate_id_url(env: str, endpoint: str, element_id: str):
-    element_id: str = element_id.replace('/', '%2F')
+    element_id: str = element_id.replace("/", "%2F")
     return f"{ENV_URLS[env]['xdr']}/{endpoint}/{element_id}"
 
 
@@ -1724,7 +1755,7 @@ def generate_id_url(env: str, endpoint: str, element_id: str):
 
 def main():
     command = demisto.command()
-    demisto.debug(f'Running Taegis Command: {command}')
+    demisto.debug(f"Running Taegis Command: {command}")
 
     commands: dict[str, Any] = {
         "fetch-incidents": fetch_incidents,
@@ -1784,7 +1815,7 @@ def main():
                 fetch_type=PARAMS.get("fetch_type"),
                 max_fetch=PARAMS.get("max_fetch"),
                 include_assets=PARAMS.get("include_assets"),
-                first_fetch_interval=PARAMS.get('first_fetch', DEFAULT_FIRST_FETCH_INTERVAL),
+                first_fetch_interval=PARAMS.get("first_fetch", DEFAULT_FIRST_FETCH_INTERVAL),
             )
         else:
             return_results(commands[command](client=client, env=environment, args=ARGS))
