@@ -74,8 +74,7 @@ tasks:
       id: 2cbaf424-3361-4362-80bb-689834c28267
       version: -1
       name: lock-get
-      description: Get lock. If the lock is already in use - will wait until it is
-        released or until timeout is reached
+      description: Get lock. If the lock is already in use - will wait until it is released or until timeout is reached
       script: Demisto Lock|||demisto-lock-get
       type: regular
       iscommand: true
@@ -108,8 +107,7 @@ tasks:
       id: 61ac5ca5-5600-4629-8033-174fe9020f6a
       version: -1
       name: lock-get
-      description: Get lock. If the lock is already in use - will wait until it is
-        released or until timeout is reached
+      description: Get lock. If the lock is already in use - will wait until it is released or until timeout is reached
       script: Demisto Lock|||demisto-lock-get
       type: regular
       iscommand: true
@@ -700,8 +698,7 @@ tasks:
       id: 499eee07-3190-43bf-8704-ca800c2e10f5
       version: -1
       name: lock-get
-      description: Get lock. If the lock is already in use - will wait until it is
-        released or until timeout is reached
+      description: Get lock. If the lock is already in use - will wait until it is released or until timeout is reached
       script: Demisto Lock|||demisto-lock-get
       type: regular
       iscommand: true
@@ -733,8 +730,7 @@ tasks:
       id: de885218-aea6-4d0d-805a-ed0bb1edf7eb
       version: -1
       name: lock-get
-      description: Get lock. If the lock is already in use - will wait until it is
-        released or until timeout is reached
+      description: Get lock. If the lock is already in use - will wait until it is released or until timeout is reached
       script: Demisto Lock|||demisto-lock-get
       type: regular
       iscommand: true
@@ -1163,5 +1159,6 @@ outputs: []
 dirtyInputs: true
 fromversion: 5.0.0
 marketplaces:
-  - xsoar
-  - marketplacev2
+- xsoar
+- marketplacev2
+- platform

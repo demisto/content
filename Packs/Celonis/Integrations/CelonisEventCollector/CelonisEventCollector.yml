@@ -56,27 +56,27 @@ script:
   - name: celonis-get-events
     description: Retrieves a list of audit logs events from the Celonis instance.
     arguments:
-      - auto: PREDEFINED
-        defaultValue: 'false'
-        description: Set this argument to true in order to create events, otherwise it will only display them.
-        name: should_push_events
-        predefined:
-          - 'true'
-          - 'false'
-        required: true
-      - description: 'Maximum number of events to return.'
-        name: limit
-        required: true
-      - description: 'The starting date from which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS.sssZ". Example: 2025-02-04T10:33:24.647Z.'
-        name: start_date
-        required: true
-      - description: 'The date up to which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS.sssZ". Example: 2025-02-04T10:33:24.647Z.'
-        name: end_date
-        required: true
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Set this argument to true in order to create events, otherwise it will only display them.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - description: 'Maximum number of events to return.'
+      name: limit
+      required: true
+    - description: 'The starting date from which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS.sssZ". Example: 2025-02-04T10:33:24.647Z.'
+      name: start_date
+      required: true
+    - description: 'The date up to which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS.sssZ". Example: 2025-02-04T10:33:24.647Z.'
+      name: end_date
+      required: true
     outputs:
-      - contextPath: Celonis.Audit
-        description: The list of audit logs events.
-        type: List
+    - contextPath: Celonis.Audit
+      description: The list of audit logs events.
+      type: List
   isfetch: false
   runonce: false
   script: '-'
@@ -87,5 +87,6 @@ script:
 fromversion: 6.10.0
 marketplaces:
 - marketplacev2
+- platform
 tests:
 - No tests (auto formatted)
