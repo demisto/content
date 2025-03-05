@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c4635b7f-f38e-4bc6-86a8-3c2d97a3de54
+    taskid: b06edf17-c8a4-46b0-888a-3ae786e01ac9
     type: start
     task:
-      id: c4635b7f-f38e-4bc6-86a8-3c2d97a3de54
+      id: b06edf17-c8a4-46b0-888a-3ae786e01ac9
       version: -1
       name: ""
       iscommand: false
@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: ae7a829d-e63e-4295-8318-840cf0234c22
+    taskid: 6a65e4c1-bf49-49e1-8020-fe55fdb0dee5
     type: regular
     task:
-      id: ae7a829d-e63e-4295-8318-840cf0234c22
+      id: 6a65e4c1-bf49-49e1-8020-fe55fdb0dee5
       version: -1
       name: Delete Context
       description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
@@ -57,8 +57,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 200
+          "x": 50,
+          "y": 210
         }
       }
     note: false
@@ -70,10 +70,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 126d8d83-c66c-4891-8677-ec72843283fe
+    taskid: 04ec74a7-575f-4dd2-8636-72fbb7732525
     type: regular
     task:
-      id: 126d8d83-c66c-4891-8677-ec72843283fe
+      id: 04ec74a7-575f-4dd2-8636-72fbb7732525
       version: -1
       name: cybelangel-report-list
       description: Retrieve reports from CybelAngel.
@@ -94,7 +94,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 380
         }
       }
@@ -107,10 +107,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: d8c591b8-2b81-450a-8275-5b1fa6ea6fdc
+    taskid: baacd301-2673-4659-8995-c67abb1bb7bf
     type: condition
     task:
-      id: d8c591b8-2b81-450a-8275-5b1fa6ea6fdc
+      id: baacd301-2673-4659-8995-c67abb1bb7bf
       version: -1
       name: Verify Output
       type: condition
@@ -134,8 +134,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 560
+          "x": 50,
+          "y": 550
         }
       }
     note: false
@@ -147,10 +147,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: a163318b-4a43-4f5c-880f-cda5fa83a397
+    taskid: c9ffe441-8902-432e-8dc5-0aaead0263d8
     type: regular
     task:
-      id: a163318b-4a43-4f5c-880f-cda5fa83a397
+      id: c9ffe441-8902-432e-8dc5-0aaead0263d8
       version: -1
       name: cybelangel-report-get
       description: Retrieve reports from CybelAngel.
@@ -169,8 +169,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 760
+          "x": 195.25,
+          "y": 720
         }
       }
     note: false
@@ -182,10 +182,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 428ec210-30ab-48db-8dc9-9834f11992aa
+    taskid: f1a03d5b-5e0a-42bb-8bca-8d97cc5ff599
     type: condition
     task:
-      id: 428ec210-30ab-48db-8dc9-9834f11992aa
+      id: f1a03d5b-5e0a-42bb-8bca-8d97cc5ff599
       version: -1
       name: Verify Output
       type: condition
@@ -193,7 +193,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "7"
+      - "9"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -214,93 +214,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 930
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
-    taskid: 8b52edfe-67f3-425d-8622-23e8e08739d5
-    type: regular
-    task:
-      id: 8b52edfe-67f3-425d-8622-23e8e08739d5
-      version: -1
-      name: scybelangel-report-get To PDF
-      description: Retrieve reports from CybelAngel.
-      script: '|||cybelangel-report-get'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#error#':
-      - "9"
-      '#none#':
-      - "8"
-    scriptarguments:
-      pdf:
-        simple: "True"
-      report_id:
-        simple: ${CybelAngel.Report.[0].id}
-      retry-count:
-        simple: "1"
-      retry-interval:
-        simple: "1"
-    separatecontext: false
-    continueonerror: true
-    continueonerrortype: errorPath
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1100
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: 5a6ddd6c-491c-404c-87b3-6ca5ce904868
-    type: condition
-    task:
-      id: 5a6ddd6c-491c-404c-87b3-6ca5ce904868
-      version: -1
-      name: Verify Output
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "9"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: endWith
-          left:
-            value:
-              simple: ${InfoFile.Name}
-            iscontext: true
-          right:
-            value:
-              simple: .pdf
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1270
+          "x": 195.25,
+          "y": 890
         }
       }
     note: false
@@ -312,10 +227,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 4e6e5af4-2f0d-4be0-82d1-0c609efa07fe
+    taskid: ae93196d-14e0-4071-870d-df3c8642a382
     type: regular
     task:
-      id: 4e6e5af4-2f0d-4be0-82d1-0c609efa07fe
+      id: ae93196d-14e0-4071-870d-df3c8642a382
       version: -1
       name: cybelangel-mirror-report-get
       description: Retrieve mirror details for a report.
@@ -335,8 +250,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1440
+          "x": 195.25,
+          "y": 1060
         }
       }
     note: false
@@ -348,10 +263,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 8f8dd7c0-425a-4155-8cd0-fa134c493bfd
+    taskid: 3e022f81-b97a-4d42-8e8a-b15a5838bfd9
     type: condition
     task:
-      id: 8f8dd7c0-425a-4155-8cd0-fa134c493bfd
+      id: 3e022f81-b97a-4d42-8e8a-b15a5838bfd9
       version: -1
       name: Verify Output
       type: condition
@@ -375,8 +290,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1600
+          "x": 195.25,
+          "y": 1230
         }
       }
     note: false
@@ -388,10 +303,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 53981ecf-793e-4028-8348-6e675a232ed9
+    taskid: dce82288-8f31-4a3b-8fec-3c662c8a0f12
     type: regular
     task:
-      id: 53981ecf-793e-4028-8348-6e675a232ed9
+      id: dce82288-8f31-4a3b-8fec-3c662c8a0f12
       version: -1
       name: cybelangel-mirror-report-get To CSV
       description: Retrieve mirror details for a report.
@@ -412,8 +327,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1770
+          "x": 340.5,
+          "y": 1400
         }
       }
     note: false
@@ -425,10 +340,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 8fe82792-0604-4519-8ac3-f710ee1c52d3
+    taskid: 7c074d07-a86a-4eb2-8690-97288be318df
     type: condition
     task:
-      id: 8fe82792-0604-4519-8ac3-f710ee1c52d3
+      id: 7c074d07-a86a-4eb2-8690-97288be318df
       version: -1
       name: Verify Output
       type: condition
@@ -453,8 +368,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1940
+          "x": 340.5,
+          "y": 1570
         }
       }
     note: false
@@ -466,10 +381,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: feaf7895-4667-4c78-8731-ea953fb82a0e
+    taskid: 9ec7fe82-0eb5-42b9-8442-c31a945cdd28
     type: regular
     task:
-      id: feaf7895-4667-4c78-8731-ea953fb82a0e
+      id: 9ec7fe82-0eb5-42b9-8442-c31a945cdd28
       version: -1
       name: cybelangel-archive-report-by-id-get
       description: Retrieve an archived report by ID.
@@ -488,8 +403,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2120
+          "x": 340.5,
+          "y": 1740
         }
       }
     note: false
@@ -501,10 +416,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: d6d11400-9991-443b-81fe-8310fc3ce270
+    taskid: 8e9d5a63-a906-46b8-8c77-317bad1cacc7
     type: condition
     task:
-      id: d6d11400-9991-443b-81fe-8310fc3ce270
+      id: 8e9d5a63-a906-46b8-8c77-317bad1cacc7
       version: -1
       name: Verify Output
       type: condition
@@ -529,8 +444,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2300
+          "x": 340.5,
+          "y": 1910
         }
       }
     note: false
@@ -542,10 +457,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: e971fd10-87a8-4c42-8795-ab20c632a1cb
+    taskid: 27072099-eb70-4102-8d5a-e8e6d44cb91e
     type: regular
     task:
-      id: e971fd10-87a8-4c42-8795-ab20c632a1cb
+      id: 27072099-eb70-4102-8d5a-e8e6d44cb91e
       version: -1
       name: cybelangel-report-status-update
       description: Update the status of one or multiple reports.
@@ -566,8 +481,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2530
+          "x": 195.25,
+          "y": 2080
         }
       }
     note: false
@@ -579,10 +494,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 838503f6-b7b8-4f33-88ba-e53f613fbb7f
+    taskid: 35e4569b-a96f-4168-8890-582e83723c08
     type: regular
     task:
-      id: 838503f6-b7b8-4f33-88ba-e53f613fbb7f
+      id: 35e4569b-a96f-4168-8890-582e83723c08
       version: -1
       name: get prev report info
       description: Retrieve reports from CybelAngel.
@@ -601,8 +516,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2740
+          "x": 195.25,
+          "y": 2250
         }
       }
     note: false
@@ -614,10 +529,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 40a55b02-2ad7-41f8-8cc6-f1b9b8a86d9e
+    taskid: 5344a0cb-3659-43e3-87ba-29044db2b393
     type: condition
     task:
-      id: 40a55b02-2ad7-41f8-8cc6-f1b9b8a86d9e
+      id: 5344a0cb-3659-43e3-87ba-29044db2b393
       version: -1
       name: Verify Output (Update status)
       type: condition
@@ -642,8 +557,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2930
+          "x": 195.25,
+          "y": 2420
         }
       }
     note: false
@@ -655,10 +570,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: cb844262-369a-43e9-883f-8e1e974ef1aa
+    taskid: cbc928c8-1f68-48e4-8ca9-1039552e085d
     type: regular
     task:
-      id: cb844262-369a-43e9-883f-8e1e974ef1aa
+      id: cbc928c8-1f68-48e4-8ca9-1039552e085d
       version: -1
       name: cybelangel-report-comments-get
       description: Retrieve comments from a report.
@@ -677,8 +592,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 3160
+          "x": 195.25,
+          "y": 2590
         }
       }
     note: false
@@ -690,10 +605,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 877557e2-7a1f-48ef-8b31-42b9175b0136
+    taskid: 66f1864b-dbcf-4608-8075-1f7086ecf7a7
     type: condition
     task:
-      id: 877557e2-7a1f-48ef-8b31-42b9175b0136
+      id: 66f1864b-dbcf-4608-8075-1f7086ecf7a7
       version: -1
       name: Verify Output
       type: condition
@@ -717,8 +632,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 3360
+          "x": 195.25,
+          "y": 2760
         }
       }
     note: false
@@ -730,10 +645,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: be838d99-a686-4924-8a98-bdad12947be8
+    taskid: 7b119ae4-d4f5-478a-838e-0f44c3ec58ef
     type: regular
     task:
-      id: be838d99-a686-4924-8a98-bdad12947be8
+      id: 7b119ae4-d4f5-478a-838e-0f44c3ec58ef
       version: -1
       name: cybelangel-report-comment-create
       description: Create a new comment on a report.
@@ -754,8 +669,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 3580
+          "x": 195.25,
+          "y": 2930
         }
       }
     note: false
@@ -767,10 +682,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: fb005837-fc55-4373-8046-60b86d5240e4
+    taskid: 026d8465-dc23-4b7e-85d3-6d12df7a0798
     type: condition
     task:
-      id: fb005837-fc55-4373-8046-60b86d5240e4
+      id: 026d8465-dc23-4b7e-85d3-6d12df7a0798
       version: -1
       name: Verify Output
       type: condition
@@ -792,8 +707,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 3750
+          "x": 195.25,
+          "y": 3100
         }
       }
     note: false
@@ -805,10 +720,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 5dd694cf-835f-432c-8fba-a9c9262c9eb2
+    taskid: 8d5f1a9f-f87b-4521-899d-6321bd96c2a0
     type: regular
     task:
-      id: 5dd694cf-835f-432c-8fba-a9c9262c9eb2
+      id: 8d5f1a9f-f87b-4521-899d-6321bd96c2a0
       version: -1
       name: cybelangel-report-attachment-get
       description: Retrieve an attachment from a report.
@@ -832,8 +747,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 3970
+          "x": 195.25,
+          "y": 3270
         }
       }
     note: false
@@ -845,10 +760,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: c0e2a078-413d-43c7-8822-18067d178dde
+    taskid: fb910c95-fb16-42d5-88c0-46779e01a84c
     type: condition
     task:
-      id: c0e2a078-413d-43c7-8822-18067d178dde
+      id: fb910c95-fb16-42d5-88c0-46779e01a84c
       version: -1
       name: Untitled Task
       type: condition
@@ -873,8 +788,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 4150
+          "x": 340.5,
+          "y": 3440
         }
       }
     note: false
@@ -886,10 +801,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 750ad957-a53a-4206-810b-956c96e16405
+    taskid: 71df963c-9002-4647-8131-151b13232682
     type: regular
     task:
-      id: 750ad957-a53a-4206-810b-956c96e16405
+      id: 71df963c-9002-4647-8131-151b13232682
       version: -1
       name: cybelangel-report-remediation-request-create
       description: Create a remediation request for a report.
@@ -912,8 +827,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 4330
+          "x": 195.25,
+          "y": 3610
         }
       }
     note: false
@@ -925,10 +840,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: bc7fe652-4007-493a-8889-b1ab83394748
+    taskid: 3eece8c2-cb76-4d89-8135-a44cf2e96a5a
     type: condition
     task:
-      id: bc7fe652-4007-493a-8889-b1ab83394748
+      id: 3eece8c2-cb76-4d89-8135-a44cf2e96a5a
       version: -1
       name: Untitled Task
       type: condition
@@ -952,8 +867,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 4500
+          "x": 195.25,
+          "y": 3780
         }
       }
     note: false
@@ -965,22 +880,23 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: e6a940d6-7b6f-481a-832a-1bce381b4c21
+    taskid: bb45084c-8141-45a5-8bbf-ceff78114fa3
     type: title
     task:
-      id: e6a940d6-7b6f-481a-832a-1bce381b4c21
+      id: bb45084c-8141-45a5-8bbf-ceff78114fa3
       version: -1
       name: End Playbook
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 4830
+          "x": 50,
+          "y": 3950
         }
       }
     note: false
@@ -997,9 +913,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4845,
-        "width": 680,
-        "x": 450,
+        "height": 3960,
+        "width": 671.5,
+        "x": 50,
         "y": 50
       }
     }
@@ -1008,4 +924,4 @@ inputs: []
 outputs: []
 quiet: true
 fromversion: 6.10.0
-description: ''
+description: test playbook for testing cybelangel integration commands
