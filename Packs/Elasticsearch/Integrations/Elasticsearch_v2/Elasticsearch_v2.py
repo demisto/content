@@ -103,6 +103,7 @@ def convert_date_to_timestamp(date):
     Returns:
         (num | str): The formatted timestamp
     """
+    demisto.debug(f'Converting date to timestamp: {date}')
     # this theoretically shouldn't happen but just in case
     if str(date).isdigit():
         return int(date)
@@ -161,6 +162,7 @@ def elasticsearch_builder(proxies):
         "verify_certs": INSECURE,
         "timeout": TIMEOUT,
     }
+    demisto.debug(f'Building Elasticsearch client with args: {connection_args}')
     if ELASTIC_SEARCH_CLIENT != ELASTICSEARCH_V8:
         # Adding the proxy related parameters to the Elasticsearch client v7 and below or OpenSearch (BC)
         connection_args["connection_class"] = RequestsHttpConnection  # type: ignore[assignment]
@@ -185,10 +187,7 @@ def elasticsearch_builder(proxies):
             connection_args["http_auth"] = (USERNAME, PASSWORD)
 
     es = Elasticsearch(**connection_args)  # type: ignore[arg-type]
-    # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
-    if API_KEY_ID and hasattr(es, 'transport'):
-        es.transport.get_connection().session.headers['authorization'] = get_api_key_header_val(  # type: ignore[attr-defined]
-            API_KEY)
+    demisto.debug(f'Elasticsearch client built with connection args: {connection_args}')
 
     return es
 
@@ -317,6 +316,7 @@ def search_command(proxies):
         time_range_dict = get_time_range(time_range_start=timestamp_range_start, time_range_end=timestamp_range_end,
                                          time_field=timestamp_field,
                                          )
+    demisto.debug(f'Executing search with index={index}, query={query}, query_dsl={query_dsl}')
 
     if query_dsl:
         response = execute_raw_query(es, query_dsl, index, size, base_page)
@@ -345,6 +345,7 @@ def search_command(proxies):
             # maintain BC by using the ES client directly (avoid using the elasticsearch_dsl library here)
             response = es.search(index=search._index, body=search.to_dict(), **search._params)
 
+    demisto.debug(f'Search response: {response}')
     total_dict, total_results = get_total_results(response)
     search_context, meta_headers, hit_tables, hit_headers = results_to_context(index, query_dsl or query, base_page,
                                                                                size, total_dict, response)
@@ -396,6 +397,7 @@ def test_query_to_fetch_incident_index(es):
             # maintain BC by using the ES client directly (avoid using the elasticsearch_dsl library here)
             response = es.search(index=search._index, body=search.to_dict(), **search._params)
 
+        demisto.debug(f'Test query to fetch incident index response: {response}')
         _, total_results = get_total_results(response)
 
     except NotFoundError as e:
@@ -419,6 +421,7 @@ def test_general_query(es):
             # maintain BC by using the ES client directly (avoid using the elasticsearch_dsl library here)
             response = es.search(index=search._index, body=search.to_dict(), **search._params)
 
+        demisto.debug(f'Test general query response: {response}')
         get_total_results(response)
 
     except NotFoundError as e:
@@ -448,6 +451,7 @@ def test_time_field_query(es):
         # maintain BC by using the ES client directly (avoid using the elasticsearch_dsl library here)
         response = es.search(index=search._index, body=search.to_dict(), **search._params)
 
+    demisto.debug(f'Test time field query response: {response}')
     _, total_results = get_total_results(response)
 
     if total_results == 0:
@@ -480,6 +484,7 @@ def test_fetch_query(es):
         # maintain BC by using the ES client directly (avoid using the elasticsearch_dsl library here)
         response = es.search(index=search._index, body=search.to_dict(), **search._params)
 
+    demisto.debug(f'Test fetch query response: {response}')
     _, total_results = get_total_results(response)
 
     if total_results > 0:
@@ -627,6 +632,7 @@ def integration_health_check(proxies):
             source = response.get('hits', {}).get('hits')[0].get('_source', {})
             hit_date = str(get_value_by_dot_notation(source, str(TIME_FIELD)))
 
+            demisto.debug(f'Hit date received: {hit_date}')
             # if not a timestamp test the conversion to datetime object
             if 'Timestamp' not in TIME_METHOD:
                 parse(str(hit_date))
@@ -807,6 +813,7 @@ def get_time_range(last_fetch: Union[str, None] = None, time_range_start=FETCH_T
     else:
         start_time = last_fetch
 
+    demisto.debug(f'Time range start time: {start_time}')
     if start_time:
         range_dict['gt'] = start_time
 
@@ -818,6 +825,7 @@ def get_time_range(last_fetch: Union[str, None] = None, time_range_start=FETCH_T
     if TIME_METHOD == 'Simple-Date':
         range_dict['format'] = ES_DEFAULT_DATETIME_FORMAT
 
+    demisto.debug(f'Time range dictionary created: {range_dict}')
     return {'range': {time_field: range_dict}}
 
 
@@ -825,7 +833,7 @@ def execute_raw_query(es, raw_query, index=None, size=None, page=None):
     try:
         raw_query = json.loads(raw_query)
         if raw_query.get('query'):
-            demisto.debug('query provided already has a query field. Sending as is')
+            demisto.debug('Query provided already has a query field. Sending as is.')
             body = raw_query
         else:
             body = {'query': raw_query}
@@ -844,6 +852,7 @@ def execute_raw_query(es, raw_query, index=None, size=None, page=None):
     else:  # Elasticsearch v7 and below or OpenSearch
         response = es.search(index=requested_index, body=body, size=size, from_=page)
 
+    demisto.debug(f'Raw query response: {response}')
     return response
 
 
@@ -869,6 +878,7 @@ def fetch_incidents(proxies):
             # maintain BC by using the ES client directly (avoid using the elasticsearch_dsl library here)
             response = es.search(index=search._index, body=search.to_dict(), **search._params)
 
+    demisto.debug(f'Fetch incidents response: {response}')
     _, total_results = get_total_results(response)
 
     incidents = []  # type: List
@@ -882,7 +892,7 @@ def fetch_incidents(proxies):
             incidents, last_fetch = results_to_incidents_datetime(response, last_fetch or FETCH_TIME)
             demisto.setLastRun({'time': str(last_fetch)})
 
-        demisto.info(f'extracted {len(incidents)} incidents')
+        demisto.info(f'Extracted {len(incidents)} incidents.')
     demisto.incidents(incidents)
 
 
@@ -942,7 +952,6 @@ def get_mapping_fields_command():
 
     return elastic_mapping
 
-
 def build_eql_body(query, fields, size, tiebreaker_field, timestamp_field, event_category_field, filter):
     body = {}
     if query is not None:
@@ -977,6 +986,7 @@ def search_eql_command(args, proxies):
                           timestamp_field=timestamp_field, event_category_field=event_category_field,
                           filter=query_filter)
 
+    demisto.debug(f'EQL search body: {body}')
     response = es.eql.search(index=index, body=body)
 
     total_dict, _ = get_total_results(response)
@@ -1003,6 +1013,7 @@ def index_document(args, proxies):
     doc_id = args.get('id', '')
     es = elasticsearch_builder(proxies)
 
+    demisto.debug(f'Indexing document in index {index} with ID {doc_id}')
     if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
         if doc_id:
             response = es.index(index=index, id=doc_id, document=doc)  # pylint: disable=E1123,E1120
@@ -1016,6 +1027,7 @@ def index_document(args, proxies):
         else:
             response = es.index(index=index, body=doc)
 
+    demisto.debug(f'Index document response: {response}')
     return response
 
 
@@ -1081,6 +1093,7 @@ def get_indices_statistics_command(args, proxies):
     indices = []
     es = elasticsearch_builder(proxies)
 
+    demisto.debug('Retrieving indices statistics')
     # Fetch the statistics for all indices
     raw_indices_data = get_indices_statistics(es)
     for index, index_data in raw_indices_data.items():
@@ -1142,8 +1155,9 @@ def main():  # pragma: no cover
                          f'distribution, Please try using the Open Search client in the instance configuration.'
                          f'\nError message: {str(e)}', error=str(e))
         if 'failed to parse date field' in str(e):
-            return_error(f'Failed to execute the {demisto.command()} command. Make sure the `Time field type` is correctly set.',
-                         error=str(e))
+            return_error(
+                f'Failed to execute the {demisto.command()} command. Make sure the `Time field type` is correctly set.',
+                error=str(e))
         return_error(f"Failed executing {demisto.command()}.\nError message: {e}", error=str(e))
 
 
