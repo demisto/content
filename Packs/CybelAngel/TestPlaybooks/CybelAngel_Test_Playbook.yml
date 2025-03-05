@@ -239,6 +239,8 @@ tasks:
       iscommand: true
       brand: ""
     nexttasks:
+      '#error#':
+      - "9"
       '#none#':
       - "8"
     scriptarguments:
@@ -246,8 +248,13 @@ tasks:
         simple: "True"
       report_id:
         simple: ${CybelAngel.Report.[0].id}
+      retry-count:
+        simple: "1"
+      retry-interval:
+        simple: "1"
     separatecontext: false
-    continueonerrortype: ""
+    continueonerror: true
+    continueonerrortype: errorPath
     view: |-
       {
         "position": {
