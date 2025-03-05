@@ -289,6 +289,8 @@ repos:
     - --config-path=validation_config.toml
     - --ignore=DO106
     - --ignore=CJ105
+    - --ignore=BA103
+    - --ignore=ST111
     pass_filenames: false
     language: system
     require_serial: true
