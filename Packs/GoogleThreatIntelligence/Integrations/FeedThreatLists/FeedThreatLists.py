@@ -184,7 +184,7 @@ def _get_indicator_type(item: dict):
     raise ValueError(f'Unknown type: {item.get("type")}. ID: {item.get("id")}')
 
 
-def _get_indicator_id(item: dict) -> str:
+def _get_indicator_id(item: dict):
     """Gets indicator ID."""
     if item.get('type') == 'url':
         return item.get('attributes', {}).get('url') or item.get('id')
