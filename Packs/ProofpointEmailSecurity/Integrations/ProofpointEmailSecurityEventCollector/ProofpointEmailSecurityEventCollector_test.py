@@ -83,7 +83,7 @@ def test_fetch_events(mocker, connection):
 
     # We set fetch_interval to 7 to get this first two events (as we "wait" 4 seconds between each event)
     fetch_interval = 7
-    event_connection = EventConnection(event_type=EventType.MESSAGE, connection=connection)
+    event_connection = EventConnection(event_type=EventType.MESSAGE, connection=connection, url="wss://testing", headers={})
     mocker.patch.object(ProofpointEmailSecurityEventCollector, "is_interval_passed", side_effect=is_interval_passed)
     debug_logs = mocker.patch.object(demisto, "debug")
     events = fetch_events(connection=event_connection, fetch_interval=fetch_interval)
@@ -174,16 +174,16 @@ def test_handle_failures_of_send_events(mocker, capfd):
     mocker.patch.object(ProofpointEmailSecurityEventCollector, "fetch_events", side_effect=fetch_events_mock)
     mocker.patch.object(ProofpointEmailSecurityEventCollector, "send_events_to_xsiam", side_effect=sends_events_to_xsiam_mock)
     with capfd.disabled():
-        perform_long_running_loop([EventConnection(EventType.MESSAGE, MockConnection()),
-                                   EventConnection(EventType.MAILLOG, MockConnection())], 60)
+        perform_long_running_loop([EventConnection(EventType.MESSAGE, MockConnection(), url="wss://test", headers={}),
+                                   EventConnection(EventType.MAILLOG, MockConnection(), url="wss://test", headers={})], 60)
     context = demisto.getIntegrationContext()
     assert context[EventType.MESSAGE] == EVENTS[:2]
     assert context[EventType.MAILLOG] == EVENTS[2:]
 
     second_try_send_events_mock = mocker.patch.object(ProofpointEmailSecurityEventCollector, "send_events_to_xsiam")
     with capfd.disabled():
-        perform_long_running_loop([EventConnection(EventType.MESSAGE, MockConnection()),
-                                   EventConnection(EventType.MAILLOG, MockConnection())], 60)
+        perform_long_running_loop([EventConnection(EventType.MESSAGE, MockConnection(), url="wss://test", headers={}),
+                                   EventConnection(EventType.MAILLOG, MockConnection(), url="wss://test", headers={})], 60)
     context = demisto.getIntegrationContext()
     # check the the context is cleared
     for event in EVENTS:
