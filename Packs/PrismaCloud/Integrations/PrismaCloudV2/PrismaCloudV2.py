@@ -780,8 +780,13 @@ def filter_alerts(client: Client, fetched_ids: Dict[str, int], response_items: L
     incidents = []
 
     for alert in response_items:
-        if alert.get('id') in fetched_ids:
-            demisto.debug(f'Fetched {alert.get("id")} already. Skipping it now.')
+        alert_id = alert.get('id')
+        if alert_id in fetched_ids:
+            demisto.debug(f'Alert {alert_id} already fetched. Skipping.')
+            # Update alert time if it has changed (patch for unexpected Prisma Cloud behavior)
+            if fetched_ids[alert_id] != alert['alertTime']:
+                fetched_ids[alert_id] = alert['alertTime']
+                demisto.debug("Overwriting alert time in lookback. This is a patch for an unexpected behavior in Prisma Cloud.")
             continue
 
         demisto.debug(f'Processing new fetched alert {alert.get("id")}.')
