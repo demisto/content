@@ -9,11 +9,11 @@ configuration:
   required: true
   type: 0
 - display: API Key
-  displaypassword: API Key
-  hiddenusername: true
   name: api_key
   required: true
   type: 9
+  displaypassword: API Key
+  hiddenusername: true
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
@@ -724,7 +724,7 @@ script:
     - contextPath: Rapid7AppSec.EngineGroup.description
       description: Description about the engine group.
       type: String
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   feed: false
   isfetch: false
   longRunning: false
