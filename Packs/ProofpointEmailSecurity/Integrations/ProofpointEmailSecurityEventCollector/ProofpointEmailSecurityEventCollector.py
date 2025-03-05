@@ -80,7 +80,7 @@ class EventConnection:
                 demisto.info(f"[{self.event_type}] Sent heartbeat pong")
                 time.sleep(self.idle_timeout)
             except exceptions.ConnectionClosedError as e:
-                demisto.warning(f"[{self.event_type}] Connection closed error in heartbeat: {str(e)}")
+                demisto.error(f"[{self.event_type}] Connection closed error in heartbeat: {str(e)}")
                 self.reconnect()
             except Exception as e:
                 demisto.error(f"[{self.event_type}] Unexpected error in heartbeat: {str(e)} {traceback.format_exc()}")
@@ -285,6 +285,7 @@ def main():  # pragma: no cover
 
     try:
         if command == "long-running-execution":
+            demisto.info("TESTSTRING")
             return_results(long_running_execution_command(host, cluster_id, api_key, fetch_interval))
         elif command == "test-module":
             return_results(test_module(host, cluster_id, api_key))
