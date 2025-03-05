@@ -15,8 +15,10 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "dependencies": {},
-    "displayedImages": []
+    "displayedImages": [],
+    "supportedModules": []
 }

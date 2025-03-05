@@ -1,13 +1,8 @@
 id: File Reputation
 version: -1
 name: File Reputation
-"marketplaces": [
-    "marketplacev2"
-]
-description: "This playbook checks the file reputation and sets the verdict as a new\
-  \ context key.\n\nThe verdict is composed by 3 main components:\n\n* VirusTotal\
-  \ detection rate\n* Digital certificate signers\n* NSRL DB\n\nNote: a user can provide\
-  \ a list of trusted signers of his own using the playbook inputs\n "
+"marketplaces": ["marketplacev2", "platform"]
+description: "This playbook checks the file reputation and sets the verdict as a new context key.\n\nThe verdict is composed by 3 main components:\n\n* VirusTotal detection rate\n* Digital certificate signers\n* NSRL DB\n\nNote: a user can provide a list of trusted signers of his own using the playbook inputs\n "
 starttaskid: "0"
 tasks:
   "0":
@@ -259,8 +254,7 @@ tasks:
       id: 83169b11-c3c4-452c-8a9b-e8cbb65740ce
       version: -1
       name: Parse HTTP response body
-      description: 'Parse a given JSON string "value" to a representative object.
-        Example: ''{"a": "value"}'' => {"a": "value"}.'
+      description: 'Parse a given JSON string "value" to a representative object. Example: ''{"a": "value"}'' => {"a": "value"}.'
       scriptName: ParseJSON
       type: regular
       iscommand: false
