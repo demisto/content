@@ -18,6 +18,5 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "ProofpointThreatResponseEventCollector",
-    "supportedModules": []
+    "defaultDataSource": "ProofpointThreatResponseEventCollector"
 }

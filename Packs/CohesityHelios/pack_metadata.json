@@ -28,6 +28,5 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "Cohesity Helios Event Collector",
-    "supportedModules": []
+    "defaultDataSource": "Cohesity Helios Event Collector"
 }

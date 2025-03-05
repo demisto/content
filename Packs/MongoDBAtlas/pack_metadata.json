@@ -24,6 +24,5 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "MongoDBAtlasEventCollector",
-    "supportedModules": []
+    "defaultDataSource": "MongoDBAtlasEventCollector"
 }
