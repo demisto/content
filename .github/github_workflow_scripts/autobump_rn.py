@@ -36,7 +36,7 @@ PR_COMMENT = "- **{}** pack version was bumped to **{}**.\n"
 COMMIT_MESSAGE = "Bump pack from version {} to {}."
 MERGE_FROM_MASTER_COMMIT_MESSAGE = f"Merged {BASE} into current branch."
 PACKS_DIR = "Packs"
-NOT_UPDATE_RN_LABEL = "ignore-auto-bump-version"
+NOT_UPDATE_RN_LABEL = "ignore-auto-bumasdasdp-version"
 PR_COMMENT_STOP_AUTOMATION = f"\nTo stop automatic version bumps, add the `{NOT_UPDATE_RN_LABEL}` " \
                              f"label to the github PR.\n"
 
