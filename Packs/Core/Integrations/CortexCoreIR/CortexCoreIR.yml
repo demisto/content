@@ -219,7 +219,7 @@ script:
       - 'false'
     description: Isolates the specified endpoint.
     execution: true
-    name: core-isolate-endpoint-ia
+    name: core-isolate-endpoint-quick-action
     prettyname: Isolate Endpoint
     quickaction: true
     hidden: true
@@ -1078,7 +1078,7 @@ script:
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
     description: Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
-    name: core-quarantine-files-ia
+    name: core-quarantine-files-quick-action
     prettyname: Quarantine File
     quickaction: true
     hidden: true
@@ -1191,7 +1191,7 @@ script:
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
     description: Restores a quarantined file on requested endpoints.
-    name: core-restore-file-ia
+    name: core-restore-file-quick-action
     prettyname: Restore File From Quarantine
     quickaction: true
     hidden: true
@@ -1386,7 +1386,7 @@ script:
       name: timeout_in_seconds
     description: Runs a scan on a selected endpoint. To scan all endpoints, run this command with argument all=true. Note that scanning all the endpoints may cause performance issues and latency.
     execution: true
-    name: core-endpoint-scan-ia
+    name: core-endpoint-scan-quick-action
     prettyname: Run Malware Scan
     quickaction: true
     hidden: true
@@ -1777,7 +1777,7 @@ script:
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
     description: Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the core-action-status-get command with returned action_id, to check the action status.
-    name: core-retrieve-files-ia
+    name: core-retrieve-files-quick-action
     prettyname: Retrieve File
     quickaction: true
     hidden: true
@@ -3708,7 +3708,7 @@ script:
       description: Is the command being called from a core pack.
       defaultValue: true
     description: Initiates a new endpoint script execution action using a script from the script library and returns the results.
-    name: core-script-run-ia
+    name: core-script-run-quick-action
     prettyname: Run Endpoint Script
     quickaction: true
     hidden: true
@@ -3920,7 +3920,7 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    name: core-terminate-causality-ia
+    name: core-terminate-causality-quick-action
     prettyname: Terminate CGO
     quickaction: true
     hidden: true
