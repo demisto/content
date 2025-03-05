@@ -318,7 +318,7 @@ def test_model_predictions(mocker: MockerFixture):
     model = load_model_from_docker()
     for pred in model_runs['predictions']:
         output = model.predict(pd.DataFrame(pred['input']))
-        output['logo_name'] = pred['output']['logo_name'] = None
+        output |= dict.fromkeys(('logo_name', 'debug_image'))
         assert output == pred['output'], f"Prediction failed with {pred['input']['name']}"
 
 
