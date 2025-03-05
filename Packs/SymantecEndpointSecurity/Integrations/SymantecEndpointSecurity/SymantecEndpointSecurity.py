@@ -13,6 +13,7 @@ PRODUCT = "endpoint_security"
 DEFAULT_CONNECTION_TIMEOUT = 30
 MAX_CHUNK_SIZE_TO_READ = 1024 * 1024 * 100  # 150 MB
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+DATE_FORMAT_2 = "%Y-%m-%dT%H:%M:%S.%fZ"
 DELIMITER = b"\n"
 MAX_EVENTS_PER_PUSH_XSIAM = 1000
 MAX_FETCH_FAILURES_ALLOWED = 5
@@ -355,16 +356,18 @@ def filter_duplicate_events(
 
     filtered_events: list[dict[str, str]] = []
 
+    demisto.debug("before filtering loop 1")
     for event in events:
         if not is_duplicate(
             event["uuid"],
-            datetime.strptime(normalize_date_format(event["log_time"]), DATE_FORMAT),
+            datetime.strptime(event["log_time"], DATE_FORMAT_2),
             latest_event_time,
             events_suspected_duplicates,
         ):
             event["_time"] = event["time"]
             filtered_events.append(event)
-        counter.uuid = event["uuid"]
+
+    demisto.debug("after filtering loop 1")
 
     return filtered_events
 
@@ -454,9 +457,9 @@ def get_events_command(client: Client, integration_context: dict) -> None:
                     f"- Total events sent to server (after filtering): {counter.filtered} events\n"
                     f"- Total data received from server: "
                     f"{counter.total_bytes} bytes (~{counter.total_bytes / (1024 * 1024):.4f} MB)\n"
-                    f"The UUIDs fetched: {counter.uuid}"
                 )
                 return
+            demisto.debug(f"Example event: {events[0]}")
             filtering_and_push_events(events, next_hash, counter)
     except DemistoException as e:
         if e.res is not None:
