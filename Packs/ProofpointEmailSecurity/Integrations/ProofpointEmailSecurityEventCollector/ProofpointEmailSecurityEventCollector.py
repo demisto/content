@@ -29,7 +29,8 @@ class EventType(str, Enum):
 
 
 class EventConnection:
-    def __init__(self, event_type: str, connection: Connection, url: str, headers: dict, fetch_interval: int = FETCH_INTERVAL_IN_SECONDS,
+    def __init__(self, event_type: str, connection: Connection, url: str, headers: dict,
+                 fetch_interval: int = FETCH_INTERVAL_IN_SECONDS,
                  idle_timeout: int = SERVER_IDLE_TIMEOUT - 20):
         self.event_type = event_type
         self.connection = connection
@@ -100,7 +101,7 @@ def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
     return fetch_start_time + timedelta(seconds=fetch_interval) < datetime.utcnow()
 
 
-def set_the_integration_context(key: str, val):
+def set_the_integration_context(key: str, val: Any):
     """Adds a key-value pair to the integration context dictionary.
         If the key already exists in the integration context, the function will overwrite the existing value with the new one.
     """
@@ -170,7 +171,7 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
         list[dict]: A list of events
     """
     event_type = connection.event_type
-    demisto.debug(f'Starting to fetch events of type {event_type.value}')
+    demisto.debug(f'Starting to fetch events of type {event_type}')
     events: list[dict] = []
     event_ids = set()
     fetch_start_time = datetime.utcnow()
@@ -178,7 +179,7 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
         try:
             event = json.loads(connection.recv(timeout=recv_timeout))
         except TimeoutError:
-            demisto.debug(f"Timeout while waiting for the event on {connection.event_type.value}")
+            demisto.debug(f"Timeout while waiting for the event on {connection.event_type}")
             continue
         except Exception as e:
             set_the_integration_context("last_run_results",
@@ -197,11 +198,11 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
             date = datetime.utcnow()
         # the `ts` parameter is not always in UTC, so we need to convert it
         event["_time"] = date.astimezone(tz.tzutc()).isoformat()
-        event["event_type"] = event_type.value
+        event["event_type"] = event_type
         events.append(event)
         event_ids.add(event_id)
     num_events = len(events)
-    demisto.debug(f"Fetched {num_events} events of type {event_type.value}")
+    demisto.debug(f"Fetched {num_events} events of type {event_type}")
     demisto.debug("The fetched events ids are: " + ", ".join([str(event_id) for event_id in event_ids]))
     set_the_integration_context("last_run_results",
                                 f"Got from connection {num_events} events starting\
@@ -237,9 +238,9 @@ def perform_long_running_loop(connections: list[EventConnection], fetch_interval
     events_to_send = []
     for connection in connections:
         events = fetch_events(connection, fetch_interval)
-        events.extend(integration_context.get(connection.event_type.value, []))
-        integration_context[connection.event_type.value] = events  # update events in context in case of fail
-        demisto.debug(f'Adding {len(events)} {connection.event_type.value} Events to XSIAM')
+        events.extend(integration_context.get(connection.event_type, []))
+        integration_context[connection.event_type] = events  # update events in context in case of fail
+        demisto.debug(f'Adding {len(events)} {connection.event_type} Events to XSIAM')
         events_to_send.extend(events)
 
     # Send the events to the XSIAM, with events from the context
@@ -247,7 +248,7 @@ def perform_long_running_loop(connections: list[EventConnection], fetch_interval
         send_events_to_xsiam(events_to_send, vendor=VENDOR, product=PRODUCT)
         # clear the context after sending the events
         for connection in connections:
-            set_the_integration_context(connection.event_type.value, [])
+            set_the_integration_context(connection.event_type, [])
     except DemistoException:
         demisto.error(f"Failed to send events to XSIAM. Error: {traceback.format_exc()}")
         # save the events to the context so we can send them again in the next execution
