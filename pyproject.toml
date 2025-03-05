@@ -17,7 +17,7 @@ python = "^3.9,<3.11"
 packaging = "^24"
 pytest = "^7.4.4"
 requests = "^2.32.3"
-urllib3 = "^2.2.2"
+urllib3 = "*"  # taken from the demisto-sdk to avoid conflicts.
 blessings = "^1.7"
 PyGithub = "^2.2.0"
 gitpython = "^3.1.43"
@@ -25,7 +25,7 @@ sendgrid = "^6.11"
 slack_sdk = "^3.31.0"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = "1.35.0" # Only affects GitHub Actions. To control the SDK version elsewhere, modify the infra repo's pyproject file
+demisto-sdk = "1.35.1" # Only affects GitHub Actions. To control the SDK version elsewhere, modify the infra repo's pyproject file
 pytest = ">=7.1.2"
 requests-mock = ">=1.9.3"
 pytest-mock = ">=3.7.0"
