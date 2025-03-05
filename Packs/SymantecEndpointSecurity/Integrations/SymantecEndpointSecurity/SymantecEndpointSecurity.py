@@ -14,6 +14,8 @@ DEFAULT_CONNECTION_TIMEOUT = 30
 MAX_CHUNK_SIZE_TO_READ = 1024 * 1024 * 150  # 150 MB
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 DELIMITER = b"\n"
+MAX_EVENTS_PER_PUSH_XSIAM = 10000
+MAX_FETCH_FAILURES_ALLOWED = 5
 
 """
 Sleep time between fetch attempts when an error occurs in the retrieval process,
@@ -21,6 +23,49 @@ primarily used to avoid overloading with consecutive API calls
 if an error is received from the API.
 """
 FETCH_INTERVAL = 60
+
+
+class EventCounter:
+    def __init__(self):
+        self._raw_events = 0
+        self._filtered_events = 0
+        self._total_bytes: int | float = 0
+        self._uuid: list[str] = []
+
+    @property
+    def raw(self) -> int:
+        return self._raw_events
+
+    @raw.setter
+    def raw(self, value: int):
+        self._raw_events += value
+
+    @property
+    def filtered(self) -> int:
+        return self._filtered_events
+
+    @filtered.setter
+    def filtered(self, value: int):
+        self._filtered_events += value
+
+    @property
+    def total_bytes(self):
+        return self._total_bytes
+
+    @total_bytes.setter
+    def total_bytes(self, value: int | float):
+        self._total_bytes += value
+
+    @property
+    def uuid(self) -> list[str]:
+        return self._uuid
+
+    @uuid.setter
+    def uuid(self, value: str):
+        self._uuid.append(value)
+
+
+""" Exceptions """
 
 
 class UnauthorizedToken(Exception):
@@ -115,7 +160,7 @@ class Client(BaseClient):
             resp_type="response",
             headers=self.headers,
             stream=True,
-            ok_codes=[200, 201, 204]
+            ok_codes=[200, 201, 204],
         )
 
 
@@ -286,7 +331,7 @@ def is_duplicate(
 
 
 def filter_duplicate_events(
-    events: list[dict[str, str]], integration_context: dict
+    events: list[dict[str, str]], integration_context: dict, counter: EventCounter
 ) -> list[dict[str, str]]:
     """
     Filter out duplicate events from the given list of events.
@@ -319,74 +364,54 @@ def filter_duplicate_events(
         ):
             event["_time"] = event["time"]
             filtered_events.append(event)
+        counter.uuid = event["uuid"]
 
     return filtered_events
 
 
-def extract_events(res: Response) -> tuple[list[dict], str]:
+def get_events(client: Client, next_fetch: dict[str, str], counter: EventCounter):
     events: list[dict] = []
     next_hash: str = ""
 
-    if res is None:
-        raise EmptyResponse
+    with client.get_events(payload=next_fetch) as res:
+        if res is None:
+            raise EmptyResponse
+        if res.status_code == 204:
+            raise NoEventsReceived
 
-    if res.status_code == 204:
-        raise NoEventsReceived
+        for line in res.iter_lines(
+            chunk_size=MAX_CHUNK_SIZE_TO_READ, delimiter=DELIMITER
+        ):
+            if not line:
+                continue  # Skip empty lines
 
-    # For debugging
-    try:
-        demisto.debug(f"Start of the response: {res.text[:50]}")
-    except Exception as e:
-        demisto.debug(f"Printing the beginning of the response failed, Error: {e}")
+            counter._total_bytes = len(line) * 3 / 4
 
-    for line in res.iter_lines(chunk_size=MAX_CHUNK_SIZE_TO_READ, delimiter=DELIMITER):
-        if not line:
-            # Consecutive delimeter can cause empty line.
-            continue
-        json_res = json.loads(line.decode('utf-8'))
-        events.extend(json_res.get("events", []))
-        next_hash = json_res.get("next", "") if json_res else ""
+            json_res = json.loads(line.decode("utf-8"))
+            events.extend(json_res.get("events", []))
+            next_hash = json_res.get("next", "")
 
-    return events, next_hash
+            # If the events exceed the limit, yield them and reset
+            if len(events) >= MAX_EVENTS_PER_PUSH_XSIAM:
+                yield events, next_hash
+                events = []  # Reset events
+
+        # If there are remaining events after the loop
+        if events:
+            yield events, next_hash
+
+    # Ensure an empty response is yielded if no events were found
+    yield [], next_hash
 
 
-def get_events_command(client: Client, integration_context: dict) -> None:
-    next_fetch: dict[str, str] = integration_context.get("next_fetch", {})
+def filtering_and_push_events(events, next_hash, counter: EventCounter):
+    integration_context = get_integration_context()
 
-    try:
-        res = client.get_events(payload=next_fetch)
-        events, next_hash = extract_events(res)
-    except DemistoException as e:
-        if e.res is not None:
-            if e.res.status_code == 401:
-                demisto.info(
-                    "Unauthorized access token, trying to obtain a new access token"
-                )
-                raise UnauthorizedToken
-            if e.res.status_code == 410:
-                raise NextPointingNotAvailable
-        raise
-
-    if not events:
-        demisto.info("No events received")
-        return
-
-    try:
-        uuids = [event["uuid"] for event in events]
-        demisto.info(f"UUIDs = {uuids}")
-    except Exception as e:
-        demisto.info(f"Failed to printing the uuids of the events, Error: {e}")
-
-    demisto.debug(f"Starting event filtering. Initial number of events: {len(events)}")
-    filtered_events = filter_duplicate_events(events, integration_context)
-    demisto.debug(
-        f"Filtering completed. Total number of events: {len(filtered_events)}"
-    )
+    counter.raw = len(events)
+    filtered_events = filter_duplicate_events(events, integration_context, counter)
+    counter.filtered = len(filtered_events)
 
     filtered_events.extend(integration_context.get("last_fetch_events", []))
-    demisto.debug(
-        f"Total number of events after merging with last fetch events: {len(filtered_events)}"
-    )
 
     try:
         push_events(filtered_events)
@@ -412,6 +437,34 @@ def get_events_command(client: Client, integration_context: dict) -> None:
     )
 
 
+def get_events_command(client: Client, integration_context: dict) -> None:
+    next_fetch: dict[str, str] = integration_context.get("next_fetch", {})
+    counter = EventCounter()
+    try:
+        for events, next_hash in get_events(client, next_fetch, counter):
+            if not events:
+                demisto.debug(
+                    f"Summary Log:\n"
+                    f"- Total events received from server (before filtering): {counter.raw} events\n"
+                    f"- Total events sent to server (after filtering): {counter.filtered} events\n"
+                    f"- Total data received from server: "
+                    f"{counter.total_bytes} bytes (~{counter.total_bytes / (1024 * 1024):.2f} MB)\n"
+                    f"The UUIDs fetched: {counter.uuid}"
+                )
+                return
+            filtering_and_push_events(events, next_hash, counter)
+    except DemistoException as e:
+        if e.res is not None:
+            if e.res.status_code == 401:
+                demisto.info(
+                    "Unauthorized access token, trying to obtain a new access token"
+                )
+                raise UnauthorizedToken
+            if e.res.status_code == 410:
+                raise NextPointingNotAvailable
+        raise
+
+
 def perform_long_running_loop(client: Client):
     """
     Manages the fetch process.
@@ -432,6 +485,7 @@ def perform_long_running_loop(client: Client):
         # Used to calculate the duration of the fetch run.
         start_timestamp = time.time()
         try:
+            set_integration_context({})
             integration_context = get_integration_context()
             demisto.info(f"Starting new fetch with {integration_context=}")
             get_events_command(client, integration_context=integration_context)
@@ -452,23 +506,53 @@ def perform_long_running_loop(client: Client):
             set_integration_context(integration_context)
 
         except EmptyResponse:
-            demisto.info(
-                "Didn't receive any response from streaming endpoint."
-            )
+            demisto.info("Didn't receive any response from streaming endpoint.")
 
         except NoEventsReceived:
             next_fetch_param = integration_context.get("next_fetch", {})
-            demisto.info(
-                f"No Events stream for {next_fetch_param=}"
-            )
+            demisto.info(f"No Events stream for {next_fetch_param=}")
 
         except Exception as e:
+            calculate_fetch_failure_count()
             raise DemistoException(f"Failed to fetch logs from API {e}")
 
         # Used to calculate the duration of the fetch run.
         end_timestamp = time.time()
 
         sleep_if_necessary(end_timestamp - start_timestamp)
+
+
+def calculate_fetch_failure_count():
+    """
+    Calculates and updates the count of consecutive fetch failures
+
+    This function retrieves the current count of consecutive fetch failures from the integration context
+    If the count exceeds MAX, it resets the integration context
+    """
+    integration_context = get_integration_context()
+    if (
+        fetch_failure_count := integration_context.get("fetch_failure_count", 0)
+    ) > MAX_FETCH_FAILURES_ALLOWED:
+        reset_integration_context({})
+    else:
+        integration_context["fetch_failure_count"] = fetch_failure_count + 1
+        set_integration_context(integration_context)
+
+
+def reset_integration_context(args: dict[str, str]) -> CommandResults:
+    integration_context = get_integration_context()
+    delete_all = argToBoolean(args.get("delete_all", "false"))
+    if delete_all:
+        set_integration_context({})
+        readable_output = "The integration context was reset successfully."
+    else:
+        integration_context.pop("next_fetch")
+        integration_context.pop("fetch_failure_count")
+        set_integration_context(integration_context)
+        readable_output = (
+            "The `next_fetch` in integration context was reset successfully."
+        )
+    return CommandResults(readable_output=readable_output)
 
 
 def test_module() -> str:
@@ -482,6 +566,7 @@ def test_module() -> str:
 
 def main() -> None:  # pragma: no cover
     params = demisto.params()
+    args = demisto.args()
 
     host = params["host"]
     token = params["token"]["password"]
@@ -503,6 +588,8 @@ def main() -> None:  # pragma: no cover
 
         if command == "test-module":
             return_results(test_module())
+        if command == "symantec-ses-reset-integration-context":
+            return_results(reset_integration_context(args))
         if command == "long-running-execution":
             demisto.info("Starting long running execution")
             perform_long_running_loop(client)
