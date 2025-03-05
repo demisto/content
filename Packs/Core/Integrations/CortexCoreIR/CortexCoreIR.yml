@@ -4019,7 +4019,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/google-cloud-storage:1.0.0.117186
+  dockerimage: demisto/google-cloud-storage:1.0.0.2113590
 tests:
 - No tests
 fromversion: 6.2.0

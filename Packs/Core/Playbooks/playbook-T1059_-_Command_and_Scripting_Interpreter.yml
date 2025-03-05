@@ -1703,3 +1703,4 @@ contentitemexportablefields:
   contentitemfields: {}
 marketplaces:
   - marketplacev2
+  - platform
