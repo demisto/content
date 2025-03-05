@@ -6,11 +6,14 @@
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "categories": ["Analytics & SIEM"],
+    "categories": [
+        "Analytics & SIEM"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ]
 }
