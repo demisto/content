@@ -726,8 +726,7 @@ name = "demisto-py"
 version = "3.2.18"
 description = "\"A Python library for the Demisto API\""
 optional = false
-python-versions = ">=3.8,<3.11"
-groups = ["dev"]
+python-versions = ">=3.9,<=3.13"
 files = [
     {file = "demisto_py-3.2.18-py3-none-any.whl", hash = "sha256:cd406ba97447d3fe919ff3d6729f9cbc5f4667736a0e2eced27493235ede43c1"},
     {file = "demisto_py-3.2.18.tar.gz", hash = "sha256:b3fe3096f60f7dd43bebb6c3571a50005c5a5699c8e3c7efceaae28feb7aca58"},
@@ -2985,8 +2984,8 @@ description = "World timezone definitions, modern and historical"
 optional = false
 python-versions = "*"
 files = [
-    {file = "pytz-2024.1-py2.py3-none-any.whl", hash = "sha256:328171f4e3623139da4983451950b28e95ac706e13f3f2630a879749e7a8b319"},
-    {file = "pytz-2024.1.tar.gz", hash = "sha256:2a29735ea9c18baf14b448846bde5a48030ed267578472d8955cd0e7443a9812"},
+    {file = "pytz-2025.1-py2.py3-none-any.whl", hash = "sha256:89dd22dca55b46eac6eda23b2d72721bf1bdfef212645d81513ef5d03038de57"},
+    {file = "pytz-2025.1.tar.gz", hash = "sha256:c2db42be2a2518b28e65f9207c4d05e6ff547d1efa4086469ef855e4ab70178e"},
 ]
 
 [package.source]
@@ -4239,7 +4238,6 @@ version = "5.3"
 description = "tzinfo object for the local timezone"
 optional = false
 python-versions = ">=3.9"
-groups = ["dev"]
 files = [
     {file = "tzlocal-5.3-py3-none-any.whl", hash = "sha256:3814135a1bb29763c6e4f08fd6e41dbb435c7a60bfbb03270211bcc537187d8c"},
     {file = "tzlocal-5.3.tar.gz", hash = "sha256:2fafbfc07e9d8b49ade18f898d6bcd37ae88ce3ad6486842a2e4f03af68323d2"},
@@ -4354,14 +4352,13 @@ version = "2.0.7"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 optional = false
 python-versions = ">=3.7"
-groups = ["dev", "github-actions"]
 files = [
     {file = "urllib3-2.0.7-py3-none-any.whl", hash = "sha256:fdb6d215c776278489906c2f8916e6e7d4f5a9b602ccbcfdf7f016fc8da0596e"},
     {file = "urllib3-2.0.7.tar.gz", hash = "sha256:c97dfde1f7bd43a71c8d2a58e369e9b2bf692d1334ea9f9cae55add7d0dd0f84"},
 ]
 
 [package.extras]
-brotli = ["brotli (>=1.0.9) ; platform_python_implementation == \"CPython\"", "brotlicffi (>=0.8.0) ; platform_python_implementation != \"CPython\""]
+brotli = ["brotli (>=1.0.9)", "brotlicffi (>=0.8.0)"]
 secure = ["certifi", "cryptography (>=1.9)", "idna (>=2.0.0)", "pyopenssl (>=17.1.0)", "urllib3-secure-extra"]
 socks = ["pysocks (>=1.5.6,!=1.5.7,<2.0)"]
 zstd = ["zstandard (>=0.18.0)"]
@@ -4662,4 +4659,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9,<3.11"
-content-hash = "aa4f33e22e23389c0c1c0bcb2ae75824d3fd518a6624e34e21c65124f3473a8a"
+content-hash = "66bea6bfa68c488a3c6dcc6a2bc1f4604a65bc4f34e2f29f6a35f96679ca7d72"
