@@ -103,7 +103,9 @@ tasks:
       id: 13a1401a-913f-4bbb-8230-93e29ceee5f6
       version: -1
       name: XDR start xql query
-      description: Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+      description: Execute an XQL query and retrieve results of an executed XQL query
+        API. The command will be executed every 10 seconds until results are retrieved
+        or until a timeout error is raised.
       script: '|||xdr-xql-generic-query'
       type: regular
       iscommand: true
@@ -113,7 +115,8 @@ tasks:
       - "4"
     scriptarguments:
       query:
-        simple: "dataset = xdr_data\n | filter event_type = EVENT_LOG \n | fields action_evtlog_message, event_id\n| limit 1"
+        simple: "dataset = xdr_data\n | filter event_type = EVENT_LOG \n | fields
+          action_evtlog_message, event_id\n| limit 1"
       query_name:
         simple: PlaybookTest1
       time_frame:
@@ -514,7 +517,8 @@ tasks:
       id: e189ddf4-f8cc-4812-883c-7d6652654179
       version: -1
       name: XDR network connection query
-      description: Query network connections between a source ip, destination ip and port.
+      description: Query network connections between a source ip, destination ip and
+        port.
       script: '|||xdr-xql-network-connection-query'
       type: regular
       iscommand: true
@@ -678,7 +682,8 @@ tasks:
       id: e4e34945-f2b1-41d5-80e8-578736f65120
       version: -1
       name: XDR file dropper query
-      description: Search for the process who wrote the given file, by its sha256 or file path.
+      description: Search for the process who wrote the given file, by its sha256
+        or file path.
       script: '|||xdr-xql-file-dropper-query'
       type: regular
       iscommand: true
@@ -720,7 +725,8 @@ tasks:
       id: dc5a3b62-9437-42f2-8efb-bcaade332de6
       version: -1
       name: XDR process instance network activity query
-      description: Search for network connection created by a given process instace ID.
+      description: Search for network connection created by a given process instace
+        ID.
       script: '|||xdr-xql-process-instance-network-activity-query'
       type: regular
       iscommand: true
@@ -762,7 +768,8 @@ tasks:
       id: 91b90b1f-855d-4902-8d8b-e0f1c8f83508
       version: -1
       name: XDR process instance causality activity query
-      description: Search for network connection created by a given process causality ID.
+      description: Search for network connection created by a given process causality
+        ID.
       script: '|||xdr-xql-process-causality-network-activity-query'
       type: regular
       iscommand: true
