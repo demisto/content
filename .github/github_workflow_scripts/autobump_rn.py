@@ -29,7 +29,7 @@ t = Terminal()
 
 ORGANIZATION_NAME = "demisto"
 REPO_MANE = "content"
-BASE = "update_rn_change_rn" #todo change obviously
+BASE = "iamthemaster" #todo change obviously
 PR_COMMENT_TITLE = "### This PR was automatically updated by a " \
                    "[GitHub Action](https://github.com/demisto/content/actions/runs/{})\n"
 PR_COMMENT = "- **{}** pack version was bumped to **{}**.\n"
