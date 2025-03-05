@@ -19,7 +19,7 @@ If you previously had an API V1 configured based on the credentials obtained fro
 ### Important
 1. The ***eDiscovery*** and ***Threat Assessment*** commands are only supported when using the `Authorization Code flow` with `Delegated (work or school account)` permission type.
 2. When using `Authorization Code flow`, the connection should be tested using the ***!msg-auth-test*** command.
-3. When using the `Authorization Code flow` for this integration, the user needs to log in as an administrator or a user with administrative privileges (`Security Reader` or `Security Administrator`) after running the **msg-generate-login-url** command and the login window appears. For more information, see [here](https://learn.microsoft.com/en-us/graph/security-authorization).
+3. When using the `Authorization Code flow` for this integration, you should log in as an administrator or a user with administrative privileges (`Security Reader` or `Security Administrator`) after running the ***msg-generate-login-url*** command and the login window appears. For more information, see [here](https://learn.microsoft.com/en-us/graph/security-authorization).
 
 ### Authentication Based on Azure Managed Identities
 ##### Note: This option is relevant only if the integration is running on Azure VM.
