@@ -260,16 +260,16 @@ high_limit_for_filter = (200, [incident6, incident7], {'N-111111': 1000000000000
 # test_filter_alerts with updated alert time
 # arguments: limit, expected_incidents, expected_updated_fetched_ids
 low_limit_for_filter__updated_alert_time = (1, [incident6], {'N-111111': 1000000000001,
-                                         'P-222222': 999996400000,
-                                         'P-666666': 1000000120000})
+                                                             'P-222222': 999996400000,
+                                                             'P-666666': 1000000120000})
 exactly_limit_for_filter__updated_alert_time = (2, [incident6, incident7], {'N-111111': 1000000000001,
-                                                        'P-222222': 999996400000,
-                                                        'P-666666': 1000000120000,
-                                                        'P-777777': 1000000130000})
+                                                                            'P-222222': 999996400000,
+                                                                            'P-666666': 1000000120000,
+                                                                            'P-777777': 1000000130000})
 high_limit_for_filter__updated_alert_time = (200, [incident6, incident7], {'N-111111': 1000000000001,
-                                                       'P-222222': 999996400000,
-                                                       'P-666666': 1000000120000,
-                                                       'P-777777': 1000000130000})
+                                                                           'P-222222': 999996400000,
+                                                                           'P-666666': 1000000120000,
+                                                                           'P-777777': 1000000130000})
 
 # test_fetch_request
 # arguments: limit, request_results, expected_incidents, expected_fetched_ids, expected_updated_last_run_time
