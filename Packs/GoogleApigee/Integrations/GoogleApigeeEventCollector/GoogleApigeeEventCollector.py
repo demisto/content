@@ -11,7 +11,7 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 VENDOR = 'google'
 PRODUCT = 'apigee'
-DEFAULT_LIMIT = 5000
+DEFAULT_LIMIT = 25000
 MILLISECOENDS_CONVERT = 1000
 
 ''' CLIENT CLASS '''
@@ -197,8 +197,12 @@ def test_module(client: Client) -> str:
         search_events(client, last_run={'last_fetch': from_time})
 
     except Exception as e:
-        if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
+        if 'usergrid' in str(e):
+            return 'Authorization Error: make sure username is correctly set'
+        elif 'Invalid Credentials' in str(e):
+            return 'Authorization Error: make sure password or organization name is correctly set'
+        elif 'signupX' in str(e):
+            return 'Authorization Error: make sure zone is correctly set'
         else:
             raise e
 
