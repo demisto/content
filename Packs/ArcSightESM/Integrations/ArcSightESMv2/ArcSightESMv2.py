@@ -202,7 +202,7 @@ def repair_malformed_json(malformed_json: str) -> str:
 
             quote_positions = find_unescaped_quotes(json_value)
 
-            if '\"' in json_value and len(quote_positions) > 2:
+            if len(quote_positions) > 2:
                 json_value = escape_inner_quotes(json_value, quote_positions)
             modified_parts.append(prefix + json_value)
         else:
