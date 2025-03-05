@@ -22,8 +22,8 @@
     "testInterval": 20,
     "tests": [
         {
-        "integrations": "qualys_fim",
-        "playbookID": "QualysFIM-Playbook"
+            "integrations": "qualys_fim",
+            "playbookID": "QualysFIM-Playbook"
         },
         {
             "integrations": "Carbon Black Enterprise EDR",
@@ -148,7 +148,6 @@
             "instance_names": "microsoft_defender_atp_dev",
             "timeout": 1200,
             "is_mockable": false
-
         },
         {
             "integrations": "CrowdstrikeFalcon",
@@ -511,7 +510,10 @@
         {
             "integrations": "Azure Network Security Groups",
             "fromversion": "5.0.0",
-            "instance_names": ["azure_nsg_client_cred", "azure_nsg_prod"],
+            "instance_names": [
+                "azure_nsg_client_cred",
+                "azure_nsg_prod"
+            ],
             "playbookID": "Azure NSG - Test"
         },
         {
@@ -1352,7 +1354,6 @@
             "instance_names": "palo_alto_firewall_9.1",
             "playbookID": "test_playbook_pan_os_firewall_exceptions_commands",
             "memory_threshold": 120
-
         },
         {
             "integrations": "Panorama",
@@ -3148,10 +3149,6 @@
             "playbookID": "AWS - CloudTrail Test Playbook"
         },
         {
-            "integrations": "DomainTools",
-            "playbookID": "DomainTools-Test"
-        },
-        {
             "integrations": "Exabeam",
             "playbookID": "Exabeam - Test"
         },
@@ -4008,7 +4005,10 @@
         {
             "integrations": "Azure Storage",
             "playbookID": "Azure Storage - Test",
-            "instance_names": ["Azure_Storage", "azure_storage_client_cred"],
+            "instance_names": [
+                "Azure_Storage",
+                "azure_storage_client_cred"
+            ],
             "is_mockable": false
         },
         {
@@ -4945,7 +4945,9 @@
                 "Demisto Lock",
                 "EWS v2"
             ],
-            "scripts": ["SearchIncidentsV2"],
+            "scripts": [
+                "SearchIncidentsV2"
+            ],
             "instance_names": [
                 "no_sync_long_timeout",
                 "ews_mail_sender_labdemisto"
@@ -5605,7 +5607,9 @@
                 "Whois",
                 "Rasterize"
             ],
-            "instance_names": ["legacy_context_output"],
+            "instance_names": [
+                "legacy_context_output"
+            ],
             "memory_threshold": 300,
             "pid_threshold": 200,
             "marketplaces": "xsoar_on_prem"
@@ -6112,7 +6116,9 @@
         "Netskope_V2_Test": "No instance - developed by Qmasters",
         "IAMInitOktaUser - Test": "CIAC-12093",
         "TAXII2 Server Performance Test": "CIAC-9768",
-        "BoxV2_TestPlaybook": "CRTX-145174"
+        "BoxV2_TestPlaybook": "CRTX-145174",
+        "Mail Sender (New) Test": "Creds not working CRTX-160174",
+        "Mail-Listener Test Playbook": "Creds not working CRTX-160174"
     },
     "skipped_integrations": {
         "qualys_fim": "No Instance",
@@ -6254,7 +6260,7 @@
         "DSPM": "No instance",
         "Symantec Email Security Cloud": "No instance"
     },
-    "native_nightly_packs":[
+    "native_nightly_packs": [
         "Palo_Alto_Networks_WildFire",
         "ipinfo",
         "Slack",
