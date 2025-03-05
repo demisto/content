@@ -725,6 +725,12 @@ def test_commands(
             "2025-02-25T13:41:10.000Z",  # Same time in UTC
             False,
         ),
+        # Invalid date - should raise ValueError
+        (
+            "Skipidi duu",  # Helsinki time (UTC+2)
+            None,  # Same time in UTC
+            True,
+        ),
     ],
 )
 @freeze_time("2024-01-05T12:00:00Z")  # Frozen time in UTC
