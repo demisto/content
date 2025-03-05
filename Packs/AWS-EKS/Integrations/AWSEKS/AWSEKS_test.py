@@ -24,8 +24,9 @@ def util_load_json(path):
 
 
 def test_build_client(mocker):
-    AWSEKS.PARAMS = {'accounts_to_access': '1,2', "defaultRegion": "Region"}
+    params = {'accounts_to_access': '1,2', "defaultRegion": "Region"}
     mocker.patch.object(AWSEKS, 'config_aws_session', return_value="aws_client")
+    mocker.patch.object(demisto, 'params', return_value=params)
 
     aws_client = AWSEKS.build_client({})
 
