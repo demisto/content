@@ -15,6 +15,10 @@ REQUEST_URL2 = f"{BASE_URL}{date_time}?limit=1000&offset=1000"
 REQUEST_URL3 = f"{BASE_URL}{date_time}?limit=20000&offset=0"
 REQUEST_URL4 = f"{BASE_URL}{date_time}?limit=20000&offset=20000"
 REQUEST_URL5 = f"{BASE_URL}{date_time}?limit=20&offset=0"
+REQUEST_URL6 = f"{BASE_URL}?value=http://dummy.com"
+REQUEST_URL7 = f"{BASE_URL}?value=1.1.1.1"
+REQUEST_URL8 = f"{BASE_URL}?value=dummy.com"
+REQUEST_URL9 = f"{BASE_URL}?value=6a7b02c43837dcb8e40d271edb88d13d2e723c721a74931857aaef4853317789"
 TOKEN = "example_token"
 
 
@@ -35,6 +39,36 @@ def load_mock_empty_response() -> str:
         str: Mock file content.
     """
     with open("test_data/empty.jsonb") as file:
+        return file.read()
+
+
+def load_mock_url_response() -> str:
+    """Load mock file that simulates an API response.
+
+    Returns:
+        str: Mock file content.
+    """
+    with open("test_data/url.jsonb") as file:
+        return file.read()
+
+
+def load_mock_ipv4_response() -> str:
+    """Load mock file that simulates an API response.
+
+    Returns:
+        str: Mock file content.
+    """
+    with open("test_data/ipv4.jsonb") as file:
+        return file.read()
+
+
+def load_mock_domain_response() -> str:
+    """Load mock file that simulates an API response.
+
+    Returns:
+        str: Mock file content.
+    """
+    with open("test_data/domain.jsonb") as file:
         return file.read()
 
 
@@ -116,7 +150,7 @@ def test_get_indicators_command(
     response2 = load_mock_empty_response()
 
     requests_mock.get(REQUEST_URL5, text=response1)
-    requests_mock.get(REQUEST_URL4, text=response2)
+    requests_mock.get(REQUEST_URL6, text=response2)
 
     args = {"date": date_time, "limit": 20, "offset": 0}
 
@@ -126,6 +160,142 @@ def test_get_indicators_command(
         result = FeedCyberint.get_indicators_command(mock_client, args)
 
         assert result == response1
+
+
+@mock.patch('FeedCyberint.is_execution_time_exceeded')
+def test_get_url_command(
+    is_execution_time_exceeded_mock,
+    mock_client,
+    requests_mock,
+):
+    """
+    Scenario:
+    - Test retrieving URL information from feed.
+
+    Given:
+    - mock_client.
+
+    When:
+    - Called the get_url_command.
+
+    Then:
+    - Ensure that the response is correct.
+    """
+    is_execution_time_exceeded_mock.return_value = False
+
+    response1 = load_mock_url_response()
+    response2 = load_mock_empty_response()
+
+    requests_mock.get(REQUEST_URL6, text=response1)
+    requests_mock.get(REQUEST_URL6, text=response2)
+
+    args = {"value": "http://dummy.com"}
+
+    result = FeedCyberint.get_url_command(mock_client, args)
+
+    assert result == response1
+
+
+@mock.patch('FeedCyberint.is_execution_time_exceeded')
+def test_get_ipv4_command(
+    is_execution_time_exceeded_mock,
+    mock_client,
+    requests_mock,
+):
+    """
+    Scenario:
+    - Test retrieving IPv4 information from feed.
+
+    Given:
+    - mock_client.
+
+    When:
+    - Called the get_ipv4_command.
+
+    Then:
+    - Ensure that the response is correct.
+    """
+    is_execution_time_exceeded_mock.return_value = False
+
+    response1 = load_mock_ipv4_response()
+    response2 = load_mock_empty_response()
+
+    requests_mock.get(REQUEST_URL7, text=response1)
+    requests_mock.get(REQUEST_URL7, text=response2)
+
+    args = {"value": "1.1.1.1"}
+
+    result = FeedCyberint.get_ipv4_command(mock_client, args)
+
+    assert result == response1
+
+
+@mock.patch('FeedCyberint.is_execution_time_exceeded')
+def test_get_domain_command(
+    is_execution_time_exceeded_mock,
+    mock_client,
+    requests_mock,
+):
+    """
+    Scenario:
+    - Test retrieving Domain information from feed.
+
+    Given:
+    - mock_client.
+
+    When:
+    - Called the get_domain_command.
+
+    Then:
+    - Ensure that the response is correct.
+    """
+    is_execution_time_exceeded_mock.return_value = False
+
+    response1 = load_mock_domain_response()
+    response2 = load_mock_empty_response()
+
+    requests_mock.get(REQUEST_URL8, text=response1)
+    requests_mock.get(REQUEST_URL8, text=response2)
+
+    args = {"value": "dummy.com"}
+
+    result = FeedCyberint.get_domain_command(mock_client, args)
+
+    assert result == response1
+
+
+@mock.patch('FeedCyberint.is_execution_time_exceeded')
+def test_get_file_sha256_command(
+    is_execution_time_exceeded_mock,
+    mock_client,
+    requests_mock,
+):
+    """
+    Scenario:
+    - Test retrieving File SHA256 information from feed.
+
+    Given:
+    - mock_client.
+
+    When:
+    - Called the get_file_sha256_command.
+
+    Then:
+    - Ensure that the response is correct.
+    """
+    is_execution_time_exceeded_mock.return_value = False
+
+    response1 = load_mock_domain_response()
+    response2 = load_mock_empty_response()
+
+    requests_mock.get(REQUEST_URL8, text=response1)
+    requests_mock.get(REQUEST_URL8, text=response2)
+
+    args = {"value": "6a7b02c43837dcb8e40d271edb88d13d2e723c721a74931857aaef4853317789"}
+
+    result = FeedCyberint.get_file_sha256_command(mock_client, args)
+
+    assert result == response1
 
 
 @mock.patch('FeedCyberint.is_execution_time_exceeded')
