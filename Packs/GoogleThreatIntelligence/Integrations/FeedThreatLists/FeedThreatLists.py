@@ -1,11 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-import urllib3
-
-# Disable insecure warnings.
-urllib3.disable_warnings()
-
 
 FEED_STR = {
     'cryptominer': 'Cryptominer',
@@ -128,12 +123,12 @@ def _add_gti_attributes(indicator_obj: dict, item: dict):
     # Relationships
     relationships = item.get('relationships', {})
     malware_families: list[str] = [
-        x['attributes']['name']
+        x.get('attributes', {}).get('name')
         for x in relationships.get('malware_families', {}).get('data', [])
     ]
     malware_families = list(set(malware_families))
     threat_actors: list[str] = [
-        x['attributes']['name']
+        x.get('attributes', {}).get('name')
         for x in relationships.get('threat_actors', {}).get('data', [])
     ]
     threat_actors = list(set(threat_actors))
@@ -178,22 +173,22 @@ def _add_gti_attributes(indicator_obj: dict, item: dict):
 
 def _get_indicator_type(item: dict):
     """Gets indicator type."""
-    if item['type'] == 'file':
+    if item.get('type') == 'file':
         return FeedIndicatorType.File
-    if item['type'] == 'domain':
+    if item.get('type') == 'domain':
         return FeedIndicatorType.Domain
-    if item['type'] == 'url':
+    if item.get('type') == 'url':
         return FeedIndicatorType.URL
-    if item['type'] == 'ip_address':
+    if item.get('type') == 'ip_address':
         return FeedIndicatorType.IP
-    raise ValueError(f'Unknown type: {item["type"]}. ID: {item["id"]}')
+    raise ValueError(f'Unknown type: {item.get("type")}. ID: {item.get("id")}')
 
 
 def _get_indicator_id(item: dict) -> str:
     """Gets indicator ID."""
-    if item['type'] == 'url':
-        return item.get('attributes', {}).get('url') or item['id']
-    return item['id']
+    if item.get('type') == 'url':
+        return item.get('attributes', {}).get('url') or item.get('id')
+    return item.get('id')
 
 
 def _add_file_attributes(indicator_obj: dict, attributes: dict) -> dict:
@@ -355,7 +350,7 @@ def fetch_indicators_command(client: Client,
     # extract values from iterator
     for item in raw_indicators:
         try:
-            indicator_obj = _create_indicator(item['data'])
+            indicator_obj = _create_indicator(item.get('data', {}))
         except ValueError as exc:
             demisto.info(str(exc))
             continue
@@ -453,7 +448,7 @@ def main():
             verify=secure,
             proxy=proxy,
             headers={
-                'x-apikey': params['credentials']['password'],
+                'x-apikey': params.get('credentials', {}).get('password'),
                 'x-tool': 'CortexGTIFeeds',
             }
         )
