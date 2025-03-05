@@ -711,10 +711,14 @@ def test_commands(
     [
         # ISO format - should pass through unchanged
         ("2025-02-25T13:41:10.382Z", "2025-02-25T13:41:10.382Z", False),
-        # Human readable - should convert to ISO
+        # Relative date - should convert to ISO
         ("1 hour", "2024-01-05T11:00:00.000Z", False),
         # Relative date - should convert to ISO
-        ("1 day", "2024-01-04T12:00:00.000Z", False),
+        ("2 days", "2024-01-03T12:00:00.000Z", False),
+        # Relative date - should convert to ISO
+        ("6 months", "2023-07-05T12:00:00.000Z", False),
+        # Relative date - should convert to ISO
+        ("2 years", "2022-01-05T12:00:00.000Z", False),
         # Timezone aware ISO format - should convert to UTC
         (
             "2025-02-25T15:41:10+02:00",  # Helsinki time (UTC+2)
