@@ -91,7 +91,7 @@ def duo_push_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """
     username = args.get("username")
     factor = "push"  # Default to "push"
-    pushinfo = args.get("pushinfo", "")
+    pushinfo = args.get("pushinfo", "From=XSOAR&Confirm=Write%20your%20message%20here...") # Default value if not provided
     type = args.get("type", "Activities")  # Default value if not provided
 
     if not username:
