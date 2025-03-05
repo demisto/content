@@ -1,0 +1,72 @@
+name: MDX Validation
+
+on: [pull_request]  # Runs on all PRs and pushes
+
+jobs:
+  validate-mdx:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install Dependencies
+        run: npm install --save-dev @mdx-js/mdx fs-extra
+
+      - name: Validate MDX for README.md files
+        run: |
+          # Find all README.md files that are not HTML
+          NO_HTML="# NO_HTML"
+          YES_HTML="# YES_HTML"
+
+          is_html_doc() {
+              local file_content
+              file_content=$(head -n 10 "$1") # Read first 10 lines for performance
+              if [[ "$file_content" == "$NO_HTML"* ]]; then
+                  return 1 # Not HTML
+              elif [[ "$file_content" == "$YES_HTML"* ]]; then
+                  return 0 # Is HTML
+              elif [[ "$file_content" == "<p>"* || "$file_content" == "<!DOCTYPE html>"* || ("$file_content" == *"<thead>"* && "$file_content" == *"<tbody>"*) ]]; then
+                  return 0 # Is HTML
+              else
+                  return 1 # Not HTML
+              fi
+          }
+
+          FILES_TO_VALIDATE=()
+
+          for file in $(git ls-files '*.md'); do
+              if [[ $(basename "$file") == "README.md" ]] && ! is_html_doc "$file"; then
+                  FILES_TO_VALIDATE+=("$file")
+              fi
+          done
+
+          if [[ ${#FILES_TO_VALIDATE[@]} -eq 0 ]]; then
+              echo "✅ No eligible README.md files found for MDX validation."
+              exit 0
+          fi
+
+          echo "Running MDX validation on: ${FILES_TO_VALIDATE[@]}"
+
+          node - <<EOF
+          const { readFileSync } = require('fs');
+          const mdx = require('@mdx-js/mdx');
+
+          const files = process.argv.slice(2);
+
+          files.forEach(file => {
+              try {
+                  const contents = readFileSync(file, 'utf8');
+                  mdx.sync(contents);
+                  console.log(\`✅ MDX validation passed: \${file}\`);
+              } catch (error) {
+                  console.error(\`❌ MDX validation failed: \${file}\\n\`, error.message);
+                  process.exit(1);
+              }
+          });
+          EOF "${FILES_TO_VALIDATE[@]}"
