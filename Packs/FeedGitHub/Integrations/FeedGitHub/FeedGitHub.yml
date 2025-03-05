@@ -211,4 +211,4 @@ tests:
 sectionOrder:
 - Connect
 - Collect
-- -st
+- Something
