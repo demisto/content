@@ -617,7 +617,7 @@ def test_invalid_json_requiring_fixing_json_string_with_multi_json_object():
     broken_json_response = requests.Response()
     broken_json_response.status_code = 200
     broken_json_response._content = (
-        b'{"test":[{"test1": "test_val", "$": "value with "quotes" inside"},{"$": "value with "quotes" inside"}]}'
+        b'{"test":[{"test1": "test_val", "$": "value with \"quotes" inside"},{"$": "value with "quotes" inside"}]}'
     )
     assert parse_json_response(broken_json_response) == {
         "test": [
@@ -628,7 +628,7 @@ def test_invalid_json_requiring_fixing_json_string_with_multi_json_object():
 
 
 def test_repair_malformed_json_with_partial_escape():
-    assert repair_malformed_json('{"$": "value with \\"partial\\" and \\"full" quotes"}') == (
+    assert repair_malformed_json('{"$": "value with \"partial" and \\"full" quotes"}') == (
         '{"$":"value with \\"partial\\" and \\"full\\" quotes"}'
     )
 
