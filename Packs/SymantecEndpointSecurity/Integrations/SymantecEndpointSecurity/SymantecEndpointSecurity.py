@@ -11,10 +11,10 @@ import time
 VENDOR = "symantec"
 PRODUCT = "endpoint_security"
 DEFAULT_CONNECTION_TIMEOUT = 30
-MAX_CHUNK_SIZE_TO_READ = 1024 * 1024 * 150  # 150 MB
+MAX_CHUNK_SIZE_TO_READ = 1024 * 1024 * 100  # 150 MB
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 DELIMITER = b"\n"
-MAX_EVENTS_PER_PUSH_XSIAM = 10000
+MAX_EVENTS_PER_PUSH_XSIAM = 1000
 MAX_FETCH_FAILURES_ALLOWED = 5
 
 """
@@ -265,7 +265,7 @@ def push_events(events: list[dict]):
     Push events to XSIAM.
     """
     demisto.debug(f"Pushing {len(events)} to XSIAM")
-    send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+    send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT, chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT)
     demisto.debug(f"Pushed {len(events)} to XSIAM successfully")
 
 
@@ -385,7 +385,7 @@ def get_events(client: Client, next_fetch: dict[str, str], counter: EventCounter
             if not line:
                 continue  # Skip empty lines
 
-            counter._total_bytes = len(line) * 3 / 4
+            counter.total_bytes = len(line) * 3 / 4
 
             json_res = json.loads(line.decode("utf-8"))
             events.extend(json_res.get("events", []))
@@ -442,13 +442,18 @@ def get_events_command(client: Client, integration_context: dict) -> None:
     counter = EventCounter()
     try:
         for events, next_hash in get_events(client, next_fetch, counter):
+            if events:
+                tmp_events = events[:]
+                for i in range(50):
+                    demisto.debug(f"len events {i} = {len(events)}")
+                    events.extend(tmp_events)
             if not events:
                 demisto.debug(
                     f"Summary Log:\n"
                     f"- Total events received from server (before filtering): {counter.raw} events\n"
                     f"- Total events sent to server (after filtering): {counter.filtered} events\n"
                     f"- Total data received from server: "
-                    f"{counter.total_bytes} bytes (~{counter.total_bytes / (1024 * 1024):.2f} MB)\n"
+                    f"{counter.total_bytes} bytes (~{counter.total_bytes / (1024 * 1024):.4f} MB)\n"
                     f"The UUIDs fetched: {counter.uuid}"
                 )
                 return
