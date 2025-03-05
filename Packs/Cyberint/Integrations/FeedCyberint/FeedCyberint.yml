@@ -198,6 +198,114 @@ script:
       description: Description.
       type: String
     description: Gets indicators from the feed.
+  - name: cyberint-get-file-sha256
+    arguments:
+    - name: value
+      description: SHA256 string
+    outputs:
+    - contextPath: Cyberint.detected_activity
+      description: Detected activity.
+      type: String
+    - contextPath: Cyberint.ioc_type
+      description: The indicator type.
+      type: String
+    - contextPath: Cyberint.ioc_value
+      description: The indicator value.
+      type: String
+    - contextPath: Cyberint.observation_date
+      description: Observation date.
+      type: String
+    - contextPath: Cyberint.severity_score
+      description: Severity score.
+      type: String
+    - contextPath: Cyberint.confidence
+      description: Confidence.
+      type: String
+    - contextPath: Cyberint.description
+      description: Description.
+      type: String
+    description: Gets File SHA256 enrichment from the feed.
+  - name: cyberint-get-domain
+    arguments:
+    - name: value
+      description: Domain string
+    outputs:
+    - contextPath: Cyberint.detected_activity
+      description: Detected activity.
+      type: String
+    - contextPath: Cyberint.ioc_type
+      description: The indicator type.
+      type: String
+    - contextPath: Cyberint.ioc_value
+      description: The indicator value.
+      type: String
+    - contextPath: Cyberint.observation_date
+      description: Observation date.
+      type: String
+    - contextPath: Cyberint.severity_score
+      description: Severity score.
+      type: String
+    - contextPath: Cyberint.confidence
+      description: Confidence.
+      type: String
+    - contextPath: Cyberint.description
+      description: Description.
+      type: String
+    description: Gets Domain enrichment from the feed.
+  - name: cyberint-get-ipv4
+    arguments:
+    - name: value
+      description: IPv4 string
+    outputs:
+    - contextPath: Cyberint.detected_activity
+      description: Detected activity.
+      type: String
+    - contextPath: Cyberint.ioc_type
+      description: The indicator type.
+      type: String
+    - contextPath: Cyberint.ioc_value
+      description: The indicator value.
+      type: String
+    - contextPath: Cyberint.observation_date
+      description: Observation date.
+      type: String
+    - contextPath: Cyberint.severity_score
+      description: Severity score.
+      type: String
+    - contextPath: Cyberint.confidence
+      description: Confidence.
+      type: String
+    - contextPath: Cyberint.description
+      description: Description.
+      type: String
+    description: Gets IPv4 enrichment from the feed.
+  - name: cyberint-get-url
+    arguments:
+    - name: value
+      description: URL string (starts with schema, e.g. https://)
+    outputs:
+    - contextPath: Cyberint.detected_activity
+      description: Detected activity.
+      type: String
+    - contextPath: Cyberint.ioc_type
+      description: The indicator type.
+      type: String
+    - contextPath: Cyberint.ioc_value
+      description: The indicator value.
+      type: String
+    - contextPath: Cyberint.observation_date
+      description: Observation date.
+      type: String
+    - contextPath: Cyberint.severity_score
+      description: Severity score.
+      type: String
+    - contextPath: Cyberint.confidence
+      description: Confidence.
+      type: String
+    - contextPath: Cyberint.description
+      description: Description.
+      type: String
+    description: Gets URL enrichment from the feed.
   dockerimage: demisto/python3:3.11.11.1940698
   feed: true
   subtype: python3

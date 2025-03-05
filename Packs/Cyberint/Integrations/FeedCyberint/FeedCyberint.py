@@ -38,7 +38,7 @@ class Client(BaseClient):
             "X-Integration-Instance-Name": demisto.integrationInstance(),
             "X-Integration-Instance-Id": "",
             "X-Integration-Customer-Name": params.get("client_name", ""),
-            "X-Integration-Version": "1.1.4"
+            "X-Integration-Version": "1.1.6"
         }
         super().__init__(base_url, verify=verify, proxy=proxy)
 
@@ -141,13 +141,101 @@ class Client(BaseClient):
 
     @logger
     def retrieve_indicators_from_api(self, date_time, limit, offset):
-        url_suffix = f"{date_time}?limit={limit}&offset={offset}"
+        url_suffix = f"/ioc/api/v1/feed/daily/{date_time}?limit={limit}&offset={offset}"
         demisto.debug(f'URL to fetch indicators: {url_suffix}')
         response = self._http_request(
             method="GET",
             url_suffix=url_suffix,
             cookies=self._cookies,
             resp_type="text",
+            timeout=120,
+            retries=3,
+        )
+        return response
+
+    @logger
+    def retrieve_file_sha256_from_api(self, value: str) -> dict[str, Any]:
+        """
+        Makes the API request to retrieve File SHA256 IoC.
+
+        Args:
+            value (str): string ^[a-f0-9]{64}$.
+
+        Returns:
+            Enrichment information.
+        """
+        url_suffix = f"/ioc/api/v1/file/sha256?value={value}"
+        demisto.debug(f'URL to retrieve File SHA256 IoC: {url_suffix}')
+        response = self._http_request(
+            method="GET",
+            url_suffix=url_suffix,
+            cookies=self._cookies,
+            timeout=120,
+            retries=3,
+        )
+        return response
+
+    @logger
+    def retrieve_domain_from_api(self, value: str) -> dict[str, Any]:
+        """
+        Makes the API request to retrieve Domain IoC.
+
+        Args:
+            value (str): string ^[a-f0-9]{64}$.
+
+        Returns:
+            Enrichment information.
+        """
+        url_suffix = f"/ioc/api/v1/domain?value={value}"
+        demisto.debug(f'URL to retrieve Domain IoC: {url_suffix}')
+        response = self._http_request(
+            method="GET",
+            url_suffix=url_suffix,
+            cookies=self._cookies,
+            timeout=120,
+            retries=3,
+        )
+        return response
+
+    @logger
+    def retrieve_ipv4_from_api(self, value: str) -> dict[str, Any]:
+        """
+        Makes the API request to retrieve IPv4 IoC.
+
+        Args:
+            value (str): string ^[a-f0-9]{64}$.
+
+        Returns:
+            Enrichment information.
+        """
+        url_suffix = f"/ioc/api/v1/ipv4?value={value}"
+        demisto.debug(f'URL to retrieve IPv4 IoC: {url_suffix}')
+        response = self._http_request(
+            method="GET",
+            url_suffix=url_suffix,
+            cookies=self._cookies,
+            timeout=120,
+            retries=3,
+        )
+        return response
+
+    @logger
+    def retrieve_url_from_api(self, value: str) -> dict[str, Any]:
+        """
+        Makes the API request to retrieve URL IoC.
+
+        Args:
+            value (str): string.
+
+        Returns:
+            Enrichment information.
+        """
+        url_suffix = f"/ioc/api/v1/url?value={value}"
+        demisto.debug(f'URL to retrieve URL IoC: {url_suffix}')
+        response = self._http_request(
+            method="GET",
+            url_suffix=url_suffix,
+            cookies=self._cookies,
             timeout=120,
             retries=3,
         )
@@ -273,8 +361,8 @@ def get_indicators_command(
         "Indicators from Cyberint Feed:",
         indicators,
         headers=["detected_activity", "ioc_type", "ioc_value", "observation_date", "severity_score", "confidence", "description"],
-        headerTransform=header_transformer,
-        removeNull=True,
+        headerTransform=ioc_header_transformer,
+        removeNull=False,
     )
 
     return CommandResults(
@@ -283,6 +371,394 @@ def get_indicators_command(
         outputs_key_field="value",
         raw_response=indicators,
         outputs=indicators,
+    )
+
+
+def get_url_command(
+    client: Client,
+    args: dict[str, Any],
+) -> CommandResults:
+    """
+    Wrapper for retrieving enrichment for URL from the feed to the war-room.
+
+    Args:
+        client: Cyberint API Client.
+        args: Command arguments.
+
+    Returns:
+        Outputs indicators.
+    """
+
+    value = args.get("value", "")
+
+    indicator = client.retrieve_url_from_api(value)
+
+    indicator_formatted = [{
+        "type": indicator["data"]["entity"]["type"],
+        "value": indicator["data"]["entity"]["value"],
+        "malicious_score": indicator["data"]["risk"]["malicious_score"],
+        "occurrences_count": indicator["data"]["risk"]["occurrences_count"],
+        "ips": indicator["data"]["enrichment"]["ips"],
+        "hostname": indicator["data"]["enrichment"]["hostname"],
+        "domain": indicator["data"]["enrichment"]["domain"],
+        "benign": indicator["data"]["benign"],
+    }]
+
+    human_readable = tableToMarkdown(
+        'URL Entity',
+        indicator_formatted,
+        headers=["type", "value", "malicious_score", "occurrences_count", "ips", "hostname", "domain", "benign"],
+        headerTransform=indicator_header_transformer,
+        removeNull=False,
+    )
+
+    detected_activities = indicator.get("data", {}).get("risk", {}).get("detected_activities", [])
+    if detected_activities is not None:
+        for activity in detected_activities:
+
+            activities_formatted = [{
+                "type": activity["type"],
+                "observation_date": activity["observation_date"],
+                "description": activity["description"],
+                "confidence": activity["confidence"],
+                "occurrences_count": activity["occurrences_count"],
+            }]
+
+            human_readable += tableToMarkdown(
+                'URL Detected activities',
+                activities_formatted,
+                date_fields=["observation_date"],
+                headers=["type", "observation_date", "description", "confidence", "occurrences_count"],
+                headerTransform=indicator_header_transformer,
+                removeNull=False,
+            )
+
+    related_entities = indicator.get("data", {}).get("enrichment", {}).get("related_entities", [])
+    if related_entities is not None:
+        for entity in related_entities:
+
+            entities_formatted = [{
+                "entity_id": entity["entity_id"],
+                "entity_type": entity["entity_type"],
+                "entity_name": entity["entity_name"],
+            }]
+
+            human_readable += tableToMarkdown(
+                'URL Related Entities',
+                entities_formatted,
+                headers=["entity_id", "entity_type", "entity_name"],
+                headerTransform=indicator_header_transformer,
+                removeNull=False,
+            )
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix="Cyberint",
+        outputs_key_field="value",
+        raw_response=indicator,
+        outputs=indicator,
+    )
+
+
+def get_ipv4_command(
+    client: Client,
+    args: dict[str, Any],
+) -> CommandResults:
+    """
+    Wrapper for retrieving enrichment for Domain from the feed to the war-room.
+
+    Args:
+        client: Cyberint API Client.
+        args: Command arguments.
+
+    Returns:
+        Outputs indicators.
+    """
+
+    value = args.get("value", "")
+
+    indicator = client.retrieve_ipv4_from_api(value)
+
+    indicator_formatted = [{
+        "type": indicator["data"]["entity"]["type"],
+        "value": indicator["data"]["entity"]["value"],
+        "malicious_score": indicator["data"]["risk"]["malicious_score"],
+        "occurrences_count": indicator["data"]["risk"]["occurrences_count"],
+        "country": indicator["data"]["enrichment"]["geo"]["country"],
+        "city": indicator["data"]["enrichment"]["geo"]["city"],
+        "asn_number": indicator["data"]["enrichment"]["asn"]["number"],
+        "asn_organization": indicator["data"]["enrichment"]["asn"]["organization"],
+        "suspicious_urls": indicator["data"]["enrichment"]["suspicious_urls"],
+        "suspicious_domains": indicator["data"]["enrichment"]["suspicious_domains"],
+        "benign": indicator["data"]["benign"],
+    }]
+
+    human_readable = tableToMarkdown(
+        'IPv4 Entity',
+        indicator_formatted,
+        headers=["type", "value", "malicious_score", "related_entities", "ips", "occurrences_count", "benign"],
+        headerTransform=indicator_header_transformer,
+        removeNull=False,
+    )
+
+    human_readable += tableToMarkdown(
+        'IPv4 Enrichment',
+        indicator_formatted,
+        headers=["suspicious_urls", "suspicious_domains"],
+        headerTransform=indicator_header_transformer,
+        removeNull=False,
+    )
+
+    detected_activities = indicator.get("data", {}).get("risk", {}).get("detected_activities", [])
+    if detected_activities is not None:
+        for activity in detected_activities:
+
+            activities_formatted = [{
+                "type": activity["type"],
+                "observation_date": activity["observation_date"],
+                "description": activity["description"],
+                "confidence": activity["confidence"],
+                "occurrences_count": activity["occurrences_count"],
+            }]
+
+            human_readable += tableToMarkdown(
+                'IPv4 Detected activities',
+                activities_formatted,
+                date_fields=["observation_date"],
+                headers=["type", "observation_date", "description", "confidence", "occurrences_count"],
+                headerTransform=indicator_header_transformer,
+                removeNull=False,
+            )
+
+    related_entities = indicator.get("data", {}).get("risk", {}).get("related_entities", [])
+    if related_entities is not None:
+        for entity in related_entities:
+
+            entities_formatted = [{
+                "entity_id": entity["entity_id"],
+                "entity_type": entity["entity_type"],
+                "entity_name": entity["entity_name"],
+            }]
+
+            human_readable += tableToMarkdown(
+                'Domain Related Entities',
+                entities_formatted,
+                headers=["entity_id", "entity_type", "entity_name"],
+                headerTransform=indicator_header_transformer,
+                removeNull=False,
+            )
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix="Cyberint",
+        outputs_key_field="value",
+        raw_response=indicator,
+        outputs=indicator,
+    )
+
+
+def get_domain_command(
+    client: Client,
+    args: dict[str, Any],
+) -> CommandResults:
+    """
+    Wrapper for retrieving enrichment for Domain from the feed to the war-room.
+
+    Args:
+        client: Cyberint API Client.
+        args: Command arguments.
+
+    Returns:
+        Outputs indicators.
+    """
+
+    value = args.get("value", "")
+
+    indicator = client.retrieve_domain_from_api(value)
+
+    indicator_formatted = [{
+        "type": indicator["data"]["entity"]["type"],
+        "value": indicator["data"]["entity"]["value"],
+        "malicious_score": indicator["data"]["risk"]["malicious_score"],
+        "ips": indicator["data"]["enrichment"]["ips"],
+        "occurrences_count": indicator["data"]["risk"]["occurrences_count"],
+        "registrant_name": indicator["data"]["enrichment"]["whois"]["registrant_name"],
+        "registrant_email": indicator["data"]["enrichment"]["whois"]["registrant_email"],
+        "registrant_organization": indicator["data"]["enrichment"]["whois"]["registrant_organization"],
+        "registrant_country": indicator["data"]["enrichment"]["whois"]["registrant_country"],
+        "registrant_telephone": indicator["data"]["enrichment"]["whois"]["registrant_telephone"],
+        "technical_contact_email": indicator["data"]["enrichment"]["whois"]["technical_contact_email"],
+        "technical_contact_name": indicator["data"]["enrichment"]["whois"]["technical_contact_name"],
+        "technical_contact_organization": indicator["data"]["enrichment"]["whois"]["technical_contact_organization"],
+        "registrar_name": indicator["data"]["enrichment"]["whois"]["registrar_name"],
+        "admin_contact_name": indicator["data"]["enrichment"]["whois"]["admin_contact_name"],
+        "admin_contact_organization": indicator["data"]["enrichment"]["whois"]["admin_contact_organization"],
+        "admin_contact_email": indicator["data"]["enrichment"]["whois"]["admin_contact_email"],
+        "created_date": indicator["data"]["enrichment"]["whois"]["created_date"],
+        "updated_date": indicator["data"]["enrichment"]["whois"]["updated_date"],
+        "expiration_date": indicator["data"]["enrichment"]["whois"]["expiration_date"],
+        "benign": indicator["data"]["benign"],
+    }]
+
+    human_readable = tableToMarkdown(
+        'Domain Entity',
+        indicator_formatted,
+        headers=["type", "value", "malicious_score", "related_entities", "ips", "occurrences_count", "benign"],
+        headerTransform=indicator_header_transformer,
+        removeNull=False,
+    )
+
+    human_readable += tableToMarkdown(
+        'Domain Enrichment',
+        indicator_formatted,
+        date_fields=["created_date", "updated_date", "expiration_date"],
+        headers=["related_entities", "ips", "registrant_name", "registrant_email", "registrant_organization",
+                 "registrant_country", "registrant_telephone", "technical_contact_email", "technical_contact_name",
+                 "technical_contact_organization", "registrar_name", "admin_contact_name", "admin_contact_organization",
+                 "admin_contact_email", "created_date", "updated_date", "expiration_date"],
+        headerTransform=indicator_header_transformer,
+        removeNull=False,
+    )
+
+    detected_activities = indicator.get("data", {}).get("risk", {}).get("detected_activities", [])
+    if detected_activities is not None:
+        for activity in detected_activities:
+
+            activities_formatted = [{
+                "type": activity["type"],
+                "observation_date": activity["observation_date"],
+                "description": activity["description"],
+                "confidence": activity["confidence"],
+                "occurrences_count": activity["occurrences_count"],
+            }]
+
+            human_readable += tableToMarkdown(
+                'Domain Detected activities',
+                activities_formatted,
+                date_fields=["observation_date"],
+                headers=["type", "observation_date", "description", "confidence", "occurrences_count"],
+                headerTransform=indicator_header_transformer,
+                removeNull=False,
+            )
+
+    related_entities = indicator.get("data", {}).get("risk", {}).get("related_entities", [])
+    if related_entities is not None:
+        for entity in related_entities:
+
+            entities_formatted = [{
+                "entity_id": entity["entity_id"],
+                "entity_type": entity["entity_type"],
+                "entity_name": entity["entity_name"],
+            }]
+
+            human_readable += tableToMarkdown(
+                'Domain Related Entities',
+                entities_formatted,
+                headers=["entity_id", "entity_type", "entity_name"],
+                headerTransform=indicator_header_transformer,
+                removeNull=False,
+            )
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix="Cyberint",
+        outputs_key_field="value",
+        raw_response=indicator,
+        outputs=indicator,
+    )
+
+
+def get_file_sha256_command(
+    client: Client,
+    args: dict[str, Any],
+) -> CommandResults:
+    """
+    Wrapper for retrieving enrichment for file SHA256 hash from the feed to the war-room.
+
+    Args:
+        client: Cyberint API Client.
+        args: Command arguments.
+
+    Returns:
+        Outputs indicators.
+    """
+
+    value = args.get("value", "")
+
+    indicator = client.retrieve_file_sha256_from_api(value)
+
+    indicator_formatted = [{
+        "type": indicator["data"]["entity"]["type"],
+        "value": indicator["data"]["entity"]["value"],
+        "malicious_score": indicator["data"]["risk"]["malicious_score"],
+        "filenames": indicator["data"]["enrichment"]["filenames"],
+        "first_seen": indicator["data"]["enrichment"]["first_seen"],
+        "download_urls": indicator["data"]["enrichment"]["download_urls"],
+        "benign": indicator["data"]["benign"],
+    }]
+
+    human_readable = tableToMarkdown(
+        'File SHA256',
+        indicator_formatted,
+        headers=["type", "value", "malicious_score", "benign"],
+        headerTransform=indicator_header_transformer,
+        removeNull=False,
+    )
+
+    human_readable += tableToMarkdown(
+        'File SHA256 Enrichment',
+        indicator_formatted,
+        date_fields=["first_seen"],
+        headers=["related_entities", "filenames", "first_seen", "download_urls"],
+        headerTransform=indicator_header_transformer,
+        removeNull=False,
+    )
+
+    detected_activities = indicator.get("data", {}).get("risk", {}).get("detected_activities", [])
+    if detected_activities is not None:
+        for activity in detected_activities:
+
+            activities_formatted = [{
+                "type": activity["type"],
+                "observation_date": activity["observation_date"],
+                "description": activity["description"],
+                "confidence": activity["confidence"],
+                "occurrences_count": activity["occurrences_count"],
+            }]
+
+            human_readable += tableToMarkdown(
+                'File SHA256 Detected activities',
+                activities_formatted,
+                date_fields=["observation_date"],
+                headers=["type", "observation_date", "description", "confidence", "occurrences_count"],
+                headerTransform=indicator_header_transformer,
+                removeNull=False,
+            )
+
+    related_entities = indicator.get("data", {}).get("risk", {}).get("related_entities", [])
+    if related_entities is not None:
+        for entity in related_entities:
+
+            entities_formatted = [{
+                "entity_id": entity["entity_id"],
+                "entity_type": entity["entity_type"],
+                "entity_name": entity["entity_name"],
+            }]
+
+            human_readable += tableToMarkdown(
+                'Domain Related Entities',
+                entities_formatted,
+                headers=["entity_id", "entity_type", "entity_name"],
+                headerTransform=indicator_header_transformer,
+                removeNull=False,
+            )
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix="Cyberint",
+        outputs_key_field="value",
+        raw_response=indicator,
+        outputs=indicator,
     )
 
 
@@ -378,8 +854,7 @@ def main():
     params = demisto.params()
     args = demisto.args()
 
-    url = params.get("url")
-    base_url = f"{url}/ioc/api/v1/feed/daily/"
+    base_url = params.get("url")
     access_token = params.get("access_token").get("password")
     insecure = not params.get("insecure", False)
     proxy = params.get("proxy", False)
@@ -400,6 +875,21 @@ def main():
 
         elif command == "cyberint-get-indicators":
             return_results(get_indicators_command(client, args))
+
+        elif command == "cyberint-get-file-sha256":
+            return_results(get_file_sha256_command(client, args))
+
+        elif command == "cyberint-get-domain":
+            demisto.debug("cyberint-get-domain")
+            return_results(get_domain_command(client, args))
+
+        elif command == "cyberint-get-ipv4":
+            demisto.debug("cyberint-get-ipv4")
+            return_results(get_ipv4_command(client, args))
+
+        elif command == "cyberint-get-url":
+            demisto.debug("cyberint-get-url")
+            return_results(get_url_command(client, args))
 
         elif command == "fetch-indicators":
             indicators = fetch_indicators_command(client, params)
@@ -434,7 +924,7 @@ def is_execution_time_exceeded(start_time: datetime) -> bool:
     return secs_from_beginning > EXECUTION_TIMEOUT_SECONDS
 
 
-def header_transformer(header: str) -> str:
+def ioc_header_transformer(header: str) -> str:
     """
     Returns a correct header.
     Args:
@@ -456,6 +946,79 @@ def header_transformer(header: str) -> str:
         return 'Confidence'
     if header == 'description':
         return 'Description'
+    return string_to_table_header(header)
+
+
+def indicator_header_transformer(header: str) -> str:
+    """
+    Returns a correct header.
+    Args:
+        header (Str): header.
+    Returns:
+        header (Str).
+    """
+    if header == 'type':
+        return 'Type'
+    if header == 'value':
+        return 'Value'
+    if header == 'malicious_score':
+        return 'Malicious score'
+    if header == 'detected_activities':
+        return 'Detected activities'
+    if header == 'related_entities':
+        return 'Related entities'
+    if header == 'filenames':
+        return 'Filenames'
+    if header == 'first_seen':
+        return 'First seen'
+    if header == 'download_urls':
+        return 'Download URLs'
+    if header == 'benign':
+        return 'Benign'
+    if header == 'observation_date':
+        return 'Observation date'
+    if header == 'occurrences_count':
+        return 'Occurrences count'
+    if header == 'ips':
+        return 'IPs'
+    if header == 'registrant_name':
+        return 'Whois registrant name'
+    if header == 'whois_registrant_email':
+        return 'Whois registrant email'
+    if header == 'registrant_organization':
+        return 'Whois registrant organization'
+    if header == 'registrant_country':
+        return 'Whois registrant country'
+    if header == 'registrant_telephone':
+        return 'Whois registrant telephone'
+    if header == 'technical_contact_email':
+        return 'Whois technical contact email'
+    if header == 'technical_contact_name':
+        return 'Whois technical contact name'
+    if header == 'technical_contact_organization':
+        return 'Whois technical contact organization'
+    if header == 'registrar_name':
+        return 'Whois registrar name'
+    if header == 'admin_contact_name':
+        return 'Whois admin contact name'
+    if header == 'admin_contact_organization':
+        return 'Whois admin contact organization'
+    if header == 'admin_contact_email':
+        return 'Whois admin contact email'
+    if header == 'created_date':
+        return 'Created date'
+    if header == 'updated_date':
+        return 'Updated date'
+    if header == 'expiration_date':
+        return 'Expiration date'
+    if header == 'hostname':
+        return 'Hostname'
+    if header == 'domain':
+        return 'Domain'
+    if header == 'asn_number':
+        return 'ASN number'
+    if header == 'asn_organization':
+        return 'ASN organization'
     return string_to_table_header(header)
 
 
