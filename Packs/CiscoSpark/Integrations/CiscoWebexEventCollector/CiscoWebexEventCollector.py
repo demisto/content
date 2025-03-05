@@ -4,22 +4,22 @@ from CommonServerUserPython import *  # noqa
 from dateutil import parser
 from typing import Callable
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-VENDOR = 'cisco'
-PRODUCT = 'webex'
+VENDOR = "cisco"
+PRODUCT = "webex"
 SCOPE = {
-    'admin': 'audit:events_read spark:kms',
-    'compliance_officer': 'spark-compliance:events_read spark:kms',
+    "admin": "audit:events_read spark:kms",
+    "compliance_officer": "spark-compliance:events_read spark:kms",
 }
 COMMAND_FUNCTION_TO_EVENT_TYPE = {
-    'get_admin_audits': 'Admin Audit Events',
-    'get_security_audits': 'Security Audit Events',
-    'get_compliance_officer_events': 'Events',
+    "get_admin_audits": "Admin Audit Events",
+    "get_security_audits": "Security Audit Events",
+    "get_compliance_officer_events": "Events",
 }
 DEFAULT_MAX_FETCH = 200
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def remove_integration_context_for_user(user: str):
@@ -54,9 +54,9 @@ def create_last_run() -> dict:
     """
     start_fetch = datetime.utcnow() - timedelta(weeks=1)
     return {
-        'admin_audits': {'since_datetime': date_time_to_iso_format(start_fetch), 'next_url': ''},
-        'security_audits': {'since_datetime': date_time_to_iso_format(start_fetch), 'next_url': ''},
-        'compliance_officer_events': {'since_datetime': date_time_to_iso_format(start_fetch), 'next_url': ''},
+        "admin_audits": {"since_datetime": date_time_to_iso_format(start_fetch), "next_url": ""},
+        "security_audits": {"since_datetime": date_time_to_iso_format(start_fetch), "next_url": ""},
+        "compliance_officer_events": {"since_datetime": date_time_to_iso_format(start_fetch), "next_url": ""},
     }
 
 
@@ -68,8 +68,8 @@ def add_fields_to_events(events: list[dict], evnet_type: str | None):
         evnet_type: The event type.
     """
     for event in events:
-        event['_time'] = event.get('created')
-        event['source_log_type'] = evnet_type
+        event["_time"] = event.get("created")
+        event["source_log_type"] = evnet_type
 
 
 def increase_datetime_for_next_fetch(events: list, latest_datetime_previous_fetch: str) -> str:
@@ -83,22 +83,30 @@ def increase_datetime_for_next_fetch(events: list, latest_datetime_previous_fetc
     Returns:
         A string represents a datetime is ISO format.
     """
-    latest_event = max(events, key=lambda event: parser.parse(event['created']))
+    latest_event = max(events, key=lambda event: parser.parse(event["created"]))
     latest_date_time = max(
-        parser.parse(latest_event.get('created'), ignoretz=True),
-        parser.parse(latest_datetime_previous_fetch, ignoretz=True)
+        parser.parse(latest_event.get("created"), ignoretz=True), parser.parse(latest_datetime_previous_fetch, ignoretz=True)
     )
     return date_time_to_iso_format(latest_date_time + timedelta(milliseconds=1))
 
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
     """Client class to interact with the service API"""
 
-    def __init__(self, url: str, verify: bool, proxy: bool, client_id: str, client_secret: str, redirect_uri: str,
-                 scope: str | None, user: str):
+    def __init__(
+        self,
+        url: str,
+        verify: bool,
+        proxy: bool,
+        client_id: str,
+        client_secret: str,
+        redirect_uri: str,
+        scope: str | None,
+        user: str,
+    ):
         super().__init__(base_url=url, verify=verify, proxy=proxy)
         self.client_id = client_id
         self.client_secret = client_secret
@@ -114,9 +122,7 @@ class Client(BaseClient):
             refresh_token: the `refresh_token` to generate the `access_token` when expires.
             code: string returns as a query parameter from the `!cisco-webex-oauth-start` command.
         """
-        headers = {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
+        headers = {"Content-Type": "application/x-www-form-urlencoded"}
         params = assign_params(
             grant_type=grant_type,
             code=code,
@@ -125,7 +131,7 @@ class Client(BaseClient):
             client_secret=self.client_secret,
             redirect_uri=self.redirect_uri,
         )
-        return self._http_request(method='POST', url_suffix='access_token', headers=headers, data=params)
+        return self._http_request(method="POST", url_suffix="access_token", headers=headers, data=params)
 
     def save_tokens_to_integration_context(self, result: dict):
         """
@@ -135,12 +141,10 @@ class Client(BaseClient):
         """
         now = datetime.utcnow()
         context = assign_params(
-            access_token=result.get('access_token'),
-            access_token_expires_in=date_time_to_iso_format(now + timedelta(seconds=result.get('expires_in', 0))),
-            refresh_token=result.get('refresh_token'),
-            refresh_token_expires_in=date_time_to_iso_format(
-                now + timedelta(seconds=result.get('refresh_token_expires_in', 0))
-            ),
+            access_token=result.get("access_token"),
+            access_token_expires_in=date_time_to_iso_format(now + timedelta(seconds=result.get("expires_in", 0))),
+            refresh_token=result.get("refresh_token"),
+            refresh_token_expires_in=date_time_to_iso_format(now + timedelta(seconds=result.get("refresh_token_expires_in", 0))),
         )
         integration_context = get_integration_context()
         integration_context[self.user] = context
@@ -153,25 +157,27 @@ class Client(BaseClient):
             The access token or None if the integration context is not set yet.
         """
         if user_integration_context := get_integration_context().get(self.user):
-            if datetime.utcnow() > parser.parse(user_integration_context.get('refresh_token_expires_in'), ignoretz=True):
+            if datetime.utcnow() > parser.parse(user_integration_context.get("refresh_token_expires_in"), ignoretz=True):
                 # In case the refresh token expired we should generate a new one using the !cisco-webex-oauth-start command.
-                raise DemistoException('The `refresh token` expired, please re-run the `!cisco-webex-oauth-start` command '
-                                       f'with the `user` argument set to {self.user}.')
+                raise DemistoException(
+                    "The `refresh token` expired, please re-run the `!cisco-webex-oauth-start` command "
+                    f"with the `user` argument set to {self.user}."
+                )
 
-            if datetime.utcnow() > parser.parse(user_integration_context.get('access_token_expires_in'), ignoretz=True):
+            if datetime.utcnow() > parser.parse(user_integration_context.get("access_token_expires_in"), ignoretz=True):
                 # In case the access token expired we create a new access token using the refresh token.
-                result = self.create_access_token('refresh_token', refresh_token=user_integration_context.get('refresh_token'))
+                result = self.create_access_token("refresh_token", refresh_token=user_integration_context.get("refresh_token"))
                 self.save_tokens_to_integration_context(result)
-                return result.get('access_token')  # Return the new access token from the API response.
+                return result.get("access_token")  # Return the new access token from the API response.
 
-            return user_integration_context.get('access_token')  # Return the access token from the integration context.
+            return user_integration_context.get("access_token")  # Return the access token from the integration context.
 
         return None
 
     def oauth_start(self) -> tuple[str, str]:
         """returns a URL as a string to use in the oauth start command."""
         params = assign_params(
-            response_type='code',
+            response_type="code",
             scope=self.scope,
             client_id=self.client_id,
             redirect_uri=self.redirect_uri,
@@ -185,7 +191,7 @@ class Client(BaseClient):
         Args:
             code: The code return from the `oauth_start` command as a query parameter.
         """
-        result = self.create_access_token('authorization_code', code=code)
+        result = self.create_access_token("authorization_code", code=code)
         self.save_tokens_to_integration_context(result)
 
     @abstractmethod
@@ -196,19 +202,26 @@ class Client(BaseClient):
 
 
 class AdminClient(Client):
-    def __init__(self, url: str, verify: bool, proxy: bool, client_id: str, client_secret: str, redirect_uri: str,
-                 scope: str | None, org_id: str):
-        super().__init__(url, verify, proxy, client_id, client_secret, redirect_uri, scope, user='admin')
+    def __init__(
+        self,
+        url: str,
+        verify: bool,
+        proxy: bool,
+        client_id: str,
+        client_secret: str,
+        redirect_uri: str,
+        scope: str | None,
+        org_id: str,
+    ):
+        super().__init__(url, verify, proxy, client_id, client_secret, redirect_uri, scope, user="admin")
         self.org_id = org_id
-        self._headers = {
-            'Authorization': f'Bearer {self.get_access_token()}'
-        }
+        self._headers = {"Authorization": f"Bearer {self.get_access_token()}"}
 
     def oauth_test(self):
         """Runs the `get_admin_audits` method in order to tes the connection."""
         self.get_admin_audits(date_time_to_iso_format(datetime.utcnow() - timedelta(hours=3)))
 
-    def get_admin_audits(self, from_date: str, limit: int = DEFAULT_MAX_FETCH, next_url: str = '') -> requests.Response:
+    def get_admin_audits(self, from_date: str, limit: int = DEFAULT_MAX_FETCH, next_url: str = "") -> requests.Response:
         """
         Returns admin audit events either with a `next_url` or according to filter parameters.
         Args:
@@ -220,16 +233,16 @@ class AdminClient(Client):
             A response object with the events returned dform the API.
         """
         if next_url:
-            return self._http_request(method='GET', full_url=next_url, resp_type='response')
+            return self._http_request(method="GET", full_url=next_url, resp_type="response")
         params = {
-            'orgId': self.org_id,
-            'from': from_date,
-            'to': date_time_to_iso_format(datetime.utcnow()),
-            'max': min(limit, DEFAULT_MAX_FETCH),
+            "orgId": self.org_id,
+            "from": from_date,
+            "to": date_time_to_iso_format(datetime.utcnow()),
+            "max": min(limit, DEFAULT_MAX_FETCH),
         }
-        return self._http_request(method='GET', url_suffix='adminAudit/events', params=params, resp_type='response')
+        return self._http_request(method="GET", url_suffix="adminAudit/events", params=params, resp_type="response")
 
-    def get_security_audits(self, from_date: str, limit: int = DEFAULT_MAX_FETCH, next_url: str = '') -> requests.Response:
+    def get_security_audits(self, from_date: str, limit: int = DEFAULT_MAX_FETCH, next_url: str = "") -> requests.Response:
         """
         Returns admin security events either with a `next_url` or according to filter parameters.
         Args:
@@ -241,30 +254,30 @@ class AdminClient(Client):
             A response object with the events returned dform the API.
         """
         if next_url:
-            return self._http_request(method='GET', full_url=next_url, resp_type='response')
+            return self._http_request(method="GET", full_url=next_url, resp_type="response")
         params = {
-            'orgId': self.org_id,
-            'startTime': from_date,
-            'endTime': date_time_to_iso_format(datetime.utcnow()),
-            'max': min(limit, 1000),
+            "orgId": self.org_id,
+            "startTime": from_date,
+            "endTime": date_time_to_iso_format(datetime.utcnow()),
+            "max": min(limit, 1000),
         }
-        return self._http_request(method='GET', url_suffix='admin/securityAudit/events', params=params, resp_type='response')
+        return self._http_request(method="GET", url_suffix="admin/securityAudit/events", params=params, resp_type="response")
 
 
 class ComplianceOfficerClient(Client):
-    def __init__(self, url: str, verify: bool, proxy: bool, client_id: str, client_secret: str, redirect_uri: str,
-                 scope: str | None):
-        super().__init__(url, verify, proxy, client_id, client_secret, redirect_uri, scope, user='compliance_officer')
-        self._headers = {
-            'Authorization': f'Bearer {self.get_access_token()}'
-        }
+    def __init__(
+        self, url: str, verify: bool, proxy: bool, client_id: str, client_secret: str, redirect_uri: str, scope: str | None
+    ):
+        super().__init__(url, verify, proxy, client_id, client_secret, redirect_uri, scope, user="compliance_officer")
+        self._headers = {"Authorization": f"Bearer {self.get_access_token()}"}
 
     def oauth_test(self):
         """Runs the `get_compliance_officer_events` method in order to tes the connection."""
         self.get_compliance_officer_events(date_time_to_iso_format(datetime.utcnow() - timedelta(hours=3)))
 
-    def get_compliance_officer_events(self, from_date: str, limit: int = DEFAULT_MAX_FETCH,
-                                      next_url: str = '') -> requests.Response:
+    def get_compliance_officer_events(
+        self, from_date: str, limit: int = DEFAULT_MAX_FETCH, next_url: str = ""
+    ) -> requests.Response:
         """
         Returns events either with a `next_url` or according to filter parameters.
         Args:
@@ -276,26 +289,26 @@ class ComplianceOfficerClient(Client):
             A response object with the events returned dform the API.
         """
         if next_url:
-            return self._http_request(method='GET', full_url=next_url, resp_type='response')
+            return self._http_request(method="GET", full_url=next_url, resp_type="response")
         params = {
-            'from': from_date,
-            'to': date_time_to_iso_format(datetime.utcnow()),
-            'max': min(limit, 1000),
+            "from": from_date,
+            "to": date_time_to_iso_format(datetime.utcnow()),
+            "max": min(limit, 1000),
         }
-        return self._http_request(method='GET', url_suffix='events', params=params, resp_type='response')
+        return self._http_request(method="GET", url_suffix="events", params=params, resp_type="response")
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_module():
     """Raises an exception with the message to run the `!cisco-webex-oauth-start` command."""
     raise DemistoException(
-        'In order to authorize the instance, first run the command `!cisco-webex-oauth-start`, '
-        'and complete the process in the URL that is returned. You will then be redirected '
-        'to the callback URL. Copy the authorization code found in the query parameter '
-        '`code`, and paste that value in the command `!cisco-webex-oauth-complete` as an argument to finish '
-        'the process. Then you can test it bu running the `!cisco-webex-oauth-test` command.'
+        "In order to authorize the instance, first run the command `!cisco-webex-oauth-start`, "
+        "and complete the process in the URL that is returned. You will then be redirected "
+        "to the callback URL. Copy the authorization code found in the query parameter "
+        "`code`, and paste that value in the command `!cisco-webex-oauth-complete` as an argument to finish "
+        "the process. Then you can test it bu running the `!cisco-webex-oauth-test` command."
     )
 
 
@@ -331,11 +344,9 @@ def oauth_complete(client: Client, args: dict) -> CommandResults:
     Returns:
         A CommandResult with a message that the tokens was created and saved successfully.
     """
-    code = args.get('code')
+    code = args.get("code")
     client.oauth_complete(code)
-    return CommandResults(
-        readable_output='Authorization completed successfully.'
-    )
+    return CommandResults(readable_output="Authorization completed successfully.")
 
 
 def oauth_test(client: Client) -> CommandResults:
@@ -348,10 +359,10 @@ def oauth_test(client: Client) -> CommandResults:
         A CommandResult with a message that the Test succeeded.
     """
     client.oauth_test()
-    return CommandResults(readable_output='```✅ Success!```')
+    return CommandResults(readable_output="```✅ Success!```")
 
 
-def get_events_with_pagination(client_function: Callable, from_date: str, limit: int, next_url: str = '') -> tuple[list, str]:
+def get_events_with_pagination(client_function: Callable, from_date: str, limit: int, next_url: str = "") -> tuple[list, str]:
     """
     Returns events with pagination mechanism.
     Args:
@@ -367,12 +378,12 @@ def get_events_with_pagination(client_function: Callable, from_date: str, limit:
 
     response = client_function(from_date, limit, next_url)
     response_json = response.json()
-    events.extend(response_json.get('items', []))
+    events.extend(response_json.get("items", []))
 
-    while (next_url := demisto.get(response.links, 'next.url', '')) and len(events) < limit:
+    while (next_url := demisto.get(response.links, "next.url", "")) and len(events) < limit:
         response = client_function(from_date, limit, next_url)
         response_json = response.json()
-        events.extend(response_json.get('items', []))
+        events.extend(response_json.get("items", []))
 
     add_fields_to_events(events, evnet_type=COMMAND_FUNCTION_TO_EVENT_TYPE.get(client_function.__name__))
 
@@ -389,8 +400,8 @@ def get_events_command(command_function: Callable, args: dict) -> tuple[CommandR
     Returns:
         A CommandResult with a readable output of the events and a list of the events.
     """
-    from_date = args.get('since_datetime', date_time_to_iso_format(datetime.utcnow() - timedelta(hours=3)))
-    limit = arg_to_number(args.get('limit', 5)) or DEFAULT_MAX_FETCH
+    from_date = args.get("since_datetime", date_time_to_iso_format(datetime.utcnow() - timedelta(hours=3)))
+    limit = arg_to_number(args.get("limit", 5)) or DEFAULT_MAX_FETCH
 
     events, _ = get_events_with_pagination(command_function, from_date=from_date, limit=limit)
 
@@ -400,8 +411,13 @@ def get_events_command(command_function: Callable, args: dict) -> tuple[CommandR
     return command_results, events
 
 
-def fetch_events(admin_client: AdminClient, co_client: ComplianceOfficerClient, last_run: dict,
-                 max_fetch: int, fetch_security_audits: bool = False) -> tuple[list, dict]:
+def fetch_events(
+    admin_client: AdminClient,
+    co_client: ComplianceOfficerClient,
+    last_run: dict,
+    max_fetch: int,
+    fetch_security_audits: bool = False,
+) -> tuple[list, dict]:
     """
     Fetches three types of events (Admin Audits, Security Audits, Events),
     It fetches from the latest event `create` date or with a `next_url` returned form the previous fetch,
@@ -421,30 +437,30 @@ def fetch_events(admin_client: AdminClient, co_client: ComplianceOfficerClient, 
     if not last_run:
         last_run = create_last_run()
 
-    demisto.debug(f'start fetching events with last_run: {last_run}')
+    demisto.debug(f"start fetching events with last_run: {last_run}")
 
     event_type_to_client_function = {
-        'admin_audits': admin_client.get_admin_audits,
-        'compliance_officer_events': co_client.get_compliance_officer_events,
+        "admin_audits": admin_client.get_admin_audits,
+        "compliance_officer_events": co_client.get_compliance_officer_events,
     }
     if fetch_security_audits:
-        event_type_to_client_function['security_audits'] = admin_client.get_security_audits
+        event_type_to_client_function["security_audits"] = admin_client.get_security_audits
 
     for event_type, client_function in event_type_to_client_function.items():
-        since_datetime = demisto.get(last_run, f'{event_type}.since_datetime')
-        next_url = demisto.get(last_run, f'{event_type}.next_url', '')
+        since_datetime = demisto.get(last_run, f"{event_type}.since_datetime")
+        next_url = demisto.get(last_run, f"{event_type}.next_url", "")
         events, next_url = get_events_with_pagination(client_function, since_datetime, max_fetch, next_url)
-        last_run[event_type]['next_url'] = next_url
+        last_run[event_type]["next_url"] = next_url
         if events:
-            last_run[event_type]['since_datetime'] = increase_datetime_for_next_fetch(events, since_datetime)
+            last_run[event_type]["since_datetime"] = increase_datetime_for_next_fetch(events, since_datetime)
             all_events.extend(events)
 
-    demisto.debug(f'finished fetching {len(all_events)} events, last_run will be set to: {last_run}')
+    demisto.debug(f"finished fetching {len(all_events)} events, last_run will be set to: {last_run}")
 
     return all_events, last_run
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:  # pragma: no cover
@@ -455,23 +471,23 @@ def main() -> None:  # pragma: no cover
     command = demisto.command()
 
     # parse parameters
-    base_url = urljoin(params.get('base_url', 'https://webexapis.com'), '/v1/')
-    admin_client_id = demisto.get(params, 'admin_credentials.identifier', '')
-    admin_client_secret = demisto.get(params, 'admin_credentials.password', '')
-    admin_redirect_uri = params.get('admin_app_redirect_uri')
-    admin_org_id = params.get('admin_org_id')
-    compliance_officer_client_id = demisto.get(params, 'compliance_officer_credentials.identifier', '')
-    compliance_officer_client_secret = demisto.get(params, 'compliance_officer_credentials.password', '')
-    compliance_officer_redirect_uri = params.get('compliance_officer_redirect_uri')
+    base_url = urljoin(params.get("base_url", "https://webexapis.com"), "/v1/")
+    admin_client_id = demisto.get(params, "admin_credentials.identifier", "")
+    admin_client_secret = demisto.get(params, "admin_credentials.password", "")
+    admin_redirect_uri = params.get("admin_app_redirect_uri")
+    admin_org_id = params.get("admin_org_id")
+    compliance_officer_client_id = demisto.get(params, "compliance_officer_credentials.identifier", "")
+    compliance_officer_client_secret = demisto.get(params, "compliance_officer_credentials.password", "")
+    compliance_officer_redirect_uri = params.get("compliance_officer_redirect_uri")
     fetch_security_audits = argToBoolean(params.get("fetch_security_audit_events", False))
     verify_certificate = argToBoolean(not params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
-    max_fetch = arg_to_number(params.get('max_fetch', DEFAULT_MAX_FETCH)) or DEFAULT_MAX_FETCH
+    max_fetch = arg_to_number(params.get("max_fetch", DEFAULT_MAX_FETCH)) or DEFAULT_MAX_FETCH
     if not 0 < max_fetch <= 2000:
         max_fetch = DEFAULT_MAX_FETCH
-    user = args.get('user')
+    user = args.get("user")
 
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
 
     try:
         admin_client = AdminClient(
@@ -482,7 +498,7 @@ def main() -> None:  # pragma: no cover
             client_secret=admin_client_secret,
             redirect_uri=admin_redirect_uri,
             org_id=admin_org_id,
-            scope=SCOPE.get('admin'),
+            scope=SCOPE.get("admin"),
         )
 
         compliance_officer_client = ComplianceOfficerClient(
@@ -492,50 +508,50 @@ def main() -> None:  # pragma: no cover
             client_id=compliance_officer_client_id,
             client_secret=compliance_officer_client_secret,
             redirect_uri=compliance_officer_redirect_uri,
-            scope=SCOPE.get('compliance_officer'),
+            scope=SCOPE.get("compliance_officer"),
         )
 
-        if command == 'test-module':
+        if command == "test-module":
             test_module()
 
-        elif command == 'cisco-webex-oauth-start':
+        elif command == "cisco-webex-oauth-start":
             remove_integration_context_for_user(user)
-            client = admin_client if user == 'admin' else compliance_officer_client
+            client = admin_client if user == "admin" else compliance_officer_client
             result = oauth_start(client)
             return_results(result)
 
-        elif command == 'cisco-webex-oauth-complete':
-            client = admin_client if user == 'admin' else compliance_officer_client
+        elif command == "cisco-webex-oauth-complete":
+            client = admin_client if user == "admin" else compliance_officer_client
             result = oauth_complete(client, args)
             return_results(result)
 
-        elif command == 'cisco-webex-oauth-test':
-            client = admin_client if user == 'admin' else compliance_officer_client
+        elif command == "cisco-webex-oauth-test":
+            client = admin_client if user == "admin" else compliance_officer_client
             result = oauth_test(client)
             return_results(result)
 
-        elif command == 'cisco-webex-get-admin-audit-events':
+        elif command == "cisco-webex-get-admin-audit-events":
             command_results, events = get_events_command(admin_client.get_admin_audits, args)
-            if argToBoolean(args.get('should_push_events', False)):
-                demisto.debug(f'Sending to XSIAM {len(events)} events of type admin_audits')
+            if argToBoolean(args.get("should_push_events", False)):
+                demisto.debug(f"Sending to XSIAM {len(events)} events of type admin_audits")
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             return_results(command_results)
 
-        elif command == 'cisco-webex-get-security-audit-events':
+        elif command == "cisco-webex-get-security-audit-events":
             command_results, events = get_events_command(admin_client.get_security_audits, args)
-            if argToBoolean(args.get('should_push_events', False)):
-                demisto.debug(f'Sending to XSIAM {len(events)} events of type security_audits')
+            if argToBoolean(args.get("should_push_events", False)):
+                demisto.debug(f"Sending to XSIAM {len(events)} events of type security_audits")
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             return_results(command_results)
 
-        elif command == 'cisco-webex-get-compliance-officer-events':
+        elif command == "cisco-webex-get-compliance-officer-events":
             command_results, events = get_events_command(compliance_officer_client.get_compliance_officer_events, args)
-            if argToBoolean(args.get('should_push_events', False)):
-                demisto.debug(f'Sending to XSIAM {len(events)} events of type events')
+            if argToBoolean(args.get("should_push_events", False)):
+                demisto.debug(f"Sending to XSIAM {len(events)} events of type events")
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             return_results(command_results)
 
-        elif command == 'fetch-events':
+        elif command == "fetch-events":
             last_run = demisto.getLastRun()
             events, next_run = fetch_events(admin_client, compliance_officer_client, last_run, max_fetch, fetch_security_audits)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
@@ -546,10 +562,10 @@ def main() -> None:  # pragma: no cover
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
