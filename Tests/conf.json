@@ -5923,6 +5923,10 @@
         {
             "integrations": "Symantec Email Security Cloud",
             "playbookID": "SymantecEmailSecurity_TestPlaybook"
+        },
+        {
+            "integrations": "CybelAngel Event Collector",
+            "playbookID": "CybelAngel Test Playbook"
         }
     ],
     "skipped_tests": {
