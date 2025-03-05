@@ -2,7 +2,7 @@
     "name": "Rapid7 - AppSec",
     "description": "Rapid7 AppSec content pack is designed to help users manage applications vulnerabilities and scans.",
     "support": "xsoar",
-    "currentVersion": "1.0.5",
+    "currentVersion": "1.0.6",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
