@@ -275,4 +275,5 @@ tests:
 marketplaces:
 - marketplacev2
 - xpanse
+- platform
 fromversion: 6.6.0
