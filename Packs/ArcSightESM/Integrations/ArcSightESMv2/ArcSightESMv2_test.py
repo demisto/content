@@ -1,5 +1,7 @@
 from pathlib import Path
-
+import json
+import requests
+from ArcSightESMv2 import parse_json_response, repair_malformed_json
 import demistomock as demisto
 import pytest
 import requests_mock
@@ -581,3 +583,59 @@ def test_invalid_json_response(mocker, requests_mock):
 
     results = demisto.results.call_args[0][0]
     assert results['Contents']  # assert that the response was parsed successfully
+
+
+def test_valid_json_response():
+    valid_response = requests.Response()
+    valid_response.status_code = 200
+    valid_response._content = b'{"$": "value"}'
+    assert parse_json_response(valid_response) == {"$": "value"}
+
+
+def test_invalid_json_with_escape_sequence():
+    invalid_response = requests.Response()
+    invalid_response.status_code = 200
+    invalid_response._content = b'{"$": "value with \\ backslash"}'
+    assert parse_json_response(invalid_response) == {"$": "value with \\ backslash"}
+
+
+def test_invalid_json_with_multiple_escape_sequences():
+    complex_invalid_response = requests.Response()
+    complex_invalid_response.status_code = 200
+    complex_invalid_response._content = b'{"$": "value with \\ backslash and \\" quote"}'
+    assert parse_json_response(complex_invalid_response) == {"$": 'value with \\ backslash and " quote'}
+
+
+def test_invalid_json_requiring_fixing_json_string():
+    broken_json_response = requests.Response()
+    broken_json_response.status_code = 200
+    broken_json_response._content = b'{"$": "value with "quotes" inside"}'
+    assert parse_json_response(broken_json_response) == {"$": 'value with "quotes" inside'}
+
+
+def test_invalid_json_requiring_fixing_json_string_with_multi_json_object():
+    broken_json_response = requests.Response()
+    broken_json_response.status_code = 200
+    broken_json_response._content = (
+        b'{"test":[{"test1": "test_val", "$": "value with \"quotes" inside"},{"$": "value with "quotes" inside"}]}'
+    )
+    assert parse_json_response(broken_json_response) == {
+        "test": [
+            {"test1": "test_val", '$': 'value with "quotes" inside'},
+            {'$': 'value with "quotes" inside'}
+        ]
+    }
+
+
+def test_repair_malformed_json_with_partial_escape():
+    assert repair_malformed_json('{"$": "value with \"partial" and \\"full" quotes"}') == (
+        '{"$":"value with \\"partial\\" and \\"full\\" quotes"}'
+    )
+
+
+def test_unfixable_json_response():
+    unfixable_response = requests.Response()
+    unfixable_response.status_code = 200
+    unfixable_response._content = b'{"key": "value"'  # Missing closing brace
+    with pytest.raises(json.JSONDecodeError):
+        parse_json_response(unfixable_response)
