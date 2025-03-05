@@ -25,18 +25,25 @@ jobs:
           YES_HTML="# YES_HTML"
 
           is_html_doc() {
-              local file_content
-              file_content=$(head -n 10 "$1") # Read first 10 lines for performance
-              if [[ "$file_content" == "$NO_HTML"* ]]; then
-                  return 1 # Not HTML
-              elif [[ "$file_content" == "$YES_HTML"* ]]; then
-                  return 0 # Is HTML
-              elif [[ "$file_content" == "<p>"* || "$file_content" == "<!DOCTYPE html>"* || ("$file_content" == *"<thead>"* && "$file_content" == *"<tbody>"*) ]]; then
-                  return 0 # Is HTML
-              else
-                  return 1 # Not HTML
-              fi
+            local file_content
+            file_content=$(cat "$1")  # Read the entire file
+            # If the file starts with NO_HTML, it's NOT an HTML document
+            # If the file starts with YES_HTML, it's an HTML document
+            # If the file starts with <p> or <!DOCTYPE html>, it's an HTML document
+            if [[ "$file_content" == "$NO_HTML"* ]]; then
+                return 1  # False (not HTML)
+            elif [[ "$file_content" == "$YES_HTML"* || "$file_content" == "<p>"* || "$file_content" == "<!DOCTYPE html>"* ]]; then
+                return 0  # True (is HTML)
+            fi
+        
+            # If the file contains <thead> and <tbody> anywhere in the file, it's an HTML document
+            if [[ "$file_content" == *"<thead>"* && "$file_content" == *"<tbody>"* ]]; then
+                return 0  # True (is HTML)
+            fi
+        
+            return 1  # False (not HTML)
           }
+
 
           FILES_TO_VALIDATE=()
 
