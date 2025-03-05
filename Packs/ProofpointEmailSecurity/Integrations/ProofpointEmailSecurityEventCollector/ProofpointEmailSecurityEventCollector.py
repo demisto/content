@@ -205,7 +205,7 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
     demisto.debug("The fetched events ids are: " + ", ".join([str(event_id) for event_id in event_ids]))
     set_the_integration_context("last_run_results",
                                 f"Got from connection {num_events} events starting\
-                                    at {str(fetch_start_time)} untill {datetime.now().astimezone(timezone.utc)}")
+                                    at {str(fetch_start_time)} until {datetime.now().astimezone(timezone.utc)}")
 
     return events
 
@@ -246,7 +246,8 @@ def perform_long_running_loop(connections: list[EventConnection], fetch_interval
     try:
         send_events_to_xsiam(events_to_send, vendor=VENDOR, product=PRODUCT)
         # clear the context after sending the events
-        demisto.setIntegrationContext({})
+        for connection in connections:
+            set_the_integration_context(connection.event_type.value, [])
     except DemistoException:
         demisto.error(f"Failed to send events to XSIAM. Error: {traceback.format_exc()}")
         # save the events to the context so we can send them again in the next execution
