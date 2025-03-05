@@ -39,6 +39,7 @@ configuration:
   type: 9
   hiddenusername: true
   required: false
+  section: Connect
 - display: Certificate Thumbprint
   name: creds_certificate
   type: 9
