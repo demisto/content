@@ -41,7 +41,7 @@ jobs:
           FILES_TO_VALIDATE=()
 
           for file in $(git ls-files '*.md'); do
-              if [[ $(basename "$file") == "README.md" ]] && ! is_html_doc "$file"; then
+              if [[ $(basename "$file") == "README.mdx" ]] && ! is_html_doc "$file"; then
                   FILES_TO_VALIDATE+=("$file")
               fi
           done
