@@ -1,0 +1,385 @@
+[RULE: msft_azure_resourcelogs_commonfields]
+// The default fields mapping shared across MSFT Azure services
+alter
+	get_properties_stream = coalesce(properties -> stream, Stream),
+	get_category = coalesce(category, Category)
+| alter
+	xdm.event.original_event_type = if(
+		get_category = "cloud-controller-manager", "Kubernetes Cloud Controller Manager	",
+		get_category = "cluster-autoscaler", "Kubernetes Cluster Autoscaler	",
+		get_category = "kube-audit", "Kubernetes Audit",
+		get_category = "kube-audit-admin", "Kubernetes Audit Admin Logs",
+		get_category = "kube-apiserver", "Kubernetes API Server	",
+		get_category = "kube-controller-manager", "Kubernetes Controller Manager",
+		get_category = "kube-scheduler", "Kubernetes Scheduler",
+		get_category = "SoftwareUpdateProfile", "Software Update Profile",
+		get_category = "SoftwareUpdates", "Software Updates",
+		get_category = "guard", "Guard"),
+	xdm.source.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AZURE,
+	xdm.target.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AZURE,
+	// xdm.target.cloud.service = XDM_CONST.CLOUD_SERVICE_TYPE_AZURE_KUBERNETES_SERVICE, 
+	xdm.target.resource.id = resourceId,
+	xdm.target.host.hostname = coalesce(properties -> pod, PodName),
+	xdm.event.log_level = if(Level = "INFO", XDM_CONST.LOG_LEVEL_INFORMATIONAL, get_properties_stream = "stderr", XDM_CONST.LOG_LEVEL_ERROR, get_properties_stream = "stdout", XDM_CONST.LOG_LEVEL_INFORMATIONAL),
+	xdm.source.agent.identifier = properties -> containerID,
+	xdm.source.cloud.project_id = TenantId;
+
+
+
+[RULE: msft_azure_aks_audit_general_fields]
+// The default fields mapping shared between the diffrent Azure AKS Audit log structures.
+alter
+	get_properties_log = properties -> log
+| alter
+	// Properties Log Extractions
+    get_properties_log_kind = coalesce(get_properties_log -> kind, kind),
+    get_properties_log_level = coalesce(get_properties_log -> level, Level),
+    get_properties_log_auditID = coalesce(get_properties_log -> auditID, AuditId),
+    get_properties_log_stage = coalesce(get_properties_log -> stage, Stage),
+    get_properties_log_RequestUri = coalesce(get_properties_log -> RequestUri, RequestUri),
+    get_properties_log_verb = coalesce(get_properties_log -> verb, Verb),
+    get_properties_log_user_username = coalesce(get_properties_log -> user.username, User -> username),
+    get_properties_log_user_uid = coalesce(get_properties_log -> user.uid, User -> uid),
+    get_properties_log_user_groups = coalesce(arraymap(get_properties_log -> user.groups[], replex("@element", "\"", "")), arraymap(User -> groups[], replex("@element", "\"", ""))),
+    get_properties_log_user_extra = coalesce(get_properties_log -> user.extra{}, User -> extra{}),
+    get_properties_log_sourceIPs = coalesce(arraymap(get_properties_log -> sourceIPs[], replex("@element", "\"", "")), SourceIps),
+    get_properties_log_userAgent = coalesce(get_properties_log -> userAgent, UserAgent),
+    get_properties_log_objectRef_resource = coalesce(get_properties_log -> objectRef.resource, ObjectRef -> resource),
+    get_properties_log_objectRef_namespace = coalesce(get_properties_log -> objectRef.namespace, ObjectRef -> namespace),
+    get_properties_log_objectRef_name = coalesce(get_properties_log -> objectRef.name, ObjectRef -> name),
+    get_properties_log_objectRef_apiGroup = coalesce(get_properties_log -> objectRef.apiGroup, ObjectRef -> apiGroup),
+    get_properties_log_objectRef_apiVersion = coalesce(get_properties_log -> objectRef.apiVersion, ObjectRef -> apiVersion),
+    get_properties_log_objectRef_resourceVersion = coalesce(get_properties_log -> objectRef.resourceVersion, ObjectRef -> resourceVersion),
+    get_properties_log_objectRef_subresource = coalesce(get_properties_log -> objectRef.subresource, ObjectRef -> subresource),
+    get_properties_log_responseStatus = coalesce(get_properties_log -> responseStatus{}, ResponseStatus),
+    get_properties_log_responseStatus_code = coalesce(to_integer(get_properties_log -> responseStatus.code), to_integer(ResponseStatus -> code)),
+    get_properties_log_responseStatus_group = coalesce(get_properties_log -> responseStatus.details.group, ResponseStatus -> details.group),
+    get_properties_log_responseStatus_status = coalesce(lowercase(get_properties_log -> responseStatus.status), lowercase(ResponseStatus -> status)),
+    get_properties_log_responseStatus_message = coalesce(get_properties_log -> responseStatus.message, ResponseStatus -> message),
+    get_properties_log_responseStatus_reason = coalesce(get_properties_log -> responseStatus.reason, ResponseStatus -> reason),
+    get_properties_log_responseStatus_name = coalesce(get_properties_log -> responseStatus.details.name, ResponseStatus -> details.name),
+    get_properties_log_responseStatus_kind = coalesce(get_properties_log -> responseStatus.details.kind, ResponseStatus -> details.kind),
+    get_properties_log_annotations = coalesce(get_properties_log -> annotations{}, Annotations),
+    get_properties_log_requestObject = coalesce(get_properties_log -> requestObject{}, RequestObject),
+    get_properties_log_responseObject = coalesce(get_properties_log -> responseObject{}, ResponseObject),
+    get_properties_log_responseObject_metadata_labels = coalesce(get_properties_log -> responseObject.metadata.labels{}, ResponseObject -> metadata.labels{}),
+    get_properties_log_responseObject_metadata_annotations = coalesce(get_properties_log -> responseObject.metadata.annotations{}, ResponseObject -> metadata.annotations{}),
+    get_properties_log_annotations_authorization_decision = coalesce(to_string(get_properties_log -> annotations{}) -> ["authorization.k8s.io/decision"], Annotations -> ["authorization.k8s.io/decision"]),
+	get_properties_log_annotations_authorization_reason = coalesce(to_string(get_properties_log -> annotations{}) -> ["authorization.k8s.io/reason"], Annotations -> ["authorization.k8s.io/reason"]),
+	get_user_extra_authentication_node_name = coalesce(replex(arrayindex(to_string(get_properties_log -> user.extra{}) -> ["authentication.kubernetes.io/node-name"][], 0), "\"", ""), replex(arrayindex(to_string(User -> extra{}) -> ["authentication.kubernetes.io/node-name"][], 0), "\"", "")),
+	get_user_extra_authentication_node_uid = coalesce(replex(arrayindex(to_string(get_properties_log -> user.extra{}) -> ["authentication.kubernetes.io/node-uid"][], 0), "\"", ""), replex(arrayindex(to_string(User -> extra{}) -> ["authentication.kubernetes.io/node-uid"][], 0), "\"", "")),
+	get_user_extra_authentication_pod_name = coalesce(replex(arrayindex(to_string(get_properties_log -> user.extra{}) -> ["authentication.kubernetes.io/pod-name"][], 0), "\"", ""), replex(arrayindex(to_string(User -> extra{}) -> ["authentication.kubernetes.io/pod-name"][], 0), "\"", "")),
+	get_user_extra_authentication_pod_uid = coalesce(replex(arrayindex(to_string(get_properties_log -> user.extra{}) -> ["authentication.kubernetes.io/pod-uid"][], 0), "\"", ""), replex(arrayindex(to_string(User -> extra{}) -> ["authentication.kubernetes.io/pod-uid"][], 0), "\"", "")),
+	get_properties_log_responseObject_status_allowed = coalesce(get_properties_log -> responseObject.status.allowed, ResponseObject -> status.allowed),
+    get_properties_log_responseObject_status_reason = coalesce(get_properties_log -> responseObject.status.reason, ResponseObject -> status.reason)
+| alter
+	// General Checks
+	check_properties_log_verb_notMethod = if(get_properties_log_verb ~= "^[A-Z]+$", get_properties_log_verb, null),
+    check_properties_log_sourceIPs_ipv4 = arraymap(get_properties_log_sourceIPs, if("@element" ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", "@element")),
+    check_properties_log_sourceIPs_ipv6 = arraymap(get_properties_log_sourceIPs, if("@element" ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", "@element"))
+| alter
+    xdm.event.type = get_properties_log_kind,
+    xdm.event.id = get_properties_log_auditID,
+    xdm.observer.type = get_properties_log_stage,	
+	xdm.target.url = get_properties_log_RequestUri,
+	xdm.event.operation_sub_type = coalesce(check_properties_log_verb_notMethod, operationName),
+	xdm.network.http.method = if(get_properties_log_verb = "acl", XDM_CONST.HTTP_METHOD_ACL, get_properties_log_verb = "baseline_control", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL, get_properties_log_verb = "bind", XDM_CONST.HTTP_METHOD_BIND, get_properties_log_verb = "checkin", XDM_CONST.HTTP_METHOD_CHECKIN, get_properties_log_verb = "checkout", XDM_CONST.HTTP_METHOD_CHECKOUT, get_properties_log_verb = "connect", XDM_CONST.HTTP_METHOD_CONNECT, get_properties_log_verb = "copy", XDM_CONST.HTTP_METHOD_COPY, get_properties_log_verb = "delete", XDM_CONST.HTTP_METHOD_DELETE, get_properties_log_verb = "get", XDM_CONST.HTTP_METHOD_GET, get_properties_log_verb = "head", XDM_CONST.HTTP_METHOD_HEAD, get_properties_log_verb = "label", XDM_CONST.HTTP_METHOD_LABEL, get_properties_log_verb = "link", XDM_CONST.HTTP_METHOD_LINK, get_properties_log_verb = "lock", XDM_CONST.HTTP_METHOD_LOCK, get_properties_log_verb = "merge", XDM_CONST.HTTP_METHOD_MERGE, get_properties_log_verb = "mkactivity", XDM_CONST.HTTP_METHOD_MKACTIVITY, get_properties_log_verb = "mkcalendar", XDM_CONST.HTTP_METHOD_MKCALENDAR, get_properties_log_verb = "mkcol", XDM_CONST.HTTP_METHOD_MKCOL, get_properties_log_verb = "mkredirectref", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, get_properties_log_verb = "mkworkspace", XDM_CONST.HTTP_METHOD_MKWORKSPACE, get_properties_log_verb = "move", XDM_CONST.HTTP_METHOD_MOVE, get_properties_log_verb = "options", XDM_CONST.HTTP_METHOD_OPTIONS, get_properties_log_verb = "orderpatch", XDM_CONST.HTTP_METHOD_ORDERPATCH, get_properties_log_verb = "patch", XDM_CONST.HTTP_METHOD_PATCH, get_properties_log_verb = "post", XDM_CONST.HTTP_METHOD_POST, get_properties_log_verb = "pri", XDM_CONST.HTTP_METHOD_PRI, get_properties_log_verb = "propfind", XDM_CONST.HTTP_METHOD_PROPFIND, get_properties_log_verb = "proppatch", XDM_CONST.HTTP_METHOD_PROPPATCH, get_properties_log_verb = "put", XDM_CONST.HTTP_METHOD_PUT, get_properties_log_verb = "rebind", XDM_CONST.HTTP_METHOD_REBIND, get_properties_log_verb = "report", XDM_CONST.HTTP_METHOD_REPORT, get_properties_log_verb = "search", XDM_CONST.HTTP_METHOD_SEARCH, get_properties_log_verb = "trace", XDM_CONST.HTTP_METHOD_TRACE, get_properties_log_verb = "unbind", XDM_CONST.HTTP_METHOD_UNBIND, get_properties_log_verb = "uncheckout", XDM_CONST.HTTP_METHOD_UNCHECKOUT, get_properties_log_verb = "unlink", XDM_CONST.HTTP_METHOD_UNLINK, get_properties_log_verb = "unlock", XDM_CONST.HTTP_METHOD_UNLOCK, get_properties_log_verb = "update", XDM_CONST.HTTP_METHOD_UPDATE, get_properties_log_verb = "updateredirectref", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, get_properties_log_verb = "version_control", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, get_properties_log_verb = null, null, to_string(get_properties_log_verb)),
+	xdm.source.user.username = get_properties_log_user_username,
+	xdm.source.user.identifier = get_properties_log_user_uid,
+	xdm.source.user.groups = get_properties_log_user_groups,
+	// xdm.source.user.group.number_of_groups = array_length(get_properties_log_user_groups),
+	// xdm.source.user.group.is_empty = if(get_properties_log_user_groups = null),
+	xdm.source.host.ipv4_addresses = arraymap(check_properties_log_sourceIPs_ipv4, if(
+        incidr("@element", "10.0.0.0/8")
+        or incidr("@element", "172.16.0.0/12")
+        or incidr("@element", "192.168.0.0/16")
+        or incidr("@element", "127.0.0.0/8")
+        or incidr("@element", "169.254.0.0/16")
+        or incidr("@element", "100.64.0.0/10"),
+        "@element")
+    ),
+   xdm.source.host.ipv4_public_addresses = arraymap(check_properties_log_sourceIPs_ipv4, if(
+        incidr("@element", "10.0.0.0/8")
+        or incidr("@element", "172.16.0.0/12")
+        or incidr("@element", "192.168.0.0/16")
+        or incidr("@element", "127.0.0.0/8")
+        or incidr("@element", "169.254.0.0/16")
+        or incidr("@element", "100.64.0.0/10"),
+        null, "@element")
+    ),
+    xdm.source.host.ipv6_addresses = check_properties_log_sourceIPs_ipv6,
+	xdm.source.user_agent = get_properties_log_userAgent,
+	xdm.target.resource.name = coalesce(get_properties_log_responseStatus_name, get_properties_log_objectRef_name),
+	xdm.target.resource.type = coalesce(get_properties_log_responseStatus_kind, get_properties_log_objectRef_resource),
+	xdm.target.resource.sub_type = coalesce(get_properties_log_responseStatus_group, get_properties_log_objectRef_apiGroup),
+	xdm.observer.content_version = get_properties_log_level,
+	xdm.network.http.response_code = if(get_properties_log_responseStatus_code = 100, XDM_CONST.HTTP_RSP_CODE_CONTINUE, get_properties_log_responseStatus_code = 101, XDM_CONST.HTTP_RSP_CODE_SWITCHING_PROTOCOLS, get_properties_log_responseStatus_code = 102, XDM_CONST.HTTP_RSP_CODE_PROCESSING, get_properties_log_responseStatus_code = 103, XDM_CONST.HTTP_RSP_CODE_EARLY_HINTS, get_properties_log_responseStatus_code = 200, XDM_CONST.HTTP_RSP_CODE_OK, get_properties_log_responseStatus_code = 201, XDM_CONST.HTTP_RSP_CODE_CREATED, get_properties_log_responseStatus_code = 202, XDM_CONST.HTTP_RSP_CODE_ACCEPTED, get_properties_log_responseStatus_code = 203, XDM_CONST.HTTP_RSP_CODE_NON__AUTHORITATIVE_INFORMATION, get_properties_log_responseStatus_code = 204, XDM_CONST.HTTP_RSP_CODE_NO_CONTENT, get_properties_log_responseStatus_code = 205, XDM_CONST.HTTP_RSP_CODE_RESET_CONTENT, get_properties_log_responseStatus_code = 206, XDM_CONST.HTTP_RSP_CODE_PARTIAL_CONTENT, get_properties_log_responseStatus_code = 207, XDM_CONST.HTTP_RSP_CODE_MULTI__STATUS, get_properties_log_responseStatus_code = 208, XDM_CONST.HTTP_RSP_CODE_ALREADY_REPORTED, get_properties_log_responseStatus_code = 226, XDM_CONST.HTTP_RSP_CODE_IM_USED, get_properties_log_responseStatus_code = 300, XDM_CONST.HTTP_RSP_CODE_MULTIPLE_CHOICES, get_properties_log_responseStatus_code = 301, XDM_CONST.HTTP_RSP_CODE_MOVED_PERMANENTLY, get_properties_log_responseStatus_code = 302, XDM_CONST.HTTP_RSP_CODE_FOUND, get_properties_log_responseStatus_code = 303, XDM_CONST.HTTP_RSP_CODE_SEE_OTHER, get_properties_log_responseStatus_code = 304, XDM_CONST.HTTP_RSP_CODE_NOT_MODIFIED, get_properties_log_responseStatus_code = 305, XDM_CONST.HTTP_RSP_CODE_USE_PROXY, get_properties_log_responseStatus_code = 307, XDM_CONST.HTTP_RSP_CODE_TEMPORARY_REDIRECT, get_properties_log_responseStatus_code = 308, XDM_CONST.HTTP_RSP_CODE_PERMANENT_REDIRECT, get_properties_log_responseStatus_code = 400, XDM_CONST.HTTP_RSP_CODE_BAD_REQUEST, get_properties_log_responseStatus_code = 401, XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED, get_properties_log_responseStatus_code = 402, XDM_CONST.HTTP_RSP_CODE_PAYMENT_REQUIRED, get_properties_log_responseStatus_code = 403, XDM_CONST.HTTP_RSP_CODE_FORBIDDEN, get_properties_log_responseStatus_code = 404, XDM_CONST.HTTP_RSP_CODE_NOT_FOUND, get_properties_log_responseStatus_code = 405, XDM_CONST.HTTP_RSP_CODE_METHOD_NOT_ALLOWED, get_properties_log_responseStatus_code = 406, XDM_CONST.HTTP_RSP_CODE_NOT_ACCEPTABLE, get_properties_log_responseStatus_code = 407, XDM_CONST.HTTP_RSP_CODE_PROXY_AUTHENTICATION_REQUIRED, get_properties_log_responseStatus_code = 408, XDM_CONST.HTTP_RSP_CODE_REQUEST_TIMEOUT, get_properties_log_responseStatus_code = 409, XDM_CONST.HTTP_RSP_CODE_CONFLICT, get_properties_log_responseStatus_code = 410, XDM_CONST.HTTP_RSP_CODE_GONE, get_properties_log_responseStatus_code = 411, XDM_CONST.HTTP_RSP_CODE_LENGTH_REQUIRED, get_properties_log_responseStatus_code = 412, XDM_CONST.HTTP_RSP_CODE_PRECONDITION_FAILED, get_properties_log_responseStatus_code = 413, XDM_CONST.HTTP_RSP_CODE_CONTENT_TOO_LARGE, get_properties_log_responseStatus_code = 414, XDM_CONST.HTTP_RSP_CODE_URI_TOO_LONG, get_properties_log_responseStatus_code = 415, XDM_CONST.HTTP_RSP_CODE_UNSUPPORTED_MEDIA_TYPE, get_properties_log_responseStatus_code = 416, XDM_CONST.HTTP_RSP_CODE_RANGE_NOT_SATISFIABLE, get_properties_log_responseStatus_code = 417, XDM_CONST.HTTP_RSP_CODE_EXPECTATION_FAILED, get_properties_log_responseStatus_code = 421, XDM_CONST.HTTP_RSP_CODE_MISDIRECTED_REQUEST, get_properties_log_responseStatus_code = 422, XDM_CONST.HTTP_RSP_CODE_UNPROCESSABLE_CONTENT, get_properties_log_responseStatus_code = 423, XDM_CONST.HTTP_RSP_CODE_LOCKED, get_properties_log_responseStatus_code = 424, XDM_CONST.HTTP_RSP_CODE_FAILED_DEPENDENCY, get_properties_log_responseStatus_code = 425, XDM_CONST.HTTP_RSP_CODE_TOO_EARLY, get_properties_log_responseStatus_code = 426, XDM_CONST.HTTP_RSP_CODE_UPGRADE_REQUIRED, get_properties_log_responseStatus_code = 428, XDM_CONST.HTTP_RSP_CODE_PRECONDITION_REQUIRED, get_properties_log_responseStatus_code = 429, XDM_CONST.HTTP_RSP_CODE_TOO_MANY_REQUESTS, get_properties_log_responseStatus_code = 431, XDM_CONST.HTTP_RSP_CODE_REQUEST_HEADER_FIELDS_TOO_LARGE, get_properties_log_responseStatus_code = 451, XDM_CONST.HTTP_RSP_CODE_UNAVAILABLE_FOR_LEGAL_REASONS, get_properties_log_responseStatus_code = 500, XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR, get_properties_log_responseStatus_code = 501, XDM_CONST.HTTP_RSP_CODE_NOT_IMPLEMENTED, get_properties_log_responseStatus_code = 502, XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY, get_properties_log_responseStatus_code = 503, XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE, get_properties_log_responseStatus_code = 504, XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT, get_properties_log_responseStatus_code = 505, XDM_CONST.HTTP_RSP_CODE_HTTP_VERSION_NOT_SUPPORTED, get_properties_log_responseStatus_code = 506, XDM_CONST.HTTP_RSP_CODE_VARIANT_ALSO_NEGOTIATES, get_properties_log_responseStatus_code = 507, XDM_CONST.HTTP_RSP_CODE_INSUFFICIENT_STORAGE, get_properties_log_responseStatus_code = 508, XDM_CONST.HTTP_RSP_CODE_LOOP_DETECTED, get_properties_log_responseStatus_code = 511, XDM_CONST.HTTP_RSP_CODE_NETWORK_AUTHENTICATION_REQUIRED, get_properties_log_responseStatus_code = null, null, to_string(get_properties_log_responseStatus_code)),
+	xdm.event.is_completed = if(get_properties_log_responseStatus_status = "success"),
+	xdm.observer.name = get_user_extra_authentication_node_name,
+	xdm.observer.unique_identifier = get_user_extra_authentication_node_uid, 
+	xdm.source.host.hostname = get_user_extra_authentication_pod_name,
+	xdm.source.host.device_id = get_user_extra_authentication_pod_uid,
+	xdm.event.outcome_reason = coalesce(get_properties_log_responseStatus_reason, get_properties_log_responseObject_status_reason, get_properties_log_annotations_authorization_reason, get_properties_log_stage),
+	xdm.event.outcome = if(
+		get_properties_log_responseStatus_status = "failure", XDM_CONST.OUTCOME_FAILED, 
+		get_properties_log_responseStatus_status = "success", XDM_CONST.OUTCOME_SUCCESS, 
+		to_string(get_properties_log_responseObject_status_allowed) = "true", XDM_CONST.OUTCOME_SUCCESS, 
+		to_string(get_properties_log_responseObject_status_allowed) = "false", XDM_CONST.OUTCOME_FAILED, 
+		get_properties_log_annotations_authorization_decision = "allow", XDM_CONST.OUTCOME_SUCCESS, 
+		get_properties_log_annotations_authorization_decision = "forbid", XDM_CONST.OUTCOME_FAILED, 
+		get_properties_log_stage = "RequestReceived", XDM_CONST.OUTCOME_PARTIAL, 
+		get_properties_log_stage = "ResponseComplete", XDM_CONST.OUTCOME_SUCCESS, 
+		get_properties_log_stage = "ResponseStarted", XDM_CONST.OUTCOME_PARTIAL, 
+		get_properties_log_stage = null, null, to_string(get_properties_log_stage));
+
+
+
+
+[MODEL: dataset=msft_aks_logs_kube_audit3_raw]
+// A broad mapping for the categories- kube-apiserver, kube-controller-manager, csi-snapshot-controller, csi-azuredisk-controller, csi-azurefile-controller.
+config case_sensitive = true
+| alter
+	get_category = coalesce(category, Category)
+| filter get_category in ("kube-apiserver", "kube-controller-manager", "csi-snapshot-controller", "csi-azuredisk-controller", "csi-azurefile-controller")
+| call msft_azure_resourcelogs_commonfields
+| alter 
+	xdm.event.operation_sub_type = operationName;
+
+
+
+// cloud-controller-manager Mapping
+config case_sensitive = true
+| alter 
+	get_category = coalesce(category, Category)
+| filter get_category = "cloud-controller-manager"
+| call msft_azure_resourcelogs_commonfields
+| alter
+	get_properties_log_verb = coalesce(arrayindex(regextract(properties -> log, "verb=\\?\"([^\"]+)"), 0), arrayindex(regextract(Message, "verb=\\?\"([^\"]+)"), 0)),
+	get_properties_log_URI = coalesce(arrayindex(regextract(properties -> log, "URI=\\?\"([^\"]+)"), 0), arrayindex(regextract(Message, "URI=\\?\"([^\"]+)"), 0)),
+	get_properties_log_auditID = coalesce(arrayindex(regextract(properties -> log, "audit\-ID=\\?\"([^\\\"]+)"), 0), arrayindex(regextract(Message, "audit\-ID=\\?\"([^\\\"]+)"), 0)),
+	get_properties_log_srcIP = coalesce(arrayindex(regextract(properties -> log, "srcIP=\\?\"([^\"]+)"), 0), arrayindex(regextract(Message, "srcIP=\\?\"([^\"]+)"), 0)),
+	get_properties_log_latency = coalesce(arrayindex(regextract(properties -> log, "latency=\\?\"(\d+\.\d+)"), 0), arrayindex(regextract(Message, "latency=\\?\"(\d+\.\d+)"), 0)),
+	get_properties_log_userAgent = coalesce(arrayindex(regextract(properties -> log, "userAgent=\\?\"([^\"]+)"), 0), arrayindex(regextract(Message, "userAgent=\\?\"([^\"]+)"), 0)),
+	get_properties_log_alertSource = arrayindex(regextract(properties -> log, "\d{2}:\d{2}:\d{2}\.\d+\s+\d+\s+([^\.]+)[^\]]+\]\s+.*"), 0),
+	get_properties_log_alertDescription = arrayindex(regextract(properties -> log, "\d{2}:\d{2}:\d{2}\.\d+\s+\d+\s+[^\.]+[^\]]+\]\s+(.*)"), 0),
+	get_properties_log_resp = coalesce(to_integer(arrayindex(regextract(properties -> log, "resp=(\d+)"), 0)), to_integer(arrayindex(regextract(Message, "resp=(\d+)"), 0)))
+| alter
+	check_src_ipv4 = if(get_properties_log_srcIP ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", arrayindex(regextract(get_properties_log_srcIP, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"), 0)),
+	check_src_ipv4_port = if(get_properties_log_srcIP ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:\d+", arrayindex(regextract(get_properties_log_srcIP, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:(\d+)"), 0)),
+	check_src_ipv6 = if(get_properties_log_srcIP !~= "\." and get_properties_log_srcIP ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", arrayindex(regextract(get_properties_log_srcIP, "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}"), 0)),
+	check_properties_log_verb_notMethod = if(get_properties_log_verb ~= "^[A-Z]+$", get_properties_log_verb, null)
+| alter
+	xdm.event.id = get_properties_log_auditID,
+	xdm.event.operation_sub_type = coalesce(check_properties_log_verb_notMethod, operationName),
+	xdm.event.description = get_properties_log_alertDescription,
+	xdm.target.application.name = get_properties_log_alertSource,
+	xdm.source.ipv4 = check_src_ipv4,
+	xdm.source.port = to_integer(check_src_ipv4_port),
+	xdm.source.ipv6 = check_src_ipv6,
+	xdm.source.user_agent = get_properties_log_userAgent,
+	xdm.event.duration = to_integer(multiply(to_float(get_properties_log_latency), 1000)),
+	xdm.event.type = if(
+		get_properties_log_URI ~= "\/metrics", "metrics",
+		get_properties_log_URI ~= "\/readyz", "readyz",
+		get_properties_log_URI ~= "\/healthz", "healthz",
+		get_properties_log_URI ~= "\/livez", "livez", get_properties_log_URI),
+	xdm.network.http.method = if(get_properties_log_verb = "acl", XDM_CONST.HTTP_METHOD_ACL, get_properties_log_verb = "baseline_control", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL, get_properties_log_verb = "bind", XDM_CONST.HTTP_METHOD_BIND, get_properties_log_verb = "checkin", XDM_CONST.HTTP_METHOD_CHECKIN, get_properties_log_verb = "checkout", XDM_CONST.HTTP_METHOD_CHECKOUT, get_properties_log_verb = "connect", XDM_CONST.HTTP_METHOD_CONNECT, get_properties_log_verb = "copy", XDM_CONST.HTTP_METHOD_COPY, get_properties_log_verb = "delete", XDM_CONST.HTTP_METHOD_DELETE, get_properties_log_verb = "get", XDM_CONST.HTTP_METHOD_GET, get_properties_log_verb = "head", XDM_CONST.HTTP_METHOD_HEAD, get_properties_log_verb = "label", XDM_CONST.HTTP_METHOD_LABEL, get_properties_log_verb = "link", XDM_CONST.HTTP_METHOD_LINK, get_properties_log_verb = "lock", XDM_CONST.HTTP_METHOD_LOCK, get_properties_log_verb = "merge", XDM_CONST.HTTP_METHOD_MERGE, get_properties_log_verb = "mkactivity", XDM_CONST.HTTP_METHOD_MKACTIVITY, get_properties_log_verb = "mkcalendar", XDM_CONST.HTTP_METHOD_MKCALENDAR, get_properties_log_verb = "mkcol", XDM_CONST.HTTP_METHOD_MKCOL, get_properties_log_verb = "mkredirectref", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, get_properties_log_verb = "mkworkspace", XDM_CONST.HTTP_METHOD_MKWORKSPACE, get_properties_log_verb = "move", XDM_CONST.HTTP_METHOD_MOVE, get_properties_log_verb = "options", XDM_CONST.HTTP_METHOD_OPTIONS, get_properties_log_verb = "orderpatch", XDM_CONST.HTTP_METHOD_ORDERPATCH, get_properties_log_verb = "patch", XDM_CONST.HTTP_METHOD_PATCH, get_properties_log_verb = "post", XDM_CONST.HTTP_METHOD_POST, get_properties_log_verb = "pri", XDM_CONST.HTTP_METHOD_PRI, get_properties_log_verb = "propfind", XDM_CONST.HTTP_METHOD_PROPFIND, get_properties_log_verb = "proppatch", XDM_CONST.HTTP_METHOD_PROPPATCH, get_properties_log_verb = "put", XDM_CONST.HTTP_METHOD_PUT, get_properties_log_verb = "rebind", XDM_CONST.HTTP_METHOD_REBIND, get_properties_log_verb = "report", XDM_CONST.HTTP_METHOD_REPORT, get_properties_log_verb = "search", XDM_CONST.HTTP_METHOD_SEARCH, get_properties_log_verb = "trace", XDM_CONST.HTTP_METHOD_TRACE, get_properties_log_verb = "unbind", XDM_CONST.HTTP_METHOD_UNBIND, get_properties_log_verb = "uncheckout", XDM_CONST.HTTP_METHOD_UNCHECKOUT, get_properties_log_verb = "unlink", XDM_CONST.HTTP_METHOD_UNLINK, get_properties_log_verb = "unlock", XDM_CONST.HTTP_METHOD_UNLOCK, get_properties_log_verb = "update", XDM_CONST.HTTP_METHOD_UPDATE, get_properties_log_verb = "updateredirectref", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, get_properties_log_verb = "version_control", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, get_properties_log_verb = null, null, to_string(get_properties_log_verb)),
+	xdm.network.http.response_code = if(get_properties_log_resp = 100, XDM_CONST.HTTP_RSP_CODE_CONTINUE, get_properties_log_resp = 101, XDM_CONST.HTTP_RSP_CODE_SWITCHING_PROTOCOLS, get_properties_log_resp = 102, XDM_CONST.HTTP_RSP_CODE_PROCESSING, get_properties_log_resp = 103, XDM_CONST.HTTP_RSP_CODE_EARLY_HINTS, get_properties_log_resp = 200, XDM_CONST.HTTP_RSP_CODE_OK, get_properties_log_resp = 201, XDM_CONST.HTTP_RSP_CODE_CREATED, get_properties_log_resp = 202, XDM_CONST.HTTP_RSP_CODE_ACCEPTED, get_properties_log_resp = 203, XDM_CONST.HTTP_RSP_CODE_NON__AUTHORITATIVE_INFORMATION, get_properties_log_resp = 204, XDM_CONST.HTTP_RSP_CODE_NO_CONTENT, get_properties_log_resp = 205, XDM_CONST.HTTP_RSP_CODE_RESET_CONTENT, get_properties_log_resp = 206, XDM_CONST.HTTP_RSP_CODE_PARTIAL_CONTENT, get_properties_log_resp = 207, XDM_CONST.HTTP_RSP_CODE_MULTI__STATUS, get_properties_log_resp = 208, XDM_CONST.HTTP_RSP_CODE_ALREADY_REPORTED, get_properties_log_resp = 226, XDM_CONST.HTTP_RSP_CODE_IM_USED, get_properties_log_resp = 300, XDM_CONST.HTTP_RSP_CODE_MULTIPLE_CHOICES, get_properties_log_resp = 301, XDM_CONST.HTTP_RSP_CODE_MOVED_PERMANENTLY, get_properties_log_resp = 302, XDM_CONST.HTTP_RSP_CODE_FOUND, get_properties_log_resp = 303, XDM_CONST.HTTP_RSP_CODE_SEE_OTHER, get_properties_log_resp = 304, XDM_CONST.HTTP_RSP_CODE_NOT_MODIFIED, get_properties_log_resp = 305, XDM_CONST.HTTP_RSP_CODE_USE_PROXY, get_properties_log_resp = 307, XDM_CONST.HTTP_RSP_CODE_TEMPORARY_REDIRECT, get_properties_log_resp = 308, XDM_CONST.HTTP_RSP_CODE_PERMANENT_REDIRECT, get_properties_log_resp = 400, XDM_CONST.HTTP_RSP_CODE_BAD_REQUEST, get_properties_log_resp = 401, XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED, get_properties_log_resp = 402, XDM_CONST.HTTP_RSP_CODE_PAYMENT_REQUIRED, get_properties_log_resp = 403, XDM_CONST.HTTP_RSP_CODE_FORBIDDEN, get_properties_log_resp = 404, XDM_CONST.HTTP_RSP_CODE_NOT_FOUND, get_properties_log_resp = 405, XDM_CONST.HTTP_RSP_CODE_METHOD_NOT_ALLOWED, get_properties_log_resp = 406, XDM_CONST.HTTP_RSP_CODE_NOT_ACCEPTABLE, get_properties_log_resp = 407, XDM_CONST.HTTP_RSP_CODE_PROXY_AUTHENTICATION_REQUIRED, get_properties_log_resp = 408, XDM_CONST.HTTP_RSP_CODE_REQUEST_TIMEOUT, get_properties_log_resp = 409, XDM_CONST.HTTP_RSP_CODE_CONFLICT, get_properties_log_resp = 410, XDM_CONST.HTTP_RSP_CODE_GONE, get_properties_log_resp = 411, XDM_CONST.HTTP_RSP_CODE_LENGTH_REQUIRED, get_properties_log_resp = 412, XDM_CONST.HTTP_RSP_CODE_PRECONDITION_FAILED, get_properties_log_resp = 413, XDM_CONST.HTTP_RSP_CODE_CONTENT_TOO_LARGE, get_properties_log_resp = 414, XDM_CONST.HTTP_RSP_CODE_URI_TOO_LONG, get_properties_log_resp = 415, XDM_CONST.HTTP_RSP_CODE_UNSUPPORTED_MEDIA_TYPE, get_properties_log_resp = 416, XDM_CONST.HTTP_RSP_CODE_RANGE_NOT_SATISFIABLE, get_properties_log_resp = 417, XDM_CONST.HTTP_RSP_CODE_EXPECTATION_FAILED, get_properties_log_resp = 421, XDM_CONST.HTTP_RSP_CODE_MISDIRECTED_REQUEST, get_properties_log_resp = 422, XDM_CONST.HTTP_RSP_CODE_UNPROCESSABLE_CONTENT, get_properties_log_resp = 423, XDM_CONST.HTTP_RSP_CODE_LOCKED, get_properties_log_resp = 424, XDM_CONST.HTTP_RSP_CODE_FAILED_DEPENDENCY, get_properties_log_resp = 425, XDM_CONST.HTTP_RSP_CODE_TOO_EARLY, get_properties_log_resp = 426, XDM_CONST.HTTP_RSP_CODE_UPGRADE_REQUIRED, get_properties_log_resp = 428, XDM_CONST.HTTP_RSP_CODE_PRECONDITION_REQUIRED, get_properties_log_resp = 429, XDM_CONST.HTTP_RSP_CODE_TOO_MANY_REQUESTS, get_properties_log_resp = 431, XDM_CONST.HTTP_RSP_CODE_REQUEST_HEADER_FIELDS_TOO_LARGE, get_properties_log_resp = 451, XDM_CONST.HTTP_RSP_CODE_UNAVAILABLE_FOR_LEGAL_REASONS, get_properties_log_resp = 500, XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR, get_properties_log_resp = 501, XDM_CONST.HTTP_RSP_CODE_NOT_IMPLEMENTED, get_properties_log_resp = 502, XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY, get_properties_log_resp = 503, XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE, get_properties_log_resp = 504, XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT, get_properties_log_resp = 505, XDM_CONST.HTTP_RSP_CODE_HTTP_VERSION_NOT_SUPPORTED, get_properties_log_resp = 506, XDM_CONST.HTTP_RSP_CODE_VARIANT_ALSO_NEGOTIATES, get_properties_log_resp = 507, XDM_CONST.HTTP_RSP_CODE_INSUFFICIENT_STORAGE, get_properties_log_resp = 508, XDM_CONST.HTTP_RSP_CODE_LOOP_DETECTED, get_properties_log_resp = 511, XDM_CONST.HTTP_RSP_CODE_NETWORK_AUTHENTICATION_REQUIRED, get_properties_log_resp = null, null, to_string(get_properties_log_resp));
+
+
+
+// cluster-autoscaler Mapping
+config case_sensitive = true
+| alter
+	get_category = coalesce(category, Category)
+| filter get_category = "cluster-autoscaler"
+| call msft_azure_resourcelogs_commonfields
+| alter
+	get_properties_log_alertSource = arrayindex(regextract(properties -> log, "\d{2}:\d{2}:\d{2}\.\d+\s+\d+\s+([^\.]+)[^\]]+\]\s+.*"), 0),
+	get_properties_log_alertDescription = arrayindex(regextract(properties -> log, "\d{2}:\d{2}:\d{2}\.\d+\s+\d+\s+[^\.]+[^\]]+\]\s+(.*)"), 0)
+| alter
+	get_vmss_server1 = arrayindex(regextract(get_properties_log_alertDescription, "VMSS:\s*([^\,]+)"), 0),
+	get_vmss_server2 = arrayindex(regextract(get_properties_log_alertDescription, "\[\%\!d\(string=([^\)]*)"), 0),
+	get_vmss_server3 = if(get_properties_log_alertDescription ~= "vmss", arrayindex(regextract(get_properties_log_alertDescription, "^\s*Skipping\s+(\S+)"), 0), null)
+| alter 
+	xdm.event.operation_sub_type = operationName,
+	xdm.event.description = get_properties_log_alertDescription,
+	xdm.target.application.name = get_properties_log_alertSource,
+	xdm.intermediate.host.hostname = coalesce(get_vmss_server3, get_vmss_server2, get_vmss_server1);
+
+
+
+// kube-scheduler Mapping
+config case_sensitive = true
+| alter
+	get_category = coalesce(category, Category)
+| filter get_category = "kube-scheduler"
+| call msft_azure_resourcelogs_commonfields
+| alter
+	get_properties_log_alertSource = coalesce(Message, arrayindex(regextract(properties -> log, "\d{2}:\d{2}:\d{2}\.\d+\s+\d+\s+([^\.]+)[^\]]+\]\s+.*"), 0)),
+	get_properties_log_alertDescription = coalesce(Message, arrayindex(regextract(properties -> log, "\d{2}:\d{2}:\d{2}\.\d+\s+\d+\s+[^\.]+[^\]]+\]\s+(.*)"), 0))
+| alter
+	get_golang_settings_GOGC = if(get_properties_log_alertDescription ~= "Golang settings", arrayindex(regextract(get_properties_log_alertDescription, "GOGC=\\?\"([^\\\"]+)"), 0)),
+	get_golang_settings_GOMAXPROCS = if(get_properties_log_alertDescription ~= "Golang settings", arrayindex(regextract(get_properties_log_alertDescription, "GOMAXPROCS=\\?\"([^\\\"]+)"), 0)),
+	get_golang_settings_GOTRACEBACK = if(get_properties_log_alertDescription ~= "Golang settings", arrayindex(regextract(get_properties_log_alertDescription, "GOTRACEBACK=\\?\"([^\\\"]+)"), 0)),
+	// get_cert_name = if(get_properties_log_alertSource ~= "tlsconfig|named_certificates|configmap_cafile_content", arrayindex(regextract(get_properties_log_alertDescription, "name=\\?\"([^\\\"]+)"), 0)),
+	// get_cert_certName = if(get_properties_log_alertSource ~= "tlsconfig|named_certificates|configmap_cafile_content", arrayindex(regextract(get_properties_log_alertDescription, "certName=\\?\"([^\\\"]+)"), 0)),
+	// get_cert_certDetail = if(get_properties_log_alertSource ~= "tlsconfig|named_certificates|configmap_cafile_content", arrayindex(regextract(get_properties_log_alertDescription, "certDetail=\\?\"([^\\\"]+)"), 0)),
+	get_cert_issuer = if(get_properties_log_alertSource ~= "tlsconfig|named_certificates|configmap_cafile_content", arrayindex(regextract(get_properties_log_alertDescription, "issuer=\\?\"([^\\\"]+)"), 0)),
+	get_cert_validServingFor = split(if(get_properties_log_alertSource ~= "tlsconfig|named_certificates|configmap_cafile_content", arrayindex(regextract(get_properties_log_alertDescription, "validServingFor=\[([^\]]*)\]"), 0)), ","),
+	get_pod = arrayindex(regextract(get_properties_log_alertDescription, "pod=\\?\"([^\\\"]+)"), 0),
+	get_node = arrayindex(regextract(get_properties_log_alertDescription, "node=\\?\"([^\\\"]+)"), 0),
+	get_flag_name = arrayindex(regextract(get_properties_log_alertDescription, "FLAG:\s+\-+([^\=]+)="), 0),
+	get_flag_value = arrayindex(regextract(get_properties_log_alertDescription, "FLAG:\s+\-+[^\=]+=\\?\"([^\\\"]+)"), 0)
+| alter
+	check_object_golang_settings = object_create("GOGC", get_golang_settings_GOGC, "GOMAXPROCS", get_golang_settings_GOMAXPROCS, "GOTRACEBACK", get_golang_settings_GOTRACEBACK),
+	check_cert_client = if(get_properties_log_alertDescription ~= "Loaded client CA"),
+	check_cert_server = if(get_properties_log_alertDescription ~= "Loaded serving cert|Loaded SNI cert"),
+	check_cert_validServingFor_ipv4 = arraymap(get_cert_validServingFor, if("@element" ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", "@element")),
+        check_cert_validServingFor_ipv6 = arraymap(get_cert_validServingFor, if("@element" ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", arrayindex(regextract("@element", "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}"), 0)))
+| alter
+	xdm.observer.name = get_node,
+	xdm.source.host.hostname = get_pod,
+	xdm.event.operation_sub_type = operationName,
+	xdm.network.tls.client_certificate.issuer = if(check_cert_client, get_cert_issuer),
+	// xdm.network.tls.client_certificate.subject_details.alternative_names = if(check_cert_client, arraycreate(get_cert_certDetail)),
+	// xdm.network.tls.client_certificate.id = if(check_cert_client, coalesce(get_cert_name, get_cert_certName)),
+	xdm.network.tls.server_certificate.issuer = if(check_cert_server, get_cert_issuer),
+	// xdm.network.tls.server_certificate.subject_details.alternative_names = if(check_cert_server, arraycreate(get_cert_certDetail)),
+	// xdm.network.tls.server_certificate.id = if(check_cert_server, coalesce(get_cert_name, get_cert_certName)),
+	xdm.target.host.ipv4_addresses = check_cert_validServingFor_ipv4,
+	xdm.target.host.ipv6_addresses = check_cert_validServingFor_ipv6,
+	xdm.event.description = get_properties_log_alertDescription,
+	xdm.target.application.name = get_properties_log_alertSource,
+	xdm.target.resource.type = if(
+		get_properties_log_alertDescription ~= "Golang settings", "Go", 
+		get_properties_log_alertDescription ~= "FLAG", "Flag"),
+	xdm.target.resource.name = if(
+		get_properties_log_alertDescription ~= "Golang settings", "Golang settings", 
+		get_properties_log_alertDescription ~= "FLAG", get_flag_name),
+	xdm.target.resource.value = if(
+		get_properties_log_alertDescription ~= "Golang settings", to_string(check_object_golang_settings), 
+		get_properties_log_alertDescription ~= "FLAG", get_flag_value);
+
+
+
+// guard Mapping
+config case_sensitive = true
+| alter
+	get_category = coalesce(category, Category)
+| filter get_category = "guard"
+| call msft_azure_resourcelogs_commonfields
+| alter
+	get_request_target = arrayindex(regextract(properties -> log, "([^\"]+)\\"\s+from\s+"), 0),
+	get_request_source = arrayindex(regextract(properties -> log, "from\s+\S+\s+\S+\s+\S+\s+\S+\sin\s+[^\\]+"), 0)
+| alter
+	get_request_target_method = arrayindex(regextract(get_request_target, "^(\S+)"), 0),
+	get_request_source_response = arrayindex(regextract(get_request_source, "from\s+\S+\s+\S+\s+(\S+)"), 0),
+	get_request_duration = to_float(arrayindex(regextract(get_request_source, "from\s+\S+\s+\S+\s+\S+\s+\d+\S+\s+in\s+([\d\.]+)"), 0)),
+	check_request_duration_micros = if(get_request_source ~= "in\s+[\d\.]+[^m]s")
+| alter
+	organise_request_duration = if(check_request_duration_micros, divide(get_request_duration, 1000), get_request_duration)
+| alter
+	xdm.event.operation_sub_type = operationName,
+	xdm.event.duration = to_integer(organise_request_duration),
+	xdm.source.sent_bytes = to_integer(arrayindex(regextract(get_request_source, "from\s+\S+\s+\S+\s+\S+\s+(\d+)"), 0)), 
+	xdm.network.http.url = arrayindex(regextract(get_request_target, "^\S+\s+(\S+)"), 0),
+	xdm.source.ipv4 = arrayindex(regextract(get_request_source, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"), 0),
+	xdm.target.ipv4 = arrayindex(regextract(get_request_target_method , "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"), 0),
+	xdm.source.port = to_integer(arrayindex(regextract(get_request_source, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:(\d+)"), 0)),
+	xdm.target.port = to_integer(arrayindex(regextract(get_request_target, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:(\d+)"), 0)),
+	xdm.network.application_protocol = arrayindex(regextract(get_request_target, "^\S+\s+\S+\s+([A-Z]+)"), 0),
+	xdm.network.http.response_code = if(get_request_source_response = "100", XDM_CONST.HTTP_RSP_CODE_CONTINUE, get_request_source_response = "101", XDM_CONST.HTTP_RSP_CODE_SWITCHING_PROTOCOLS, get_request_source_response = "102", XDM_CONST.HTTP_RSP_CODE_PROCESSING, get_request_source_response = "103", XDM_CONST.HTTP_RSP_CODE_EARLY_HINTS, get_request_source_response = "200", XDM_CONST.HTTP_RSP_CODE_OK, get_request_source_response = "201", XDM_CONST.HTTP_RSP_CODE_CREATED, get_request_source_response = "202", XDM_CONST.HTTP_RSP_CODE_ACCEPTED, get_request_source_response = "203", XDM_CONST.HTTP_RSP_CODE_NON__AUTHORITATIVE_INFORMATION, get_request_source_response = "204", XDM_CONST.HTTP_RSP_CODE_NO_CONTENT, get_request_source_response = "205", XDM_CONST.HTTP_RSP_CODE_RESET_CONTENT, get_request_source_response = "206", XDM_CONST.HTTP_RSP_CODE_PARTIAL_CONTENT, get_request_source_response = "207", XDM_CONST.HTTP_RSP_CODE_MULTI__STATUS, get_request_source_response = "208", XDM_CONST.HTTP_RSP_CODE_ALREADY_REPORTED, get_request_source_response = "226", XDM_CONST.HTTP_RSP_CODE_IM_USED, get_request_source_response = "300", XDM_CONST.HTTP_RSP_CODE_MULTIPLE_CHOICES, get_request_source_response = "301", XDM_CONST.HTTP_RSP_CODE_MOVED_PERMANENTLY, get_request_source_response = "302", XDM_CONST.HTTP_RSP_CODE_FOUND, get_request_source_response = "303", XDM_CONST.HTTP_RSP_CODE_SEE_OTHER, get_request_source_response = "304", XDM_CONST.HTTP_RSP_CODE_NOT_MODIFIED, get_request_source_response = "305", XDM_CONST.HTTP_RSP_CODE_USE_PROXY, get_request_source_response = "307", XDM_CONST.HTTP_RSP_CODE_TEMPORARY_REDIRECT, get_request_source_response = "308", XDM_CONST.HTTP_RSP_CODE_PERMANENT_REDIRECT, get_request_source_response = "400", XDM_CONST.HTTP_RSP_CODE_BAD_REQUEST, get_request_source_response = "401", XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED, get_request_source_response = "402", XDM_CONST.HTTP_RSP_CODE_PAYMENT_REQUIRED, get_request_source_response = "403", XDM_CONST.HTTP_RSP_CODE_FORBIDDEN, get_request_source_response = "404", XDM_CONST.HTTP_RSP_CODE_NOT_FOUND, get_request_source_response = "405", XDM_CONST.HTTP_RSP_CODE_METHOD_NOT_ALLOWED, get_request_source_response = "406", XDM_CONST.HTTP_RSP_CODE_NOT_ACCEPTABLE, get_request_source_response = "407", XDM_CONST.HTTP_RSP_CODE_PROXY_AUTHENTICATION_REQUIRED, get_request_source_response = "408", XDM_CONST.HTTP_RSP_CODE_REQUEST_TIMEOUT, get_request_source_response = "409", XDM_CONST.HTTP_RSP_CODE_CONFLICT, get_request_source_response = "410", XDM_CONST.HTTP_RSP_CODE_GONE, get_request_source_response = "411", XDM_CONST.HTTP_RSP_CODE_LENGTH_REQUIRED, get_request_source_response = "412", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_FAILED, get_request_source_response = "413", XDM_CONST.HTTP_RSP_CODE_CONTENT_TOO_LARGE, get_request_source_response = "414", XDM_CONST.HTTP_RSP_CODE_URI_TOO_LONG, get_request_source_response = "415", XDM_CONST.HTTP_RSP_CODE_UNSUPPORTED_MEDIA_TYPE, get_request_source_response = "416", XDM_CONST.HTTP_RSP_CODE_RANGE_NOT_SATISFIABLE, get_request_source_response = "417", XDM_CONST.HTTP_RSP_CODE_EXPECTATION_FAILED, get_request_source_response = "421", XDM_CONST.HTTP_RSP_CODE_MISDIRECTED_REQUEST, get_request_source_response = "422", XDM_CONST.HTTP_RSP_CODE_UNPROCESSABLE_CONTENT, get_request_source_response = "423", XDM_CONST.HTTP_RSP_CODE_LOCKED, get_request_source_response = "424", XDM_CONST.HTTP_RSP_CODE_FAILED_DEPENDENCY, get_request_source_response = "425", XDM_CONST.HTTP_RSP_CODE_TOO_EARLY, get_request_source_response = "426", XDM_CONST.HTTP_RSP_CODE_UPGRADE_REQUIRED, get_request_source_response = "428", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_REQUIRED, get_request_source_response = "429", XDM_CONST.HTTP_RSP_CODE_TOO_MANY_REQUESTS, get_request_source_response = "431", XDM_CONST.HTTP_RSP_CODE_REQUEST_HEADER_FIELDS_TOO_LARGE, get_request_source_response = "451", XDM_CONST.HTTP_RSP_CODE_UNAVAILABLE_FOR_LEGAL_REASONS, get_request_source_response = "500", XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR, get_request_source_response = "501", XDM_CONST.HTTP_RSP_CODE_NOT_IMPLEMENTED, get_request_source_response = "502", XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY, get_request_source_response = "503", XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE, get_request_source_response = "504", XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT, get_request_source_response = "505", XDM_CONST.HTTP_RSP_CODE_HTTP_VERSION_NOT_SUPPORTED, get_request_source_response = "506", XDM_CONST.HTTP_RSP_CODE_VARIANT_ALSO_NEGOTIATES, get_request_source_response = "507", XDM_CONST.HTTP_RSP_CODE_INSUFFICIENT_STORAGE, get_request_source_response = "508", XDM_CONST.HTTP_RSP_CODE_LOOP_DETECTED, get_request_source_response = "511", XDM_CONST.HTTP_RSP_CODE_NETWORK_AUTHENTICATION_REQUIRED, get_request_source_response = null, null, to_string(get_request_source_response)),
+	xdm.network.http.method =  if(get_request_target_method = "ACL", XDM_CONST.HTTP_METHOD_ACL, get_request_target_method = "BASELINE_CONTROL", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL, get_request_target_method = "BIND", XDM_CONST.HTTP_METHOD_BIND, get_request_target_method = "CHECKIN", XDM_CONST.HTTP_METHOD_CHECKIN, get_request_target_method = "CHECKOUT", XDM_CONST.HTTP_METHOD_CHECKOUT, get_request_target_method = "CONNECT", XDM_CONST.HTTP_METHOD_CONNECT, get_request_target_method = "COPY", XDM_CONST.HTTP_METHOD_COPY, get_request_target_method = "DELETE", XDM_CONST.HTTP_METHOD_DELETE, get_request_target_method = "GET", XDM_CONST.HTTP_METHOD_GET, get_request_target_method = "HEAD", XDM_CONST.HTTP_METHOD_HEAD, get_request_target_method = "LABEL", XDM_CONST.HTTP_METHOD_LABEL, get_request_target_method = "LINK", XDM_CONST.HTTP_METHOD_LINK, get_request_target_method = "LOCK", XDM_CONST.HTTP_METHOD_LOCK, get_request_target_method = "MERGE", XDM_CONST.HTTP_METHOD_MERGE, get_request_target_method = "MKACTIVITY", XDM_CONST.HTTP_METHOD_MKACTIVITY, get_request_target_method = "MKCALENDAR", XDM_CONST.HTTP_METHOD_MKCALENDAR, get_request_target_method = "MKCOL", XDM_CONST.HTTP_METHOD_MKCOL, get_request_target_method = "MKREDIRECTREF", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, get_request_target_method = "MKWORKSPACE", XDM_CONST.HTTP_METHOD_MKWORKSPACE, get_request_target_method = "MOVE", XDM_CONST.HTTP_METHOD_MOVE, get_request_target_method = "OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS, get_request_target_method = "ORDERPATCH", XDM_CONST.HTTP_METHOD_ORDERPATCH, get_request_target_method = "PATCH", XDM_CONST.HTTP_METHOD_PATCH, get_request_target_method = "POST", XDM_CONST.HTTP_METHOD_POST, get_request_target_method = "PRI", XDM_CONST.HTTP_METHOD_PRI, get_request_target_method = "PROPFIND", XDM_CONST.HTTP_METHOD_PROPFIND, get_request_target_method = "PROPPATCH", XDM_CONST.HTTP_METHOD_PROPPATCH, get_request_target_method = "PUT", XDM_CONST.HTTP_METHOD_PUT, get_request_target_method = "REBIND", XDM_CONST.HTTP_METHOD_REBIND, get_request_target_method = "REPORT", XDM_CONST.HTTP_METHOD_REPORT, get_request_target_method = "SEARCH", XDM_CONST.HTTP_METHOD_SEARCH, get_request_target_method = "TRACE", XDM_CONST.HTTP_METHOD_TRACE, get_request_target_method = "UNBIND", XDM_CONST.HTTP_METHOD_UNBIND, get_request_target_method = "UNCHECKOUT", XDM_CONST.HTTP_METHOD_UNCHECKOUT, get_request_target_method = "UNLINK", XDM_CONST.HTTP_METHOD_UNLINK, get_request_target_method = "UNLOCK", XDM_CONST.HTTP_METHOD_UNLOCK, get_request_target_method = "UPDATE", XDM_CONST.HTTP_METHOD_UPDATE, get_request_target_method = "UPDATEREDIRECTREF", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, get_request_target_method = "VERSION_CONTROL", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, get_request_target_method = null, null, to_string(get_request_target_method));
+
+
+
+// Audit Mapping - User|Group|ServiceAccount ClusterRoleBinding
+config case_sensitive = true
+| alter
+    get_category = coalesce(category, Category),
+    get_properties_log_requestObject_kind = coalesce(to_string(properties -> log) -> requestObject.kind, RequestObject -> kind),   
+    get_properties_log_responseObject_kind = coalesce(to_string(properties -> log) -> responseObject.kind, ResponseObject -> kind),
+    get_properties_log_requestObject_subjects_kind = coalesce(arrayindex(to_string(properties -> log) -> requestObject.subjects[], 0) -> kind, arrayindex(requestObject -> subjects[], 0) -> kind)
+| filter get_category in ("kube-audit", "kube-audit-admin") and get_properties_log_requestObject_subjects_kind ~= "User|Group|ServiceAccount" and get_properties_log_responseObject_kind = "ClusterRoleBinding" and get_properties_log_requestObject_kind = null
+| call msft_azure_resourcelogs_commonfields
+| call msft_azure_aks_audit_general_fields
+| alter
+	get_properties_log_requestObject_subjects_name = coalesce(arrayindex(get_properties_log -> requestObject.subjects[], 0) -> name, arrayindex(RequestObject -> subjects[], 0) -> name),
+    get_properties_log_responseObject_subjects_kind = coalesce(arrayindex(get_properties_log -> responseObject.subjects[], 0) -> kind, arrayindex(ResponseObject -> subjects[], 0) -> kind),
+    get_properties_log_responseObject_subjects_name = coalesce(arrayindex(get_properties_log -> responseObject.subjects[], 0) -> name, arrayindex(ResponseObject -> subjects[], 0) -> name),
+    create_group_builtin = arraycreate("system:nodes", "system:serviceaccount"),
+    create_accountservice_builtin = arraycreate("default","aksService", "aks-support", "system:anonymous", "kube-controller-manager", "kube-scheduler", "kube-proxy", "metrics-server", "cloud-node-manager", "azure-policy", "azure-file-csi-driver", "azure-disk-csi-driver", "omsagent", "ama-logs", "ama-metrics")
+| alter
+    create_all_builtin = arrayconcat(create_group_builtin, create_accountservice_builtin)    
+| alter
+	xdm.target.resource.value = object_create("objectRef_namespace", get_properties_log_objectRef_namespace, "objectRef_subresource", get_properties_log_objectRef_subresource, "objectRef_resourceVersion", get_properties_log_objectRef_resourceVersion, "objectRef_apiVersion", get_properties_log_objectRef_apiVersion, "responseObject_metadata_labels", get_properties_log_responseObject_metadata_labels, "responseObject_metadata_annotations", get_properties_log_responseObject_metadata_annotations),
+	xdm.event.description = object_create("message", get_properties_log_responseStatus_message, "requestObject", get_properties_log_requestObject, "responseObject", get_properties_log_responseObject, "responseStatus", get_properties_log_responseStatus, "user_extra_annotations", get_properties_log_user_extra, "log_annotations", get_properties_log_annotations),
+	xdm.target.user.username = get_properties_log_responseObject_subjects_name,
+	xdm.source.user.user_type = if(
+		get_properties_log_requestObject_subjects_kind = "ServiceAccount", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
+		get_properties_log_requestObject_subjects_kind = "User", XDM_CONST.USER_TYPE_REGULAR
+	),
+	xdm.source.user.identity_type = if(arraymap(create_all_builtin, if(get_properties_log_requestObject_subjects_name ~= "@element", "@element")) != null, XDM_CONST.IDENTITY_TYPE_BUILTIN),
+	xdm.target.user.user_type = if(
+		get_properties_log_responseObject_subjects_kind = "ServiceAccount", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
+		get_properties_log_responseObject_subjects_kind = "User", XDM_CONST.USER_TYPE_REGULAR
+	),		
+	xdm.target.user.identity_type = if(arraymap(create_all_builtin, if(get_properties_log_responseObject_subjects_name ~= "@element", "@element")) != null, XDM_CONST.IDENTITY_TYPE_BUILTIN);
+
+
+
+// Audit Mapping - RequestResponse - StorageClass, Status
+config case_sensitive = true
+| alter
+    get_category = coalesce(category, Category),
+    get_properties_log_requestObject_kind = coalesce(to_string(properties -> log) -> requestObject.kind, RequestObject -> kind),   
+    get_properties_log_responseObject_kind = coalesce(to_string(properties -> log) -> responseObject.kind, ResponseObject -> kind)
+| filter get_category in ("kube-audit", "kube-audit-admin") and get_properties_log_requestObject_kind = "StorageClass" and get_properties_log_responseObject_kind = "Status"
+| call msft_azure_resourcelogs_commonfields
+| call msft_azure_aks_audit_general_fields
+| alter
+	xdm.target.resource.value = object_create("objectRef_namespace", get_properties_log_objectRef_namespace, "objectRef_subresource", get_properties_log_objectRef_subresource, "objectRef_resourceVersion", get_properties_log_objectRef_resourceVersion, "objectRef_apiVersion", get_properties_log_objectRef_apiVersion, "responseObject_metadata_labels", get_properties_log_responseObject_metadata_labels, "responseObject_metadata_annotations", get_properties_log_responseObject_metadata_annotations),
+	xdm.event.description = object_create("message", get_properties_log_responseStatus_message, "requestObject", get_properties_log_requestObject, "responseObject", get_properties_log_responseObject, "responseStatus", get_properties_log_responseStatus, "user_extra_annotations", get_properties_log_user_extra, "log_annotations", get_properties_log_annotations),
+	xdm.database.operation = if(
+		get_properties_log_verb = "query", XDM_CONST.DB_OPERATION_QUERY,
+		get_properties_log_verb = "update", XDM_CONST.DB_OPERATION_UPDATE,
+		get_properties_log_verb = "create", XDM_CONST.DB_OPERATION_CREATE,
+		get_properties_log_verb = "delete", XDM_CONST.DB_OPERATION_DELETE,
+		get_properties_log_verb = "alter", XDM_CONST.DB_OPERATION_ALTER
+	),
+	xdm.database.schema = get_properties_log_requestObject;
+
+
+
+// Audit Mapping - Metadata and Request log types
+config case_sensitive = true
+| alter
+    get_category = coalesce(category, Category),
+    get_properties_log_level = coalesce(to_string(properties -> log) -> level, Level)
+| filter get_category in ("kube-audit", "kube-audit-admin") and get_properties_log_level ~= "Metadata|Request"
+| call msft_azure_resourcelogs_commonfields
+| call msft_azure_aks_audit_general_fields
+| alter
+    create_group_builtin = arraycreate("system:nodes", "system:serviceaccount"),
+    create_accountservice_builtin = arraycreate("default", "aksService", "aks-support", "system:anonymous", "kube-controller-manager", "kube-scheduler", "kube-proxy", "metrics-server", "cloud-node-manager", "azure-policy", "azure-file-csi-driver", "azure-disk-csi-driver", "omsagent", "ama-logs", "ama-metrics")
+| alter
+    create_all_builtin = arrayconcat(create_group_builtin, create_accountservice_builtin)    
+| alter
+	xdm.target.resource.value = object_create("objectRef_namespace", get_properties_log_objectRef_namespace, "objectRef_subresource", get_properties_log_objectRef_subresource, "objectRef_resourceVersion", get_properties_log_objectRef_resourceVersion, "objectRef_apiVersion", get_properties_log_objectRef_apiVersion),
+	xdm.event.description = object_create("message", get_properties_log_responseStatus_message, "requestObject", get_properties_log_requestObject, "responseObject", get_properties_log_responseObject, "responseStatus", get_properties_log_responseStatus, "user_extra_annotations", get_properties_log_user_extra, "log_annotations", get_properties_log_annotations, "responseObject_metadata_labels", get_properties_log_responseObject_metadata_labels, "responseObject_metadata_annotations", get_properties_log_responseObject_metadata_annotations),
+	xdm.source.user.user_type = if(arraymap(create_all_builtin, if(get_properties_log_user_username ~= "@element", "@element")) != null, XDM_CONST.USER_TYPE_SERVICE_ACCOUNT),
+	xdm.source.user.identity_type = if(arraymap(create_all_builtin, if(get_properties_log_user_username ~= "@element", "@element")) != null, XDM_CONST.IDENTITY_TYPE_BUILTIN);
+
+
+
+// Audit Mapping - The default mapping for any AKS Audit log structures 
+config case_sensitive = true
+| alter
+	get_category = coalesce(category, Category)
+| filter get_category in ("kube-audit", "kube-audit-admin")
+| call msft_azure_resourcelogs_commonfields
+| call msft_azure_aks_audit_general_fields
+| alter
+	xdm.target.resource.value = object_create("objectRef_namespace", get_properties_log_objectRef_namespace, "objectRef_subresource", get_properties_log_objectRef_subresource, "objectRef_resourceVersion", get_properties_log_objectRef_resourceVersion, "objectRef_apiVersion", get_properties_log_objectRef_apiVersion, "responseObject_metadata_labels", get_properties_log_responseObject_metadata_labels, "responseObject_metadata_annotations", get_properties_log_responseObject_metadata_annotations),
+	xdm.event.description = object_create("message", get_properties_log_responseStatus_message, "requestObject", get_properties_log_requestObject, "responseObject", get_properties_log_responseObject, "responseStatus", get_properties_log_responseStatus, "user_extra_annotations", get_properties_log_user_extra, "log_annotations", get_properties_log_annotations);
