@@ -20,6 +20,11 @@ def client() -> Client:
     )
 
 
+def load_test_data(file_name):
+    with open(f"test_data/{file_name}.json") as file:
+        return json.load(file)
+
+
 class HttpRequestsMocker:
 
     def __init__(self, num_of_events: int):
@@ -516,3 +521,320 @@ def test_get_events_command_command(mocker):
     CybelAngelEventCollector.main()
     fetched_events = return_results_mocker.call_args[0][0]
     assert len(fetched_events.outputs) == 100
+
+
+def mock_client():
+    """
+    Create a mock client for testing.
+    """
+    from CybelAngelEventCollector import Client
+
+    return Client(
+        TEST_URL,
+        client_id="1234",
+        client_secret="1234",
+        verify=False,
+        proxy=False,
+    )
+
+
+def test_cybelangel_report_list_command(mocker):
+    """
+    Given:
+     - A start date and an end date.
+
+    When:
+     - Retrieving a list of reports within the specified date range.
+
+    Then:
+     - Ensure the command returns a valid list of reports.
+     - Validate that the outputs are correctly formatted.
+    """
+    from CybelAngelEventCollector import cybelangel_report_list_command
+    client = mock_client()
+    mocker.patch.object(
+        client,
+        "_http_request",
+        return_results=load_test_data("report_list"),
+    )
+    args = {"start_date": "2024-01-01", "end_date": "2024-02-01"}
+
+    result = cybelangel_report_list_command(client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "CybelAngel.Report"
+    assert result.outputs is not None
+    assert "Reports list" in result.readable_output
+
+
+def test_cybelangel_report_get_command(mocker):
+    """
+    Given:
+     - A specific report ID.
+
+    When:
+     - Retrieving the details of the report.
+
+    Then:
+     - Ensure the command returns the correct report details.
+     - Validate that the readable output includes the report ID.
+    """
+    from CybelAngelEventCollector import cybelangel_report_get_command
+    client = mock_client()
+    mocker.patch.object(
+        client,
+        "_http_request",
+        return_results=load_test_data("report_list").get("reports")[0],
+    )
+    args = {"report_id": "test"}
+
+    result = cybelangel_report_get_command(client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "CybelAngel.Report"
+    assert result.outputs is not None
+    assert "Report ID" in result.readable_output
+
+
+def test_cybelangel_report_get_command_to_pdf(mocker):
+    """
+    Given:
+     - A report ID and the 'pdf' flag set to true.
+
+    When:
+     - Requesting to export the report as a PDF.
+
+    Then:
+     - Ensure the command returns a valid file result in PDF format.
+    """
+    from CybelAngelEventCollector import cybelangel_report_get_command
+    client = mock_client()
+    mocker.patch.object(
+        client,
+        "_http_request",
+        return_results=load_test_data("report_list").get("reports")[0],
+    )
+    # test get report to pdf
+    args = {"report_id": "test", "pdf": "true"}
+    mocker.patch(
+        "CybelAngelEventCollector.fileResult",
+        return_value={
+            "Contents": "",
+            "ContentsFormat": "text",
+            "Type": 9,
+            "File": "cybelangel_report_<report_id>.pdf",
+            "FileID": "<report_id>",
+        },
+    )
+    result = cybelangel_report_get_command(client, args)
+    assert isinstance(result, dict)
+
+
+def test_cybelangel_mirror_report_get_command(mocker):
+    """
+    Given:
+     - A report ID with the 'csv' flag set to false.
+
+    When:
+     - Fetching mirror report details.
+
+    Then:
+     - Ensure the command returns a CommandResults object with the expected report data.
+    """
+    from CybelAngelEventCollector import cybelangel_mirror_report_get_command
+    client = mock_client()
+    mocker.patch.object(
+        client,
+        "_http_request",
+        return_results=load_test_data("mirror-report"),
+    )
+    args = {"csv": "false", "report_id": "test"}
+
+    result = cybelangel_mirror_report_get_command(client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "CybelAngel.ReportMirror"
+    assert result.outputs is not None
+    assert "Mirror details for Report ID" in result.readable_output
+
+
+def test_cybelangel_mirror_report_get_command_to_csv(mocker):
+    """
+    Given:
+     - A report ID with the 'csv' flag set to true.
+
+    When:
+     - Requesting to export the mirror report as a CSV file.
+
+    Then:
+     - Ensure the command returns a valid file result in CSV format.
+    """
+    from CybelAngelEventCollector import cybelangel_mirror_report_get_command
+    client = mock_client()
+    mocker.patch.object(
+        client,
+        "_http_request",
+        return_results=load_test_data("mirror-report"),
+    )
+    args = {"report_id": "test", "csv": "true"}
+    mocker.patch(
+        "CybelAngelEventCollector.fileResult",
+        return_value={
+            "Contents": "",
+            "ContentsFormat": "text",
+            "Type": 9,
+            "File": "cybelangel_mirror_report_<report_id>.csv",
+            "FileID": "<report_id>",
+        },
+    )
+    result = cybelangel_mirror_report_get_command(client, args)
+    assert isinstance(result, dict)
+
+
+def test_cybelangel_report_comment_create_command(mocker):
+    """
+    Given:
+     - A discussion ID, comment content, and additional metadata.
+
+    When:
+     - Creating a new comment for the report.
+
+    Then:
+     - Ensure the command successfully adds the comment and returns the expected output.
+    """
+    from CybelAngelEventCollector import cybelangel_report_comment_create_command, Client
+    client = mock_client()
+    report_id = "11223344"
+
+    mocker.patch.object(
+        Client,
+        "get_report_comment",
+        return_value=load_test_data("create_comment_result"),
+    )
+
+    args = {"discussion_id": f"{report_id}:tenant id", "content": "Test func", "parent_id": "55667788", "assigned": "true"}
+    response = cybelangel_report_comment_create_command(client, args)
+
+    assert f"Comment created successfully for report ID: {report_id}" in response.readable_output
+
+
+def test_cybelangel_report_comment_create_command_invalid(mocker):
+    """
+    Given:
+     - An invalid discussion ID that does not follow the 'report_id:tenant_id' format.
+
+    When:
+     - Attempting to create a comment with the invalid discussion ID.
+
+    Then:
+     - Ensure the command raises a ValueError with the correct error message.
+    """
+    from CybelAngelEventCollector import cybelangel_report_comment_create_command
+    client = mock_client()
+    report_id = "11223344"
+
+    # Case: Invalid discussion_id format (no colon)
+    args_invalid = {"discussion_id": report_id, "content": "Test func"}
+    with pytest.raises(ValueError, match="Invalid discussion_id format. Expected format: 'report_id:tenant_id'."):
+        cybelangel_report_comment_create_command(client, args_invalid)
+
+
+def test_cybelangel_archive_report_by_id_get_command(mocker):
+    """
+    Given:
+     - A report ID to retrieve the archived version of the report.
+
+    When:
+     - Requesting the archived report in ZIP format.
+
+    Then:
+     - Ensure the command returns a file result containing the ZIP archive.
+     - Validate that the returned file name follows the expected format.
+    """
+    from CybelAngelEventCollector import cybelangel_archive_report_by_id_get_command
+    client = mock_client()
+    mocker.patch.object(
+        client,
+        "_http_request",
+        return_results=load_test_data("mirror-report"),
+    )
+    args = {"report_id": "test"}
+    mocker.patch(
+        "CybelAngelEventCollector.fileResult",
+        return_value={
+            "Contents": "",
+            "ContentsFormat": "text",
+            "Type": 9,
+            "File": "cybelangel_archive_report_<report_id>.zip",
+            "FileID": "<report_id>",
+        },
+    )
+    result = cybelangel_archive_report_by_id_get_command(client, args)
+    assert isinstance(result, dict)
+
+
+def test_cybelangel_report_comments_get_command(mocker):
+    """
+    Given:
+     - A report ID for which comments need to be retrieved.
+     - A response containing existing comments for the report.
+
+    When:
+     - Running the `cybelangel_report_comments_get_command`.
+
+    Then:
+     - Ensure the command successfully retrieves comments for the given report.
+     - Validate that the `discussion_id` starts with the report ID.
+     - Validate that the `discussion_id` ends with 'Tenant id'.
+    """
+    from CybelAngelEventCollector import cybelangel_report_comments_get_command, Client
+    client = mock_client()
+    # case No previous comments exist in this report
+    mocker.patch.object(
+        Client,
+        "get_report_comment",
+        return_value=load_test_data("get_comments_res"),
+    )
+    report_id = "11223344"
+    args = {'report_id': report_id}
+    response = cybelangel_report_comments_get_command(client, args)
+    assert response.outputs.get("Comment")[0].get("discussion_id").startswith(report_id)  # type: ignore
+    assert response.outputs.get("Comment")[0].get("discussion_id").endswith("Tenant id")  # type: ignore
+
+
+def test_cybelangel_report_attachment_get_command(mocker):
+    """
+    Given:
+     - report ID and attachment ID
+
+    When:
+     - running the cybelangel_report_attachment_get_command with the given arguments
+
+    Then:
+     - ensure the function returns a dictionary containing the expected file details
+        and the text of the attachment starts with "sep=" for CSV file.
+    """
+    from CybelAngelEventCollector import cybelangel_report_attachment_get_command, Client
+    client = mock_client()
+    response = mocker.patch.object(
+        Client,
+        "get_report_attachment",
+        return_value=type("StringWrapper", (object,), {
+                          "text": "sep=,\nkeyword,email,password\nTest1,Test2,Test3\nTest1,Test2"})()
+    )
+    report_id = "11223344"
+    attachment_id = "55667788"
+    args = {"report_id": report_id}
+    mocker.patch(
+        "CybelAngelEventCollector.fileResult",
+        return_value={
+            "Contents": "",
+            "ContentsFormat": "text",
+            "Type": 9,
+            "File": f"cybelangel_report_{report_id}_attachment_{attachment_id}.csv",
+            "FileID": "<report_id>",
+        },
+    )
+    result = cybelangel_report_attachment_get_command(client, args)
+    assert isinstance(result, dict)
+    assert response.text.startswith("sep=")
