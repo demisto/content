@@ -2,10 +2,10 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 
-''' CONSTANTS '''
-VENDOR = 'Jamf'
-PRODUCT = 'Protect'
-ASSETS_PRODUCT = 'protect_computers'
+""" CONSTANTS """
+VENDOR = "Jamf"
+PRODUCT = "Protect"
+ASSETS_PRODUCT = "protect_computers"
 ALERT_PAGE_SIZE = 200
 AUDIT_PAGE_SIZE = 5000
 COMPUTER_PAGE_SIZE = 100
@@ -14,10 +14,10 @@ DEFAULT_MAX_FETCH_AUDIT = 20000
 COMPUTER_MAX_FETCH = 500
 DEFAULT_LIMIT = 10
 MINUTES_BEFORE_TOKEN_EXPIRED = 2
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
@@ -38,8 +38,8 @@ class Client(BaseClient):
             str: The authentication token.
         """
         integration_context = get_integration_context()
-        if token := integration_context.get('token'):
-            expires_date = integration_context.get('expires')
+        if token := integration_context.get("token"):
+            expires_date = integration_context.get("expires")
             if expires_date and not self._is_token_expired(expires_date):
                 return token
         return self._create_new_token(client_id, client_password)
@@ -143,18 +143,9 @@ class Client(BaseClient):
         Returns:
             dict: The response from the API.
         """
-        json_data = {
-            "query": query,
-            "variables": variables
-        }
+        json_data = {"query": query, "variables": variables}
         headers = {"Authorization": self.token}
-        res = self._http_request(
-            method="POST",
-            url_suffix="/graphql",
-            headers=headers,
-            json_data=json_data,
-            retries=3
-        )
+        res = self._http_request(method="POST", url_suffix="/graphql", headers=headers, json_data=json_data, retries=3)
         self.handle_errors(res)
         return res
 
@@ -198,10 +189,7 @@ class Client(BaseClient):
                 }
             }
             """
-            variables = assign_params(
-                page_size=ALERT_PAGE_SIZE,
-                next=next_page
-            )
+            variables = assign_params(page_size=ALERT_PAGE_SIZE, next=next_page)
             if not next_page:
                 variables["created"] = args.get("created")
 
@@ -226,12 +214,7 @@ class Client(BaseClient):
             }
             """
 
-            variables = {
-                "input": assign_params(
-                    pageSize=AUDIT_PAGE_SIZE,
-                    next=next_page
-                )
-            }
+            variables = {"input": assign_params(pageSize=AUDIT_PAGE_SIZE, next=next_page)}
             if not next_page:
                 variables["input"]["condition"] = {
                     "dateRange": {
@@ -303,10 +286,7 @@ class Client(BaseClient):
                     }
                 }
             """
-            variables = assign_params(
-                page_size=COMPUTER_PAGE_SIZE,
-                next=next_page
-            )
+            variables = assign_params(page_size=COMPUTER_PAGE_SIZE, next=next_page)
 
         demisto.debug(f"fetching event type: '{event_type}' with variables: {variables}")
 
@@ -339,13 +319,7 @@ def test_module(client: Client, params) -> str:
     return "ok"
 
 
-def get_events(
-    client,
-    event_type,
-    max_fetch: int,
-    next_page: str = "",
-    command_args: dict = {}
-) -> tuple[list[dict], dict]:
+def get_events(client, event_type, max_fetch: int, next_page: str = "", command_args: dict = {}) -> tuple[list[dict], dict]:
     """
     Fetches events from the Jamf Protect API.
 
@@ -412,12 +386,20 @@ def get_events_for_type(
     next_page = last_run.get("next_page", "")
 
     events, page_info = get_events(client, event_type, max_fetch, next_page, command_args)
-    filtered_events = [event for event in events if (event.get("date") or event.get(
-        "created")) != last_run.get("last_fetch")] if events else events
+    filtered_events = (
+        [event for event in events if (event.get("date") or event.get("created")) != last_run.get("last_fetch")]
+        if events
+        else events
+    )
     demisto.debug(f"Filtered out {len(events)-len(filtered_events)} duplicate events.")
 
-    latest_event = max(filter(None, (arg_to_datetime(event.get("created") or event.get("date"), DATE_FORMAT)
-                                     for event in filtered_events))).strftime(DATE_FORMAT) if filtered_events else current_date
+    latest_event = (
+        max(
+            filter(None, (arg_to_datetime(event.get("created") or event.get("date"), DATE_FORMAT) for event in filtered_events))
+        ).strftime(DATE_FORMAT)
+        if filtered_events
+        else current_date
+    )
 
     new_last_fetch_date = max(created, latest_event)
     new_last_run = {"last_fetch": new_last_fetch_date}
@@ -479,43 +461,41 @@ def fetch_assets(client, assets_last_run={}, max_fetch=COMPUTER_MAX_FETCH):
             - Total assets count.
             - Snapshot ID.
     """
-    next_page = assets_last_run.get('next_page', '')
-    snapshot_id = assets_last_run.get('snapshot_id', str(round(time.time() * 1000)))
+    next_page = assets_last_run.get("next_page", "")
+    snapshot_id = assets_last_run.get("snapshot_id", str(round(time.time() * 1000)))
 
     assets, page_info = get_events(client, "computers", max_fetch, next_page)
 
-    next_run = {
-        'next_page': page_info.get("next"),
-        'snapshot_id': snapshot_id,
-        'nextTrigger': "0",
-        'type': 1
-    } if page_info.get("next") else {}
+    next_run = (
+        {"next_page": page_info.get("next"), "snapshot_id": snapshot_id, "nextTrigger": "0", "type": 1}
+        if page_info.get("next")
+        else {}
+    )
 
     return assets, next_run, page_info.get("total", 0), snapshot_id
 
 
 def get_events_command(
-    client: Client,
-    args: dict[str, str]
+    client: Client, args: dict[str, str]
 ) -> tuple[list[dict], list[CommandResults]] | tuple[list, CommandResults]:
     """
-     Fetches events from the Jamf Protect API within a specified date range and returns them along with the command results.
+    Fetches events from the Jamf Protect API within a specified date range and returns them along with the command results.
 
-     This function fetches both alert and audit type events from the Jamf Protect API based on the provided start and end dates.
-     It fetches events up to the maximum number specified by the 'limit' argument.
-     If the 'should_push_events' argument is set to True, it sends the fetched events to XSIAM.
+    This function fetches both alert and audit type events from the Jamf Protect API based on the provided start and end dates.
+    It fetches events up to the maximum number specified by the 'limit' argument.
+    If the 'should_push_events' argument is set to True, it sends the fetched events to XSIAM.
 
-     Args:
-         client (Client): An instance of the Client class for interacting with the API.
-         args (dict): A dictionary containing the arguments for the command.
-                      It should contain keys 'start_date', 'end_date', 'limit' and 'should_push_events'.
+    Args:
+        client (Client): An instance of the Client class for interacting with the API.
+        args (dict): A dictionary containing the arguments for the command.
+                     It should contain keys 'start_date', 'end_date', 'limit' and 'should_push_events'.
 
-     Returns:
-         tuple: A tuple containing two elements:
-             - A list of dictionaries. Each dictionary represents an event.
-             - A list of CommandResults objects. Each CommandResults object represents the command results for a type of event.
-     """
-    limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
+    Returns:
+        tuple: A tuple containing two elements:
+            - A list of dictionaries. Each dictionary represents an event.
+            - A list of CommandResults objects. Each CommandResults object represents the command results for a type of event.
+    """
+    limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT
     event_types = {"alert": limit, "audit": limit}
     start_date, end_date = validate_start_and_end_dates(args)
 
@@ -524,21 +504,15 @@ def get_events_command(
 
     for event_type, max_fetch in event_types.items():
         fetched_events, _ = get_events_for_type(
-            client,
-            last_run={},
-            event_type=event_type,
-            max_fetch=max_fetch,
-            start_date=start_date,
-            end_date=end_date
+            client, last_run={}, event_type=event_type, max_fetch=max_fetch, start_date=start_date, end_date=end_date
         )
         events = fetched_events[:max_fetch]
         all_fetched_events.extend(events)
 
         if events:
-            command_results.append(CommandResults(
-                readable_output=tableToMarkdown(f"Jamf Protect {event_type} Events", events),
-                raw_response=events
-            ))
+            command_results.append(
+                CommandResults(readable_output=tableToMarkdown(f"Jamf Protect {event_type} Events", events), raw_response=events)
+            )
 
     if not all_fetched_events:
         command_results.append(CommandResults(readable_output="No events found."))
@@ -547,15 +521,16 @@ def get_events_command(
 
 
 def get_assets_command(client: Client, args: dict[str, str]):
-    limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
+    limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT
 
     fetched_assets, _, _, _ = fetch_assets(client, max_fetch=limit)
     assets = fetched_assets[:limit]
 
-    command_results = CommandResults(
-        readable_output=tableToMarkdown("Jamf Protect Computers Assets", assets),
-        raw_response=assets
-    ) if assets else CommandResults(readable_output="No computer assets found.")
+    command_results = (
+        CommandResults(readable_output=tableToMarkdown("Jamf Protect Computers Assets", assets), raw_response=assets)
+        if assets
+        else CommandResults(readable_output="No computer assets found.")
+    )
 
     return assets, command_results
 
@@ -603,8 +578,7 @@ def calculate_fetch_dates(start_date: str, last_run: dict, end_date: str = "") -
     """
     now_utc_time = get_current_time()
     # argument > last run > current time
-    start_date = start_date or last_run.get('last_fetch') or (
-        (now_utc_time - timedelta(minutes=1)).strftime(DATE_FORMAT))
+    start_date = start_date or last_run.get("last_fetch") or ((now_utc_time - timedelta(minutes=1)).strftime(DATE_FORMAT))
     # argument > current time
     end_date = end_date or now_utc_time.strftime(DATE_FORMAT)
     return start_date, end_date
@@ -631,7 +605,7 @@ def validate_start_and_end_dates(args):
     """
     start_date_str = ""
     end_date_str = ""
-    if start_date := arg_to_datetime(args.get('start_date')):
+    if start_date := arg_to_datetime(args.get("start_date")):
         start_date_str = start_date.strftime(DATE_FORMAT)
     if end_date := arg_to_datetime(args.get("end_date")):
         end_date_str = end_date.strftime(DATE_FORMAT)
@@ -657,12 +631,12 @@ def add_fields_to_events(events: list[dict[str, Any]], event_type: str) -> list:
     for event in events:
         event["source_log_type"] = event_type
         if event_type != "computers":
-            event['_time'] = event.get('date') or event.get('created')
+            event["_time"] = event.get("date") or event.get("created")
 
     return events
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:  # pragma: no cover
@@ -671,40 +645,41 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
     try:
-        client_id = params.get('client', {}).get('identifier', '')
-        client_password = params.get('client', {}).get('password', '')
-        max_fetch_audits = arg_to_number(params.get('max_fetch_audits')) or DEFAULT_MAX_FETCH_AUDIT
-        max_fetch_alerts = arg_to_number(params.get('max_fetch_alerts')) or DEFAULT_MAX_FETCH_ALERT
+        client_id = params.get("client", {}).get("identifier", "")
+        client_password = params.get("client", {}).get("password", "")
+        max_fetch_audits = arg_to_number(params.get("max_fetch_audits")) or DEFAULT_MAX_FETCH_AUDIT
+        max_fetch_alerts = arg_to_number(params.get("max_fetch_alerts")) or DEFAULT_MAX_FETCH_ALERT
 
-        demisto.debug(f'Command being called is {command}')
+        demisto.debug(f"Command being called is {command}")
 
         client = Client(
-            base_url=params.get('base_url', ''),
-            verify=not params.get('insecure', False),
-            proxy=params.get('proxy', False),
+            base_url=params.get("base_url", ""),
+            verify=not params.get("insecure", False),
+            proxy=params.get("proxy", False),
             client_id=client_id,
-            client_password=client_password
+            client_password=client_password,
         )
 
-        if command == 'test-module':
+        if command == "test-module":
             return_results(test_module(client, params))
 
-        elif command == 'jamf-protect-get-events':
+        elif command == "jamf-protect-get-events":
             events, results = get_events_command(client=client, args=args)
             return_results(results)
             if argToBoolean(args.get("should_push_events")):
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
 
-        elif command == 'jamf-protect-get-computer-assets':
+        elif command == "jamf-protect-get-computer-assets":
             assets, results = get_assets_command(client=client, args=args)
             return_results(results)
             if argToBoolean(args.get("should_push_events")):
-                send_data_to_xsiam(data=assets, vendor=VENDOR, product=ASSETS_PRODUCT, data_type='assets',
-                                   items_count=str(len(assets)))
+                send_data_to_xsiam(
+                    data=assets, vendor=VENDOR, product=ASSETS_PRODUCT, data_type="assets", items_count=str(len(assets))
+                )
 
-        elif command == 'fetch-events':
+        elif command == "fetch-events":
             last_run = demisto.getLastRun()
-            demisto.debug(f'Starting fetch events with last run: {last_run}')
+            demisto.debug(f"Starting fetch events with last run: {last_run}")
 
             events, new_last_run = fetch_events(
                 client=client,
@@ -712,30 +687,38 @@ def main() -> None:  # pragma: no cover
                 max_fetch_audits=max_fetch_audits,
                 last_run=last_run,
             )
-            demisto.debug(f'Sending {len(events)} events to XSIAM API')
+            demisto.debug(f"Sending {len(events)} events to XSIAM API")
             send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
 
             demisto.debug(f"Set last run: {new_last_run}")
             demisto.setLastRun(new_last_run)
 
-        elif command == 'fetch-assets':
+        elif command == "fetch-assets":
             last_run = demisto.getAssetsLastRun()
-            demisto.debug(f'Starting fetch assets with last run: {last_run}')
+            demisto.debug(f"Starting fetch assets with last run: {last_run}")
 
             assets, new_last_run, total_assets_to_report, snapshot_id = fetch_assets(client=client, assets_last_run=last_run)
 
-            demisto.debug(f"Sending {len(assets)} assets to XSIAM API "
-                          f"with snapshot_id: {snapshot_id} and items_count: {total_assets_to_report}")
+            demisto.debug(
+                f"Sending {len(assets)} assets to XSIAM API "
+                f"with snapshot_id: {snapshot_id} and items_count: {total_assets_to_report}"
+            )
 
-            send_data_to_xsiam(data=assets, vendor=VENDOR, product=ASSETS_PRODUCT, data_type='assets',
-                               snapshot_id=snapshot_id, items_count=str(total_assets_to_report))
+            send_data_to_xsiam(
+                data=assets,
+                vendor=VENDOR,
+                product=ASSETS_PRODUCT,
+                data_type="assets",
+                snapshot_id=snapshot_id,
+                items_count=str(total_assets_to_report),
+            )
 
             demisto.debug(f"Set assets last run: {new_last_run}")
             demisto.setAssetsLastRun(new_last_run)
 
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
