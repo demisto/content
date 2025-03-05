@@ -6,6 +6,21 @@
         "Gatewatcher Incident": {
             "dontMapEventToLabels": true,
             "internalMapping": {
+                "Destination IP": {
+                    "simple": "destination.ip"
+                },
+                "Destination Port": {
+                    "simple": "destination.port"
+                },
+                "Protocol": {
+                    "simple": "network.protocol"
+                },
+                "Source IP": {
+                    "simple": "source.ip"
+                },
+                "Source Port": {
+                    "simple": "source.port"
+                },
                 "Gatewatcher Flow ID": {
                     "simple": "network.flow_id"
                 },
@@ -620,6 +635,12 @@
 	"Gatewatcher Alert Incident": {
             "dontMapEventToLabels": false,
             "internalMapping": {
+                "Destination IP": {
+                    "simple": "destination.ip"
+                },
+                "Destination Port": {
+                    "simple": "destination.port"
+                },
                 "Gatewatcher Flow ID": {
                     "simple": "network.flow_id"
                 },
