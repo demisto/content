@@ -201,7 +201,7 @@ script:
   - name: cyberint-get-file-sha256
     arguments:
     - name: value
-      description: SHA256 string
+      description: SHA256 string.
     outputs:
     - contextPath: Cyberint.detected_activity
       description: Detected activity.
@@ -228,7 +228,7 @@ script:
   - name: cyberint-get-domain
     arguments:
     - name: value
-      description: Domain string
+      description: Domain string.
     outputs:
     - contextPath: Cyberint.detected_activity
       description: Detected activity.
@@ -255,7 +255,7 @@ script:
   - name: cyberint-get-ipv4
     arguments:
     - name: value
-      description: IPv4 string
+      description: IPv4 string.
     outputs:
     - contextPath: Cyberint.detected_activity
       description: Detected activity.
@@ -282,7 +282,7 @@ script:
   - name: cyberint-get-url
     arguments:
     - name: value
-      description: URL string (starts with schema, e.g. https://)
+      description: URL string (starts with schema, e.g. https://).
     outputs:
     - contextPath: Cyberint.detected_activity
       description: Detected activity.
