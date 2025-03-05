@@ -4,10 +4,12 @@
     "feed": false,
     "id": "Gatewatcher Incidents Classifier",
     "keyTypeMap": {
+        "active_cti": "Gatewatcher Alert Incident",
         "beacon_detect": "Gatewatcher Alert Incident",
         "dga_detect": "Gatewatcher Alert Incident",
         "ioc": "Gatewatcher Alert Incident",
         "malcore": "Gatewatcher Alert Incident",
+	    "malcore_retroanalyzer": "Gatewatcher Alert Incident",
         "malicious_powershell_detect": "Gatewatcher Alert Incident",
         "ransomware_detect": "Gatewatcher Alert Incident",
         "retrohunt": "Gatewatcher Alert Incident",

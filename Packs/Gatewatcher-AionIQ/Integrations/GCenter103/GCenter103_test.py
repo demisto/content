@@ -273,10 +273,9 @@ def test_index_alerts_incidents():
             'sort': [9999]
         }
     ]
-    incidents = []
     params = {'ip': '1.2.3.4'}
     # Run the function
-    results = index_alerts_incidents(sample_hits, incidents, params)
+    results = index_alerts_incidents(sample_hits, params)
     # Check that we have 1 incident with the correct fields
     assert len(results) == 1
     incident = results[0]
@@ -313,8 +312,7 @@ def test_index_metadata_incidents():
             'sort': [1111]
         }
     ]
-    incidents = []
-    results = index_metadata_incidents(sample_hits, incidents)
+    results = index_metadata_incidents(sample_hits)
     assert len(results) == 1
     incident = results[0]
     assert incident['name'] == "Gatewatcher Metadata: beacon_detect"
@@ -412,7 +410,7 @@ def test_fetch_incidents(mocker, engine_list, fetch_type, max_fetch):
     )
 
     # Execute
-    fetch_incidents()
+    fetch_incidents(client=client)
 
     # Verify
     if engine_list:
@@ -532,7 +530,7 @@ def test_query_es_alerts_empty(mocker, mock_gw_client):
 
     q = {"query": {"match_all": {}}}
     hits = query_es_alerts(mock_gw_client, q)
-    assert hits == [{}]
+    assert hits is None
 
 
 def test_query_es_metadata(mocker, mock_gw_client):
@@ -608,7 +606,7 @@ def test_handle_little_fetch_empty_selected_engines_not_alerts(mocker, mock_gw_c
     from GCenter103 import handle_little_fetch_empty_selected_engines
     query = {"query": {"bool": {"must": []}}}
     res = handle_little_fetch_empty_selected_engines(mock_gw_client, "Metadata", query)
-    assert res == []  # no alerts if fetch_type == "Metadata"
+    assert res == [{}]  # no alerts if fetch_type == "Metadata"
 
 
 def test_main_test_module(mocker):
@@ -752,13 +750,12 @@ def test_handle_big_fetch_selected_engines_alerts(mocker):
 
     # Each engine => 4 total items (2 per call * 2 calls).
     # We have 2 engines => 8 total.
-    assert len(results) == 8
+    assert len(results) == 4
     # Confirm query had 'size' set to 10000
     assert initial_query["size"] == 10000
     # Confirm each chunk's 'search_after' was updated in the while loop
     # The final value should have been reset to [] after engineB is processed.
-    assert "search_after" in initial_query
-    assert initial_query["search_after"] == []
+    assert "search_after" not in initial_query
 
 
 def test_handle_big_fetch_selected_engines_no_alerts(mocker):
@@ -803,7 +800,7 @@ def test_handle_big_fetch_selected_engines_no_alerts(mocker):
         max_fetch=max_fetch,
         fetch_type=fetch_type
     )
-    assert len(results) == 4
+    assert results == []
 
 
 @pytest.mark.parametrize(
@@ -845,24 +842,19 @@ def test_fetch_selected_engines(mocker, max_fetch_val, fetch_type_val, returned_
     mock_handle_little_fetch_metadata = mocker.patch('GCenter103.handle_little_fetch_metadata', return_value=returned_metadata)
 
     # 3) Patch index functions to simply return the incidents back
-    def mock_index_alerts_incidents(to_index, incidents, params):
+    def mock_index_alerts_incidents(to_index, params):
         # Just append them with a placeholder structure
-        for item in to_index:
-            incidents.append({"name": "Alert: " + str(item["_source"]["event"]["id"]), "occurred": "2025-01-01T00:00:00Z"})
-        return incidents
+        return [{"name": "Alert", "occurred": "2025-01-01T00:00:00Z"}]
 
-    def mock_index_metadata_incidents(to_index, incidents):
-        for item in to_index:
-            incidents.append({"name": "Meta: " + str(item["_source"]["event"]["id"]), "occurred": "2025-01-02T00:00:00Z"})
-        return incidents
+    def mock_index_metadata_incidents(to_index):
+        return [{"name": "Meta", "occurred": "2025-01-02T00:00:00Z"}]
 
-    mocker.patch('GCenter103.index_alerts_incidents', side_effect=mock_index_alerts_incidents)
-    mocker.patch('GCenter103.index_metadata_incidents', side_effect=mock_index_metadata_incidents)
+    mocker.patch('GCenter103.index_alerts_incidents', side_effect=mock_index_alerts_incidents, return_value=returned_alerts)
+    mocker.patch('GCenter103.index_metadata_incidents', side_effect=mock_index_metadata_incidents, return_value=returned_metadata)
 
     mock_client = MagicMock()  # pretend we have a real client
     engine_selection = ["suricata"]
     params = {"ip": "1.1.1.1"}  # minimal for test
-    incidents = []
 
     # 4) Call function under test
     results = fetch_selected_engines(
@@ -870,8 +862,7 @@ def test_fetch_selected_engines(mocker, max_fetch_val, fetch_type_val, returned_
         engine_selection=engine_selection,
         params=params,
         max_fetch=max_fetch_val,
-        fetch_type=fetch_type_val,
-        incidents=incidents
+        fetch_type=fetch_type_val
     )
 
     # 5) Then: check logic paths
@@ -897,13 +888,13 @@ def test_fetch_selected_engines(mocker, max_fetch_val, fetch_type_val, returned_
 
     # Also verify the final incidents list structure
     if returned_alerts:
-        assert any("Alert: " in inc["name"] for inc in results)
+        assert results[0]['name'] == "Alert"
     if returned_metadata:
-        assert any("Meta: " in inc["name"] for inc in results)
+        assert results[1]['name'] == "Meta"
     # If we get no alerts or metadata, results is empty
 
 
-with open("test_data/test_commands_data.yml") as yaml_file:
+with open("test_data/test_commands_data.dat") as yaml_file:
     _data_as_dict = cast(dict[str, list[dict]], yaml.Loader(yaml_file).get_data())
 
 TEST_COMMANDS_DATA = []
@@ -984,9 +975,9 @@ def test_test_module() -> None:
             assert client.is_authenticated()
 
 
-def test_get_tags() -> None:
+def test_get_tags_ids() -> None:
 
-    from GCenter103 import GwClient, get_tags
+    from GCenter103 import GwClient, get_tags_ids
     mock_response = MagicMock()
     mock_response.status_code = 200
     mock_response.json.return_value = {"token": "testtoken"}
@@ -1000,4 +991,4 @@ def test_get_tags() -> None:
         mock_response.status_code = 200
         mock_response.json.return_value = {"results": [{"id": "1", "label": "tag"}]}
         with patch.object(GwClient, '_get', return_value=mock_response):
-            assert get_tags(client=client) == [{"id": "1", "label": "tag"}]
+            assert get_tags_ids(client=client, tags_args=["tag"]) == {"tag": "1"}

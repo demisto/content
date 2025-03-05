@@ -9,151 +9,203 @@ def gatewatcherAlertEngine() -> CommandResults:
     incident = demisto.incident()
     d = json.loads(str(incident['CustomFields']['GatewatcherRawEvent']))
 
+    if d['event']['module'] == "active_cti":
+
+        ret_fields = {
+            "dns.query": d.get('dns', {}).get('query', ""),
+            "flow.bytes_toclient": d.get('flow', {}).get('bytes_toclient', ""),
+            "flow.bytes_toserver": d.get('flow', {}).get('bytes_toserver', ""),
+            "flow.pkts_toclient": d.get('flow', {}).get('pkts_toclient', ""),
+            "flow.pkts_toserver": d.get('flow', {}).get('pkts_toserver', ""),
+            "flow.start": d.get('flow', {}).get('start', ""),
+            "sigflow.action": d.get('sigflow', {}).get('action', ""),
+            "sigflow.category": d.get('sigflow', {}).get('category', ""),
+            "sigflow.gid": d.get('sigflow', {}).get('gid', 0),
+            "sigflow.metadata": d.get('sigflow', {}).get('metadata', {}),
+            "sigflow.payload": d.get('sigflow', {}).get('payload', ""),
+            "sigflow.payload_printable": d.get('sigflow', {}).get('payload_printable', ""),
+            "sigflow.rev": d.get('sigflow', {}).get('rev', 0),
+            "sigflow.signature": d.get('sigflow', {}).get('signature', ""),
+            "sigflow.signature_id": d.get('sigflow', {}).get('signature_id', 0),
+            "sigflow.stream": d.get('sigflow', {}).get('stream', 0)
+        }
+
     if d['event']['module'] == "malcore":
 
         ret_fields = {
-            "malcore.detail_threat_found": "",
-            "malcore.engines_last_update_date": "",
-            "malcore.magic_details": "",
-            "malcore.state": "",
-            "malcore.total_found": ""
+            "malcore.analyzed_clean": d['malcore'].get("analyzed_clean",""),
+            "malcore.analyzed_error": d['malcore'].get("analyzed_error",""),
+            "malcore.analyzed_infected": d['malcore'].get("analyzed_infected",""),
+            "malcore.analyzed_other": d['malcore'].get("analyzed_other",""),
+            "malcore.analyzed_suspicious": d['malcore'].get("analyzed_suspicious",""),
+            "malcore.analyzers_up": d['malcore'].get("analyzers_up",""),
+            "malcore.code": d['malcore'].get("code",""),
+            "malcore.detail_scan_time": d['malcore'].get("detail_scan_time",""),
+            "malcore.detail_threat_found": d['malcore'].get("detail_threat_found",""),
+            "malcore.detail_wait_time": d['malcore'].get("detail_wait_time",""),
+            "malcore.engine_id": d['malcore'].get("engine_id",""),
+            "malcore.engines_last_update_date": d['malcore'].get("engines_last_update_date",""),
+            "malcore.file_type": d['malcore'].get("file_type",""),
+            "malcore.file_type_description": d['malcore'].get("file_type_description",""),
+            "malcore.magic_details": d['malcore'].get("magic_details",""),
+            "malcore.processing_time": d['malcore'].get("processing_time",""),
+            "malcore.reporting_token": d['malcore'].get("reporting_token",""),
+            "malcore.state": d['malcore'].get("state",""),
+            "malcore.total_found": d['malcore'].get("total_found","")
         }
-        ret_fields['malcore.detail_threat_found'] = d['malcore']['detail_threat_found']
-        ret_fields['malcore.engines_last_update_date'] = d['malcore']['engines_last_update_date']
-        ret_fields['malcore.magic_details'] = d['malcore']['magic_details']
-        ret_fields['malcore.state'] = d['malcore']['state']
-        ret_fields['malcore.total_found'] = d['malcore']['total_found']
+
+    if d['event']['module'] == "malcore_retroanalyzer":
+
+        ret_fields = {
+            "malcore_retroanalyzer.analyzed_clean": d['malcore_retroanalyzer'].get("analyzed_clean",""),
+            "malcore_retroanalyzer.analyzed_error": d['malcore_retroanalyzer'].get("analyzed_error",""),
+            "malcore_retroanalyzer.analyzed_infected": d['malcore_retroanalyzer'].get("analyzed_infected",""),
+            "malcore_retroanalyzer.analyzed_other": d['malcore_retroanalyzer'].get("analyzed_other",""),
+            "malcore_retroanalyzer.analyzed_suspicious": d['malcore_retroanalyzer'].get("analyzed_suspicious",""),
+            "malcore_retroanalyzer.analyzers_up": d['malcore_retroanalyzer'].get("analyzers_up",""),
+            "malcore_retroanalyzer.code": d['malcore_retroanalyzer'].get("code",""),
+            "malcore_retroanalyzer.detail_scan_time": d['malcore_retroanalyzer'].get("detail_scan_time",""),
+            "malcore_retroanalyzer.detail_threat_found": d['malcore_retroanalyzer'].get("detail_threat_found",""),
+            "malcore_retroanalyzer.detail_wait_time": d['malcore_retroanalyzer'].get("detail_wait_time",""),
+            "malcore_retroanalyzer.engine_id": d['malcore_retroanalyzer'].get("engine_id",""),
+            "malcore_retroanalyzer.engines_last_update_date": d['malcore_retroanalyzer'].get("engines_last_update_date",""),
+            "malcore_retroanalyzer.file_type": d['malcore_retroanalyzer'].get("file_type",""),
+            "malcore_retroanalyzer.file_type_description": d['malcore_retroanalyzer'].get("file_type_description",""),
+            "malcore_retroanalyzer.magic_details": d['malcore_retroanalyzer'].get("magic_details",""),
+            "malcore_retroanalyzer.processing_time": d['malcore_retroanalyzer'].get("processing_time",""),
+            "malcore_retroanalyzer.reporting_token": d['malcore_retroanalyzer'].get("reporting_token",""),
+            "malcore_retroanalyzer.state": d['malcore_retroanalyzer'].get("state",""),
+            "malcore_retroanalyzer.total_found": d['malcore_retroanalyzer'].get("total_found","")
+        }
 
     if d['event']['module'] == "shellcode_detect":
 
         ret_fields = {
-            "shellcode.encodings": "",
-            "shellcode.sub_type": ""
+            "shellcode.analysis": d['shellcode'].get("analysis", {}),
+            "shellcode.encodings": d['shellcode'].get("encodings", []),
+            "shellcode.id": d['shellcode'].get("id", ""),
+            "shellcode.sample_id": d['shellcode'].get("sample_id", ""),
+            "shellcode.sub_type": d['shellcode'].get("sub_type", "")
         }
-        ret_fields['shellcode.encodings'] = d['shellcode']['encodings']
-        ret_fields['shellcode.sub_type'] = d['shellcode']['sub_type']
 
     if d['event']['module'] == "malicious_powershell_detect":
 
         ret_fields = {
-            "malicious_powershell.proba_obfuscated": "",
-            "malicious_powershell.score": ""
+            "malicious_powershell.id": d['malicious_powershell'].get("id", ""),
+            "malicious_powershell.proba_obfuscated": d['malicious_powershell'].get("proba_obfuscated", ""),
+            "malicious_powershell.sample_id": d['malicious_powershell'].get("sample_id", ""),
+            "malicious_powershell.score": d['malicious_powershell'].get("score", 0),
+            "malicious_powershell.score_details": d['malicious_powershell'].get("score_details", {})
         }
-        ret_fields['malicious_powershell.proba_obfuscated'] = d['malicious_powershell']['proba_obfuscated']
-        ret_fields['malicious_powershell.score'] = d['malicious_powershell']['score']
 
     if d['event']['module'] == "sigflow_alert":
 
         ret_fields = {
-            "sigflow.action": "",
-            "sigflow.category": "",
-            "sigflow.payload": "",
-            "sigflow.payload_printable": ""
+            "sigflow.action": d['sigflow'].get("action", ""),
+            "sigflow.category": d['sigflow'].get("category", ""),
+            "sigflow.gid": d['sigflow'].get("gid", 0),
+            "sigflow.metadata": d['sigflow'].get('metadata', {}),
+            "sigflow.payload": d['sigflow'].get("payload", ""),
+            "sigflow.payload_printable": d['sigflow'].get("payload_printable", ""),
+            "sigflow.rev": d['sigflow'].get("rev", 0),
+            "sigflow.signature": d['sigflow'].get("signature", ""),
+            "sigflow.signature_id": d['sigflow'].get("signature_id", 0),
+            "sigflow.stream": d['sigflow'].get("stream", 0)
         }
-        ret_fields['sigflow.action'] = d['sigflow']['action']
-        ret_fields['sigflow.category'] = d['sigflow']['category']
-        ret_fields['sigflow.payload'] = d['sigflow']['payload']
-        ret_fields['sigflow.payload_printable'] = d['sigflow']['payload_printable']
 
     if d['event']['module'] == "dga_detect":
 
         ret_fields = {
-            "dga.dga_count": "",
-            "dga.dga_ratio": "",
-            "dga.malware_behavior_confidence": "",
-            "dga.nx_domain_count": "",
-            "dga.top_DGA": ""
+            "dga.dga_count": d['dga'].get("dga_count", 0),
+            "dga.dga_ratio": d['dga'].get("dga_ratio", 0),
+            "dga.malware_behavior_confidence": d['dga'].get("malware_behavior_confidence", 0),
+            "dga.nx_domain_count": d['dga'].get("nx_domain_count", 0),
+            "dga.top_DGA": d['dga'].get("top_DGA", [])
         }
-        ret_fields['dga.dga_count'] = d['dga']['dga_count']
-        ret_fields['dga.dga_ratio'] = d['dga']['dga_ratio']
-        ret_fields['dga.malware_behavior_confidence'] = d['dga']['malware_behavior_confidence']
-        ret_fields['dga.nx_domain_count'] = d['dga']['nx_domain_count']
-        ret_fields['dga.top_DGA'] = d['dga']['top_DGA']
 
     if d['event']['module'] == "ioc":
 
         ret_fields = {
-            "ioc.campaigns": "",
-            "ioc.case_id": "",
-            "ioc.categories": "",
-            "ioc.creation_date": "",
-            "ioc.description": "",
-            "ioc.external_links": "",
-            "ioc.families": "",
-            "ioc.kill_chain_phases": "",
-            "ioc.meta_data": "",
-            "ioc.package_date": "",
-            "ioc.relations": "",
-            "ioc.signature": "",
-            "ioc.tags": "",
-            "ioc.targeted_countries": "",
-            "ioc.targeted_organizations": "",
-            "ioc.targeted_platforms": "",
-            "ioc.targeted_sectors": "",
-            "ioc.threat_actor": "",
-            "ioc.tlp": "",
-            "ioc.ttp": "",
-            "ioc.type": "",
-            "ioc.updated_date": "",
-            "ioc.usage_mode": "",
-            "ioc.value": "",
-            "ioc.vulnerabilities": "",
+            "ioc.campaigns": d['ioc'].get("campaigns", []),
+            "ioc.case_id": d['ioc'].get("case_id", ""),
+            "ioc.categories": d['ioc'].get("categories", []),
+            "ioc.creation_date": d['ioc'].get("creation_date", ""),
+            "ioc.description": d['ioc'].get("description", ""),
+            "ioc.external_links": d['ioc'].get("external_links", []),
+            "ioc.families": d['ioc'].get("families", []),
+            "ioc.id": d['ioc'].get("id", ""),
+            "ioc.kill_chain_phases": d['ioc'].get("kill_chain_phases", []),
+            "ioc.meta_data": d['ioc'].get("meta_data", {}),
+            "ioc.package_date": d['ioc'].get("package_date", ""),
+            "ioc.relations": d['ioc'].get("relations", []),
+            "ioc.signature": d['ioc'].get("signature", ""),
+            "ioc.tags": d['ioc'].get("tags", []),
+            "ioc.targeted_countries": d['ioc'].get("targeted_countries", []),
+            "ioc.targeted_organizations": d['ioc'].get("targeted_organizations", []),
+            "ioc.targeted_platforms": d['ioc'].get("targeted_platforms", []),
+            "ioc.targeted_sectors": d['ioc'].get("targeted_sectors", []),
+            "ioc.threat_actor": d['ioc'].get("threat_actor", []),
+            "ioc.tlp": d['ioc'].get("tlp", ""),
+            "ioc.ttp": d['ioc'].get("ttp", []),
+            "ioc.type": d['ioc'].get("type", ""),
+            "ioc.updated_date": d['ioc'].get("updated_date", ""),
+            "ioc.usage_mode": d['ioc'].get("usage_mode", ""),
+            "ioc.value": d['ioc'].get("value", ""),
+            "ioc.vulnerabilities": d['ioc'].get("vulnerabilities", [])
         }
-        ret_fields['ioc.campaigns'] = d['ioc']['campaigns']
-        ret_fields['ioc.case_id'] = d['ioc']['case_id']
-        ret_fields['ioc.categories'] = d['ioc']['categories']
-        ret_fields['ioc.creation_date'] = d['ioc']['creation_date']
-        ret_fields['ioc.description'] = d['ioc']['description']
-        ret_fields['ioc.external_links'] = d['ioc']['external_links']
-        ret_fields['ioc.families'] = d['ioc']['families']
-        ret_fields['ioc.kill_chain_phases'] = d['ioc']['kill_chain_phases']
-        ret_fields['ioc.meta_data'] = d['ioc']['meta_data']
-        ret_fields['ioc.package_date'] = d['ioc']['package_date']
-        ret_fields['ioc.relations'] = d['ioc']['relations']
-        ret_fields['ioc.signature'] = d['ioc']['signature']
-        ret_fields['ioc.tags'] = d['ioc']['tags']
-        ret_fields['ioc.targeted_countries'] = d['ioc']['targeted_countries']
-        ret_fields['ioc.targeted_organizations'] = d['ioc']['targeted_organizations']
-        ret_fields['ioc.targeted_platforms'] = d['ioc']['targeted_platforms']
-        ret_fields['ioc.targeted_sectors'] = d['ioc']['targeted_sectors']
-        ret_fields['ioc.threat_actor'] = d['ioc']['threat_actor']
-        ret_fields['ioc.tlp'] = d['ioc']['tlp']
-        ret_fields['ioc.ttp'] = d['ioc']['ttp']
-        ret_fields['ioc.type'] = d['ioc']['type']
-        ret_fields['ioc.updated_date'] = d['ioc']['updated_date']
-        ret_fields['ioc.usage_mode'] = d['ioc']['usage_mode']
-        ret_fields['ioc.value'] = d['ioc']['value']
-        ret_fields['ioc.vulnerabilities'] = d['ioc']['vulnerabilities']
 
     if d['event']['module'] == "ransomware_detect":
 
         ret_fields = {
-            "ransomware.alert_threshold": "",
-            "ransomware.malicious_behavior_confidence": "",
-            "ransomware.session_score": ""
+            "ransomware.alert_threshold": d['ransomware'].get("alert_threshold", 0),
+            "ransomware.malicious_behavior_confidence": d['ransomware'].get("malicious_behavior_confidence", 0),
+            "ransomware.session_score": d['ransomware'].get("session_score", 0)
         }
-        ret_fields['ransomware.alert_threshold'] = d['ransomware']['alert_threshold']
-        ret_fields['ransomware.malicious_behavior_confidence'] = d['ransomware']['malicious_behavior_confidence']
-        ret_fields['ransomware.session_score'] = d['ransomware']['session_score']
 
     if d['event']['module'] == "beacon_detect":
 
         ret_fields = {
-            "beacon.active": "",
-            "beacon.hostname_resolution": "",
-            "beacon.id": "",
-            "beacon.mean_time_interval": "",
-            "beacon.possible_cnc": "",
-            "beacon.session_count": "",
-            "beacon.type": ""
+            "beacon.active": d['beacon'].get("active", ""),
+            "beacon.hostname_resolution": d['beacon'].get("hostname_resolution", ""),
+            "beacon.id": d['beacon'].get("id", ""),
+            "beacon.mean_time_interval": d['beacon'].get("mean_time_interval", 0),
+            "beacon.possible_cnc": d['beacon'].get("possible_cnc", ""),
+            "beacon.session_count": d['beacon'].get("session_count", 0),
+            "beacon.type": d['beacon'].get("type", "")
         }
-        ret_fields['beacon.active'] = d['beacon']['active']
-        ret_fields['beacon.hostname_resolution'] = d['beacon']['hostname_resolution']
-        ret_fields['beacon.id'] = d['beacon']['id']
-        ret_fields['beacon.mean_time_interval'] = d['beacon']['mean_time_interval']
-        ret_fields['beacon.possible_cnc'] = d['beacon']['possible_cnc']
-        ret_fields['beacon.session_count'] = d['beacon']['session_count']
-        ret_fields['beacon.type'] = d['beacon']['type']
+
+    if d['event']['module'] == "retrohunt":
+
+        ret_fields = {
+            "ioc.campaigns": d.get("ioc", {}).get("campaigns", []),
+            "ioc.case_id": d.get("ioc", {}).get("case_id", ""),
+            "ioc.categories": d.get("ioc", {}).get("categories", []),
+            "ioc.creation_date": d.get("ioc", {}).get("creation_date", ""),
+            "ioc.description": d.get("ioc", {}).get("description", ""),
+            "ioc.external_links": d.get("ioc", {}).get("external_links", []),
+            "ioc.families": d.get("ioc", {}).get("families", []),
+            "ioc.id": d.get("ioc", {}).get("id", ""),
+            "ioc.kill_chain_phases": d.get("ioc", {}).get("kill_chain_phases", []),
+            "ioc.meta_data": d.get("ioc", {}).get("meta_data", {}),
+            "ioc.package_date": d.get("ioc", {}).get("package_date", ""),
+            "ioc.relations": d.get("ioc", {}).get("relations", []),
+            "ioc.signature": d.get("ioc", {}).get("signature", ""),
+            "ioc.tags": d.get("ioc", {}).get("tags", []),
+            "ioc.targeted_countries": d.get("ioc", {}).get("targeted_countries", []),
+            "ioc.targeted_organizations": d.get("ioc", {}).get("targeted_organizations", []),
+            "ioc.targeted_platforms": d.get("ioc", {}).get("targeted_platforms", []),
+            "ioc.targeted_sectors": d.get("ioc", {}).get("targeted_sectors", []),
+            "ioc.threat_actor": d.get("ioc", {}).get("threat_actor", []),
+            "ioc.tlp": d.get("ioc", {}).get("tlp", ""),
+            "ioc.ttp": d.get("ioc", {}).get("ttp", []),
+            "ioc.type": d.get("ioc", {}).get("type", ""),
+            "ioc.updated_date": d.get("ioc", {}).get("updated_date", ""),
+            "ioc.usage_mode": d.get("ioc", {}).get("usage_mode", ""),
+            "ioc.value": d.get("ioc", {}).get("value", ""),
+            "ioc.vulnerabilities": d.get("ioc", {}).get("vulnerabilities", []),
+            "matched_event.content": d['matched_event'].get("content", {}),
+            "matched_event.id": d['matched_event'].get("id", "")
+        }
 
     return CommandResults(raw_response=ret_fields)
 

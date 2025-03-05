@@ -59,7 +59,6 @@
                                 "endCol": 2,
                                 "fieldId": "sourceip",
                                 "height": 53,
-                                "id": "50f2d410-abe0-11ef-ad0a-79f77443cdb4",
                                 "index": 4,
                                 "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                                 "sectionItemType": "field",
@@ -69,8 +68,15 @@
                                 "endCol": 2,
                                 "fieldId": "sourceport",
                                 "height": 53,
-                                "id": "4e76d790-abe0-11ef-ad0a-79f77443cdb4",
                                 "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcemacaddress",
+                                "height": 53,
+                                "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -79,8 +85,7 @@
                                 "endCol": 2,
                                 "fieldId": "destinationip",
                                 "height": 53,
-                                "id": "53cc32d0-abe0-11ef-ad0a-79f77443cdb4",
-                                "index": 6,
+                                "index": 7,
                                 "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -89,8 +94,15 @@
                                 "endCol": 2,
                                 "fieldId": "destinationport",
                                 "height": 53,
-                                "id": "52e1f9e0-abe0-11ef-ad0a-79f77443cdb4",
-                                "index": 7,
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "destinationmacaddress",
+                                "height": 53,
+                                "index": 9,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -98,17 +110,16 @@
                                 "endCol": 2,
                                 "fieldId": "protocol",
                                 "height": 53,
-                                "id": "14eca890-aca5-11ef-9202-89fa98701c99",
-                                "index": 8,
+                                "index": 10,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "gatewatchertransport",
-                                "height": 53,
-                                "id": "1fe90180-aca5-11ef-9202-89fa98701c99",
-                                "index": 8,
+                                "fieldId": "gatewatchernetworktransport",
+                                "height": 22,
+                                "id": "2186aa90-f815-11ef-be05-fbed46995715",
+                                "index": 11,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -118,7 +129,7 @@
                                 "fieldId": "sourcebrand",
                                 "height": 53,
                                 "id": "incident-sourceBrand-field",
-                                "index": 8,
+                                "index": 12,
                                 "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -129,7 +140,7 @@
                                 "fieldId": "sourceinstance",
                                 "height": 53,
                                 "id": "incident-sourceInstance-field",
-                                "index": 9,
+                                "index": 13,
                                 "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -495,15 +506,6 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "gatewatcherdns",
-                                "height": 53,
-                                "id": "328b4570-ada2-11ef-9be1-5d2604062cce",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "gatewatcherdnsanswers",
                                 "height": 53,
                                 "id": "0fe210f0-b192-11ef-b835-73f24f516e16",
@@ -554,15 +556,6 @@
                         "hideName": false,
                         "i": "caseinfoid-d890c4b0-ada5-11ef-9be1-5d2604062cce",
                         "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "gatewatchersmb",
-                                "height": 53,
-                                "id": "e91e9780-ada5-11ef-9be1-5d2604062cce",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
                             {
                                 "endCol": 2,
                                 "fieldId": "gatewatchersmbcommand",

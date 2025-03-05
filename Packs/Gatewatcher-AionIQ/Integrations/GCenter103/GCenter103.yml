@@ -6,12 +6,12 @@ commonfields:
   id: GCenter 103
   version: -1
 configuration:
-- display: GCenter IP address
+- display: GCenter IP address or FQDN
   name: ip
   required: true
   type: 0
   section: Connect
-  additionalinfo: The IP of the GCenter from where the events will be fetched.
+  additionalinfo: The IP address or the Fully Qualified Domain Name of the GCenter from where the events will be fetched.
 - displaypassword: GCenter API token
   name: token
   required: false
@@ -59,6 +59,7 @@ configuration:
   type: 16
   options:
   - malcore
+  - malcore_retroanalyzer
   - shellcode_detect
   - malicious_powershell_detect
   - sigflow_alert
@@ -79,7 +80,7 @@ configuration:
   display: Fetch limit
   name: max_fetch
   type: 0
-  additionalinfo: This value represents the maximum events fetched by instruction. The default value is 200 and is the optimum for Cortex XSOAR.
+  additionalinfo: This value represents the maximum events fetched by instruction, this integration can handle up to 10000. The default value is 200 and is the optimum for Cortex XSOAR.
   section: Collect
   required: false
 - display: Incident type
