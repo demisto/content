@@ -8,22 +8,26 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: API Key
   name: api_key
   required: true
   type: 9
   displaypassword: API Key
   hiddenusername: true
+  section: Connect
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
 description: Rapid7 AppSec integration allows the management of applications vulnerabilities and scans.
 display: Rapid7AppSec
 name: rapid7appsec
@@ -736,3 +740,6 @@ script:
 fromversion: 6.9.0
 tests:
 - No tests
+sectionOrder:
+- Connect
+- Collect
