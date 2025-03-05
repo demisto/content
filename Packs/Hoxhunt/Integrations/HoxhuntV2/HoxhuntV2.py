@@ -744,8 +744,8 @@ def hoxhunt_send_incident_soc_feedback_command(client: Client, args: dict, param
     threat_feedback_reported_at_limit = args.get('threat_feedback_reported_at_limit')
 
     threat_feedback_reported_at_limit_parsed = arg_to_datetime(arg=threat_feedback_reported_at_limit, is_utc=True)
-    date_limit_as_iso_string = threat_feedback_reported_at_limit_parsed.strftime(
-        '%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'  # type: ignore
+    date_limit_as_iso_string = threat_feedback_reported_at_limit_parsed.strftime(  # type: ignore
+        '%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
 
     response = client.send_incident_soc_feedback(incident_id, custom_message, date_limit_as_iso_string)
 
