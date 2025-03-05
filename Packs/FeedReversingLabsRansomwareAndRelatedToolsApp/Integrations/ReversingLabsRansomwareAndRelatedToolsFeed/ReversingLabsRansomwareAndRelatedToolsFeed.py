@@ -12,14 +12,14 @@ INDICATOR_TYPE_MAP = {
     "ipv4": FeedIndicatorType.IP,
     "domain": FeedIndicatorType.Domain,
     "hash": FeedIndicatorType.File,
-    "uri": FeedIndicatorType.URL
+    "uri": FeedIndicatorType.URL,
 }
 
 
 class Client(BaseClient):
-
-    RANSOMWARE_INDICATORS_ENDPOINT = "/api/public/v1/ransomware/indicators?hours={hours}&" \
-                                     "indicatorTypes={indicator_types}&tagFormat=dict"
+    RANSOMWARE_INDICATORS_ENDPOINT = (
+        "/api/public/v1/ransomware/indicators?hours={hours}&" "indicatorTypes={indicator_types}&tagFormat=dict"
+    )
 
     def __init__(self, base_url, auth, headers, verify):
         super().__init__(base_url=base_url, auth=auth, headers=headers, verify=verify)
@@ -32,12 +32,7 @@ class Client(BaseClient):
 
         try:
             response = self._http_request(
-                method="GET",
-                url_suffix=endpoint,
-                timeout=timeout,
-                auth=self._auth,
-                retries=retries,
-                resp_type="json"
+                method="GET", url_suffix=endpoint, timeout=timeout, auth=self._auth, retries=retries, resp_type="json"
             )
         except Exception as e:
             return_error(f"Request towards the defined endpoint {endpoint} did not succeed. {str(e)}")
@@ -101,10 +96,7 @@ def fetch_indicators_command(client, params):
     new_last_run = datetime.now().isoformat()
 
     response = client.query_indicators(
-        hours=hours_historical,
-        indicator_types=indicator_types_param,
-        timeout=(30, 300),
-        retries=3
+        hours=hours_historical, indicator_types=indicator_types_param, timeout=(30, 300), retries=3
     )
 
     tlp_color_param = params.get("tlp_color", None)
@@ -137,9 +129,7 @@ def map_file_info(indicator, tag_list, file_info):
             file_name = file_info.get("fileName")
 
             file_info_fields = assign_params(
-                size=file_info.get("fileSize"),
-                filetype=file_info.get("fileType"),
-                associatedfilenames=[file_name]
+                size=file_info.get("fileSize"), filetype=file_info.get("fileType"), associatedfilenames=[file_name]
             )
 
             indicator["fields"].update(file_info_fields)
@@ -162,9 +152,7 @@ def create_indicator_object(rl_indicator, user_tag_list, tlp_color_param):
         "value": rl_indicator.get("indicatorValue"),
         "type": INDICATOR_TYPE_MAP.get(indicator_type),
         "rawJSON": rl_indicator,
-        "fields": {
-            "lastseenbysource": last_seen
-        },
+        "fields": {"lastseenbysource": last_seen},
         "score": confidence_to_score(rl_indicator.get("confidence", 0)),
     }
 
@@ -190,7 +178,7 @@ def create_indicator_object(rl_indicator, user_tag_list, tlp_color_param):
     additional_fields = assign_params(
         malwaretypes=indicator_tags.get("malwareType"),
         malwarefamily=indicator_tags.get("malwareFamilyName"),
-        trafficlightprotocol=tlp_color_param
+        trafficlightprotocol=tlp_color_param,
     )
 
     indicator["fields"].update(additional_fields)
@@ -198,11 +186,7 @@ def create_indicator_object(rl_indicator, user_tag_list, tlp_color_param):
     if indicator_type == "hash":
         hashes = rl_indicator.get("hash")
         if hashes:
-            hash_fields = assign_params(
-                sha1=hashes.get("sha1"),
-                sha256=hashes.get("sha256"),
-                md5=hashes.get("md5")
-            )
+            hash_fields = assign_params(sha1=hashes.get("sha1"), sha256=hashes.get("sha256"), md5=hashes.get("md5"))
 
             indicator["fields"].update(hash_fields)
 
@@ -250,12 +234,7 @@ def get_indicators_command(client):
 
     limit = int(demisto.args().get("limit", 50))
 
-    response = client.query_indicators(
-        hours=hours_arg,
-        indicator_types=indicator_types_arg,
-        timeout=(30, 300),
-        retries=3
-    )
+    response = client.query_indicators(hours=hours_arg, indicator_types=indicator_types_arg, timeout=(30, 300), retries=3)
 
     indicator_list = response.get("data", [])[:limit]
 
@@ -264,8 +243,8 @@ def get_indicators_command(client):
     command_result = CommandResults(
         readable_output=readable_output,
         raw_response=response,
-        outputs_prefix='ReversingLabs',
-        outputs={"indicators": indicator_list}
+        outputs_prefix="ReversingLabs",
+        outputs={"indicators": indicator_list},
     )
 
     return command_result
@@ -282,9 +261,18 @@ def format_readable_output(response, indicator_list):
     indicator_table = tableToMarkdown(
         name="Indicators",
         t=indicator_list,
-        headers=["indicatorValue", "indicatorType", "daysValid", "confidence",
-                 "rating", "indicatorTags", "lastUpdate", "deleted", "hash"],
-        headerTransform=pascalToSpace
+        headers=[
+            "indicatorValue",
+            "indicatorType",
+            "daysValid",
+            "confidence",
+            "rating",
+            "indicatorTags",
+            "lastUpdate",
+            "deleted",
+            "hash",
+        ],
+        headerTransform=pascalToSpace,
     )
 
     markdown = f"{markdown}\n{indicator_table}"
@@ -295,12 +283,7 @@ def format_readable_output(response, indicator_list):
 def test_module_command(client, params):
     hours_param, indicator_types_param = return_validated_params(params)
 
-    client.query_indicators(
-        hours=hours_param,
-        indicator_types=indicator_types_param,
-        timeout=(30, 300),
-        retries=1
-    )
+    client.query_indicators(hours=hours_param, indicator_types=indicator_types_param, timeout=(30, 300), retries=1)
 
     return "ok"
 
@@ -318,12 +301,7 @@ def main():
     demisto.debug(f"Command being called is {command}")
 
     try:
-        client = Client(
-            base_url=host,
-            verify=verify,
-            auth=(username, password),
-            headers={"User-Agent": USER_AGENT}
-        )
+        client = Client(base_url=host, verify=verify, auth=(username, password), headers={"User-Agent": USER_AGENT})
 
         if command == "test-module":
             result = test_module_command(client, params)
