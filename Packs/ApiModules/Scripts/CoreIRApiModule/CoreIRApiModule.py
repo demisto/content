@@ -4261,7 +4261,7 @@ def parse_role_names(role_data: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def enrich_error_message_id_group_role(e: DemistoException, type_: str | None, custom_message: str | None) -> str | None:
+def enrich_error_message_id_group_role(e: DemistoException|Exception, type_: str | None, custom_message: str | None) -> str | None:
     """
     Attempts to parse additional info from an exception and return it as string. Returns `None` if it can't do that.
 
@@ -4274,11 +4274,19 @@ def enrich_error_message_id_group_role(e: DemistoException, type_: str | None, c
         ValueError: If the error message indicates that the resource was not found, a more detailed error message
             is constructed using the `find_the_cause_error` function and raised with the original error as the cause.
     """
-    if (
-        e.res is not None
+    demisto_error_condition = (
+        isinstance(e, DemistoException)
+        and e.res is not None
         and e.res.status_code == 500
         and 'was not found' in str(e)
-    ):
+    )
+    exception_condition = (
+        isinstance(e, Exception)
+        and str(e) is not None
+        and '500' in str(e)
+        and 'was not found' in str(e)
+    )
+    if demisto_error_condition or exception_condition:
         error_message: str = ''
         pattern = r"(id|Group|Role) \\?'([/A-Za-z 0-9_]+)\\?'"
         if match := re.search(pattern, str(e)):
@@ -4464,14 +4472,21 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
 
     """
 
-    def _warn_if_module_is_disabled(e: DemistoException) -> None:
-        if (
-            e is not None
+    def _warn_if_module_is_disabled(e: DemistoException| Exception) -> None:
+        demisto_error_condition = (isinstance(e, DemistoException)
+            and e is not None
             and e.res is not None
             and e.res.status_code == 500
             and 'No identity threat' in str(e)
-            and "An error occurred while processing XDR public API" in e.message
-        ):
+            and "An error occurred while processing XDR public API" in e.message)
+        exception_condition = (
+            isinstance(e, Exception)
+            and str(e) is not None
+            and '500' in str(e)
+            and 'No identity threat' in str(e)
+            and "An error occurred while processing XDR public API" in str(e)
+        )
+        if demisto_error_condition or exception_condition:
             return_warning(f'Please confirm the XDR Identity Threat Module is enabled.\nFull error message: {e}', exit=True)
 
     match command:
@@ -4492,7 +4507,7 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
     if id_ := args.get(id_key):
         try:
             outputs = client.risk_score_user_or_host(id_).get('reply', {})
-        except DemistoException as e:
+        except Exception as e:
             _warn_if_module_is_disabled(e)
             if error_message := enrich_error_message_id_group_role(e=e, type_="id", custom_message=""):
                 not_found_message = 'was not found'
