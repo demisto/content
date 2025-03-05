@@ -759,7 +759,7 @@ def test_commands(
         ),
         # Invalid date - should raise ValueError
         (
-            "Skipidi duu", # Invalid date
+            "Skipidi duu",  # Invalid date
             None,
             True,
         ),
