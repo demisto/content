@@ -588,22 +588,22 @@ def test_invalid_json_response(mocker, requests_mock):
 def test_valid_json_response():
     valid_response = requests.Response()
     valid_response.status_code = 200
-    valid_response._content = b'{"key": "value"}'
-    assert parse_json_response(valid_response) == {"key": "value"}
+    valid_response._content = b'{"$": "value"}'
+    assert parse_json_response(valid_response) == {"$": "value"}
 
 
 def test_invalid_json_with_escape_sequence():
     invalid_response = requests.Response()
     invalid_response.status_code = 200
-    invalid_response._content = b'{"key": "value with \\ backslash"}'
-    assert parse_json_response(invalid_response) == {"key": "value with \\ backslash"}
+    invalid_response._content = b'{"$": "value with \\ backslash"}'
+    assert parse_json_response(invalid_response) == {"$": "value with \\ backslash"}
 
 
 def test_invalid_json_with_multiple_escape_sequences():
     complex_invalid_response = requests.Response()
     complex_invalid_response.status_code = 200
-    complex_invalid_response._content = b'{"key": "value with \\ backslash and \\" quote"}'
-    assert parse_json_response(complex_invalid_response) == {"key": 'value with \\ backslash and " quote'}
+    complex_invalid_response._content = b'{"$": "value with \\ backslash and \\" quote"}'
+    assert parse_json_response(complex_invalid_response) == {"$": 'value with \\ backslash and " quote'}
 
 
 def test_invalid_json_requiring_fixing_json_string():
