@@ -759,8 +759,8 @@ def test_commands(
         ),
         # Invalid date - should raise ValueError
         (
-            "Skipidi duu",  # Helsinki time (UTC+2)
-            None,  # Same time in UTC
+            "Skipidi duu", # Invalid date
+            None,
             True,
         ),
     ],
@@ -774,6 +774,7 @@ def test_send_incident_soc_feedback_date_parsing(mock_client, mocker, test_date,
         Calling hoxhunt_send_incident_soc_feedback_command
     Then
         - ISO dates should pass through unchanged if already in UTC
+        - Relative dates should be converted to ISO
         - Timezone-aware dates should be converted to UTC
         - Invalid timezones should raise ValueError
     """
