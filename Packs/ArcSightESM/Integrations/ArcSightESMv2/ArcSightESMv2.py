@@ -176,7 +176,7 @@ def repair_malformed_json(malformed_json: str) -> str:
             if quote_pos == -1:  # No more occurrences found
                 break
             # Check if the quote is already escaped
-            if quote_pos == 0 or json_value[quote_pos - 1] != '\\':
+            if quote_pos == 0 or json_value[quote_pos - 1:quote_pos + 1] != '\\':
                 quote_positions.append(quote_pos)
             search_start = quote_pos + 1  # Move start position to just after the found index
         return quote_positions
