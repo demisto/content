@@ -135,7 +135,7 @@ alter
 
 
 
-[MODEL: dataset=msft_aks_logs_kube_audit3_raw]
+[MODEL: dataset=msft_azure_aks_raw]
 // A broad mapping for the categories- kube-apiserver, kube-controller-manager, csi-snapshot-controller, csi-azuredisk-controller, csi-azurefile-controller.
 config case_sensitive = true
 | alter

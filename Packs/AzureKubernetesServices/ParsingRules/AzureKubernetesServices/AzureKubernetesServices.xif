@@ -1,4 +1,4 @@
-[INGEST:vendor="msft", product="aks_logs_kube_audit3", target_dataset="msft_aks_logs_kube_audit3_raw", no_hit=keep]
+[INGEST:vendor="msft", product="azure_aks", target_dataset="msft_azure_aks_raw", no_hit=keep]
 // Supported timestamp is for UTC time YYYY-mm-ddTHH:MM:SS.ssssZ format. E.g; 2025-02-04T11:23:29.0324070Z
 filter 
     requestreceivedtime ~= "\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z" 
