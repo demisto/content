@@ -2693,7 +2693,8 @@ def get_machine_software_command(client: MsClient, args: dict) -> CommandResults
     https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-installed-software?view=o365-worldwide
 
     Args:
-        machine_id (str): Machine ID
+        client: MsClient
+        args: arguments from CortexSOAR. May include 'machine_id'.
 
     Returns:
         CommandResults.
@@ -2718,6 +2719,9 @@ def get_machine_software_command(client: MsClient, args: dict) -> CommandResults
 
 def get_machine_vulnerabilities_command(client: MsClient, args: dict) -> CommandResults:
     """Retrieves a collection of vulnerabilities related to specific device.
+    Args:
+        client: MsClient
+        args: arguments from CortexSOAR. May include 'machine_id'.
 
     Returns:
         CommandResults.
@@ -2743,8 +2747,9 @@ def get_machine_vulnerabilities_command(client: MsClient, args: dict) -> Command
 def get_machine_missing_kbs_command(client: MsClient, args: dict) -> CommandResults:
     """Retrieves a collection of missing security updates on a specific device.
 
-     Args:
-        machine_id (str): Machine ID
+    Args:
+        client: MsClient
+        args: arguments from CortexSOAR. May include 'machine_id'.
 
     Returns:
         CommandResults.
