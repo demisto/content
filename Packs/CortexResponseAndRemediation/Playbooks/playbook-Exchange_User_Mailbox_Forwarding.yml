@@ -577,6 +577,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -616,6 +617,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -663,6 +665,7 @@ tasks:
                 value:
                   simple: "2"
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
