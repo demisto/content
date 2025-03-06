@@ -41,12 +41,14 @@ jobs:
           fi
 
           echo "Running MDX validation..."
-          
+
+          export FILES_TO_VALIDATE_JSON=$(printf '%s\n' "${FILES_TO_VALIDATE[@]}" | jq -R . | jq -s .)
+
           node --input-type=module - <<'EOF'
           import { readFileSync } from 'fs';
           import { compile } from '@mdx-js/mdx';
 
-          const files = process.argv.slice(1);
+          const files = JSON.parse(process.env.FILES_TO_VALIDATE_JSON);
 
           for (const file of files) {
               try {
@@ -58,4 +60,4 @@ jobs:
                   process.exit(1);
               }
           }
-          EOF "${FILES_TO_VALIDATE[@]}"
+          EOF
