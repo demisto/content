@@ -2,7 +2,7 @@
     "name": "SecurityTrails",
     "description": "Integration for the SecurityTrails platform.",
     "support": "community",
-    "currentVersion": "1.1.9",
+    "currentVersion": "1.1.10",
     "author": "Adam Burt",
     "url": "",
     "email": "",
@@ -21,5 +21,10 @@
         "marketplacev2",
         "platform"
     ],
-    "supportedModules": []
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }
