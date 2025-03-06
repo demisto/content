@@ -9,9 +9,9 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": ["IT"],
     "useCases": [],
-    "keywords": [ "IBM", "IBM MaaS360", "MaaS360", "MaaS", "Security" ],
+    "keywords": [ "IBM MaaS360", "Security" ,"Device Management"],
     "marketplaces": [
         "marketplacev2"
     ]

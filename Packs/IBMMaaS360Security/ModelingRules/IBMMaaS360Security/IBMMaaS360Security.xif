@@ -1,0 +1,45 @@
+/*-------------------------------
+   ----------- RULES -------------
+   ------------------------------- */
+[RULE: ibm_maas360_map_common_event_fields]
+alter
+    IPV4 = if(IP_Address ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}",IP_Address ,null),
+    IPV6 = if(IP_Address ~= "^((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})$",IP_Address ,null),
+    xdm.event.type = source_log_type;
+/*-----------------------------------------
+  ------------ MODELING RULES -------------
+  ----------------------------------------- */
+[MODEL: dataset = "ibm_maas360_security_raw"]
+//Modeling Rules -> Admin changes audit 
+ filter source_log_type = "admin_changes_audit"
+| call ibm_maas360_map_common_event_fields
+| alter
+    Is_Added = if(len(Roles_Added) = 0 , "N/A", Roles_Added),
+    Is_Deleted = if(len(Roles_Deleted) = 0 , "N/A", Roles_Deleted)
+| alter
+    Temp_Added_Description = if(Is_Added != "N/A",concat("The user was added to role '",Is_Added,"'"), "N/A"),
+    Temp_Description_Deleted = if(Is_Deleted != "N/A",concat("The user was removed from role '", Is_Deleted,"'"),"N/A"),
+    Temp_NA_Description = if(Is_Added = "N/A" and Is_Deleted = "N/A", "N/A")
+| alter     
+    Temp_Added_Deleted_Description = if(Is_Added != "N/A" and Is_Deleted != "N/A", concat("The user was added to a role '", Is_Added , "' and ", " was removed from '",Is_Deleted,"'" ), Is_Added = "N/A" and Is_Deleted != "N/A", Temp_Description_Deleted , Is_Added != "N/A" and Is_Deleted = "N/A", Temp_Added_Description , Is_Added = "N/A" and Is_Deleted = "N/A",Temp_NA_Description )
+| alter 
+    xdm.source.user.username = Performed_By,
+    xdm.event.operation = Operation_Type,
+    xdm.source.ipv4 = IPV4,
+    xdm.source.ipv6 = IPV6,
+    xdm.target.user.upn = E_mail,
+    xdm.target.user.username = Username,
+    xdm.target.user.first_name = First_Name,
+    xdm.target.user.middle_name = Middle_Name,
+    xdm.target.user.last_name = Last_Name,
+    xdm.event.description = Temp_Added_Deleted_Description;
+//Modeling Rules -> Admin login report
+filter source_log_type = "admin_login_report"
+| call ibm_maas360_map_common_event_fields
+| alter
+    xdm.source.user.username = Username,
+    xdm.source.ipv4 = IPV4,
+    xdm.source.ipv6 = IPV6,
+    xdm.event.outcome = if(Auth_Status = "Successful", XDM_CONST.OUTCOME_SUCCESS, Auth_Status = "User Authentication Failed" or Auth_Status = "Device Authentication Failed", XDM_CONST.OUTCOME_FAILED, Auth_Status = null, null, to_string(Auth_Status)),
+    xdm.source.host.os = Operating_System,
+    xdm.network.http.browser = Browser_Version;

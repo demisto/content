@@ -1,0 +1,60 @@
+{
+    "ibm_maas360_security_raw": {
+      "IP_Address": {
+        "type": "string",
+        "is_array": false
+      },
+      "source_log_type": {
+        "type": "string",
+        "is_array": false
+      },
+      "Performed_By": {
+        "type": "string",
+        "is_array": false
+      },
+      "E_mail": {
+        "type": "string",
+        "is_array": false
+      },
+      "Operation_Type": {
+        "type": "string",
+        "is_array": false
+      },
+      "Username": {
+        "type": "string",
+        "is_array": false
+      },
+      "First_Name": {
+        "type": "string",
+        "is_array": "false"
+      },
+      "Middle_Name": {
+        "type": "string",
+        "is_array": "false"
+      },
+      "Last_Name": {
+        "type": "string",
+        "is_array": "false"
+      },
+      "Auth_Status": {
+        "type": "string",
+        "is_array": "false"
+      },
+      "Operating_System": {
+        "type": "string",
+        "is_array": "false"
+      },
+      "Browser_Version": {
+        "type": "string",
+        "is_array": "false"
+      },
+      "Roles_Added": {
+        "type": "string",
+        "is_array": "false"
+      },
+      "Roles_Deleted": {
+        "type": "string",
+        "is_array": "false"
+      }
+    }
+  }
