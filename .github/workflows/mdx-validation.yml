@@ -9,6 +9,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 2  # Fetch at least two commits for diff comparison
 
       - name: Install Node.js
         uses: actions/setup-node@v3
@@ -18,15 +20,24 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Get Changed Files
+      - name: Fetch Base Branch
+        run: git fetch origin ${{ github.base_ref }} --depth=1
+
+      - name: Get Changed README.md Files
         id: changed-files
         run: |
-          FILES=$(git diff --name-only origin/${{ github.base_ref }}...${{ github.head_ref }} -- '*.md')
+          FILES=$(git diff --name-only origin/${{ github.base_ref }} -- '*.md')
+
+          if [[ -z "$FILES" ]]; then
+            echo "✅ No changed README.md files in this PR."
+            exit 0
+          fi
+
           echo "FILES<<EOF" >> $GITHUB_ENV
           echo "$FILES" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
-      - name: Validate MDX for Changed README.md Files
+      - name: Validate MDX
         run: |
           NO_HTML="# NO_HTML"
           YES_HTML="# YES_HTML"
