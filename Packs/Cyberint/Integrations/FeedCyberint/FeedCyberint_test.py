@@ -10,11 +10,11 @@ from CommonServerPython import DemistoException
 date_time = str(datetime.now().strftime(FeedCyberint.DATE_FORMAT))
 
 BASE_URL = "https://feed-example.com"
-REQUEST_URL1 = f"{BASE_URL}{date_time}?limit=1000&offset=0"
-REQUEST_URL2 = f"{BASE_URL}{date_time}?limit=1000&offset=1000"
-REQUEST_URL3 = f"{BASE_URL}{date_time}?limit=20000&offset=0"
-REQUEST_URL4 = f"{BASE_URL}{date_time}?limit=20000&offset=20000"
-REQUEST_URL5 = f"{BASE_URL}{date_time}?limit=20&offset=0"
+REQUEST_URL1 = f"{BASE_URL}/ioc/api/v1/feed/daily/{date_time}?limit=1000&offset=0"
+REQUEST_URL2 = f"{BASE_URL}/ioc/api/v1/feed/daily/{date_time}?limit=1000&offset=1000"
+REQUEST_URL3 = f"{BASE_URL}/ioc/api/v1/feed/daily/{date_time}?limit=20000&offset=0"
+REQUEST_URL4 = f"{BASE_URL}/ioc/api/v1/feed/daily/{date_time}?limit=20000&offset=20000"
+REQUEST_URL5 = f"{BASE_URL}/ioc/api/v1/feed/daily/{date_time}?limit=20&offset=0"
 REQUEST_URL6 = f"{BASE_URL}/ioc/api/v1/url?value=http://dummy.com"
 REQUEST_URL7 = f"{BASE_URL}/ioc/api/v1/ipv4?value=1.1.1.1"
 REQUEST_URL8 = f"{BASE_URL}/ioc/api/v1/domain?value=dummy.com"
@@ -48,7 +48,7 @@ def load_mock_url_response() -> str:
     Returns:
         str: Mock file content.
     """
-    with open("test_data/url.jsonb") as file:
+    with open("test_data/url.json") as file:
         return file.read()
 
 
@@ -58,7 +58,17 @@ def load_mock_ipv4_response() -> str:
     Returns:
         str: Mock file content.
     """
-    with open("test_data/ipv4.jsonb") as file:
+    with open("test_data/ipv4.json") as file:
+        return file.read()
+
+
+def load_mock_file_sha256_response() -> str:
+    """Load mock file that simulates an API response.
+
+    Returns:
+        str: Mock file content.
+    """
+    with open("test_data/file_sha256.json") as file:
         return file.read()
 
 
@@ -68,7 +78,7 @@ def load_mock_domain_response() -> str:
     Returns:
         str: Mock file content.
     """
-    with open("test_data/domain.jsonb") as file:
+    with open("test_data/domain.json") as file:
         return file.read()
 
 
@@ -285,8 +295,8 @@ def test_get_file_sha256_command(
     """
     is_execution_time_exceeded_mock.return_value = False
 
-    response1 = load_mock_domain_response()
-    response2 = load_mock_empty_response()
+    response1 = load_mock_file_sha256_response()
+    response2 = load_mock_file_sha256_response()
 
     requests_mock.get(REQUEST_URL8, text=response1)
     requests_mock.get(REQUEST_URL8, text=response2)
