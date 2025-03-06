@@ -1608,7 +1608,7 @@ script:
       required: false
       auto: PREDEFINED
       predefined:
-      - permanentlydeleted
+      - permanentlyDelete
       - recoverable
     - description: The ID of the eDiscovery search.
       isArray: false
