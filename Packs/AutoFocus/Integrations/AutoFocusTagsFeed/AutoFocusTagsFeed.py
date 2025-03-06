@@ -456,7 +456,7 @@ def fetch_indicators(client: Client,
     for tag_details in iterator:
         tag_dict = tag_details.get('tag', {})
         public_tag_name = tag_dict.get('public_tag_name', '')
-        tag_name = tag_dict.get('tag_name' '')
+        tag_name = tag_dict.get('tag_name')
         tag_class = tag_dict.get('tag_class', '')
         source = tag_dict.get('source', '')
         tag_type = get_tag_class(tag_class, source)
