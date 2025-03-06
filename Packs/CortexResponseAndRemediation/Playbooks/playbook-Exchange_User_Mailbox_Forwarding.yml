@@ -577,7 +577,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
-    continueonerrortype: ""
+    continueonerrortype: true
     view: |-
       {
         "position": {
@@ -616,7 +616,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
-    continueonerrortype: ""
+    continueonerrortype: true
     view: |-
       {
         "position": {
@@ -663,7 +663,7 @@ tasks:
                 value:
                   simple: "2"
     separatecontext: false
-    continueonerrortype: ""
+    continueonerrortype: true
     view: |-
       {
         "position": {
