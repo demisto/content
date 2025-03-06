@@ -2,7 +2,7 @@
     "name": "McAfee Database Security",
     "description": "McAfee Database Security is a software solution that monitors the Database Management System (DBMS) and protects it from internal and external threats and intra database exploits.",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
