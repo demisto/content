@@ -1368,6 +1368,35 @@ def test_filter_alerts(prisma_cloud_v2_client, limit, expected_incidents, expect
     assert fetched_ids == expected_updated_fetched_ids
 
 
+@pytest.mark.parametrize('limit, expected_incidents, expected_updated_fetched_ids',
+                         (input_data.low_limit_for_filter__updated_alert_time,
+                          input_data.exactly_limit_for_filter__updated_alert_time,
+                          input_data.high_limit_for_filter__updated_alert_time,
+                          ))
+def test_filter_alerts_with_updated_alert_time(prisma_cloud_v2_client, limit, expected_incidents, expected_updated_fetched_ids):
+    """
+    Given:
+        - A set of fetched IDs with an alert ID and its timestamp.
+        - A list of alerts from Prisma Cloud, including an alert with the same ID but a different timestamp.
+        - A limit on the number of incidents to return.
+    When:
+        - Filtering the alerts from Prisma Cloud, considering the fetched IDs and the limit.
+    Then:
+        - Returns the expected incidents up to the limit, excluding those already fetched.
+        - Updates the fetched IDs dictionary with the new timestamp for the alert with the updated timestamp.
+    """
+    from PrismaCloudV2 import filter_alerts
+
+    fetched_ids = {'N-111111': 1000000000000,
+                   'P-222222': 999996400000}
+    response_items = [{'id': 'N-111111', 'alertTime': 1000000000001, 'policy': {'name': 'Policy One', 'severity': 'high'}},
+                      input_data.truncated_alert6,
+                      input_data.truncated_alert7]
+
+    assert filter_alerts(prisma_cloud_v2_client, fetched_ids, response_items, limit) == expected_incidents
+    assert fetched_ids == expected_updated_fetched_ids
+
+
 @pytest.mark.parametrize('alert, expected_incident_context',
                          ((input_data.truncated_alert6, input_data.incident6),
                           (input_data.truncated_alert7, input_data.incident7),
