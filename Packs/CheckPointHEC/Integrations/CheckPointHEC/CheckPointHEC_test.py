@@ -16,7 +16,7 @@ from CheckPointHEC import (
     checkpointhec_delete_ctp_list_items, checkpointhec_delete_ctp_lists, checkpointhec_create_avurl_exception,
     checkpointhec_update_avurl_exception, checkpointhec_delete_avurl_exception, checkpointhec_delete_avurl_exceptions,
     checkpointhec_create_avdlp_exception, checkpointhec_update_avdlp_exception, checkpointhec_delete_avdlp_exception,
-    checkpointhec_delete_avdlp_exceptions, test_module as check_module
+    checkpointhec_delete_avdlp_exceptions, checkpointhec_download_email, test_module as check_module
 )
 from CommonServerPython import DemistoException
 
@@ -188,13 +188,13 @@ def test_call_smart_api(mocker):
 
     client._call_api(method, url_suffix)
     get_headers.assert_called_with(request_string)
-    http_request.assert_called_with(method, url_suffix=path, headers={}, params=None, json_data=None)
+    http_request.assert_called_with(method, url_suffix=path, headers={}, params=None, json_data=None, resp_type='json')
 
     params = {'param1': 'value1'}
     request_string += '?param1=value1'
     client._call_api(method, url_suffix, params=params)
     get_headers.assert_called_with(request_string)
-    http_request.assert_called_with(method, url_suffix=path, headers={}, params=params, json_data=None)
+    http_request.assert_called_with(method, url_suffix=path, headers={}, params=params, json_data=None, resp_type='json')
 
 
 def test_call_infinity_api(mocker):
@@ -223,7 +223,7 @@ def test_call_infinity_api(mocker):
 
     client._call_api(method, url_suffix)
     get_headers.assert_called_with(None)
-    http_request.assert_called_with(method, url_suffix=path, headers={}, params=None, json_data=None)
+    http_request.assert_called_with(method, url_suffix=path, headers={}, params=None, json_data=None, resp_type='json')
 
 
 def test_test_module(mocker):
@@ -661,6 +661,27 @@ def test_report_mis_classification_fail(mocker):
         })
     assert str(e.value) == 'Error reporting mis-classification'
     call_api.assert_called()
+
+
+def test_checkpointhec_download_email(mocker):
+    client = Client(
+        base_url='https://smart-api-example-1-us.avanan-example.net',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    content = b'abc123'
+    entity_id = '0' * 32
+
+    import CheckPointHEC
+    file_result = mocker.patch.object(CheckPointHEC, 'fileResult')
+    call_api = mocker.patch.object(client, '_call_api', return_value=content)
+
+    checkpointhec_download_email(client, {'entity_id': entity_id})
+    call_api.assert_called()
+    file_result.assert_called_once_with(filename=f'{entity_id}.eml', data=content)
 
 
 def test_get_ap_exceptions_empty(mocker):
