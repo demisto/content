@@ -746,13 +746,13 @@ reference = "pypi-public"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.35.1"
+version = "1.36.0"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.9,<3.13"
 files = [
-    {file = "demisto_sdk-1.35.1-py3-none-any.whl", hash = "sha256:70f082b5d753340efa0043773a2f2ab1142135b0560ac69ab868b68130b363e6"},
-    {file = "demisto_sdk-1.35.1.tar.gz", hash = "sha256:209d0dfc28764af7c9bc024bcc36a0feb1cf5f3e53b9e78d3131009539ab0c81"},
+    {file = "demisto_sdk-1.36.0-py3-none-any.whl", hash = "sha256:4129c58b800be2157beaaa2dbdc993868e0c876aac79fea6b31691285186c4fc"},
+    {file = "demisto_sdk-1.36.0.tar.gz", hash = "sha256:37c2122b9ab8ef8389eda9f1a0b569e7313bb4d8cb15d38e58bf833a8fe2e8bd"},
 ]
 
 [package.dependencies]
@@ -765,7 +765,7 @@ configparser = ">=5.2.0,<6.0.0"
 coverage = ">=7.2.1,<7.4"
 dateparser = ">=1.1.1,<2.0.0"
 decorator = ">=5.1.1,<6.0.0"
-demisto-py = ">=3.2.10,<4.0.0"
+demisto-py = ">=3.2.17,<4.0.0"
 dictdiffer = ">=0.9.0,<0.10.0"
 dictor = ">=0.1.9,<0.2.0"
 docker = ">=7.1.0,<8.0.0"
@@ -4679,4 +4679,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9,<3.11"
-content-hash = "aa4f33e22e23389c0c1c0bcb2ae75824d3fd518a6624e34e21c65124f3473a8a"
+content-hash = "d3c825e596c6fcf05ea0c69662fda7f52d79f2f04dbfddaea574da58cc076b0e"
