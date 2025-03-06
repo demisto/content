@@ -181,7 +181,7 @@ script:
       name: ip-address-to
     - description: 'The network address. Mandatory for type: network.'
       name: network-address
-    - description: 'Network significant bits. Mandatory for type: network'
+    - description: 'Network significant bits. Mandatory for type: network.'
       name: cidr-mask
     - description: 'A list of entry values in JSON format. For example: [{"type":"single","ipAddressFrom":"1.2.3.4"}].'
       name: json-entries
@@ -293,14 +293,14 @@ script:
       name: followed-action
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: 'Indicates whether to allow only one alert to be created for every web session. Default: False'
+      description: 'Indicates whether to allow only one alert to be created for every web session. Default: False.'
       name: one-alert-per-session
       predefined:
       - 'True'
       - 'False'
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: 'Indicates whether to show the response page in alerts. Default: False'
+      description: 'Indicates whether to show the response page in alerts. Default: False.'
       name: display-response-page
       predefined:
       - 'True'
@@ -327,12 +327,12 @@ script:
     - description: Comma separated list of country names in which to search. Mandatory when geo-location-criteria-operation is set.
       name: country-names
     - auto: PREDEFINED
-      description: 'Match operation for source IP addresses. Options: atLeastOne, excludeAll'
+      description: 'Match operation for source IP addresses. Options: atLeastOne, excludeAll.'
       name: ip-addresses-criteria-operation
       predefined:
       - atLeastOne
       - excludeAll
-    - description: 'List of match criteria in JSON format, e.g., [{"type": "sourceIpAddresses","operation": "atLeastOne","userDefined": ["1.2.3.4"]}]'
+    - description: 'List of match criteria in JSON format, e.g., [{"type": "sourceIpAddresses","operation": "atLeastOne","userDefined": ["1.2.3.4"]}].'
       name: match-criteria-json
     description: Create a web service custom policy.
     name: imperva-waf-web-service-custom-policy-create
@@ -478,10 +478,10 @@ script:
       description: The alert severity.
       type: String
     - contextPath: ImpervaWAF.CustomWebPolicy.ApplyTo.serverGroupName
-      description: Name of the server group to apply
+      description: Name of the server group to apply.
       type: String
     - contextPath: ImpervaWAF.CustomWebPolicy.ApplyTo.siteName
-      description: Name of the site to apply
+      description: Name of the site to apply.
       type: String
     - contextPath: ImpervaWAF.CustomWebPolicy.ApplyTo.webServiceName
       description: The name of the web service to apply.
@@ -507,7 +507,7 @@ script:
       required: true
     description: Deletes a web service custom policy indicated by the policy name.
     name: imperva-waf-web-service-custom-policy-delete
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   runonce: false
   script: '-'
   subtype: python3

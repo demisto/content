@@ -16,3 +16,5 @@ ignore=IM111
 [file:ThreatGrid_image.png]
 ignore=IM111
 
+[file:ThreatGridv2.yml]
+ignore=ST111
