@@ -6,7 +6,7 @@ sectionOrder:
 - Collect
 name: Google Apigee
 display: Google Apigee
-category: Analytics & SIEM
+category: Cloud Services
 description: Apigee is Google Cloud's native API management platform that can be used to build, manage, and secure APIs — for any use case, environment, or scale. Apigee offers high performance API proxies to create a consistent, reliable interface for your backend services. The proxy layer gives you granular control over security, rate limiting, quotas, analytics, and more for all of your services. Apigee supports REST, gRPC, SOAP, and GraphQL, providing the flexibility to implement any API architectural style.
 configuration:
 - display: Server URL
@@ -16,7 +16,7 @@ configuration:
   section: Connect
 - display: Username (email address)
   displaypassword: Password
-  name: client
+  name: credentials
   required: true
   type: 9
   section: Connect
@@ -30,9 +30,9 @@ configuration:
   required: false
   type: 0
   section: Connect
-  additionalinfo: If you are accessing the Edge OAuth2 service from a SAML-enabled org in Edge for Public Cloud, you must provide zone name.
+  additionalinfo: The zone name must be provided when accessing the Edge OAuth2 service from a SAML-enabled org.
 - display: The maximum number of Audit Logs per fetch
-  name:  max_fetch
+  name: max_fetch
   required: false
   type: 0
   section: Collect
@@ -43,11 +43,13 @@ configuration:
   required: false
   type: 8
   section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
   section: Connect
+  advanced: true
 script:
   commands:
   - arguments:
@@ -62,17 +64,13 @@ script:
       required: true
     - default: false
       description: The number of events to return.
-      isArray: false
       name: limit
       required: false
-      secret: false
     - default: false
       description: Date from which to get events.
       name: from_date
       required: false
-    deprecated: false
     description: Gets logs from Google Apigee.
-    execution: false
     name: google-apigee-get-events
   dockerimage: demisto/python3:3.11.10.115186
   isfetchevents: true

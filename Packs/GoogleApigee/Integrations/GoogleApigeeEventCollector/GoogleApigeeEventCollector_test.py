@@ -3,7 +3,7 @@ import pytest
 from GoogleApigeeEventCollector import (
     Client,
     fetch_events,
-    get_events,
+    get_events_command,
 )
 
 
@@ -12,7 +12,7 @@ def mock_client():
                   password='password', zone='zone')
 
 
-def test_get_events(requests_mock, mocker):
+def test_get_events_command(requests_mock, mocker):
     """
     Tests google-apigee-get-events command function.
     Checks the output of the command function with the expected output.
@@ -28,7 +28,7 @@ def test_get_events(requests_mock, mocker):
     }
     mocker.patch.object(Client, 'get_access_token', return_value={'access_token': 'access_token'})
     requests_mock.get(f'https://test.com/v1/audits/organizations/{client.org_name}', json=mock_response)
-    events, _ = get_events(client, args)
+    events, _ = get_events_command(client, args)
 
     assert len(events) == mock_response.get('total_count')
     assert events == mock_response.get('auditRecord')
@@ -136,14 +136,16 @@ def test_fetch_events(mocker, scenario, last_fetch, limit, events_amount, events
     mocked_client.get_logs.side_effect = mock_get_logs
     mocked_client.max_fetch = limit
 
-    last_run = {'events_amount': events_amount, 'last_fetch': last_fetch}
+    last_run = {'last_fetch_events_amount': events_amount, 'last_fetch_timestamp': last_fetch}
     next_run, events = fetch_events(
         client=mocked_client,
         last_run=last_run,
+        limit=limit
     )
 
     assert len(events) == events_size
-    assert next_run.get('events_amount') == new_events_amount, f'{scenario} - set last run does not match expected value'
+    assert next_run.get(
+        'last_fetch_events_amount') == new_events_amount, f'{scenario} - set last run does not match expected value'
     if events:
         assert events[0].get('timeStamp') == last_event_time
         assert events[-1].get('timeStamp') >= last_fetch
@@ -161,3 +163,27 @@ def test_test_module(requests_mock, mocker):
     res = test_module(client)
 
     assert res == 'ok'
+
+
+@pytest.mark.parametrize(
+    'scenario, token_initiate_time, token_expiration_seconds, current_time, result',
+    [
+        (
+            'valid token',  # scenario
+            120,  # token_initiate_time
+            400,  # token_expiration_seconds
+            140,  # current_time
+            True  # result
+        ),
+        (
+            'invalid token',  # scenario
+            120,  # token_initiate_time
+            100,  # token_expiration_seconds
+            300,  # current_time
+            False  # result
+        ),
+    ]
+)
+def test_is_token_valid(mocker, scenario, token_initiate_time, token_expiration_seconds, current_time, result):
+    is_token_valid = Client.is_token_valid(token_initiate_time, token_expiration_seconds, current_time)
+    assert is_token_valid == result, f'{scenario} - does not match expected value'
