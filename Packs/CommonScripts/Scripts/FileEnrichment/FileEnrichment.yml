@@ -1,10 +1,10 @@
 args:
 - name: file_hash
   description: 'Hash of the file. Supported types are: MD5, SHA1, SHA256, and SHA512.'
-- name: brands
+- name: enrichment_brands
   description: |-
-    Which integrations brands to run the command for. If not provided, the command will run for all available integrations.
-    For multi-select, provide a comma-separated list. For example: "VirusTotal (API v3),Cortex Core - IR".
+    Integrations brands to use for running the file reputation command. If not provided, the command will run for all available integrations that contain the file reputation command.
+    For multi-select, provide a comma-separated list. For example: "VirusTotal (API v3),WildFire-v2".
   auto: PREDEFINED
   predefined:
   - 'VirusTotal (API v3)'
@@ -339,9 +339,6 @@ outputs:
     type: Array
   - contextPath: File.AssociatedFileNames.Source
     description: The vendor from which the associated file names were retrieved.
-    type: String
-  - contextPath: File.VTFileVerdict
-    description: The VirusTotal verdict. A file is considered Malicious if it has more than 5 malicious detections.
     type: String
 script: '-'
 timeout: '0'

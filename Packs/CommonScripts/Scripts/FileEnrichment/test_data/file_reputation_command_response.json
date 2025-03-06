@@ -67,21 +67,7 @@
                         ]
                     }
                 }
-            ],
-            "VirusTotal.File(val.id && val.id == obj.id)": {
-                "attributes": {
-                    "last_analysis_stats": {
-                        "confirmed-timeout": 0,
-                        "failure": 2,
-                        "harmless": 0,
-                        "malicious": 43,
-                        "suspicious": 0,
-                        "timeout": 0,
-                        "type-unsupported": 11,
-                        "undetected": 20
-                    }
-                }
-            }
+            ]
         }
     }
 ]

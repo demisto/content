@@ -16,7 +16,7 @@ This script gathers file reputation data from multiple integrations and returns 
 | **Argument Name** | **Description** |
 | --- | --- |
 | file_hash | Hash of the file. Supported types are: MD5, SHA1, SHA256, and SHA512. |
-| brands | Which integrations brands to run the command for. If not provided, the command will run for all available integrations.<br/>For multi-select, provide a comma-separated list. For example: "VirusTotal \(API v3\),Cortex Core - IR". |
+| enrichment_brands | Integrations brands to use for running the `!file` command. If not provided, the command will run for all available integrations that contain the file reputation command.<br/>For multi-select, provide a comma-separated list. For example: "VirusTotal \(API v3\),WildFire-v2". |
 | verbose | Whether to retrieve human readable entry for every command or only the final result. Set to true to get a human-readable entry for every command. Set to false to get a human-readable summary of the final result. Default is false. |
 | external_enrichment | Whether to run additional external indicator enrichment commands. Set to true to enrich with information from the specified source brands. Set to false to only query for existing indicators in the Threat Intelligence Module \(TIM\). Default is false. |
 
@@ -130,4 +130,3 @@ This script gathers file reputation data from multiple integrations and returns 
 | File.Organization.Source | The vendor from which the organization information was retrieved. | String |
 | File.AssociatedFileNames.Value | The names of other files associated with this file. | Array |
 | File.AssociatedFileNames.Source | The vendor from which the associated file names were retrieved. | String |
-| File.VTFileVerdict | The VirusTotal verdict. A file is considered Malicious if it has more than 5 malicious detections. | String |

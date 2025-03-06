@@ -10,78 +10,74 @@
         "Tags": [
             "malware"
         ],
-        "DBotScore": {
-            "Indicator": [
-                {
+        "DBotScore": [
+            {
+                "Indicator": {
                     "Value": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
                     "Source": "VirusTotal (API v3)"
                 },
-                {
-                    "Value": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
-                    "Source": "WildFire-v2"
-                },
-                {
-                    "Value": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
-                    "Source": "WildFire-v2"
-                }
-            ],
-            "Reliability": [
-                {
+                "Reliability": {
                     "Value": "C - Fairly reliable",
                     "Source": "VirusTotal (API v3)"
                 },
-                {
-                    "Value": "B - Usually reliable",
-                    "Source": "WildFire-v2"
-                },
-                {
-                    "Value": "B - Usually reliable",
-                    "Source": "WildFire-v2"
-                }
-            ],
-            "Score": [
-                {
+                "Score": {
                     "Value": 3,
                     "Source": "VirusTotal (API v3)"
                 },
-                {
-                    "Value": 3,
-                    "Source": "WildFire-v2"
-                },
-                {
-                    "Value": 3,
-                    "Source": "WildFire-v2"
-                }
-            ],
-            "Type": [
-                {
+                "Type": {
                     "Value": "file",
                     "Source": "VirusTotal (API v3)"
                 },
-                {
-                    "Value": "file",
-                    "Source": "WildFire-v2"
-                },
-                {
-                    "Value": "file",
-                    "Source": "WildFire-v2"
-                }
-            ],
-            "Vendor": [
-                {
+                "Vendor": {
                     "Value": "VirusTotal (API v3)",
                     "Source": "VirusTotal (API v3)"
-                },
-                {
-                    "Value": "WildFire-v2",
+                }
+            },
+            {
+                "Indicator": {
+                    "Value": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
                     "Source": "WildFire-v2"
                 },
-                {
+                "Reliability": {
+                    "Value": "B - Usually reliable",
+                    "Source": "WildFire-v2"
+                },
+                "Score": {
+                    "Value": 3,
+                    "Source": "WildFire-v2"
+                },
+                "Type": {
+                    "Value": "file",
+                    "Source": "WildFire-v2"
+                },
+                "Vendor": {
                     "Value": "WildFire-v2",
                     "Source": "WildFire-v2"
                 }
-            ]
-        },
+            },
+            {
+                "Indicator": {
+                    "Value": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
+                    "Source": "WildFire-v2"
+                },
+                "Reliability": {
+                    "Value": "B - Usually reliable",
+                    "Source": "WildFire-v2"
+                },
+                "Score": {
+                    "Value": 3,
+                    "Source": "WildFire-v2"
+                },
+                "Type": {
+                    "Value": "file",
+                    "Source": "WildFire-v2"
+                },
+                "Vendor": {
+                    "Value": "WildFire-v2",
+                    "Source": "WildFire-v2"
+                }
+            }
+        ],
         "Hashes": [
             {
                 "type": "MD5",
@@ -116,7 +112,6 @@
                 "AVG"
             ]
         },
-        "VTFileVerdict": "Malicious",
         "DigitalSignature": {
             "Published": "None"
         },

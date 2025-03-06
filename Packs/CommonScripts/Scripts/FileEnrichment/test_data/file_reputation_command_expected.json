@@ -1,28 +1,30 @@
 {
     "Context": {
         "Extension": "zip",
-        "DBotScore": {
-            "Indicator": {
-                "Value": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
-                "Source": "VirusTotal (API v3)"
-            },
-            "Reliability": {
-                "Value": "C - Fairly reliable",
-                "Source": "VirusTotal (API v3)"
-            },
-            "Score": {
-                "Value": 3,
-                "Source": "VirusTotal (API v3)"
-            },
-            "Type": {
-                "Value": "file",
-                "Source": "VirusTotal (API v3)"
-            },
-            "Vendor": {
-                "Value": "VirusTotal (API v3)",
-                "Source": "VirusTotal (API v3)"
+        "DBotScore": [
+            {
+                "Indicator": {
+                    "Value": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
+                    "Source": "VirusTotal (API v3)"
+                },
+                "Reliability": {
+                    "Value": "C - Fairly reliable",
+                    "Source": "VirusTotal (API v3)"
+                },
+                "Score": {
+                    "Value": 3,
+                    "Source": "VirusTotal (API v3)"
+                },
+                "Type": {
+                    "Value": "file",
+                    "Source": "VirusTotal (API v3)"
+                },
+                "Vendor": {
+                    "Value": "VirusTotal (API v3)",
+                    "Source": "VirusTotal (API v3)"
+                }
             }
-        },
+        ],
         "Hashes": [
             {
                 "type": "MD5",
@@ -73,8 +75,7 @@
                 "CTX",
                 "AVG"
             ]
-        },
-        "VTFileVerdict": "Malicious"
+        }
     },
     "HumanReadable": "#### Result for !file file=\"7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0\"\n### Results of file hash 7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0\n|Sha1|Sha256|Md5|MeaningfulName|TypeExtension|Last Modified|Reputation|Positives|\n|\u2014|\u2014|\u2014|\u2014|\u2014|\u2014|\u2014|\u2014|\n| d8b426700c3c10413abb8acdcfeccaaec8f06cd9 | 7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0 | 4e76823c05048e92a4c0122d61000edf | \u672a\u78ba\u8a8d 639898.crdownload | jar | 2025-02-02 12:54:47Z | -208 | 43/76 |\n"
 }

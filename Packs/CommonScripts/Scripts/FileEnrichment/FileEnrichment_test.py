@@ -9,92 +9,33 @@ from FileEnrichment import Brands, Command, CommandResults, ContextPaths, EntryT
 SHA_256_HASH = "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0"
 
 
-COMMAND_HAS_REQUIRED_ARGS_PARAMS = [  # command, expected_has_required_args
-    pytest.param(
-        Command(Brands.WILDFIRE_V2, "wildfire-report", {"sha256": SHA_256_HASH}),
-        True,
-        id="Has all args",
-    ),
-    pytest.param(
-        Command(Brands.VIRUS_TOTAL_V3, "file", {"file": None}),
-        False,
-        id="Is missing args",
-    ),
-    pytest.param(
-        Command(Brands.CORE_IR, "get-endpoints", {}),
-        True,
-        id="Has no args",
-    ),
-]
-
-COMMAND_SHOULD_BRAND_RUN_PARAMS = [  # command, expected_should_brand_run
-    pytest.param(
-        Command(Brands.WILDFIRE_V2, "wildfire-get-verdict", {"file_hash": SHA_256_HASH}),
-        True,
-        id="Brand active",
-    ),
-    pytest.param(
-        Command(Brands.VIRUS_TOTAL_V3, "vt-file-sandbox-report", {"file": SHA_256_HASH}),
-        False,
-        id="Brand disabled",
-    ),
-]
-
-COMMAND_PREPARE_HUMAN_READABLE_PARAMS = [   # original_human_readable, is_error, expected_readable_output
-    pytest.param(
-        "This is a regular message",
-        False,
-        "#### Result for !wildfire-upload-url upload=\"http://www.example.com\"\nThis is a regular message",
-        id="Note entry",
-    ),
-    pytest.param(
-        "This is an error message",
-        True,
-        "#### Error for !wildfire-upload-url upload=\"http://www.example.com\"\nThis is an error message",
-        id="Error Entry",
-    ),
-]
-
-MAIN_VALID_HASH_PARAMS = [
-    pytest.param(True, id="Enabled external enrichment"),
-    pytest.param(False, id="Disabled external enrichment"),
-]
-
-
-""" TEST HELPER FUNCTIONS """
-
-
 def util_load_json(path: str):
     with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
-""" UNIT TESTS FUNCTIONS """
-
-
-@pytest.mark.parametrize("command, expected_has_required_args", COMMAND_HAS_REQUIRED_ARGS_PARAMS)
-def test_command_has_required_args(command: Command, expected_has_required_args: bool):
+@pytest.mark.parametrize(
+    "command, expected_has_enabled_instance",
+    [
+        pytest.param(
+            Command("wildfire-get-verdict", {"file_hash": SHA_256_HASH}, Brands.WILDFIRE_V2),
+            True,
+            id="Brand active",
+        ),
+        pytest.param(
+            Command("vt-file-sandbox-report", {"file": SHA_256_HASH}, Brands.VIRUS_TOTAL_V3),
+            False,
+            id="Brand disabled",
+        ),
+    ],
+)
+def test_command_has_enabled_instance(command: Command, expected_has_enabled_instance: bool):
     """
     Given:
         - Command objects with source brand and arguments dictionaries.
 
     When:
-        - Calling `Command._has_required_args`.
-
-    Assert:
-        - Ensure value is True if all arguments have values or if command has no arguments. Otherwise, False.
-    """
-    assert command._has_required_args == expected_has_required_args
-
-
-@pytest.mark.parametrize("command, expected_should_brand_run", COMMAND_SHOULD_BRAND_RUN_PARAMS)
-def test_command_should_brand_run(command: Command, expected_should_brand_run: bool):
-    """
-    Given:
-        - Command objects with source brand and arguments dictionaries.
-
-    When:
-        - Calling `Command._should_brand_run`.
+        - Calling `Command.has_enabled_instance`.
 
     Assert:
         - Ensure value is True if an integration instance of the brand is active. Otherwise, False.
@@ -104,12 +45,27 @@ def test_command_should_brand_run(command: Command, expected_should_brand_run: b
         "instance_ir": {"brand": Brands.CORE_IR.value, "state": "active"},
         "instance_vt": {"brand": Brands.VIRUS_TOTAL_V3.value, "state": "disabled"},
     }
-    brands_to_run = Brands.values()  # all brands
 
-    assert command._should_brand_run(modules, brands_to_run) == expected_should_brand_run
+    assert command.has_enabled_instance(modules) == expected_has_enabled_instance
 
 
-@pytest.mark.parametrize("original_human_readable, is_error, expected_readable_output", COMMAND_PREPARE_HUMAN_READABLE_PARAMS)
+@pytest.mark.parametrize(
+    "original_human_readable, is_error, expected_readable_output",
+    [
+        pytest.param(
+            "This is a regular message",
+            False,
+            "#### Result for !wildfire-upload-url upload=\"http://www.example.com\"\nThis is a regular message",
+            id="Note entry",
+        ),
+        pytest.param(
+            "This is an error message",
+            True,
+            "#### Error for !wildfire-upload-url upload=\"http://www.example.com\"\nThis is an error message",
+            id="Error Entry",
+        ),
+    ],
+)
 def test_command_prepare_human_readable(original_human_readable: str, is_error: bool, expected_readable_output: str):
     """
     Given:
@@ -121,7 +77,7 @@ def test_command_prepare_human_readable(original_human_readable: str, is_error: 
     Assert:
         - Ensure correct human readable value with the appropriate title and message.
     """
-    command = Command(Brands.WILDFIRE_V2, "wildfire-upload-url", {"upload": "http://www.example.com"})
+    command = Command("wildfire-upload-url", {"upload": "http://www.example.com"}, Brands.WILDFIRE_V2)
 
     human_readable_command_results = command.prepare_human_readable(original_human_readable, is_error)
 
@@ -139,7 +95,7 @@ def test_command_execute(mocker: MockerFixture):
     Assert:
         - Ensure correctly parsed entry context and human-readable CommandResults from the execution response.
     """
-    command = Command(Brands.VIRUS_TOTAL_V3, "file", {"file": SHA_256_HASH})
+    command = Command("file", {"file": SHA_256_HASH}, Brands.VIRUS_TOTAL_V3)
 
     demisto_execute_response = util_load_json("test_data/file_reputation_command_response.json")
     mock_demisto_execute = mocker.patch("FileEnrichment.demisto.executeCommand", return_value=demisto_execute_response)
@@ -290,7 +246,7 @@ def test_execute_file_reputation(mocker: MockerFixture):
     """
     from FileEnrichment import execute_file_reputation
 
-    command = Command(Brands.VIRUS_TOTAL_V3, "file", {"file": SHA_256_HASH})
+    command = Command("file", {"file": SHA_256_HASH})
 
     demisto_execute_response = util_load_json("test_data/file_reputation_command_response.json")
     mocker.patch("FileEnrichment.demisto.executeCommand", return_value=demisto_execute_response)
@@ -315,7 +271,7 @@ def test_execute_wildfire_report(mocker: MockerFixture):
     """
     from FileEnrichment import execute_wildfire_report
 
-    command = Command(Brands.WILDFIRE_V2, "wildfire-report", {"sha256": SHA_256_HASH})
+    command = Command("wildfire-report", {"sha256": SHA_256_HASH}, Brands.WILDFIRE_V2)
 
     demisto_execute_response = util_load_json("test_data/wildfire_report_command_response.json")
     mocker.patch("FileEnrichment.demisto.executeCommand", return_value=demisto_execute_response)
@@ -340,7 +296,7 @@ def test_execute_wildfire_verdict(mocker: MockerFixture):
     """
     from FileEnrichment import execute_wildfire_verdict
 
-    command = Command(Brands.WILDFIRE_V2, "wildfire-get-verdict", {"hash": SHA_256_HASH})
+    command = Command("wildfire-get-verdict", {"hash": SHA_256_HASH}, Brands.WILDFIRE_V2)
 
     demisto_execute_response = util_load_json("test_data/wildfire_verdict_command_response.json")
     mocker.patch("FileEnrichment.demisto.executeCommand", return_value=demisto_execute_response)
@@ -365,7 +321,7 @@ def test_execute_ir_hash_analytics(mocker: MockerFixture):
     """
     from FileEnrichment import execute_ir_hash_analytics
 
-    command = Command(Brands.CORE_IR, "core-get-hash-analytics-prevalence", {"sha256": SHA_256_HASH})
+    command = Command("core-get-hash-analytics-prevalence", {"sha256": SHA_256_HASH}, Brands.CORE_IR)
 
     demisto_execute_response = util_load_json("test_data/ir_hash_analytics_command_response.json")
     mocker.patch("FileEnrichment.demisto.executeCommand", return_value=demisto_execute_response)
@@ -392,14 +348,12 @@ def test_enrich_with_command_known_command(mocker: MockerFixture):
 
     mock_execution_function = mocker.patch("FileEnrichment.execute_ir_hash_analytics", return_value=("", ""))
 
-    command = Command(Brands.CORE_IR, "core-get-hash-analytics-prevalence", {"sha256": SHA_256_HASH})
+    command = Command("core-get-hash-analytics-prevalence", {"sha256": SHA_256_HASH}, Brands.CORE_IR)
     modules = {"instance_ir": {"brand": Brands.CORE_IR.value, "state": "active"}}
-    brands_to_run = Brands.values()
 
     enrich_with_command(
         command=command,
         modules=modules,
-        brands_to_run=brands_to_run,
         per_command_context={},
         verbose_command_results=[],
     )
@@ -420,15 +374,13 @@ def test_enrich_with_command_unknown_command():
     """
     from FileEnrichment import enrich_with_command
 
-    command = Command(Brands.CORE_IR, "core-get-endpoints", {"limit": "10"})
+    command = Command("core-get-endpoints", {"limit": "10"}, Brands.CORE_IR)
     modules = {"instance_ir": {"brand": Brands.CORE_IR.value, "state": "active"}}
-    brands_to_run = Brands.values()
 
     with pytest.raises(ValueError, match="Unknown command: core-get-endpoints"):
         enrich_with_command(
             command=command,
             modules=modules,
-            brands_to_run=brands_to_run,
             per_command_context={},
             verbose_command_results=[],
         )
@@ -449,14 +401,12 @@ def test_enrich_with_command_cannot_run(mocker: MockerFixture):
 
     mock_execution_function = mocker.patch("FileEnrichment.execute_file_reputation")
 
-    command = Command(Brands.VIRUS_TOTAL_V3, "file", {"file": SHA_256_HASH})
+    command = Command("file", {"file": SHA_256_HASH}, Brands.VIRUS_TOTAL_V3)
     modules = {"instance_vt": {"brand": Brands.VIRUS_TOTAL_V3.value, "state": "disabled"}}
-    brands_to_run = Brands.values()
 
     enrich_with_command(
         command=command,
         modules=modules,
-        brands_to_run=brands_to_run,
         per_command_context={},
         verbose_command_results=[],
     )
@@ -481,7 +431,7 @@ def test_search_file_indicator(mocker: MockerFixture):
     mocker.patch("FileEnrichment.IndicatorsSearcher.__iter__", return_value=iter(indicator_search_results))
 
     per_command_context, verbose_command_results = {}, []
-    search_file_indicator(SHA_256_HASH, per_command_context, verbose_command_results)
+    search_file_indicator(SHA_256_HASH, per_command_context, verbose_command_results, False)
 
     expected_output = util_load_json("test_data/search_file_indicator_expected.json")
     assert per_command_context["findIndicators"] == expected_output["Context"]
@@ -506,7 +456,7 @@ def test_run_external_enrichment(mocker: MockerFixture):
         "instance_ir": {"brand": Brands.CORE_IR.value, "state": "active"},
         "instance_vt": {"brand": Brands.VIRUS_TOTAL_V3.value, "state": "active"},
     }
-    brands_to_run = Brands.values()
+    file_reputation_brands = [Brands.VIRUS_TOTAL_V3.value]
 
     mock_enrich_with_command = mocker.patch("FileEnrichment.enrich_with_command")
 
@@ -514,7 +464,7 @@ def test_run_external_enrichment(mocker: MockerFixture):
         file_hash=SHA_256_HASH,
         hash_type="sha256",
         modules=modules,
-        brands_to_run=brands_to_run,
+        file_reputation_brands=file_reputation_brands,
         per_command_context={},
         verbose_command_results=[],
     )
@@ -525,7 +475,7 @@ def test_run_external_enrichment(mocker: MockerFixture):
     file_reputation_command = mock_enrich_with_command.call_args_list[0][0][0]
 
     assert file_reputation_command.name == "file"
-    assert file_reputation_command.args == {"file": SHA_256_HASH, "using-brand": ",".join(brands_to_run)}
+    assert file_reputation_command.args == {"file": SHA_256_HASH, "using-brand": ",".join(file_reputation_brands)}
 
     # B. Run Wildfire Report command
     wildfire_report_command = mock_enrich_with_command.call_args_list[1][0][0]
@@ -653,7 +603,13 @@ def test_main_invalid_hash(mocker: MockerFixture):
     assert mock_return_error.call_args[0][0] == expected_error_message
 
 
-@pytest.mark.parametrize("external_enrichment", MAIN_VALID_HASH_PARAMS)
+@pytest.mark.parametrize(
+    "external_enrichment",
+    [
+        pytest.param(True, id="Enabled external enrichment"),
+        pytest.param(False, id="Disabled external enrichment"),
+    ]
+)
 def test_main_valid_hash(mocker: MockerFixture, external_enrichment: bool):
     """
     Given:
