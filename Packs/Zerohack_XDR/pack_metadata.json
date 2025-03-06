@@ -2,7 +2,7 @@
     "name": "Zerohack XDR",
     "description": "ZeroHack XDR is a Comprehensive Network and Host Threat Detection and Remediation software suite designed on the SaaS model for Clouds and On-Premises Environments. It provides advanced threat detection functionalities using Deep Packet Inspection, Passive Fingerprinting and AI Engine to monitor and learn the Network and individual behavior for early prediction of attacks.",
     "support": "partner",
-    "currentVersion": "1.0.12",
+    "currentVersion": "1.0.13",
     "author": "Whizhack Technologies",
     "url": "https://xdr.zerohack.com",
     "email": "support@whizhack.com",
@@ -37,6 +37,13 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

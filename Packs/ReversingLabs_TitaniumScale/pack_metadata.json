@@ -2,7 +2,7 @@
     "name": "ReversingLabs TitaniumScale",
     "description": "Extract internal threat indicators with static malware analysis engine. Classify files and determine threat level.",
     "support": "partner",
-    "currentVersion": "1.2.1",
+    "currentVersion": "1.2.2",
     "author": "ReversingLabs",
     "url": "https://www.reversinglabs.com/products/malware-threat-hunting-and-investigations",
     "email": "support@reversinglabs.com",
@@ -25,5 +25,10 @@
         "marketplacev2",
         "platform"
     ],
-    "supportedModules": []
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }

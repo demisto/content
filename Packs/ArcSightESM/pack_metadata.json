@@ -2,7 +2,7 @@
     "name": "ArcSight ESM",
     "description": "ArcSight ESM SIEM by Micro Focus (Formerly HPE Software).",
     "support": "xsoar",
-    "currentVersion": "1.2.4",
+    "currentVersion": "1.2.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
