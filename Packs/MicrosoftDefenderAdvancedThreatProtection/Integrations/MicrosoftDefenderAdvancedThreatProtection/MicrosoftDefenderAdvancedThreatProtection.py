@@ -2767,8 +2767,6 @@ def get_machine_missing_kbs_command(client: MsClient, args: dict) -> CommandResu
         missing_kbs_output, headers=headers, removeNull=True,
     )
 
-    # assert 0
-
     return CommandResults(
         outputs_prefix="MicrosoftATP.PublicProductFix",
         outputs=missing_kbs_output,
