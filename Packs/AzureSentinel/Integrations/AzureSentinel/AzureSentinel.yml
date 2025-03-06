@@ -2381,7 +2381,107 @@ script:
     execution: false
     name: azure-sentinel-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.117163
+  - arguments:
+    - name: title
+      description: The incident's title.
+      required: true
+    - auto: PREDEFINED
+      description: The incident severity.
+      name: severity
+      predefined:
+      - High
+      - Medium
+      - Low
+      - Informational
+    - auto: PREDEFINED
+      description: The incident status.
+      name: status
+      predefined:
+      - New
+      - Active
+      - Closed
+      required: true
+    - description: The incident description.
+      name: description
+    - description: Incident labels. Note that all labels will be set as labelType='User'.
+      isArray: true
+      name: labels
+    description: Create a sentinel incident.
+    name: azure-sentinel-create-incident
+    outputs:
+    - contextPath: AzureSentinel.Incident.ID
+      description: The incident ID.
+      type: String
+    - contextPath: AzureSentinel.Incident.Title
+      description: The incident's title.
+      type: String
+    - contextPath: AzureSentinel.Incident.Description
+      description: Description of the incident.
+      type: String
+    - contextPath: AzureSentinel.Incident.Severity
+      description: The incident severity.
+      type: String
+    - contextPath: AzureSentinel.Incident.Status
+      description: The incident status.
+      type: String
+    - contextPath: AzureSentinel.Incident.AssigneeName
+      description: The name of the incident assignee.
+      type: String
+    - contextPath: AzureSentinel.Incident.AssigneeEmail
+      description: The email address of the incident assignee.
+      type: String
+    - contextPath: AzureSentinel.Incident.AssigneeObjectID
+      description: The object ID of the incident assignee.
+      type: string
+    - contextPath: AzureSentinel.Incident.AssigneeUPN
+      description: The user principal name of the incident assignee.
+      type: string
+    - contextPath: AzureSentinel.Incident.Label.Name
+      description: The name of the incident label.
+      type: String
+    - contextPath: AzureSentinel.Incident.Label.Type
+      description: The incident label type.
+      type: String
+    - contextPath: AzureSentinel.Incident.FirstActivityTimeUTC
+      description: The date and time of the incident's first activity.
+      type: Date
+    - contextPath: AzureSentinel.Incident.LastActivityTimeUTC
+      description: The date and time of the incident's last activity.
+      type: Date
+    - contextPath: AzureSentinel.Incident.LastModifiedTimeUTC
+      description: The date and time the incident was last modified.
+      type: Date
+    - contextPath: AzureSentinel.Incident.CreatedTimeUTC
+      description: The date and time the incident was created.
+      type: Date
+    - contextPath: AzureSentinel.Incident.IncidentNumber
+      description: The incident number.
+      type: Number
+    - contextPath: AzureSentinel.Incident.AlertsCount
+      description: The number of the alerts in the incident.
+      type: Number
+    - contextPath: AzureSentinel.Incident.BookmarkCount
+      description: The number of bookmarks in the incident.
+      type: Number
+    - contextPath: AzureSentinel.Incident.CommentCount
+      description: The number of comments in the incident.
+      type: Number
+    - contextPath: AzureSentinel.Incident.AlertProductNames
+      description: The alert product names of the incident.
+      type: String
+    - contextPath: AzureSentinel.Incident.Tactics
+      description: The incident's tactics.
+      type: String
+    - contextPath: AzureSentinel.Incident.FirstActivityTimeGenerated
+      description: The incident's generated first activity time.
+      type: Date
+    - contextPath: AzureSentinel.Incident.LastActivityTimeGenerated
+      description: The incident's generated last activity time.
+      type: Date
+    - contextPath: AzureSentinel.Incident.Etag
+      description: The Etag of the incident.
+      type: String
+  dockerimage: demisto/crypto:1.0.0.2005673
   isfetch: true
   runonce: false
   script: '-'

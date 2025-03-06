@@ -2,7 +2,7 @@
     "name": "SendGrid",
     "description": "SendGrid provides a cloud-based service that assists businesses with email delivery. It allows companies to track email opens, unsubscribes, bounces, and spam reports. Our SendGrid pack utilize these SendGrid use cases to help you send and manage your emails.",
     "support": "community",
-    "currentVersion": "1.1.6",
+    "currentVersion": "1.1.7",
     "author": "Sharat Patil",
     "url": "",
     "email": "",
@@ -21,5 +21,10 @@
         "marketplacev2",
         "platform"
     ],
-    "supportedModules": []
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }
