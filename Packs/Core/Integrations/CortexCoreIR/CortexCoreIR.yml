@@ -1327,10 +1327,10 @@ script:
     - description: List of endpoint IDs.
       isArray: true
       name: endpoint_id_list
-      prettyname: Run action on list of endpoint IDs.
+      prettyname: Run action on.
       prettypredefined:
         Issue initiator host: ${alert.placeholder_1}
-        I ssue remote host: ${alert.placeholder_2}
+        Issue remote host: ${alert.placeholder_2}
     - description: Name of the distribution list.
       isArray: true
       name: dist_name
@@ -3683,9 +3683,6 @@ script:
       name: script_uid
       required: true
       prettyname: Script
-      prettypredefined:
-        placeholder_1: ${alert.placeholder_1}
-        placeholder_2: ${alert.placeholder_2}
     - description: Dictionary containing the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}.
       name: parameters
     - defaultValue: '600'
