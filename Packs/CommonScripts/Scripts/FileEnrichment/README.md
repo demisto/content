@@ -1,4 +1,4 @@
-This script gathers file reputation data from multiple integrations and returns a File entity with consolidated information to the context output.
+This script gathers file reputation data from multiple integrations and returns a "File" object with consolidated information to the context output.
 
 ## Script Data
 
@@ -16,9 +16,9 @@ This script gathers file reputation data from multiple integrations and returns 
 | **Argument Name** | **Description** |
 | --- | --- |
 | file_hash | Hash of the file. Supported types are: MD5, SHA1, SHA256, and SHA512. |
-| enrichment_brands | Integrations brands to use for running the `!file` command. If not provided, the command will run for all available integrations that contain the file reputation command.<br/>For multi-select, provide a comma-separated list. For example: "VirusTotal \(API v3\),WildFire-v2". |
-| verbose | Whether to retrieve human readable entry for every command or only the final result. Set to true to get a human-readable entry for every command. Set to false to get a human-readable summary of the final result. Default is false. |
-| external_enrichment | Whether to run additional external indicator enrichment commands. Set to true to enrich with information from the specified source brands. Set to false to only query for existing indicators in the Threat Intelligence Module \(TIM\). Default is false. |
+| enrichment_brands | Integrations brands to use for running the file reputation command. If not provided, the command will run for all available integrations that contain the file reputation command.<br/>For multi-select, provide a comma-separated list. For example: "VirusTotal \(API v3\),WildFire-v2". |
+| verbose | Whether to retrieve a human-readable entry for every command or only the final result. Set to true to retrieve a human-readable entry for every command. Set to retrieve a human-readable summary of the final result. |
+| external_enrichment | Whether to run additional external indicator enrichment commands. Set to true to enrich with information from the specified source brands. Set to false to query only for existing indicators in Threat Intelligence \(TIM\). |
 
 ## Outputs
 
