@@ -287,6 +287,7 @@ script:
       required: true
       description: "The username of the account to disable (sAMAccountName)."
     - name: password
+      secret: true
       required: true
       description: "The password to set for the user."
     - name: base-dn
