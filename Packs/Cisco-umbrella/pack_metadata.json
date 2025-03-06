@@ -2,7 +2,7 @@
     "name": "Cisco Umbrella Investigate",
     "description": "Cisco Umbrella Investigate",
     "support": "xsoar",
-    "currentVersion": "2.0.2",
+    "currentVersion": "2.0.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -15,6 +15,15 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "C0",
+        "C1",
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

@@ -2,6 +2,7 @@ id: Enrichment for Verdict
 version: -1
 marketplaces:
 - marketplacev2
+- platform
 name: Enrichment for Verdict
 description: This playbook checks prior alert closing reasons and performs enrichment and prevalence checks on different IOC types. It then returns the information needed to establish the alert's verdict.
 starttaskid: "0"

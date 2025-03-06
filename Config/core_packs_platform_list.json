@@ -12,8 +12,8 @@
         "Jira",
         "MicrosoftTeams",
         "Slack",
-        "ServiceNow"
-
+        "ServiceNow",
+        "rasterize"
     ],
     "update_core_packs_list": [
         "Base",
@@ -28,6 +28,7 @@
         "Jira",
         "MicrosoftTeams",
         "Slack",
-        "ServiceNow"
+        "ServiceNow",
+        "rasterize"
     ]
   }

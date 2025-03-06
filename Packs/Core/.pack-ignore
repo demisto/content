@@ -38,6 +38,12 @@ ignore=LO107
 [file:playbook-Scheduled_task_created_with_HTTP_or_FTP_reference.yml]
 ignore=GR103
 
+[file:playbook-Remote_PsExec_with_Lolbin_Command_Execution_alert.yml]
+ignore=RM116
+
+[file:Packs/Core/Playbooks/playbook-Remote_PsExec_with_Lolbin_Command_Execution_alert.yml]
+ignore=PB118,PB119
+
 [known_words]
 xsiam
 coreirapimodule

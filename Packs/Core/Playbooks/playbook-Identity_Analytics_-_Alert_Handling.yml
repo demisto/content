@@ -1646,5 +1646,7 @@ outputSections:
 outputs: []
 tests:
 - Test Playbook - Identity Analytics - Alert Handling
-marketplaces: ["marketplacev2"]
+marketplaces: 
+- marketplacev2
+- platform
 fromversion: 6.10.0
