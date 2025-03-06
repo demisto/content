@@ -53,11 +53,16 @@ jobs:
 
           echo "Running MDX validation"
 
-          node - <<'EOF'
+          # Store files as a space-separated string
+          FILE_LIST="${FILES_TO_VALIDATE[@]}"
+
+          # Pass files to node script as arguments
+          node - "$FILE_LIST" <<'EOF'
           const { readFileSync } = require('fs');
           const mdx = require('@mdx-js/mdx');
 
-          const files = process.argv.slice(1);  // Read from stdin args
+          // Read arguments properly
+          const files = process.argv[1]?.split(" ") || [];
 
           files.forEach(file => {
               try {
@@ -69,5 +74,6 @@ jobs:
                   process.exit(1);
               }
           });
-          EOF "${FILES_TO_VALIDATE[@]}"
+          EOF
+
 
