@@ -27,7 +27,7 @@ def mock_demisto(mocker):
 
 
 client_mocker = MsClient(
-    tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name', base_url='url', verify='use_ssl',
+    tenant_id="tenant_id", auth_id="auth_id", client_secret='enc_key', app_name='app_name', base_url='url', verify='use_ssl',
     proxy='proxy', self_deployed='self_deployed', alert_severities_to_fetch='Informational,Low,Medium,High',
     alert_time_to_fetch='3 days', alert_status_to_fetch='New', max_fetch='10', auth_code='', auth_type='',
     redirect_uri='', endpoint_type='com', alert_detectionsource_to_fetch='')
@@ -2412,7 +2412,7 @@ def test_gcc_resource(mocker, endpoint_type):
         Validate that the resource called matches the is_gcc attribute, so that GCC-based instance requests go through.
     """
     client = MsClient(
-        tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name', base_url='url',
+        tenant_id="tenant_id", auth_id="auth_id", client_secret='enc_key', app_name='app_name', base_url='url',
         verify='use_ssl',
         proxy='proxy', self_deployed='self_deployed', alert_severities_to_fetch='Informational,Low,Medium,High',
         alert_time_to_fetch='3 days', alert_status_to_fetch='New', max_fetch='10', endpoint_type=endpoint_type,

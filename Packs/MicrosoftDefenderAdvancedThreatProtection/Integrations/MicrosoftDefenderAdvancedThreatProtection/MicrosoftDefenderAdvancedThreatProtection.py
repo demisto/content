@@ -6,6 +6,7 @@ from collections.abc import Callable
 from CommonServerPython import *
 import urllib3
 import dataclasses
+from urllib.parse import quote
 from dateutil.parser import parse
 from requests import Response
 from MicrosoftApiModule import *  # noqa: E402
@@ -1202,7 +1203,7 @@ class MsClient:
      Microsoft  Client enables authorized access to Microsoft Defender Advanced Threat Protection (ATP)
     """
 
-    def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
+    def __init__(self, tenant_id, auth_id, client_secret, app_name, base_url, verify, proxy, self_deployed,
                  alert_severities_to_fetch, alert_status_to_fetch, alert_time_to_fetch, max_fetch,
                  auth_type, endpoint_type, redirect_uri, auth_code, certificate_thumbprint: str | None = None,
                  private_key: str | None = None, managed_identities_client_id: str | None = None,
@@ -1233,7 +1234,7 @@ class MsClient:
             auth_code=auth_code,
             tenant_id=tenant_id,
             app_name=app_name,
-            enc_key=enc_key,
+            enc_key=quote(client_secret),
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             retry_on_rate_limit=True,
@@ -5622,7 +5623,7 @@ def main():  # pragma: no cover
     is_gcc = params.get('is_gcc', False)
     tenant_id = params.get('tenant_id') or params.get('_tenant_id')
     auth_id = params.get('_auth_id') or params.get('auth_id')
-    enc_key = (params.get('credentials') or {}).get('password') or params.get('enc_key')
+    client_secret = (params.get('credentials') or {}).get('password') or params.get('enc_key')
     use_ssl: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
     self_deployed: bool = params.get('self_deployed', False)
@@ -5646,10 +5647,10 @@ def main():  # pragma: no cover
     base_url: str = urljoin(params_url, '/api')
 
     if not managed_identities_client_id:
-        if not self_deployed and not enc_key:
+        if not self_deployed and not client_secret:
             raise DemistoException('Key must be provided. For further information see '
                                    'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
-        elif not enc_key and (not certificate_thumbprint or not private_key):
+        elif not client_secret and (not certificate_thumbprint or not private_key):
             raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
         if not auth_id:
             raise Exception('Authentication ID must be provided.')
@@ -5668,7 +5669,7 @@ def main():  # pragma: no cover
     try:
 
         client = MsClient(
-            base_url=base_url, tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=APP_NAME, verify=use_ssl,
+            base_url=base_url, tenant_id=tenant_id, auth_id=auth_id, client_secret=client_secret, app_name=APP_NAME, verify=use_ssl,
             proxy=proxy, self_deployed=self_deployed, alert_severities_to_fetch=alert_severities_to_fetch,
             alert_status_to_fetch=alert_status_to_fetch, alert_time_to_fetch=alert_time_to_fetch,
             max_fetch=max_alert_to_fetch, certificate_thumbprint=certificate_thumbprint, private_key=private_key,
