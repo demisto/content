@@ -148,7 +148,7 @@ def websocket_connections(
     extra_headers = {"Authorization": f"Bearer {api_key}"}
 
     try:
-        with ExitStack() as stack:  # Keep connection contexts for clean up
+        with ExitStack():  # Keep connection contexts for clean up
             connections = [EventConnection(
                 event_type=event_type,
                 url=url(type=event_type.value),
@@ -190,7 +190,7 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
             demisto.debug(f"Timeout while waiting for the event on {connection.event_type}")
             continue
         except exceptions.ConnectionClosedError:
-            demisto.error(f"Connection closed, attempting to reconnect...")
+            demisto.error("Connection closed, attempting to reconnect...")
             connection.reconnect()
             continue
         except Exception as e:
