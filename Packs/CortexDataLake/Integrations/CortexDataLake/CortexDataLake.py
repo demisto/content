@@ -671,7 +671,7 @@ def files_context_transformer(row_content: dict) -> dict:
     }
 
 
-def gp_context_transformer(row_content):
+def gp_context_transformer(row_content: dict) -> dict:
     """
         This function retrieves data from a row of raw data into context path locations.
         Documentation: https://docs.paloaltonetworks.com/strata-logging-service/log-reference/network-logs/network-globalprotect-log
