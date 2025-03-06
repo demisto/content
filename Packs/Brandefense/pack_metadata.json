@@ -2,7 +2,7 @@
     "name": "Brandefense",
     "description": "Branddefense is looking for data for each brand and collecting information and alarming the related brand about dark web finding (credentials, similar domain names etc.) related to the firm.With Brandefense integration it is possible to automate Brand related alarms and breach notifications, actions and much more.",
     "support": "community",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "asimsarpkurt",
     "url": "https://app.brandefense.io/",
     "email": "asimsarpkurt@gmail.com",
@@ -27,5 +27,10 @@
     "githubUser": [
         "asimsarpkurt"
     ],
-    "supportedModules": []
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }
