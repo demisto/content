@@ -70,14 +70,17 @@ PROCESS_FIELDS = [element['field'] for element in PROCESS_INFO]
 PROCESS_HEADERS = [element['header'] for element in PROCESS_INFO]
 
 MALOP_HEADERS = [
-    'GUID', 'Link', 'CreationTime', 'Status', 'LastUpdateTime', 'DecisionFailure', 'Suspects', 'AffectedMachine', 'InvolvedHash']
+    'GUID', 'Link', 'CreationTime', 'Status', 'LastUpdateTime', 'DecisionFailure', 'Suspects',
+    'AffectedMachine', 'InvolvedHash']
 
 SINGLE_MALOP_HEADERS = [
-    'GUID', 'Link', 'CreationTime', 'Status', 'LastUpdateTime', 'InvolvedHash']
+    'GUID', 'Link', 'CreationTime', 'Status', 'LastUpdateTime', 'InvolvedHash', 'Severity',
+    'Machines', 'Users', 'DecisionStatuses', 'DetectionTypes', 'DetectionEngines',
+    'MitreTechniques', 'MalopCloserName']
 
 DOMAIN_HEADERS = [
-    'Name', 'Reputation', 'IsInternalDomain', 'WasEverResolved', 'WasEverResolvedAsASecondLevelDomain', 'Malicious',
-    'SuspicionsCount']
+    'Name', 'Reputation', 'IsInternalDomain', 'WasEverResolved',
+    'WasEverResolvedAsASecondLevelDomain', 'Malicious', 'SuspicionsCount']
 
 USER_HEADERS = ['Username', 'Domain', 'LastMachineLoggedInTo', 'Organization', 'LocalSystem']
 
@@ -563,6 +566,16 @@ def query_malops_command(client: Client, args: dict):
         outputs=outputs)
 
 
+def get_detection_details(client: Client, non_edr_guid):
+    try:
+        json_body = {"malopGuid": non_edr_guid}
+        detection_details_response = client.cybereason_api_call('POST', '/rest/detection/details', json_body=json_body)
+        demisto.info(f"detection details api response: {detection_details_response}")
+    except Exception as error:
+        demisto.info(f"Exception while getting detection/details: {error}")
+    return detection_details_response
+
+
 def poll_malops(client: Client, start_time):
     end_time = round(datetime.now().timestamp()) * 1000
     json_body = {"startTime": start_time, "endTime": end_time}
@@ -571,21 +584,10 @@ def poll_malops(client: Client, start_time):
     return api_response
 
 
-def get_non_edr_malop_data(client, start_time):
-    malop_data = poll_malops(client, start_time)
-    non_edr_malop_data = []
-    for malops in malop_data['malops']:
-        if not malops.get('edr'):
-            non_edr_malop_data.append(malops)
-
-    malop_data.clear()
-    demisto.debug(f"Total count of EPP Malops fetched is: {len(non_edr_malop_data)}")
-    return non_edr_malop_data
-
-
 def query_malops(
     client: Client, total_result_limit: int = None, per_group_limit: int = None, template_context: str = None,
-        filters: list = None, guid_list: str = None) -> Any:
+        filters: list = None, guid_list: Optional[List[str]] = None) -> Any:
+    demisto.info(f"guid list in query_malop function: {guid_list}")
     json_body = {
         'totalResultLimit': int(total_result_limit) if total_result_limit else 10000,
         'perGroupLimit': int(per_group_limit) if per_group_limit else 10000,
@@ -604,6 +606,7 @@ def query_malops(
     # First request - "MalopProcess"
     json_body['queryPath'][0]['requestedType'] = "MalopProcess"  # type: ignore
     malop_process_type = client.cybereason_api_call('POST', '/rest/crimes/unified', json_body=json_body)
+    demisto.info(f"malop_process response: {malop_process_type}")
     # Second request - "MalopLogonSession"
     json_body['queryPath'][0]['requestedType'] = "MalopLogonSession"  # type: ignore
     malop_loggon_session_type = client.cybereason_api_call('POST', '/rest/crimes/unified', json_body=json_body)
@@ -1501,7 +1504,7 @@ def delete_sensor_command(client: Client, args: dict):
     return CommandResults(readable_output=output)
 
 
-def malop_to_incident(malop: str) -> dict:
+def malop_to_incident(malop: dict) -> dict:
     if not isinstance(malop, dict):
         raise ValueError("Cybereason raw response is not valid, malop is not dict")
 
@@ -1538,7 +1541,7 @@ def malop_to_incident(malop: str) -> dict:
         malopUpdateTime = str(malop.get('lastUpdateTime', '2010-01-01'))
 
     if element_values := malop.get('elementValues'):
-        if root_cause_elements := element_values.get('rootCauseElements', {}).get('elementValues', []):
+        if root_cause_elements := element_values.get('primaryRootCauseElements', {}).get('elementValues', []):
             rootCauseElementName = root_cause_elements[0].get('name', '')
             rootCauseElementType = root_cause_elements[0].get('elementType', '')
         else:
@@ -1558,7 +1561,7 @@ def malop_to_incident(malop: str) -> dict:
     severity = malop.get('severity', '')
 
     incident = {
-        'rawJSON': json.dumps(malop),
+        'rawjson': json.dumps(malop),
         'name': 'Cybereason Malop ' + guid_string,
         'dbotmirrorid': guid_string,
         'CustomFields': {
@@ -1590,74 +1593,121 @@ def fetch_incidents(client: Client):
     max_update_time = int(last_update_time)
 
     if FETCH_BY == 'MALOP UPDATE TIME':
-        filters = [{
-            'facetName': 'malopLastUpdateTime',
-            'values': [last_update_time],
-            'filterType': 'GreaterThan'
-        }]
+        pass
     elif FETCH_BY == 'MALOP CREATION TIME':
-        filters = [{
-            'facetName': 'creationTime',
-            'values': [last_update_time],
-            'filterType': 'GreaterThan'
-        }]
+        pass
     else:
         raise Exception('Given filter to fetch by is invalid.')
 
-    malop_process_type, malop_loggon_session_type = query_malops(client, total_result_limit=10000, per_group_limit=10000,
-                                                                 filters=filters)
+    integration_context = get_integration_context()
+    token = integration_context.get('jsession_id')
+    valid_until = integration_context.get('valid_until')
+    demisto.debug(f"In fetch_incidents: token: {token} and valid_until: {valid_until}")
+    end_time = integration_context.get('end_time')
+    start_time = integration_context.get('start_time')
+    offset = integration_context.get('offset')
+    total_malops_fetched = integration_context.get('total_malops_fetched')
+    start_time = integration_context.get('start_time')
+    demisto.debug(f"Polling started..... offset: {offset} total_malops_fetched: {total_malops_fetched}")
+    if not start_time:
+        start_time = last_update_time
+    if not end_time:
+        end_time = int(datetime.now().timestamp()) * 1000
+    if not offset:
+        offset = 0
+    if not total_malops_fetched:
+        total_malops_fetched = 0
+
+    malop_management_response = get_malop_management_data(client, start_time, end_time, offset)
+    demisto.debug(
+        f"Polling starts. total_malops_fetched: {total_malops_fetched} "
+        f"offset: {offset} start_time: {start_time} end_time: {end_time}"
+    )
+
+    edr_guid_list, non_edr_guid_list = [], []
+    total_malops_available = malop_management_response.get("data", {}).get("totalHits", 0)
+    malop_management_response = malop_management_response.get("data", {}).get("data", [])
+    malop_count_per_poll = len(malop_management_response)
+    demisto.info(
+        f"Malop stats: Malop per paginated call {malop_count_per_poll}. Malops per polling cycle {total_malops_available}")
+    total_malops_fetched += malop_count_per_poll
+    for malop in malop_management_response:
+        demisto.info(f"inside for loop mmng/v2. malop: {malop}")
+        if malop.get("isEdr"):
+            edr_guid_list.append(malop["guid"])
+        else:
+            non_edr_guid_list.append(malop["guid"])
+    demisto.info(f"edr guid list: {edr_guid_list}")
+    demisto.info(f"non_edr_guid_list: {non_edr_guid_list}")
     incidents = []
+    if edr_guid_list:
+        malop_process_type, malop_loggon_session_type = query_malops(
+            client, total_result_limit=10000, per_group_limit=10000, guid_list=edr_guid_list
+        )
 
-    for response in (malop_process_type, malop_loggon_session_type):
-        malops = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={},
-                               return_type=dict)
+        for response in (malop_process_type, malop_loggon_session_type):
+            malops = dict_safe_get(
+                response, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict
+            )
 
-        for malop in list(malops.values()):
-            simple_values = dict_safe_get(malop, ['simpleValues'], default_return_value={}, return_type=dict)
-            simple_values.pop('iconBase64', None)
-            simple_values.pop('malopActivityTypes', None)
-            malop_update_time = int(dict_safe_get(simple_values, ['malopLastUpdateTime', 'values', 0]))
-            if int(malop_update_time) > int(max_update_time):
-                max_update_time = malop_update_time
+            for malop in list(malops.values()):
+                simple_values = dict_safe_get(malop, ['simpleValues'], default_return_value={}, return_type=dict)
+                simple_values.pop('iconBase64', None)
+                simple_values.pop('malopActivityTypes', None)
+                malop_update_time = int(dict_safe_get(simple_values, ['malopLastUpdateTime', 'values', 0]))
+                if int(malop_update_time) > int(max_update_time):
+                    max_update_time = malop_update_time
 
-            guid_string = malop.get('guidString', '')
-            if not guid_string:
-                guid_string = malop.get('guid', '')
+                guid_string = malop.get('guidString', '')
+                if not guid_string:
+                    guid_string = malop.get('guid', '')
 
+                try:
+                    incident = malop_to_incident(malop)
+                    demisto.info(f"incident for edr malop: {incident}")
+                except Exception:
+                    demisto.debug(f"edr malop got failed to convert into incident : {guid_string} and malop : {malop}")
+                    continue
+                incidents.append(incident)
+                demisto.info(f"edr malop got appended in incidents: {incidents}")
+
+    if IS_EPP_ENABLED and non_edr_guid_list:
+        demisto.info("Starting process for non-EDR incidents...")
+        for non_edr_malop in non_edr_guid_list:
+            detection_detail_response = get_detection_details(client, non_edr_malop)
             try:
-                incident = malop_to_incident(malop)
+                incident = malop_to_incident(detection_detail_response)
             except Exception:
-                demisto.debug(f"edr malop got failed to convert into incident : {guid_string} and malop : {malop}")
+                demisto.debug(f"non edr malop got failed to convert into incident : {guid_string} and malop : {malop}")
                 continue
             incidents.append(incident)
-
-    # Enable Polling for Cybereason EPP Malops
-    non_edr = get_non_edr_malop_data(client, last_update_time)
-    if IS_EPP_ENABLED:
-        demisto.info(f"Fetching EPP malop is enabled: {IS_EPP_ENABLED}")
-        for non_edr_malops in non_edr:
-            malop_update_time = dict_safe_get(non_edr_malops, ['lastUpdateTime'])
-
-            if malop_update_time > max_update_time:
-                max_update_time = malop_update_time
-
-            guid_string = non_edr_malops.get('guidString', '')
-            if not guid_string:
-                guid_string = non_edr_malops.get('guid', '')
-
-            try:
-                incident = malop_to_incident(non_edr_malops)
-            except Exception:
-                demisto.debug(f"non edr malop got failed to convert into incident : {guid_string} and malop : {non_edr_malops}")
-                continue
-            incidents.append(incident)
-        demisto.debug(f"Fetching the length of incidents list if epp in enabled : {len(incidents)}")
+            demisto.info(f"non edr malop got appended in incidents: {incidents}")
 
     demisto.setLastRun({
         'creation_time': max_update_time
     })
 
     demisto.incidents(incidents)
+
+    if total_malops_fetched < total_malops_available:
+        offset += malop_count_per_poll
+        demisto.debug(
+            f"Total malop fetched: {total_malops_fetched} is less than total malops available: {total_malops_available}")
+        demisto.debug(f"updating offset to {offset}")
+    else:
+        offset = 0
+        demisto.debug("No more results")
+
+    integration_context['total_malops_fetched'] = total_malops_fetched
+    integration_context['start_time'] = str(start_time)
+    integration_context['end_time'] = end_time
+    integration_context['offset'] = offset
+    set_integration_context(integration_context)
+    demisto.debug("Saved integration context data for mmng/v2")
+    demisto.debug(
+        f"Polling ends. total_malops_available: {total_malops_available} "
+        f"total_malops_fetched: {total_malops_fetched} offset: {offset}"
+    )
 
 
 def login(client: Client):
@@ -1686,10 +1736,8 @@ def validate_jsession(client: Client):
         HEADERS["Cookie"] = f"JSESSIONID={token}"
         return
     token, creation_time = login(client)
-    integration_context = {
-        'jsession_id': token,
-        'valid_until': creation_time + 28000
-    }
+    integration_context['jsession_id'] = token
+    integration_context['valid_until'] = creation_time + 28000
     set_integration_context(integration_context)
     HEADERS["Cookie"] = f"JSESSIONID={token}"
 
@@ -2078,6 +2126,37 @@ def get_machine_details_command(client: Client, args: dict):
             outputs=outputs)
 
 
+def get_malop_management_data(client: Client, start_time, end_time, offset):
+    demisto.info("initiating get_malop_management_data")
+    query = {
+        "search": {},
+        "range": {
+            "from": start_time,
+            "to": end_time
+        },
+        "pagination": {
+            "pageSize": 50,
+            "offset": offset
+        },
+        "filter": {
+            "malop":
+            {
+                "status": ["Active"],
+            },
+        },
+        "federation": {
+            "groups": []
+        },
+        "sort": [{
+            "field": "LastUpdateTime",
+            "order": "desc"
+        }]
+    }
+    demisto.info(f"API query for malop management: {query}")
+    response = client.cybereason_api_call('POST', '/rest/mmng/v2/malops', json_body=query)
+    return response
+
+
 def query_malop_management_command(client: Client, args: dict):
     malop_guid = args.get('malopGuid')
     json_body = {
@@ -2099,12 +2178,37 @@ def query_malop_management_command(client: Client, args: dict):
         raise DemistoException(f"Could not find details for the provided MalopGuid {malop_guid}")
     else:
         outputs = []
-        for single_malop in response["data"]["data"]:
+        for single_malop in response.get("data", {}).get("data", []):
+            demisto.debug(f"single_malop: {single_malop}")
             guid = single_malop.get("guid", "")
             creation_time = single_malop.get("creationTime", "")
             malop_last_update_time = single_malop.get("lastUpdateTime", "")
             management_status = single_malop.get("investigationStatus", "")
             involved_hashes = single_malop.get("rootCauseElementHashes", [])
+            malop_severity = single_malop.get("severity", "")
+            machines = single_malop.get("machines", [])
+            filtered_machines = [
+                {
+                    "guid": machine.get("guid"),
+                    "displayName": machine.get("displayName"),
+                    "pylumId": machine.get("pylumId"),
+                }
+                for machine in machines
+            ]
+
+            users = single_malop.get("users", [])
+            filtered_users = [
+                {
+                    "guid": user.get("guid"),
+                    "displayName": user.get("displayName"),
+                }
+                for user in users
+            ]
+            decision_statuses = single_malop.get("decisionStatuses", [])
+            dectection_types = single_malop.get("detectionTypes", [])
+            detection_engines = single_malop.get("detectionEngines", [])
+            mitre_techniques = single_malop.get("mitreTechniques")
+            closer_name = single_malop.get("closerName")
             if single_malop["isEdr"]:
                 link = SERVER + '/#/malop/' + guid
             else:
@@ -2115,7 +2219,16 @@ def query_malop_management_command(client: Client, args: dict):
                 'CreationTime': creation_time,
                 'LastUpdateTime': malop_last_update_time,
                 'Status': management_status,
-                'InvolvedHash': involved_hashes
+                'InvolvedHash': involved_hashes,
+                'Severity': malop_severity,
+                'Machines': filtered_machines,
+                'Users': filtered_users,
+                "DecisionStatuses": decision_statuses,
+                "DetectionTypes": dectection_types,
+                "DetectionEngines": detection_engines,
+                "MitreTechniques": mitre_techniques,
+                "MalopCloserName": closer_name
+
             }
             outputs.append(malop_output)
         return CommandResults(
@@ -2149,7 +2262,7 @@ def update_malop_investigation_status_command(client: Client, args: dict):
     malop_guid = str(args.get('malopGuid'))
     investigation_status = str(args.get('investigationStatus'))
 
-    if investigation_status not in INVESTIGATION_STATUS_MAP.keys():
+    if investigation_status not in INVESTIGATION_STATUS_MAP:
         raise Exception(f"Invalid investigation status. Must be one of: {', '.join(INVESTIGATION_STATUS_MAP.keys())}")
 
     update_malop_investigation_status(client, malop_guid, investigation_status)
