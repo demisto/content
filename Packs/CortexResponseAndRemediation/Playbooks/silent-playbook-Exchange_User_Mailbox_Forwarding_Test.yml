@@ -129,7 +129,8 @@ tasks:
     type: regular
     view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -180\n  }\n}"
   '12':
-    continueonerrortype: true
+    continueonerror: true
+    continueonerrortype: ''
     id: '12'
     ignoreworker: false
     isautoswitchedtoquietmode: false
@@ -162,7 +163,8 @@ tasks:
     type: regular
     view: "{\n  \"position\": {\n    \"x\": -1050,\n    \"y\": 260\n  }\n}"
   '13':
-    continueonerrortype: true
+    continueonerror: true
+    continueonerrortype: ''
     id: '13'
     ignoreworker: false
     isautoswitchedtoquietmode: false
@@ -195,7 +197,8 @@ tasks:
     type: regular
     view: "{\n  \"position\": {\n    \"x\": -630,\n    \"y\": 260\n  }\n}"
   '14':
-    continueonerrortype: true
+    continueonerror: true
+    continueonerrortype: ''
     id: '14'
     ignoreworker: false
     isautoswitchedtoquietmode: false
