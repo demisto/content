@@ -1,0 +1,7 @@
+[INGEST:vendor="proofpoint", product="ps", target_dataset="proofpoint_ps_raw" , no_hit=keep]
+  filter _raw_log ~= "^\<\d+\>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+[+|-]\d+:\d+"
+| alter _time = parse_timestamp("%FT%H:%M:%E*S", arrayindex(regextract(_raw_log, "^\<\d+\>(\d{4}\-\d{1,2}\-\d{1,2}T\d{2}:\d{2}:\d{2}\.\d+)[+-]\d{2}:\d{2}"), 0), arrayindex(regextract(_raw_log, "^\<\d+\>\d{4}\-\d{1,2}\-\d{1,2}T\d{2}:\d{2}:\d{2}\.\d+([+-]\d{2}:\d{2})"), 0))
+| alter tmp_get_xml_keys = rtrim(arraystring(arraymap(regextract(_raw_log,"([A-Za-z_]+)=(?:\".*?\"|\S+)"),concat("(?P<", "@element", ">[^|]+)?\|")),""),"\|")
+| alter tmp_get_xml_values = arraystring(arraymap(regextract(_raw_log,"(?:[A-Za-z_]+)=(\".*?\"|\S+)"),rtrim("@element",",")),"|")
+| alter parsed_fields = if(tmp_get_xml_values = null or tmp_get_xml_values ~= "^\s*$", null, regexcapture(tmp_get_xml_values, tmp_get_xml_keys))
+| fields -tmp_*;
