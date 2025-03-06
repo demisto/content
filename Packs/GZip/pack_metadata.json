@@ -2,7 +2,7 @@
     "name": "GZip",
     "description": "Use this pack to zip and unzip files with GZip.",
     "support": "community",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "Sharat Patil",
     "url": "",
     "email": "",
@@ -21,5 +21,10 @@
     "githubUser": [
         "sharatpatil7"
     ],
-    "supportedModules": []
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }

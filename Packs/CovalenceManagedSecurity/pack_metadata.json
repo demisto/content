@@ -2,7 +2,7 @@
     "name": "Covalence Managed Security",
     "description": "Triggers by triaged alerts from endpoint, cloud, and network security monitoring. Contains event details and easy-to-follow mitigation steps.",
     "support": "partner",
-    "currentVersion": "1.3.2",
+    "currentVersion": "1.3.3",
     "author": "Field Effect Security",
     "url": "https://fieldeffect.com/products/covalence-cyber-security/",
     "email": "support@fieldeffect.com",
@@ -20,5 +20,10 @@
         "marketplacev2",
         "platform"
     ],
-    "supportedModules": []
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }

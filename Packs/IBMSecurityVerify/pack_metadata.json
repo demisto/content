@@ -2,7 +2,7 @@
     "name": "IBM Security Verify",
     "description": "Centralize and streamline your identity and access management processes with IBM Security Verify. This content pack provides comprehensive tools and integrations to manage and protect user identities, enforce security policies, and ensure compliance across your organization. Leverage automated workflows and API integrations to enhance your security posture and simplify identity governance and administration.",
     "support": "xsoar",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -25,5 +25,10 @@
         "marketplacev2",
         "platform"
     ],
-    "supportedModules": []
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }
