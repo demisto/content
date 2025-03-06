@@ -299,7 +299,6 @@ def main():  # pragma: no cover
 
     try:
         if command == "long-running-execution":
-            demisto.info("TESTSTRING")
             return_results(long_running_execution_command(host, cluster_id, api_key, fetch_interval))
         elif command == "test-module":
             return_results(test_module(host, cluster_id, api_key))
