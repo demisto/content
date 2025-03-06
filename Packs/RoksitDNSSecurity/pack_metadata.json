@@ -2,7 +2,7 @@
     "name": "Roksit DNS Security",
     "description": "This integration provides adding selected domains to the Roksit Secure DNS's Blacklisted Domain List through API .",
     "support": "community",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "Asim Sarp Kurt",
     "url": "",
     "email": "asimsarpkurt@gmail.com",
@@ -21,5 +21,10 @@
     "githubUser": [
         "asimsarpkurt"
     ],
-    "supportedModules": []
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }
