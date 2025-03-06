@@ -1,3 +1,23 @@
+name: MDX Validation
+
+on: [pull_request]  # Runs on all PRs and pushes
+
+jobs:
+  validate-mdx:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install Dependencies
+        run: npm install --save-dev @mdx-js/mdx fs-extra
+
       - name: Validate MDX for README.md files
         run: |
           # Find all README.md files that are not HTML
@@ -50,3 +70,4 @@
               }
           });
           EOF "${FILES_TO_VALIDATE[@]}"
+
