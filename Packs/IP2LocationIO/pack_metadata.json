@@ -2,7 +2,7 @@
     "name": "IP2LocationIO",
     "description": "IP2Location.io API integration to query IP geolocation.",
     "support": "community",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "ip2location",
     "url": "https://www.ip2location.io/",
     "email": "support@ip2location.io",
@@ -21,5 +21,10 @@
     "githubUser": [
         "ip2location"
     ],
-    "supportedModules": []
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }
