@@ -2,7 +2,7 @@
     "name": "Free Enrichers",
     "description": "This content Pack helps set up free enrichers (Plug & Enrich, Free with sign-up) available for TIM",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -14,10 +14,8 @@
         "Free Enricher",
         "Plug & Enrich"
     ],
-    "itemPrefix": [
-    ],
-    "useCases": [
-    ],
+    "itemPrefix": [],
+    "useCases": [],
     "keywords": [
         "Feed"
     ],
@@ -74,130 +72,112 @@
             "mandatory": false,
             "display_name": "This Content Pack helps you run Whois commands as playbook tasks or real-time actions within Cortex XSOAR to obtain valuable domain metadata."
         },
-
         "AbuseDB": {
             "mandatory": false,
             "display_name": "Central repository to report and identify IP addresses that have been associated with malicious activity online. Check the Detailed Information section for more information on how to configure the integration."
         },
-
         "AlienVault_OTX": {
             "mandatory": false,
             "display_name": "Query Indicators of Compromise in AlienVault OTX."
         },
-
         "APIVoid": {
             "mandatory": false,
             "display_name": "APIVoid wraps up a number of services such as ipvoid & urlvoid"
         },
-
         "CheckPhish": {
             "mandatory": false,
             "display_name": "Check any URL to detect suspicious behavior."
         },
-
         "CrowdSec": {
             "mandatory": false,
             "display_name": "Enrich the data you have on your threats with the most advanced real-world CTI."
         },
-
         "GreyNoise": {
             "mandatory": false,
             "display_name": "GreyNoise is a threat intelligence service that collects and analyzes Internet-wide scan and attack traffic. With this integration, users can contextualize existing alerts, filter false-positives, identify compromised devices, and track emerging threats."
         },
-
         "HostIo": {
             "mandatory": false,
             "display_name": "Enrich domains using the host.io API."
         },
-
         "IP-API": {
             "mandatory": false,
             "display_name": "Integrate with the IP-API.com IP enrichment service."
         },
-
         "ipinfo": {
             "mandatory": false,
             "display_name": "Use the ipinfo.io API to get data about an IP address"
         },
-
-        "IPQualityScore" : {
+        "IPQualityScore": {
             "mandatory": false,
             "display_name": "Detect threats with real-time risk scoring by IPQS. Playbook analyzes IP addresses, email addresses, and domains or URLs for high risk behavior."
         },
-
         "Ipstack": {
             "mandatory": false,
             "display_name": "One of the leading IP to geolocation APIs and global IP database services."
         },
-
         "Lastline": {
             "mandatory": false,
             "display_name": "Use the Lastline v2 integration to provide threat analysts and incident response teams with the advanced malware isolation and inspection environment needed to safely execute advanced malware samples, and understand their behavior."
         },
-
         "Maltiverse": {
             "mandatory": false,
             "display_name": "Maltiverse helps you to analyze suspicious hashes, URLs, domains, and IP addresses."
         },
-
         "MalwareBazaar": {
             "mandatory": false,
             "display_name": "MalwareBazaar offers an API to download malware samples, comment malware samples, and obtain intel based on file hash, tag, signature, file type, etc."
         },
-
         "MandiantAdvantageThreatIntelligence": {
             "mandatory": false,
             "display_name": "Integrate your Mandiant Advantage Threat Intelligence data with Cortex XSOAR"
         },
-
         "MISP": {
             "mandatory": false,
             "display_name": "Malware information and threat sharing platform."
         },
-
         "PolySwarm": {
             "mandatory": false,
             "display_name": "Real-time threat intelligence from a crowdsourced network of security experts and antivirus companies."
         },
-
         "Pulsedive": {
             "mandatory": false,
             "display_name": "Leverage Pulsedive threat intelligence in Cortex XSOAR to enrich any domain, URL, or IP. Retrieve risk scores and factors, investigate contextual data, pivot on any data point, and investigate potential threats."
         },
-
         "Shodan": {
             "mandatory": false,
             "display_name": "A search engine used for searching Internet-connected devices"
         },
-
         "Synapse": {
             "mandatory": false,
             "display_name": "Vertex Synapse intelligence analysis framework."
         },
-
         "ThreatExchange": {
             "mandatory": false,
             "display_name": "Receive threat intelligence about applications, IP addresses, URLs and hashes, a service by Facebook"
         },
-
         "UrlScan": {
             "mandatory": false,
             "display_name": "urlscan.io Web Threat Intelligence"
         },
-
         "VirusTotal": {
             "mandatory": false,
             "display_name": "Analyze suspicious hashes, URLs, domains and IP addresses"
         },
-
         "CIRCL": {
             "mandatory": false,
             "display_name": "Searches for CVE information using [circl.lu](https://www.circl.lu/services/cve-search/)."
         }
-
     },
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

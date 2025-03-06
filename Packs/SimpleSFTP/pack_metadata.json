@@ -2,7 +2,7 @@
     "name": "Simple SFTP",
     "description": "Simple SFTP Integration to copy files from SFTP Server using paramiko.",
     "support": "community",
-    "currentVersion": "1.2.2",
+    "currentVersion": "1.2.3",
     "author": "Rahul Vijaydev, Vibhu A Bharadwaj",
     "url": "",
     "email": "",
@@ -21,5 +21,10 @@
         "marketplacev2",
         "platform"
     ],
-    "supportedModules": []
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }

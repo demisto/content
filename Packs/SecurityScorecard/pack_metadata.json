@@ -2,7 +2,7 @@
     "name": "SecurityScorecard",
     "description": "Provides security scorecards and alerts for domains.",
     "support": "partner",
-    "currentVersion": "1.0.12",
+    "currentVersion": "1.0.13",
     "author": "SecurityScorecard",
     "url": "https://securityscorecard.com/contact-us",
     "email": "support@securityscorecard.io",
@@ -24,5 +24,10 @@
     "githubUser": [
         "hx0ar"
     ],
-    "supportedModules": []
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }
