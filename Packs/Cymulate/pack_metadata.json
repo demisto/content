@@ -21,5 +21,10 @@
         "platform"
     ],
     "defaultDataSource": "cymulate_v2",
-    "supportedModules": []
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }
