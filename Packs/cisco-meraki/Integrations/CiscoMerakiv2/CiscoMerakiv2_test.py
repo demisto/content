@@ -533,7 +533,7 @@ def test_list_commands_next_link(
     assert len(command_results) == 2
     assert command_results[1].outputs_prefix.endswith(f"{outputs_prefix}LinkTokens")
     assert command_results[1].readable_output == (
-        f"{outputs_prefix} Link Tokens for" f" next_token='{expected_outputs['Next']}'."
+        f"{outputs_prefix} Link Tokens for next_token='{expected_outputs['Next']}'."
     )
     assert command_results[1].outputs == expected_outputs
 

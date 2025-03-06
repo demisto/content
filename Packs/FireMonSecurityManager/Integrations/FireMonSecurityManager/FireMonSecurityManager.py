@@ -329,13 +329,13 @@ def pca_command(client, args):
         return CommandResults(
             outputs_prefix="FireMonSecurityManager.PCA",
             outputs_key_field="pca",
-            outputs="No matching rule found for this requirement, " "Please go back and update the requirement",
+            outputs="No matching rule found for this requirement, Please go back and update the requirement",
             readable_output=tableToMarkdown(
                 name="FireMon SecurityManager PCA:",
-                t={"pca": "No matching rule found for this requirement, " "Please go back and update the requirement"},
+                t={"pca": "No matching rule found for this requirement, Please go back and update the requirement"},
                 removeNull=True,
             ),
-            raw_response="No matching rule found for this requirement, " "Please go back and update the requirement",
+            raw_response="No matching rule found for this requirement, Please go back and update the requirement",
         )
 
     for i in range(len(list_of_device_changes)):

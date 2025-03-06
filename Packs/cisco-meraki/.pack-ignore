@@ -7,3 +7,6 @@ ignore=MR108
 [file:CiscoMerakiModelingRules_1_3.yml]
 ignore=MR108
 
+[file:CiscoMerakiv2.yml]
+ignore=ST111
+

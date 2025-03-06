@@ -2107,7 +2107,7 @@ def list_zones_command(client: Client, args: Dict) -> CommandResults:
             'InterfaceMode': item.get('interfaceMode', ''),
             'Interfaces': [{
                 'Name': obj.get('name', ''),
-                'ID': obj.get('id' '')
+                'ID': obj.get('id')
             } for obj in item.get('interfaces', {})
             ]
         } for item in items

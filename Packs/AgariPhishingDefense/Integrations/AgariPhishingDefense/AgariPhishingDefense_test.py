@@ -22,7 +22,7 @@ AUTHENTICATION_RESP_HEADER = {
     'created_at': 1604920579,
 }
 
-PAYLOAD = 'client_id=client_dummy_id&client_secret' '=client_dummy_secret '
+PAYLOAD = 'client_id=client_dummy_id&client_secret=client_dummy_secret '
 
 MOCK_INTEGRATION_CONTEXT = {
     'api_token': API_TOKEN,

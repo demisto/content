@@ -4,3 +4,6 @@ ignore=IM111
 [file:CiscoFirepower_1_3.yml]
 ignore=MR108
 
+[file:CiscoFirepower.yml]
+ignore=ST111
+
