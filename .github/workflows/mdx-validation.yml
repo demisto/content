@@ -57,10 +57,10 @@ jobs:
           FILE_LIST=$(mktemp)
           printf "%s\n" "${FILES_TO_VALIDATE[@]}" > "$FILE_LIST"
 
-          # Pass the temporary file to node instead of passing all arguments directly
-          node - "$FILE_LIST" <<'EOF'
-          const { readFileSync } = require('fs');
-          const mdx = require('@mdx-js/mdx');
+          # Run the Node.js script with dynamic import
+          node --input-type=module - <<'EOF'
+          import { readFileSync } from 'fs';
+          import { sync as mdx } from '@mdx-js/mdx';
 
           // Read file paths from the temporary file
           const filePath = process.argv[1];
@@ -69,17 +69,18 @@ jobs:
           files.forEach(file => {
               try {
                   const contents = readFileSync(file, 'utf8');
-                  mdx.sync(contents);
+                  mdx(contents);
                   console.log(`✅ MDX validation passed: ${file}`);
               } catch (error) {
                   console.error(`❌ MDX validation failed: ${file}\n`, error.message);
                   process.exit(1);
               }
           });
-          EOF
+          EOF "$FILE_LIST"
 
           # Clean up temporary file
           rm "$FILE_LIST"
+
 
 
 
