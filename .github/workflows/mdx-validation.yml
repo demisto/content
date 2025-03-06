@@ -1,6 +1,6 @@
 name: MDX Validation
 
-on: [pull_request]  # Runs on all PRs and pushes
+on: [pull_request]
 
 jobs:
   validate-mdx:
@@ -16,26 +16,15 @@ jobs:
           node-version: 18
 
       - name: Install Dependencies
-        run: npm install --save-dev @mdx-js/mdx fs-extra
+        run: npm ci
 
       - name: Validate MDX for README.md files
         run: |
-          # Find all README.md files that are not HTML
           NO_HTML="# NO_HTML"
           YES_HTML="# YES_HTML"
 
           is_html_doc() {
-            local file_content
-            file_content=$(cat "$1")  # Read the entire file
-            if [[ "$file_content" == "$NO_HTML"* ]]; then
-                return 1  # False (not HTML)
-            elif [[ "$file_content" == "$YES_HTML"* || "$file_content" == "<p>"* || "$file_content" == "<!DOCTYPE html>"* ]]; then
-                return 0  # True (is HTML)
-            fi
-            if [[ "$file_content" == *"<thead>"* && "$file_content" == *"<tbody>"* ]]; then
-                return 0  # True (is HTML)
-            fi
-            return 1  # False (not HTML)
+              grep -qE "^($YES_HTML|<p>|<!DOCTYPE html>|<thead>.*<tbody>)" "$1"
           }
 
           FILES_TO_VALIDATE=()
@@ -51,36 +40,22 @@ jobs:
               exit 0
           fi
 
-          echo "Running MDX validation"
-
-          # Create a temporary file to store file paths
-          FILE_LIST=$(mktemp)
-          printf "%s\n" "${FILES_TO_VALIDATE[@]}" > "$FILE_LIST"
-
-          # Run the Node.js script with dynamic import
+          echo "Running MDX validation..."
+          
           node --input-type=module - <<'EOF'
           import { readFileSync } from 'fs';
-          import { sync as mdx } from '@mdx-js/mdx';
+          import { compile } from '@mdx-js/mdx';
 
-          // Read file paths from the temporary file
-          const filePath = process.argv[1];
-          const files = readFileSync(filePath, 'utf8').trim().split("\n");
+          const files = process.argv.slice(1);
 
-          files.forEach(file => {
+          for (const file of files) {
               try {
                   const contents = readFileSync(file, 'utf8');
-                  mdx(contents);
+                  await compile(contents);
                   console.log(`✅ MDX validation passed: ${file}`);
               } catch (error) {
                   console.error(`❌ MDX validation failed: ${file}\n`, error.message);
                   process.exit(1);
               }
-          });
-          EOF "$FILE_LIST"
-
-          # Clean up temporary file
-          rm "$FILE_LIST"
-
-
-
-
+          }
+          EOF "${FILES_TO_VALIDATE[@]}"
