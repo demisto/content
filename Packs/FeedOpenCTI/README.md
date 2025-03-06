@@ -1,3 +1,5 @@
+Note: Support for this Pack will be moved to the Partner on May, 26, 2025.
+
 Use the **OpenCTI Feed** integration to periodically get indicators from the OpenCTI feed.
 This pack includes two versions of the **OpenCTI Feed** integration:
 - **OpenCTI Feed 3.X**: compatible with OpenCTI 3.X API version.
