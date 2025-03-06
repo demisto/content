@@ -21,5 +21,10 @@
     "githubUser": [
         "amurret"
     ],
-    "supportedModules": []
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }
