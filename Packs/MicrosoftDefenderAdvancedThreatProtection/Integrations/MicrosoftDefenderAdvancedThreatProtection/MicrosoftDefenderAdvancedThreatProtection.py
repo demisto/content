@@ -2700,7 +2700,7 @@ def get_machine_software_command(client: MsClient, args: dict) -> CommandResults
     """
     headers = ['id', 'name', 'vendor', 'weakness', 'publicExploit', 'activeAlert',
                'exposedMachines', 'installedMachines', 'impactScore', "isNormalized", "category"]
-    machine_id = args["machine_id"]
+    machine_id = args.get("machine_id", "")
 
     raw_response = client.get_software_by_machine_id(machine_id)
     software_outputs = raw_response.get('value')
@@ -2725,7 +2725,7 @@ def get_machine_vulnerabilities_command(client: MsClient, args: dict) -> Command
     headers = ["id", "name", "cveSupportability", "cvssV3", "cvssVector", "description", "epss", "exploitInKit", "exploitTypes",
                "exploitUris", "exploitVerified", "exposedMachines", "firstDetected", "publicExploit", "publishedOn", "severity", "tags", "updatedOn"]  # noqa: E501
 
-    machine_id = args.get("machine_id")
+    machine_id = args.get("machine_id", "")
     raw_response = client.get_vulnerabilities_by_machine_id(machine_id)
     vulns_outputs = raw_response.get('value')
 
@@ -2751,7 +2751,7 @@ def get_machine_missing_kbs_command(client: MsClient, args: dict) -> CommandResu
     """
 
     headers = ['id', 'name', 'osBuild', 'url', 'machineMissedOn', 'cveAddressed', 'productNames']
-    machine_id = args.get("machine_id")
+    machine_id = args.get("machine_id", "")
 
     raw_response = client.get_missing_kbs_by_machine_id(machine_id)
 
