@@ -1845,6 +1845,7 @@ script:
   runonce: false
   script: ''
   subtype: python3
+  supportsquickactions: true
   type: python
 tests:
 - JiraV3 Test
