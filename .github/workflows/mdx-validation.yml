@@ -58,7 +58,7 @@ jobs:
               exit 0
           fi
 
-          echo "Running MDX validation on: ${FILES_TO_VALIDATE[@]}"
+          echo "Running MDX validation"
 
           node - <<EOF
           const { readFileSync } = require('fs');
