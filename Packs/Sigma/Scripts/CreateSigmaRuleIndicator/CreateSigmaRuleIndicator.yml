@@ -10,7 +10,7 @@ args:
 - name: sigma_rule_str
   description: A string containing the Sigma rule in its original format.
 - name: entry_id
-  description: The entry ID of the file that contains the Sigma rule. The script will read the Sigma rule from this file if provided.
+  description: The entry ID of the file that contains the Sigma rules (either a rule file or a zip file with multiple rules).
 - name: create_indicators
   default: true
   auto: PREDEFINED
@@ -26,5 +26,6 @@ runas: DBotWeakRole
 engineinfo: {}
 fromversion: 6.10.0
 dockerimage: demisto/pysigma:1.0.0.110641
+timeout: 1200
 tests:
 - No tests (auto formatted)
