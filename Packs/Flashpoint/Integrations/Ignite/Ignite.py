@@ -238,8 +238,10 @@ class Client(BaseClient):
         :return: http response on json
         """
         demisto.debug(f"Requesting Ignite with method: {method}, url_suffix: {url_suffix} and params: {params}")
+        # For reputation commands which run during an enrichment we limit the timeout and the retries
         retries = TOTAL_RETRIES_ON_ENRICHMENT if is_time_sensitive() else TOTAL_RETRIES
         timeout = TIMEOUT_ON_ENRICHMENT if is_time_sensitive() else DEFAULT_TIMEOUT
+        
         resp = self._http_request(method=method, url_suffix=url_suffix, params=params, json_data=json_data, retries=retries,
                                   status_list_to_retry=STATUS_CODE_TO_RETRY, backoff_factor=BACKOFF_FACTOR,
                                   raise_on_redirect=False, raise_on_status=False, resp_type='response',
