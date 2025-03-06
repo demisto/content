@@ -2,7 +2,7 @@
     "name": "QueryAI",
     "description": "Query.AI is a decentralized data access and analysis technology that simplifies security investigations across disparate platforms without data duplication.",
     "support": "partner",
-    "currentVersion": "1.0.13",
+    "currentVersion": "1.0.14",
     "author": "Query.AI",
     "url": "https://www.query.ai",
     "email": "support@query.ai",
@@ -23,6 +23,13 @@
     "certification": "certified",
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

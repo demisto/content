@@ -2,7 +2,7 @@
     "name": "Altipeak",
     "description": "Integration with Safewalk identity management and report service",
     "support": "partner",
-    "currentVersion": "1.0.7",
+    "currentVersion": "1.0.8",
     "author": "Altipeak",
     "url": "https://www.altipeaksecurity.com",
     "email": "support@altipeak.com",
@@ -14,7 +14,14 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
-    "defaultDataSource": "SafewalkManagement"
+    "defaultDataSource": "SafewalkManagement",
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }

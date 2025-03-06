@@ -2,7 +2,7 @@
     "name": "Bonusly",
     "description": "Bonus.ly is an employee recognition platform which enterprises use to for employee recognition. We're building tools to help people feel a sense of purpose and progress at work. The platform which also has an API enables employees to recognize each other by providing a point based bonus system. Bonus.ly helps your employees feel connected, engaged, and aligned is mission critical right now. Bonusly makes employee recognition easy and fun, fostering community and creating company-wide alignment. It also provides employees with positive feedback in the work that they are doing. ",
     "support": "community",
-    "currentVersion": "1.0.16",
+    "currentVersion": "1.0.17",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -19,6 +19,13 @@
     "dependencies": {},
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

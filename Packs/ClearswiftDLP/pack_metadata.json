@@ -2,7 +2,7 @@
     "name": "Clearswift DLP",
     "description": "The Clearswift Endpoint Data Loss Prevention (DLP) solution offers visibility, control, monitoring and policies that help a company protect its assets.",
     "support": "xsoar",
-    "currentVersion": "1.0.5",
+    "currentVersion": "1.0.6",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -13,6 +13,13 @@
     "useCases": [],
     "keywords": [],
     "marketplaces": [
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }
