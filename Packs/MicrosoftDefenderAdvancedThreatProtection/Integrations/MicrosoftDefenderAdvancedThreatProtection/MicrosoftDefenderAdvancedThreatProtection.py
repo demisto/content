@@ -2194,7 +2194,7 @@ class MsClient:
 
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
 
-    def get_missing_kbs_by_machine_id(self, machine_id):
+    def get_missing_kbs_by_machine_id(self, machine_id: str) -> dict:
         """Retrieves a list of missing security updates (KBs) by machine id.
         https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-missing-kbs-machine?view=o365-worldwide
 
@@ -2229,7 +2229,7 @@ class MsClient:
             params['$filter'] = filter_req
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
 
-    def get_vulnerabilities_by_machine_id(self, machine_id):
+    def get_vulnerabilities_by_machine_id(self, machine_id: str) -> dict:
         """Retrieves a list of vulnerabilities affected by a machine id.
         https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-discovered-vulnerabilities?view=o365-worldwide
 
