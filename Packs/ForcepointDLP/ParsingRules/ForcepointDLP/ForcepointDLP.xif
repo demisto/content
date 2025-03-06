@@ -1,2 +1,2 @@
-[INGEST:vendor="Forcepoint", product="Forcepoint DLP", target_dataset="forcepoint_dlp_raw", no_hit=keep]
+[INGEST:vendor="Forcepoint", product="Forcepoint DLP", target_dataset="forcepoint_forcepoint_dlp_raw", no_hit=keep]
 alter _time = timeStamp;
