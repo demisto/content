@@ -181,6 +181,7 @@ configuration:
   required: false
   additionalinfo: Save Hunting Query result to the Microsoft 365 Defender context.
     path
+  section: Collect
 description: Unified gateway to security insights - all from a unified Microsoft Graph Security API.
 display: Microsoft Graph Security
 name: Microsoft Graph
@@ -2256,7 +2257,7 @@ script:
     - contextPath: MsGraph.Incident.systemTags
       description: The system tags associated with the incident.
       type: String collection
-  dockerimage: demisto/crypto:1.0.0.114611
+  dockerimage: demisto/crypto:1.0.0.2005673
   isfetch: true
   runonce: false
   script: '-'
