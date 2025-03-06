@@ -1,7 +1,7 @@
 
 fromversion: 8.4.0  # Will be updated with XSIAM version updates
-id: <IBMr>_<MaaS360_Security>_ModelingRule
-name: <IBM> <MaaS360 Security> Modeling Rule
+id: IBM_MaaS360_Security_ModelingRule
+name: IBM MaaS360 Security Modeling Rule
 rules: ''
 schema: ''
 tags: ''
