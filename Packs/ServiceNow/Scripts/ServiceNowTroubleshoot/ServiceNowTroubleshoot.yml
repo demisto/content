@@ -1,5 +1,5 @@
 args: []
-comment: "Troubleshot ServiceNow v2 integration by displaying health information of enabled instances and old and active incidents of disabled instances."
+comment: Troubleshot ServiceNow v2 integration by displaying health information of enabled instances and old and active incidents of disabled instances.
 commonfields:
   id: ServiceNowTroubleshoot
   version: -1
@@ -19,5 +19,6 @@ fromversion: 6.1.0
 marketplaces:
 - xsoar
 - marketplacev2
-tests: 
+- platform
+tests:
 - No tests

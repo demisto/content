@@ -4,31 +4,25 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Eradication Plan
 description: "This playbook handles all the eradication actions available with Cortex XSIAM, including the following sub-playbooks:\n* Eradication Plan - Reset user password\n* Eradication Plan - Delete file\n* Eradication Plan - Kill process (currently, the playbook supports terminating a process by name)  \n\nNote: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details."
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: a565fd6d-2dd4-4f6f-8c41-d80d96fd1a58
     type: start
     task:
       id: a565fd6d-2dd4-4f6f-8c41-d80d96fd1a58
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "57"
+      - '57'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 170,
-          "y": -470
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 170,\n    \"y\": -470\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -36,8 +30,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "46":
-    id: "46"
+  '46':
+    id: '46'
     taskid: 0b8d21a3-7d1d-44ac-898f-f7b9dd3c484e
     type: collection
     task:
@@ -47,19 +41,13 @@ tasks:
       description: Select which indicators to block.
       type: collection
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "47"
+      - '47'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -120,
-          "y": 240
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -120,\n    \"y\": 240\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -68,7 +56,7 @@ tasks:
       subject:
       body:
       methods: []
-      format: ""
+      format: ''
       bcc:
       cc:
       timings:
@@ -79,8 +67,8 @@ tasks:
         completeaftersla: false
     form:
       questions:
-      - id: "0"
-        label: ""
+      - id: '0'
+        label: ''
         labelarg:
           simple: Select Users to reset their password
         required: false
@@ -93,12 +81,12 @@ tasks:
             root: inputs.Username
             transformers:
             - operator: uniq
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: ''
         readonly: false
-      - id: "1"
-        label: ""
+      - id: '1'
+        label: ''
         labelarg:
           simple: Select Files to delete
         required: false
@@ -111,12 +99,12 @@ tasks:
             root: inputs.FilePath
             transformers:
             - operator: uniq
-        fieldassociated: ""
-        placeholder: ""
+        fieldassociated: ''
+        placeholder: ''
         tooltip: Please consider carefully whether the file will be needed for further investigation before deleting it.
         readonly: false
-      - id: "2"
-        label: ""
+      - id: '2'
+        label: ''
         labelarg:
           simple: Select Process to terminate
         required: false
@@ -136,21 +124,21 @@ tasks:
                   value:
                     simple: inputs.FilePath
                   iscontext: true
-        fieldassociated: ""
-        placeholder: ""
+        fieldassociated: ''
+        placeholder: ''
         tooltip: Please consider carefully whether the process termination could impact system processes with a similar name.
         readonly: false
       title: Which Eradication actions would you like to perform?
       description: Select which eradication actions to perform.
-      sender: ""
+      sender: ''
       expired: false
       totalanswers: 0
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "47":
-    id: "47"
+  '47':
+    id: '47'
     taskid: eac14d54-acee-4628-894b-c3f85ad56381
     type: title
     task:
@@ -159,22 +147,16 @@ tasks:
       name: Eradication
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "54"
-      - "52"
-      - "53"
+      - '54'
+      - '52'
+      - '53'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 170,
-          "y": 410
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 170,\n    \"y\": 410\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -182,8 +164,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "48":
-    id: "48"
+  '48':
+    id: '48'
     taskid: 7e62a114-2f14-44b9-8fcb-e391078f8112
     type: condition
     task:
@@ -193,15 +175,15 @@ tasks:
       description: Whether to perform eradication actions automatically or manually.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "46"
-      "yes":
-      - "47"
+      - '46'
+      yes:
+      - '47'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -211,16 +193,10 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 170,
-          "y": 60
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 170,\n    \"y\": 60\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -228,8 +204,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "49":
-    id: "49"
+  '49':
+    id: '49'
     taskid: 4c625140-7998-49e8-82c5-aeee98dfc0ca
     type: playbook
     task:
@@ -240,10 +216,10 @@ tasks:
       playbookName: Eradication Plan - Delete File
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "55"
+      - '55'
     scriptarguments:
       EndpointID:
         complex:
@@ -273,7 +249,7 @@ tasks:
               optionsB: {}
               rhs:
                 value:
-                  simple: "True"
+                  simple: 'True'
               rhsB: {}
               then:
                 value:
@@ -283,19 +259,13 @@ tasks:
         complex:
           root: inputs.FileRemediation
     separatecontext: true
-    continueonerrortype: ""
+    continueonerrortype: ''
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 100
-    view: |-
-      {
-        "position": {
-          "x": 170,
-          "y": 695
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 170,\n    \"y\": 695\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -303,8 +273,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "50":
-    id: "50"
+  '50':
+    id: '50'
     taskid: 4064fb9d-3562-4426-8567-806aac320392
     type: playbook
     task:
@@ -315,10 +285,10 @@ tasks:
       playbookName: Eradication Plan - Reset Password
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "55"
+      - '55'
     scriptarguments:
       UserRemediation:
         complex:
@@ -348,26 +318,20 @@ tasks:
               optionsB: {}
               rhs:
                 value:
-                  simple: "True"
+                  simple: 'True'
               rhsB: {}
               then:
                 value:
                   simple: inputs.Username
                 iscontext: true
     separatecontext: true
-    continueonerrortype: ""
+    continueonerrortype: ''
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 100
-    view: |-
-      {
-        "position": {
-          "x": -300,
-          "y": 695
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": -300,\n    \"y\": 695\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -375,8 +339,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "51":
-    id: "51"
+  '51':
+    id: '51'
     taskid: f6891014-dec9-4d8f-8bcf-9394440fff4c
     type: playbook
     task:
@@ -387,10 +351,10 @@ tasks:
       playbookName: Eradication Plan - Terminate Process
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "55"
+      - '55'
     scriptarguments:
       EndpointID:
         complex:
@@ -420,7 +384,7 @@ tasks:
               optionsB: {}
               rhs:
                 value:
-                  simple: "True"
+                  simple: 'True'
               rhsB: {}
               then:
                 value:
@@ -451,7 +415,7 @@ tasks:
               optionsB: {}
               rhs:
                 value:
-                  simple: "True"
+                  simple: 'True'
               rhsB: {}
               then:
                 value:
@@ -461,19 +425,13 @@ tasks:
         complex:
           root: inputs.ProcessTermination
     separatecontext: true
-    continueonerrortype: ""
+    continueonerrortype: ''
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 100
-    view: |-
-      {
-        "position": {
-          "x": 640,
-          "y": 695
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 640,\n    \"y\": 695\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -481,8 +439,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "52":
-    id: "52"
+  '52':
+    id: '52'
     taskid: e2ca1e88-b318-4dd3-8cd0-e79bcea8b708
     type: title
     task:
@@ -491,20 +449,14 @@ tasks:
       name: Reset Password
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "50"
+      - '50'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -300,
-          "y": 560
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -300,\n    \"y\": 560\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -512,8 +464,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "53":
-    id: "53"
+  '53':
+    id: '53'
     taskid: 55eece77-4b85-418a-85b4-2df675bc6406
     type: title
     task:
@@ -522,20 +474,14 @@ tasks:
       name: Delete File
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "49"
+      - '49'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 170,
-          "y": 560
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 170,\n    \"y\": 560\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -543,8 +489,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "54":
-    id: "54"
+  '54':
+    id: '54'
     taskid: 85a5283a-4dcb-4be9-8994-cda1836b671a
     type: title
     task:
@@ -553,20 +499,14 @@ tasks:
       name: Terminate Process
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "51"
+      - '51'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 640,
-          "y": 560
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 640,\n    \"y\": 560\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -574,8 +514,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "55":
-    id: "55"
+  '55':
+    id: '55'
     taskid: aca6dccc-d750-41e7-8303-cc4cb1d1e1d8
     type: title
     task:
@@ -584,17 +524,11 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 170,
-          "y": 875
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 170,\n    \"y\": 875\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -602,8 +536,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "56":
-    id: "56"
+  '56':
+    id: '56'
     taskid: d459e56b-3290-44e3-81c7-0a69a339dbbf
     type: regular
     task:
@@ -614,15 +548,15 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "48"
+      - '48'
     scriptarguments:
       key:
         simple: ProcessList
       stringify:
-        simple: "false"
+        simple: 'false'
       value:
         complex:
           root: inputs.FilePath
@@ -655,14 +589,8 @@ tasks:
                 value:
                   simple: PID
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -120,
-          "y": -140
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -120,\n    \"y\": -140\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -670,8 +598,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "57":
-    id: "57"
+  '57':
+    id: '57'
     taskid: e5166636-3899-4c68-8dfa-b2b39ca764ed
     type: condition
     task:
@@ -681,15 +609,15 @@ tasks:
       description: Check if the file path and PID are defined.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "48"
-      "yes":
-      - "56"
+      - '48'
+      yes:
+      - '56'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -705,14 +633,8 @@ tasks:
               complex:
                 root: inputs.ProcessID
             iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 170,
-          "y": -330
-        }
-      }
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 170,\n    \"y\": -330\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -720,24 +642,11 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: |-
-  {
-    "linkLabelsPosition": {
-      "48_47_yes": 0.53
-    },
-    "paper": {
-      "dimensions": {
-        "height": 1410,
-        "width": 1320,
-        "x": -300,
-        "y": -470
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {\n    \"48_47_yes\": 0.53\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1410,\n      \"width\": 1320,\n      \"x\": -300,\n      \"y\": -470\n    }\n  }\n}"
 inputs:
 - key: AutoEradicate
   value:
-    simple: "True"
+    simple: 'True'
   required: false
   description: Set to True to execute the eradication playbook automatically.
   playbookInputQuery:
@@ -773,7 +682,7 @@ inputs:
   playbookInputQuery:
 - key: UserRemediation
   value:
-    simple: "True"
+    simple: 'True'
   required: false
   description: Set to 'True' to reset the user's password.
   playbookInputQuery:
@@ -796,4 +705,5 @@ tests:
 - Eradication plan - Test
 marketplaces:
 - marketplacev2
+- platform
 fromversion: 6.6.0

@@ -1,34 +1,25 @@
 id: Ransomware Advanced Analysis
 version: -1
 name: Ransomware Advanced Analysis
-description: |-
-  This playbook detects the ransomware type and searches for available decryptors.
-
-  The playbook uses the ID-Ransomware service, which allows you to detect the ransomware using multiple methods.
-starttaskid: "0"
+description: "This playbook detects the ransomware type and searches for available decryptors.\n\nThe playbook uses the ID-Ransomware service, which allows you to detect the ransomware using multiple methods."
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 94496b66-deeb-4ad3-850c-5b29297b6424
     type: start
     task:
       id: 94496b66-deeb-4ad3-850c-5b29297b6424
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "35"
+      - '35'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -290,
-          "y": 20
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": -290,\n    \"y\": 20\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -36,8 +27,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
+  '14':
+    id: '14'
     taskid: 6bea0606-e0de-47aa-8622-a9dc9bf3c4bf
     type: title
     task:
@@ -46,16 +37,10 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -290,
-          "y": 1740
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": -290,\n    \"y\": 1740\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -63,8 +48,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "35":
-    id: "35"
+  '35':
+    id: '35'
     taskid: 39aa0da1-a8d5-414a-8b1b-f60441955a36
     type: title
     task:
@@ -73,19 +58,13 @@ tasks:
       name: Get ransomware note - Manual
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "45"
+      - '45'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -290,
-          "y": 145
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": -290,\n    \"y\": 145\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -93,8 +72,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "42":
-    id: "42"
+  '42':
+    id: '42'
     taskid: c7f23da2-0676-45c4-8dd7-57cff68e0bb2
     type: regular
     task:
@@ -105,10 +84,10 @@ tasks:
       scriptName: ReadFile
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "43"
+      - '43'
     scriptarguments:
       entryID:
         complex:
@@ -132,13 +111,7 @@ tasks:
                   simple: html
           accessor: EntryID
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 110,
-          "y": 600
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 110,\n    \"y\": 600\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -151,8 +124,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "43":
-    id: "43"
+  '43':
+    id: '43'
     taskid: 04faf861-3fcd-4cd2-804f-2e279c128cbe
     type: regular
     task:
@@ -168,23 +141,17 @@ tasks:
       brand: Rasterize
     nexttasks:
       '#none#':
-      - "51"
+      - '51'
     scriptarguments:
       height:
-        simple: "800"
+        simple: '800'
       htmlBody:
         complex:
           root: FileData
       width:
-        simple: "600"
+        simple: '600'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 110,
-          "y": 760
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 110,\n    \"y\": 760\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -192,8 +159,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "45":
-    id: "45"
+  '45':
+    id: '45'
     taskid: fa354c56-3f26-4e78-8218-c8bf57b54d28
     type: regular
     task:
@@ -203,18 +170,12 @@ tasks:
       description: Uploads the ransomware note for advanced analysis.
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "46"
+      - '46'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -290,
-          "y": 270
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": -290,\n    \"y\": 270\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -222,8 +183,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "46":
-    id: "46"
+  '46':
+    id: '46'
     taskid: 57e20d64-4490-4bf4-805e-1edb473eb085
     type: condition
     task:
@@ -233,20 +194,14 @@ tasks:
       description: Manual validation for the ransomware file upload.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "14"
-      "Yes":
-      - "42"
+      - '14'
+      Yes:
+      - '42'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -290,
-          "y": 430
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": -290,\n    \"y\": 430\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -254,8 +209,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "47":
-    id: "47"
+  '47':
+    id: '47'
     taskid: 72ff599b-0986-4a1e-843b-c562a545f884
     type: title
     task:
@@ -264,19 +219,13 @@ tasks:
       name: ID-Ransomware Enrichment
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "48"
+      - '48'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 110,
-          "y": 1090
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 110,\n    \"y\": 1090\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -284,41 +233,23 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "48":
-    id: "48"
+  '48':
+    id: '48'
     taskid: 180c115a-9d1c-4a76-8fa0-02ad4c57c3aa
     type: regular
     task:
       id: 180c115a-9d1c-4a76-8fa0-02ad4c57c3aa
       version: -1
       name: Search decryptor using the ransomware URL
-      description: |-
-        Use ID-Ransomware for identifying the ransomware type.
-        If the the ransomware was identified successfully, use the decryptor to recover the encrypted files.
-
-        [ID-Ransomware service](https://id-ransomware.malwarehunterteam.com/identify.php)
-
-        **The identification can be done by submitting one of the following:**
-
-        1.The ransomware note.
-
-        2.The contact link provided in the ransomware note.
-
-        3.An encrypted file sample (be careful when uploading encrypted files, as some may include sensitive information).
+      description: "Use ID-Ransomware for identifying the ransomware type.\nIf the the ransomware was identified successfully, use the decryptor to recover the encrypted files.\n\n[ID-Ransomware service](https://id-ransomware.malwarehunterteam.com/identify.php)\n\n**The identification can be done by submitting one of the following:**\n\n1.The ransomware note.\n\n2.The contact link provided in the ransomware note.\n\n3.An encrypted file sample (be careful when uploading encrypted files, as some may include sensitive information)."
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "49"
+      - '49'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 110,
-          "y": 1220
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 110,\n    \"y\": 1220\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -326,8 +257,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "49":
-    id: "49"
+  '49':
+    id: '49'
     taskid: 54a17556-1c79-452c-8bc1-3be8419e1dcf
     type: condition
     task:
@@ -337,20 +268,14 @@ tasks:
       description: Manual validation for the results of the ID-Ransomware query.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "14"
-      "Yes":
-      - "50"
+      - '14'
+      Yes:
+      - '50'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 110,
-          "y": 1390
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 110,\n    \"y\": 1390\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -358,8 +283,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "50":
-    id: "50"
+  '50':
+    id: '50'
     taskid: d7f9e68e-b92e-46f3-8fee-1afd80d3c922
     type: regular
     task:
@@ -369,18 +294,12 @@ tasks:
       description: A manual task for the analyst to verify that the decryptor works.
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "14"
+      - '14'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 110,
-          "y": 1570
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 110,\n    \"y\": 1570\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -388,8 +307,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "51":
-    id: "51"
+  '51':
+    id: '51'
     taskid: ea3e7ea6-ad7e-4b2d-83d9-e5c019523008
     type: regular
     task:
@@ -403,19 +322,13 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "47"
+      - '47'
     scriptarguments:
       text:
         complex:
           root: FileData
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 110,
-          "y": 920
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 110,\n    \"y\": 920\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -423,26 +336,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: |-
-  {
-    "linkLabelsPosition": {
-      "46_14_#default#": 0.52,
-      "46_42_Yes": 0.43,
-      "49_14_#default#": 0.43,
-      "49_50_Yes": 0.43
-    },
-    "paper": {
-      "dimensions": {
-        "height": 1785,
-        "width": 780,
-        "x": -290,
-        "y": 20
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {\n    \"46_14_#default#\": 0.52,\n    \"46_42_Yes\": 0.43,\n    \"49_14_#default#\": 0.43,\n    \"49_50_Yes\": 0.43\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1785,\n      \"width\": 780,\n      \"x\": -290,\n      \"y\": 20\n    }\n  }\n}"
 inputs: []
 outputs: []
 tests:
 - No tests (auto formatted)
-marketplaces: ["marketplacev2"]
+marketplaces:
+- marketplacev2
+- platform
 fromversion: 6.6.0

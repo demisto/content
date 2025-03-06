@@ -2,11 +2,7 @@ id: Email Address Enrichment - Generic v2.1
 version: -1
 fromversion: 5.0.0
 name: Email Address Enrichment - Generic v2.1
-description: |-
-  Enrich email addresses.
-  - Get information from Active Directory for internal addresses
-  - Get the domain-squatting reputation for external addresses
-  - Email address reputation using !email command.
+description: "Enrich email addresses.\n- Get information from Active Directory for internal addresses\n- Get the domain-squatting reputation for external addresses\n- Email address reputation using !email command."
 starttaskid: '0'
 tasks:
   '0':
@@ -24,13 +20,7 @@ tasks:
       '#none#':
       - '5'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 497.5,
-          "y": 120
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 497.5,\n    \"y\": 120\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -38,7 +28,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '4':
     id: '4'
     taskid: 8970ccc7-3ca4-4f5a-879e-f9d0c07c3e5b
@@ -55,13 +45,7 @@ tasks:
       query:
         simple: entry.contents:${Account.Username}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 497.5,
-          "y": 1310
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 497.5,\n    \"y\": 1310\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -69,7 +53,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '5':
     id: '5'
     taskid: dce4e3b8-0986-4a8c-8436-0602977d9f8c
@@ -85,24 +69,18 @@ tasks:
     nexttasks:
       '#default#':
       - '20'
-      'yes':
+      yes:
       - '9'
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
             value:
               simple: inputs.Email
             iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 497.5,
-          "y": 250
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 497.5,\n    \"y\": 250\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -110,7 +88,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '9':
     id: '9'
     taskid: 41284223-6f2e-44de-82a4-c8e096a3cdc4
@@ -147,13 +125,7 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 497.5,
-          "y": 450
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 497.5,\n    \"y\": 450\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -161,7 +133,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '10':
     id: '10'
     taskid: 1a9686bb-e22f-46a7-8f5e-adf7acffdf3b
@@ -177,15 +149,9 @@ tasks:
     nexttasks:
       '#none#':
       - '17'
-      - "23"
+      - '23'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 22.5,
-          "y": 790
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 22.5,\n    \"y\": 790\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -193,7 +159,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '11':
     id: '11'
     taskid: 7874c1a7-0bae-43cc-8f13-9234c337f491
@@ -209,15 +175,9 @@ tasks:
     nexttasks:
       '#none#':
       - '18'
-      - "21"
+      - '21'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 950,
-          "y": 790
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 950,\n    \"y\": 790\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -225,7 +185,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '12':
     id: '12'
     taskid: e3b298d5-cb30-4440-803e-596597adcc10
@@ -261,13 +221,7 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 222.5,
-          "y": 1135
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 222.5,\n    \"y\": 1135\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -275,7 +229,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '13':
     id: '13'
     taskid: 4dbbbdb8-0102-445f-8fc3-d3ed70c32aa3
@@ -292,7 +246,7 @@ tasks:
     nexttasks:
       '#default#':
       - '4'
-      'yes':
+      yes:
       - '11'
     scriptarguments:
       value:
@@ -312,13 +266,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 710.5,
-          "y": 620
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 710.5,\n    \"y\": 620\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -326,7 +274,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '14':
     id: '14'
     taskid: 4bb4197a-cd13-41a6-8882-b8e6c51312c3
@@ -343,7 +291,7 @@ tasks:
     nexttasks:
       '#default#':
       - '4'
-      'yes':
+      yes:
       - '10'
     scriptarguments:
       value:
@@ -363,13 +311,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 292.5,
-          "y": 620
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 292.5,\n    \"y\": 620\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -377,7 +319,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '15':
     id: '15'
     taskid: 9b9a97f6-c855-4d4e-8047-f0306f006a5f
@@ -430,17 +372,11 @@ tasks:
                   simple: Address
               stringify:
                 value:
-                  simple: "false"
+                  simple: 'false'
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 750.5,
-          "y": 1135
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 750.5,\n    \"y\": 1135\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -448,7 +384,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '17':
     id: '17'
     taskid: bc59d675-c18d-44ac-878f-bdc8dc7c578e
@@ -465,7 +401,7 @@ tasks:
     nexttasks:
       '#default#':
       - '4'
-      'yes':
+      yes:
       - '12'
     scriptarguments:
       value:
@@ -492,13 +428,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 222.5,
-          "y": 930
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 222.5,\n    \"y\": 930\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -506,7 +436,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '18':
     id: '18'
     taskid: 82034885-dcb2-4c4a-8fa7-1c1514c27e46
@@ -523,7 +453,7 @@ tasks:
     nexttasks:
       '#default#':
       - '4'
-      'yes':
+      yes:
       - '15'
     scriptarguments:
       value:
@@ -538,13 +468,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 750.5,
-          "y": 930
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 750.5,\n    \"y\": 930\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -552,7 +476,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerrortype: ''
   '20':
     id: '20'
     taskid: 358de9fa-efe5-47c2-801f-7c85db0d408b
@@ -569,13 +493,7 @@ tasks:
       '#none#':
       - '4'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -400,
-          "y": 465
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": -400,\n    \"y\": 465\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -583,8 +501,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  "21":
+    continueonerrortype: ''
+  '21':
     conditions:
     - condition:
       - - ignorecase: true
@@ -596,24 +514,24 @@ tasks:
           operator: isEqualString
           right:
             value:
-              simple: "True"
-      label: "yes"
-    continueonerrortype: ""
-    id: "21"
+              simple: 'True'
+      label: yes
+    continueonerrortype: ''
+    id: '21'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "22"
+      - '4'
+      yes:
+      - '22'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 047c804f-cc74-4eb3-8ea5-7776e5827088
       iscommand: false
       name: Should use !email command?
@@ -623,22 +541,16 @@ tasks:
     taskid: 047c804f-cc74-4eb3-8ea5-7776e5827088
     timertriggers: []
     type: condition
-    view: |-
-      {
-        "position": {
-          "x": 1150,
-          "y": 930
-        }
-      }
-  "22":
-    continueonerrortype: ""
-    id: "22"
+    view: "{\n  \"position\": {\n    \"x\": 1150,\n    \"y\": 930\n  }\n}"
+  '22':
+    continueonerrortype: ''
+    id: '22'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     note: false
     quietmode: 0
     scriptarguments:
@@ -661,7 +573,7 @@ tasks:
     separatecontext: false
     skipunavailable: true
     task:
-      brand: ""
+      brand: ''
       description: Checks if an email address was compromised.
       id: 156ef5ee-88a6-4fd7-8636-b6e9c678f5e3
       iscommand: true
@@ -672,24 +584,18 @@ tasks:
     taskid: 156ef5ee-88a6-4fd7-8636-b6e9c678f5e3
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 1160,
-          "y": 1135
-        }
-      }
-  "23":
-    continueonerrortype: ""
-    id: "23"
+    view: "{\n  \"position\": {\n    \"x\": 1160,\n    \"y\": 1135\n  }\n}"
+  '23':
+    continueonerrortype: ''
+    id: '23'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "24"
+      - '4'
+      yes:
+      - '24'
     note: false
     quietmode: 0
     scriptarguments:
@@ -698,7 +604,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       id: 766c0f6c-feff-49af-8bfd-62574133e61c
       iscommand: false
@@ -709,31 +615,25 @@ tasks:
     taskid: 766c0f6c-feff-49af-8bfd-62574133e61c
     timertriggers: []
     type: condition
-    view: |-
-      {
-        "position": {
-          "x": -180,
-          "y": 930
-        }
-      }
-  "24":
-    continueonerrortype: ""
+    view: "{\n  \"position\": {\n    \"x\": -180,\n    \"y\": 930\n  }\n}"
+  '24':
+    continueonerrortype: ''
     fieldMapping:
     - incidentfield: Additional Email Addresses
       output:
         simple: ${EWS.ResolvedNames.email_address}
-    id: "24"
+    id: '24'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     note: false
     quietmode: 0
     scriptarguments:
       full-contact-data:
-        simple: "False"
+        simple: 'False'
       identifier:
         complex:
           accessor: Address
@@ -753,7 +653,7 @@ tasks:
     separatecontext: false
     skipunavailable: true
     task:
-      brand: ""
+      brand: ''
       description: This operation verifies aliases and matches display names to the correct mailbox user. It handles one ambiguous name at a time. If there are multiple potential matches, all will be returned, but limited to a maximum of 100 candidates.
       id: d10b47f1-37e1-4354-870b-0ac7b022d7d3
       iscommand: true
@@ -764,34 +664,8 @@ tasks:
     taskid: d10b47f1-37e1-4354-870b-0ac7b022d7d3
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": -180,
-          "y": 1135
-        }
-      }
-view: |-
-  {
-    "linkLabelsPosition": {
-      "13_11_yes": 0.64,
-      "13_4_#default#": 0.25,
-      "14_10_yes": 0.65,
-      "14_4_#default#": 0.17,
-      "17_4_#default#": 0.55,
-      "18_4_#default#": 0.25,
-      "21_4_#default#": 0.13,
-      "5_20_#default#": 0.35
-    },
-    "paper": {
-      "dimensions": {
-        "height": 1255,
-        "width": 1940,
-        "x": -400,
-        "y": 120
-      }
-    }
-  }
+    view: "{\n  \"position\": {\n    \"x\": -180,\n    \"y\": 1135\n  }\n}"
+view: "{\n  \"linkLabelsPosition\": {\n    \"13_11_yes\": 0.64,\n    \"13_4_#default#\": 0.25,\n    \"14_10_yes\": 0.65,\n    \"14_4_#default#\": 0.17,\n    \"17_4_#default#\": 0.55,\n    \"18_4_#default#\": 0.25,\n    \"21_4_#default#\": 0.13,\n    \"5_20_#default#\": 0.35\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1255,\n      \"width\": 1940,\n      \"x\": -400,\n      \"y\": 120\n    }\n  }\n}"
 inputs:
 - key: InternalDomains
   value: {}
@@ -813,16 +687,12 @@ inputs:
   required: false
   description: The domains associated with the incident. These domains will be checked for domain-squatting.
   playbookInputQuery:
-- description: |-
-    Define if you would like to use the !email command.
-    Note: This input should be used whenever there is no auto-extract enabled in the investigation flow.
-    Possible values: True / False.
-    The default value is false.
+- description: "Define if you would like to use the !email command.\nNote: This input should be used whenever there is no auto-extract enabled in the investigation flow.\nPossible values: True / False.\nThe default value is false."
   key: UseReputationCommand
   playbookInputQuery:
   required: true
   value:
-    simple: "False"
+    simple: 'False'
 outputs:
 - contextPath: Account
   description: The Account object.
@@ -965,3 +835,4 @@ tests:
 marketplaces:
 - xsoar
 - marketplacev2
+- platform

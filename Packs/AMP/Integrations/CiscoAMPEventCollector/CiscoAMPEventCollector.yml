@@ -73,6 +73,9 @@ script:
   type: python
 marketplaces:
 - marketplacev2
+supportedModules:
+  - X0
+  - X1
 fromversion: 6.8.0
 tests:
 - No tests (auto formatted)

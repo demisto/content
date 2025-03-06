@@ -137,3 +137,6 @@ ignore=GR107
 [file:playbook-Isolate_Endpoint_-_Generic_V2.yml]
 ignore=GR107
 
+# TODO - Remove this - temporary for platform support PR
+[file:playbook-Email_Address_Enrichment_-_Generic_v2.1.yml]
+ignore=RM116
