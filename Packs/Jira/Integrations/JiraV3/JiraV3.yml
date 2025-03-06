@@ -1745,6 +1745,98 @@ script:
     - contextPath: Jira.IssueField.Schema.configuration
       description: If the field is a custom field, the configuration of the field.
       type: Object
+  - arguments:
+      - description: 'The issue object (in JSON format). This argument is for advanced users, as when utilizing this argument, one cannot use other arguments and must input all required arguments into the issue_json. In addition, when issue_json is used, it is not possible to use the project name but only the project key. For example {"fields":{"customfield_10037":"field_value", "summary": "some summary", "project": {"key": "<project_key>"}}}. For more information about this argument, see https://developer.atlassian.com/server/jira/platform/jira-rest-api-example-create-issue-7897248/.'
+        name: issue_json
+        prettyname: Project Key
+      - description: Deprecated. Please use issue_json.
+        name: issueJson
+        hidden: true
+      - description: The summary of the issue (Summary value is required, either from the "summary" argument, or from the "issue_json" argument).
+        name: summary
+        prettyname: Summary
+        prettypredefined:
+          Task: ${issue.id + issue.name} # What goes here?
+        required: true # is it true here?
+      - description: The project key with which to associate the issue (Project Key or name is required).
+        name: project_key
+      - description: Deprecated. Please use project_key.
+        name: projectKey
+        hidden: true
+      - description: 'Selects an issue type by name, for example: "Problem". (Issue type name or id is required).'
+        name: issue_type_name
+        prettyname: Issue Type
+        prettypredefined:
+          Task: ${issue.placeholder_1} # What goes here?
+      - description: Deprecated. Please use issue_type_name.
+        name: issueTypeName
+        hidden: true
+      - description: Selects an issue type by its numeric ID (Issue type name or id is required).
+        name: issue_type_id
+      - description: Deprecated. Please use issue_type_id.
+        name: issueTypeId
+        hidden: true
+      - description: The project name with which to associate the issue (Project Key or name is required).
+        name: project_name
+      - description: Deprecated. Please use project_name.
+        name: projectName
+        hidden: true
+      - description: A description of the issue.
+        name: description
+        prettyname: Description
+        prettypredefined:
+          Task: ${issue.Description} # What goes here?
+      - description: A CSV list of labels.
+        isArray: true
+        name: labels
+      - description: 'The priority of the issue, for example: High, Medium.'
+        name: priority
+        prettyname: Priority
+        prettypredefined:
+          High: High # What goes here?
+          Medium: Medium # What goes here?
+          Low: Low # What goes here?
+      - description: The due date for the issue (in the format yyyy-mm-dd).
+        name: due_date
+      - description: Deprecated. Please use due_date.
+        name: dueDate
+        hidden: true
+      - description: The name of the assignee. Relevant for Jira Server only. If you are using Jira Cloud, provide the assignee_id argument instead. Use the jira-get-id-by-attribute command to get the user's name.
+        name: assignee
+      - description: The account ID of the assignee. Relevant for Jira Cloud only. Use the jira-get-id-by-attribute command to get the user's account ID.
+        name: assignee_id
+      - description: The account ID of the reporter. Relevant for Jira Cloud only. Use the jira-get-id-by-attribute command to get the user's account ID.
+        name: reporter_id
+      - description: The name of the of the reporter. Relevant for Jira Server only. Please use reporter_id for Jira Cloud. Use the jira-get-id-by-attribute command to get the user's name.
+        name: reporter
+      - description: The parent issue key (if you're creating a sub-task).
+        name: parent_issue_key
+      - description: Deprecated. Please use parent_issue_key.
+        name: parentIssueKey
+        hidden: true
+      - description: The parent issue ID (if you're creating a sub-task).
+        name: parent_issue_id
+      - description: Deprecated. Please use parent_issue_id.
+        name: parentIssueId
+        hidden: true
+      - description: A text field for describing the environment in which the issue occurred. For example environment="IE9 on Windows 7".
+        name: environment
+      - description: The security level of the issue. For example security="Anyone".
+        name: security
+      - description: The component names of the issue. For example components="component1,component2". When using a Jira OnPrem instance, the entered components must already exist.
+        isArray: true
+        name: components
+    description: Creates a new issue in Jira.
+    name: jira-create-issue-quick-action
+    prettyname: Create Jira Ticket
+    quickaction: true
+    outputs:
+      - contextPath: Ticket.Id
+        description: The ticket ID.
+        type: String
+      - contextPath: Ticket.Key
+        description: The ticket key.
+        type: String
   dockerimage: demisto/btfl-soup:1.0.1.2129515
   isfetch: true
   ismappable: true
