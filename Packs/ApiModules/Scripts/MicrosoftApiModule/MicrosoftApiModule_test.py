@@ -108,8 +108,19 @@ def retry_on_rate_limit_client(retry_on_rate_limit: bool):
      b'\\r\\nTrace ID: test\\r\\nCorrelation ID: test\\r\\nTimestamp: 2023-07-02 06:40:26Z", '
      b'"error_codes": [700082], "timestamp": "2023-07-02 06:40:26Z", "trace_id": "test", "correlation_id": "test",'
      b' "error_uri": "https://login.microsoftonline.com/error?code=700082"}', 400,
-     'invalid_grant. \nThe refresh token has expired due to inactivity.\nYou can run the ***command_prefix-auth-reset*** '
-     'command to reset the authentication process.')])
+     'invalid_grant. \nThe refresh token has expired due to inactivity.\xa0The token was issued on 2023-02-06T12:26:14.6448497Z '
+     'and was inactive for 90.00:00:00.\nYou can run the ***command_prefix-auth-reset*** command to '
+     'reset the authentication process.'),
+    (b'{"error": "invalid_resource", "error_description": "AADSTS500011: The resource principal named '
+     b'https://security.microsoft.us was not found in the tenant named x Inc.. This can happen if the '
+     b'application has not been installed by the administrator of the tenant or consented to by any user '
+     b'in the tenant. You might have sent your authentication request to the wrong tenant. '
+     b'Trace ID: test Correlation ID: test '
+     b'Timestamp: 2025-02-26 14:27:01Z", "error_codes": [500011], "timestamp": "2025-02-26 14:27:01Z", '
+     b'"trace_id": "test", "correlation_id": "test", "error_uri": "https://login.microsoftonline.us/error?code=500011"}', 400,
+     'invalid_resource. \nThe resource principal named https://security.microsoft.us was not found in the tenant named x Inc.. '
+     'This can happen if the application has not been installed by the administrator of the tenant or consented '
+     'to by any user in the tenant. You might have sent your authentication request to the wrong tenant.')])
 def test_error_parser(mocker, error_content, status_code, expected_response):
     """
     Given:
