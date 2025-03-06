@@ -1,15 +1,15 @@
 from contextlib import ExitStack, contextmanager
 from enum import Enum
 from functools import partial
+from threading import Thread, Lock
 
-from websockets import Data, exceptions
-from CommonServerPython import *  # noqa: F401
+from dateutil import tz
+from websockets import exceptions
 from websockets.sync.client import connect
 from websockets.sync.connection import Connection
-from threading import Lock, Thread
-from dateutil import tz
-import traceback
 
+import demistomock as demisto
+from CommonServerPython import *
 
 VENDOR = "proofpoint"
 PRODUCT = "email_security"
@@ -29,20 +29,26 @@ class EventType(str, Enum):
 
 
 class EventConnection:
-    def __init__(self, event_type: str, connection: Connection, url: str, headers: dict,
+    def __init__(self, event_type: EventType, url: str, headers: dict,
                  fetch_interval: int = FETCH_INTERVAL_IN_SECONDS,
                  idle_timeout: int = SERVER_IDLE_TIMEOUT - 20):
-        self.event_type = event_type
-        self.connection = connection
+        self.event_type = event_type.value
         self.url = url
         self.headers = headers
         self.lock = Lock()
         self.idle_timeout = idle_timeout
         self.fetch_interval = fetch_interval
+        self.connection = self.connect()
         self.heartbeat_thread = Thread(target=self.heartbeat, daemon=True)
         self.heartbeat_thread.start()
 
-    def recv(self, timeout: float | None = None) -> Data:
+    def connect(self) -> Connection:
+        """
+        Establish a new WebSocket connection.
+        """
+        return connect(self.url, additional_headers=self.headers)
+
+    def recv(self, timeout: float | None = None) -> Any:
         """
         Receive the next message from the connection
 
@@ -51,7 +57,7 @@ class EventConnection:
                              If timeout passes, raises TimeoutError
 
         Returns:
-            Data: Next event received from the connection
+            Any: Next event received from the connection
         """
         with self.lock:
             event = self.connection.recv(timeout=timeout)
@@ -63,7 +69,7 @@ class EventConnection:
         """
         with self.lock:
             try:
-                self.connection = connect(self.url, additional_headers=self.headers)
+                self.connection = self.connect()
                 demisto.info(f"[{self.event_type}] Successfully reconnected to WebSocket")
             except Exception as e:
                 demisto.error(f"[{self.event_type}] Reconnection failed: {str(e)} {traceback.format_exc()}")
@@ -81,7 +87,10 @@ class EventConnection:
                 demisto.info(f"[{self.event_type}] Sent heartbeat pong")
                 time.sleep(self.idle_timeout)
             except exceptions.ConnectionClosedError as e:
-                demisto.error(f"[{self.event_type}] Connection closed error in heartbeat: {str(e)}")
+                demisto.error(f"[{self.event_type}] Connection closed due to error in thread - {self.event_type}: {str(e)}")
+                self.reconnect()
+            except exceptions.ConnectionClosedOK:
+                demisto.info(f"[{self.event_type}] Connection closed OK in thread - {self.event_type}")
                 self.reconnect()
             except Exception as e:
                 demisto.error(f"[{self.event_type}] Unexpected error in heartbeat: {str(e)} {traceback.format_exc()}")
@@ -142,19 +151,18 @@ def websocket_connections(
         with ExitStack() as stack:  # Keep connection contexts for clean up
             connections = [EventConnection(
                 event_type=event_type,
-                connection=stack.enter_context(connect(url(type=event_type.value), additional_headers=extra_headers)),
                 url=url(type=event_type.value),
                 headers=extra_headers,
                 fetch_interval=fetch_interval,
             ) for event_type in EventType]
 
             set_the_integration_context(
-                "last_run_results", f"Opened a connection successfully at {datetime.now().astimezone(timezone.utc)}")
+                "last_run_results", f"Opened a connection successfully at {datetime.now().astimezone(tz.tzutc())}")
 
             yield connections
     except Exception as e:
         set_the_integration_context("last_run_results",
-                                    f"{str(e)} \n This error happened at {datetime.now().astimezone(timezone.utc)}")
+                                    f"{str(e)} \n This error happened at {datetime.now().astimezone(tz.tzutc())}")
         raise DemistoException(f"{str(e)}\n")
 
 
@@ -181,9 +189,13 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
         except TimeoutError:
             demisto.debug(f"Timeout while waiting for the event on {connection.event_type}")
             continue
+        except exceptions.ConnectionClosedError:
+            demisto.error(f"Connection closed, attempting to reconnect...")
+            connection.reconnect()
+            continue
         except Exception as e:
             set_the_integration_context("last_run_results",
-                                        f"{str(e)} \n This error happened at {datetime.now().astimezone(timezone.utc)}")
+                                        f"{str(e)} \n This error happened at {datetime.now().astimezone(tz.tzutc())}")
             raise DemistoException(str(e))
         event_id = event.get("id", event.get("guid"))
         event_ts = event.get("ts")
@@ -206,7 +218,7 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
     demisto.debug("The fetched events ids are: " + ", ".join([str(event_id) for event_id in event_ids]))
     set_the_integration_context("last_run_results",
                                 f"Got from connection {num_events} events starting\
-                                    at {str(fetch_start_time)} until {datetime.now().astimezone(timezone.utc)}")
+                                    at {str(fetch_start_time)} until {datetime.now().astimezone(tz.tzutc())}")
 
     return events
 
