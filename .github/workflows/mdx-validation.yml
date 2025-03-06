@@ -53,16 +53,18 @@ jobs:
 
           echo "Running MDX validation"
 
-          # Store files as a space-separated string
-          FILE_LIST="${FILES_TO_VALIDATE[@]}"
+          # Create a temporary file to store file paths
+          FILE_LIST=$(mktemp)
+          printf "%s\n" "${FILES_TO_VALIDATE[@]}" > "$FILE_LIST"
 
-          # Pass files to node script as arguments
+          # Pass the temporary file to node instead of passing all arguments directly
           node - "$FILE_LIST" <<'EOF'
           const { readFileSync } = require('fs');
           const mdx = require('@mdx-js/mdx');
 
-          // Read arguments properly
-          const files = process.argv[1]?.split(" ") || [];
+          // Read file paths from the temporary file
+          const filePath = process.argv[1];
+          const files = readFileSync(filePath, 'utf8').trim().split("\n");
 
           files.forEach(file => {
               try {
@@ -75,5 +77,9 @@ jobs:
               }
           });
           EOF
+
+          # Clean up temporary file
+          rm "$FILE_LIST"
+
 
 
