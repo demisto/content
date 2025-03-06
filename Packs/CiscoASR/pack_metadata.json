@@ -2,7 +2,7 @@
     "name": "Cisco ASR",
     "description": "Cisco Aggregation Services Router (ASR) is a service used on cisco routers for combine traffic link for better performance and scalability.",
     "support": "xsoar",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -16,5 +16,10 @@
         "marketplacev2",
         "platform"
     ],
-    "supportedModules": []
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }

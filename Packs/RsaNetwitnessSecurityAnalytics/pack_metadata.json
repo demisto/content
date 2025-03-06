@@ -2,7 +2,7 @@
     "name": "RSA NetWitness Security Analytics",
     "description": "RSA Security Analytics, compatible with prior to v11. A distributed and modular system that enables highly flexible deployment architectures that scale with the needs of the organization. Security Analytics allows administrators to collect two types of data from the network infrastructure, packet data and log data.",
     "support": "xsoar",
-    "currentVersion": "1.0.13",
+    "currentVersion": "1.0.14",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -18,5 +18,10 @@
         "marketplacev2",
         "platform"
     ],
-    "supportedModules": []
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }
