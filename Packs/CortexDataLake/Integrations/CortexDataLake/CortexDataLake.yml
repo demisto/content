@@ -2180,7 +2180,7 @@ script:
   dockerimage: demisto/python_pancloud_v2:1.0.0.2027056
   isfetch: true
   runonce: false
-  script: ''
+  script: '-'
   subtype: python3
   type: python
 tests:
