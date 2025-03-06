@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: CybelAngel Event Collector
   version: -1
@@ -14,6 +17,7 @@ configuration:
   name: credentials
   type: 9
   required: true
+  section: Connect
 - display: The maximum number of events per fetch
   name: max_fetch
   defaultvalue: "5000"
@@ -21,13 +25,16 @@ configuration:
   type: 0
   required: true
   section: Collect
+  hidden:
+  - xsoar
 - defaultvalue: 30 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  hidden: false
   name: first_fetch
   required: false
   type: 0
   section: Collect
+  hidden:
+  - xsoar
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -40,8 +47,8 @@ configuration:
   required: false
   section: Connect
   advanced: true
-description: 'CybelAngel Event Collector collects reports from the CybelAngel platform, which specializes in external attack surface protection and management.'
-display: CybelAngel Event Collector
+description: 'CybelAngel collects reports from the CybelAngel platform, which specializes in external attack surface protection and management.'
+display: CybelAngel
 name: CybelAngel Event Collector
 script:
   commands:
@@ -59,15 +66,144 @@ script:
     description: 'Send events from CybelAngel to XSIAM. Used mainly for debugging.'
     name: cybelangel-get-events
     outputs: []
+  - name: cybelangel-report-list
+    description: 'Retrieve reports from CybelAngel.'
+    arguments:
+    - name: start_date
+      description: 'Get reports from a specific start date formatted with ISO 8601.'
+      defaultValue: '3 Days ago'
+      required: false
+    - description: 'Get reports until a specific end date formatted with ISO 8601.'
+      defaultValue: 'Now'
+      name: end_date
+      required: false
+    outputs:
+    - contextPath: CybelAngel.Report
+      description: 'The retrieved reports.'
+  - name: cybelangel-report-get
+    description: 'Retrieve reports from CybelAngel.'
+    arguments:
+    - name: report_id
+      description: 'The ID of the report to retrieve.'
+      required: true
+    - name: pdf
+      description: 'If true, retrieves the report as a PDF file.'
+      defaultValue: False
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    outputs:
+    - contextPath: CybelAngel.Report
+      description: 'The retrieved reports.'
+    - contextPath: InfoFile.EntryID
+      description: 'Entry ID of the saved PDF file.'
+      type: String
+  - name: cybelangel-mirror-report-get
+    description: 'Retrieve the mirror details for the specified report.'
+    arguments:
+    - name: report_id
+      description: 'The ID of the report.'
+      required: true
+    - name: csv
+      description: 'If true, retrieves the mirror report in CSV format.'
+      defaultValue: False
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    outputs:
+    - contextPath: CybelAngel.ReportMirror
+      description: 'Mirror details of the report.'
+    - contextPath: InfoFile.EntryID
+      description: 'Entry ID of the saved CSV file.'
+  - name: cybelangel-archive-report-by-id-get
+    description: 'Retrieve an archived report by ID as a ZIP file.'
+    arguments:
+    - name: report_id
+      description: 'The ID of the archived report.'
+      required: true
+    outputs:
+    - contextPath: InfoFile.EntryID
+      description: 'Entry ID of the saved ZIP file.'
+  - name: cybelangel-report-status-update
+    description: 'Update the status of one or multiple reports.'
+    arguments:
+    - name: report_ids
+      description: 'List of report IDs to update.'
+      isArray: true
+      required: true
+    - auto: PREDEFINED
+      name: status
+      description: 'The new status of the reports.'
+      required: true
+      predefined:
+      - 'draft'
+      - 'open'
+      - 'in_progress'
+      - 'resolved'
+      - 'discarded'
+  - name: cybelangel-report-comments-get
+    description: 'Retrieve comments from a report.'
+    arguments:
+    - name: report_id
+      description: 'The ID of the report.'
+      required: true
+    outputs:
+    - contextPath: CybelAngel.Report.Comment
+      description: 'The list of comments for the report.'
+  - name: cybelangel-report-comment-create
+    description: 'Create a new comment on a report.'
+    arguments:
+    - name: discussion_id
+      description: 'The discussion_id is made of report id and tenant id like uuid:uuid. Example: <report_id>:<your-tenant-id>.'
+      required: true
+    - name: content
+      description: 'The content of the comment.'
+      required: true
+    - name: parent_id
+      description: 'The ID of the parent comment (for replies).'
+      required: false
+    - name: assigned
+      description: 'Specifies if the comment is assigned to analysts (true/false).'
+      defaultValue: false
+      required: false
+  - name: cybelangel-report-attachment-get
+    description: 'Retrieve an attachment from a report.'
+    arguments:
+    - name: report_id
+      description: 'The ID of the report.'
+      required: true
+    - name: attachment_id
+      description: 'The ID of the attachment.'
+      required: true
+    outputs:
+    - contextPath: InfoFile.EntryID
+      description: 'Entry ID of the retrieved file.'
+  - name: cybelangel-report-remediation-request-create
+    description: 'Create a remediation request for a report.'
+    arguments:
+    - name: report_id
+      description: 'The ID of the report.'
+      required: true
+    - name: requestor_email
+      description: 'Email of the requestor.'
+      required: true
+    - name: requestor_fullname
+      description: 'Full name of the requestor.'
+      required: true
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetchevents: true
 fromversion: 8.0.0
 marketplaces:
-- marketplacev2
-- platform
+  - xsoar
+  - marketplacev2
+  - platform
 tests:
-- No tests (auto formatted)
+- CybelAngel Test Playbook
