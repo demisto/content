@@ -7,7 +7,6 @@ from CommonServerUserPython import *
 
 
 
-import time
 import enum
 import json
 import urllib3
@@ -977,9 +976,9 @@ class Client(BaseClient):
             """
         url_suffix = f"{JOB_STATUS}/{job_id}"
         max_wait = params.get("max_wait")
-        if max_wait is not None:
-            if not (0 <= max_wait <= 25):
-                raise ValueError("max_wait must be an integer between 0 and 25")
+
+        if max_wait is not None and not (0 <= max_wait <= 25):
+            raise ValueError("max_wait must be an integer between 0 and 25")
 
         return self._http_request(method="GET", url_suffix=url_suffix, params=params)
 
