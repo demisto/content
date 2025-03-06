@@ -8,11 +8,21 @@
     "email": "",
     "created": "2020-01-17T14:56:54Z",
     "categories": [
-        "Cloud Service Provider"
+        "Cloud Service Provider",
+        "Cloud Services",
+        "IT Services",
+        "CI/CD"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "azure",
+        "aks",
+        "kubernetes",
+        "kubernetes services"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
