@@ -2,7 +2,7 @@
     "name": "Delinea DevOps Secrets Vault",
     "description": "This integration pack helps you retrieve the data stored in the Delinea DevOps Storage Vault and use it in other integrations.",
     "support": "partner",
-    "currentVersion": "1.0.6",
+    "currentVersion": "1.0.7",
     "author": "Delinea Inc",
     "url": "https://delinea.com/support",
     "email": "support@delinea.com",
@@ -18,6 +18,13 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }
