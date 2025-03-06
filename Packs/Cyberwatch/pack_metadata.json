@@ -34,5 +34,6 @@
         "platform"
     ],
     "dependencies": {},
-    "displayedImages": []
+    "displayedImages": [],
+    "supportedModules": []
 }

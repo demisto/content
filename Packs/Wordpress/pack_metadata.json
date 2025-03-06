@@ -20,5 +20,6 @@
     "devEmail": [
         "aburt@paloaltonetworks.com"
     ],
-    "githubUser": []
+    "githubUser": [],
+    "supportedModules": []
 }

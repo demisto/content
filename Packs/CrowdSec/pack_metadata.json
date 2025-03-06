@@ -29,5 +29,6 @@
     "devEmail": [
         "support@crowdsec.net"
     ],
-    "githubUser": []
+    "githubUser": [],
+    "supportedModules": []
 }

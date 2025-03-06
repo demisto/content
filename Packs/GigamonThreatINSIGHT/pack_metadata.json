@@ -20,5 +20,6 @@
     "devEmail": [
         "apps@gigamon.com"
     ],
-    "githubUser": []
+    "githubUser": [],
+    "supportedModules": []
 }

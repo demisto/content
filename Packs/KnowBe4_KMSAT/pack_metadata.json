@@ -30,5 +30,6 @@
         "marketplacev2",
         "platform"
     ],
-    "githubUser": []
+    "githubUser": [],
+    "supportedModules": []
 }
