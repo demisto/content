@@ -51,16 +51,16 @@
                     "simple": "urgency"
                 },
                 "Splunk Notable Reviewer": {
-					"complex": {
-						"filters": [],
-						"root": "reviewer",
-						"transformers": [
-							{
-								"operator": "FirstArrayElement"
-							}
-						]
-					}
-				},
+                    "complex": {
+                        "filters": [],
+                        "root": "reviewer",
+                        "transformers": [
+                            {
+                                "operator": "FirstArrayElement"
+                            }
+                        ]
+                    }
+                },
                 "Srcs": {
                     "simple": "src"
                 },
@@ -132,8 +132,8 @@
                     "simple": "_time"
                 },
                 "owner": {
-					"simple": "owner"
-				},
+                    "simple": "owner"
+                },
                 "severity": {
                     "simple": "severity"
                 }
@@ -163,6 +163,10 @@
     "name": "Splunk - Notable Generic Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
-    "marketplaces": ["xsoar", "marketplacev2"],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
     "fromVersion": "6.0.0"
 }
