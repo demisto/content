@@ -9,16 +9,16 @@ from CommonServerPython import DemistoException
 
 date_time = '2025-01-01'
 
-BASE_URL = "https://feed-example.com/ioc/api/v1"
-REQUEST_URL1 = f"{BASE_URL}/feed/daily/{date_time}?limit=1000&offset=0"
-REQUEST_URL2 = f"{BASE_URL}/feed/daily/{date_time}?limit=1000&offset=1000"
-REQUEST_URL3 = f"{BASE_URL}/feed/daily/{date_time}?limit=20000&offset=0"
-REQUEST_URL4 = f"{BASE_URL}/feed/daily/{date_time}?limit=20000&offset=20000"
-REQUEST_URL5 = f"{BASE_URL}/feed/daily/{date_time}?limit=20&offset=0"
-REQUEST_URL6 = f"{BASE_URL}/url?value=http://dummy.com"
-REQUEST_URL7 = f"{BASE_URL}/ipv4?value=1.1.1.1"
-REQUEST_URL8 = f"{BASE_URL}/domain?value=dummy.com"
-REQUEST_URL9 = f"{BASE_URL}/v1/file/sha256?value=6a7b02c43837dcb8e40d271edb88d13d2e723c721a74931857aaef4853317789"
+BASE_URL = "https://feed-example.com"
+REQUEST_URL1 = f"{BASE_URL}/ioc/api/v1/feed/daily/{date_time}?limit=1000&offset=0"
+REQUEST_URL2 = f"{BASE_URL}/ioc/api/v1/feed/daily/{date_time}?limit=1000&offset=1000"
+REQUEST_URL3 = f"{BASE_URL}/ioc/api/v1/feed/daily/{date_time}?limit=20000&offset=0"
+REQUEST_URL4 = f"{BASE_URL}/ioc/api/v1/feed/daily/{date_time}?limit=20000&offset=20000"
+REQUEST_URL5 = f"{BASE_URL}/ioc/api/v1/feed/daily/{date_time}?limit=20&offset=0"
+REQUEST_URL6 = f"{BASE_URL}/ioc/api/v1/url?value=http://dummy.com"
+REQUEST_URL7 = f"{BASE_URL}/ioc/api/v1/ipv4?value=1.1.1.1"
+REQUEST_URL8 = f"{BASE_URL}/ioc/api/v1/domain?value=dummy.com"
+REQUEST_URL9 = f"{BASE_URL}/ioc/api/v1/v1/file/sha256?value=6a7b02c43837dcb8e40d271edb88d13d2e723c721a74931857aaef4853317789"
 TOKEN = "example_token"
 
 
@@ -475,7 +475,7 @@ def test_is_x_minutes_ago_yesterday_edge_case(mock_datetime):
 def test_retrieve_indicators_from_api_success(mock_client, requests_mock):
     """Test retrieve_indicators_from_api with a successful response."""
 
-    date_time = "2025-01-01T00:00:00Z"
+    date_time = "2025-01-01"
     limit = 100
     offset = 0
     mock_response = '{"ioc_value": "example.com"}\n{"ioc_value": "malicious.com"}'
@@ -495,7 +495,7 @@ def test_retrieve_indicators_from_api_success(mock_client, requests_mock):
 def test_retrieve_indicators_from_api_failure(mock_client, requests_mock):
     """Test retrieve_indicators_from_api with an HTTP error."""
 
-    date_time = "2025-01-01T00:00:00Z"
+    date_time = "2025-01-01"
     limit = 100
     offset = 0
 
@@ -513,7 +513,7 @@ def test_retrieve_indicators_from_api_failure(mock_client, requests_mock):
 def test_retrieve_indicators_from_api_timeout(mock_client, requests_mock):
     """Test retrieve_indicators_from_api with a timeout."""
 
-    date_time = "2025-01-01T00:00:00Z"
+    date_time = "2025-01-01"
     limit = 100
     offset = 0
 
@@ -530,7 +530,7 @@ def test_retrieve_indicators_from_api_timeout(mock_client, requests_mock):
 def test_retrieve_indicators_from_api_invalid_response(mock_client, requests_mock):
     """Test retrieve_indicators_from_api with an invalid response."""
 
-    date_time = "2025-01-01T00:00:00Z"
+    date_time = "2025-01-01"
     limit = 100
     offset = 0
     mock_response = "Invalid JSON response"
@@ -730,7 +730,7 @@ def test_process_feed_response_valid(mock_demisto, mock_client):
     # Mock auto_detect_indicator_type
     mock_auto_detect = MagicMock(return_value=True)
     with patch("FeedCyberint.auto_detect_indicator_type", mock_auto_detect):
-        result = mock_client.process_feed_response("2025-01-01T00:00:00Z", 100, 0)
+        result = mock_client.process_feed_response("2025-01-01", 100, 0)
 
     assert len(result) == 0
 
@@ -746,7 +746,7 @@ def test_process_feed_response_invalid_json(mock_retrieve_indicators, mock_demis
     # Mock demisto.error to capture error logs
     mock_demisto.error = MagicMock()
 
-    result = mock_client.process_feed_response("2025-01-01T00:00:00Z", 100, 0)
+    result = mock_client.process_feed_response("2025-01-01", 100, 0)
 
     # Assertions
     assert result == []  # Should return an empty list on failure
@@ -760,7 +760,7 @@ def test_process_feed_response_no_indicators(mock_retrieve_indicators, mock_demi
     mock_response = ""
     mock_retrieve_indicators.return_value = mock_response
 
-    result = mock_client.process_feed_response("2025-01-01T00:00:00Z", 100, 0)
+    result = mock_client.process_feed_response("2025-01-01", 100, 0)
 
     # Assertions
     assert result == []  # Should return an empty list if no indicators
@@ -777,10 +777,10 @@ def test_process_feed_response_valid_but_no_matching_indicators(mock_retrieve_in
     # Mock auto_detect_indicator_type to return False for all values
     mock_auto_detect = MagicMock(return_value=False)
     with patch("FeedCyberint.auto_detect_indicator_type", mock_auto_detect):
-        result = mock_client.process_feed_response("2025-01-01T00:00:00Z", 100, 0)
+        result = mock_client.process_feed_response("2025-01-01", 100, 0)
 
     # Assertions
-    mock_retrieve_indicators.assert_called_once_with("2025-01-01T00:00:00Z", 100, 0)
+    mock_retrieve_indicators.assert_called_once_with("2025-01-01", 100, 0)
     mock_auto_detect.assert_any_call("invalid_indicator")
     mock_auto_detect.assert_any_call("another_invalid_indicator")
     assert result == []  # Should return an empty list since no valid indicators matched
@@ -797,10 +797,10 @@ def test_process_feed_response_valid_with_matching_indicators(mock_retrieve_indi
     # Mock auto_detect_indicator_type to return True for all values
     mock_auto_detect = MagicMock(return_value=True)
     with patch("FeedCyberint.auto_detect_indicator_type", mock_auto_detect):
-        result = mock_client.process_feed_response("2025-01-01T00:00:00Z", 100, 0)
+        result = mock_client.process_feed_response("2025-01-01", 100, 0)
 
     # Assertions
-    mock_retrieve_indicators.assert_called_once_with("2025-01-01T00:00:00Z", 100, 0)
+    mock_retrieve_indicators.assert_called_once_with("2025-01-01", 100, 0)
     mock_auto_detect.assert_any_call("valid_indicator")
     mock_auto_detect.assert_any_call("another_valid_indicator")
     assert len(result) == 2
