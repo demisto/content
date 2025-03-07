@@ -481,8 +481,8 @@ def test_retrieve_indicators_from_api_success(mock_client, requests_mock):
     mock_response = '{"ioc_value": "example.com"}\n{"ioc_value": "malicious.com"}'
 
     # Mock the HTTP request
-    url_suffix = f"{date_time}?limit={limit}&offset={offset}"
-    requests_mock.get(f"{BASE_URL}/{url_suffix}",
+    url_suffix = f"/ioc/api/v1/feed/daily/{date_time}?limit={limit}&offset={offset}"
+    requests_mock.get(f"{BASE_URL}{url_suffix}",
                       text=mock_response,
                       status_code=200,
                       )
@@ -500,8 +500,8 @@ def test_retrieve_indicators_from_api_failure(mock_client, requests_mock):
     offset = 0
 
     # Mock the HTTP request to return a 500 error
-    url_suffix = f"{date_time}?limit={limit}&offset={offset}"
-    requests_mock.get(f"{BASE_URL}/{url_suffix}",
+    url_suffix = f"/ioc/api/v1/feed/daily/{date_time}?limit={limit}&offset={offset}"
+    requests_mock.get(f"{BASE_URL}{url_suffix}",
                       status_code=500,
                       text="Internal Server Error",
                       )
@@ -518,8 +518,8 @@ def test_retrieve_indicators_from_api_timeout(mock_client, requests_mock):
     offset = 0
 
     # Mock the HTTP request to simulate a timeout
-    url_suffix = f"{date_time}?limit={limit}&offset={offset}"
-    requests_mock.get(f"{BASE_URL}/{url_suffix}",
+    url_suffix = f"/ioc/api/v1/feed/daily/{date_time}?limit={limit}&offset={offset}"
+    requests_mock.get(f"{BASE_URL}{url_suffix}",
                       exc=TimeoutError("Request timed out"),
                       )
 
@@ -536,8 +536,8 @@ def test_retrieve_indicators_from_api_invalid_response(mock_client, requests_moc
     mock_response = "Invalid JSON response"
 
     # Mock the HTTP request
-    url_suffix = f"{date_time}?limit={limit}&offset={offset}"
-    requests_mock.get(f"{BASE_URL}/{url_suffix}",
+    url_suffix = f"/ioc/api/v1/feed/daily/{date_time}?limit={limit}&offset={offset}"
+    requests_mock.get(f"{BASE_URL}{url_suffix}",
                       text=mock_response,
                       status_code=200,
                       )
@@ -834,8 +834,8 @@ def test_process_feed_response_wrong_data(mock_client, requests_mock, capfd):
         mock_response = "test"
 
         # Mock the HTTP request
-        url_suffix = f"{date_time}?limit={limit}&offset={offset}"
-        requests_mock.get(f"{BASE_URL}/{url_suffix}",
+        url_suffix = f"/ioc/api/v1/feed/daily/{date_time}?limit={limit}&offset={offset}"
+        requests_mock.get(f"{BASE_URL}{url_suffix}",
                           text=mock_response,
                           status_code=200,
                           )
@@ -859,8 +859,8 @@ def test_get_indicators_command_ok(mock_client, requests_mock):
     mock_response = "[{'detected_activity': 'activity_1}]"
 
     # Mock the HTTP request
-    url_suffix = f"{date_time}?limit={limit}&offset={offset}"
-    requests_mock.get(f"{BASE_URL}/{url_suffix}",
+    url_suffix = f"/ioc/api/v1/feed/daily/{date_time}?limit={limit}&offset={offset}"
+    requests_mock.get(f"{BASE_URL}{url_suffix}",
                       text=mock_response,
                       status_code=200,
                       )
@@ -889,8 +889,8 @@ def test_test_module_success(requests_mock):
     mock_response = ""
 
     # Mock the HTTP request
-    url_suffix = f"{date_time}?limit={limit}&offset={offset}"
-    requests_mock.get(f"{BASE_URL}/{url_suffix}",
+    url_suffix = f"/ioc/api/v1/feed/daily/{date_time}?limit={limit}&offset={offset}"
+    requests_mock.get(f"{BASE_URL}{url_suffix}",
                       text=mock_response,
                       status_code=200,
                       )
