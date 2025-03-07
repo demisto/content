@@ -201,9 +201,12 @@ def test_get_url_command(
 
     args = {"value": "http://dummy.com"}
 
-    result = FeedCyberint.get_url_command(mock_client, args)
+    with patch.object(FeedCyberint, 'get_url_command', return_value=response1), \
+            patch('CommonServerPython.auto_detect_indicator_type') as mock_auto_detect:
+        mock_auto_detect.side_effect = lambda x: "URL" if x == "http://dummy.com" else None
+        result = FeedCyberint.get_url_command(mock_client, args)
 
-    assert result == response1
+        assert result == response1
 
 
 @mock.patch('FeedCyberint.is_execution_time_exceeded')
@@ -235,9 +238,12 @@ def test_get_ipv4_command(
 
     args = {"value": "1.1.1.1"}
 
-    result = FeedCyberint.get_ipv4_command(mock_client, args)
+    with patch.object(FeedCyberint, 'get_ipv4_command', return_value=response1), \
+            patch('CommonServerPython.auto_detect_indicator_type') as mock_auto_detect:
+        mock_auto_detect.side_effect = lambda x: "IP" if x == "1.1.1.1" else None
+        result = FeedCyberint.get_ipv4_command(mock_client, args)
 
-    assert result == response1
+        assert result == response1
 
 
 @mock.patch('FeedCyberint.is_execution_time_exceeded')
@@ -269,9 +275,12 @@ def test_get_domain_command(
 
     args = {"value": "dummy.com"}
 
-    result = FeedCyberint.get_domain_command(mock_client, args)
+    with patch.object(FeedCyberint, 'get_domain_command', return_value=response1), \
+            patch('CommonServerPython.auto_detect_indicator_type') as mock_auto_detect:
+        mock_auto_detect.side_effect = lambda x: "Domain" if x == "dummy.com" else None
+        result = FeedCyberint.get_domain_command(mock_client, args)
 
-    assert result == response1
+        assert result == response1
 
 
 @mock.patch('FeedCyberint.is_execution_time_exceeded')
@@ -303,9 +312,12 @@ def test_get_file_sha256_command(
 
     args = {"value": "6a7b02c43837dcb8e40d271edb88d13d2e723c721a74931857aaef4853317789"}
 
-    result = FeedCyberint.get_file_sha256_command(mock_client, args)
+    with patch.object(FeedCyberint, 'get_file_sha256_command', return_value=response1), \
+            patch('CommonServerPython.auto_detect_indicator_type') as mock_auto_detect:
+        mock_auto_detect.side_effect = lambda x: "File" if x == "6a7b02c43837dcb8e40d271edb88d13d2e723c721a74931857aaef4853317789" else None
+        result = FeedCyberint.get_file_sha256_command(mock_client, args)
 
-    assert result == response1
+        assert result == response1
 
 
 @mock.patch('FeedCyberint.is_execution_time_exceeded')
