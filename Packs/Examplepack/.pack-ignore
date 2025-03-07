@@ -1,0 +1,13 @@
+[file:AlibabaActionTrailEventCollector.yml]
+ignore=BA124
+
+[file:AlibabaParsingRules.yml]
+ignore=PR101
+
+[known_words]
+Alibaba
+ActionTrail
+
+# GR103 is temporary, see CIAC-11705
+[file:Trigger_-Alibaba_ActionTrail_-_Multiple_Unauthorized_Action_Attempts_Detected_By_a_User.json]
+ignore=GR103
