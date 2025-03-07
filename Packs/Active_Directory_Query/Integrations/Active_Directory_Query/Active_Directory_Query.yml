@@ -285,7 +285,7 @@ script:
     arguments:
     - name: username
       required: true
-      description: "The username of the account to disable (sAMAccountName)."
+      description: "The username whose password will be changed."
     - name: password
       secret: true
       required: true
