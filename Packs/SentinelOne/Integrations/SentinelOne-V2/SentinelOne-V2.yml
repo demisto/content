@@ -35,131 +35,118 @@ configuration:
 - display: Incident type
   name: incidentType
   type: 13
+  section: Connect
   required: false
-  section: Collect
 - name: fetch_type
   display: Fetch incidents from type
   defaultvalue: Threats
   type: 15
+  section: Collect
   options:
   - Alerts
   - Threats
   - Both
   required: false
-  section: Collect
 - name: fetch_time
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   defaultvalue: "3 days"
   type: 0
   section: Collect
   required: false
-  advanced: true
 - name: fetch_threat_rank
   display: "Minimum risk score for importing incidents (0-10), where 0 is low risk and 10 is high risk. Relevant for API version 2.0."
   defaultvalue: '5'
   type: 0
   section: Collect
   required: false
-  advanced: true
 - name: fetch_severity
   display: Defines Alert severity to fetch.
   type: 16
+  section: Collect
   options:
   - High
   - Medium
   - Low
   required: false
-  section: Collect
-  advanced: true
 - name: fetch_incidentStatus
   display: Define which Alerts should be fetched.
   type: 16
+  section: Collect
   defaultvalue: UNRESOLVED
   options:
   - RESOLVED
   - UNRESOLVED
   - IN_PROGRESS
   required: false
-  section: Collect
-  advanced: true
 - name: fetch_threat_incident_statuses
   display: 'Define which Threats should be fetched.'
   type: 16
+  section: Collect
   defaultvalue: UNRESOLVED
   required: false
   options:
   - RESOLVED
   - UNRESOLVED
   - IN_PROGRESS
-  section: Collect
-  advanced: true
 - name: fetch_limit
   display: 'Fetch limit: The maximum number of threats or alerts to fetch'
   type: 0
+  section: Collect
   required: false
   defaultvalue: '10'
-  section: Collect
-  advanced: true
 - name: fetch_site_ids
   display: Site IDs
   type: 0
+  section: Collect
   additionalinfo: Comma-separated list of site IDs to fetch incidents for. Leave blank to fetch all sites.
   required: false
-  section: Collect
-  advanced: true
 - name: block_site_ids
   display: Block Site IDs
   type: 0
+  section: Collect
   required: false
   additionalinfo: Comma-separated list of site IDs for where hashes should be blocked. If left blank all hashes will be blocked globally. If filled out with site ids all hashes will be no longer be blocked globally, they will now be blocked in the scope of those sites.
-  section: Collect
-  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
   section: Connect
-  advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
   section: Connect
-  advanced: true
+  required: false
 - display: API Token (Deprecated)
   name: token
   type: 4
+  section: Connect
   required: false
   additionalinfo: Use the "API Token (Recommended)" parameter instead.
-  section: Connect
-  advanced: true
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
-  required: false
   section: Collect
-  advanced: true
+  required: false
 - additionalinfo: 'Choose the direction to mirror the incident: Incoming (from SentinelOne to Cortex XSOAR), Outgoing (from Cortex XSOAR to SentinelOne), or Incoming and Outgoing (from/to Cortex XSOAR and SentinelOne).'
   defaultvalue: None
   display: Incident Mirroring Direction
   name: mirror_direction
   type: 15
+  section: Collect
   required: false
   options:
   - None
   - Incoming
   - Outgoing
   - Incoming And Outgoing
-  section: Collect
 - additionalinfo: When selected, closing the SentinelOne ticket is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
   name: close_xsoar_incident
   type: 8
-  required: false
   section: Collect
-  advanced: true
+  required: false
 description: Use the SentinelOne integration to send requests to your management server and get responses with data pulled from agents or from the management database.
 display: SentinelOne v2
 name: SentinelOne V2
@@ -2322,7 +2309,7 @@ script:
     name: sentinelone-run-remote-script
   - arguments:
     - name: account_ids
-      isArray: true
+      isArray: true 
       description: "A comma-separated list of account IDs. Example: '225494730938493804,225494730938493915'."
     - name: computer_name_contains
       description: Free-text filter by agent computer name (supports multiple values).
@@ -2345,16 +2332,16 @@ script:
     - name: description_contains
       description: Only include tasks with specific description.
     - name: detailed_status_contains
-      isArray: true
+      isArray: true 
       description: Only include tasks with specific detailed status.
     - name: group_ids
-      isArray: true
+      isArray: true 
       description: "Comma-separated list of Group IDs to filter by. Example: '225494730938493804,225494730938493915'."
     - name: ids
-      isArray: true
+      isArray: true 
       description: "Comma-separated list of IDs to filter by. Example: '225494730938493804,225494730938493915'."
     - name: initiated_by_contains
-      isArray: true
+      isArray: true 
       description: Only include tasks from specific initiating user.
     - name: limit
       description: "Limit number of returned items (1-1000). Example: '10'."
@@ -2362,12 +2349,12 @@ script:
       required: true
       description: "Parent task ID to fetch the status by. Example: '225494730938493804'."
     - name: parent_task_id_in
-      isArray: true
+      isArray: true 
       description: List of IDs to filter by.
     - name: query
       description: Query.
     - name: site_ids
-      isArray: true
+      isArray: true 
       description: "List of site IDs to filter by. Example: '225494730938493804,225494730938493915'."
     - name: status
       description: "Status of the script task. Example: 'created'."
@@ -2525,10 +2512,10 @@ script:
       - "false"
       - "true"
     - defaultValue: '60'
-      description: Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds.
+      description: Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. 
       name: interval
     - defaultValue: '600'
-      description: Indicates the time in seconds until the polling sequence timeouts.
+      description: Indicates the time in seconds until the polling sequence timeouts. 
       name: timeout
     - description: "Parent task ID to fetch the status by. Example: '225494730938493804'."
       name: parent_task_id
