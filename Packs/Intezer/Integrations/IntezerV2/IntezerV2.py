@@ -1144,7 +1144,7 @@ def main():  # pragma: no cover
                                  intezer_api_key,
                                  analyze_base_url,
                                  use_ssl,
-                                 user_agent=get_pack_version())
+                                 user_agent=get_pack_version('Intezer'))
 
         command_handlers: Dict[str, Callable[[IntezerApi, dict], Union[List[CommandResults],
                                                                        CommandResults,

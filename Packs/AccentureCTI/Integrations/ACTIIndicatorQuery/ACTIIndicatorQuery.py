@@ -23,7 +23,7 @@ ENDPOINTS = {
 class Client(BaseClient):
     def __init__(self, input_url: str, api_key: str, verify_certificate: bool, proxy: bool, endpoint="/rest/threatindicator/v0"):
         base_url = urljoin(input_url, endpoint)
-        PACK_VERSION = get_pack_version()
+        PACK_VERSION = get_pack_version('Accenture CTI v2')
         DEMISTO_VERSION = demisto.demistoVersion()
         DEMISTO_VERSION = f'{DEMISTO_VERSION["version"]}.{DEMISTO_VERSION["buildNumber"]}'
         headers = {
