@@ -139,10 +139,10 @@
     "nextScheduledTime": "0001-01-01T00:00:00Z",
     "latestScheduledReportTime": "0001-01-01T00:00:00Z",
     "latestReportTime": "0001-01-01T00:00:00Z",
-    "modified": "2018-01-25T09:39:59.419435661Z",
+    "modified": "2018-01-24T16:42:04.828526683Z",
     "runningUser": "",
     "locked": false,
-    "name": "Last 7 days incidents",
+    "name": "Last 30 days incidents",
     "timezoneOffset": 0,
     "runOnce": false,
     "scheduled": false,
@@ -164,7 +164,7 @@
                         "byTo": "days",
                         "byFrom": "days",
                         "toValue": 0,
-                        "fromValue": 7,
+                        "fromValue": 30,
                         "field": "",
                         "by": "day"
                     },
@@ -172,7 +172,7 @@
                     "toDate": "0001-01-01T00:00:00Z"
                 }
             },
-            "data": "# **Last 7 days incidents**\n\n{date}\n\n---",
+            "data": "# **Last 30 days incidents**\n\n{date}\n\n---",
             "type": "placeholder",
             "title": "last24HoursIncidentReport Headline"
         },
@@ -192,7 +192,7 @@
                         "byTo": "days",
                         "byFrom": "days",
                         "toValue": 0,
-                        "fromValue": 7,
+                        "fromValue": 30,
                         "field": "",
                         "by": "day"
                     },
@@ -200,7 +200,7 @@
                     "toDate": "0001-01-01T00:00:00Z"
                 }
             },
-            "data": "# Last 7 days incidents: {0}",
+            "data": "# Last 30 days incidents: {0}",
             "type": "placeholder",
             "title": "last24HoursIncidentReport Headline1"
         },
@@ -220,7 +220,7 @@
                         "byTo": "days",
                         "byFrom": "days",
                         "toValue": 0,
-                        "fromValue": 7,
+                        "fromValue": 30,
                         "field": "",
                         "by": "day"
                     },
@@ -271,7 +271,7 @@
                         "byTo": "days",
                         "byFrom": "days",
                         "toValue": 0,
-                        "fromValue": 7,
+                        "fromValue": 30,
                         "field": "",
                         "by": "day"
                     },
@@ -321,7 +321,7 @@
                         "byTo": "days",
                         "byFrom": "days",
                         "toValue": 0,
-                        "fromValue": 7,
+                        "fromValue": 30,
                         "field": "",
                         "by": "day"
                     },
@@ -371,7 +371,7 @@
                         "byTo": "days",
                         "byFrom": "days",
                         "toValue": 0,
-                        "fromValue": 7,
+                        "fromValue": 30,
                         "field": "",
                         "by": "day"
                     },
@@ -422,7 +422,7 @@
                         "byTo": "days",
                         "byFrom": "days",
                         "toValue": 0,
-                        "fromValue": 7,
+                        "fromValue": 30,
                         "field": "",
                         "by": "day"
                     },
@@ -468,7 +468,7 @@
                         "byTo": "days",
                         "byFrom": "days",
                         "toValue": 0,
-                        "fromValue": 7,
+                        "fromValue": 30,
                         "field": "",
                         "by": "day"
                     },
@@ -491,7 +491,7 @@
             "byTo": "days",
             "byFrom": "days",
             "toValue": 0,
-            "fromValue": 7,
+            "fromValue": 30,
             "field": ""
         },
         "toDate": "0001-01-01T00:00:00Z",
@@ -510,7 +510,7 @@
                     "size": 0,
                     "dataType": "incidents",
                     "params": {
-                        "text": "# **Last 7 days incidents**\n\n{date}\n\n---"
+                        "text": "# **Last 30 days incidents**\n\n{date}\n\n---"
                     },
                     "query": "status:Active or status:Pending",
                     "modified": "2018-01-23T17:52:18.713904673Z",
@@ -545,7 +545,7 @@
                     "size": 0,
                     "dataType": "incidents",
                     "params": {
-                        "text": "# Last 7 days incidents: {0}"
+                        "text": "# Last 30 days incidents: {0}"
                     },
                     "query": "status:Active or status:Pending",
                     "modified": "2018-01-23T18:08:14.105664992Z",
@@ -830,7 +830,7 @@
                 }
             }
         ],
-        "name": "Last 7 days incidents",
+        "name": "Last 30 days incidents",
         "isPredefined": false,
         "version": 0,
         "fromDate": "0001-01-01T00:00:00Z",
@@ -842,8 +842,7 @@
     "type": "pdf",
     "tags": [],
     "createdBy": "DBot",
-    "fromVersion": "5.0.0",
-    "description": "Last 7 days summary of incidents statistics, followed by a list of all current open incidents.",
-    "id": "last7DaysIncidentReport",
-    "toVersion": "8.9.0"
+    "fromVersion": "9.0.0",
+    "description": "Last 30 days summary of incidents statistics, followed by a list of all current open incidents.",
+    "id": "last30DaysIncidentReport"
 }
