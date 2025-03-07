@@ -7,18 +7,18 @@ import pytest
 
 from CommonServerPython import DemistoException
 
-date_time = str(datetime.now().strftime(FeedCyberint.DATE_FORMAT))
+date_time = '2025-01-01'
 
-BASE_URL = "https://feed-example.com"
-REQUEST_URL1 = f"{BASE_URL}/ioc/api/v1/feed/daily/{date_time}?limit=1000&offset=0"
-REQUEST_URL2 = f"{BASE_URL}/ioc/api/v1/feed/daily/{date_time}?limit=1000&offset=1000"
-REQUEST_URL3 = f"{BASE_URL}/ioc/api/v1/feed/daily/{date_time}?limit=20000&offset=0"
-REQUEST_URL4 = f"{BASE_URL}/ioc/api/v1/feed/daily/{date_time}?limit=20000&offset=20000"
-REQUEST_URL5 = f"{BASE_URL}/ioc/api/v1/feed/daily/{date_time}?limit=20&offset=0"
-REQUEST_URL6 = f"{BASE_URL}/ioc/api/v1/url?value=http://dummy.com"
-REQUEST_URL7 = f"{BASE_URL}/ioc/api/v1/ipv4?value=1.1.1.1"
-REQUEST_URL8 = f"{BASE_URL}/ioc/api/v1/domain?value=dummy.com"
-REQUEST_URL9 = f"{BASE_URL}/ioc/api/v1/file/sha256?value=6a7b02c43837dcb8e40d271edb88d13d2e723c721a74931857aaef4853317789"
+BASE_URL = "https://feed-example.com/ioc/api/v1"
+REQUEST_URL1 = f"{BASE_URL}/feed/daily/{date_time}?limit=1000&offset=0"
+REQUEST_URL2 = f"{BASE_URL}/feed/daily/{date_time}?limit=1000&offset=1000"
+REQUEST_URL3 = f"{BASE_URL}/feed/daily/{date_time}?limit=20000&offset=0"
+REQUEST_URL4 = f"{BASE_URL}/feed/daily/{date_time}?limit=20000&offset=20000"
+REQUEST_URL5 = f"{BASE_URL}/feed/daily/{date_time}?limit=20&offset=0"
+REQUEST_URL6 = f"{BASE_URL}/url?value=http://dummy.com"
+REQUEST_URL7 = f"{BASE_URL}/ipv4?value=1.1.1.1"
+REQUEST_URL8 = f"{BASE_URL}/domain?value=dummy.com"
+REQUEST_URL9 = f"{BASE_URL}/v1/file/sha256?value=6a7b02c43837dcb8e40d271edb88d13d2e723c721a74931857aaef4853317789"
 TOKEN = "example_token"
 
 
@@ -356,23 +356,23 @@ def test_fetch_indicators_command_ok(
         assert result is not None
 
 
-def test_header_transformer():
+def test_ioc_header_transformer():
     """
-    Test the header_transformer function to ensure it correctly transforms headers.
+    Test the ioc_header_transformer function to ensure it correctly transforms headers.
     """
     # Test predefined headers
-    assert FeedCyberint.header_transformer('detected_activity') == 'Detected activity'
-    assert FeedCyberint.header_transformer('ioc_type') == 'IoC type'
-    assert FeedCyberint.header_transformer('ioc_value') == 'IoC value'
-    assert FeedCyberint.header_transformer('observation_date') == 'Observation date'
-    assert FeedCyberint.header_transformer('severity_score') == 'Severity score'
-    assert FeedCyberint.header_transformer('confidence') == 'Confidence'
-    assert FeedCyberint.header_transformer('description') == 'Description'
+    assert FeedCyberint.ioc_header_transformer('detected_activity') == 'Detected activity'
+    assert FeedCyberint.ioc_header_transformer('ioc_type') == 'IoC type'
+    assert FeedCyberint.ioc_header_transformer('ioc_value') == 'IoC value'
+    assert FeedCyberint.ioc_header_transformer('observation_date') == 'Observation date'
+    assert FeedCyberint.ioc_header_transformer('severity_score') == 'Severity score'
+    assert FeedCyberint.ioc_header_transformer('confidence') == 'Confidence'
+    assert FeedCyberint.ioc_header_transformer('description') == 'Description'
 
     # Test fallback case with a mock
     with patch('FeedCyberint.string_to_table_header') as mock_string_to_table_header:
         mock_string_to_table_header.return_value = 'Fallback Header'
-        result = FeedCyberint.header_transformer('custom_header')
+        result = FeedCyberint.ioc_header_transformer('custom_header')
         mock_string_to_table_header.assert_called_once_with('custom_header')
         assert result == 'Fallback Header'
 
