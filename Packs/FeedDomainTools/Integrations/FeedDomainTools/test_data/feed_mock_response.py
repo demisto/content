@@ -29,7 +29,11 @@ NOD_PARSED_INDICATOR_RESPONSE = [
     {
         "value": "latrysa.online",
         "type": "Domain",
-        "fields": {"tags": "DomainToolsFeeds,nod,", "service": "DomainTools Feeds"},
+        "fields": {
+            "tags": "DomainToolsFeeds,nod,",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-01-13T13:36:58Z",
+        },
         "rawJSON": {
             "value": "latrysa.online",
             "type": "Domain",
@@ -39,7 +43,11 @@ NOD_PARSED_INDICATOR_RESPONSE = [
     {
         "value": "solarwinds.com.kz",
         "type": "Domain",
-        "fields": {"tags": "DomainToolsFeeds,nod,", "service": "DomainTools Feeds"},
+        "fields": {
+            "tags": "DomainToolsFeeds,nod,",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-01-13T13:36:57Z",
+        },
         "rawJSON": {
             "value": "solarwinds.com.kz",
             "type": "Domain",
@@ -49,7 +57,11 @@ NOD_PARSED_INDICATOR_RESPONSE = [
     {
         "value": "delradoapartments.info",
         "type": "Domain",
-        "fields": {"tags": "DomainToolsFeeds,nod,", "service": "DomainTools Feeds"},
+        "fields": {
+            "tags": "DomainToolsFeeds,nod,",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-01-13T13:36:56Z",
+        },
         "rawJSON": {
             "value": "delradoapartments.info",
             "type": "Domain",
@@ -59,7 +71,11 @@ NOD_PARSED_INDICATOR_RESPONSE = [
     {
         "value": "dcoeds.pro",
         "type": "Domain",
-        "fields": {"tags": "DomainToolsFeeds,nod,", "service": "DomainTools Feeds"},
+        "fields": {
+            "tags": "DomainToolsFeeds,nod,",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-01-13T13:36:56Z",
+        },
         "rawJSON": {
             "value": "dcoeds.pro",
             "type": "Domain",
@@ -69,7 +85,11 @@ NOD_PARSED_INDICATOR_RESPONSE = [
     {
         "value": "31xx8052a.cc",
         "type": "Domain",
-        "fields": {"tags": "DomainToolsFeeds,nod,", "service": "DomainTools Feeds"},
+        "fields": {
+            "tags": "DomainToolsFeeds,nod,",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-01-13T13:36:56Z",
+        },
         "rawJSON": {
             "value": "31xx8052a.cc",
             "type": "Domain",
@@ -79,7 +99,11 @@ NOD_PARSED_INDICATOR_RESPONSE = [
     {
         "value": "397dm.my",
         "type": "Domain",
-        "fields": {"tags": "DomainToolsFeeds,nod,", "service": "DomainTools Feeds"},
+        "fields": {
+            "tags": "DomainToolsFeeds,nod,",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-01-13T13:36:56Z",
+        },
         "rawJSON": {
             "value": "397dm.my",
             "type": "Domain",
@@ -89,7 +113,11 @@ NOD_PARSED_INDICATOR_RESPONSE = [
     {
         "value": "256adadw.top",
         "type": "Domain",
-        "fields": {"tags": "DomainToolsFeeds,nod,", "service": "DomainTools Feeds"},
+        "fields": {
+            "tags": "DomainToolsFeeds,nod,",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-01-13T13:36:55Z",
+        },
         "rawJSON": {
             "value": "256adadw.top",
             "type": "Domain",
@@ -99,7 +127,11 @@ NOD_PARSED_INDICATOR_RESPONSE = [
     {
         "value": "gt-press.com",
         "type": "Domain",
-        "fields": {"tags": "DomainToolsFeeds,nod,", "service": "DomainTools Feeds"},
+        "fields": {
+            "tags": "DomainToolsFeeds,nod,",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-01-13T13:36:54Z",
+        },
         "rawJSON": {
             "value": "gt-press.com",
             "type": "Domain",
@@ -109,7 +141,11 @@ NOD_PARSED_INDICATOR_RESPONSE = [
     {
         "value": "xtxei61366.outsystemscloud.com",
         "type": "Domain",
-        "fields": {"tags": "DomainToolsFeeds,nod,", "service": "DomainTools Feeds"},
+        "fields": {
+            "tags": "DomainToolsFeeds,nod,",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-01-13T13:36:53Z",
+        },
         "rawJSON": {
             "value": "xtxei61366.outsystemscloud.com",
             "type": "Domain",
@@ -119,7 +155,11 @@ NOD_PARSED_INDICATOR_RESPONSE = [
     {
         "value": "www-ledger-live.cfd",
         "type": "Domain",
-        "fields": {"tags": "DomainToolsFeeds,nod,", "service": "DomainTools Feeds"},
+        "fields": {
+            "tags": "DomainToolsFeeds,nod,",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-01-13T13:36:53Z",
+        },
         "rawJSON": {
             "value": "www-ledger-live.cfd",
             "type": "Domain",
@@ -132,7 +172,11 @@ NAD_PARSED_INDICATOR_RESPONSE = [
     {
         "value": "freiberger.com.pl",
         "type": "Domain",
-        "fields": {"tags": "DomainToolsFeeds,nad,", "service": "DomainTools Feeds"},
+        "fields": {
+            "tags": "DomainToolsFeeds,nad,",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-01-13T13:37:00Z",
+        },
         "rawJSON": {
             "value": "freiberger.com.pl",
             "type": "Domain",
@@ -142,7 +186,11 @@ NAD_PARSED_INDICATOR_RESPONSE = [
     {
         "value": "dreambuilderschannel.info",
         "type": "Domain",
-        "fields": {"tags": "DomainToolsFeeds,nad,", "service": "DomainTools Feeds"},
+        "fields": {
+            "tags": "DomainToolsFeeds,nad,",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-01-13T13:37:00Z",
+        },
         "rawJSON": {
             "value": "dreambuilderschannel.info",
             "type": "Domain",
@@ -152,7 +200,11 @@ NAD_PARSED_INDICATOR_RESPONSE = [
     {
         "value": "image163.blogspot.sn",
         "type": "Domain",
-        "fields": {"tags": "DomainToolsFeeds,nad,", "service": "DomainTools Feeds"},
+        "fields": {
+            "tags": "DomainToolsFeeds,nad,",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-01-13T13:37:00Z",
+        },
         "rawJSON": {
             "value": "image163.blogspot.sn",
             "type": "Domain",
@@ -162,7 +214,11 @@ NAD_PARSED_INDICATOR_RESPONSE = [
     {
         "value": "xiaoyintao9.vip",
         "type": "Domain",
-        "fields": {"tags": "DomainToolsFeeds,nad,", "service": "DomainTools Feeds"},
+        "fields": {
+            "tags": "DomainToolsFeeds,nad,",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-01-13T13:37:00Z",
+        },
         "rawJSON": {
             "value": "xiaoyintao9.vip",
             "type": "Domain",
@@ -172,7 +228,11 @@ NAD_PARSED_INDICATOR_RESPONSE = [
     {
         "value": "hyperionmaterials.ch",
         "type": "Domain",
-        "fields": {"tags": "DomainToolsFeeds,nad,", "service": "DomainTools Feeds"},
+        "fields": {
+            "tags": "DomainToolsFeeds,nad,",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-01-13T13:37:00Z",
+        },
         "rawJSON": {
             "value": "hyperionmaterials.ch",
             "type": "Domain",
@@ -182,7 +242,11 @@ NAD_PARSED_INDICATOR_RESPONSE = [
     {
         "value": "hhjt6.vip",
         "type": "Domain",
-        "fields": {"tags": "DomainToolsFeeds,nad,", "service": "DomainTools Feeds"},
+        "fields": {
+            "tags": "DomainToolsFeeds,nad,",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-01-13T13:37:00Z",
+        },
         "rawJSON": {
             "value": "hhjt6.vip",
             "type": "Domain",
@@ -192,7 +256,11 @@ NAD_PARSED_INDICATOR_RESPONSE = [
     {
         "value": "hg2998.vip",
         "type": "Domain",
-        "fields": {"tags": "DomainToolsFeeds,nad,", "service": "DomainTools Feeds"},
+        "fields": {
+            "tags": "DomainToolsFeeds,nad,",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-01-13T13:37:00Z",
+        },
         "rawJSON": {
             "value": "hg2998.vip",
             "type": "Domain",
@@ -202,7 +270,11 @@ NAD_PARSED_INDICATOR_RESPONSE = [
     {
         "value": "lyrixmp3skull.ws",
         "type": "Domain",
-        "fields": {"tags": "DomainToolsFeeds,nad,", "service": "DomainTools Feeds"},
+        "fields": {
+            "tags": "DomainToolsFeeds,nad,",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-01-13T13:37:00Z",
+        },
         "rawJSON": {
             "value": "lyrixmp3skull.ws",
             "type": "Domain",
@@ -212,7 +284,11 @@ NAD_PARSED_INDICATOR_RESPONSE = [
     {
         "value": "bohicaespresso.shop",
         "type": "Domain",
-        "fields": {"tags": "DomainToolsFeeds,nad,", "service": "DomainTools Feeds"},
+        "fields": {
+            "tags": "DomainToolsFeeds,nad,",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-01-13T13:37:00Z",
+        },
         "rawJSON": {
             "value": "bohicaespresso.shop",
             "type": "Domain",
@@ -222,7 +298,11 @@ NAD_PARSED_INDICATOR_RESPONSE = [
     {
         "value": "vontresesworldofhair.ws",
         "type": "Domain",
-        "fields": {"tags": "DomainToolsFeeds,nad,", "service": "DomainTools Feeds"},
+        "fields": {
+            "tags": "DomainToolsFeeds,nad,",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-01-13T13:37:00Z",
+        },
         "rawJSON": {
             "value": "vontresesworldofhair.ws",
             "type": "Domain",
