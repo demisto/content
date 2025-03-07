@@ -314,7 +314,8 @@ def test_get_file_sha256_command(
 
     with patch.object(FeedCyberint, 'get_file_sha256_command', return_value=response1), \
             patch('CommonServerPython.auto_detect_indicator_type') as mock_auto_detect:
-        mock_auto_detect.side_effect = lambda x: "File" if x == "6a7b02c43837dcb8e40d271edb88d13d2e723c721a74931857aaef4853317789" else None
+        mock_auto_detect.side_effect = lambda x: "File" \
+            if x == "6a7b02c43837dcb8e40d271edb88d13d2e723c721a74931857aaef4853317789" else None
         result = FeedCyberint.get_file_sha256_command(mock_client, args)
 
         assert result == response1
@@ -373,6 +374,51 @@ def test_ioc_header_transformer():
     with patch('FeedCyberint.string_to_table_header') as mock_string_to_table_header:
         mock_string_to_table_header.return_value = 'Fallback Header'
         result = FeedCyberint.ioc_header_transformer('custom_header')
+        mock_string_to_table_header.assert_called_once_with('custom_header')
+        assert result == 'Fallback Header'
+
+
+def test_indicator_header_transformer():
+    """
+    Test the indicator_header_transformer function to ensure it correctly transforms headers.
+    """
+    # Test predefined headers
+    assert FeedCyberint.indicator_header_transformer('type') == 'Type'
+    assert FeedCyberint.indicator_header_transformer('value') == 'Value'
+    assert FeedCyberint.indicator_header_transformer('malicious_score') == 'Malicious score'
+    assert FeedCyberint.indicator_header_transformer('detected_activities') == 'Detected activities'
+    assert FeedCyberint.indicator_header_transformer('related_entities') == 'Related entities'
+    assert FeedCyberint.indicator_header_transformer('filenames') == 'Filenames'
+    assert FeedCyberint.indicator_header_transformer('first_seen') == 'First seen'
+    assert FeedCyberint.indicator_header_transformer('download_urls') == 'Download URLs'
+    assert FeedCyberint.indicator_header_transformer('benign') == 'Benign'
+    assert FeedCyberint.indicator_header_transformer('observation_date') == 'Observation date'
+    assert FeedCyberint.indicator_header_transformer('occurrences_count') == 'Occurrences count'
+    assert FeedCyberint.indicator_header_transformer('ips') == 'IPs'
+    assert FeedCyberint.indicator_header_transformer('registrant_name') == 'Whois registrant name'
+    assert FeedCyberint.indicator_header_transformer('registrant_email') == 'Whois registrant name'
+    assert FeedCyberint.indicator_header_transformer('registrant_organization') == 'Whois registrant organization'
+    assert FeedCyberint.indicator_header_transformer('registrant_country') == 'Whois registrant country'
+    assert FeedCyberint.indicator_header_transformer('registrant_telephone') == 'Whois registrant telephone'
+    assert FeedCyberint.indicator_header_transformer('technical_contact_email') == 'Whois technical contact email'
+    assert FeedCyberint.indicator_header_transformer('technical_contact_name') == 'Whois technical contact name'
+    assert FeedCyberint.indicator_header_transformer('technical_contact_organization') == 'Whois technical contact organization'
+    assert FeedCyberint.indicator_header_transformer('registrar_name') == 'Whois registrar name'
+    assert FeedCyberint.indicator_header_transformer('admin_contact_name') == 'Whois admin contact name'
+    assert FeedCyberint.indicator_header_transformer('admin_contact_organization') == 'Whois admin contact organization'
+    assert FeedCyberint.indicator_header_transformer('admin_contact_email') == 'Whois admin contact email'
+    assert FeedCyberint.indicator_header_transformer('created_date') == 'Created date'
+    assert FeedCyberint.indicator_header_transformer('updated_date') == 'Updated date'
+    assert FeedCyberint.indicator_header_transformer('expiration_date') == 'Expiration date'
+    assert FeedCyberint.indicator_header_transformer('hostname') == 'Hostname'
+    assert FeedCyberint.indicator_header_transformer('domain') == 'Domain'
+    assert FeedCyberint.indicator_header_transformer('asn_number') == 'ASN number'
+    assert FeedCyberint.indicator_header_transformer('asn_organization') == 'ASN organization'
+
+    # Test fallback case with a mock
+    with patch('FeedCyberint.string_to_table_header') as mock_string_to_table_header:
+        mock_string_to_table_header.return_value = 'Fallback Header'
+        result = FeedCyberint.indicator_header_transformer('custom_header')
         mock_string_to_table_header.assert_called_once_with('custom_header')
         assert result == 'Fallback Header'
 

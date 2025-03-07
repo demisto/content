@@ -983,7 +983,7 @@ def indicator_header_transformer(header: str) -> str:
         return 'IPs'
     if header == 'registrant_name':
         return 'Whois registrant name'
-    if header == 'whois_registrant_email':
+    if header == 'registrant_email':
         return 'Whois registrant email'
     if header == 'registrant_organization':
         return 'Whois registrant organization'
