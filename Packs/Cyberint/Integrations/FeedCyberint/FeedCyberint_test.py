@@ -396,7 +396,7 @@ def test_indicator_header_transformer():
     assert FeedCyberint.indicator_header_transformer('occurrences_count') == 'Occurrences count'
     assert FeedCyberint.indicator_header_transformer('ips') == 'IPs'
     assert FeedCyberint.indicator_header_transformer('registrant_name') == 'Whois registrant name'
-    assert FeedCyberint.indicator_header_transformer('registrant_email') == 'Whois registrant name'
+    assert FeedCyberint.indicator_header_transformer('registrant_email') == 'Whois registrant email'
     assert FeedCyberint.indicator_header_transformer('registrant_organization') == 'Whois registrant organization'
     assert FeedCyberint.indicator_header_transformer('registrant_country') == 'Whois registrant country'
     assert FeedCyberint.indicator_header_transformer('registrant_telephone') == 'Whois registrant telephone'
@@ -736,6 +736,94 @@ def test_main_get_indicators(mock_demisto, mock_client):
 
     # Replace get_indicators_command with mock
     with patch("FeedCyberint.get_indicators_command", mock_get_indicators_command):
+        FeedCyberint.main()
+
+
+@patch("FeedCyberint.demisto")
+def test_main_get_url(mock_demisto, mock_client):
+    """Test main() with the 'cyberint-get-url' command."""
+    # Mock parameters and command
+    mock_demisto.params.return_value = {
+        "url": "https://example.com",
+        "access_token": {"password": "test-token"},
+        "insecure": False,
+        "proxy": False,
+    }
+    mock_demisto.command.return_value = "cyberint-get-url"
+    mock_demisto.args.return_value = {"arg1": "http://dummy.com"}
+
+    # Mock get_url_command
+    mock_get_url_command = MagicMock()
+    mock_get_url_command.return_value = "url-results"
+
+    # Replace get_url_command with mock
+    with patch("FeedCyberint.get_url_command", mock_get_url_command):
+        FeedCyberint.main()
+
+
+@patch("FeedCyberint.demisto")
+def test_main_get_domain(mock_demisto, mock_client):
+    """Test main() with the 'cyberint-get-domain' command."""
+    # Mock parameters and command
+    mock_demisto.params.return_value = {
+        "url": "https://example.com",
+        "access_token": {"password": "test-token"},
+        "insecure": False,
+        "proxy": False,
+    }
+    mock_demisto.command.return_value = "cyberint-get-domain"
+    mock_demisto.args.return_value = {"arg1": "dummy.com"}
+
+    # Mock get_domain_command
+    mock_get_domain_command = MagicMock()
+    mock_get_domain_command.return_value = "domain-results"
+
+    # Replace get_domain_command with mock
+    with patch("FeedCyberint.get_domain_command", mock_get_domain_command):
+        FeedCyberint.main()
+
+
+@patch("FeedCyberint.demisto")
+def test_main_get_ipv4(mock_demisto, mock_client):
+    """Test main() with the 'cyberint-get-ipv4' command."""
+    # Mock parameters and command
+    mock_demisto.params.return_value = {
+        "url": "https://example.com",
+        "access_token": {"password": "test-token"},
+        "insecure": False,
+        "proxy": False,
+    }
+    mock_demisto.command.return_value = "cyberint-get-ipv4"
+    mock_demisto.args.return_value = {"arg1": "1.1.1.1"}
+
+    # Mock get_ipv4_command
+    mock_get_ipv4_command = MagicMock()
+    mock_get_ipv4_command.return_value = "ipv4-results"
+
+    # Replace get_ipv4_command with mock
+    with patch("FeedCyberint.get_ipv4_command", mock_get_ipv4_command):
+        FeedCyberint.main()
+
+
+@patch("FeedCyberint.demisto")
+def test_main_get_file_sha256(mock_demisto, mock_client):
+    """Test main() with the 'cyberint-get-file-sha256' command."""
+    # Mock parameters and command
+    mock_demisto.params.return_value = {
+        "url": "https://example.com",
+        "access_token": {"password": "test-token"},
+        "insecure": False,
+        "proxy": False,
+    }
+    mock_demisto.command.return_value = "cyberint-get-file-sha256"
+    mock_demisto.args.return_value = {"arg1": "6a7b02c43837dcb8e40d271edb88d13d2e723c721a74931857aaef4853317789"}
+
+    # Mock get_file_sha256_command
+    mock_get_file_sha256_command = MagicMock()
+    mock_get_file_sha256_command.return_value = "file-sha256-results"
+
+    # Replace get_file_sha256_command with mock
+    with patch("FeedCyberint.get_file_sha256_command", mock_get_file_sha256_command):
         FeedCyberint.main()
 
 
