@@ -18,7 +18,6 @@ configuration:
   displaypassword: API Token
   hiddenusername: true
   required: false
-  section: Connect
 - name: api_version
   display: API Version
   required: true
@@ -28,24 +27,20 @@ configuration:
   options:
   - "2.0"
   - "2.1"
-  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
   required: false
-  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
-  section: Connect
   required: false
   section: Collect
 - name: fetch_type
   display: Fetch incidents from type
   defaultvalue: Threats
   type: 15
-  section: Collect
   options:
   - Alerts
   - Threats
@@ -58,7 +53,6 @@ configuration:
   type: 0
   section: Collect
   required: false
-  section: Collect
   advanced: true
 - name: fetch_threat_rank
   display: "Minimum risk score for importing incidents (0-10), where 0 is low risk and 10 is high risk. Relevant for API version 2.0."
@@ -66,12 +60,10 @@ configuration:
   type: 0
   section: Collect
   required: false
-  section: Collect
   advanced: true
 - name: fetch_severity
   display: Defines Alert severity to fetch.
   type: 16
-  section: Collect
   options:
   - High
   - Medium
@@ -82,7 +74,6 @@ configuration:
 - name: fetch_incidentStatus
   display: Define which Alerts should be fetched.
   type: 16
-  section: Collect
   defaultvalue: UNRESOLVED
   options:
   - RESOLVED
@@ -94,7 +85,6 @@ configuration:
 - name: fetch_threat_incident_statuses
   display: 'Define which Threats should be fetched.'
   type: 16
-  section: Collect
   defaultvalue: UNRESOLVED
   required: false
   options:
@@ -106,7 +96,6 @@ configuration:
 - name: fetch_limit
   display: 'Fetch limit: The maximum number of threats or alerts to fetch'
   type: 0
-  section: Collect
   required: false
   defaultvalue: '10'
   section: Collect
@@ -114,7 +103,6 @@ configuration:
 - name: fetch_site_ids
   display: Site IDs
   type: 0
-  section: Collect
   additionalinfo: Comma-separated list of site IDs to fetch incidents for. Leave blank to fetch all sites.
   required: false
   section: Collect
@@ -122,7 +110,6 @@ configuration:
 - name: block_site_ids
   display: Block Site IDs
   type: 0
-  section: Collect
   required: false
   additionalinfo: Comma-separated list of site IDs for where hashes should be blocked. If left blank all hashes will be blocked globally. If filled out with site ids all hashes will be no longer be blocked globally, they will now be blocked in the scope of those sites.
   section: Collect
@@ -130,21 +117,18 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  section: Connect
   required: false
   section: Connect
   advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
-  section: Connect
   required: false
   section: Connect
   advanced: true
 - display: API Token (Deprecated)
   name: token
   type: 4
-  section: Connect
   required: false
   additionalinfo: Use the "API Token (Recommended)" parameter instead.
   section: Connect
@@ -153,7 +137,6 @@ configuration:
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
-  section: Collect
   required: false
   section: Collect
   advanced: true
@@ -162,7 +145,6 @@ configuration:
   display: Incident Mirroring Direction
   name: mirror_direction
   type: 15
-  section: Collect
   required: false
   options:
   - None
@@ -175,7 +157,6 @@ configuration:
   display: Close Mirrored XSOAR Incident
   name: close_xsoar_incident
   type: 8
-  section: Collect
   required: false
   section: Collect
   advanced: true
