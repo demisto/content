@@ -1,7 +1,7 @@
 commonfields:
-  id: IdentifyAttachedEmail
+  id: IdentifyAttachedEmail-4fd841c
   version: -1
-name: IdentifyAttachedEmail
+name: IdentifyAttachedEmail-4fd841c
 script: ''
 type: python
 subtype: python3
