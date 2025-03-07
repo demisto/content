@@ -3,7 +3,6 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 from datetime import datetime
-import dateparser
 import time
 
 
@@ -264,8 +263,7 @@ def parse_event_time_to_date_time(event: dict = {}, event_time: str = "") -> dat
             event_date_time = datetime.strptime(event_time, DATE_FORMAT_WITHOUT_MILLISECOND)
         except Exception:
             raise e
-            
-        
+
     return event_date_time
 
 
@@ -419,7 +417,7 @@ def filtering_and_push_events(events: list[dict], next_hash: str, integration_co
     )
 
 
-def get_events_command(client: Client, integration_context: dict) -> dict:
+def get_events_command(client: Client, integration_context: dict[str, Any]) -> dict[str, Any]:
     next_fetch: dict[str, str] = integration_context.get("next_fetch", {})
     counter = EventCounter()
     try:

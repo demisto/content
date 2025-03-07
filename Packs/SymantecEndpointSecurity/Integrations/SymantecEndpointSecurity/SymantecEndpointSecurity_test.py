@@ -2,7 +2,6 @@ import pytest
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from pytest_mock import MockerFixture
 from SymantecEndpointSecurity import (
-    normalize_date_format,
     extract_events_suspected_duplicates,
     calculate_next_fetch,
     filter_duplicate_events,
