@@ -188,7 +188,7 @@ def calculate_next_fetch(
     next_hash: str,
     include_last_fetch_events: bool,
     last_integration_context: dict[str, str],
-) -> dict[str, str]:
+) -> dict[str, Any]:
     """
     Calculate and update the integration context for the next fetch operation.
 
