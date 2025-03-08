@@ -10,7 +10,6 @@ urllib3.disable_warnings()
 
 VENDOR = "workday"
 PRODUCT = "signon"
-API_VERSION = "v40.0"
 REQUEST_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # Old format for making requests
 EVENT_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"  # New format for processing events
 TIMEDELTA = 1
@@ -92,6 +91,7 @@ class Client(BaseClient):
         tenant_name: str,
         username: str,
         password: str,
+        api_version: str
     ):
         headers = {"content-type": "text/xml;charset=UTF-8"}
 
@@ -102,6 +102,7 @@ class Client(BaseClient):
         self.tenant_name = tenant_name
         self.username = escape(username)
         self.password = escape(password)
+        self.api_version = api_version
 
     def generate_workday_account_signons_body(
         self,
@@ -140,8 +141,7 @@ class Client(BaseClient):
                     </wsse:Security>
                 </soapenv:Header>
                 <soapenv:Body>
-                    <bsvc:Get_Workday_Account_Signons_Request xmlns:bsvc="urn:com.workday/bsvc" bsvc:version="v37.0">
-                        <!-- Optional: -->
+                    <bsvc:Get_Workday_Account_Signons_Request xmlns:bsvc="urn:com.workday/bsvc" bsvc:version="{self.api_version}">
                         <bsvc:Request_Criteria>
                             <!-- Optional: -->
                             <bsvc:From_DateTime>{from_time}</bsvc:From_DateTime>
@@ -158,8 +158,7 @@ class Client(BaseClient):
                     </bsvc:Get_Workday_Account_Signons_Request>
                 </soapenv:Body>
             </soapenv:Envelope>
-
-            """  # noqa:E501
+        """
 
     def generate_test_payload(self, from_time: str, to_time: str) -> str:
         return f"""
@@ -173,8 +172,7 @@ class Client(BaseClient):
                     </wsse:Security>
                 </soapenv:Header>
                 <soapenv:Body>
-                    <bsvc:Get_Workday_Account_Signons_Request xmlns:bsvc="urn:com.workday/bsvc" bsvc:version="v37.0">
-                        <!-- Optional: -->
+                    <bsvc:Get_Workday_Account_Signons_Request xmlns:bsvc="urn:com.workday/bsvc" bsvc:version="{self.api_version}">
                         <bsvc:Request_Criteria>
                             <!-- Optional: -->
                             <bsvc:From_DateTime>{from_time}</bsvc:From_DateTime>
@@ -502,7 +500,9 @@ def main() -> None:  # pragma: no cover
 
     if not base_url.startswith("https://"):
         raise ValueError("Invalid base URL. Should begin with https://")
-    url = f"{base_url}/ccx/service/{tenant_name}/Identity_Management/{API_VERSION}"
+
+    api_version = params.get("api_version", "v40.0")
+    url = f"{base_url}/ccx/service/{tenant_name}/Identity_Management/{api_version}"
 
     username = params.get("credentials", {}).get("identifier")
     password = params.get("credentials", {}).get("password")
@@ -520,6 +520,7 @@ def main() -> None:  # pragma: no cover
             password=password,
             verify_certificate=verify_certificate,
             proxy=proxy,
+            api_version=api_version
         )
 
         if command == "test-module":
