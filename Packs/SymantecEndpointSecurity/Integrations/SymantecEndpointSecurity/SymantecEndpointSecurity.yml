@@ -55,7 +55,7 @@ script:
     description: Reset Integration context. By default, resetting the integration context only resets the `next_fetch` field in the integration context.
     arguments:
     - name: delete_all
-      description: Whether delete all integration context, default, false
+      description: Whether delete all integration context, default, false.
       defaultValue: false
       auto: PREDEFINED
       predefined:
