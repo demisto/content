@@ -276,7 +276,7 @@ def extract_events_suspected_duplicates(events: list[dict]) -> list[str]:
     """
 
     # Find the maximum event time
-    latest_event_time = max(events, key=parse_event_time_to_date_time)["log_time"]
+    latest_event_time = parse_event_time_to_date_time(max(events, key=parse_event_time_to_date_time))
 
     # Filter all JSONs with the maximum event time
     filtered_events = filter(
@@ -320,7 +320,7 @@ def is_duplicate(
 
 
 def filter_duplicate_events(
-    events: list[dict[str, str]], integration_context: dict, counter: EventCounter
+    events: list[dict[str, str]], integration_context: dict
 ) -> list[dict[str, str]]:
     """
     Filter out duplicate events from the given list of events.
@@ -393,7 +393,7 @@ def get_events(client: Client, next_fetch: dict[str, str], counter: EventCounter
 def filtering_and_push_events(events: list[dict], next_hash: str, integration_context: dict, counter: EventCounter):
 
     counter.events = len(events)
-    filtered_events = filter_duplicate_events(events, integration_context, counter)
+    filtered_events = filter_duplicate_events(events, integration_context)
     counter.filtered_events = len(filtered_events)
 
     filtered_events.extend(integration_context.get("last_fetch_events", []))

@@ -27,25 +27,6 @@ def mock_client() -> Client:
 
 
 @pytest.mark.parametrize(
-    "date_str, expected_result",
-    [
-        ("2024-10-09T12:34:56.789Z", "2024-10-09T12:34:56Z"),
-        ("2024-10-09T12:34:56.789324959595959959595Z", "2024-10-09T12:34:56Z"),
-    ],
-)
-def test_normalize_date_format(date_str: str, expected_result: str):
-    """
-    Given:
-        - A date string with microseconds
-    When:
-        - The `normalize_date_format` function is called
-    Then:
-        - Ensure that return a date string without microseconds
-    """
-    assert normalize_date_format(date_str) == expected_result
-
-
-@pytest.mark.parametrize(
     "events, expected_results",
     [
         (
@@ -54,7 +35,7 @@ def test_normalize_date_format(date_str: str, expected_result: str):
                 {"uuid": "456", "log_time": "2024-10-09T12:34:56.789Z"},
                 {"uuid": "789", "log_time": "2024-10-09T12:34:55.789Z"},
             ],
-            ["123", "456"],
+            ["456"],
         )
     ],
 )
@@ -97,7 +78,14 @@ def test_extract_events_suspected_duplicates(
                     "time": "2024-10-09T12:34:55.789Z",
                 },
             ],
-            [],
+            [
+                {
+                    "uuid": "456",
+                    "log_time": "2024-10-09T12:34:56.789Z",
+                    "time": "2024-10-09T12:34:56.789Z",
+                    "_time": "2024-10-09T12:34:56.789Z"
+                }
+            ],
             id="Event time is equal to or less than last_event_time",
         ),
         pytest.param(
@@ -210,14 +198,12 @@ def test_calculate_next_fetch_last_latest_event_time_are_equal(
     Then:
         - Ensure that updated the 'integration_context' with new events in addition to the old ones, and the next hash
     """
-    mock_set_integration_context = mocker.patch(
-        "SymantecEndpointSecurity.set_integration_context"
-    )
-    calculate_next_fetch(
+
+    integration_context = calculate_next_fetch(
         filtered_events, next_hash, include_last_fetch_events, last_integration_context
     )
 
-    assert mock_set_integration_context.call_args[0][0] == expected_integration_context
+    assert integration_context == expected_integration_context
 
 
 def test_perform_long_running_loop_unauthorized_token(mocker: MockerFixture):
@@ -262,7 +248,7 @@ def test_perform_long_running_loop_next_pointing_not_available(mocker: MockerFix
     mocker.patch("SymantecEndpointSecurity.sleep_if_necessary")
     with pytest.raises(DemistoException, match="Failed to fetch logs from API"):
         perform_long_running_loop(mock_client())
-    assert mock_integration_context == {}
+    assert mock_integration_context == {'fetch_failure_count': 1}
 
 
 def test_test_module(mocker: MockerFixture):
