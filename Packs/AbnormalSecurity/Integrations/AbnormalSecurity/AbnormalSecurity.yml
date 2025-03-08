@@ -57,6 +57,12 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
+- display: Polling Lag Time (in minutes)
+  name: polling_lag
+  defaultvalue: "0"
+  type: 0
+  required: false
+  additionalinfo: Time in minutes to subtract from polling time window for data consistency
 description: Abnormal Security detects the whole spectrum of email attacks, from vendor email compromise and spear-phishing to unwanted email spam and graymail. To stop these advanced attacks, Abnormal leverages the industry’s most advanced behavioral data science to baseline known good behavior and detects anomalies.
 display: Abnormal Security
 name: Abnormal Security
