@@ -4,7 +4,7 @@ from CommonServerPython import *  # noqa: F401
 
 from typing import Any
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 import urllib3
@@ -97,9 +97,9 @@ class Client(BaseClient):
 
         return response
 
-    def get_details_of_a_threat_request(self, threat_id, subtenant=None):
+    def get_details_of_a_threat_request(self, threat_id, subtenant=None, page_size=None, page_number=None):
         headers = self._headers
-        params = assign_params(subtenant=subtenant)
+        params = assign_params(subtenant=subtenant, pageSize=page_size, pageNumber=page_number)
 
         response = self._http_request('get', f'threats/{threat_id}', params=params, headers=headers)
 
@@ -394,8 +394,10 @@ def get_a_list_of_threats_command(client, args):
 def get_details_of_a_threat_command(client, args):
     threat_id = str(args.get('threat_id', ''))
     subtenant = args.get('subtenant', None)
+    page_size = args.get('page_size', None)
+    page_number = args.get('page_number', None)
 
-    response = client.get_details_of_a_threat_request(threat_id, subtenant)
+    response = client.get_details_of_a_threat_request(threat_id, subtenant, page_size, page_number)
     headers = [
         'subject',
         'fromAddress',
@@ -756,10 +758,11 @@ def generate_threat_incidents(client, threats):
     incidents = []
     for threat in threats:
         threat_details = client.get_details_of_a_threat_request(threat["threatId"])
+        received_time = threat_details["messages"][0].get("receivedTime")
         incident = {
             "dbotMirrorId": str(threat["threatId"]),
             "name": "Threat",
-            "occurred": threat_details["messages"][0].get("receivedTime"),
+            "occurred": received_time[:26] if len(received_time) > 26 else received_time,
             "details": "Threat",
             "rawJSON": json.dumps(threat_details) if threat_details else {}
         }
@@ -771,9 +774,14 @@ def generate_abuse_campaign_incidents(client, campaigns):
     incidents = []
     for campaign in campaigns:
         campaign_details = client.get_details_of_an_abuse_mailbox_campaign_request(campaign["campaignId"])
-        incident = {"dbotMirrorId": str(campaign["campaignId"]), "name": "Abuse Campaign",
-                    "occurred": campaign_details["firstReported"], 'details': "Abuse Campaign",
-                    "rawJSON": json.dumps(campaign_details) if campaign_details else {}}
+        first_reported = campaign_details["firstReported"]
+        incident = {
+            "dbotMirrorId": str(campaign["campaignId"]),
+            "name": "Abuse Campaign",
+            "occurred": first_reported[:26] if len(first_reported) > 26 else first_reported,
+            'details': "Abuse Campaign",
+            "rawJSON": json.dumps(campaign_details) if campaign_details else {}
+        }
         incidents.append(incident)
     return incidents
 
@@ -796,7 +804,8 @@ def fetch_incidents(
         fetch_threats: bool,
         fetch_abuse_campaigns: bool,
         fetch_account_takeover_cases: bool,
-        max_incidents_to_fetch: Optional[int] = FETCH_LIMIT
+        max_incidents_to_fetch: Optional[int] = FETCH_LIMIT,
+        polling_lag: Optional[timedelta] = timedelta(minutes=0),
 ):
     """
     Fetch incidents from various sources (threats, abuse campaigns, and account takeovers).
@@ -806,6 +815,7 @@ def fetch_incidents(
     - last_run (Dict[str, Any]): Dictionary containing details about the last time incidents were fetched.
     - first_fetch_time (str): ISO formatted string indicating the first time from which to start fetching incidents.
     - max_incidents_to_fetch (int, optional): Maximum number of incidents to fetch. Defaults to FETCH_LIMIT.
+    - polling_lag (int, optional): Time in minutes to subtract from polling time window for data consistency. Defaults to 5.
 
     Returns:
     - Tuple[Dict[str, str], List[Dict]]: Tuple containing a dictionary with the `last_fetch` time and a list of fetched incidents.
@@ -814,6 +824,8 @@ def fetch_incidents(
     try:
         last_fetch = last_run.get("last_fetch", first_fetch_time)
         last_fetch_datetime = datetime.fromisoformat(last_fetch[:-1]).astimezone(timezone.utc)
+        # Apply polling lag to the last fetch time
+        last_fetch_datetime -= polling_lag
         last_fetch = last_fetch_datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
 
         current_datetime = datetime.utcnow().astimezone(timezone.utc)
@@ -944,6 +956,9 @@ def main():  # pragma: nocover
         elif command == 'fetch-incidents' and is_fetch:
             max_incidents_to_fetch = arg_to_number(params.get("max_fetch", FETCH_LIMIT))
             fetch_threats = params.get("fetch_threats", False)
+            # Get the polling lag time parameter
+            polling_lag_minutes = int(params.get('polling_lag', 5))
+            polling_lag_delta = timedelta(minutes=polling_lag_minutes)
             fetch_abuse_campaigns = params.get("fetch_abuse_campaigns", False)
             fetch_account_takeover_cases = params.get("fetch_account_takeover_cases", False)
             first_fetch_datetime = arg_to_datetime(arg=params.get("first_fetch"), arg_name="First fetch time", required=True)
@@ -958,7 +973,8 @@ def main():  # pragma: nocover
                 max_incidents_to_fetch=max_incidents_to_fetch,
                 fetch_threats=fetch_threats,
                 fetch_abuse_campaigns=fetch_abuse_campaigns,
-                fetch_account_takeover_cases=fetch_account_takeover_cases
+                fetch_account_takeover_cases=fetch_account_takeover_cases,
+                polling_lag=polling_lag_delta
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)

@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -9,8 +11,8 @@ class Client(BaseClient):
     def list_threats(self, params):
         return self._http_request('GET', params=params, url_suffix='threats')
 
-    def get_threat(self, threat_id):
-        return self._http_request('GET', url_suffix=f'threats/{threat_id}')
+    def get_threat(self, threat_id, params):
+        return self._http_request('GET', params=params, url_suffix=f'threats/{threat_id}')
 
 
 def format_messages(messages: list):
@@ -31,7 +33,7 @@ def format_messages(messages: list):
     return messages
 
 
-def get_events(client: Client, after: str):
+def get_events(client: Client, after: str, event_polling_lag: int):
     """Retrieves messages by time range & ordered by datetime
 
     Args:
@@ -44,6 +46,7 @@ def get_events(client: Client, after: str):
 
     """
     before = arg_to_datetime(arg='now', arg_name='before', required=True).strftime("%Y-%m-%dT%H:%M:%SZ")  # type: ignore
+    before -= timedelta(minutes=event_polling_lag)
     threats_ids = get_list_threats(client, after, before)
     messages = []
     if threats_ids:
@@ -67,7 +70,8 @@ def get_messages_by_datetime(client: Client, threat_id: str, after: str, before:
       list:  messages filtered by the time range.
     """
     messages = []
-    res = client.get_threat(threat_id)
+    params = assign_params(pageSize=1000)
+    res = client.get_threat(threat_id, params)
     for message in res.get('messages'):
         # messages are ordered from newest to oldest
         received_time = message.get('receivedTime')
@@ -110,21 +114,27 @@ def main():
     token = params['token']['password']
     verify = params['verify']
     proxy = params['proxy']
-    after = arg_to_datetime(
-        arg='1 minute').strftime("%Y-%m-%dT%H:%M:%SZ")  # type: ignore
-    client = Client(base_url='https://api.abnormalplatform.com/v1',
-                    verify=verify,
-                    proxy=proxy,
-                    headers={"Authorization": f"Bearer {token}"})
+    event_polling_lag = int(params.get('event_polling_lag', 0))
+    after = arg_to_datetime(arg='1 minute').strftime("%Y-%m-%dT%H:%M:%SZ")  # type: ignore
+
+    client = Client(
+        base_url='https://api.abnormalplatform.com/v1',
+        verify=verify,
+        proxy=proxy,
+        headers={"Authorization": f"Bearer {token}"},
+        timeout=60
+    )
 
     last_run = demisto.getLastRun().get('last_run')
     if last_run:
         after = last_run
+    after -= timedelta(minutes=event_polling_lag)
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     try:
-        threats, last_run = get_events(client, after)
+
+        threats, last_run = get_events(client, after, event_polling_lag)
         if command == 'test-module':
             return_results('ok')
 

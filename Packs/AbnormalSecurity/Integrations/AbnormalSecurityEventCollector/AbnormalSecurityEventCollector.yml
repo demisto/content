@@ -27,6 +27,12 @@ configuration:
   name: verify
   type: 8
   required: false
+- display: Event Collection Lag Time (in minutes)
+  name: event_polling_lag
+  defaultvalue: "0"
+  type: 0
+  required: false
+  additionalinfo: Time in minutes to subtract from event collection window for data consistency
 script:
   script: ""
   type: python
