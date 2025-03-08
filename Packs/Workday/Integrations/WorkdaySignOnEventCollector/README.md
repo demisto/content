@@ -4,16 +4,17 @@ This integration was integrated and tested with version v37.0 of Workday Sign On
 ## Configure Workday Sign On Event Collector in Cortex
 
 
-| **Parameter**                                     | **Description** | **Required** |
-|---------------------------------------------------| --- | --- |
-| Server URL (e.g., https://services1.myworkday.com) | API Endpoint of Workday server. Can be obtained from View API Clients report in Workday application. | True |
-| Tenant Name                                       | The name of the Workday Tenant. Can be obtained from View API Clients report in Workday application. | True |
-| Username                                          |  | True |
-| Password                                          |  | True |
-| Trust any certificate (not secure)                |  | False |
-| Use system proxy settings                         |  | False |
-| Max events per fetch                              | The maximum number of sign on events to retrieve. Large amount of events may cause performance issues. | False |
-| Events Fetch Interval                             |  | False |
+| **Parameter**                                      | **Description** | **Required** |
+|----------------------------------------------------| --- |--------------|
+| Server URL (e.g., https://services1.myworkday.com) | API Endpoint of Workday server. Can be obtained from View API Clients report in Workday application. | True         |
+| Tenant Name                                        | The name of the Workday Tenant. Can be obtained from View API Clients report in Workday application. | True         |
+| API Version                                        | Some tenants may be using different API versions. Check in your Workday tenant to determine the version to use. Default is v40.0. | False        |
+| Username                                           |  | True         |
+| Password                                           |  | True         |
+| Trust any certificate (not secure)                 |  | False        |
+| Use system proxy settings                          |  | False        |
+| Max events per fetch                               | The maximum number of sign on events to retrieve. Large amount of events may cause performance issues. | False        |
+| Events Fetch Interval                              |  | False        |
 
 
 ## Commands
