@@ -423,6 +423,7 @@ def get_user_command(client: MsGraphClient, args: dict):
     }
     return human_readable, outputs, user_data
 
+@suppress_errors_with_404_code
 def get_user_mfa_methods_command(client: MsGraphClient, args: dict):
     user = args.get('user')
     user_mfa_methods = client.get_user_mfa_methods(user)
