@@ -14,7 +14,7 @@ MAX_CHUNK_SIZE_TO_READ = 1024 * 1024 * 100  # 100 MB
 DATE_FORMAT_WITHOUT_MILLISECOND = "%Y-%m-%dT%H:%M:%SZ"
 DATE_FORMAT_WITH_MILLISECOND = "%Y-%m-%dT%H:%M:%S.%fZ"
 DELIMITER = b"\n"
-MAX_EVENTS_PER_PUSH_XSIAM = 10000
+MAX_EVENTS_PER_PUSH_XSIAM = 20000
 MAX_FETCH_FAILURES_ALLOWED = 5
 
 """
@@ -161,7 +161,7 @@ class Client(BaseClient):
             resp_type="response",
             headers=self.headers,
             stream=True,
-            ok_codes=[200, 201, 204],
+            ok_codes=[200, 201, 204]
         )
 
 
