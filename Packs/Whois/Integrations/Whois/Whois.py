@@ -8694,11 +8694,12 @@ def whois_command(reliability: str) -> List[CommandResults]:
         except (PywhoisError, WhoisEmptyResponse) as e:  # "DOMAIN NOT FOUND", "Invalid Domain Format", "Network Issues", "WHOIS Server Changes"
             demisto.debug(f"WHOIS lookup failed for {domain}: {e}")
 
-            execution_metrics = increment_metric(
-                execution_metrics=execution_metrics,
-                mapping=whois_exception_mapping,
-                caught_exception=type(e)
-            )
+            if should_error:
+                execution_metrics = increment_metric(
+                    execution_metrics=execution_metrics,
+                    mapping=whois_exception_mapping,
+                    caught_exception=type(e)
+                )
 
             output = ({
                 outputPaths['domain']: {
@@ -9087,11 +9088,12 @@ def whois_and_domain_command(command: str, reliability: str) -> list[CommandResu
         except (PywhoisError, WhoisEmptyResponse) as e:  # "DOMAIN NOT FOUND", "Invalid Domain Format", "Network Issues", "WHOIS Server Changes"
             demisto.debug(f"WHOIS lookup failed for {domain}: {e}")
 
-            execution_metrics = increment_metric(
-                execution_metrics=execution_metrics,
-                mapping=whois_exception_mapping,
-                caught_exception=type(e),
-            )
+            if should_error:
+                execution_metrics = increment_metric(
+                    execution_metrics=execution_metrics,
+                    mapping=whois_exception_mapping,
+                    caught_exception=type(e),
+                )
 
             output = {
                 outputPaths["domain"]: {
