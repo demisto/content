@@ -70,6 +70,7 @@ configuration:
   - F - Reliability cannot be judged
   type: 15
   required: false
+  section: Connect
 description: Use the Prisma Cloud Compute integration to fetch incidents from your Prisma Cloud Compute environment.
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
