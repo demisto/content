@@ -49,4 +49,4 @@ args:
 scripttarget: 0
 tests:
 - Generic Polling Test
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.8.1983910

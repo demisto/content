@@ -8,7 +8,7 @@ name: GetTasksWithSections
 script: '-'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.8.1983910
 tags:
 - Utility
 comment: Groups all tasks for a specific incident according to the task headers (titles).

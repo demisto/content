@@ -23,6 +23,6 @@ args:
   description: Maximum number of results to display.
   defaultValue: "100"
 scripttarget: 0
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.8.1983910
 tests:
 - No tests (auto formatted)
