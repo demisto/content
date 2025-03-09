@@ -6,19 +6,21 @@ BLACK_HTML_STYLE = "color:#555555;text-align:center;font-size:200%;"  # pragma: 
 
 def main():  # pragma: no cover
     try:
-        alert = demisto.context().get('Core', {}).get('OriginalAlert')
+        alert = demisto.context().get("Core", {}).get("OriginalAlert")
         if isinstance(alert, list):
             alert = alert[0]
-        event = alert.get('event')
-        regionName = event.get('region')
+        event = alert.get("event")
+        regionName = event.get("region")
 
         html = f"<h1 style='{BLACK_HTML_STYLE}'>{str(regionName)}</h1>"
 
-        return return_results({
-            'ContentsFormat': EntryFormat.HTML,
-            'Type': EntryType.NOTE,
-            'Contents': html,
-        })
+        return return_results(
+            {
+                "ContentsFormat": EntryFormat.HTML,
+                "Type": EntryType.NOTE,
+                "Contents": html,
+            }
+        )
     except Exception as e:
         return_error(f"An error occurred: {str(e)}")
 
