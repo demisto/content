@@ -5,6 +5,13 @@
         "CommonScripts",
         "Core",
         "FiltersAndTransformers",
+        "AWS-IAM",
+        "GCP-IAM",
+        "AWS-SecretsManager",
+        "Jira",
+        "MicrosoftTeams",
+        "Slack",
+        "ServiceNow",
         "rasterize"
     ],
     "update_core_packs_list": [
@@ -13,6 +20,13 @@
         "CommonScripts",
         "Core",
         "FiltersAndTransformers",
+        "AWS-IAM",
+        "GCP-IAM",
+        "AWS-SecretsManager",
+        "Jira",
+        "MicrosoftTeams",
+        "Slack",
+        "ServiceNow",
         "rasterize"
     ]
   }
