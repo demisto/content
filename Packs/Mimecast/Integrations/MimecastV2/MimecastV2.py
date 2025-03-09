@@ -2153,6 +2153,7 @@ def fetch_incidents():
         demisto.debug(f"{current_next_page=}")
         demisto.debug(f"{dedup_held_messages=}")
         next_page, next_dedup_held_messages, last_fetch_held_messages = fetch_held_messages(last_fetch_held_messages_date_time,
+                                                                                            last_fetch_held_messages,
                                                                                             current_fetch_held_message,
                                                                                             dedup_held_messages,
                                                                                             current_next_page,
@@ -2172,6 +2173,7 @@ def fetch_incidents():
 
 
 def fetch_held_messages(last_fetch_held_messages_date_time,
+                        last_fetch_held_messages,
                         current_fetch_held_message,
                         dedup_held_messages,
                         current_next_page,
