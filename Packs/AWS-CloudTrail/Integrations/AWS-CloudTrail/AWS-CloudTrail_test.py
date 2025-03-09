@@ -100,6 +100,7 @@ class CloudTrailClient:
         class Paginator:
             def paginate(self, **kwargs):
                 return [{"Events": [{"Username": "user"}]}]
+
         return Paginator()
 
 
@@ -115,7 +116,7 @@ class STSClient:
 
 
 def mock_boto3_client(service_name, *args, **kwargs):
-    if service_name == 'sts':
+    if service_name == "sts":
         return STSClient()
     return CloudTrailClient()
 
