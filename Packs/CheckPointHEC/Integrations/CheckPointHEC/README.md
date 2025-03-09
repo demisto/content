@@ -1,7 +1,8 @@
 The Best Way to Protect Enterprise Email & Collaboration from phishing, malware, account takeover, data loss, etc.
-This integration was integrated and tested with version 1.1.6 of CheckPointHEC
+This integration was integrated and tested with version 1.1.7 of CheckPointHEC
 
 ## Configure Check Point Harmony Email and Collaboration (HEC) in Cortex
+
 
 
 | **Parameter** | **Description** | **Required** |
@@ -12,15 +13,18 @@ This integration was integrated and tested with version 1.1.6 of CheckPointHEC
 | Client ID | The client ID of the Smart API or Check Point Infinity API. | True |
 | Client Secret | The client secret of the Smart API or Check Point Infinity API. | True |
 | First fetch time | The time range for the first fetch. The default is 1 hour. | False |
-| SaaS Application | Get incidents from the selected SaaS | False |
-| State | Get incidents with only the selected states | False |
-| Severity | Get incidents with only the selected severities | False |
-| Threat Type | Get incidents with only the selected types | False |
-| Maximum number of incidents per fetch | The maximum number of incidents to fetch per fetch. The default is 10. | False |
+| SaaS Application | Get incidents from the selected SaaS. | False |
+| State | Get incidents with only the selected states. | False |
+| Severity | Get incidents with only the selected severities. | False |
+| Threat Type | Get incidents with only the selected types. | False |
+| Maximum number of incidents per fetch | The maximum number of incidents to retrieve per fetch. | False |
 | Collect restore requests | Collect restore requests as incidents. | False |
+| Include denied requests | Denied restore requests will be in the results \(they are not by default\). | False |
+| Include accepted requests | Accepted restore requests will be in the results \(they are not by default\). | False |
 | Trust any certificate (not secure) | Trust server certificate. | False |
 | Use system proxy settings | Use system proxy settings. | False |
 | Incidents Fetch Interval | The interval in minutes to fetch incidents. The default is 1 minute. | False |
+
 
 
 
@@ -124,7 +128,7 @@ Retrieve specific email entity
 ### checkpointhec-get-scan-info
 
 ***
-Retrieve specific email scan with positive threats
+Retrieve specific email scan with positive threats.
 
 #### Base Command
 
@@ -135,16 +139,17 @@ Retrieve specific email scan with positive threats
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | entity | Scanned entity id. | Required | 
+| include_clean | Include clean scans. Possible values are: True, False. Default is False. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPointHEC.ScanResult.ap | unknown | Anti-phishing scan results | 
-| CheckPointHEC.ScanResult.dlp | unknown | Data Loss Prevention scan results | 
-| CheckPointHEC.ScanResult.clicktimeProtection | unknown | Click Time Protection scan results | 
-| CheckPointHEC.ScanResult.shadowIt | unknown | Shadow IT scan results | 
-| CheckPointHEC.ScanResult.av | unknown | Antivirus scan results | 
+| CheckPointHEC.ScanResult.ap | unknown | Anti-phishing scan results. | 
+| CheckPointHEC.ScanResult.dlp | unknown | Data Loss Prevention scan results. | 
+| CheckPointHEC.ScanResult.clicktimeProtection | unknown | Click Time Protection scan results. | 
+| CheckPointHEC.ScanResult.shadowIt | unknown | Shadow IT scan results. | 
+| CheckPointHEC.ScanResult.av | unknown | Antivirus scan results. | 
 
 ### checkpointhec-search-emails
 
@@ -1212,6 +1217,25 @@ Delete Avanan DLP exceptions.
 | exc_str_list | List of exception strings to delete. | Required | 
 | entity_type | Entity type. | Optional | 
 | entity_id | Entity id. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### checkpointhec-download-email
+
+***
+Download email file.
+
+#### Base Command
+
+`checkpointhec-download-email`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entity_id | Email entity id, currently available in the incident's mirror external id. | Required | 
+| original | Whether to download original email or with modifications. Possible values are: True, False. Default is False. | Optional | 
 
 #### Context Output
 
