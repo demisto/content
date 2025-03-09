@@ -25,7 +25,7 @@ outputs:
   type: string
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.8.1983910
 runas: DBotWeakRole
 fromversion: 6.0.0
 comment: 'Joins values from two lists by index according to a given format.'
