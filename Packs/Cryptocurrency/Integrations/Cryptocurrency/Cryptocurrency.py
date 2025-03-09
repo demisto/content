@@ -7,16 +7,16 @@ from typing import Dict, List
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-BITCOIN = 'bitcoin'
-INTEGRATION_NAME = 'Cryptocurrency'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+BITCOIN = "bitcoin"
+INTEGRATION_NAME = "Cryptocurrency"
 SCORE = {
-    'None': 0,
-    'Good': 1,
-    'Suspicious': 2,
-    'Bad': 3,
+    "None": 0,
+    "Good": 1,
+    "Suspicious": 2,
+    "Bad": 3,
 }
 
 
@@ -36,28 +36,30 @@ def get_bitcoin_reputation(addresses, reliability, reputation, score) -> List[Co
             dbot_score=dbot_score,
         )
         table_data = {
-            'Address': address,
-            'Cryptocurrency Address Type': BITCOIN,
-            'Reputation': reputation,
+            "Address": address,
+            "Cryptocurrency Address Type": BITCOIN,
+            "Reputation": reputation,
         }
-        table_name = f'{INTEGRATION_NAME} reputation for {address}'
+        table_name = f"{INTEGRATION_NAME} reputation for {address}"
         hr = tableToMarkdown(table_name, table_data)
 
-        command_results.append(CommandResults(
-            outputs_prefix='Cryptocurrency',
-            readable_output=hr,
-            outputs_key_field='Address',
-            indicator=crypto_context,
-        ))
+        command_results.append(
+            CommandResults(
+                outputs_prefix="Cryptocurrency",
+                readable_output=hr,
+                outputs_key_field="Address",
+                indicator=crypto_context,
+            )
+        )
     return command_results
 
 
 def crypto_reputation_command(args: Dict[str, str], reliability: str, reputation: str):
-    crypto_addresses = argToList(args.get('crypto', ''))
+    crypto_addresses = argToList(args.get("crypto", ""))
 
     # For cases the command was executed by a playbook/user and the addresses received are verified
     # Stripping the `bitcoin` prefix from the given addresses (if exists) then add it to match the convention.
-    if args.get('address_type') == BITCOIN:
+    if args.get("address_type") == BITCOIN:
         bitcoin_addresses = [f'bitcoin:{address.lstrip("bitcoin:")}' for address in crypto_addresses]
 
     else:
@@ -71,23 +73,23 @@ def crypto_reputation_command(args: Dict[str, str], reliability: str, reputation
 
 def main():
     params = demisto.params()
-    reliability = params['reliability']
-    reputation = params['reputation']
+    reliability = params["reliability"]
+    reputation = params["reputation"]
 
-    demisto.info(f'Command being called is {demisto.command()}')
+    demisto.info(f"Command being called is {demisto.command()}")
     try:
-        if demisto.command() == 'test-module':
-            return_results('ok')
+        if demisto.command() == "test-module":
+            return_results("ok")
 
-        elif demisto.command() == 'crypto':
+        elif demisto.command() == "crypto":
             return_results(crypto_reputation_command(demisto.args(), reliability, reputation))
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
