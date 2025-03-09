@@ -60,13 +60,13 @@ def initialize_commands() -> list:
     # ]
 
     commands = [
-        # Command(
-              # TODO need to be tested on xsiam
-        #     brand='Cortex Core - IR',
-        #     name='core-isolate-endpoint',
-        #     arg_mapping={'endpoint_id': 'agent_id'},
-        #     pre_command_check=None
-        # ),
+        Command(
+            # TODO need to be tested on xsiam
+            brand='Cortex Core - IR',
+            name='core-isolate-endpoint',
+            arg_mapping={'endpoint_id': 'agent_id'},
+            pre_command_check=None
+        ),
         # Command(
               # TODO to get credentials
         #     brand='Cybereason',
@@ -312,7 +312,8 @@ def main():
     try:
         # args = demisto.args()
         args = {
-            'agent_hostname': 'DC1ENV11ADC01,DC1ENV11ADC02,falcon-crowdstrike-sensor-centos7,Arts-MacBook-Pro,WIN10X64,example1'}
+            # 'agent_hostname': 'WIN10X64'}
+            'agent_hostname': 'DC1ENV11ADC01,DC1ENV11ADC02,falcon-crowdstrike-sensor-centos7,Arts-MacBook-Pro,example1'}
         agent_ids = argToList(args.get("agent_id", []))
         agent_ips = argToList(args.get("agent_ip", []))
         agent_hostnames = argToList(args.get("agent_hostname", []))
@@ -347,11 +348,11 @@ def main():
                 continue
 
             for command in commands:
-                demisto.debug(f'executing command {command.name} with {args=}')
                 if command.brand != args.get('agent_brand'):
                     demisto.debug(f'Skipping command {command.name} with {args=},'
                                   f'as its brand does not match the endpoint brand.')
                     continue
+                demisto.debug(f'executing command {command.name} with {args=}')
                 if command.pre_command_check and not command.pre_command_check(verbose=verbose,
                                                                                outputs=outputs,
                                                                                human_readable_outputs=human_readable_outputs,
