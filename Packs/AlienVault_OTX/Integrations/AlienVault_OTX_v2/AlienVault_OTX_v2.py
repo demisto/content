@@ -334,10 +334,7 @@ def reputation_with_handling_error(client, section, argument, sub_section=None):
         raise e
     except Exception as e:
         if not client.should_error and 'The command could not be execute:' in str(e):
-            return_warning(str(e))
-            if section == 'url':
-                return 404
-            return {}
+            return_warning(str(e), exit=True)
         raise e
 
         
