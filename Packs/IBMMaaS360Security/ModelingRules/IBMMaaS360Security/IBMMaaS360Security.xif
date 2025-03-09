@@ -30,7 +30,7 @@ alter
     xdm.target.user.first_name = First_Name,
     xdm.target.user.middle_name = Middle_Name,
     xdm.target.user.last_name = Last_Name,
-    xdm.event.description = coalesce(temp_deleted_description,temp_added_description,temp_added_deleted_description);
+    xdm.event.description = coalesce(temp_added_deleted_description,temp_deleted_description,temp_added_description);
 //Modeling Rules -> Admin login report
 filter source_log_type = "admin_login_report"
 | call ibm_maas360_map_common_event_fields
