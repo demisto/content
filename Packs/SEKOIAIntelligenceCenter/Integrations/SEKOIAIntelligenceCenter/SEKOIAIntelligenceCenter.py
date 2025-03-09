@@ -155,10 +155,10 @@ def extract_indicator_from_pattern(stix_object: dict) -> str:
         [ipv4-addr:value = '198.51.100.1/32'] => 198.51.100.1/32
         [ipv4-addr:value = '198.51.100.1/32' OR ipv4-addr:value = '203.0.113.33/32'] => 198.51.100.1/32
     """
-    if 'pattern' not in stix_object:
-        return stix_object['name']
+    if "pattern" not in stix_object:
+        return stix_object["name"]
 
-    pattern = PatternParser(stix_object['pattern'])
+    pattern = PatternParser(stix_object["pattern"])
     data = pattern.inspect()
 
     # item looks like [(['value'], '=', "'198.51.100.1/32'")]
@@ -243,11 +243,7 @@ def get_stix_object_reputation(stix_bundle: dict, stix_object: dict, is_unknown:
 
 
 def get_ip_indicator_reputation(
-    stix_object: dict,
-    reputation_score: int,
-    reliability_score: str,
-    tlp: str,
-    is_unknown: bool
+    stix_object: dict, reputation_score: int, reliability_score: str, tlp: str, is_unknown: bool
 ) -> CommandResults:
     """
     Return stix_object of type IP as indicator
@@ -258,7 +254,7 @@ def get_ip_indicator_reputation(
         integration_name=INTEGRATION_NAME,
         score=reputation_score,
         reliability=reliability_score,
-        message='No results found.' if is_unknown else None
+        message="No results found." if is_unknown else None,
     )
 
     indicator_value: str = extract_indicator_from_pattern(stix_object)
@@ -276,8 +272,9 @@ def get_ip_indicator_reputation(
     )
 
 
-def get_file_indicator_reputation(stix_object: dict, reputation_score: int, reliability_score: str,
-                                  tlp: str, is_unknown: bool) -> CommandResults:
+def get_file_indicator_reputation(
+    stix_object: dict, reputation_score: int, reliability_score: str, tlp: str, is_unknown: bool
+) -> CommandResults:
     """
     Return stix_object of type file as indicator
     """
@@ -285,7 +282,7 @@ def get_file_indicator_reputation(stix_object: dict, reputation_score: int, reli
     if is_unknown:
         return create_indicator_result_with_dbotscore_unknown(stix_object["name"], DBotScoreType.FILE, reliability_score)
 
-    hashes = extract_file_indicator_hashes(stix_object['pattern'])
+    hashes = extract_file_indicator_hashes(stix_object["pattern"])
 
     dbot_score = Common.DBotScore(
         indicator=hashes["md5"],
@@ -305,15 +302,13 @@ def get_file_indicator_reputation(stix_object: dict, reputation_score: int, reli
     )
 
     return CommandResults(
-        outputs_prefix="SEKOIAIntelligenceCenter.File",
-        outputs_key_field="name",
-        outputs=stix_object,
-        indicator=file
+        outputs_prefix="SEKOIAIntelligenceCenter.File", outputs_key_field="name", outputs=stix_object, indicator=file
     )
 
 
-def get_domain_indicator_reputation(stix_object: dict, reputation_score: int, reliability_score: str,
-                                    tlp: str, is_unknown: bool) -> CommandResults:
+def get_domain_indicator_reputation(
+    stix_object: dict, reputation_score: int, reliability_score: str, tlp: str, is_unknown: bool
+) -> CommandResults:
     """
     Return stix_object of type domain as indicator
     """
@@ -324,7 +319,7 @@ def get_domain_indicator_reputation(stix_object: dict, reputation_score: int, re
         integration_name=INTEGRATION_NAME,
         score=reputation_score,
         reliability=reliability_score,
-        message='No results found.' if is_unknown else None
+        message="No results found." if is_unknown else None,
     )
 
     domain_name = extract_indicator_from_pattern(stix_object)
@@ -342,9 +337,9 @@ def get_domain_indicator_reputation(stix_object: dict, reputation_score: int, re
     )
 
 
-def get_url_indicator_reputation(stix_object: dict, reputation_score: int,
-                                 reliability_score: str, tlp: str,
-                                 is_unknown: bool) -> CommandResults:
+def get_url_indicator_reputation(
+    stix_object: dict, reputation_score: int, reliability_score: str, tlp: str, is_unknown: bool
+) -> CommandResults:
     """
     Return stix_object of type url as indicator
     """
@@ -355,7 +350,7 @@ def get_url_indicator_reputation(stix_object: dict, reputation_score: int,
         integration_name=INTEGRATION_NAME,
         score=reputation_score,
         reliability=reliability_score,
-        message='No results found.' if is_unknown else None
+        message="No results found." if is_unknown else None,
     )
 
     url_addr = extract_indicator_from_pattern(stix_object)
@@ -374,8 +369,7 @@ def get_url_indicator_reputation(stix_object: dict, reputation_score: int,
 
 
 def get_email_indicator_reputation(
-    stix_object: dict, reputation_score: int, reliability_score: str,
-    tlp: str, is_unknown: bool
+    stix_object: dict, reputation_score: int, reliability_score: str, tlp: str, is_unknown: bool
 ) -> CommandResults | None:
     """
     Return stix_object of type email as indicator
@@ -386,7 +380,7 @@ def get_email_indicator_reputation(
         integration_name=INTEGRATION_NAME,
         score=reputation_score,
         reliability=reliability_score,
-        message='No results found.' if is_unknown else None
+        message="No results found." if is_unknown else None,
     )
 
     email_addr = extract_indicator_from_pattern(stix_object)
@@ -484,9 +478,11 @@ def extract_indicators(indicator: dict, indicator_context: dict) -> list:
         object_reputation = get_stix_object_reputation(stix_bundle={}, stix_object=stix_object, is_unknown=True)
 
         if object_reputation:
-            object_reputation.readable_output = tableToMarkdown(name=f'{INTEGRATION_NAME}:',
-                                                                t={indicator["type"]: indicator["value"], 'Result': 'Not found'},
-                                                                headers=[indicator["type"], 'Result'])
+            object_reputation.readable_output = tableToMarkdown(
+                name=f"{INTEGRATION_NAME}:",
+                t={indicator["type"]: indicator["value"], "Result": "Not found"},
+                headers=[indicator["type"], "Result"],
+            )
 
         return [object_reputation]
 
