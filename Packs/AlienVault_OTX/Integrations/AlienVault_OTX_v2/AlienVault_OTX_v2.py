@@ -73,12 +73,21 @@ class Client(BaseClient):
                                         url_suffix=suffix,
                                         params=params)
         except DemistoException as e:
+            demisto.debug(e)
             if hasattr(e.res, 'status_code'):
                 if e.res.status_code == 404:
                     result = 404
                 elif e.res.status_code == 400:
                     demisto.debug(f'{e.res.text} response received from server when trying to get api:{e.res.url}')
+                    if not self.should_error:
+                        return_warning(f'The command could not be execute: {argument} is invalid.', exit=True)
                     raise Exception(f'The command could not be execute: {argument} is invalid.')
+                elif e.res.status_code in (504, 502):
+                    demisto.debug(f"The status code is {e.res.status_code}")
+                    if not self.should_error:
+                        return_warning(e)
+                        result = {}
+                    raise e
                 else:
                     raise
             else:
@@ -325,18 +334,6 @@ def reputation_with_handling_error(client, section, argument, sub_section=None):
         if section == 'url':
             return 404
         return {}
-    except DemistoException as e:
-        demisto.debug(f"An error was raised {e=}")
-        if not client.should_error and ('504' in e.message or '502' in e.message):
-            return_warning(e.message)
-            if section == 'url':
-                return 404
-            return {}
-        raise e
-    except Exception as e:
-        if not client.should_error and 'The command could not be execute:' in str(e):
-            return_warning(str(e), exit=True)
-        raise e
 
         
 
