@@ -37,8 +37,17 @@ commonfields:
   version: -1
 name: isolate-endpoint
 outputs:
-- contextPath: IsolateEndpointResults
+- contextPath: IsolateEndpointResults.EndpointName
   description: The endpoint's hostname.
+  type: String
+- contextPath: IsolateEndpointResults.Results.Result
+  description: The results of the isolation.
+  type: String
+- contextPath: IsolateEndpointResults.Results.Brand
+  description: The used brand for the isolation.
+  type: String
+- contextPath: IsolateEndpointResults.Results.Message
+  description: An informative message for the isolation results.
   type: String
 script: '-'
 timeout: '0'

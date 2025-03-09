@@ -12,6 +12,7 @@ class Command:
         output_keys: List[str],
         args_mapping: dict,
         output_mapping: dict | Callable,
+        is_bang: bool = False,
         post_processing: Callable = None,
     ):
         """
@@ -27,6 +28,7 @@ class Command:
         self.output_keys = output_keys
         self.args_mapping = args_mapping
         self.output_mapping = output_mapping
+        self.is_bang = is_bang
         self.post_processing = post_processing
 
     def __repr__(self):
@@ -294,7 +296,14 @@ def initialize_commands(module_manager: ModuleManager) -> tuple[EndpointCommandR
             args_mapping={},
             output_mapping={},
             post_processing=cylance_filtering
-        )
+        ),
+        # Command(  # TODO this is a bang command
+        #     brand='Microsoft Defender Advanced Threat Protection',
+        #     name='endpoint',
+        #     output_keys=["Endpoint"],
+        #     output_mapping={},
+        #     args_mapping={'agent_hostname': 'agent_hostname'}
+        # )
     ]
 
     list_args_commands = [
@@ -489,6 +498,9 @@ def prepare_args(command: Command, endpoint_args: dict[str, Any]) -> dict[str, A
     for command_arg_key, endpoint_arg_key in command.args_mapping.items():
         if command_arg_value := endpoint_args.get(endpoint_arg_key):
             command_args[command_arg_key] = command_arg_value
+
+    if command.is_bang:
+        command_args['brand'] = command.brand
 
     return command_args
 

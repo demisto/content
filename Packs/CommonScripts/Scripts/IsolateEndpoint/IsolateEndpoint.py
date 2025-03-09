@@ -45,13 +45,6 @@ class Command:
 def initialize_commands() -> list:
     #     PreCommand(
     #         # TODO to add to get-endpoint-data
-    #         brand='FireEyeHX v2',
-    #         name='fireeye-hx-get-host-information',
-    #         arg_mapping={'agentId': 'agent_id', 'hostName': 'agent_hostname'},
-    #         post_cmd_name='fireeye-hx-host-containment',
-    #     ),
-    #     PreCommand(
-    #         # TODO to add to get-endpoint-data
     #         brand='Microsoft Defender Advanced Threat Protection',
     #         name='endpoint',
     #         arg_mapping={},
@@ -61,7 +54,7 @@ def initialize_commands() -> list:
 
     commands = [
         Command(
-            # TODO need to be tested on xsiam
+            # need to be tested on XSIAM
             brand='Cortex Core - IR',
             name='core-isolate-endpoint',
             arg_mapping={'endpoint_id': 'agent_id'},
@@ -84,20 +77,19 @@ def initialize_commands() -> list:
             brand='CrowdstrikeFalcon',
             name='cs-falcon-contain-host',
             arg_mapping={'ids': 'agent_id'},
-            pre_command_check=check_conditions_cs_falcon_contain_host,
+            pre_command_check=None,
         ),
-        # Command(
-              # TODO waiting for its pre-command
-        #     brand='FireEyeHX v2',
-        #     name='fireeye-hx-host-containment',
-        #     arg_mapping={'agentId': 'agent_id', 'hostName': 'agent_hostname'},  # command can have or agentId or hostName
-        #     pre_command_check=check_conditions_fireeye_hx_host_containment,
-        # ),
+        Command(
+            brand='FireEyeHX v2',
+            name='fireeye-hx-host-containment',
+            arg_mapping={'agentId': 'agent_id', 'hostName': 'agent_hostname'},  # command can use agentId or hostName
+            pre_command_check=None,
+        ),
         Command(
             brand='VMware Carbon Black EDR v2',
             name='cb-edr-quarantine-device',
             arg_mapping={'sensor_id': 'agent_id'},
-            pre_command_check=check_conditions_cb_edr_quarantine_device,
+            pre_command_check=None,
         ),
         # Command(
               # TODO waiting for its pre-command
@@ -114,8 +106,8 @@ def initialize_commands() -> list:
 
 
 class ModuleManager:
-    def __init__(self, brands_to_run: list[str]) -> None:
-        self.modules_context = demisto.getModules()
+    def __init__(self, modules: dict[str, Any], brands_to_run: list[str]) -> None:
+        self.modules_context = modules
         self._brands_to_run = brands_to_run
         self._enabled_brands = {
             module.get("brand")
@@ -137,10 +129,6 @@ class ModuleManager:
 """ PREPROCESS FUNCTIONS """
 
 
-def check_conditions_cb_edr_quarantine_device(verbose, outputs, human_readable_outputs, args, endpoint_data) -> bool:
-    return True
-
-
 def check_conditions_cybereason_isolate_machine(verbose, outputs, human_readable_outputs, args, endpoint_data):
     cybereason_is_probe_connected_command = Command(
         brand='Cybereason',
@@ -157,22 +145,6 @@ def check_conditions_cybereason_isolate_machine(verbose, outputs, human_readable
     except Exception as e:
         return False
 
-    return True
-
-
-def check_conditions_fireeye_hx_host_containment(verbose, outputs, human_readable_outputs, args, endpoint_data) -> bool:
-    pass
-
-
-def check_conditions_cs_falcon_contain_host(verbose, outputs, human_readable_outputs, args, endpoint_data) -> bool:
-    if not endpoint_data.get('Status', {}).get('Source', '') == 'CrowdstrikeFalcon':
-        create_message_to_context_and_hr(endpoint_data=args,
-                                         result='Fail',
-                                         brand='CrowdstrikeFalcon',
-                                         message=f'cs_falcon_contain_host command can not be executed.',
-                                         outputs=outputs,
-                                         human_readable_outputs=human_readable_outputs,
-                                         verbose=verbose)
     return True
 
 
@@ -237,15 +209,14 @@ def is_endpoint_isolatable(endpoint_data: dict, force: bool, server_os_list: lis
 def create_message_to_context_and_hr(endpoint_data, result, brand, message, outputs, human_readable_outputs, verbose):
     endpoint_name = endpoint_data.get('agent_hostname') or endpoint_data.get('agent_id') or endpoint_data.get('agent_ip')
     context = {
-        'endpoint_name': endpoint_name,
-        'results': {
-            'result': result,
-            'brand': brand,
-            'message': message
+        'EndpointName': endpoint_name,
+        'Results': {
+            'Result': result,
+            'Brand': brand,
+            'Message': message
         }
     }
     hr = {
-        'Status': result,
         'Result': result,
         'Entity': endpoint_name,
         'Message': message
@@ -256,14 +227,13 @@ def create_message_to_context_and_hr(endpoint_data, result, brand, message, outp
 
 
 def are_there_missing_args(arg_mapping: dict, args: dict) -> bool:
-    missing_keys = [key for key in arg_mapping.values() if key not in args]
-    if len(missing_keys) == len(arg_mapping):  # checks if all args are missing
-        return True
-    return False
+    if not arg_mapping:  # If there are no expected args, return False
+        return False
+    return all(args.get(key, "") == "" for key in arg_mapping.values())  # checks if *all* args are missing
 
 
 def map_args(arg_mapping: dict, args: dict) -> dict:
-    return {k: args[v] for k, v in arg_mapping.items()}
+    return {k: args.get(v, '') for k, v in arg_mapping.items()}
 
 
 def map_zipped_args(agent_ids, agent_ips, agent_hostnames):
@@ -295,13 +265,13 @@ def get_args_from_endpoint_data(endpoint_data: dict) -> dict:
     return args
 
 
-def structure_endpoints_data(get_endpoint_data_results: dict) -> list:
+def structure_endpoints_data(get_endpoint_data_results: dict | list | None) -> list:
     # demisto.debug(f'These are the get-endpoint-data results before structured: {get_endpoint_data_results=}')
     if get_endpoint_data_results:
         if not isinstance(get_endpoint_data_results, list):
             get_endpoint_data_results = [get_endpoint_data_results]
         if len(get_endpoint_data_results) > 1:
-            get_endpoint_data_results = get_endpoint_data_results[-1]
+            get_endpoint_data_results = [get_endpoint_data_results[-1]]
 
         # Ensure the result is a list and remove None values
         return [item for item in get_endpoint_data_results if item is not None]
@@ -310,10 +280,10 @@ def structure_endpoints_data(get_endpoint_data_results: dict) -> list:
 
 def main():
     try:
-        # args = demisto.args()
-        args = {
-            # 'agent_hostname': 'WIN10X64'}
-            'agent_hostname': 'DC1ENV11ADC01,DC1ENV11ADC02,falcon-crowdstrike-sensor-centos7,Arts-MacBook-Pro,example1'}
+        args = demisto.args()
+        # args = {
+        #     'agent_hostname': 'WIN10X64'}
+            # 'agent_hostname': 'DC1ENV11ADC01,DC1ENV11ADC02,falcon-crowdstrike-sensor-centos7,Arts-MacBook-Pro,example1'}
         agent_ids = argToList(args.get("agent_id", []))
         agent_ips = argToList(args.get("agent_ip", []))
         agent_hostnames = argToList(args.get("agent_hostname", []))
@@ -322,12 +292,12 @@ def main():
         verbose = True
         brands_to_run = argToList(args.get('brands', []))
         server_os_list = argToList(args.get('server_os', []))
-        module_manager = ModuleManager(brands_to_run)
+        module_manager = ModuleManager(demisto.getModules(), brands_to_run)
         commands = initialize_commands()
         zipped_args = map_zipped_args(agent_ids, agent_ips, agent_hostnames)
         demisto.debug(f'zipped_args={zipped_args}')
 
-        endpoint_data_results = structure_endpoints_data(execute_command(command="get-endpoint-data", args=args))
+        endpoint_data_results = structure_endpoints_data(execute_command(command="get-endpoint-data-modified", args=args)) #todo to change name back
 
         demisto.debug(f'these are the results from get_endpoint_data_results execute_command {endpoint_data_results}')
 
