@@ -14,14 +14,14 @@ alter
  filter source_log_type = "admin_changes_audit"
 | call ibm_maas360_map_common_event_fields
 | alter
-    Is_Added = if(len(Roles_Added) = 0 , "N/A", Roles_Added),
-    Is_Deleted = if(len(Roles_Deleted) = 0 , "N/A", Roles_Deleted)
+    is_added = if(len(Roles_Added) = 0 , "N/A", Roles_Added),
+    is_deleted = if(len(Roles_Deleted) = 0 , "N/A", Roles_Deleted)
 | alter
-    Temp_Added_Description = if(Is_Added != "N/A",concat("The user was added to role '",Is_Added,"'"), "N/A"),
-    Temp_Description_Deleted = if(Is_Deleted != "N/A",concat("The user was removed from role '", Is_Deleted,"'"),"N/A"),
-    Temp_NA_Description = if(Is_Added = "N/A" and Is_Deleted = "N/A", "N/A")
+    temp_added_description = if(is_added != "N/A",concat("The user was added to role '",is_added,"'"), "N/A"),
+    temp_deleted_description = if(is_deleted != "N/A",concat("The user was removed from role '", is_deleted,"'"),"N/A"),
+    temp_na_description = if(is_added = "N/A" and is_deleted = "N/A", "N/A")
 | alter     
-    Temp_Added_Deleted_Description = if(Is_Added != "N/A" and Is_Deleted != "N/A", concat("The user was added to a role '", Is_Added , "' and ", " was removed from '",Is_Deleted,"'" ), Is_Added = "N/A" and Is_Deleted != "N/A", Temp_Description_Deleted , Is_Added != "N/A" and Is_Deleted = "N/A", Temp_Added_Description , Is_Added = "N/A" and Is_Deleted = "N/A",Temp_NA_Description )
+    temp_added_deleted_description = if(is_added != "N/A" and is_deleted != "N/A", concat("The user was added to a role '", is_added , "' and ", "was removed from '",is_deleted,"'" ), is_added = "N/A" and is_deleted != "N/A", temp_deleted_description , is_added != "N/A" and is_deleted = "N/A", temp_added_description , is_added = "N/A" and is_deleted = "N/A",temp_na_description )
 | alter 
     xdm.source.user.username = Performed_By,
     xdm.event.operation = Operation_Type,
@@ -32,7 +32,7 @@ alter
     xdm.target.user.first_name = First_Name,
     xdm.target.user.middle_name = Middle_Name,
     xdm.target.user.last_name = Last_Name,
-    xdm.event.description = Temp_Added_Deleted_Description;
+    xdm.event.description = temp_added_deleted_description;
 //Modeling Rules -> Admin login report
 filter source_log_type = "admin_login_report"
 | call ibm_maas360_map_common_event_fields
