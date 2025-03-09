@@ -145,7 +145,7 @@ Send feedback to reporters of incident about whether the reported email was safe
 | --- | --- | --- |
 | incident_id | The ID of the Hoxhunt incident for which SOC feedback will be sent. | Required | 
 | custom_message | A custom message to include with the SOC feedback. | Required | 
-| threat_feedback_reported_at_limit | Datetime limit as a iso string (e.g. "2024-10-30T08:37:42.359Z"). | Required | 
+| threat_feedback_reported_at_limit | Datetime limit. Accepts (&lt;number&gt; &lt;time unit&gt;), e.g "7 days", "one month" or a iso string (e.g. "2024-10-30T08:37:42.359Z") | Required | 
 
 #### Context Output
 

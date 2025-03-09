@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Any
 from unittest.mock import MagicMock
+from freezegun import freeze_time
 
 import pytest
 from HoxhuntV2 import *
@@ -735,3 +736,59 @@ def test_commands(
     else:
         output = command_function(mock_client, args, params={})
         assert output == expected_output
+
+
+@pytest.mark.parametrize(
+    "test_date, expected_api_date, should_raise",
+    [
+        # ISO format - should pass through unchanged
+        ("2025-02-25T13:41:10.382Z", "2025-02-25T13:41:10.382Z", False),
+        # Relative date - should convert to ISO
+        ("1 hour", "2024-01-05T11:00:00.000Z", False),
+        # Relative date - should convert to ISO
+        ("2 days", "2024-01-03T12:00:00.000Z", False),
+        # Relative date - should convert to ISO
+        ("6 months", "2023-07-05T12:00:00.000Z", False),
+        # Relative date - should convert to ISO
+        ("2 years", "2022-01-05T12:00:00.000Z", False),
+        # Timezone aware ISO format - should convert to UTC
+        (
+            "2025-02-25T15:41:10+02:00",  # Helsinki time (UTC+2)
+            "2025-02-25T13:41:10.000Z",  # Same time in UTC
+            False,
+        ),
+        # Invalid date - should raise ValueError
+        (
+            "Skipidi duu",  # Invalid date
+            None,
+            True,
+        ),
+    ],
+)
+@freeze_time("2024-01-05T12:00:00Z")  # Frozen time in UTC
+def test_send_incident_soc_feedback_date_parsing(mock_client, mocker, test_date, expected_api_date, should_raise):
+    """
+    Given
+        Different formats of threat_feedback_reported_at_limit dates with various timezone specifications
+    When
+        Calling hoxhunt_send_incident_soc_feedback_command
+    Then
+        - ISO dates should pass through unchanged if already in UTC
+        - Relative dates should be converted to ISO
+        - Timezone-aware dates should be converted to UTC
+        - Invalid timezones should raise ValueError
+    """
+    args = {"incident_id": "inc123", "custom_message": "Test message", "threat_feedback_reported_at_limit": test_date}
+
+    mock_result = GqlResult(data={})
+    mocker.patch.object(mock_client, "send_incident_soc_feedback", return_value=mock_result)
+    mocker.patch("HoxhuntV2.create_output", side_effect=lambda results, *_: results)
+
+    if should_raise:
+        with pytest.raises(ValueError):
+            hoxhunt_send_incident_soc_feedback_command(mock_client, args, {})
+    else:
+        result = hoxhunt_send_incident_soc_feedback_command(mock_client, args, {})
+
+        mock_client.send_incident_soc_feedback.assert_called_once_with("inc123", "Test message", expected_api_date)
+        assert result == {"_id": "inc123", "custom_message": "Test message", "limit date": test_date}
