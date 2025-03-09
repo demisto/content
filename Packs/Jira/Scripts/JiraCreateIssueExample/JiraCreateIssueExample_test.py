@@ -3,11 +3,7 @@ import pytest
 from typing import List, Any, Dict
 
 
-@pytest.mark.parametrize("due_date", [
-    ("2022-01-01"),
-    ("2023-01-31"),
-    ("2024-02-29")
-])
+@pytest.mark.parametrize("due_date", [("2022-01-01"), ("2023-01-31"), ("2024-02-29")])
 def test_validate_date_field_data_remains(due_date: str):
     """
     Given:
@@ -27,11 +23,7 @@ def test_validate_date_field_data_remains(due_date: str):
     validate_date_field(due_date)
 
 
-@pytest.mark.parametrize("due_date", [
-    ("2022-31-31"),
-    ("202-51-XY"),
-    ("ABC")
-])
+@pytest.mark.parametrize("due_date", [("2022-31-31"), ("202-51-XY"), ("ABC")])
 def test_validate_date_field_format(due_date: str):
     """
     Given:
@@ -51,10 +43,7 @@ def test_validate_date_field_format(due_date: str):
         raise validate_date_field(due_date)
 
 
-@pytest.mark.parametrize("due_date", [
-    ("2022-12-12T13:00:00"),
-    ("2022-12-12Z12")
-])
+@pytest.mark.parametrize("due_date", [("2022-12-12T13:00:00"), ("2022-12-12Z12")])
 def test_validate_date_field_time_data_doesnt_match(due_date: str):
     """
     Given:
@@ -73,15 +62,18 @@ def test_validate_date_field_time_data_doesnt_match(due_date: str):
         raise validate_date_field(due_date)
 
 
-@pytest.mark.parametrize("custom_fields, expected", [
-    (["customfield_10096=test"], {"customfield_10096": "test"}),
-    (["customfield_10096=test", "customfield_10040=100"], {"customfield_10096": "test", "customfield_10040": 100}),
-    (["customfield_10096=test", "customfield_10040=0100"], {"customfield_10096": "test", "customfield_10040": "0100"}),
-    (["customfield_10096=test", "customfield_10040=A100"], {"customfield_10096": "test", "customfield_10040": "A100"}),
-    (["customfield_10096:test", "customfield_10040=A100"], {"customfield_10040": "A100"}),
-    (["customfield_10096==test", "customfield_10040=A100"], {"customfield_10040": "A100"}),
-    ([], {}),
-])
+@pytest.mark.parametrize(
+    "custom_fields, expected",
+    [
+        (["customfield_10096=test"], {"customfield_10096": "test"}),
+        (["customfield_10096=test", "customfield_10040=100"], {"customfield_10096": "test", "customfield_10040": 100}),
+        (["customfield_10096=test", "customfield_10040=0100"], {"customfield_10096": "test", "customfield_10040": "0100"}),
+        (["customfield_10096=test", "customfield_10040=A100"], {"customfield_10096": "test", "customfield_10040": "A100"}),
+        (["customfield_10096:test", "customfield_10040=A100"], {"customfield_10040": "A100"}),
+        (["customfield_10096==test", "customfield_10040=A100"], {"customfield_10040": "A100"}),
+        ([], {}),
+    ],
+)
 def test_parse_custom_fields(custom_fields: List[str], expected: Dict[str, Any]):
     """
     Given:
@@ -113,18 +105,21 @@ def test_parse_custom_fields(custom_fields: List[str], expected: Dict[str, Any])
     assert actual == expected
 
 
-@pytest.mark.parametrize("args, custom_fields, expected", [
-    (
-        {"arg1": "val1", "arg2": 1},
-        {"customfield_10096": "test", "customfield_10040": 100},
-        {"arg1": "val1", "arg2": 1, "issueJson": {"fields": {"customfield_10096": "test", "customfield_10040": 100}}}
-    ),
-    (
-        {},
-        {"customfield_10096": "test", "customfield_10040": 100},
-        {"issueJson": {"fields": {"customfield_10096": "test", "customfield_10040": 100}}}
-    )
-])
+@pytest.mark.parametrize(
+    "args, custom_fields, expected",
+    [
+        (
+            {"arg1": "val1", "arg2": 1},
+            {"customfield_10096": "test", "customfield_10040": 100},
+            {"arg1": "val1", "arg2": 1, "issueJson": {"fields": {"customfield_10096": "test", "customfield_10040": 100}}},
+        ),
+        (
+            {},
+            {"customfield_10096": "test", "customfield_10040": 100},
+            {"issueJson": {"fields": {"customfield_10096": "test", "customfield_10040": 100}}},
+        ),
+    ],
+)
 def test_add_custom_fields(args: Dict[str, Any], custom_fields: Dict[str, Any], expected):
     """
     Given:
