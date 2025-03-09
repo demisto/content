@@ -864,7 +864,7 @@ script:
     - contextPath: InfoFile.Size
       description: Report size.
     - contextPath: InfoFile.Type
-      description: Report type e.g. "PDF".
+      description: Report type, e.g., "PDF".
     - contextPath: InfoFile.Info
       description: Basic info about the report.
   - arguments:
