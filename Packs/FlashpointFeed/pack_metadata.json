@@ -2,7 +2,7 @@
     "name": "FlashpointFeed",
     "description": "Ingest indicator feeds from Flashpoint.",
     "support": "partner",
-    "currentVersion": "2.0.4",
+    "currentVersion": "2.0.5",
     "author": "Flashpoint",
     "url": "https://flashpoint.my.site.com/helpcenter/s/",
     "email": "support@flashpoint-intel.com",
