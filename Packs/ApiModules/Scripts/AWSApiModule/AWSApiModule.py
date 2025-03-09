@@ -6,7 +6,7 @@ from botocore.config import Config
 STS_ENDPOINTS = {
     "us-gov-west-1": "https://sts.us-gov-west-1.amazonaws.com",
     "us-gov-east-1": "https://sts.us-gov-east-1.amazonaws.com",
-}  # See: https://docs.aws.amazon.com/general/latest/gr/sts.html
+}  #  See: https://docs.aws.amazon.com/general/latest/gr/sts.html
 
 
 def validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id, aws_secret_access_key):
