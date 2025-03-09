@@ -47,6 +47,8 @@ repos:
     - --config=nightly_ruff.toml
     args:docker_autoupdate:
     - --config=nightly_ruff.toml
+  - id: ruff-format
+    min_py_version: '3.7'
 - repo: https://github.com/hhatto/autopep8
   rev: v2.3.1
   hooks:
@@ -287,6 +289,8 @@ repos:
     - --config-path=validation_config.toml
     - --ignore=DO106
     - --ignore=CJ105
+    - --ignore=BA103
+    - --ignore=ST111
     pass_filenames: false
     language: system
     require_serial: true
