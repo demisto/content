@@ -85,9 +85,10 @@ class Client(BaseClient):
                 elif e.res.status_code in (504, 502):
                     demisto.debug(f"The status code is {e.res.status_code}")
                     if not self.should_error:
-                        return_warning(e)
+                        return_warning(e.message)
                         result = {}
-                    raise e
+                    else:
+                        raise e
                 else:
                     raise
             else:
