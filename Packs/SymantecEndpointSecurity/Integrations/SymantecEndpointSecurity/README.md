@@ -59,3 +59,8 @@ When using the `delete_all=true` argument, the entire `integration_context` is d
 #### Context Output
 
 There is no context output for this command.
+
+
+### Troubleshooting
+In case where the integration has been disabled for an extended period, it is recommended to run the command `symantec-ses-reset-integration-context` without the `delete_all` argument. This will ensure that the `next` parameter stored in the `integration_context` is cleared,  
+This means that the fetch process will run without the `next` parameter and retrieve all available events from the stream. However, events will still be filtered based on the last retrieved event timestamp.

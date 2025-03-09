@@ -445,7 +445,6 @@ def get_events_command(client: Client, integration_context: dict[str, Any]) -> d
     except Exception:
         set_integration_context(integration_context)
         raise
-        
 
     return integration_context
 
