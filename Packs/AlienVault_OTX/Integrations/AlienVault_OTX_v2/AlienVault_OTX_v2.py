@@ -336,8 +336,6 @@ def reputation_with_handling_error(client, section, argument, sub_section=None):
             return 404
         return {}
 
-        
-
 
 ''' COMMANDS '''
 
