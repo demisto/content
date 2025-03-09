@@ -1702,4 +1702,5 @@ fromversion: 6.6.0
 contentitemexportablefields:
   contentitemfields: {}
 marketplaces:
-  - marketplacev2
+- marketplacev2
+- platform
