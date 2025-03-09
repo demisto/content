@@ -1564,7 +1564,8 @@
         {
             "playbookID": "ContentPackInstaller_Test",
             "integrations": "Core REST API",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "timeout": 500
         },
         {
             "playbookID": "Default - Test",
@@ -3768,7 +3769,8 @@
                 "Core REST API"
             ],
             "playbookID": "FeedZoom_Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "timeout": 500
         },
         {
             "playbookID": "PCAP Analysis Test",
@@ -5841,6 +5843,7 @@
         }
     ],
     "skipped_tests": {
+        "Tanium Threat Response V2 Test": "The creds were expired, opened a ticket CRTX-155635",
         "ExabeamDataLake-test": "The credentials were expired, can't restore CRTX-149225",
         "Okta IAM - Test Playbook": "Credentials issue CRTX-116483",
         "ThreatCrowd - Test": "The pack is deprecated",
