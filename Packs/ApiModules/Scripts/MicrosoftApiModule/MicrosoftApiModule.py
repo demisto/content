@@ -35,7 +35,7 @@ AUTHORIZATION_CODE = 'authorization_code'
 REFRESH_TOKEN = 'refresh_token'  # guardrails-disable-line
 DEVICE_CODE = 'urn:ietf:params:oauth:grant-type:device_code'
 REGEX_SEARCH_URL = r'(?P<url>https?://[^\s]+)'
-REGEX_SEARCH_ERROR_DESC = r"^.*?:\s(?P<desc>.*?\.)"
+REGEX_SEARCH_ERROR_DESC = r"^[^:]+:\s(?P<desc>.*?)(?:\s*Trace ID:| Correlation ID:| Timestamp:|$)"
 SESSION_STATE = 'session_state'
 
 # Deprecated, prefer using AZURE_CLOUDS
