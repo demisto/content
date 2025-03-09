@@ -442,6 +442,10 @@ def get_events_command(client: Client, integration_context: dict[str, Any]) -> d
             if e.res.status_code == 410:
                 raise NextPointingNotAvailable
         raise
+    except Exception:
+        set_integration_context(integration_context)
+        raise
+        
 
     return integration_context
 

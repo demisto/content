@@ -41,6 +41,11 @@ For more information on obtaining *OAuth Credentials*, refer to [this documentat
 ***
 Reset Integration context. By default, resetting the integration context only resets the `next_fetch` field in the integration context.
 
+**Note:**
+By default, resetting the integration context only resets the `next_fetch` field in the integration context,  
+This means that the next fetch call will be performed without the `next` parameter, but events will still be filtered, preventing duplicate events from being ingested.  
+
+When using the `delete_all=true` argument, the entire `integration_context` is deleted. This means that the API call will be performed without the `next` parameter, and duplicate events may be ingested into the system.
 #### Base Command
 
 `symantec-ses-reset-integration-context`
