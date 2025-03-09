@@ -14,35 +14,33 @@ def convert_to_table(context_results: str) -> CommandResults:
     comment_entries = json.loads(context_results)
 
     md = tableToMarkdown(
-        name='',
+        name="",
         t=comment_entries,
         headers=list(comment_entries.keys()),
         removeNull=True,
         sort_headers=False,
         headerTransform=pascalToSpace,
-        is_auto_json_transform=True
+        is_auto_json_transform=True,
     )
 
-    return CommandResults(
-        readable_output=md
-    )
+    return CommandResults(readable_output=md)
 
 
 def main():  # pragma: no cover
     try:
         if context := dict_safe_get(
             demisto.callingContext,
-            ['context', 'Incidents', 0, 'CustomFields', 'crowdstrikefalconenrichments'],
+            ["context", "Incidents", 0, "CustomFields", "crowdstrikefalconenrichments"],
             {},
         ):
             return_results(convert_to_table(context))
         else:
-            return CommandResults(readable_output='No data to present')
+            return CommandResults(readable_output="No data to present")
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(str(e))
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
