@@ -158,6 +158,7 @@ FORMAT_IPv4 = [
     ('http://142.42.1.1:8080/', 'http://142.42.1.1:8080/'),  # disable-secrets-detection
     ('http://142.42.1.1:8080', 'http://142.42.1.1:8080'),  # disable-secrets-detection
     ('http://223.255.255.254', 'http://223.255.255.254'),  # disable-secrets-detection
+    ('https://86834311/test', 'https://5.44.252.135/test'),  # disable-secrets-detection
 ]
 
 FORMAT_IPv6 = [
