@@ -12,7 +12,6 @@ import itertools
 
 class Brands(Enum):
     TIM = "TIM"  # Threat Intelligence Module
-    VIRUS_TOTAL_V3 = "VirusTotal (API v3)"  # VirusTotal (API v3) (Partner Contribution)
     WILDFIRE_V2 = "WildFire-v2"  # Palo Alto Networks WildFire v2
     CORE_IR = "Cortex Core - IR"  # Core - Investigation & Response
 
@@ -24,16 +23,10 @@ class Brands(Enum):
 class ContextPaths(Enum):
     DBOT_SCORE = Common.DBotScore.CONTEXT_PATH
     FILE = Common.File.CONTEXT_PATH
-    WILDFIRE_V2_REPORT = (
-        "WildFire.Report(val.SHA256 && val.SHA256 == obj.SHA256 || "
-        "val.MD5 && val.MD5 == obj.MD5 || val.URL && val.URL == obj.URL)"
-    )
     WILDFIRE_V2_VERDICT = "WildFire.Verdicts(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5)"
     CORE_IR_HASH_ANALYTICS = "Core.AnalyticsPrevalence.Hash"
     VIRUS_TOTAL_FILE = "VirusTotal.File(val.id && val.id == obj.id)"
 
-
-VIRUS_TOTAL_MALICIOUS_DETECTION_THRESHOLD = 5
 
 """ COMMAND CLASS """
 
@@ -63,12 +56,7 @@ class Command:
             bool: True if the command brand has an enabled instance. Otherwise, False.
         """
         enabled_brands = {module.get("brand") for module in modules.values() if module.get("state") == "active"}
-
-        if self.brand and self.brand.value not in enabled_brands:
-            demisto.debug(f"Skipping command '{self.name}'. The brand '{self.brand}' has no enabled instance.")
-            return False
-
-        return True
+        return bool(self.brand and self.brand.value in enabled_brands)
 
     def prepare_human_readable(self, human_readable: str, is_error: bool = False) -> CommandResults:
         """
@@ -100,7 +88,7 @@ class Command:
         Returns:
             tuple[list[dict], list[CommandResults]]: A tuple of entry context dictionaries and human-readable CommandResults.
         """
-        demisto.debug(f"Stating to execute command: {self}")
+        demisto.debug(f"Stating to execute command: {self}.")
         execution_results = demisto.executeCommand(self.name, self.args)
 
         if not execution_results:
@@ -112,7 +100,7 @@ class Command:
         entry_context: list[dict] = []
         readable_command_results: list[CommandResults] = []
 
-        demisto.debug(f"Parsing execution response of command: {self}")
+        demisto.debug(f"Parsing execution response of command: {self}.")
 
         for result in execution_results:
 
@@ -129,7 +117,7 @@ class Command:
                 else:
                     entry_context.append(entry_context_item)
 
-        demisto.debug(f"Finished parsing execution response of command: {self}")
+        demisto.debug(f"Finished parsing execution response of command: {self}.")
 
         return entry_context, readable_command_results
 
@@ -150,7 +138,7 @@ class Command:
         return f"!{self.name} {' '.join(formatted_args)}"
 
     def __str__(self) -> str:
-        """Formatted string representation for human-readable output"""
+        """Formatted string representation for human-readable output and logging"""
         return self.as_formatted_string
 
     def __repr__(self) -> str:
@@ -211,37 +199,7 @@ def get_from_context(entry_context_item: dict, context_path: ContextPaths) -> li
     return value if isinstance(value, list) else [value]
 
 
-def get_file_and_dbot_scores_from_context(entry_context: list[dict], brand: Brands | None = None) -> dict:
-    """
-    Gets the `File` indicator and `DBotScore` objects from the entry context, if present.
-    Since the `file_hash` script argument is not a list, only one `File` indicator object is retrieved.
-    However, since the `enrichment_brand` argument can accept multiple values, there could be several `DBotScore` objects.
-
-    Args:
-        entry_context (list): List of entry context items in the command response.
-        brand (Brands | None): Optional source brand to be added under the `Source` key in the `DBotScore` dictionaries.
-
-    Returns:
-        dict: Context output dictionary with the `File` indicator and `DBotScore` objects, if found.
-    """
-    context_output = {}
-
-    for context_item in entry_context:
-        if files := get_from_context(context_item, ContextPaths.FILE):
-            context_output.update(files[0])
-
-        if dbot_scores := get_from_context(context_item, ContextPaths.DBOT_SCORE):
-            if "DBotScore" not in context_output:
-                context_output["DBotScore"] = []
-
-            for dbot_score in dbot_scores:
-                dbot_score_brand = brand or dbot_score.get("Vendor", "Unknown")
-                context_output["DBotScore"].append(add_source_brand_to_values(dbot_score, brand=dbot_score_brand))
-
-    return context_output
-
-
-def flatten_list(nested_list: list) -> list:
+def flatten_list(nested_list: list[Any]) -> list[Any]:
     """
     Flattens a nested list of lits.
 
@@ -316,11 +274,12 @@ def merge_context_outputs(per_command_context: dict[str, Any]) -> dict[str, Any]
             else:
                 target[key] = value
 
-    merged_file_context: dict[str, Any] = {}
-    for context in per_command_context.values():
-        recursive_merge(merged_file_context, context)
+    merged_context_output: dict[str, Any] = {}
+    for command_name, command_context_output in per_command_context.items():
+        demisto.debug(f"Merging context output of command: {command_name} context: {command_context_output}.")
+        recursive_merge(merged_context_output, command_context_output)
 
-    return {ContextPaths.FILE.value: assign_params(**merged_file_context)}
+    return {ContextPaths.FILE.value: assign_params(**merged_context_output)}
 
 
 """ COMMAND EXECUTION FUNCTIONS """
@@ -339,30 +298,16 @@ def execute_file_reputation(command: Command) -> tuple[dict, list[CommandResults
     """
     entry_context, readable_command_results = command.execute()
 
-    context_output: dict[str, Any] = get_file_and_dbot_scores_from_context(entry_context)
+    context_output: dict[str, Any] = {"DBotScore": []}
 
-    return assign_params(**context_output), readable_command_results
-
-
-def execute_wildfire_report(command: Command) -> tuple[dict, list[CommandResults]]:
-    """
-    Executes the `!wildfire-report` command and transforms the entry context into a standard context output by extracting the
-    `File` and `DBotScore` dictionaries. It also adds source brand fields to additional entry context items.
-
-    Args:
-        command (Command): The `!wildfire-report` command to be executed.
-
-    Returns:
-        tuple[dict, list[CommandResults]]: A tuple of the transformed context output, and human-readable command results.
-    """
-    entry_context, readable_command_results = command.execute()
-
-    context_output: dict[str, Any] = get_file_and_dbot_scores_from_context(entry_context, brand=Brands.WILDFIRE_V2)
-
-    # Add additional brand fields to context
     for context_item in entry_context:
-        if wild_fire_report := get_from_context(context_item, ContextPaths.WILDFIRE_V2_REPORT):
-            context_output["Report"] = add_source_brand_to_values(wild_fire_report[0], brand=Brands.WILDFIRE_V2)
+        if files := get_from_context(context_item, ContextPaths.FILE):
+            context_output.update(files[0])
+
+        if dbot_scores := get_from_context(context_item, ContextPaths.DBOT_SCORE):
+            for dbot_score in dbot_scores:
+                dbot_score_brand = dbot_score.get("Vendor", "Unknown")
+                context_output["DBotScore"].append(add_source_brand_to_values(dbot_score, brand=dbot_score_brand))
 
     return assign_params(**context_output), readable_command_results
 
@@ -380,10 +325,14 @@ def execute_wildfire_verdict(command: Command) -> tuple[dict, list[CommandResult
     """
     entry_context, readable_command_results = command.execute()
 
-    context_output: dict[str, Any] = get_file_and_dbot_scores_from_context(entry_context, brand=Brands.WILDFIRE_V2)
+    context_output: dict[str, Any] = {"DBotScore": []}
 
-    # Add additional brand fields to context
     for context_item in entry_context:
+        if dbot_scores := get_from_context(context_item, ContextPaths.DBOT_SCORE):
+            for dbot_score in dbot_scores:
+                context_output["DBotScore"].append(add_source_brand_to_values(dbot_score, brand=Brands.WILDFIRE_V2))
+
+        # Add additional brand fields to context
         if wild_fire_verdict := get_from_context(context_item, ContextPaths.WILDFIRE_V2_VERDICT):
             context_output["Verdicts"] = add_source_brand_to_values(wild_fire_verdict[0], brand=Brands.WILDFIRE_V2)
 
@@ -403,7 +352,7 @@ def execute_ir_hash_analytics(command: Command) -> tuple[dict, list[CommandResul
     """
     entry_context, readable_command_results = command.execute()
 
-    context_output: dict[str, Any] = {}  # No File indicator and no DBotScore in entry context
+    context_output: dict[str, Any] = {}  # No DBotScore in entry context
 
     # Add brand fields to context
     for context_item in entry_context:
@@ -431,20 +380,20 @@ def enrich_with_command(
         verbose_command_results (list[CommandResults]): : List of CommandResults with human-readable output.
     """
     if not command.has_enabled_instance(modules):
+        demisto.debug(f"Skipping command '{command.name}'. The brand '{command.brand}' has no enabled instance.")
         return
 
     command_execution_function_mapping: dict[str, Callable] = {
         "file": execute_file_reputation,
-        "wildfire-report": execute_wildfire_report,
         "wildfire-get-verdict": execute_wildfire_verdict,
         "core-get-hash-analytics-prevalence": execute_ir_hash_analytics,
     }
 
     execution_function = command_execution_function_mapping.get(command.name)
-
     if not execution_function:
-        raise ValueError(f"Unknown command: {command.name}")
+        raise ValueError(f"Unknown command: {command.name}.")
 
+    demisto.debug(f"Running enrichment flow with command {command}.")
     context, readable_command_results = execution_function(command)
 
     per_command_context[command.name] = context
@@ -533,18 +482,7 @@ def run_external_enrichment(
     )
     enrich_with_command(file_reputation_command, modules, per_command_context, verbose_command_results)
 
-    # B. Run Wildfire Report command - only works with SHA256 and MD5 hashes
-    if hash_type in ("sha256", "md5"):
-        wildfire_report_command = Command(
-            name="wildfire-report",
-            args={"sha256": file_hash} if hash_type == "sha256" else {"md5": file_hash},
-            brand=Brands.WILDFIRE_V2,
-        )
-        enrich_with_command(wildfire_report_command, modules, per_command_context, verbose_command_results)
-    else:
-        demisto.debug(f"Skipping running command 'wildfire-report'. Unsupported file hash type: {hash_type}.")
-
-    # C. Run Wildfire Verdict command
+    # B. Run Wildfire Verdict command
     wildfire_verdict_command = Command(
         name="wildfire-get-verdict",
         args={"hash": file_hash},
@@ -552,7 +490,7 @@ def run_external_enrichment(
     )
     enrich_with_command(wildfire_verdict_command, modules, per_command_context, verbose_command_results)
 
-    # D. Run Core IR Hash Analytics command - only works with SHA256 hashes
+    # C. Run Core IR Hash Analytics command - only works with SHA256 hashes
     if hash_type == "sha256":
         hash_analytics_command = Command(
             name="core-get-hash-analytics-prevalence",
@@ -584,7 +522,7 @@ def summarize_command_results(
     Returns:
         CommandResults: The CommandResults with a human-readable output summary.
     """
-    demisto.debug("Starting to summarize results from all executed commands")
+    demisto.debug("Starting to summarize results from all executed commands.")
 
     file_found_count = len([value for value in per_command_context.values() if value])
     are_all_results_errors = (
@@ -604,7 +542,7 @@ def summarize_command_results(
         if external_enrichment is False:
             summary["Message"] += " Consider setting external_enrichment=true."
 
-    demisto.debug(f"Summarized results from all executed commands: {summary}")
+    demisto.debug(f"Summarized results from all executed commands: {summary}.")
 
     return CommandResults(
         readable_output=tableToMarkdown(name=f"File Enrichment result for {file_hash}", t=summary),
@@ -612,59 +550,78 @@ def summarize_command_results(
     )
 
 
+""" SCRIPT FUNCTION """
+
+
+def file_enrichment_script(args: dict[str, Any]) -> list[CommandResults]:
+    """
+    Implements `!file-enrichment` script by searching for the File indicator in TIM and (optionally) running external enrichment.
+    It then outputs a human-readable summary of the command execution results and returns a consolidated merged `File` context.
+
+    Args:
+        args (dict): Script arguments.
+
+    Returns:
+        list[CommandResults]: List of CommandResults objects.
+    """
+    external_enrichment: bool = argToBoolean(args.get("external_enrichment", False))
+    verbose: bool = argToBoolean(args.get("verbose", False))
+    file_reputation_brands: list = argToList(args.get("enrichment_brands"))  # brands to use for `!file` reputation command
+
+    file_hash: str = args.get("file_hash", "")
+    hash_type: str = get_hash_type(file_hash).casefold()
+
+    if not file_hash or hash_type == "unknown":
+        raise ValueError("A valid file hash must be provided. Supported types are: MD5, SHA1, SHA256, and SHA512.")
+
+    per_command_context: dict = {}
+    verbose_command_results: list[CommandResults] = []
+
+    # 1. Search indicators in TIM
+    search_file_indicator(
+        file_hash=file_hash,
+        per_command_context=per_command_context,
+        verbose_command_results=verbose_command_results,
+        external_enrichment=external_enrichment,
+    )
+
+    if external_enrichment:
+        demisto.debug("Getting integration instances on tenant.")
+        modules = demisto.getModules()
+
+        # 2. Run external enrichment using various source brand commands
+        run_external_enrichment(
+            file_hash=file_hash,
+            hash_type=hash_type,
+            modules=modules,
+            file_reputation_brands=file_reputation_brands,
+            per_command_context=per_command_context,
+            verbose_command_results=verbose_command_results,
+        )
+
+    # 3. Summarize all command results
+    summary_command_results = summarize_command_results(
+        file_hash=file_hash,
+        per_command_context=per_command_context,
+        verbose_command_results=verbose_command_results,
+        external_enrichment=external_enrichment,
+    )
+
+    command_results = [summary_command_results]
+    if verbose:
+        # If `verbose` argument is True, CommandResults are returned for every executed command
+        command_results.extend(verbose_command_results)
+
+    return command_results
+
+
 """ MAIN FUNCTION """
 
 
-def main():
+def main():  # pragma: no cover
     try:
         args = demisto.args()
-
-        external_enrichment: bool = argToBoolean(args.get("external_enrichment", False))
-        verbose: bool = argToBoolean(args.get("verbose", False))
-        file_reputation_brands: list = argToList(args.get("enrichment_brands"))  # brands to use for `!file` reputation command
-
-        file_hash: str = args.get("file_hash", "")
-        hash_type: str = get_hash_type(file_hash).casefold()
-
-        if not file_hash or hash_type == "unknown":
-            raise ValueError("A valid file hash must be provided. Supported types are: MD5, SHA1, SHA256, and SHA512.")
-
-        per_command_context: dict = {}
-        verbose_command_results: list[CommandResults] = []
-
-        # 1. Search indicators in TIM
-        search_file_indicator(
-            file_hash=file_hash,
-            per_command_context=per_command_context,
-            verbose_command_results=verbose_command_results,
-            external_enrichment=external_enrichment,
-        )
-
-        if external_enrichment:
-            modules = demisto.getModules()
-
-            # 2. Run external enrichment using various source brand commands
-            run_external_enrichment(
-                file_hash=file_hash,
-                hash_type=hash_type,
-                modules=modules,
-                file_reputation_brands=file_reputation_brands,
-                per_command_context=per_command_context,
-                verbose_command_results=verbose_command_results,
-            )
-
-        # 3. Summarize all command results
-        summary_command_results = summarize_command_results(
-            file_hash=file_hash,
-            per_command_context=per_command_context,
-            verbose_command_results=verbose_command_results,
-            external_enrichment=external_enrichment,
-        )
-
-        command_results = [summary_command_results]
-        if verbose:
-            command_results.extend(verbose_command_results)
-
+        command_results = file_enrichment_script(args)
         return_results(command_results)
 
     except Exception as e:
@@ -674,5 +631,5 @@ def main():
 """ ENTRY POINT """
 
 
-if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

@@ -23,7 +23,7 @@ def util_load_json(path: str):
             id="Brand active",
         ),
         pytest.param(
-            Command("vt-file-sandbox-report", {"file": SHA_256_HASH}, Brands.VIRUS_TOTAL_V3),
+            Command("core-get-hash-analytics-prevalence", {"sha256": SHA_256_HASH}, Brands.CORE_IR),
             False,
             id="Brand disabled",
         ),
@@ -42,8 +42,7 @@ def test_command_has_enabled_instance(command: Command, expected_has_enabled_ins
     """
     modules = {
         "instance_wf": {"brand": Brands.WILDFIRE_V2.value, "state": "active"},
-        "instance_ir": {"brand": Brands.CORE_IR.value, "state": "active"},
-        "instance_vt": {"brand": Brands.VIRUS_TOTAL_V3.value, "state": "disabled"},
+        "instance_ir": {"brand": Brands.CORE_IR.value, "state": "disabled"},
     }
 
     assert command.has_enabled_instance(modules) == expected_has_enabled_instance
@@ -95,7 +94,7 @@ def test_command_execute(mocker: MockerFixture):
     Assert:
         - Ensure correctly parsed entry context and human-readable CommandResults from the execution response.
     """
-    command = Command("file", {"file": SHA_256_HASH}, Brands.VIRUS_TOTAL_V3)
+    command = Command("file", {"file": SHA_256_HASH})
 
     demisto_execute_response = util_load_json("test_data/file_reputation_command_response.json")
     mock_demisto_execute = mocker.patch("FileEnrichment.demisto.executeCommand", return_value=demisto_execute_response)
@@ -223,7 +222,6 @@ def test_merge_context_outputs():
     per_command_context = {
         "findIndicators": util_load_json("test_data/search_file_indicator_expected.json")["Context"],
         "file": util_load_json("test_data/file_reputation_command_expected.json")["Context"],
-        "wildfire-report": util_load_json("test_data/wildfire_report_command_expected.json")["Context"],
         "wildfire-get-verdict": util_load_json("test_data/wildfire_verdict_command_expected.json")["Context"],
         "core-get-hash-analytics-prevalence": util_load_json("test_data/ir_hash_analytics_command_expected.json")["Context"],
     }
@@ -254,31 +252,6 @@ def test_execute_file_reputation(mocker: MockerFixture):
     context_output, readable_command_results = execute_file_reputation(command)
 
     expected_output = util_load_json("test_data/file_reputation_command_expected.json")
-    assert context_output == expected_output["Context"]
-    assert readable_command_results[0].readable_output == expected_output["HumanReadable"]
-
-
-def test_execute_wildfire_report(mocker: MockerFixture):
-    """
-    Given:
-        - The '!wildfire-report' command with a SHA256 file hash.
-
-    When:
-        - Calling `execute_wildfire_report`.
-
-    Assert:
-        - Ensure correct context output and human-readable output.
-    """
-    from FileEnrichment import execute_wildfire_report
-
-    command = Command("wildfire-report", {"sha256": SHA_256_HASH}, Brands.WILDFIRE_V2)
-
-    demisto_execute_response = util_load_json("test_data/wildfire_report_command_response.json")
-    mocker.patch("FileEnrichment.demisto.executeCommand", return_value=demisto_execute_response)
-
-    context_output, readable_command_results = execute_wildfire_report(command)
-
-    expected_output = util_load_json("test_data/wildfire_report_command_expected.json")
     assert context_output == expected_output["Context"]
     assert readable_command_results[0].readable_output == expected_output["HumanReadable"]
 
@@ -389,7 +362,7 @@ def test_enrich_with_command_unknown_command():
 def test_enrich_with_command_cannot_run(mocker: MockerFixture):
     """
     Given:
-        - The known '!file' command with a SHA256 hash and a disabled instance of the source brand.
+        - The known '!core-get-hash-analytics-prevalence' command with a SHA256 hash and a disabled instance of the source brand.
 
     When:
         - Calling `enrich_with_command`.
@@ -401,8 +374,8 @@ def test_enrich_with_command_cannot_run(mocker: MockerFixture):
 
     mock_execution_function = mocker.patch("FileEnrichment.execute_file_reputation")
 
-    command = Command("file", {"file": SHA_256_HASH}, Brands.VIRUS_TOTAL_V3)
-    modules = {"instance_vt": {"brand": Brands.VIRUS_TOTAL_V3.value, "state": "disabled"}}
+    command = Command("core-get-hash-analytics-prevalence", {"sha256": SHA_256_HASH}, Brands.CORE_IR)
+    modules = {"instance_ir": {"brand": Brands.CORE_IR.value, "state": "disabled"}}
 
     enrich_with_command(
         command=command,
@@ -454,9 +427,8 @@ def test_run_external_enrichment(mocker: MockerFixture):
     modules = {
         "instance_wf": {"brand": Brands.WILDFIRE_V2.value, "state": "active"},
         "instance_ir": {"brand": Brands.CORE_IR.value, "state": "active"},
-        "instance_vt": {"brand": Brands.VIRUS_TOTAL_V3.value, "state": "active"},
     }
-    file_reputation_brands = [Brands.VIRUS_TOTAL_V3.value]
+    file_reputation_brands = [Brands.WILDFIRE_V2.value]
 
     mock_enrich_with_command = mocker.patch("FileEnrichment.enrich_with_command")
 
@@ -469,7 +441,7 @@ def test_run_external_enrichment(mocker: MockerFixture):
         verbose_command_results=[],
     )
 
-    assert mock_enrich_with_command.call_count == 4
+    assert mock_enrich_with_command.call_count == 3
 
     # A. Run file reputation command
     file_reputation_command = mock_enrich_with_command.call_args_list[0][0][0]
@@ -477,20 +449,14 @@ def test_run_external_enrichment(mocker: MockerFixture):
     assert file_reputation_command.name == "file"
     assert file_reputation_command.args == {"file": SHA_256_HASH, "using-brand": ",".join(file_reputation_brands)}
 
-    # B. Run Wildfire Report command
-    wildfire_report_command = mock_enrich_with_command.call_args_list[1][0][0]
-
-    assert wildfire_report_command.name == "wildfire-report"
-    assert wildfire_report_command.args == {"sha256": SHA_256_HASH}
-
-    # C. Run Wildfire Verdict command
-    wildfire_verdict_command = mock_enrich_with_command.call_args_list[2][0][0]
+    # B. Run Wildfire Verdict command
+    wildfire_verdict_command = mock_enrich_with_command.call_args_list[1][0][0]
 
     assert wildfire_verdict_command.name == "wildfire-get-verdict"
     assert wildfire_verdict_command.args == {"hash": SHA_256_HASH}
 
-    # D. Run Core IR Hash Analytics command
-    hash_analytics_command = mock_enrich_with_command.call_args_list[3][0][0]
+    # C. Run Core IR Hash Analytics command
+    hash_analytics_command = mock_enrich_with_command.call_args_list[2][0][0]
 
     assert hash_analytics_command.name == "core-get-hash-analytics-prevalence"
     assert hash_analytics_command.args == {"sha256": SHA_256_HASH}
@@ -616,23 +582,20 @@ def test_main_valid_hash(mocker: MockerFixture, external_enrichment: bool):
         - A valid SHA256 file hash and external_enrichment boolean flag.
 
     When:
-        - Calling `main`
+        - Calling `file_enrichment_script`
 
     Assert:
         - Ensure the correct functions are called, depending on the value of external_enrichment.
     """
-    from FileEnrichment import main
-
-    args = {"file_hash": SHA_256_HASH, "external_enrichment": external_enrichment}
-    mocker.patch("FileEnrichment.demisto.args", return_value=args)
+    from FileEnrichment import file_enrichment_script
 
     mock_search_file_indicator = mocker.patch("FileEnrichment.search_file_indicator")
     mock_demisto_get_modules = mocker.patch("FileEnrichment.demisto.getModules")
     mock_run_external_enrichment = mocker.patch("FileEnrichment.run_external_enrichment")
     mock_summarize_command_results = mocker.patch("FileEnrichment.summarize_command_results")
-    mock_return_results = mocker.patch("FileEnrichment.return_results")
 
-    main()
+    args = {"file_hash": SHA_256_HASH, "external_enrichment": external_enrichment}
+    file_enrichment_script(args)
 
     assert mock_search_file_indicator.call_count == 1
 
@@ -641,4 +604,3 @@ def test_main_valid_hash(mocker: MockerFixture, external_enrichment: bool):
     assert mock_run_external_enrichment.call_count == int(external_enrichment)
 
     assert mock_summarize_command_results.call_count == 1
-    assert mock_return_results.call_count == 1
