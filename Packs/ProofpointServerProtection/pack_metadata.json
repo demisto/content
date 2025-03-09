@@ -19,7 +19,8 @@
         "proofpoint",
         "email",
         "security",
-        "protection server"
+        "protection server",
+        "pps"
     ],
     "marketplaces": [
         "xsoar",
