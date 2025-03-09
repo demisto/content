@@ -1,4 +1,4 @@
-import itertools
+from requests import Response
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -13,6 +13,7 @@ PRODUCT = "endpoint_security"
 DEFAULT_CONNECTION_TIMEOUT = 30
 MAX_CHUNK_SIZE_TO_READ = 1024 * 1024 * 150  # 150 MB
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+DELIMITER = b"\n"
 
 """
 Sleep time between fetch attempts when an error occurs in the retrieval process,
@@ -27,15 +28,23 @@ class UnauthorizedToken(Exception):
     Exception raised when the authentication token is unauthorized.
     """
 
-    ...
-
 
 class NextPointingNotAvailable(Exception):
     """
     Exception raised when the next pointing is not available.
     """
 
-    ...
+
+class EmptyResponse(Exception):
+    """
+    Exception raised when the response from the API is None
+    """
+
+
+class NoEventsReceived(Exception):
+    """
+    Exception raised when no events received
+    """
 
 
 class Client(BaseClient):
@@ -94,41 +103,20 @@ class Client(BaseClient):
             "Accept-Encoding": "gzip",
         }
 
-    def get_events(self, payload: dict[str, str]) -> dict:
+    def get_events(self, payload: dict[str, str]) -> Response:
         """
         API call in streaming to fetch events
         """
-        res = self._http_request(
+        return self._http_request(
             method="POST",
             url_suffix=f"/v1/event-export/stream/{self.stream_id}/{self.channel_id}",
             json_data=payload,
             params={"connectionTimeout": DEFAULT_CONNECTION_TIMEOUT},
-            resp_type="text",
+            resp_type="response",
             headers=self.headers,
+            stream=True,
+            ok_codes=[200, 201, 204]
         )
-        try:
-            demisto.info(f"The size of the raw res.text = {len(res)}")
-        except Exception as e:
-            demisto.info(f"Failed to printing the size of raw res.text, Error: {e}")
-
-        # Formats a string into a valid JSON array
-        res = res.replace("}\n{", ",")
-        try:
-            demisto.info(f"The size of raw res.text after replacing = {len(res)}")
-        except Exception as e:
-            demisto.info(f"Failed to printing the size of raw res.text, Error: {e}")
-
-        if not res.startswith("["):
-            res = f"[{res}]"
-        json_res = json.loads(res)
-
-        try:
-            json_str = json.dumps(json_res)
-            demisto.info(f"The size of raw res.text after replacing = {len(json_str)}")
-        except Exception as e:
-            demisto.info(f"Failed to convert from dict to json string, Error: {e}")
-
-        return json_res
 
 
 def sleep_if_necessary(last_run_duration: float) -> None:
@@ -335,11 +323,39 @@ def filter_duplicate_events(
     return filtered_events
 
 
+def extract_events(res: Response) -> tuple[list[dict], str]:
+    events: list[dict] = []
+    next_hash: str = ""
+
+    if res is None:
+        raise EmptyResponse
+
+    if res.status_code == 204:
+        raise NoEventsReceived
+
+    # For debugging
+    try:
+        demisto.debug(f"Start of the response: {res.text[:50]}")
+    except Exception as e:
+        demisto.debug(f"Printing the beginning of the response failed, Error: {e}")
+
+    for line in res.iter_lines(chunk_size=MAX_CHUNK_SIZE_TO_READ, delimiter=DELIMITER):
+        if not line:
+            # Consecutive delimeter can cause empty line.
+            continue
+        json_res = json.loads(line.decode('utf-8'))
+        events.extend(json_res.get("events", []))
+        next_hash = json_res.get("next", "") if json_res else ""
+
+    return events, next_hash
+
+
 def get_events_command(client: Client, integration_context: dict) -> None:
     next_fetch: dict[str, str] = integration_context.get("next_fetch", {})
 
     try:
-        json_res = client.get_events(payload=next_fetch)
+        res = client.get_events(payload=next_fetch)
+        events, next_hash = extract_events(res)
     except DemistoException as e:
         if e.res is not None:
             if e.res.status_code == 401:
@@ -350,11 +366,6 @@ def get_events_command(client: Client, integration_context: dict) -> None:
             if e.res.status_code == 410:
                 raise NextPointingNotAvailable
         raise
-
-    events: list[dict] = list(
-        itertools.chain.from_iterable(chunk["events"] for chunk in json_res)
-    )
-    next_hash = json_res[0].get("next", "") if json_res else ""
 
     if not events:
         demisto.info("No events received")
@@ -430,8 +441,8 @@ def perform_long_running_loop(client: Client):
                 client._update_access_token_in_headers()
             except Exception as e:
                 raise DemistoException("Failed obtaining a new access token") from e
-        except NextPointingNotAvailable:
 
+        except NextPointingNotAvailable:
             demisto.debug(
                 "Next is pointing to older event which is not available for streaming. "
                 "Clearing next_fetch, The integration's dedup mechanism will make sure we don't insert duplicate events. "
@@ -439,8 +450,20 @@ def perform_long_running_loop(client: Client):
             )
             integration_context.pop("next_fetch")
             set_integration_context(integration_context)
+
+        except EmptyResponse:
+            demisto.info(
+                "Didn't receive any response from streaming endpoint."
+            )
+
+        except NoEventsReceived:
+            next_fetch_param = integration_context.get("next_fetch", {})
+            demisto.info(
+                f"No Events stream for {next_fetch_param=}"
+            )
+
         except Exception as e:
-            raise DemistoException("Failed to fetch logs from API") from e
+            raise DemistoException(f"Failed to fetch logs from API {e}")
 
         # Used to calculate the duration of the fetch run.
         end_timestamp = time.time()

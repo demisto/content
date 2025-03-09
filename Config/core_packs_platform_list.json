@@ -1,0 +1,16 @@
+{
+    "core_packs_list": [
+        "Base",
+        "CommonPlaybooks",
+        "CommonScripts",
+        "Core",
+        "FiltersAndTransformers"
+    ],
+    "update_core_packs_list": [
+        "Base",
+        "CommonPlaybooks",
+        "CommonScripts",
+        "Core",
+        "FiltersAndTransformers"
+    ]
+  }
