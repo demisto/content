@@ -209,7 +209,7 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
             'Authorization': auth_header
         }
 
-    LOG(f'running {method} request with url={url}, params={json.dumps(params)}, data={json.dumps(payload)},'
+    demisto.debug(f'running {method} request with url={url}, params={json.dumps(params)}, data={json.dumps(payload)},'
         f'is user auth={is_user_auth}')
     try:
         res = requests.request(
