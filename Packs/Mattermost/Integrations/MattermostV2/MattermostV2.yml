@@ -207,6 +207,22 @@ script:
       description: The creator ID of the channel.
       type: String
   - arguments:
+    - name: team_name
+      description: The name of the team to list channels from. Default is the team
+        name from the integration configuration.
+    - name: user_id
+      required: true
+      description: User id to get channel memberships for.
+    outputs:
+    - contextPath: Mattermost.User.Channels
+      description: List of channels where the user is member of.
+      type: Unknown
+    - contextPath: Mattermost.User.id
+      description: The ID of the user.
+      type: String
+    description: Get all private channel memberships for a user on a specific team.
+    name: mattermost-list-channels-for-user
+  - arguments:
     - description: The display name of the channel to create.
       name: display_name
       required: true
@@ -521,6 +537,105 @@ script:
       - 'channel'
     description: Mirrors the investigation between Mattermost and the Cortex XSOAR War Room.
     name: mattermost-mirror-investigation
+  - arguments:
+    - name: page
+      description: The page number to retrieve. Default value is 0.
+    - name: page_size
+      description: The size of the page to retrieve. Default value is 50.
+    - name: limit
+      description: How many results to retrieve. Will override the page and page_size
+        arguments if given.
+    - name: group
+      description: Search for a specific user group by this pattern.
+    name: mattermost-list-usergroups
+    outputs:
+    - contextPath: Mattermost.Groups.id
+      description: The ID of the user group.
+      type: String
+    - contextPath: Mattermost.Groups.create_at
+      description: When was the user group created.
+      type: Unknown
+    - contextPath: Mattermost.Groups.update_at
+      description: When was the user group updated.
+      type: Unknown
+    - contextPath: Mattermost.Groups.delete_at
+      description: When was the user group deleted.
+      type: Unknown
+    - contextPath: Mattermost.Groups.display_name
+      description: The display name of the user group.
+      type: String
+    - contextPath: Mattermost.Groups.name
+      description: The name of the user group.
+      type: String
+    - contextPath: Mattermost.Groups.description
+      description: The description of the user group.
+      type: String
+    - contextPath: Mattermost.Groups.source
+      description: The source of the user group.
+      type: String
+    - contextPath: Mattermost.Groups.remote_id
+      description: The remote id of the user group.
+      type: String
+    - contextPath: Mattermost.Groups.has_syncables
+      description: If the user group has any syncables.
+      type: boolean
+    description: Lists user groups.
+  - name: mattermost-list-usergroup-members
+    arguments:
+    - name: group
+      required: true
+      description: The group name of the user group to add the user to.
+    outputs:
+    - contextPath: Mattermost.Groups.name
+      description: The name of the user group.
+      type: String
+    - contextPath: Mattermost.Groups.id
+      description: The ID of the user group.
+      type: String
+    - contextPath: Mattermost.Groups.total_member_count
+      description: The total count of members in the user group.
+      type: Unknown
+    - contextPath: Mattermost.Groups.members
+      description: Detailed list of the user group members.
+      type: Unknown
+    description: Lists user group members.
+  - name: mattermost-add-usergroup-member
+    arguments:
+    - name: group
+      required: true
+      description: The group name of the user group to add the user to.
+    - name: user_ids
+      required: true
+      description: The ID(s) of the user(s) to add. Use the command 'mattermost-list-users'
+        to fetch the user ID(s).
+    description: Add user group member(s).
+  - name: mattermost-remove-usergroup-member
+    arguments:
+    - name: group
+      required: true
+      description: The group name of the user group to remove the user from.
+    - name: user_ids
+      required: true
+      description: The ID(s) of the user(s) to remove. Use the command 'mattermost-list-users'
+        to fetch the user ID(s).
+    description: Remove user group member(s).
+  - name: mattermost-set-channel-role
+    arguments:
+    - name: channel_id
+      required: true
+      description: The channel id to set the role in.
+    - name: user_id
+      required: true
+      description: The ID of the user to set role for. Use the command 'mattermost-list-users'
+        to fetch the user ID.
+    - name: role
+      auto: PREDEFINED
+      predefined:
+      - Admin
+      - Member
+      description: The role to set for the user.
+      defaultValue: Member
+    description: Update a user's roles for a channel.
   longRunning: true
   runonce: false
   script: '-'
