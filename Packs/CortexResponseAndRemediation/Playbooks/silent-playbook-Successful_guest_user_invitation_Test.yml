@@ -484,6 +484,7 @@ tasks:
     type: condition
     view: "{\n  \"position\": {\n    \"x\": 1530,\n    \"y\": 790\n  }\n}"
   '2':
+    continueonerror: true
     continueonerrortype: ''
     id: '2'
     ignoreworker: false
@@ -936,6 +937,7 @@ tasks:
     type: title
     view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 1460\n  }\n}"
   '3':
+    continueonerror: true
     continueonerrortype: ''
     id: '3'
     ignoreworker: false
@@ -1313,6 +1315,7 @@ tasks:
     type: regular
     view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 2130\n  }\n}"
   '4':
+    continueonerror: true
     continueonerrortype: ''
     id: '4'
     ignoreworker: false

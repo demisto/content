@@ -4,13 +4,29 @@
         "CommonPlaybooks",
         "CommonScripts",
         "Core",
-        "FiltersAndTransformers"
+        "FiltersAndTransformers",
+        "AWS-IAM",
+        "GCP-IAM",
+        "AWS-SecretsManager",
+        "Jira",
+        "MicrosoftTeams",
+        "Slack",
+        "ServiceNow",
+        "rasterize"
     ],
     "update_core_packs_list": [
         "Base",
         "CommonPlaybooks",
         "CommonScripts",
         "Core",
-        "FiltersAndTransformers"
+        "FiltersAndTransformers",
+        "AWS-IAM",
+        "GCP-IAM",
+        "AWS-SecretsManager",
+        "Jira",
+        "MicrosoftTeams",
+        "Slack",
+        "ServiceNow",
+        "rasterize"
     ]
   }
