@@ -1,0 +1,31 @@
+args:
+- name: from
+  required: true
+- name: from_display_name
+- name: from_domain
+- name: ip_src
+- name: subject
+- name: send_date
+- name: return_path
+commonfields:
+  id: misp_setmail_attributes
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.12.8.1983910
+enabled: true
+engineinfo: {}
+name: misp_setmail_attributes
+outputs:
+- contextPath: MispEmailAttribute
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
