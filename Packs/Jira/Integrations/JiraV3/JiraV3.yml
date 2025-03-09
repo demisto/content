@@ -1748,26 +1748,26 @@ script:
   - arguments:
       - description: 'The issue object (in JSON format). This argument is for advanced users, as when utilizing this argument, one cannot use other arguments and must input all required arguments into the issue_json. In addition, when issue_json is used, it is not possible to use the project name but only the project key. For example {"fields":{"customfield_10037":"field_value", "summary": "some summary", "project": {"key": "<project_key>"}}}. For more information about this argument, see https://developer.atlassian.com/server/jira/platform/jira-rest-api-example-create-issue-7897248/.'
         name: issue_json
-        prettyname: Project Key
       - description: Deprecated. Please use issue_json.
         name: issueJson
         hidden: true
       - description: The summary of the issue (Summary value is required, either from the "summary" argument, or from the "issue_json" argument).
         name: summary
         prettyname: Summary
-        prettypredefined:
-          Task: ${issue.id + issue.name} # What goes here?
-        required: true # is it true here?
+        defaultValue: ${alert.ID} + ${alert.Name}   # What goes here?
+        required: true
       - description: The project key with which to associate the issue (Project Key or name is required).
         name: project_key
+        prettyname: Project Key
+        required: true
       - description: Deprecated. Please use project_key.
         name: projectKey
         hidden: true
       - description: 'Selects an issue type by name, for example: "Problem". (Issue type name or id is required).'
         name: issue_type_name
+        defaultValue: 'Task'
         prettyname: Issue Type
-        prettypredefined:
-          Task: ${issue.placeholder_1} # What goes here?
+        required: true
       - description: Deprecated. Please use issue_type_name.
         name: issueTypeName
         hidden: true
@@ -1784,18 +1784,19 @@ script:
       - description: A description of the issue.
         name: description
         prettyname: Description
-        prettypredefined:
-          Task: ${issue.Description} # What goes here?
+        defaultValue: ${alert.Description} # What goes here?
+        required: true
       - description: A CSV list of labels.
         isArray: true
         name: labels
       - description: 'The priority of the issue, for example: High, Medium.'
         name: priority
         prettyname: Priority
-        prettypredefined:
-          High: High # What goes here?
-          Medium: Medium # What goes here?
-          Low: Low # What goes here?
+        defaultvalue : 1 - High
+        predefined:
+          - 3 - Low
+          - 2 - Medium
+          - 1 - High
       - description: The due date for the issue (in the format yyyy-mm-dd).
         name: due_date
       - description: Deprecated. Please use due_date.
