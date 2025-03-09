@@ -1754,7 +1754,7 @@ script:
       - description: The summary of the issue (Summary value is required, either from the "summary" argument, or from the "issue_json" argument).
         name: summary
         prettyname: Summary
-        defaultValue: ${alert.ID} + ${alert.Name}   # What goes here?
+        defaultValue: "${issue.ID} ${issue.Name}"
         required: true
       - description: The project key with which to associate the issue (Project Key or name is required).
         name: project_key
@@ -1765,8 +1765,8 @@ script:
         hidden: true
       - description: 'Selects an issue type by name, for example: "Problem". (Issue type name or id is required).'
         name: issue_type_name
-        defaultValue: 'Task'
         prettyname: Issue Type
+        defaultValue: 'Task'
         required: true
       - description: Deprecated. Please use issue_type_name.
         name: issueTypeName
@@ -1784,7 +1784,7 @@ script:
       - description: A description of the issue.
         name: description
         prettyname: Description
-        defaultValue: ${alert.Description} # What goes here?
+        defaultValue: ${issue.Description}
         required: true
       - description: A CSV list of labels.
         isArray: true

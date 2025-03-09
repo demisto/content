@@ -770,18 +770,17 @@ script:
   - arguments:
     - description: The channel to which to send messages. Supports only standard channels.
       name: channel
-      prettyname: channel # TODO: is it true?
+      prettyname: Channel
     - description: The message to send to the channel or team member.
       name: message
-      prettyname: message
+      prettyname: Message
       required: true
-      defaultValue: ${alert.name} + ${alert.Description} # TODO: is it true?
+      defaultValue: "${issue.Name} ${issue.Description}"
     - description: Display name or email address of the team member to send the message to.
       name: team_member
-      prettyname: team member # TODO: is it true?
+      prettyname: Team member
     - description: The team in which the specified channel exists. The team must already exist, and this value will override the default channel configured in the integration parameters.
       name: team
-      prettyname: team # TODO: is it true?
     - description: ID of the message to send the notification to as a reply when sending to a channel.
       name: message_id
     - description: The Microsoft Teams adaptive card to send.
