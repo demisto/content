@@ -1,4 +1,6 @@
 category: Cloud Services
+sectionOrder:
+- Connect
 commonfields:
   id: AWS-EKS
   version: -1
@@ -33,19 +35,6 @@ configuration:
   displaypassword: Secret Key
   section: Connect
   required: true
-- display: Timeout
-  name: timeout
-  defaultvalue: 60,10
-  additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 seconds will be used.
-  type: 0
-  required: false
-  section: Connect
-- display: Retries
-  name: retries
-  additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
-  type: 0
-  section: Connect
-  required: false
 - display: AWS STS Regional Endpoints
   additionalinfo: Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration.
   name: sts_regional_endpoint
@@ -55,14 +44,73 @@ configuration:
   type: 15
   section: Connect
   required: false
+- display: Role Arn
+  name: roleArn
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- display: Role Session Name
+  name: roleSessionName
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- display: Role Session Duration
+  name: sessionDuration
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- display: Timeout
+  name: timeout
+  defaultvalue: 60,10
+  additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 seconds will be used.
+  type: 0
+  required: false
+  section: Connect
+  advanced: true
+- display: Retries
+  name: retries
+  additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
+  type: 0
+  section: Connect
+  required: false
+  advanced: true
+- display: AWS organization accounts
+  name: accounts_to_access
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+  additionalinfo: A comma-separated list of AWS Organization accounts to use when running EC2 commands. A role name for cross-organization account access must be provided to use this feature.
+- display: Role name for cross-organization account access
+  name: access_role_name
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+  additionalinfo: The role name used to access accounts in the organization. This role name must exist in the accounts provided in "AWS Organization accounts" and be assumable with the credentials provided.
+- display: Max concurrent command calls
+  name: max_workers
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+  defaultvalue: 5
+  additionalinfo: The maximum number of concurrent calls to allow when running a command on all accounts provided in "AWS Organization accounts to access".
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  advanced: true
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  advanced: true
+  section: Connect
 description: The AWS EKS integration allows for the management and operation of Amazon Elastic Kubernetes Service (EKS) clusters.
 display: AWS-EKS
 name: AWS-EKS
@@ -96,6 +144,12 @@ script:
         - sa-east-1
         - eu-north-1
         - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
     outputs:
     - contextPath: AWS.EKS.Cluster.ClustersNames
       description: A list of all of the clusters for your account in the specified Amazon Web Services Region.
@@ -147,6 +201,12 @@ script:
         - sa-east-1
         - eu-north-1
         - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
     outputs:
     - contextPath: AWS.EKS.UpdateCluster.clusterName
       description: The name of the cluster.
@@ -196,6 +256,12 @@ script:
         - sa-east-1
         - eu-north-1
         - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
     outputs:
     - contextPath: AWS.EKS.DescribeCluster.name
       description: The name of your cluster.
@@ -366,6 +432,12 @@ script:
         - sa-east-1
         - eu-north-1
         - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
     outputs:
     - contextPath: AWS.EKS.CreateAccessEntry.clusterName
       description: The name of the cluster.
@@ -441,6 +513,12 @@ script:
         - sa-east-1
         - eu-north-1
         - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
     outputs:
     - contextPath: AWS.EKS.AssociatedAccessPolicy.clusterName
       description: The name of your cluster.
@@ -506,6 +584,12 @@ script:
         - sa-east-1
         - eu-north-1
         - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
     outputs:
     - contextPath: AWS.EKS.UpdateAccessEntry.clusterName
       description: The name of your cluster.
@@ -538,7 +622,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/boto3py3:1.0.0.115129
+  dockerimage: demisto/boto3py3:1.0.0.2587407
 fromversion: 6.9.0
 tests:
 - AWSEKS-Test
