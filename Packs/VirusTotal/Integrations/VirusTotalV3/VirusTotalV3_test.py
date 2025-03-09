@@ -312,7 +312,7 @@ def test_not_found_domain_command(mocker, requests_mock):
         args=demisto.args(), relationships=domain_relationships)
 
     assert results[0].execution_metrics is None
-    assert results[0].readable_output == 'Domain "testing.com" was not found in VirusTotal'
+    assert results[0].readable_output == 'Domain "testing.com" was not found in VirusTotal.'
     assert results[0].indicator.dbot_score.score == 0
 
 
@@ -469,7 +469,7 @@ def test_not_found_ip_command(mocker, requests_mock):
         disable_private_ip_lookup=False)
 
     assert results[0].execution_metrics is None
-    assert results[0].readable_output == 'IP "192.168.0.1" was not found in VirusTotal'
+    assert results[0].readable_output == 'IP "192.168.0.1" was not found in VirusTotal.'
     assert results[0].indicator.dbot_score.score == 0
 
 
@@ -548,7 +548,7 @@ def test_not_found_url_command(mocker, requests_mock):
         args=demisto.args(), relationships=url_relationships)
 
     assert results[0].execution_metrics is None
-    assert results[0].readable_output == f'URL "{testing_url}" was not found in VirusTotal'
+    assert results[0].readable_output == f'URL "{testing_url}" was not found in VirusTotal.'
     assert results[0].indicator.dbot_score.score == 0
 
 
@@ -619,8 +619,113 @@ def test_not_found_private_file_command(mocker, requests_mock):
     results = private_file_command(client=client, args=demisto.args())
 
     assert results[0].execution_metrics is None
-    assert results[0].readable_output == f'File "{sha256}" was not found in VirusTotal'
+    assert results[0].readable_output == f'File "{sha256}" was not found in VirusTotal.'
     assert results[0].indicator.dbot_score.score == 0
+
+
+def test_private_url_command(mocker, requests_mock):
+    """
+    Given:
+    - A valid Testing private URL
+    When:
+    - Running the !vt-privatescanning-url command
+    Then:
+    - Validate the command results are valid and contains metric data
+    """
+    from VirusTotalV3 import private_url_command, Client
+    import CommonServerPython
+    # Setup Mocks
+    url = 'https://www.example.com'
+    mocker.patch.object(demisto, 'args', return_value={'url': url})
+    mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+
+    # Assign arguments
+    params = demisto.params()
+    client = Client(params=params)
+
+    # Load assertions and mocked request data
+    mock_response = util_load_json('test_data/private_url.json')
+    expected_results = util_load_json('test_data/private_url_results.json')
+    requests_mock.get(f'https://www.virustotal.com/api/v3/private/urls/{encode_url_to_base64(url)}',
+                      json=mock_response)
+
+    # Run command and collect result array
+    results = private_url_command(client=client, args=demisto.args())
+
+    assert results[1].execution_metrics == [{'APICallsCount': 1, 'Type': 'Successful'}]
+    assert results[0].execution_metrics is None
+    assert results[0].outputs == expected_results
+
+
+def test_not_found_private_url_command(mocker, requests_mock):
+    """
+    Given:
+    - A valid Testing private URL
+    When:
+    - Running the !vt-privatescanning-url command
+    Then:
+    - Display "Not found" message to user
+    """
+    from VirusTotalV3 import private_url_command, Client
+    import CommonServerPython
+    # Setup Mocks
+    url = 'https://www.example.com'
+    mocker.patch.object(demisto, 'args', return_value={'url': url})
+    mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+
+    # Assign arguments
+    params = demisto.params()
+    client = Client(params=params)
+
+    mock_response = {'error': {'code': 'NotFoundError'}}
+    requests_mock.get(f'https://www.virustotal.com/api/v3/private/urls/{encode_url_to_base64(url)}',
+                      json=mock_response)
+
+    results = private_url_command(client=client, args=demisto.args())
+
+    assert results[0].execution_metrics is None
+    assert results[0].readable_output == f'URL "{url}" was not found in VirusTotal.'
+    assert results[0].indicator.dbot_score.score == 0
+
+
+def test_private_url_scan_command(mocker, requests_mock):
+    """
+    Given:
+    - A valid URL
+    When:
+    - Running the !vt-privatescanning-url-scan command
+    Then:
+    - Validate the command results are valid
+    """
+    from VirusTotalV3 import private_scan_url_command, Client
+    import CommonServerPython
+
+    mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+    params = demisto.params()
+    client = Client(params=params)
+
+    url = 'https://www.example.com'
+    mock_response = {
+        'data': {
+            'id': 'random_id',
+            'url': url,
+        }
+    }
+
+    mocker.patch.object(demisto, 'args', return_value={'url': url})
+    requests_mock.post('https://www.virustotal.com/api/v3/private/urls',
+                       json=mock_response)
+
+    results = private_scan_url_command(client=client, args=demisto.args())
+
+    assert results.execution_metrics is None
+    assert results.outputs == {
+        'VirusTotal.Submission(val.id && val.id === obj.id)': mock_response['data'],
+        'vtScanID': 'random_id',
+    }
 
 
 def test_not_found_file_sandbox_report_command(mocker, requests_mock):
@@ -653,4 +758,4 @@ def test_not_found_file_sandbox_report_command(mocker, requests_mock):
     results = file_sandbox_report_command(client=client, args=demisto.args())
 
     assert results[0].execution_metrics is None
-    assert results[0].readable_output == f'File "{sha256}" was not found in VirusTotal'
+    assert results[0].readable_output == f'File "{sha256}" was not found in VirusTotal.'
