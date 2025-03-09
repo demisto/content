@@ -1688,8 +1688,7 @@ script:
       name: short_description
       prettyname: Name
       required: true
-      prettypredefined:
-        Initiator host endpoint ID: ${$issue_id + $Issue.Name} # To handle
+      defaultValue: ${$issue_id + $Issue.Name} # To handle
     - auto: PREDEFINED
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", "sn_si_incident" or "std_change_template". Default is "incident".
@@ -1707,6 +1706,7 @@ script:
     - auto: PREDEFINED
       description: Ticket urgency. You can either select from the predefined options or enter another value. For example, "Urgent" or "5".
       name: urgency
+      prettyname: Urgency
       predefined:
         - 3 - Low
         - 2 - Medium
@@ -1793,6 +1793,9 @@ script:
       name: delivery_plan
     - description: Ticket description.
       name: description
+      prettyname: Description
+      required: true
+      defaultValue: ${alert.Description} # Is this true?
     - description: 'Ticket due date, in the format: YYYY-MM-DD HH:MM:SS.'
       name: due_date
     - description: 'Expected start date/time, in the format: YYYY-MM-DD HH:MM:SS.'
