@@ -1,0 +1,2265 @@
+{
+  "dashboards_data": [
+    {
+      "name": "Veeam Data Platform Monitoring",
+      "description": "Aggregated information about jobs run on Veeam Backup & Replication servers.",
+      "status": "ENABLED",
+      "layout": [
+        {
+          "id": "row-6854",
+          "data": [
+            {
+              "key": "xql_1715774699200",
+              "data": {
+                "type": "Custom XQL",
+                "width": 50,
+                "height": 413,
+                "params": [
+                  {
+                    "name": "hosts",
+                    "value": "*"
+                  }
+                ],
+                "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"190\",\"290\",\"150\",\"151\",\"790\",\"194\",\"490\",\"451\",\"390\",\"36022\",\"36026\")\r\n| alter \r\n_jobResultCode=arrayindex(if(\r\n    _instanceId in (\"790\"), regextract(_raw_log, \"param3\\=\\\"(\\d+)\\\"\"), \r\n    _instanceId in (\"36022\",\"36026\",\"290\"), regextract(_raw_log, \"Result\\=\\\"(\\d+)\\\"\"), \r\n    _instanceId in (\"150\",\"151\",\"451\"), regextract(_raw_log, \"Status\\=\\\"(\\d+)\\\"\"), \r\n    regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\")), 0),\r\n_host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($hosts)\r\n| comp \r\n    count(if(_jobResultCode = \"2\", 1)) as _failed\r\n| fields _failed\r\n\r\n\r\n\r\n\r\n\n| view graph type = single subtype = standard yaxis = _failed ",
+                "time_frame": { "relativeTime": 86400000 },
+                "viewOptions": {
+                  "type": "single",
+                  "commands": [
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "subtype",
+                        "value": "standard"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxis",
+                        "value": "_failed"
+                      }
+                    }
+                  ]
+                },
+                "drilldown_config": {
+                  "actionData": {
+                    "timeRange": "widget_timeframe",
+                    "xqlPhrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"190\",\"290\",\"150\",\"151\",\"790\",\"194\",\"490\",\"451\",\"390\",\"36022\",\"36026\")\r\n| alter \r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0)),\r\n    _jobResultCode=arrayindex(if(\r\n        _instanceId in (\"790\"), regextract(_raw_log, \"param3\\=\\\"(\\d+)\\\"\"), \r\n        _instanceId in (\"36022\",\"36026\",\"290\"), regextract(_raw_log, \"Result\\=\\\"(\\d+)\\\"\"), \r\n        _instanceId in (\"150\",\"151\",\"451\"), regextract(_raw_log, \"Status\\=\\\"(\\d+)\\\"\"), \r\n        regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\")), 0),\r\n    _jobTypeCode=if(\r\n        _instanceId=\"290\", \"290\", arrayindex(regextract(_raw_log, \"JobType\\=\\\"(\\d+)\\\"\"), 0)),\r\n    _host=regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"),\r\n    _description=arrayindex(regextract(_raw_log, \"Description\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0)\r\n| filter _jobResultCode=\"2\"\r\n| alter \r\n    _jobResult=if(\r\n        _jobResultCode = \"0\", \"Success\",\r\n        _jobResultCode = \"1\", \"Warning\",\r\n        _jobResultCode = \"2\", \"Failed\",\r\n        _jobResultCode = \"3\", \"Working\"),\r\n    _jobType=if(\r\n        _jobTypeCode = \"1\",\"Replication Job\",\r\n        _jobTypeCode = \"2\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"3\",\"SureBackup Job\",\r\n        _jobTypeCode = \"0\",\"Backup Job\",\r\n        _jobTypeCode = \"8\",\"Quick Migration\",\r\n        _jobTypeCode = \"22\",\"Rescan Job\",\r\n        _jobTypeCode = \"24\",\"File to Tape Job\",\r\n        _jobTypeCode = \"28\",\"Backup to Tape Job\",\r\n        _jobTypeCode = \"50\",\"Replication Job\",\r\n        _jobTypeCode = \"51\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"52\",\"MS SQL Log Backup Job\",\r\n        _jobTypeCode = \"54\",\"Oracle Log Backup Job\",\r\n        _jobTypeCode = \"63\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"65\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"70\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"74\",\"PostgreSQL Log Backup Job\",\r\n        _jobTypeCode = \"100\",\"Configuration Backup Job\",\r\n        _jobTypeCode = \"104\",\"Configuration Database Maintenance Job\",\r\n        _jobTypeCode = \"202\",\"Restore Job\",\r\n        _jobTypeCode = \"203\",\"Undo Failover Plan\",\r\n        _jobTypeCode = \"290\",\"Restore Job\",\r\n        _jobTypeCode = \"316\",\"CDP Policy\",\r\n        _jobTypeCode = \"4000\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"12000\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"12002\",\"Agent Backup Job (Backup Policy)\",\r\n        _jobTypeCode = \"12003\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"13000\",\"File Backup job\",\r\n        _jobTypeCode = \"13003\",\"File Backup Copy Job\",\r\n        _jobTypeCode = \"14000\",\"Backup Job\",\r\n        _jobTypeCode = \"15000\",\"Storage Snapshot Snapshot-Only Job\",\r\n        _jobTypeCode = \"15001\",\"Storage Snapshot Backup Job\",\r\n        _jobTypeCode = \"15002\",\"Storage Snapshot Copy Job\",\r\n        _jobTypeCode = \"15004\",\"Storage Snapshot Restore Session\",\r\n        _jobTypeCode = \"18000\",\"Archive Tier Backup Job\",\r\n        _jobTypeCode = \"18001\",\"Archive Tier Restore Session\",\r\n        _jobTypeCode = \"18002\",\"Archive Download Session\",\r\n        _jobTypeCode = \"18003\",\"Archive Tier Synchronization Job\",\r\n        _jobTypeCode = \"18004\",\"Archive Tier Backup Copy Job\",\r\n        _jobTypeCode = \"18005\",\"Archive Tier Archiving Job\",\r\n        _jobTypeCode = \"18006\",\"Publish Disk Session\",\r\n        _jobTypeCode = \"18008\",\"Object Storage Repository Synchronization Job\",\r\n        _jobTypeCode = \"24002\",\"Guest OS File Restore Session\",\r\n        _jobTypeCode = \"33000\",\"SureBackup Scan only\",\r\n        _jobTypeCode = \"33001\",\"SureBackup Scan only\")\r\n| fields\r\n    _host as `Data Source`, _time as `Date`, _description as `Message Details`, _jobType as `Job Type`, _jobResult as `State`",
+                    "timePicker": [],
+                    "openInNewTab": true
+                  },
+                  "actionType": "open_xql_search"
+                }
+              }
+            },
+            {
+              "key": "xql_1715776054053",
+              "data": {
+                "type": "Custom XQL",
+                "width": 50,
+                "height": 413,
+                "params": [
+                  {
+                    "name": "hosts",
+                    "value": "*"
+                  }
+                ],
+                "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"150\",\"151\")\r\n| alter \r\n    _transferredGb=to_float(arrayindex(regextract(_raw_log, \"TransferredGb\\=\\\"(\\d*\\.?\\d*)\\\"\"), 0)),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($hosts)\r\n| comp sum(_transferredGb) as _totalTransferredGb\r\n| replacenull _totalTransferredGb = 0\r\n| fields _totalTransferredGb\r\n\r\n\r\n\r\n\r\n\r\n\n| view graph type = single subtype = standard yaxis = _totalTransferredGb dataunit = \"GB\" ",
+                "time_frame": { "relativeTime": 604800000 },
+                "viewOptions": {
+                  "type": "single",
+                  "commands": [
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "subtype",
+                        "value": "standard"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxis",
+                        "value": "_totalTransferredGb"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "dataunit",
+                        "value": "\"GB\""
+                      }
+                    }
+                  ]
+                },
+                "drilldown_config": {
+                  "actionData": {
+                    "timeRange": "widget_timeframe",
+                    "xqlPhrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"150\",\"151\")\r\n| alter \r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0)),\r\n    _transferredGb=to_float(arrayindex(regextract(_raw_log, \"TransferredGb\\=\\\"(\\d*\\.?\\d*)\\\"\"), 0)),\r\n    _jobResultCode=arrayindex(regextract(_raw_log, \"Status\\=\\\"(\\d+)\\\"\"), 0),\r\n    _jobTypeCode=if(\r\n        _instanceId=\"290\", \"290\", arrayindex(regextract(_raw_log, \"JobType\\=\\\"(\\d+)\\\"\"), 0)),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0),\r\n    _description=arrayindex(regextract(_raw_log, \"Description\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0)\r\n| alter \r\n    _jobResult=if(\r\n        _jobResultCode = \"0\", \"Success\",\r\n        _jobResultCode = \"1\", \"Warning\",\r\n        _jobResultCode = \"2\", \"Failed\",\r\n        _jobResultCode = \"3\", \"Working\"),\r\n    _jobType=if(\r\n        _jobTypeCode = \"1\",\"Replication Job\",\r\n        _jobTypeCode = \"2\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"3\",\"SureBackup Job\",\r\n        _jobTypeCode = \"0\",\"Backup Job\",\r\n        _jobTypeCode = \"8\",\"Quick Migration\",\r\n        _jobTypeCode = \"22\",\"Rescan Job\",\r\n        _jobTypeCode = \"24\",\"File to Tape Job\",\r\n        _jobTypeCode = \"28\",\"Backup to Tape Job\",\r\n        _jobTypeCode = \"50\",\"Replication Job\",\r\n        _jobTypeCode = \"51\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"52\",\"MS SQL Log Backup Job\",\r\n        _jobTypeCode = \"54\",\"Oracle Log Backup Job\",\r\n        _jobTypeCode = \"63\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"65\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"70\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"74\",\"PostgreSQL Log Backup Job\",\r\n        _jobTypeCode = \"100\",\"Configuration Backup Job\",\r\n        _jobTypeCode = \"104\",\"Configuration Database Maintenance Job\",\r\n        _jobTypeCode = \"202\",\"Restore Job\",\r\n        _jobTypeCode = \"203\",\"Undo Failover Plan\",\r\n        _jobTypeCode = \"290\",\"Restore Job\",\r\n        _jobTypeCode = \"316\",\"CDP Policy\",\r\n        _jobTypeCode = \"4000\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"12000\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"12002\",\"Agent Backup Job (Backup Policy)\",\r\n        _jobTypeCode = \"12003\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"13000\",\"File Backup job\",\r\n        _jobTypeCode = \"13003\",\"File Backup Copy Job\",\r\n        _jobTypeCode = \"14000\",\"Backup Job\",\r\n        _jobTypeCode = \"15000\",\"Storage Snapshot Snapshot-Only Job\",\r\n        _jobTypeCode = \"15001\",\"Storage Snapshot Backup Job\",\r\n        _jobTypeCode = \"15002\",\"Storage Snapshot Copy Job\",\r\n        _jobTypeCode = \"15004\",\"Storage Snapshot Restore Session\",\r\n        _jobTypeCode = \"18000\",\"Archive Tier Backup Job\",\r\n        _jobTypeCode = \"18001\",\"Archive Tier Restore Session\",\r\n        _jobTypeCode = \"18002\",\"Archive Download Session\",\r\n        _jobTypeCode = \"18003\",\"Archive Tier Synchronization Job\",\r\n        _jobTypeCode = \"18004\",\"Archive Tier Backup Copy Job\",\r\n        _jobTypeCode = \"18005\",\"Archive Tier Archiving Job\",\r\n        _jobTypeCode = \"18006\",\"Publish Disk Session\",\r\n        _jobTypeCode = \"18008\",\"Object Storage Repository Synchronization Job\",\r\n        _jobTypeCode = \"24002\",\"Guest OS File Restore Session\",\r\n        _jobTypeCode = \"33000\",\"SureBackup Scan only\",\r\n        _jobTypeCode = \"33001\",\"SureBackup Scan only\")\r\n| fields\r\n    _host as `Data Source`, _time as `Date`, _transferredGb as `Transferred Data (GB)`, _description as `Message Details`, _jobType as `Job Type`, _jobResult as `State`",
+                    "timePicker": [],
+                    "openInNewTab": true
+                  },
+                  "actionType": "open_xql_search"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-8486",
+          "data": [
+            {
+              "key": "xql_1715780123485",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 531,
+                "params": [
+                  {
+                    "name": "hosts",
+                    "value": "*"
+                  }
+                ],
+                "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"190\",\"790\",\"194\",\"490\",\"451\")\r\n| alter \r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0))\r\n| alter \r\n_jobResultCode=arrayindex(if(\r\n    _instanceId in (\"790\"), regextract(_raw_log, \"param3\\=\\\"(\\d+)\\\"\"),\r\n    _instanceId in (\"451\"), regextract(_raw_log, \"Status\\=\\\"(\\d+)\\\"\"), \r\n    regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\")), 0),\r\n_day=date_floor(_time ,\"d\"),\r\n_host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($hosts)\r\n| comp \r\n    count(if(_jobResultCode = \"0\", 1)) as Success, \r\n    count(if(_jobResultCode = \"1\", 1)) as Warning,\r\n    count(if(_jobResultCode = \"2\", 1)) as Failed,  \r\n    count(if(_jobResultCode = \"3\", 1)) as Working by _day\r\n| fields Success, Warning, Failed, Working, _day\r\n| sort asc _day\r\n\r\n\r\n\n| view graph type = area subtype = standard show_percentage = `false` xaxis = _day yaxis = Success,Warning,Failed,Working seriescolor(\"Success\",\"#00D15F\") seriescolor(\"Working\",\"#0084D1\") seriescolor(\"Warning\",\"#FF8F2E\") seriescolor(\"Failed\",\"#D10000\") ",
+                "time_frame": { "relativeTime": 604800000 },
+                "viewOptions": {
+                  "type": "area",
+                  "commands": [
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "subtype",
+                        "value": "standard"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "show_percentage",
+                        "value": "false"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "xaxis",
+                        "value": "_day"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxis",
+                        "value": "Success,Warning,Failed,Working"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "Success", "#00D15F" ],
+                        "name": "seriescolor"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "Working", "#0084D1" ],
+                        "name": "seriescolor"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "Warning", "#FF8F2E" ],
+                        "name": "seriescolor"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "Failed", "#D10000" ],
+                        "name": "seriescolor"
+                      }
+                    }
+                  ]
+                },
+                "drilldown_config": {
+                  "actionData": {
+                    "timeRange": "widget_timeframe",
+                    "xqlPhrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"190\",\"790\",\"194\",\"490\",\"451\")\r\n| alter \r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0)),\r\n    _jobResultCode=arrayindex(if(\r\n        _instanceId in (\"790\"), regextract(_raw_log, \"param3\\=\\\"(\\d+)\\\"\"), \r\n        _instanceId in (\"451\"), regextract(_raw_log, \"Status\\=\\\"(\\d+)\\\"\"), \r\n        regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\")), 0),\r\n    _jobTypeCode=if(\r\n        _instanceId=\"290\", \"290\", arrayindex(regextract(_raw_log, \"JobType\\=\\\"(\\d+)\\\"\"), 0)),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0),\r\n    _day=date_floor(_time ,\"d\"),\r\n    _description=arrayindex(regextract(_raw_log, \"Description\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0)\r\n| alter \r\n    _jobResult=if(\r\n        _jobResultCode = \"0\", \"Success\",\r\n        _jobResultCode = \"1\", \"Warning\",\r\n        _jobResultCode = \"2\", \"Failed\",\r\n        _jobResultCode = \"3\", \"Working\"),\r\n    _jobType=if(\r\n        _jobTypeCode = \"1\",\"Replication Job\",\r\n        _jobTypeCode = \"2\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"3\",\"SureBackup Job\",\r\n        _jobTypeCode = \"0\",\"Backup Job\",\r\n        _jobTypeCode = \"8\",\"Quick Migration\",\r\n        _jobTypeCode = \"22\",\"Rescan Job\",\r\n        _jobTypeCode = \"24\",\"File to Tape Job\",\r\n        _jobTypeCode = \"28\",\"Backup to Tape Job\",\r\n        _jobTypeCode = \"50\",\"Replication Job\",\r\n        _jobTypeCode = \"51\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"52\",\"MS SQL Log Backup Job\",\r\n        _jobTypeCode = \"54\",\"Oracle Log Backup Job\",\r\n        _jobTypeCode = \"63\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"65\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"70\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"74\",\"PostgreSQL Log Backup Job\",\r\n        _jobTypeCode = \"100\",\"Configuration Backup Job\",\r\n        _jobTypeCode = \"104\",\"Configuration Database Maintenance Job\",\r\n        _jobTypeCode = \"202\",\"Restore Job\",\r\n        _jobTypeCode = \"203\",\"Undo Failover Plan\",\r\n        _jobTypeCode = \"290\",\"Restore Job\",\r\n        _jobTypeCode = \"316\",\"CDP Policy\",\r\n        _jobTypeCode = \"4000\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"12000\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"12002\",\"Agent Backup Job (Backup Policy)\",\r\n        _jobTypeCode = \"12003\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"13000\",\"File Backup job\",\r\n        _jobTypeCode = \"13003\",\"File Backup Copy Job\",\r\n        _jobTypeCode = \"14000\",\"Backup Job\",\r\n        _jobTypeCode = \"15000\",\"Storage Snapshot Snapshot-Only Job\",\r\n        _jobTypeCode = \"15001\",\"Storage Snapshot Backup Job\",\r\n        _jobTypeCode = \"15002\",\"Storage Snapshot Copy Job\",\r\n        _jobTypeCode = \"15004\",\"Storage Snapshot Restore Session\",\r\n        _jobTypeCode = \"18000\",\"Archive Tier Backup Job\",\r\n        _jobTypeCode = \"18001\",\"Archive Tier Restore Session\",\r\n        _jobTypeCode = \"18002\",\"Archive Download Session\",\r\n        _jobTypeCode = \"18003\",\"Archive Tier Synchronization Job\",\r\n        _jobTypeCode = \"18004\",\"Archive Tier Backup Copy Job\",\r\n        _jobTypeCode = \"18005\",\"Archive Tier Archiving Job\",\r\n        _jobTypeCode = \"18006\",\"Publish Disk Session\",\r\n        _jobTypeCode = \"18008\",\"Object Storage Repository Synchronization Job\",\r\n        _jobTypeCode = \"24002\",\"Guest OS File Restore Session\",\r\n        _jobTypeCode = \"33000\",\"SureBackup Scan only\",\r\n        _jobTypeCode = \"33001\",\"SureBackup Scan only\")\r\n| filter _day = to_timestamp($x_axis.value, \"MILLIS\")  and _jobResult = $y_axis.name \r\n| fields\r\n    _host as `Data Source`, _time as `Date`, _description as `Message Details`, _jobType as `Job Type`, _jobResult as `State`",
+                    "timePicker": [],
+                    "openInNewTab": true
+                  },
+                  "actionType": "open_xql_search"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-4523",
+          "data": [
+            {
+              "key": "xql_1715780383232",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 531,
+                "params": [
+                  {
+                    "name": "hosts",
+                    "value": "*"
+                  }
+                ],
+                "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"390\")\r\n| alter \r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0))\r\n| alter \r\n_jobResultCode=arrayindex(regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\"), 0),\r\n_day=date_floor(_time ,\"d\"),\r\n_host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($hosts)\r\n| comp \r\n    count(if(_jobResultCode = \"0\", 1)) as Success, \r\n    count(if(_jobResultCode = \"1\", 1)) as Warning,\r\n    count(if(_jobResultCode = \"2\", 1)) as Failed,  \r\n    count(if(_jobResultCode = \"3\", 1)) as Working by _day\r\n| fields Success, Warning, Failed, Working, _day\r\n| sort asc _day\r\n\r\n\r\n\r\n\r\n\n| view graph type = area subtype = standard show_percentage = `false` xaxis = _day yaxis = Success,Warning,Failed,Working seriescolor(\"Success\",\"#00D15F\") seriescolor(\"Working\",\"#0084D1\") seriescolor(\"Warning\",\"#FF8F2E\") seriescolor(\"Failed\",\"#D10000\") ",
+                "time_frame": { "relativeTime": 604800000 },
+                "viewOptions": {
+                  "type": "area",
+                  "commands": [
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "subtype",
+                        "value": "standard"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "show_percentage",
+                        "value": "false"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "xaxis",
+                        "value": "_day"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxis",
+                        "value": "Success,Warning,Failed,Working"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "Success", "#00D15F" ],
+                        "name": "seriescolor"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "Working", "#0084D1" ],
+                        "name": "seriescolor"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "Warning", "#FF8F2E" ],
+                        "name": "seriescolor"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "Failed", "#D10000" ],
+                        "name": "seriescolor"
+                      }
+                    }
+                  ]
+                },
+                "drilldown_config": {
+                  "actionData": {
+                    "timeRange": "widget_timeframe",
+                    "xqlPhrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"390\")\r\n| alter \r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0)),\r\n    _jobResultCode=arrayindex(regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\"), 0),\r\n    _jobTypeCode=if(\r\n        _instanceId=\"290\", \"290\", arrayindex(regextract(_raw_log, \"JobType\\=\\\"(\\d+)\\\"\"), 0)),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0),\r\n    _day=date_floor(_time ,\"d\"),\r\n    _description=arrayindex(regextract(_raw_log, \"Description\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0)\r\n| alter \r\n    _jobResult=if(\r\n        _jobResultCode = \"0\", \"Success\",\r\n        _jobResultCode = \"1\", \"Warning\",\r\n        _jobResultCode = \"2\", \"Failed\",\r\n        _jobResultCode = \"3\", \"Working\"),\r\n    _jobType=if(\r\n        _jobTypeCode = \"1\",\"Replication Job\",\r\n        _jobTypeCode = \"2\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"3\",\"SureBackup Job\",\r\n        _jobTypeCode = \"0\",\"Backup Job\",\r\n        _jobTypeCode = \"8\",\"Quick Migration\",\r\n        _jobTypeCode = \"22\",\"Rescan Job\",\r\n        _jobTypeCode = \"24\",\"File to Tape Job\",\r\n        _jobTypeCode = \"28\",\"Backup to Tape Job\",\r\n        _jobTypeCode = \"50\",\"Replication Job\",\r\n        _jobTypeCode = \"51\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"52\",\"MS SQL Log Backup Job\",\r\n        _jobTypeCode = \"54\",\"Oracle Log Backup Job\",\r\n        _jobTypeCode = \"63\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"65\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"70\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"74\",\"PostgreSQL Log Backup Job\",\r\n        _jobTypeCode = \"100\",\"Configuration Backup Job\",\r\n        _jobTypeCode = \"104\",\"Configuration Database Maintenance Job\",\r\n        _jobTypeCode = \"202\",\"Restore Job\",\r\n        _jobTypeCode = \"203\",\"Undo Failover Plan\",\r\n        _jobTypeCode = \"290\",\"Restore Job\",\r\n        _jobTypeCode = \"316\",\"CDP Policy\",\r\n        _jobTypeCode = \"4000\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"12000\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"12002\",\"Agent Backup Job (Backup Policy)\",\r\n        _jobTypeCode = \"12003\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"13000\",\"File Backup job\",\r\n        _jobTypeCode = \"13003\",\"File Backup Copy Job\",\r\n        _jobTypeCode = \"14000\",\"Backup Job\",\r\n        _jobTypeCode = \"15000\",\"Storage Snapshot Snapshot-Only Job\",\r\n        _jobTypeCode = \"15001\",\"Storage Snapshot Backup Job\",\r\n        _jobTypeCode = \"15002\",\"Storage Snapshot Copy Job\",\r\n        _jobTypeCode = \"15004\",\"Storage Snapshot Restore Session\",\r\n        _jobTypeCode = \"18000\",\"Archive Tier Backup Job\",\r\n        _jobTypeCode = \"18001\",\"Archive Tier Restore Session\",\r\n        _jobTypeCode = \"18002\",\"Archive Download Session\",\r\n        _jobTypeCode = \"18003\",\"Archive Tier Synchronization Job\",\r\n        _jobTypeCode = \"18004\",\"Archive Tier Backup Copy Job\",\r\n        _jobTypeCode = \"18005\",\"Archive Tier Archiving Job\",\r\n        _jobTypeCode = \"18006\",\"Publish Disk Session\",\r\n        _jobTypeCode = \"18008\",\"Object Storage Repository Synchronization Job\",\r\n        _jobTypeCode = \"24002\",\"Guest OS File Restore Session\",\r\n        _jobTypeCode = \"33000\",\"SureBackup Scan only\",\r\n        _jobTypeCode = \"33001\",\"SureBackup Scan only\")\r\n| filter _day = to_timestamp($x_axis.value, \"MILLIS\")  and _jobResult = $y_axis.name \r\n| fields\r\n    _host as `Data Source`, _time as `Date`, _description as `Message Details`, _jobType as `Job Type`, _jobResult as `State`",
+                    "timePicker": [],
+                    "openInNewTab": true
+                  },
+                  "actionType": "open_xql_search"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-446",
+          "data": [
+            {
+              "key": "xql_1715780485921",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 603,
+                "params": [
+                  {
+                    "name": "hosts",
+                    "value": "*"
+                  }
+                ],
+                "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"40700\")\r\n| alter \r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0)),\r\n    _jobResult=arrayindex(regextract(_raw_log, \"Result\\:\\ ([^.]*)\"), 0),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($hosts)\r\n| sort desc  _time\r\n| fields\r\n    _host as `Data Source`, _time as `Date`, _jobResult as `State`\r\n| limit 100",
+                "entityType": "xql-widget-table-3505ac26-ab2f-4520-bf63-1c6d60a86ffb",
+                "time_frame": { "relativeTime": 2592000000 },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": null,
+                  "columnWidth": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-3185",
+          "data": [
+            {
+              "key": "xql_1715780632686",
+              "data": {
+                "type": "Custom XQL",
+                "width": 33.333333333333336,
+                "height": 291,
+                "params": [
+                  {
+                    "name": "hosts",
+                    "value": "*"
+                  }
+                ],
+                "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"190\",\"290\",\"150\",\"151\",\"790\",\"194\",\"490\",\"451\",\"390\",\"36022\",\"36026\")\r\n| alter \r\n    _jobResultCode=arrayindex(if(\r\n        _instanceId in (\"790\"), regextract(_raw_log, \"param3\\=\\\"(\\d+)\\\"\"), \r\n        _instanceId in (\"36022\",\"36026\",\"290\"), regextract(_raw_log, \"Result\\=\\\"(\\d+)\\\"\"), \r\n        _instanceId in (\"150\",\"151\",\"451\"), regextract(_raw_log, \"Status\\=\\\"(\\d+)\\\"\"), \r\n        regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\")), 0),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($hosts)\r\n| alter _jobResult=if(\r\n    _jobResultCode = \"0\", \"Success\",\r\n    _jobResultCode = \"1\", \"Warning\",\r\n    _jobResultCode = \"2\", \"Failed\",\r\n    _jobResultCode = \"3\", \"Working\")\r\n| comp\r\n    count(_instanceId) as _jobsByResult by _jobResult \r\n\r\n\r\n\r\n\n| view graph type = pie subtype = full xaxis = _jobResult yaxis = _jobsByResult valuecolor(\"Success\",\"#00D15F\") valuecolor(\"Failed\",\"#D10000\") ",
+                "time_frame": { "relativeTime": 2592000000 },
+                "viewOptions": {
+                  "type": "pie",
+                  "commands": [
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "subtype",
+                        "value": "full"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "xaxis",
+                        "value": "_jobResult"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxis",
+                        "value": "_jobsByResult"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "Success", "#00D15F" ],
+                        "name": "valuecolor"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "Failed", "#D10000" ],
+                        "name": "valuecolor"
+                      }
+                    }
+                  ]
+                },
+                "drilldown_config": {
+                  "actionData": {
+                    "timeRange": "widget_timeframe",
+                    "xqlPhrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"190\",\"290\",\"150\",\"151\",\"790\",\"194\",\"490\",\"451\",\"390\",\"36022\",\"36026\")\r\n| alter \r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0)),\r\n    _jobResultCode=arrayindex(if(\r\n        _instanceId in (\"790\"), regextract(_raw_log, \"param3\\=\\\"(\\d+)\\\"\"), \r\n        _instanceId in (\"36022\",\"36026\",\"290\"), regextract(_raw_log, \"Result\\=\\\"(\\d+)\\\"\"), \r\n        _instanceId in (\"150\",\"151\",\"451\"), regextract(_raw_log, \"Status\\=\\\"(\\d+)\\\"\"), \r\n        regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\")), 0),\r\n    _jobTypeCode=if(\r\n        _instanceId=\"290\", \"290\", arrayindex(regextract(_raw_log, \"JobType\\=\\\"(\\d+)\\\"\"), 0)),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0),\r\n    _description=arrayindex(regextract(_raw_log, \"Description\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0)\r\n| alter \r\n    _jobResult=if(\r\n        _jobResultCode = \"0\", \"Success\",\r\n        _jobResultCode = \"1\", \"Warning\",\r\n        _jobResultCode = \"2\", \"Failed\",\r\n        _jobResultCode = \"3\", \"Working\"),\r\n    _jobType=if(\r\n        _jobTypeCode = \"1\",\"Replication Job\",\r\n        _jobTypeCode = \"2\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"3\",\"SureBackup Job\",\r\n        _jobTypeCode = \"0\",\"Backup Job\",\r\n        _jobTypeCode = \"8\",\"Quick Migration\",\r\n        _jobTypeCode = \"22\",\"Rescan Job\",\r\n        _jobTypeCode = \"24\",\"File to Tape Job\",\r\n        _jobTypeCode = \"28\",\"Backup to Tape Job\",\r\n        _jobTypeCode = \"50\",\"Replication Job\",\r\n        _jobTypeCode = \"51\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"52\",\"MS SQL Log Backup Job\",\r\n        _jobTypeCode = \"54\",\"Oracle Log Backup Job\",\r\n        _jobTypeCode = \"63\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"65\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"70\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"74\",\"PostgreSQL Log Backup Job\",\r\n        _jobTypeCode = \"100\",\"Configuration Backup Job\",\r\n        _jobTypeCode = \"104\",\"Configuration Database Maintenance Job\",\r\n        _jobTypeCode = \"202\",\"Restore Job\",\r\n        _jobTypeCode = \"203\",\"Undo Failover Plan\",\r\n        _jobTypeCode = \"290\",\"Restore Job\",\r\n        _jobTypeCode = \"316\",\"CDP Policy\",\r\n        _jobTypeCode = \"4000\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"12000\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"12002\",\"Agent Backup Job (Backup Policy)\",\r\n        _jobTypeCode = \"12003\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"13000\",\"File Backup job\",\r\n        _jobTypeCode = \"13003\",\"File Backup Copy Job\",\r\n        _jobTypeCode = \"14000\",\"Backup Job\",\r\n        _jobTypeCode = \"15000\",\"Storage Snapshot Snapshot-Only Job\",\r\n        _jobTypeCode = \"15001\",\"Storage Snapshot Backup Job\",\r\n        _jobTypeCode = \"15002\",\"Storage Snapshot Copy Job\",\r\n        _jobTypeCode = \"15004\",\"Storage Snapshot Restore Session\",\r\n        _jobTypeCode = \"18000\",\"Archive Tier Backup Job\",\r\n        _jobTypeCode = \"18001\",\"Archive Tier Restore Session\",\r\n        _jobTypeCode = \"18002\",\"Archive Download Session\",\r\n        _jobTypeCode = \"18003\",\"Archive Tier Synchronization Job\",\r\n        _jobTypeCode = \"18004\",\"Archive Tier Backup Copy Job\",\r\n        _jobTypeCode = \"18005\",\"Archive Tier Archiving Job\",\r\n        _jobTypeCode = \"18006\",\"Publish Disk Session\",\r\n        _jobTypeCode = \"18008\",\"Object Storage Repository Synchronization Job\",\r\n        _jobTypeCode = \"24002\",\"Guest OS File Restore Session\",\r\n        _jobTypeCode = \"33000\",\"SureBackup Scan only\",\r\n        _jobTypeCode = \"33001\",\"SureBackup Scan only\")\r\n| filter _jobResult = $x_axis.value  \r\n| fields\r\n    _host as `Data Source`, _time as `Date`, _description as `Message Details`, _jobType as `Job Type`, _jobResult as `State`",
+                    "timePicker": [],
+                    "openInNewTab": true
+                  },
+                  "actionType": "open_xql_search"
+                }
+              }
+            },
+            {
+              "key": "xql_1715780719907",
+              "data": {
+                "type": "Custom XQL",
+                "width": 33.333333333333336,
+                "height": 291,
+                "params": [
+                  {
+                    "name": "hosts",
+                    "value": "*"
+                  }
+                ],
+                "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"190\")\r\n| alter \r\n    _jobResultCode=arrayindex(regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\"), 0),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0),\r\n    _jobTypeCode=if(\r\n        _instanceId=\"290\", \"290\", arrayindex(if(\r\n            _instanceId=\"790\", regextract(_raw_log, \"param4\\=\\\"(\\d+)\\\"\"), \r\n            \"1\"=\"1\", regextract(_raw_log, \"JobType\\=\\\"(\\d+)\\\"\")), 0))\r\n| filter _jobTypeCode = \"0\" AND _host in ($hosts)\r\n| alter _jobResult=if(\r\n    _jobResultCode = \"0\", \"Success\",\r\n    _jobResultCode = \"1\", \"Warning\",\r\n    _jobResultCode = \"2\", \"Failed\",\r\n    _jobResultCode = \"3\", \"Working\")\r\n| comp\r\n    count(_instanceId) as _jobsByResult by _jobResult \r\n\r\n\n| view graph type = pie subtype = full xaxis = _jobResult yaxis = _jobsByResult valuecolor(\"Success\",\"#00D15F\") valuecolor(\"Failed\",\"#D10000\") ",
+                "time_frame": { "relativeTime": 2592000000 },
+                "viewOptions": {
+                  "type": "pie",
+                  "commands": [
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "subtype",
+                        "value": "full"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "xaxis",
+                        "value": "_jobResult"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxis",
+                        "value": "_jobsByResult"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "Success", "#00D15F" ],
+                        "name": "valuecolor"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "Failed", "#D10000" ],
+                        "name": "valuecolor"
+                      }
+                    }
+                  ]
+                },
+                "drilldown_config": {
+                  "actionData": {
+                    "timeRange": "widget_timeframe",
+                    "xqlPhrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"190\")\r\n| alter \r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0)),\r\n    _jobResultCode=arrayindex(regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\"), 0),\r\n    _jobTypeCode=if(\r\n        _instanceId=\"290\", \"290\", arrayindex(regextract(_raw_log, \"JobType\\=\\\"(\\d+)\\\"\"), 0)),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0),\r\n    _description=arrayindex(regextract(_raw_log, \"Description\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0)\r\n| alter \r\n    _jobResult=if(\r\n        _jobResultCode = \"0\", \"Success\",\r\n        _jobResultCode = \"1\", \"Warning\",\r\n        _jobResultCode = \"2\", \"Failed\",\r\n        _jobResultCode = \"3\", \"Working\"),\r\n    _jobType=if(\r\n        _jobTypeCode = \"1\",\"Replication Job\",\r\n        _jobTypeCode = \"2\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"3\",\"SureBackup Job\",\r\n        _jobTypeCode = \"0\",\"Backup Job\",\r\n        _jobTypeCode = \"8\",\"Quick Migration\",\r\n        _jobTypeCode = \"22\",\"Rescan Job\",\r\n        _jobTypeCode = \"24\",\"File to Tape Job\",\r\n        _jobTypeCode = \"28\",\"Backup to Tape Job\",\r\n        _jobTypeCode = \"50\",\"Replication Job\",\r\n        _jobTypeCode = \"51\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"52\",\"MS SQL Log Backup Job\",\r\n        _jobTypeCode = \"54\",\"Oracle Log Backup Job\",\r\n        _jobTypeCode = \"63\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"65\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"70\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"74\",\"PostgreSQL Log Backup Job\",\r\n        _jobTypeCode = \"100\",\"Configuration Backup Job\",\r\n        _jobTypeCode = \"104\",\"Configuration Database Maintenance Job\",\r\n        _jobTypeCode = \"202\",\"Restore Job\",\r\n        _jobTypeCode = \"203\",\"Undo Failover Plan\",\r\n        _jobTypeCode = \"290\",\"Restore Job\",\r\n        _jobTypeCode = \"316\",\"CDP Policy\",\r\n        _jobTypeCode = \"4000\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"12000\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"12002\",\"Agent Backup Job (Backup Policy)\",\r\n        _jobTypeCode = \"12003\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"13000\",\"File Backup job\",\r\n        _jobTypeCode = \"13003\",\"File Backup Copy Job\",\r\n        _jobTypeCode = \"14000\",\"Backup Job\",\r\n        _jobTypeCode = \"15000\",\"Storage Snapshot Snapshot-Only Job\",\r\n        _jobTypeCode = \"15001\",\"Storage Snapshot Backup Job\",\r\n        _jobTypeCode = \"15002\",\"Storage Snapshot Copy Job\",\r\n        _jobTypeCode = \"15004\",\"Storage Snapshot Restore Session\",\r\n        _jobTypeCode = \"18000\",\"Archive Tier Backup Job\",\r\n        _jobTypeCode = \"18001\",\"Archive Tier Restore Session\",\r\n        _jobTypeCode = \"18002\",\"Archive Download Session\",\r\n        _jobTypeCode = \"18003\",\"Archive Tier Synchronization Job\",\r\n        _jobTypeCode = \"18004\",\"Archive Tier Backup Copy Job\",\r\n        _jobTypeCode = \"18005\",\"Archive Tier Archiving Job\",\r\n        _jobTypeCode = \"18006\",\"Publish Disk Session\",\r\n        _jobTypeCode = \"18008\",\"Object Storage Repository Synchronization Job\",\r\n        _jobTypeCode = \"24002\",\"Guest OS File Restore Session\",\r\n        _jobTypeCode = \"33000\",\"SureBackup Scan only\",\r\n        _jobTypeCode = \"33001\",\"SureBackup Scan only\")\r\n| filter _jobTypeCode = \"0\" AND _jobResult = $x_axis.value  \r\n| fields\r\n    _host as `Data Source`, _time as `Date`, _description as `Message Details`, _jobType as `Job Type`, _jobResult as `State`",
+                    "timePicker": [],
+                    "openInNewTab": true
+                  },
+                  "actionType": "open_xql_search"
+                }
+              }
+            },
+            {
+              "key": "xql_1715780786267",
+              "data": {
+                "type": "Custom XQL",
+                "width": 33.333333333333336,
+                "height": 291,
+                "params": [
+                  {
+                    "name": "hosts",
+                    "value": "*"
+                  }
+                ],
+                "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"790\")\r\n| alter \r\n    _jobResultCode=arrayindex(regextract(_raw_log, \"param3\\=\\\"(\\d+)\\\"\"), 0),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($hosts)\r\n| alter _jobResult=if(\r\n    _jobResultCode = \"0\", \"Success\",\r\n    _jobResultCode = \"1\", \"Warning\",\r\n    _jobResultCode = \"2\", \"Failed\",\r\n    _jobResultCode = \"3\", \"Working\")\r\n| comp\r\n    count(_instanceId) as _jobsByResult by _jobResult \r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\n| view graph type = pie subtype = full xaxis = _jobResult yaxis = _jobsByResult valuecolor(\"Success\",\"#00D15F\") ",
+                "time_frame": { "relativeTime": 2592000000 },
+                "viewOptions": {
+                  "type": "pie",
+                  "commands": [
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "subtype",
+                        "value": "full"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "xaxis",
+                        "value": "_jobResult"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxis",
+                        "value": "_jobsByResult"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "Success", "#00D15F" ],
+                        "name": "valuecolor"
+                      }
+                    }
+                  ]
+                },
+                "drilldown_config": {
+                  "actionData": {
+                    "timeRange": "widget_timeframe",
+                    "xqlPhrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"790\")\r\n| alter \r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0)),\r\n    _jobResultCode=arrayindex(regextract(_raw_log, \"param3\\=\\\"(\\d+)\\\"\"), 0),\r\n    _jobTypeCode=if(\r\n        _instanceId=\"290\", \"290\", arrayindex(regextract(_raw_log, \"JobType\\=\\\"(\\d+)\\\"\"), 0)),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0),\r\n    _description=arrayindex(regextract(_raw_log, \"Description\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0)\r\n| alter \r\n    _jobResult=if(\r\n        _jobResultCode = \"0\", \"Success\",\r\n        _jobResultCode = \"1\", \"Warning\",\r\n        _jobResultCode = \"2\", \"Failed\",\r\n        _jobResultCode = \"3\", \"Working\"),\r\n    _jobType=if(\r\n        _jobTypeCode = \"1\",\"Replication Job\",\r\n        _jobTypeCode = \"2\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"3\",\"SureBackup Job\",\r\n        _jobTypeCode = \"0\",\"Backup Job\",\r\n        _jobTypeCode = \"8\",\"Quick Migration\",\r\n        _jobTypeCode = \"22\",\"Rescan Job\",\r\n        _jobTypeCode = \"24\",\"File to Tape Job\",\r\n        _jobTypeCode = \"28\",\"Backup to Tape Job\",\r\n        _jobTypeCode = \"50\",\"Replication Job\",\r\n        _jobTypeCode = \"51\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"52\",\"MS SQL Log Backup Job\",\r\n        _jobTypeCode = \"54\",\"Oracle Log Backup Job\",\r\n        _jobTypeCode = \"63\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"65\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"70\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"74\",\"PostgreSQL Log Backup Job\",\r\n        _jobTypeCode = \"100\",\"Configuration Backup Job\",\r\n        _jobTypeCode = \"104\",\"Configuration Database Maintenance Job\",\r\n        _jobTypeCode = \"202\",\"Restore Job\",\r\n        _jobTypeCode = \"203\",\"Undo Failover Plan\",\r\n        _jobTypeCode = \"290\",\"Restore Job\",\r\n        _jobTypeCode = \"316\",\"CDP Policy\",\r\n        _jobTypeCode = \"4000\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"12000\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"12002\",\"Agent Backup Job (Backup Policy)\",\r\n        _jobTypeCode = \"12003\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"13000\",\"File Backup job\",\r\n        _jobTypeCode = \"13003\",\"File Backup Copy Job\",\r\n        _jobTypeCode = \"14000\",\"Backup Job\",\r\n        _jobTypeCode = \"15000\",\"Storage Snapshot Snapshot-Only Job\",\r\n        _jobTypeCode = \"15001\",\"Storage Snapshot Backup Job\",\r\n        _jobTypeCode = \"15002\",\"Storage Snapshot Copy Job\",\r\n        _jobTypeCode = \"15004\",\"Storage Snapshot Restore Session\",\r\n        _jobTypeCode = \"18000\",\"Archive Tier Backup Job\",\r\n        _jobTypeCode = \"18001\",\"Archive Tier Restore Session\",\r\n        _jobTypeCode = \"18002\",\"Archive Download Session\",\r\n        _jobTypeCode = \"18003\",\"Archive Tier Synchronization Job\",\r\n        _jobTypeCode = \"18004\",\"Archive Tier Backup Copy Job\",\r\n        _jobTypeCode = \"18005\",\"Archive Tier Archiving Job\",\r\n        _jobTypeCode = \"18006\",\"Publish Disk Session\",\r\n        _jobTypeCode = \"18008\",\"Object Storage Repository Synchronization Job\",\r\n        _jobTypeCode = \"24002\",\"Guest OS File Restore Session\",\r\n        _jobTypeCode = \"33000\",\"SureBackup Scan only\",\r\n        _jobTypeCode = \"33001\",\"SureBackup Scan only\")\r\n| filter _jobResult = $x_axis.value  \r\n| fields\r\n    _host as `Data Source`, _time as `Date`, _description as `Message Details`, _jobType as `Job Type`, _jobResult as `State`",
+                    "timePicker": [],
+                    "openInNewTab": true
+                  },
+                  "actionType": "open_xql_search"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-7730",
+          "data": [
+            {
+              "key": "xql_1715780875011",
+              "data": {
+                "type": "Custom XQL",
+                "width": 33.333333333333336,
+                "height": 280,
+                "params": [
+                  {
+                    "name": "hosts",
+                    "value": "*"
+                  }
+                ],
+                "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"36022\",\"36026\")\r\n| alter \r\n    _jobResultCode=arrayindex(regextract(_raw_log, \"Result\\=\\\"(\\d+)\\\"\"), 0),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($hosts)\r\n| alter _jobResult=if(\r\n    _jobResultCode = \"0\", \"Success\",\r\n    _jobResultCode = \"1\", \"Warning\",\r\n    _jobResultCode = \"2\", \"Failed\",\r\n    _jobResultCode = \"3\", \"Working\")\r\n| comp\r\n    count(_instanceId) as _jobsByResult by _jobResult \r\n\r\n\n| view graph type = pie subtype = full xaxis = _jobResult yaxis = _jobsByResult valuecolor(\"Success\",\"#00D15F\") ",
+                "time_frame": { "relativeTime": 2592000000 },
+                "viewOptions": {
+                  "type": "pie",
+                  "commands": [
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "subtype",
+                        "value": "full"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "xaxis",
+                        "value": "_jobResult"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxis",
+                        "value": "_jobsByResult"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "Success", "#00D15F" ],
+                        "name": "valuecolor"
+                      }
+                    }
+                  ]
+                },
+                "drilldown_config": {
+                  "actionData": {
+                    "timeRange": "widget_timeframe",
+                    "xqlPhrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"36022\",\"36026\")\r\n| alter \r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0)),\r\n    _jobResultCode=arrayindex(regextract(_raw_log, \"Result\\=\\\"(\\d+)\\\"\"), 0),\r\n    _jobTypeCode=if(\r\n        _instanceId=\"290\", \"290\", arrayindex(regextract(_raw_log, \"JobType\\=\\\"(\\d+)\\\"\"), 0)),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0),\r\n    _description=arrayindex(regextract(_raw_log, \"Description\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0)\r\n| alter \r\n    _jobResult=if(\r\n        _jobResultCode = \"0\", \"Success\",\r\n        _jobResultCode = \"1\", \"Warning\",\r\n        _jobResultCode = \"2\", \"Failed\",\r\n        _jobResultCode = \"3\", \"Working\"),\r\n    _jobType=if(\r\n        _jobTypeCode = \"1\",\"Replication Job\",\r\n        _jobTypeCode = \"2\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"3\",\"SureBackup Job\",\r\n        _jobTypeCode = \"0\",\"Backup Job\",\r\n        _jobTypeCode = \"8\",\"Quick Migration\",\r\n        _jobTypeCode = \"22\",\"Rescan Job\",\r\n        _jobTypeCode = \"24\",\"File to Tape Job\",\r\n        _jobTypeCode = \"28\",\"Backup to Tape Job\",\r\n        _jobTypeCode = \"50\",\"Replication Job\",\r\n        _jobTypeCode = \"51\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"52\",\"MS SQL Log Backup Job\",\r\n        _jobTypeCode = \"54\",\"Oracle Log Backup Job\",\r\n        _jobTypeCode = \"63\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"65\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"70\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"74\",\"PostgreSQL Log Backup Job\",\r\n        _jobTypeCode = \"100\",\"Configuration Backup Job\",\r\n        _jobTypeCode = \"104\",\"Configuration Database Maintenance Job\",\r\n        _jobTypeCode = \"202\",\"Restore Job\",\r\n        _jobTypeCode = \"203\",\"Undo Failover Plan\",\r\n        _jobTypeCode = \"290\",\"Restore Job\",\r\n        _jobTypeCode = \"316\",\"CDP Policy\",\r\n        _jobTypeCode = \"4000\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"12000\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"12002\",\"Agent Backup Job (Backup Policy)\",\r\n        _jobTypeCode = \"12003\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"13000\",\"File Backup job\",\r\n        _jobTypeCode = \"13003\",\"File Backup Copy Job\",\r\n        _jobTypeCode = \"14000\",\"Backup Job\",\r\n        _jobTypeCode = \"15000\",\"Storage Snapshot Snapshot-Only Job\",\r\n        _jobTypeCode = \"15001\",\"Storage Snapshot Backup Job\",\r\n        _jobTypeCode = \"15002\",\"Storage Snapshot Copy Job\",\r\n        _jobTypeCode = \"15004\",\"Storage Snapshot Restore Session\",\r\n        _jobTypeCode = \"18000\",\"Archive Tier Backup Job\",\r\n        _jobTypeCode = \"18001\",\"Archive Tier Restore Session\",\r\n        _jobTypeCode = \"18002\",\"Archive Download Session\",\r\n        _jobTypeCode = \"18003\",\"Archive Tier Synchronization Job\",\r\n        _jobTypeCode = \"18004\",\"Archive Tier Backup Copy Job\",\r\n        _jobTypeCode = \"18005\",\"Archive Tier Archiving Job\",\r\n        _jobTypeCode = \"18006\",\"Publish Disk Session\",\r\n        _jobTypeCode = \"18008\",\"Object Storage Repository Synchronization Job\",\r\n        _jobTypeCode = \"24002\",\"Guest OS File Restore Session\",\r\n        _jobTypeCode = \"33000\",\"SureBackup Scan only\",\r\n        _jobTypeCode = \"33001\",\"SureBackup Scan only\")\r\n| filter _jobResult = $x_axis.value  \r\n| fields\r\n    _host as `Data Source`, _time as `Date`, _description as `Message Details`, _jobType as `Job Type`, _jobResult as `State`",
+                    "timePicker": [],
+                    "openInNewTab": true
+                  },
+                  "actionType": "open_xql_search"
+                }
+              }
+            },
+            {
+              "key": "xql_1715780917449",
+              "data": {
+                "type": "Custom XQL",
+                "width": 33.333333333333336,
+                "height": 280,
+                "params": [
+                  {
+                    "name": "hosts",
+                    "value": "*"
+                  }
+                ],
+                "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"151\")\r\n| alter \r\n    _jobResultCode=arrayindex(regextract(_raw_log, \"Status\\=\\\"(\\d+)\\\"\"), 0),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($hosts)\r\n| alter _jobResult=if(\r\n    _jobResultCode = \"0\", \"Success\",\r\n    _jobResultCode = \"1\", \"Warning\",\r\n    _jobResultCode = \"2\", \"Failed\",\r\n    _jobResultCode = \"3\", \"Working\")\r\n| comp\r\n    count(_instanceId) as _jobsByResult by _jobResult \r\n\r\n\r\n\r\n\r\n\r\n\r\n\n| view graph type = pie subtype = full xaxis = _jobResult yaxis = _jobsByResult valuecolor(\"Success\",\"#00D15F\") ",
+                "time_frame": { "relativeTime": 2592000000 },
+                "viewOptions": {
+                  "type": "pie",
+                  "commands": [
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "subtype",
+                        "value": "full"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "xaxis",
+                        "value": "_jobResult"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxis",
+                        "value": "_jobsByResult"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "Success", "#00D15F" ],
+                        "name": "valuecolor"
+                      }
+                    }
+                  ]
+                },
+                "drilldown_config": {
+                  "actionData": {
+                    "timeRange": "widget_timeframe",
+                    "xqlPhrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"151\")\r\n| alter \r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0)),\r\n    _jobResultCode=arrayindex(regextract(_raw_log, \"Status\\=\\\"(\\d+)\\\"\"), 0),\r\n    _jobTypeCode=if(\r\n        _instanceId=\"290\", \"290\", arrayindex(regextract(_raw_log, \"JobType\\=\\\"(\\d+)\\\"\"), 0)),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0),\r\n    _description=arrayindex(regextract(_raw_log, \"Description\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0)\r\n| alter \r\n    _jobResult=if(\r\n        _jobResultCode = \"0\", \"Success\",\r\n        _jobResultCode = \"1\", \"Warning\",\r\n        _jobResultCode = \"2\", \"Failed\",\r\n        _jobResultCode = \"3\", \"Working\"),\r\n    _jobType=if(\r\n        _jobTypeCode = \"1\",\"Replication Job\",\r\n        _jobTypeCode = \"2\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"3\",\"SureBackup Job\",\r\n        _jobTypeCode = \"0\",\"Backup Job\",\r\n        _jobTypeCode = \"8\",\"Quick Migration\",\r\n        _jobTypeCode = \"22\",\"Rescan Job\",\r\n        _jobTypeCode = \"24\",\"File to Tape Job\",\r\n        _jobTypeCode = \"28\",\"Backup to Tape Job\",\r\n        _jobTypeCode = \"50\",\"Replication Job\",\r\n        _jobTypeCode = \"51\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"52\",\"MS SQL Log Backup Job\",\r\n        _jobTypeCode = \"54\",\"Oracle Log Backup Job\",\r\n        _jobTypeCode = \"63\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"65\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"70\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"74\",\"PostgreSQL Log Backup Job\",\r\n        _jobTypeCode = \"100\",\"Configuration Backup Job\",\r\n        _jobTypeCode = \"104\",\"Configuration Database Maintenance Job\",\r\n        _jobTypeCode = \"202\",\"Restore Job\",\r\n        _jobTypeCode = \"203\",\"Undo Failover Plan\",\r\n        _jobTypeCode = \"290\",\"Restore Job\",\r\n        _jobTypeCode = \"316\",\"CDP Policy\",\r\n        _jobTypeCode = \"4000\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"12000\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"12002\",\"Agent Backup Job (Backup Policy)\",\r\n        _jobTypeCode = \"12003\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"13000\",\"File Backup job\",\r\n        _jobTypeCode = \"13003\",\"File Backup Copy Job\",\r\n        _jobTypeCode = \"14000\",\"Backup Job\",\r\n        _jobTypeCode = \"15000\",\"Storage Snapshot Snapshot-Only Job\",\r\n        _jobTypeCode = \"15001\",\"Storage Snapshot Backup Job\",\r\n        _jobTypeCode = \"15002\",\"Storage Snapshot Copy Job\",\r\n        _jobTypeCode = \"15004\",\"Storage Snapshot Restore Session\",\r\n        _jobTypeCode = \"18000\",\"Archive Tier Backup Job\",\r\n        _jobTypeCode = \"18001\",\"Archive Tier Restore Session\",\r\n        _jobTypeCode = \"18002\",\"Archive Download Session\",\r\n        _jobTypeCode = \"18003\",\"Archive Tier Synchronization Job\",\r\n        _jobTypeCode = \"18004\",\"Archive Tier Backup Copy Job\",\r\n        _jobTypeCode = \"18005\",\"Archive Tier Archiving Job\",\r\n        _jobTypeCode = \"18006\",\"Publish Disk Session\",\r\n        _jobTypeCode = \"18008\",\"Object Storage Repository Synchronization Job\",\r\n        _jobTypeCode = \"24002\",\"Guest OS File Restore Session\",\r\n        _jobTypeCode = \"33000\",\"SureBackup Scan only\",\r\n        _jobTypeCode = \"33001\",\"SureBackup Scan only\")\r\n| filter _jobResult = $x_axis.value  \r\n| fields\r\n    _host as `Data Source`, _time as `Date`, _description as `Message Details`, _jobType as `Job Type`, _jobResult as `State`",
+                    "timePicker": [],
+                    "openInNewTab": true
+                  },
+                  "actionType": "open_xql_search"
+                }
+              }
+            },
+            {
+              "key": "xql_1715780965590",
+              "data": {
+                "type": "Custom XQL",
+                "width": 33.333333333333336,
+                "height": 280,
+                "params": [
+                  {
+                    "name": "hosts",
+                    "value": "*"
+                  }
+                ],
+                "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"490\")\r\n| alter \r\n    _jobResultCode=arrayindex(regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\"), 0),\r\n    _jobTypeCode=arrayindex(regextract(_raw_log , \"JobType\\=\\\"(\\d+)\\\"\"), 0),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _jobTypeCode=\"13003\" and _host in ($hosts)\r\n| alter _jobResult=if(\r\n    _jobResultCode = \"0\", \"Success\",\r\n    _jobResultCode = \"1\", \"Warning\",\r\n    _jobResultCode = \"2\", \"Failed\",\r\n    _jobResultCode = \"3\", \"Working\")\r\n| comp\r\n    count(_instanceId) as _jobsByResult by _jobResult \r\n\r\n\r\n\r\n\r\n\n| view graph type = pie subtype = full xaxis = _jobResult yaxis = _jobsByResult valuecolor(\"Success\",\"#00D15F\") ",
+                "time_frame": { "relativeTime": 2592000000 },
+                "viewOptions": {
+                  "type": "pie",
+                  "commands": [
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "subtype",
+                        "value": "full"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "xaxis",
+                        "value": "_jobResult"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxis",
+                        "value": "_jobsByResult"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "Success", "#00D15F" ],
+                        "name": "valuecolor"
+                      }
+                    }
+                  ]
+                },
+                "drilldown_config": {
+                  "actionData": {
+                    "timeRange": "widget_timeframe",
+                    "xqlPhrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"490\")\r\n| alter \r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0)),\r\n    _jobResultCode=arrayindex(regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\"), 0),\r\n    _jobTypeCode=if(\r\n        _instanceId=\"290\", \"290\", arrayindex(regextract(_raw_log, \"JobType\\=\\\"(\\d+)\\\"\"), 0)),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0),\r\n    _description=arrayindex(regextract(_raw_log, \"Description\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0)\r\n| alter \r\n    _jobResult=if(\r\n        _jobResultCode = \"0\", \"Success\",\r\n        _jobResultCode = \"1\", \"Warning\",\r\n        _jobResultCode = \"2\", \"Failed\",\r\n        _jobResultCode = \"3\", \"Working\"),\r\n    _jobType=if(\r\n        _jobTypeCode = \"1\",\"Replication Job\",\r\n        _jobTypeCode = \"2\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"3\",\"SureBackup Job\",\r\n        _jobTypeCode = \"0\",\"Backup Job\",\r\n        _jobTypeCode = \"8\",\"Quick Migration\",\r\n        _jobTypeCode = \"22\",\"Rescan Job\",\r\n        _jobTypeCode = \"24\",\"File to Tape Job\",\r\n        _jobTypeCode = \"28\",\"Backup to Tape Job\",\r\n        _jobTypeCode = \"50\",\"Replication Job\",\r\n        _jobTypeCode = \"51\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"52\",\"MS SQL Log Backup Job\",\r\n        _jobTypeCode = \"54\",\"Oracle Log Backup Job\",\r\n        _jobTypeCode = \"63\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"65\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"70\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"74\",\"PostgreSQL Log Backup Job\",\r\n        _jobTypeCode = \"100\",\"Configuration Backup Job\",\r\n        _jobTypeCode = \"104\",\"Configuration Database Maintenance Job\",\r\n        _jobTypeCode = \"202\",\"Restore Job\",\r\n        _jobTypeCode = \"203\",\"Undo Failover Plan\",\r\n        _jobTypeCode = \"290\",\"Restore Job\",\r\n        _jobTypeCode = \"316\",\"CDP Policy\",\r\n        _jobTypeCode = \"4000\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"12000\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"12002\",\"Agent Backup Job (Backup Policy)\",\r\n        _jobTypeCode = \"12003\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"13000\",\"File Backup job\",\r\n        _jobTypeCode = \"13003\",\"File Backup Copy Job\",\r\n        _jobTypeCode = \"14000\",\"Backup Job\",\r\n        _jobTypeCode = \"15000\",\"Storage Snapshot Snapshot-Only Job\",\r\n        _jobTypeCode = \"15001\",\"Storage Snapshot Backup Job\",\r\n        _jobTypeCode = \"15002\",\"Storage Snapshot Copy Job\",\r\n        _jobTypeCode = \"15004\",\"Storage Snapshot Restore Session\",\r\n        _jobTypeCode = \"18000\",\"Archive Tier Backup Job\",\r\n        _jobTypeCode = \"18001\",\"Archive Tier Restore Session\",\r\n        _jobTypeCode = \"18002\",\"Archive Download Session\",\r\n        _jobTypeCode = \"18003\",\"Archive Tier Synchronization Job\",\r\n        _jobTypeCode = \"18004\",\"Archive Tier Backup Copy Job\",\r\n        _jobTypeCode = \"18005\",\"Archive Tier Archiving Job\",\r\n        _jobTypeCode = \"18006\",\"Publish Disk Session\",\r\n        _jobTypeCode = \"18008\",\"Object Storage Repository Synchronization Job\",\r\n        _jobTypeCode = \"24002\",\"Guest OS File Restore Session\",\r\n        _jobTypeCode = \"33000\",\"SureBackup Scan only\",\r\n        _jobTypeCode = \"33001\",\"SureBackup Scan only\")\r\n| filter _jobTypeCode=\"13003\" and _jobResult = $x_axis.value  \r\n| fields\r\n    _host as `Data Source`, _time as `Date`, _description as `Message Details`, _jobType as `Job Type`, _jobResult as `State`",
+                    "timePicker": [],
+                    "openInNewTab": true
+                  },
+                  "actionType": "open_xql_search"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-1357",
+          "data": [
+            {
+              "key": "xql_1715781014094",
+              "data": {
+                "type": "Custom XQL",
+                "width": 33.333333333333336,
+                "height": 285,
+                "params": [
+                  {
+                    "name": "hosts",
+                    "value": "*"
+                  }
+                ],
+                "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"190\")\r\n| alter \r\n    _jobResultCode=arrayindex(regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\"), 0),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0),\r\n    _jobTypeCode=if(\r\n        _instanceId=\"290\", \"290\", arrayindex(if(\r\n            _instanceId=\"790\", regextract(_raw_log, \"param4\\=\\\"(\\d+)\\\"\"), \r\n            \"1\"=\"1\", regextract(_raw_log, \"JobType\\=\\\"(\\d+)\\\"\")), 0))\r\n| filter _jobTypeCode = \"1\" AND _host in ($hosts)\r\n| alter _jobResult=if(\r\n    _jobResultCode = \"0\", \"Success\",\r\n    _jobResultCode = \"1\", \"Warning\",\r\n    _jobResultCode = \"2\", \"Failed\",\r\n    _jobResultCode = \"3\", \"Working\")\r\n| comp\r\n    count(_instanceId) as _jobsByResult by _jobResult \r\n\r\n\r\n\r\n\r\n\r\n\r\n\n| view graph type = pie subtype = full xaxis = _jobResult yaxis = _jobsByResult valuecolor(\"Success\",\"#00D15F\") ",
+                "time_frame": { "relativeTime": 2592000000 },
+                "viewOptions": {
+                  "type": "pie",
+                  "commands": [
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "subtype",
+                        "value": "full"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "xaxis",
+                        "value": "_jobResult"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxis",
+                        "value": "_jobsByResult"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "Success", "#00D15F" ],
+                        "name": "valuecolor"
+                      }
+                    }
+                  ]
+                },
+                "drilldown_config": {
+                  "actionData": {
+                    "timeRange": "widget_timeframe",
+                    "xqlPhrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"190\")\r\n| alter \r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0)),\r\n    _jobResultCode=arrayindex(regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\"), 0),\r\n    _jobTypeCode=if(\r\n        _instanceId=\"290\", \"290\", arrayindex(regextract(_raw_log, \"JobType\\=\\\"(\\d+)\\\"\"), 0)),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0),\r\n    _description=arrayindex(regextract(_raw_log, \"Description\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0)\r\n| alter \r\n    _jobResult=if(\r\n        _jobResultCode = \"0\", \"Success\",\r\n        _jobResultCode = \"1\", \"Warning\",\r\n        _jobResultCode = \"2\", \"Failed\",\r\n        _jobResultCode = \"3\", \"Working\"),\r\n    _jobType=if(\r\n        _jobTypeCode = \"1\",\"Replication Job\",\r\n        _jobTypeCode = \"2\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"3\",\"SureBackup Job\",\r\n        _jobTypeCode = \"0\",\"Backup Job\",\r\n        _jobTypeCode = \"8\",\"Quick Migration\",\r\n        _jobTypeCode = \"22\",\"Rescan Job\",\r\n        _jobTypeCode = \"24\",\"File to Tape Job\",\r\n        _jobTypeCode = \"28\",\"Backup to Tape Job\",\r\n        _jobTypeCode = \"50\",\"Replication Job\",\r\n        _jobTypeCode = \"51\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"52\",\"MS SQL Log Backup Job\",\r\n        _jobTypeCode = \"54\",\"Oracle Log Backup Job\",\r\n        _jobTypeCode = \"63\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"65\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"70\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"74\",\"PostgreSQL Log Backup Job\",\r\n        _jobTypeCode = \"100\",\"Configuration Backup Job\",\r\n        _jobTypeCode = \"104\",\"Configuration Database Maintenance Job\",\r\n        _jobTypeCode = \"202\",\"Restore Job\",\r\n        _jobTypeCode = \"203\",\"Undo Failover Plan\",\r\n        _jobTypeCode = \"290\",\"Restore Job\",\r\n        _jobTypeCode = \"316\",\"CDP Policy\",\r\n        _jobTypeCode = \"4000\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"12000\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"12002\",\"Agent Backup Job (Backup Policy)\",\r\n        _jobTypeCode = \"12003\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"13000\",\"File Backup job\",\r\n        _jobTypeCode = \"13003\",\"File Backup Copy Job\",\r\n        _jobTypeCode = \"14000\",\"Backup Job\",\r\n        _jobTypeCode = \"15000\",\"Storage Snapshot Snapshot-Only Job\",\r\n        _jobTypeCode = \"15001\",\"Storage Snapshot Backup Job\",\r\n        _jobTypeCode = \"15002\",\"Storage Snapshot Copy Job\",\r\n        _jobTypeCode = \"15004\",\"Storage Snapshot Restore Session\",\r\n        _jobTypeCode = \"18000\",\"Archive Tier Backup Job\",\r\n        _jobTypeCode = \"18001\",\"Archive Tier Restore Session\",\r\n        _jobTypeCode = \"18002\",\"Archive Download Session\",\r\n        _jobTypeCode = \"18003\",\"Archive Tier Synchronization Job\",\r\n        _jobTypeCode = \"18004\",\"Archive Tier Backup Copy Job\",\r\n        _jobTypeCode = \"18005\",\"Archive Tier Archiving Job\",\r\n        _jobTypeCode = \"18006\",\"Publish Disk Session\",\r\n        _jobTypeCode = \"18008\",\"Object Storage Repository Synchronization Job\",\r\n        _jobTypeCode = \"24002\",\"Guest OS File Restore Session\",\r\n        _jobTypeCode = \"33000\",\"SureBackup Scan only\",\r\n        _jobTypeCode = \"33001\",\"SureBackup Scan only\")\r\n| filter _jobTypeCode = \"1\" AND _jobResult = $x_axis.value  \r\n| fields\r\n    _host as `Data Source`, _time as `Date`, _description as `Message Details`, _jobType as `Job Type`, _jobResult as `State`",
+                    "timePicker": [],
+                    "openInNewTab": true
+                  },
+                  "actionType": "open_xql_search"
+                }
+              }
+            },
+            {
+              "key": "xql_1715781071150",
+              "data": {
+                "type": "Custom XQL",
+                "width": 33.333333333333336,
+                "height": 285,
+                "params": [
+                  {
+                    "name": "hosts",
+                    "value": "*"
+                  }
+                ],
+                "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"490\")\r\n| alter \r\n    _jobResultCode=arrayindex(regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\"), 0),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($hosts)\r\n| alter _jobResult=if(\r\n    _jobResultCode = \"0\", \"Success\",\r\n    _jobResultCode = \"1\", \"Warning\",\r\n    _jobResultCode = \"2\", \"Failed\",\r\n    _jobResultCode = \"3\", \"Working\")\r\n| comp\r\n    count(_instanceId) as _jobsByResult by _jobResult \r\n\r\n\r\n\r\n\r\n\r\n\r\n\n| view graph type = pie subtype = full xaxis = _jobResult yaxis = _jobsByResult valuecolor(\"Success\",\"#00D15F\") ",
+                "time_frame": { "relativeTime": 2592000000 },
+                "viewOptions": {
+                  "type": "pie",
+                  "commands": [
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "subtype",
+                        "value": "full"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "xaxis",
+                        "value": "_jobResult"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxis",
+                        "value": "_jobsByResult"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "Success", "#00D15F" ],
+                        "name": "valuecolor"
+                      }
+                    }
+                  ]
+                },
+                "drilldown_config": {
+                  "actionData": {
+                    "timeRange": "widget_timeframe",
+                    "xqlPhrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"490\")\r\n| alter \r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0)),\r\n    _jobResultCode=arrayindex(regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\"), 0),\r\n    _jobTypeCode=if(\r\n        _instanceId=\"290\", \"290\", arrayindex(regextract(_raw_log, \"JobType\\=\\\"(\\d+)\\\"\"), 0)),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0),\r\n    _description=arrayindex(regextract(_raw_log, \"Description\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0)\r\n| alter \r\n    _jobResult=if(\r\n        _jobResultCode = \"0\", \"Success\",\r\n        _jobResultCode = \"1\", \"Warning\",\r\n        _jobResultCode = \"2\", \"Failed\",\r\n        _jobResultCode = \"3\", \"Working\"),\r\n    _jobType=if(\r\n        _jobTypeCode = \"1\",\"Replication Job\",\r\n        _jobTypeCode = \"2\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"3\",\"SureBackup Job\",\r\n        _jobTypeCode = \"0\",\"Backup Job\",\r\n        _jobTypeCode = \"8\",\"Quick Migration\",\r\n        _jobTypeCode = \"22\",\"Rescan Job\",\r\n        _jobTypeCode = \"24\",\"File to Tape Job\",\r\n        _jobTypeCode = \"28\",\"Backup to Tape Job\",\r\n        _jobTypeCode = \"50\",\"Replication Job\",\r\n        _jobTypeCode = \"51\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"52\",\"MS SQL Log Backup Job\",\r\n        _jobTypeCode = \"54\",\"Oracle Log Backup Job\",\r\n        _jobTypeCode = \"63\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"65\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"70\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"74\",\"PostgreSQL Log Backup Job\",\r\n        _jobTypeCode = \"100\",\"Configuration Backup Job\",\r\n        _jobTypeCode = \"104\",\"Configuration Database Maintenance Job\",\r\n        _jobTypeCode = \"202\",\"Restore Job\",\r\n        _jobTypeCode = \"203\",\"Undo Failover Plan\",\r\n        _jobTypeCode = \"290\",\"Restore Job\",\r\n        _jobTypeCode = \"316\",\"CDP Policy\",\r\n        _jobTypeCode = \"4000\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"12000\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"12002\",\"Agent Backup Job (Backup Policy)\",\r\n        _jobTypeCode = \"12003\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"13000\",\"File Backup job\",\r\n        _jobTypeCode = \"13003\",\"File Backup Copy Job\",\r\n        _jobTypeCode = \"14000\",\"Backup Job\",\r\n        _jobTypeCode = \"15000\",\"Storage Snapshot Snapshot-Only Job\",\r\n        _jobTypeCode = \"15001\",\"Storage Snapshot Backup Job\",\r\n        _jobTypeCode = \"15002\",\"Storage Snapshot Copy Job\",\r\n        _jobTypeCode = \"15004\",\"Storage Snapshot Restore Session\",\r\n        _jobTypeCode = \"18000\",\"Archive Tier Backup Job\",\r\n        _jobTypeCode = \"18001\",\"Archive Tier Restore Session\",\r\n        _jobTypeCode = \"18002\",\"Archive Download Session\",\r\n        _jobTypeCode = \"18003\",\"Archive Tier Synchronization Job\",\r\n        _jobTypeCode = \"18004\",\"Archive Tier Backup Copy Job\",\r\n        _jobTypeCode = \"18005\",\"Archive Tier Archiving Job\",\r\n        _jobTypeCode = \"18006\",\"Publish Disk Session\",\r\n        _jobTypeCode = \"18008\",\"Object Storage Repository Synchronization Job\",\r\n        _jobTypeCode = \"24002\",\"Guest OS File Restore Session\",\r\n        _jobTypeCode = \"33000\",\"SureBackup Scan only\",\r\n        _jobTypeCode = \"33001\",\"SureBackup Scan only\")\r\n| filter _jobResult = $x_axis.value  \r\n| fields\r\n    _host as `Data Source`, _time as `Date`, _description as `Message Details`, _jobType as `Job Type`, _jobResult as `State`",
+                    "timePicker": [],
+                    "openInNewTab": true
+                  },
+                  "actionType": "open_xql_search"
+                }
+              }
+            },
+            {
+              "key": "xql_1715781165935",
+              "data": {
+                "type": "Custom XQL",
+                "width": 33.333333333333336,
+                "height": 285,
+                "params": [
+                  {
+                    "name": "hosts",
+                    "value": "*"
+                  }
+                ],
+                "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"194\")\r\n| alter \r\n    _jobResultCode=arrayindex(regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\"), 0),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($hosts)\r\n| alter _jobResult=if(\r\n    _jobResultCode = \"0\", \"Success\",\r\n    _jobResultCode = \"1\", \"Warning\",\r\n    _jobResultCode = \"2\", \"Failed\",\r\n    _jobResultCode = \"3\", \"Working\")\r\n| comp\r\n    count(_instanceId) as _jobsByResult by _jobResult \r\n\r\n\r\n\r\n\r\n\r\n\n| view graph type = pie subtype = full xaxis = _jobResult yaxis = _jobsByResult valuecolor(\"Success\",\"#00D15F\") ",
+                "time_frame": { "relativeTime": 2592000000 },
+                "viewOptions": {
+                  "type": "pie",
+                  "commands": [
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "subtype",
+                        "value": "full"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "xaxis",
+                        "value": "_jobResult"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxis",
+                        "value": "_jobsByResult"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "Success", "#00D15F" ],
+                        "name": "valuecolor"
+                      }
+                    }
+                  ]
+                },
+                "drilldown_config": {
+                  "actionData": {
+                    "timeRange": "widget_timeframe",
+                    "xqlPhrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"194\")\r\n| alter \r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0)),\r\n    _jobResultCode=arrayindex(regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\"), 0),\r\n    _jobTypeCode=if(\r\n        _instanceId=\"290\", \"290\", arrayindex(regextract(_raw_log, \"JobType\\=\\\"(\\d+)\\\"\"), 0)),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0),\r\n    _description=arrayindex(regextract(_raw_log, \"Description\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0)\r\n| alter \r\n    _jobResult=if(\r\n        _jobResultCode = \"0\", \"Success\",\r\n        _jobResultCode = \"1\", \"Warning\",\r\n        _jobResultCode = \"2\", \"Failed\",\r\n        _jobResultCode = \"3\", \"Working\"),\r\n    _jobType=if(\r\n        _jobTypeCode = \"1\",\"Replication Job\",\r\n        _jobTypeCode = \"2\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"3\",\"SureBackup Job\",\r\n        _jobTypeCode = \"0\",\"Backup Job\",\r\n        _jobTypeCode = \"8\",\"Quick Migration\",\r\n        _jobTypeCode = \"22\",\"Rescan Job\",\r\n        _jobTypeCode = \"24\",\"File to Tape Job\",\r\n        _jobTypeCode = \"28\",\"Backup to Tape Job\",\r\n        _jobTypeCode = \"50\",\"Replication Job\",\r\n        _jobTypeCode = \"51\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"52\",\"MS SQL Log Backup Job\",\r\n        _jobTypeCode = \"54\",\"Oracle Log Backup Job\",\r\n        _jobTypeCode = \"63\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"65\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"70\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"74\",\"PostgreSQL Log Backup Job\",\r\n        _jobTypeCode = \"100\",\"Configuration Backup Job\",\r\n        _jobTypeCode = \"104\",\"Configuration Database Maintenance Job\",\r\n        _jobTypeCode = \"202\",\"Restore Job\",\r\n        _jobTypeCode = \"203\",\"Undo Failover Plan\",\r\n        _jobTypeCode = \"290\",\"Restore Job\",\r\n        _jobTypeCode = \"316\",\"CDP Policy\",\r\n        _jobTypeCode = \"4000\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"12000\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"12002\",\"Agent Backup Job (Backup Policy)\",\r\n        _jobTypeCode = \"12003\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"13000\",\"File Backup job\",\r\n        _jobTypeCode = \"13003\",\"File Backup Copy Job\",\r\n        _jobTypeCode = \"14000\",\"Backup Job\",\r\n        _jobTypeCode = \"15000\",\"Storage Snapshot Snapshot-Only Job\",\r\n        _jobTypeCode = \"15001\",\"Storage Snapshot Backup Job\",\r\n        _jobTypeCode = \"15002\",\"Storage Snapshot Copy Job\",\r\n        _jobTypeCode = \"15004\",\"Storage Snapshot Restore Session\",\r\n        _jobTypeCode = \"18000\",\"Archive Tier Backup Job\",\r\n        _jobTypeCode = \"18001\",\"Archive Tier Restore Session\",\r\n        _jobTypeCode = \"18002\",\"Archive Download Session\",\r\n        _jobTypeCode = \"18003\",\"Archive Tier Synchronization Job\",\r\n        _jobTypeCode = \"18004\",\"Archive Tier Backup Copy Job\",\r\n        _jobTypeCode = \"18005\",\"Archive Tier Archiving Job\",\r\n        _jobTypeCode = \"18006\",\"Publish Disk Session\",\r\n        _jobTypeCode = \"18008\",\"Object Storage Repository Synchronization Job\",\r\n        _jobTypeCode = \"24002\",\"Guest OS File Restore Session\",\r\n        _jobTypeCode = \"33000\",\"SureBackup Scan only\",\r\n        _jobTypeCode = \"33001\",\"SureBackup Scan only\")\r\n| filter _jobResult = $x_axis.value  \r\n| fields\r\n    _host as `Data Source`, _time as `Date`, _description as `Message Details`, _jobType as `Job Type`, _jobResult as `State`",
+                    "timePicker": [],
+                    "openInNewTab": true
+                  },
+                  "actionType": "open_xql_search"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-7460",
+          "data": [
+            {
+              "key": "xql_1715781224440",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 407,
+                "params": [
+                  {
+                    "name": "hosts",
+                    "value": "*"
+                  }
+                ],
+                "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"190\",\"290\",\"150\",\"151\",\"790\",\"194\",\"490\",\"451\",\"390\",\"36022\",\"36026\")\r\n| alter \r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0)),\r\n    _jobResultCode=arrayindex(if(\r\n        _instanceId in (\"790\"), regextract(_raw_log, \"param3\\=\\\"(\\d+)\\\"\"), \r\n        _instanceId in (\"36022\",\"36026\",\"290\"), regextract(_raw_log, \"Result\\=\\\"(\\d+)\\\"\"), \r\n        _instanceId in (\"150\",\"151\",\"451\"), regextract(_raw_log, \"Status\\=\\\"(\\d+)\\\"\"), \r\n        regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\")), 0),\r\n    _jobTypeCode=if(\r\n        _instanceId=\"290\", \"290\", arrayindex(regextract(_raw_log, \"JobType\\=\\\"(\\d+)\\\"\"), 0)),\r\n    _host=regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"),\r\n    _description=arrayindex(regextract(_raw_log, \"Description\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0)\r\n| filter _host in ($hosts)\r\n| alter \r\n    _jobResult=if(\r\n        _jobResultCode = \"0\", \"Success\",\r\n        _jobResultCode = \"1\", \"Warning\",\r\n        _jobResultCode = \"2\", \"Failed\",\r\n        _jobResultCode = \"3\", \"Working\"),\r\n    _jobType=if(\r\n        _jobTypeCode = \"1\",\"Replication Job\",\r\n        _jobTypeCode = \"2\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"3\",\"SureBackup Job\",\r\n        _jobTypeCode = \"0\",\"Backup Job\",\r\n        _jobTypeCode = \"8\",\"Quick Migration\",\r\n        _jobTypeCode = \"22\",\"Rescan Job\",\r\n        _jobTypeCode = \"24\",\"File to Tape Job\",\r\n        _jobTypeCode = \"28\",\"Backup to Tape Job\",\r\n        _jobTypeCode = \"50\",\"Replication Job\",\r\n        _jobTypeCode = \"51\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"52\",\"MS SQL Log Backup Job\",\r\n        _jobTypeCode = \"54\",\"Oracle Log Backup Job\",\r\n        _jobTypeCode = \"60\",\"HPE StoreOnce Replication Job\",\r\n        _jobTypeCode = \"63\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"65\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"70\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"74\",\"PostgreSQL Log Backup Job\",\r\n        _jobTypeCode = \"100\",\"Configuration Backup Job\",\r\n        _jobTypeCode = \"104\",\"Configuration Database Maintenance Job\",\r\n        _jobTypeCode = \"202\",\"Restore Job\",\r\n        _jobTypeCode = \"203\",\"Undo Failover Plan\",\r\n        _jobTypeCode = \"290\",\"Restore Job\",\r\n        _jobTypeCode = \"316\",\"CDP Policy\",\r\n        _jobTypeCode = \"4000\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"12000\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"12002\",\"Agent Backup Job (Backup Policy)\",\r\n        _jobTypeCode = \"12003\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"13000\",\"File Backup job\",\r\n        _jobTypeCode = \"13003\",\"File Backup Copy Job\",\r\n        _jobTypeCode = \"14000\",\"Backup Job\",\r\n        _jobTypeCode = \"15000\",\"Storage Snapshot Snapshot-Only Job\",\r\n        _jobTypeCode = \"15001\",\"Storage Snapshot Backup Job\",\r\n        _jobTypeCode = \"15002\",\"Storage Snapshot Copy Job\",\r\n        _jobTypeCode = \"15004\",\"Storage Snapshot Restore Session\",\r\n        _jobTypeCode = \"18000\",\"Archive Tier Backup Job\",\r\n        _jobTypeCode = \"18001\",\"Archive Tier Restore Session\",\r\n        _jobTypeCode = \"18002\",\"Archive Download Session\",\r\n        _jobTypeCode = \"18003\",\"Archive Tier Synchronization Job\",\r\n        _jobTypeCode = \"18004\",\"Archive Tier Backup Copy Job\",\r\n        _jobTypeCode = \"18005\",\"Archive Tier Archiving Job\",\r\n        _jobTypeCode = \"18006\",\"Publish Disk Session\",\r\n        _jobTypeCode = \"18008\",\"Object Storage Repository Synchronization Job\",\r\n        _jobTypeCode = \"24002\",\"Guest OS File Restore Session\",\r\n        _jobTypeCode = \"33000\",\"SureBackup Scan only\",\r\n        _jobTypeCode = \"33001\",\"SureBackup Scan only\")\r\n| sort desc  _time\r\n| fields\r\n    _host as `Data Source`, _time as `Date`, _description as `Message Details`, _jobType as `Job Type`, _jobResult as `State`\r\n| limit 100",
+                "entityType": "xql-widget-table-90464939-772a-4a1b-bbdf-40efb2f53009",
+                "time_frame": { "relativeTime": 2592000000 },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": null,
+                  "columnWidth": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-6508",
+          "data": [
+            {
+              "key": "xql_1715781311118",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 546,
+                "params": [
+                  {
+                    "name": "hosts",
+                    "value": "*"
+                  }
+                ],
+                "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"190\",\"290\",\"150\",\"151\",\"790\",\"194\",\"490\",\"451\",\"390\",\"36022\",\"36026\")\r\n| alter \r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0))\r\n| alter \r\n    _jobTypeCode=if(\r\n        _instanceId=\"290\", \"290\", arrayindex(regextract(_raw_log, \"JobType\\=\\\"(\\d+)\\\"\"), 0)),\r\n    _day=date_floor(_time ,\"d\"),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($hosts)\r\n| comp \r\n        count(if(_jobTypeCode in (\"1\",\"50\"), 1)) as _replicationJob,\r\n        count(if(_jobTypeCode = \"3\", 1)) as _sureBackupJob,\r\n        count(if(_jobTypeCode in (\"0\",\"14000\"), 1)) as _backupJob,\r\n        count(if(_jobTypeCode = \"8\", 1)) as _quickMigration,\r\n        count(if(_jobTypeCode = \"22\", 1)) as _rescanJob,\r\n        count(if(_jobTypeCode = \"24\", 1)) as _fileToTapeJob,\r\n        count(if(_jobTypeCode = \"28\", 1)) as _backupToTapeJob,\r\n        count(if(_jobTypeCode = \"52\", 1)) as _msSQLLogBackupJob,\r\n        count(if(_jobTypeCode = \"54\", 1)) as _oracleLogBackupJob,\r\n        count(if(_jobTypeCode = \"60\", 1)) as _HPEStoreOnceReplicationJob,\r\n        count(if(_jobTypeCode in (\"2\",\"51\",\"63\",\"65\",\"70\"), 1)) as _backupCopyJob,\r\n        count(if(_jobTypeCode = \"74\", 1)) as _postgreSQLLogBackupJob,\r\n        count(if(_jobTypeCode = \"100\", 1)) as _configurationBackupJob,\r\n        count(if(_jobTypeCode = \"104\", 1)) as _configurationDatabaseMaintenanceJob,\r\n        count(if(_jobTypeCode in (\"202\",\"290\"), 1)) as _restoreJob,\r\n        count(if(_jobTypeCode = \"203\", 1)) as _undoFailoverPlan,\r\n        count(if(_jobTypeCode = \"316\", 1)) as _cdpPolicy,\r\n        count(if(_jobTypeCode in (\"4000\",\"12000\",\"12003\"), 1)) as _agentBackupJobBS,\r\n        count(if(_jobTypeCode = \"12002\", 1)) as _agentBackupJobBP,\r\n        count(if(_jobTypeCode = \"13000\", 1)) as _fileBackupJob,\r\n        count(if(_jobTypeCode = \"13003\", 1)) as _fileBackupCopyJob,\r\n        count(if(_jobTypeCode = \"15000\", 1)) as _storageSnapshotSnapshotOnlyJob,\r\n        count(if(_jobTypeCode = \"15001\", 1)) as _storageSnapshotBackupJob,\r\n        count(if(_jobTypeCode = \"15002\", 1)) as _storageSnapshotCopyJob,\r\n        count(if(_jobTypeCode = \"15004\", 1)) as _storageSnapshotRestoreSession,\r\n        count(if(_jobTypeCode = \"18000\", 1)) as _archiveTierBackupJob,\r\n        count(if(_jobTypeCode = \"18001\", 1)) as _archiveTierRestoreSession,\r\n        count(if(_jobTypeCode = \"18002\", 1)) as _archiveDownloadSession,\r\n        count(if(_jobTypeCode = \"18003\", 1)) as _archiveTierSynchronizationJob,\r\n        count(if(_jobTypeCode = \"18004\", 1)) as _archiveTierBackupCopyJob,\r\n        count(if(_jobTypeCode = \"18005\", 1)) as _archiveTierArchivingJob,\r\n        count(if(_jobTypeCode = \"18006\", 1)) as _publishDiskSession,\r\n        count(if(_jobTypeCode = \"18008\", 1)) as _objectStorageRepositorySynchronizationJob,\r\n        count(if(_jobTypeCode = \"24002\", 1)) as _guestOSFileRestoreSession,\r\n        count(if(_jobTypeCode in (\"33000\", \"33001\"), 1)) as _sureBackupScanOnly\r\n            by _day\r\n| sort asc _day\r\n\r\n\r\n\r\n\n| view graph type = column subtype = stacked xaxis = _day yaxis = _replicationJob,_sureBackupJob,_backupJob,_fileBackupJob,_quickMigration,_rescanJob,_fileToTapeJob,_backupToTapeJob,_msSQLLogBackupJob,_oracleLogBackupJob,_HPEStoreOnceReplicationJob,_backupCopyJob,_postgreSQLLogBackupJob,_configurationDatabaseMaintenanceJob,_configurationBackupJob,_restoreJob,_undoFailoverPlan,_cdpPolicy,_agentBackupJobBS,_agentBackupJobBP,_fileBackupCopyJob,_storageSnapshotSnapshotOnlyJob,_storageSnapshotBackupJob,_storageSnapshotCopyJob,_storageSnapshotRestoreSession,_archiveTierBackupJob,_archiveTierRestoreSession,_archiveDownloadSession,_archiveTierSynchronizationJob,_archiveTierBackupCopyJob,_archiveTierArchivingJob,_publishDiskSession,_objectStorageRepositorySynchronizationJob,_guestOSFileRestoreSession,_sureBackupScanOnly seriestitle(\"_replicationJob\",\"Replication Job\") seriestitle(\"_sureBackupJob\",\"SureBackup Job\") seriestitle(\"_backupJob\",\"Backup Job\") seriestitle(\"_quickMigration\",\"Quick Migration\") seriestitle(\"_rescanJob\",\"Rescan Job\") seriestitle(\"_fileToTapeJob\",\"File to Tape Job\") seriestitle(\"_backupToTapeJob\",\"Backup to Tape Job\") seriestitle(\"_msSQLLogBackupJob\",\"MS SQL Log Backup Job\") seriestitle(\"_oracleLogBackupJob\",\"Oracle Log Backup Job\") seriestitle(\"_HPEStoreOnceReplicationJob\",\"HPE StoreOnce Replication Job\") seriestitle(\"_backupCopyJob\",\"Backup Copy Job\") seriestitle(\"_postgreSQLLogBackupJob\",\"PostgreSQL Log Backup Job\") seriestitle(\"_configurationBackupJob\",\"Configuration Backup Job\") seriestitle(\"_configurationDatabaseMaintenanceJob\",\"Configuration Database Maintenance Job\") seriestitle(\"_restoreJob\",\"Restore Job\") seriestitle(\"_undoFailoverPlan\",\"Undo Failover Plan\") seriestitle(\"_cdpPolicy\",\"CDP Policy\") seriestitle(\"_agentBackupJobBS\",\"Agent Backup Job (Backup Server)\") seriestitle(\"_agentBackupJobBP\",\"Agent Backup Job (Backup Policy)\") seriestitle(\"_fileBackupJob\",\"File Backup Job\") seriestitle(\"_fileBackupCopyJob\",\"File Backup Copy Job\") seriestitle(\"_storageSnapshotSnapshotOnlyJob\",\"Storage Snapshot Snapshot-Only Job\") seriestitle(\"_storageSnapshotBackupJob\",\"Storage Snapshot Backup Job\") seriestitle(\"_storageSnapshotCopyJob\",\"Storage Snapshot Copy Job\") seriestitle(\"_storageSnapshotRestoreSession\",\"Storage Snapshot Restore Session\") seriestitle(\"_archiveTierBackupJob\",\"Archive Tier Backup Job\") seriestitle(\"_archiveTierRestoreSession\",\"Archive Tier Restore Session\") seriestitle(\"_archiveDownloadSession\",\"Archive Download Session\") seriestitle(\"_archiveTierSynchronizationJob\",\"Archive Tier Synchronization Job\") seriestitle(\"_archiveTierBackupCopyJob\",\"Archive Tier Backup Copy Job\") seriestitle(\"_archiveTierArchivingJob\",\"Archive Tier Archiving Job\") seriestitle(\"_publishDiskSession\",\"Publish Disk Session\") seriestitle(\"_objectStorageRepositorySynchronizationJob\",\"Object Storage Repository Synchronization Job\") seriestitle(\"_guestOSFileRestoreSession\",\"Guest OS File Restore Session\") seriestitle(\"_sureBackupScanOnly\",\"SureBackup Scan only\") ",
+                "time_frame": { "relativeTime": 2592000000 },
+                "viewOptions": {
+                  "type": "column",
+                  "commands": [
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "subtype",
+                        "value": "stacked"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "xaxis",
+                        "value": "_day"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxis",
+                        "value": "_replicationJob,_sureBackupJob,_backupJob,_fileBackupJob,_quickMigration,_rescanJob,_fileToTapeJob,_backupToTapeJob,_msSQLLogBackupJob,_oracleLogBackupJob,_HPEStoreOnceReplicationJob,_backupCopyJob,_postgreSQLLogBackupJob,_configurationDatabaseMaintenanceJob,_configurationBackupJob,_restoreJob,_undoFailoverPlan,_cdpPolicy,_agentBackupJobBS,_agentBackupJobBP,_fileBackupCopyJob,_storageSnapshotSnapshotOnlyJob,_storageSnapshotBackupJob,_storageSnapshotCopyJob,_storageSnapshotRestoreSession,_archiveTierBackupJob,_archiveTierRestoreSession,_archiveDownloadSession,_archiveTierSynchronizationJob,_archiveTierBackupCopyJob,_archiveTierArchivingJob,_publishDiskSession,_objectStorageRepositorySynchronizationJob,_guestOSFileRestoreSession,_sureBackupScanOnly"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_replicationJob", "Replication Job" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_sureBackupJob", "SureBackup Job" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_backupJob", "Backup Job" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_quickMigration", "Quick Migration" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_rescanJob", "Rescan Job" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_fileToTapeJob", "File to Tape Job" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_backupToTapeJob", "Backup to Tape Job" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_msSQLLogBackupJob", "MS SQL Log Backup Job" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_oracleLogBackupJob", "Oracle Log Backup Job" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_HPEStoreOnceReplicationJob", "HPE StoreOnce Replication Job" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_backupCopyJob", "Backup Copy Job" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_postgreSQLLogBackupJob", "PostgreSQL Log Backup Job" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_configurationBackupJob", "Configuration Backup Job" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_configurationDatabaseMaintenanceJob", "Configuration Database Maintenance Job" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_restoreJob", "Restore Job" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_undoFailoverPlan", "Undo Failover Plan" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_cdpPolicy", "CDP Policy" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_agentBackupJobBS", "Agent Backup Job (Backup Server)" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_agentBackupJobBP", "Agent Backup Job (Backup Policy)" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_fileBackupJob", "File Backup Job" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_fileBackupCopyJob", "File Backup Copy Job" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_storageSnapshotSnapshotOnlyJob", "Storage Snapshot Snapshot-Only Job" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_storageSnapshotBackupJob", "Storage Snapshot Backup Job" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_storageSnapshotCopyJob", "Storage Snapshot Copy Job" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_storageSnapshotRestoreSession", "Storage Snapshot Restore Session" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_archiveTierBackupJob", "Archive Tier Backup Job" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_archiveTierRestoreSession", "Archive Tier Restore Session" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_archiveDownloadSession", "Archive Download Session" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_archiveTierSynchronizationJob", "Archive Tier Synchronization Job" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_archiveTierBackupCopyJob", "Archive Tier Backup Copy Job" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_archiveTierArchivingJob", "Archive Tier Archiving Job" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_publishDiskSession", "Publish Disk Session" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_objectStorageRepositorySynchronizationJob", "Object Storage Repository Synchronization Job" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_guestOSFileRestoreSession", "Guest OS File Restore Session" ],
+                        "name": "seriestitle"
+                      }
+                    },
+                    {
+                      "func": {
+                        "args": [ "_sureBackupScanOnly", "SureBackup Scan only" ],
+                        "name": "seriestitle"
+                      }
+                    }
+                  ]
+                },
+                "drilldown_config": {
+                  "actionData": {
+                    "timeRange": "widget_timeframe",
+                    "xqlPhrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"190\",\"290\",\"150\",\"151\",\"790\",\"194\",\"490\",\"451\",\"390\",\"36022\",\"36026\")\r\n| alter \r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0)),\r\n    _jobResultCode=arrayindex(if(\r\n        _instanceId in (\"790\"), regextract(_raw_log, \"param3\\=\\\"(\\d+)\\\"\"), \r\n        _instanceId in (\"36022\",\"36026\",\"290\"), regextract(_raw_log, \"Result\\=\\\"(\\d+)\\\"\"), \r\n        _instanceId in (\"150\",\"151\",\"451\"), regextract(_raw_log, \"Status\\=\\\"(\\d+)\\\"\"), \r\n        regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\")), 0),\r\n    _jobTypeCode=if(\r\n        _instanceId=\"290\", \"290\", arrayindex(regextract(_raw_log, \"JobType\\=\\\"(\\d+)\\\"\"), 0)),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0),\r\n    _day=date_floor(_time ,\"d\"),\r\n    _description=arrayindex(regextract(_raw_log, \"Description\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0)\r\n| alter \r\n    _jobResult=if(\r\n        _jobResultCode = \"0\", \"Success\",\r\n        _jobResultCode = \"1\", \"Warning\",\r\n        _jobResultCode = \"2\", \"Failed\",\r\n        _jobResultCode = \"3\", \"Working\"),\r\n    _jobTypeColumn=if(\r\n        _jobTypeCode in (\"1\",\"50\"), \"_replicationJob\",\r\n        _jobTypeCode = \"3\", \"_sureBackupJob\",\r\n        _jobTypeCode in (\"0\",\"14000\"), \"_backupJob\",\r\n        _jobTypeCode = \"8\", \"_quickMigration\",\r\n        _jobTypeCode = \"22\", \"_rescanJob\",\r\n        _jobTypeCode = \"24\", \"_fileToTapeJob\",\r\n        _jobTypeCode = \"28\", \"_backupToTapeJob\",\r\n        _jobTypeCode = \"52\", \"_msSQLLogBackupJob\",\r\n        _jobTypeCode = \"54\", \"_oracleLogBackupJob\",\r\n        _jobTypeCode in (\"2\",\"51\",\"63\",\"65\",\"70\"), \"_backupCopyJob\",\r\n        _jobTypeCode = \"74\", \"_postgreSQLLogBackupJob\",\r\n        _jobTypeCode = \"100\", \"_configurationBackupJob\",\r\n        _jobTypeCode = \"104\", \"_configurationDatabaseMaintenanceJob\",\r\n        _jobTypeCode in (\"202\",\"290\"), \"_restoreJob\",\r\n        _jobTypeCode = \"203\", \"_undoFailoverPlan\",\r\n        _jobTypeCode = \"316\", \"_cdpPolicy\",\r\n        _jobTypeCode in (\"4000\",\"12000\",\"12003\"), \"_agentBackupJobBS\",\r\n        _jobTypeCode = \"12002\", \"_agentBackupJobBP\",\r\n        _jobTypeCode = \"13000\", \"_fileBackupJob\",\r\n        _jobTypeCode = \"13003\", \"_fileBackupCopyJob\",\r\n        _jobTypeCode = \"15000\", \"_storageSnapshotSnapshotOnlyJob\",\r\n        _jobTypeCode = \"15001\", \"_storageSnapshotBackupJob\",\r\n        _jobTypeCode = \"15002\", \"_storageSnapshotCopyJob\",\r\n        _jobTypeCode = \"15004\", \"_storageSnapshotRestoreSession\",\r\n        _jobTypeCode = \"18000\", \"_archiveTierBackupJob\",\r\n        _jobTypeCode = \"18001\", \"_archiveTierRestoreSession\",\r\n        _jobTypeCode = \"18002\", \"_archiveDownloadSession\",\r\n        _jobTypeCode = \"18003\", \"_archiveTierSynchronizationJob\",\r\n        _jobTypeCode = \"18004\", \"_archiveTierBackupCopyJob\",\r\n        _jobTypeCode = \"18005\", \"_archiveTierArchivingJob\",\r\n        _jobTypeCode = \"18006\", \"_publishDiskSession\",\r\n        _jobTypeCode = \"18008\", \"_objectStorageRepositorySynchronizationJob\",\r\n        _jobTypeCode = \"24002\", \"_guestOSFileRestoreSession\",\r\n        _jobTypeCode in (\"33000\", \"33001\"), \"_sureBackupScanOnly\"),\r\n    _jobType=if(\r\n        _jobTypeCode = \"1\",\"Replication Job\",\r\n        _jobTypeCode = \"2\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"3\",\"SureBackup Job\",\r\n        _jobTypeCode = \"0\",\"Backup Job\",\r\n        _jobTypeCode = \"8\",\"Quick Migration\",\r\n        _jobTypeCode = \"22\",\"Rescan Job\",\r\n        _jobTypeCode = \"24\",\"File to Tape Job\",\r\n        _jobTypeCode = \"28\",\"Backup to Tape Job\",\r\n        _jobTypeCode = \"50\",\"Replication Job\",\r\n        _jobTypeCode = \"51\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"52\",\"MS SQL Log Backup Job\",\r\n        _jobTypeCode = \"54\",\"Oracle Log Backup Job\",\r\n        _jobTypeCode = \"60\",\"HPE StoreOnce Replication Job\",\r\n        _jobTypeCode = \"63\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"65\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"70\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"74\",\"PostgreSQL Log Backup Job\",\r\n        _jobTypeCode = \"100\",\"Configuration Backup Job\",\r\n        _jobTypeCode = \"104\",\"Configuration Database Maintenance Job\",\r\n        _jobTypeCode = \"202\",\"Restore Job\",\r\n        _jobTypeCode = \"203\",\"Undo Failover Plan\",\r\n        _jobTypeCode = \"290\",\"Restore Job\",\r\n        _jobTypeCode = \"316\",\"CDP Policy\",\r\n        _jobTypeCode = \"4000\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"12000\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"12002\",\"Agent Backup Job (Backup Policy)\",\r\n        _jobTypeCode = \"12003\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"13000\",\"File Backup job\",\r\n        _jobTypeCode = \"13003\",\"File Backup Copy Job\",\r\n        _jobTypeCode = \"14000\",\"Backup Job\",\r\n        _jobTypeCode = \"15000\",\"Storage Snapshot Snapshot-Only Job\",\r\n        _jobTypeCode = \"15001\",\"Storage Snapshot Backup Job\",\r\n        _jobTypeCode = \"15002\",\"Storage Snapshot Copy Job\",\r\n        _jobTypeCode = \"15004\",\"Storage Snapshot Restore Session\",\r\n        _jobTypeCode = \"18000\",\"Archive Tier Backup Job\",\r\n        _jobTypeCode = \"18001\",\"Archive Tier Restore Session\",\r\n        _jobTypeCode = \"18002\",\"Archive Download Session\",\r\n        _jobTypeCode = \"18003\",\"Archive Tier Synchronization Job\",\r\n        _jobTypeCode = \"18004\",\"Archive Tier Backup Copy Job\",\r\n        _jobTypeCode = \"18005\",\"Archive Tier Archiving Job\",\r\n        _jobTypeCode = \"18006\",\"Publish Disk Session\",\r\n        _jobTypeCode = \"18008\",\"Object Storage Repository Synchronization Job\",\r\n        _jobTypeCode = \"24002\",\"Guest OS File Restore Session\",\r\n        _jobTypeCode = \"33000\",\"SureBackup Scan only\",\r\n        _jobTypeCode = \"33001\",\"SureBackup Scan only\")\r\n| filter _day = to_timestamp($x_axis.value, \"MILLIS\")  and _jobTypeColumn = $y_axis.name \r\n| fields\r\n    _host as `Data Source`, _time as `Date`, _description as `Message Details`, _jobType as `Job Type`, _jobResult as `State`",
+                    "timePicker": [],
+                    "openInNewTab": true
+                  },
+                  "actionType": "open_xql_search"
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": null,
+                  "columnWidth": null
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "default_dashboard_id": 1,
+      "global_id": "9b572c78d0f645ada74ca06c1273b13f",
+      "metadata": {
+        "params": [
+          {
+            "name": "hosts",
+            "type": "DYNAMIC",
+            "title": "Data Sources",
+            "value": [],
+            "executionID": "2621c18a328f43_625872_inv",
+            "valueOptions": [],
+            "investigation": {
+              "ttl": "0",
+              "source": "investigation",
+              "timeframe": { "relativeTime": 86400000 },
+              "input_dict": {
+                "xql": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"190\",\"290\",\"150\",\"151\",\"790\",\"194\",\"490\",\"451\",\"390\",\"36022\",\"36026\",\"40700\")\r\n| alter \r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| dedup _host \r\n| fields\r\n    _host\r\n// | alter testyair = _host \r\n// | fields testyair ",
+                "tenants": [],
+                "schedule": null,
+                "query_editor": "xql",
+                "notification_link": "xql/xql-search/_EXECUTION_ID_",
+                "run_in_background": false,
+                "query_definition_name": "XQL-QUERY-139051"
+              },
+              "dashboard_id": null
+            },
+            "investigationError": null,
+            "filterComponentType": "MULTI_SELECT",
+            "investigationColumn": "_host"
+          }
+        ]
+      }
+    }
+  ],
+  "widgets_data": [
+    {
+      "widget_key": "xql_1715774699200",
+      "title": "Failed Jobs",
+      "creation_time": 1727085252616,
+      "description": "The total amount of jobs finished with the Failed status.",
+      "data": {
+        "params": [
+          {
+            "name": "hosts",
+            "value": "*"
+          }
+        ],
+        "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"190\",\"290\",\"150\",\"151\",\"790\",\"194\",\"490\",\"451\",\"390\",\"36022\",\"36026\")\r\n| alter \r\n_jobResultCode=arrayindex(if(\r\n    _instanceId in (\"790\"), regextract(_raw_log, \"param3\\=\\\"(\\d+)\\\"\"), \r\n    _instanceId in (\"36022\",\"36026\",\"290\"), regextract(_raw_log, \"Result\\=\\\"(\\d+)\\\"\"), \r\n    _instanceId in (\"150\",\"151\",\"451\"), regextract(_raw_log, \"Status\\=\\\"(\\d+)\\\"\"), \r\n    regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\")), 0),\r\n_host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($hosts)\r\n| comp \r\n    count(if(_jobResultCode = \"2\", 1)) as _failed\r\n| fields _failed\r\n\r\n\r\n\r\n\r\n\n| view graph type = single subtype = standard yaxis = _failed ",
+        "time_frame": { "relativeTime": 86400000 },
+        "viewOptions": {
+          "type": "single",
+          "commands": [
+            {
+              "command": {
+                "op": "=",
+                "name": "subtype",
+                "value": "standard"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxis",
+                "value": "_failed"
+              }
+            }
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [ "veeam_*" ],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1715776054053",
+      "title": "Transferred Data",
+      "creation_time": 1727085256050,
+      "description": "The total amount of transferred data.",
+      "data": {
+        "params": [
+          {
+            "name": "hosts",
+            "value": "*"
+          }
+        ],
+        "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"150\",\"151\")\r\n| alter \r\n    _transferredGb=to_float(arrayindex(regextract(_raw_log, \"TransferredGb\\=\\\"(\\d*\\.?\\d*)\\\"\"), 0)),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($hosts)\r\n| comp sum(_transferredGb) as _totalTransferredGb\r\n| replacenull _totalTransferredGb = 0\r\n| fields _totalTransferredGb\r\n\r\n\r\n\r\n\r\n\r\n\n| view graph type = single subtype = standard yaxis = _totalTransferredGb dataunit = \"GB\" ",
+        "time_frame": { "relativeTime": 86400000 },
+        "viewOptions": {
+          "type": "single",
+          "commands": [
+            {
+              "command": {
+                "op": "=",
+                "name": "subtype",
+                "value": "standard"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxis",
+                "value": "_totalTransferredGb"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "dataunit",
+                "value": "\"GB\""
+              }
+            }
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [ "veeam_*" ],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1715780123485",
+      "title": "Backup and Copy Jobs: Daily Report",
+      "creation_time": 1727085252027,
+      "description": "Daily statistics on finished backup and backup copy jobs.",
+      "data": {
+        "params": [
+          {
+            "name": "hosts",
+            "value": "*"
+          }
+        ],
+        "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"190\",\"790\",\"194\",\"490\",\"451\")\r\n| alter \r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0))\r\n| alter \r\n_jobResultCode=arrayindex(if(\r\n    _instanceId in (\"790\"), regextract(_raw_log, \"param3\\=\\\"(\\d+)\\\"\"),\r\n    _instanceId in (\"451\"), regextract(_raw_log, \"Status\\=\\\"(\\d+)\\\"\"), \r\n    regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\")), 0),\r\n_day=date_floor(_time ,\"d\"),\r\n_host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($hosts)\r\n| comp \r\n    count(if(_jobResultCode = \"0\", 1)) as Success, \r\n    count(if(_jobResultCode = \"1\", 1)) as Warning,\r\n    count(if(_jobResultCode = \"2\", 1)) as Failed,  \r\n    count(if(_jobResultCode = \"3\", 1)) as Working by _day\r\n| fields Success, Warning, Failed, Working, _day\r\n| sort asc _day\r\n\r\n\r\n\n| view graph type = area subtype = standard show_percentage = `false` xaxis = _day yaxis = Success,Warning,Failed,Working seriescolor(\"Success\",\"#00D15F\") seriescolor(\"Working\",\"#0084D1\") seriescolor(\"Warning\",\"#FF8F2E\") seriescolor(\"Failed\",\"#D10000\") ",
+        "time_frame": { "relativeTime": 2592000000 },
+        "viewOptions": {
+          "type": "area",
+          "commands": [
+            {
+              "command": {
+                "op": "=",
+                "name": "subtype",
+                "value": "standard"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "show_percentage",
+                "value": "false"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "xaxis",
+                "value": "_day"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxis",
+                "value": "Success,Warning,Failed,Working"
+              }
+            },
+            {
+              "func": {
+                "args": [ "Success", "#00D15F" ],
+                "name": "seriescolor"
+              }
+            },
+            {
+              "func": {
+                "args": [ "Working", "#0084D1" ],
+                "name": "seriescolor"
+              }
+            },
+            {
+              "func": {
+                "args": [ "Warning", "#FF8F2E" ],
+                "name": "seriescolor"
+              }
+            },
+            {
+              "func": {
+                "args": [ "Failed", "#D10000" ],
+                "name": "seriescolor"
+              }
+            }
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [ "veeam_*" ],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1715780383232",
+      "title": "SureBackup Jobs: Daily Report",
+      "creation_time": 1727085255663,
+      "description": "Daily statistics on finished SureBackup jobs.",
+      "data": {
+        "params": [
+          {
+            "name": "hosts",
+            "value": "*"
+          }
+        ],
+        "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"390\")\r\n| alter \r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0))\r\n| alter \r\n_jobResultCode=arrayindex(regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\"), 0),\r\n_day=date_floor(_time ,\"d\"),\r\n_host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($hosts)\r\n| comp \r\n    count(if(_jobResultCode = \"0\", 1)) as Success, \r\n    count(if(_jobResultCode = \"1\", 1)) as Warning,\r\n    count(if(_jobResultCode = \"2\", 1)) as Failed,  \r\n    count(if(_jobResultCode = \"3\", 1)) as Working by _day\r\n| fields Success, Warning, Failed, Working, _day\r\n| sort asc _day\r\n\r\n\r\n\r\n\r\n\n| view graph type = area subtype = standard show_percentage = `false` xaxis = _day yaxis = Success,Warning,Failed,Working seriescolor(\"Success\",\"#00D15F\") seriescolor(\"Working\",\"#0084D1\") seriescolor(\"Warning\",\"#FF8F2E\") seriescolor(\"Failed\",\"#D10000\") ",
+        "time_frame": { "relativeTime": 2592000000 },
+        "viewOptions": {
+          "type": "area",
+          "commands": [
+            {
+              "command": {
+                "op": "=",
+                "name": "subtype",
+                "value": "standard"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "show_percentage",
+                "value": "false"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "xaxis",
+                "value": "_day"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxis",
+                "value": "Success,Warning,Failed,Working"
+              }
+            },
+            {
+              "func": {
+                "args": [ "Success", "#00D15F" ],
+                "name": "seriescolor"
+              }
+            },
+            {
+              "func": {
+                "args": [ "Working", "#0084D1" ],
+                "name": "seriescolor"
+              }
+            },
+            {
+              "func": {
+                "args": [ "Warning", "#FF8F2E" ],
+                "name": "seriescolor"
+              }
+            },
+            {
+              "func": {
+                "args": [ "Failed", "#D10000" ],
+                "name": "seriescolor"
+              }
+            }
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [ "veeam_*" ],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1715780485921",
+      "title": "Latest Configuration Backups",
+      "creation_time": 1727085254196,
+      "description": "Information about the latest configuration backup job run on each Veeam Backup & Replication server.",
+      "data": {
+        "params": [
+          {
+            "name": "hosts",
+            "value": "*"
+          }
+        ],
+        "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"40700\")\r\n| alter \r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0)),\r\n    _jobResult=arrayindex(regextract(_raw_log, \"Result\\:\\ ([^.]*)\"), 0),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($hosts)\r\n| sort desc  _time\r\n| fields\r\n    _host as `Data Source`, _time as `Date`, _jobResult as `State`\r\n| limit 100",
+        "time_frame": { "relativeTime": 2592000000 },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {
+            "_id": "{\"pinned\":null,\"width\":287,\"hide\":true}",
+            "_tag": "{\"pinned\":null,\"width\":114,\"hide\":true}",
+            "_vendor": "{\"pinned\":null,\"width\":1434,\"hide\":true}",
+            "_product": "{\"pinned\":null,\"width\":159,\"hide\":true}",
+            "_raw_log": "{\"pinned\":null,\"width\":700,\"hide\":false}",
+            "_insert_time": "{\"pinned\":null,\"width\":187,\"hide\":true}",
+            "COL_66ba12fe11b24b94b2f254085c605f3a": "{\"pinned\":null,\"width\":249,\"hide\":false}"
+          },
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [ "veeam_*" ],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1715780632686",
+      "title": "All Jobs",
+      "creation_time": 1727085251591,
+      "description": "The breakdown of all finished jobs by state.",
+      "data": {
+        "params": [
+          {
+            "name": "hosts",
+            "value": "*"
+          }
+        ],
+        "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"190\",\"290\",\"150\",\"151\",\"790\",\"194\",\"490\",\"451\",\"390\",\"36022\",\"36026\")\r\n| alter \r\n    _jobResultCode=arrayindex(if(\r\n        _instanceId in (\"790\"), regextract(_raw_log, \"param3\\=\\\"(\\d+)\\\"\"), \r\n        _instanceId in (\"36022\",\"36026\",\"290\"), regextract(_raw_log, \"Result\\=\\\"(\\d+)\\\"\"), \r\n        _instanceId in (\"150\",\"151\",\"451\"), regextract(_raw_log, \"Status\\=\\\"(\\d+)\\\"\"), \r\n        regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\")), 0),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($hosts)\r\n| alter _jobResult=if(\r\n    _jobResultCode = \"0\", \"Success\",\r\n    _jobResultCode = \"1\", \"Warning\",\r\n    _jobResultCode = \"2\", \"Failed\",\r\n    _jobResultCode = \"3\", \"Working\")\r\n| comp\r\n    count(_instanceId) as _jobsByResult by _jobResult \r\n\r\n\r\n\r\n\n| view graph type = pie subtype = full xaxis = _jobResult yaxis = _jobsByResult valuecolor(\"Success\",\"#00D15F\") valuecolor(\"Failed\",\"#D10000\") ",
+        "time_frame": { "relativeTime": 2592000000 },
+        "viewOptions": {
+          "type": "pie",
+          "commands": [
+            {
+              "command": {
+                "op": "=",
+                "name": "subtype",
+                "value": "full"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "xaxis",
+                "value": "_jobResult"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxis",
+                "value": "_jobsByResult"
+              }
+            },
+            {
+              "func": {
+                "args": [ "Success", "#00D15F" ],
+                "name": "valuecolor"
+              }
+            },
+            {
+              "func": {
+                "args": [ "Failed", "#D10000" ],
+                "name": "valuecolor"
+              }
+            }
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [ "veeam_*" ],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1715780719907",
+      "title": "VM Backup Jobs",
+      "creation_time": 1727085256413,
+      "description": "The breakdown of finished VM backup jobs by state.",
+      "data": {
+        "params": [
+          {
+            "name": "hosts",
+            "value": "*"
+          }
+        ],
+        "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"190\")\r\n| alter \r\n    _jobResultCode=arrayindex(regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\"), 0),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0),\r\n    _jobTypeCode=if(\r\n        _instanceId=\"290\", \"290\", arrayindex(if(\r\n            _instanceId=\"790\", regextract(_raw_log, \"param4\\=\\\"(\\d+)\\\"\"), \r\n            \"1\"=\"1\", regextract(_raw_log, \"JobType\\=\\\"(\\d+)\\\"\")), 0))\r\n| filter _jobTypeCode = \"0\" AND _host in ($hosts)\r\n| alter _jobResult=if(\r\n    _jobResultCode = \"0\", \"Success\",\r\n    _jobResultCode = \"1\", \"Warning\",\r\n    _jobResultCode = \"2\", \"Failed\",\r\n    _jobResultCode = \"3\", \"Working\")\r\n| comp\r\n    count(_instanceId) as _jobsByResult by _jobResult \r\n\r\n\n| view graph type = pie subtype = full xaxis = _jobResult yaxis = _jobsByResult valuecolor(\"Success\",\"#00D15F\") valuecolor(\"Failed\",\"#D10000\") ",
+        "time_frame": { "relativeTime": 2592000000 },
+        "viewOptions": {
+          "type": "pie",
+          "commands": [
+            {
+              "command": {
+                "op": "=",
+                "name": "subtype",
+                "value": "full"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "xaxis",
+                "value": "_jobResult"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxis",
+                "value": "_jobsByResult"
+              }
+            },
+            {
+              "func": {
+                "args": [ "Success", "#00D15F" ],
+                "name": "valuecolor"
+              }
+            },
+            {
+              "func": {
+                "args": [ "Failed", "#D10000" ],
+                "name": "valuecolor"
+              }
+            }
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [ "veeam_*" ],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1715780786267",
+      "title": "Agent Jobs",
+      "creation_time": 1727085251098,
+      "description": "The breakdown of finished Veeam Agent jobs by state.",
+      "data": {
+        "params": [
+          {
+            "name": "hosts",
+            "value": "*"
+          }
+        ],
+        "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"790\")\r\n| alter \r\n    _jobResultCode=arrayindex(regextract(_raw_log, \"param3\\=\\\"(\\d+)\\\"\"), 0),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($hosts)\r\n| alter _jobResult=if(\r\n    _jobResultCode = \"0\", \"Success\",\r\n    _jobResultCode = \"1\", \"Warning\",\r\n    _jobResultCode = \"2\", \"Failed\",\r\n    _jobResultCode = \"3\", \"Working\")\r\n| comp\r\n    count(_instanceId) as _jobsByResult by _jobResult \r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\n| view graph type = pie subtype = full xaxis = _jobResult yaxis = _jobsByResult valuecolor(\"Success\",\"#00D15F\") ",
+        "time_frame": { "relativeTime": 2592000000 },
+        "viewOptions": {
+          "type": "pie",
+          "commands": [
+            {
+              "command": {
+                "op": "=",
+                "name": "subtype",
+                "value": "full"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "xaxis",
+                "value": "_jobResult"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxis",
+                "value": "_jobsByResult"
+              }
+            },
+            {
+              "func": {
+                "args": [ "Success", "#00D15F" ],
+                "name": "valuecolor"
+              }
+            }
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [ "veeam_*" ],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1715780875011",
+      "title": "Enterprise Plug-in Jobs",
+      "creation_time": 1727085252313,
+      "description": "The breakdown of finished enterprise plug-in jobs by state.",
+      "data": {
+        "params": [
+          {
+            "name": "hosts",
+            "value": "*"
+          }
+        ],
+        "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"36022\",\"36026\")\r\n| alter \r\n    _jobResultCode=arrayindex(regextract(_raw_log, \"Result\\=\\\"(\\d+)\\\"\"), 0),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($hosts)\r\n| alter _jobResult=if(\r\n    _jobResultCode = \"0\", \"Success\",\r\n    _jobResultCode = \"1\", \"Warning\",\r\n    _jobResultCode = \"2\", \"Failed\",\r\n    _jobResultCode = \"3\", \"Working\")\r\n| comp\r\n    count(_instanceId) as _jobsByResult by _jobResult \r\n\r\n\n| view graph type = pie subtype = full xaxis = _jobResult yaxis = _jobsByResult valuecolor(\"Success\",\"#00D15F\") ",
+        "time_frame": { "relativeTime": 2592000000 },
+        "viewOptions": {
+          "type": "pie",
+          "commands": [
+            {
+              "command": {
+                "op": "=",
+                "name": "subtype",
+                "value": "full"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "xaxis",
+                "value": "_jobResult"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxis",
+                "value": "_jobsByResult"
+              }
+            },
+            {
+              "func": {
+                "args": [ "Success", "#00D15F" ],
+                "name": "valuecolor"
+              }
+            }
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [ "veeam_*" ],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1715780917449",
+      "title": "File Backup Jobs",
+      "creation_time": 1727085252964,
+      "description": "The breakdown of finished file backup jobs by state.",
+      "data": {
+        "params": [
+          {
+            "name": "hosts",
+            "value": "*"
+          }
+        ],
+        "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"151\")\r\n| alter \r\n    _jobResultCode=arrayindex(regextract(_raw_log, \"Status\\=\\\"(\\d+)\\\"\"), 0),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($hosts)\r\n| alter _jobResult=if(\r\n    _jobResultCode = \"0\", \"Success\",\r\n    _jobResultCode = \"1\", \"Warning\",\r\n    _jobResultCode = \"2\", \"Failed\",\r\n    _jobResultCode = \"3\", \"Working\")\r\n| comp\r\n    count(_instanceId) as _jobsByResult by _jobResult \r\n\r\n\r\n\r\n\r\n\r\n\r\n\n| view graph type = pie subtype = full xaxis = _jobResult yaxis = _jobsByResult valuecolor(\"Success\",\"#00D15F\") ",
+        "time_frame": { "relativeTime": 2592000000 },
+        "viewOptions": {
+          "type": "pie",
+          "commands": [
+            {
+              "command": {
+                "op": "=",
+                "name": "subtype",
+                "value": "full"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "xaxis",
+                "value": "_jobResult"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxis",
+                "value": "_jobsByResult"
+              }
+            },
+            {
+              "func": {
+                "args": [ "Success", "#00D15F" ],
+                "name": "valuecolor"
+              }
+            }
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [ "veeam_*" ],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1715780965590",
+      "title": "File Backup Copy Jobs",
+      "creation_time": 1727085252807,
+      "description": "The breakdown of finished file backup copy jobs by state.",
+      "data": {
+        "params": [
+          {
+            "name": "hosts",
+            "value": "*"
+          }
+        ],
+        "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"490\")\r\n| alter \r\n    _jobResultCode=arrayindex(regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\"), 0),\r\n    _jobTypeCode=arrayindex(regextract(_raw_log , \"JobType\\=\\\"(\\d+)\\\"\"), 0),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _jobTypeCode=\"13003\" and _host in ($hosts)\r\n| alter _jobResult=if(\r\n    _jobResultCode = \"0\", \"Success\",\r\n    _jobResultCode = \"1\", \"Warning\",\r\n    _jobResultCode = \"2\", \"Failed\",\r\n    _jobResultCode = \"3\", \"Working\")\r\n| comp\r\n    count(_instanceId) as _jobsByResult by _jobResult \r\n\r\n\r\n\r\n\r\n\n| view graph type = pie subtype = full xaxis = _jobResult yaxis = _jobsByResult valuecolor(\"Success\",\"#00D15F\") ",
+        "time_frame": { "relativeTime": 2592000000 },
+        "viewOptions": {
+          "type": "pie",
+          "commands": [
+            {
+              "command": {
+                "op": "=",
+                "name": "subtype",
+                "value": "full"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "xaxis",
+                "value": "_jobResult"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxis",
+                "value": "_jobsByResult"
+              }
+            },
+            {
+              "func": {
+                "args": [ "Success", "#00D15F" ],
+                "name": "valuecolor"
+              }
+            }
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [ "veeam_*" ],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1715781014094",
+      "title": "Replication Jobs",
+      "creation_time": 1727085255402,
+      "description": "The breakdown of finished replication jobs by state.",
+      "data": {
+        "params": [
+          {
+            "name": "hosts",
+            "value": "*"
+          }
+        ],
+        "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"190\")\r\n| alter \r\n    _jobResultCode=arrayindex(regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\"), 0),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0),\r\n    _jobTypeCode=if(\r\n        _instanceId=\"290\", \"290\", arrayindex(if(\r\n            _instanceId=\"790\", regextract(_raw_log, \"param4\\=\\\"(\\d+)\\\"\"), \r\n            \"1\"=\"1\", regextract(_raw_log, \"JobType\\=\\\"(\\d+)\\\"\")), 0))\r\n| filter _jobTypeCode = \"1\" AND _host in ($hosts)\r\n| alter _jobResult=if(\r\n    _jobResultCode = \"0\", \"Success\",\r\n    _jobResultCode = \"1\", \"Warning\",\r\n    _jobResultCode = \"2\", \"Failed\",\r\n    _jobResultCode = \"3\", \"Working\")\r\n| comp\r\n    count(_instanceId) as _jobsByResult by _jobResult \r\n\r\n\r\n\r\n\r\n\r\n\r\n\n| view graph type = pie subtype = full xaxis = _jobResult yaxis = _jobsByResult valuecolor(\"Success\",\"#00D15F\") ",
+        "time_frame": { "relativeTime": 2592000000 },
+        "viewOptions": {
+          "type": "pie",
+          "commands": [
+            {
+              "command": {
+                "op": "=",
+                "name": "subtype",
+                "value": "full"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "xaxis",
+                "value": "_jobResult"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxis",
+                "value": "_jobsByResult"
+              }
+            },
+            {
+              "func": {
+                "args": [ "Success", "#00D15F" ],
+                "name": "valuecolor"
+              }
+            }
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [ "veeam_*" ],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1715781071150",
+      "title": "Backup Copy Jobs",
+      "creation_time": 1727085252170,
+      "description": "The breakdown of finished backup copy jobs by state.",
+      "data": {
+        "params": [
+          {
+            "name": "hosts",
+            "value": "*"
+          }
+        ],
+        "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"490\")\r\n| alter \r\n    _jobResultCode=arrayindex(regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\"), 0),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($hosts)\r\n| alter _jobResult=if(\r\n    _jobResultCode = \"0\", \"Success\",\r\n    _jobResultCode = \"1\", \"Warning\",\r\n    _jobResultCode = \"2\", \"Failed\",\r\n    _jobResultCode = \"3\", \"Working\")\r\n| comp\r\n    count(_instanceId) as _jobsByResult by _jobResult \r\n\r\n\r\n\r\n\r\n\r\n\r\n\n| view graph type = pie subtype = full xaxis = _jobResult yaxis = _jobsByResult valuecolor(\"Success\",\"#00D15F\") ",
+        "time_frame": { "relativeTime": 2592000000 },
+        "viewOptions": {
+          "type": "pie",
+          "commands": [
+            {
+              "command": {
+                "op": "=",
+                "name": "subtype",
+                "value": "full"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "xaxis",
+                "value": "_jobResult"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxis",
+                "value": "_jobsByResult"
+              }
+            },
+            {
+              "func": {
+                "args": [ "Success", "#00D15F" ],
+                "name": "valuecolor"
+              }
+            }
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [ "veeam_*" ],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1715781165935",
+      "title": "Tape Jobs",
+      "creation_time": 1727085255840,
+      "description": "The breakdown of finished tape jobs by state.",
+      "data": {
+        "params": [
+          {
+            "name": "hosts",
+            "value": "*"
+          }
+        ],
+        "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"194\")\r\n| alter \r\n    _jobResultCode=arrayindex(regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\"), 0),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($hosts)\r\n| alter _jobResult=if(\r\n    _jobResultCode = \"0\", \"Success\",\r\n    _jobResultCode = \"1\", \"Warning\",\r\n    _jobResultCode = \"2\", \"Failed\",\r\n    _jobResultCode = \"3\", \"Working\")\r\n| comp\r\n    count(_instanceId) as _jobsByResult by _jobResult \r\n\r\n\r\n\r\n\r\n\r\n\n| view graph type = pie subtype = full xaxis = _jobResult yaxis = _jobsByResult valuecolor(\"Success\",\"#00D15F\") ",
+        "time_frame": { "relativeTime": 2592000000 },
+        "viewOptions": {
+          "type": "pie",
+          "commands": [
+            {
+              "command": {
+                "op": "=",
+                "name": "subtype",
+                "value": "full"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "xaxis",
+                "value": "_jobResult"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxis",
+                "value": "_jobsByResult"
+              }
+            },
+            {
+              "func": {
+                "args": [ "Success", "#00D15F" ],
+                "name": "valuecolor"
+              }
+            }
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [ "veeam_*" ],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1715781224440",
+      "title": "Latest Finished Jobs",
+      "creation_time": 1727085254989,
+      "description": "Detailed information about the latest finished jobs on each Veeam Backup & Replication server.",
+      "data": {
+        "params": [
+          {
+            "name": "hosts",
+            "value": "*"
+          }
+        ],
+        "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"190\",\"290\",\"150\",\"151\",\"790\",\"194\",\"490\",\"451\",\"390\",\"36022\",\"36026\")\r\n| alter \r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0)),\r\n    _jobResultCode=arrayindex(if(\r\n        _instanceId in (\"790\"), regextract(_raw_log, \"param3\\=\\\"(\\d+)\\\"\"), \r\n        _instanceId in (\"36022\",\"36026\",\"290\"), regextract(_raw_log, \"Result\\=\\\"(\\d+)\\\"\"), \r\n        _instanceId in (\"150\",\"151\",\"451\"), regextract(_raw_log, \"Status\\=\\\"(\\d+)\\\"\"), \r\n        regextract(_raw_log, \"JobResult\\=\\\"(\\d+)\\\"\")), 0),\r\n    _jobTypeCode=if(\r\n        _instanceId=\"290\", \"290\", arrayindex(regextract(_raw_log, \"JobType\\=\\\"(\\d+)\\\"\"), 0)),\r\n    _host=regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"),\r\n    _description=arrayindex(regextract(_raw_log, \"Description\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0)\r\n| filter _host in ($hosts)\r\n| alter \r\n    _jobResult=if(\r\n        _jobResultCode = \"0\", \"Success\",\r\n        _jobResultCode = \"1\", \"Warning\",\r\n        _jobResultCode = \"2\", \"Failed\",\r\n        _jobResultCode = \"3\", \"Working\"),\r\n    _jobType=if(\r\n        _jobTypeCode = \"1\",\"Replication Job\",\r\n        _jobTypeCode = \"2\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"3\",\"SureBackup Job\",\r\n        _jobTypeCode = \"0\",\"Backup Job\",\r\n        _jobTypeCode = \"8\",\"Quick Migration\",\r\n        _jobTypeCode = \"22\",\"Rescan Job\",\r\n        _jobTypeCode = \"24\",\"File to Tape Job\",\r\n        _jobTypeCode = \"28\",\"Backup to Tape Job\",\r\n        _jobTypeCode = \"50\",\"Replication Job\",\r\n        _jobTypeCode = \"51\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"52\",\"MS SQL Log Backup Job\",\r\n        _jobTypeCode = \"54\",\"Oracle Log Backup Job\",\r\n        _jobTypeCode = \"60\",\"HPE StoreOnce Replication Job\",\r\n        _jobTypeCode = \"63\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"65\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"70\",\"Backup Copy Job\",\r\n        _jobTypeCode = \"74\",\"PostgreSQL Log Backup Job\",\r\n        _jobTypeCode = \"100\",\"Configuration Backup Job\",\r\n        _jobTypeCode = \"104\",\"Configuration Database Maintenance Job\",\r\n        _jobTypeCode = \"202\",\"Restore Job\",\r\n        _jobTypeCode = \"203\",\"Undo Failover Plan\",\r\n        _jobTypeCode = \"290\",\"Restore Job\",\r\n        _jobTypeCode = \"316\",\"CDP Policy\",\r\n        _jobTypeCode = \"4000\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"12000\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"12002\",\"Agent Backup Job (Backup Policy)\",\r\n        _jobTypeCode = \"12003\",\"Agent Backup Job (Backup Server)\",\r\n        _jobTypeCode = \"13000\",\"File Backup job\",\r\n        _jobTypeCode = \"13003\",\"File Backup Copy Job\",\r\n        _jobTypeCode = \"14000\",\"Backup Job\",\r\n        _jobTypeCode = \"15000\",\"Storage Snapshot Snapshot-Only Job\",\r\n        _jobTypeCode = \"15001\",\"Storage Snapshot Backup Job\",\r\n        _jobTypeCode = \"15002\",\"Storage Snapshot Copy Job\",\r\n        _jobTypeCode = \"15004\",\"Storage Snapshot Restore Session\",\r\n        _jobTypeCode = \"18000\",\"Archive Tier Backup Job\",\r\n        _jobTypeCode = \"18001\",\"Archive Tier Restore Session\",\r\n        _jobTypeCode = \"18002\",\"Archive Download Session\",\r\n        _jobTypeCode = \"18003\",\"Archive Tier Synchronization Job\",\r\n        _jobTypeCode = \"18004\",\"Archive Tier Backup Copy Job\",\r\n        _jobTypeCode = \"18005\",\"Archive Tier Archiving Job\",\r\n        _jobTypeCode = \"18006\",\"Publish Disk Session\",\r\n        _jobTypeCode = \"18008\",\"Object Storage Repository Synchronization Job\",\r\n        _jobTypeCode = \"24002\",\"Guest OS File Restore Session\",\r\n        _jobTypeCode = \"33000\",\"SureBackup Scan only\",\r\n        _jobTypeCode = \"33001\",\"SureBackup Scan only\")\r\n| sort desc  _time\r\n| fields\r\n    _host as `Data Source`, _time as `Date`, _description as `Message Details`, _jobType as `Job Type`, _jobResult as `State`\r\n| limit 100",
+        "time_frame": { "relativeTime": 2592000000 },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {
+            "_id": "{\"pinned\":null,\"width\":294,\"hide\":true,\"order\":2}",
+            "Date": "{\"pinned\":null,\"width\":186,\"hide\":false,\"order\":0}",
+            "_tag": "{\"pinned\":null,\"width\":114,\"hide\":true,\"order\":6}",
+            "State": "{\"pinned\":null,\"width\":135,\"hide\":true,\"order\":1}",
+            "_vendor": "{\"pinned\":null,\"width\":521,\"hide\":true,\"order\":7}",
+            "_product": "{\"pinned\":null,\"width\":159,\"hide\":true,\"order\":4}",
+            "_raw_log": "{\"pinned\":null,\"width\":700,\"hide\":false,\"order\":5}",
+            "_insert_time": "{\"pinned\":null,\"width\":186,\"hide\":true,\"order\":3}",
+            "action-buttons": "{\"pinned\":\"right\",\"width\":184,\"hide\":false,\"order\":11}"
+          },
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [ "veeam_*" ],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1715781311118",
+      "title": "Finished Jobs by Type",
+      "creation_time": 1727085253939,
+      "description": "Daily statistics on finished jobs by type.",
+      "data": {
+        "params": [
+          {
+            "name": "hosts",
+            "value": "*"
+          }
+        ],
+        "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"190\",\"290\",\"150\",\"151\",\"790\",\"194\",\"490\",\"451\",\"390\",\"36022\",\"36026\")\r\n| alter \r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0))\r\n| alter \r\n    _jobTypeCode=if(\r\n        _instanceId=\"290\", \"290\", arrayindex(regextract(_raw_log, \"JobType\\=\\\"(\\d+)\\\"\"), 0)),\r\n    _day=date_floor(_time ,\"d\"),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| filter _host in ($hosts)\r\n| comp \r\n        count(if(_jobTypeCode in (\"1\",\"50\"), 1)) as _replicationJob,\r\n        count(if(_jobTypeCode = \"3\", 1)) as _sureBackupJob,\r\n        count(if(_jobTypeCode in (\"0\",\"14000\"), 1)) as _backupJob,\r\n        count(if(_jobTypeCode = \"8\", 1)) as _quickMigration,\r\n        count(if(_jobTypeCode = \"22\", 1)) as _rescanJob,\r\n        count(if(_jobTypeCode = \"24\", 1)) as _fileToTapeJob,\r\n        count(if(_jobTypeCode = \"28\", 1)) as _backupToTapeJob,\r\n        count(if(_jobTypeCode = \"52\", 1)) as _msSQLLogBackupJob,\r\n        count(if(_jobTypeCode = \"54\", 1)) as _oracleLogBackupJob,\r\n        count(if(_jobTypeCode = \"60\", 1)) as _HPEStoreOnceReplicationJob,\r\n        count(if(_jobTypeCode in (\"2\",\"51\",\"63\",\"65\",\"70\"), 1)) as _backupCopyJob,\r\n        count(if(_jobTypeCode = \"74\", 1)) as _postgreSQLLogBackupJob,\r\n        count(if(_jobTypeCode = \"100\", 1)) as _configurationBackupJob,\r\n        count(if(_jobTypeCode = \"104\", 1)) as _configurationDatabaseMaintenanceJob,\r\n        count(if(_jobTypeCode in (\"202\",\"290\"), 1)) as _restoreJob,\r\n        count(if(_jobTypeCode = \"203\", 1)) as _undoFailoverPlan,\r\n        count(if(_jobTypeCode = \"316\", 1)) as _cdpPolicy,\r\n        count(if(_jobTypeCode in (\"4000\",\"12000\",\"12003\"), 1)) as _agentBackupJobBS,\r\n        count(if(_jobTypeCode = \"12002\", 1)) as _agentBackupJobBP,\r\n        count(if(_jobTypeCode = \"13000\", 1)) as _fileBackupJob,\r\n        count(if(_jobTypeCode = \"13003\", 1)) as _fileBackupCopyJob,\r\n        count(if(_jobTypeCode = \"15000\", 1)) as _storageSnapshotSnapshotOnlyJob,\r\n        count(if(_jobTypeCode = \"15001\", 1)) as _storageSnapshotBackupJob,\r\n        count(if(_jobTypeCode = \"15002\", 1)) as _storageSnapshotCopyJob,\r\n        count(if(_jobTypeCode = \"15004\", 1)) as _storageSnapshotRestoreSession,\r\n        count(if(_jobTypeCode = \"18000\", 1)) as _archiveTierBackupJob,\r\n        count(if(_jobTypeCode = \"18001\", 1)) as _archiveTierRestoreSession,\r\n        count(if(_jobTypeCode = \"18002\", 1)) as _archiveDownloadSession,\r\n        count(if(_jobTypeCode = \"18003\", 1)) as _archiveTierSynchronizationJob,\r\n        count(if(_jobTypeCode = \"18004\", 1)) as _archiveTierBackupCopyJob,\r\n        count(if(_jobTypeCode = \"18005\", 1)) as _archiveTierArchivingJob,\r\n        count(if(_jobTypeCode = \"18006\", 1)) as _publishDiskSession,\r\n        count(if(_jobTypeCode = \"18008\", 1)) as _objectStorageRepositorySynchronizationJob,\r\n        count(if(_jobTypeCode = \"24002\", 1)) as _guestOSFileRestoreSession,\r\n        count(if(_jobTypeCode in (\"33000\", \"33001\"), 1)) as _sureBackupScanOnly\r\n            by _day\r\n| sort asc _day\r\n\r\n\r\n\r\n\n| view graph type = column subtype = stacked xaxis = _day yaxis = _replicationJob,_sureBackupJob,_backupJob,_fileBackupJob,_quickMigration,_rescanJob,_fileToTapeJob,_backupToTapeJob,_msSQLLogBackupJob,_oracleLogBackupJob,_HPEStoreOnceReplicationJob,_backupCopyJob,_postgreSQLLogBackupJob,_configurationDatabaseMaintenanceJob,_configurationBackupJob,_restoreJob,_undoFailoverPlan,_cdpPolicy,_agentBackupJobBS,_agentBackupJobBP,_fileBackupCopyJob,_storageSnapshotSnapshotOnlyJob,_storageSnapshotBackupJob,_storageSnapshotCopyJob,_storageSnapshotRestoreSession,_archiveTierBackupJob,_archiveTierRestoreSession,_archiveDownloadSession,_archiveTierSynchronizationJob,_archiveTierBackupCopyJob,_archiveTierArchivingJob,_publishDiskSession,_objectStorageRepositorySynchronizationJob,_guestOSFileRestoreSession,_sureBackupScanOnly seriestitle(\"_replicationJob\",\"Replication Job\") seriestitle(\"_sureBackupJob\",\"SureBackup Job\") seriestitle(\"_backupJob\",\"Backup Job\") seriestitle(\"_quickMigration\",\"Quick Migration\") seriestitle(\"_rescanJob\",\"Rescan Job\") seriestitle(\"_fileToTapeJob\",\"File to Tape Job\") seriestitle(\"_backupToTapeJob\",\"Backup to Tape Job\") seriestitle(\"_msSQLLogBackupJob\",\"MS SQL Log Backup Job\") seriestitle(\"_oracleLogBackupJob\",\"Oracle Log Backup Job\") seriestitle(\"_HPEStoreOnceReplicationJob\",\"HPE StoreOnce Replication Job\") seriestitle(\"_backupCopyJob\",\"Backup Copy Job\") seriestitle(\"_postgreSQLLogBackupJob\",\"PostgreSQL Log Backup Job\") seriestitle(\"_configurationBackupJob\",\"Configuration Backup Job\") seriestitle(\"_configurationDatabaseMaintenanceJob\",\"Configuration Database Maintenance Job\") seriestitle(\"_restoreJob\",\"Restore Job\") seriestitle(\"_undoFailoverPlan\",\"Undo Failover Plan\") seriestitle(\"_cdpPolicy\",\"CDP Policy\") seriestitle(\"_agentBackupJobBS\",\"Agent Backup Job (Backup Server)\") seriestitle(\"_agentBackupJobBP\",\"Agent Backup Job (Backup Policy)\") seriestitle(\"_fileBackupJob\",\"File Backup Job\") seriestitle(\"_fileBackupCopyJob\",\"File Backup Copy Job\") seriestitle(\"_storageSnapshotSnapshotOnlyJob\",\"Storage Snapshot Snapshot-Only Job\") seriestitle(\"_storageSnapshotBackupJob\",\"Storage Snapshot Backup Job\") seriestitle(\"_storageSnapshotCopyJob\",\"Storage Snapshot Copy Job\") seriestitle(\"_storageSnapshotRestoreSession\",\"Storage Snapshot Restore Session\") seriestitle(\"_archiveTierBackupJob\",\"Archive Tier Backup Job\") seriestitle(\"_archiveTierRestoreSession\",\"Archive Tier Restore Session\") seriestitle(\"_archiveDownloadSession\",\"Archive Download Session\") seriestitle(\"_archiveTierSynchronizationJob\",\"Archive Tier Synchronization Job\") seriestitle(\"_archiveTierBackupCopyJob\",\"Archive Tier Backup Copy Job\") seriestitle(\"_archiveTierArchivingJob\",\"Archive Tier Archiving Job\") seriestitle(\"_publishDiskSession\",\"Publish Disk Session\") seriestitle(\"_objectStorageRepositorySynchronizationJob\",\"Object Storage Repository Synchronization Job\") seriestitle(\"_guestOSFileRestoreSession\",\"Guest OS File Restore Session\") seriestitle(\"_sureBackupScanOnly\",\"SureBackup Scan only\") ",
+        "time_frame": { "relativeTime": 2592000000 },
+        "viewOptions": {
+          "type": "column",
+          "commands": [
+            {
+              "command": {
+                "op": "=",
+                "name": "subtype",
+                "value": "stacked"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "xaxis",
+                "value": "_day"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxis",
+                "value": "_replicationJob,_sureBackupJob,_backupJob,_fileBackupJob,_quickMigration,_rescanJob,_fileToTapeJob,_backupToTapeJob,_msSQLLogBackupJob,_oracleLogBackupJob,_HPEStoreOnceReplicationJob,_backupCopyJob,_postgreSQLLogBackupJob,_configurationDatabaseMaintenanceJob,_configurationBackupJob,_restoreJob,_undoFailoverPlan,_cdpPolicy,_agentBackupJobBS,_agentBackupJobBP,_fileBackupCopyJob,_storageSnapshotSnapshotOnlyJob,_storageSnapshotBackupJob,_storageSnapshotCopyJob,_storageSnapshotRestoreSession,_archiveTierBackupJob,_archiveTierRestoreSession,_archiveDownloadSession,_archiveTierSynchronizationJob,_archiveTierBackupCopyJob,_archiveTierArchivingJob,_publishDiskSession,_objectStorageRepositorySynchronizationJob,_guestOSFileRestoreSession,_sureBackupScanOnly"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_replicationJob", "Replication Job" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_sureBackupJob", "SureBackup Job" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_backupJob", "Backup Job" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_quickMigration", "Quick Migration" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_rescanJob", "Rescan Job" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_fileToTapeJob", "File to Tape Job" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_backupToTapeJob", "Backup to Tape Job" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_msSQLLogBackupJob", "MS SQL Log Backup Job" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_oracleLogBackupJob", "Oracle Log Backup Job" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_HPEStoreOnceReplicationJob", "HPE StoreOnce Replication Job" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_backupCopyJob", "Backup Copy Job" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_postgreSQLLogBackupJob", "PostgreSQL Log Backup Job" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_configurationBackupJob", "Configuration Backup Job" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_configurationDatabaseMaintenanceJob", "Configuration Database Maintenance Job" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_restoreJob", "Restore Job" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_undoFailoverPlan", "Undo Failover Plan" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_cdpPolicy", "CDP Policy" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_agentBackupJobBS", "Agent Backup Job (Backup Server)" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_agentBackupJobBP", "Agent Backup Job (Backup Policy)" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_fileBackupJob", "File Backup Job" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_fileBackupCopyJob", "File Backup Copy Job" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_storageSnapshotSnapshotOnlyJob", "Storage Snapshot Snapshot-Only Job" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_storageSnapshotBackupJob", "Storage Snapshot Backup Job" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_storageSnapshotCopyJob", "Storage Snapshot Copy Job" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_storageSnapshotRestoreSession", "Storage Snapshot Restore Session" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_archiveTierBackupJob", "Archive Tier Backup Job" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_archiveTierRestoreSession", "Archive Tier Restore Session" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_archiveDownloadSession", "Archive Download Session" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_archiveTierSynchronizationJob", "Archive Tier Synchronization Job" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_archiveTierBackupCopyJob", "Archive Tier Backup Copy Job" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_archiveTierArchivingJob", "Archive Tier Archiving Job" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_publishDiskSession", "Publish Disk Session" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_objectStorageRepositorySynchronizationJob", "Object Storage Repository Synchronization Job" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_guestOSFileRestoreSession", "Guest OS File Restore Session" ],
+                "name": "seriestitle"
+              }
+            },
+            {
+              "func": {
+                "args": [ "_sureBackupScanOnly", "SureBackup Scan only" ],
+                "name": "seriestitle"
+              }
+            }
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [ "veeam_*" ],
+        "query_uses_library": false
+      }
+    }
+  ],
+  "fromVersion": "8.4.0"
+}
