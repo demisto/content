@@ -15,11 +15,7 @@ def generate_mock_client():
     """
 
     with Mocker() as mocker:
-        mocker.get(
-            API_URL + status_check_ext[1],
-            status_code=200,
-            json="Ok"
-        )
+        mocker.get(API_URL + status_check_ext[1], status_code=200, json="Ok")
         client = Client(API_URL, API_KEY)
 
     return client
@@ -49,7 +45,7 @@ def test_mock_trigger_workflow():
             "evidence_path": "\\\\localhost\\Evidence",
             "search_tag_path": "\\\\localhost\\ScanAndTag",
             "export_path": "\\\\localhost\\Exports",
-            "target_ips": "127.0.0.1"
+            "target_ips": "127.0.0.1",
         }
         result = _trigger_workflow(client, **workflow_params)
         outputs = result.outputs

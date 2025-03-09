@@ -34,7 +34,6 @@ class Client(BaseClient):
         )
 
     def _call(self, url_suffix: str, **kwargs):
-
         json_data = {
             "demisto_command": demisto.command(),
             "demisto_args": demisto.args(),
@@ -141,10 +140,7 @@ class Actions:
     def __init__(self, rf_client: Client):
         self.client = rf_client
 
-    def _process_result_actions(
-        self, response: Union[dict, CommandResults]
-    ) -> Optional[List[CommandResults]]:
-
+    def _process_result_actions(self, response: Union[dict, CommandResults]) -> Optional[List[CommandResults]]:
         if isinstance(response, CommandResults):
             # Case when we got 404 on response, and it was processed in self.client._call() method.
             return [response]
@@ -191,7 +187,6 @@ class Actions:
     #######################################################
 
     def fetch_incidents(self) -> None:
-
         response = self.client.fetch_incidents()
 
         if isinstance(response, CommandResults):
@@ -223,12 +218,8 @@ class Actions:
             attachments = []
             incident_json = json.loads(incident.get("rawJSON", "{}"))
             if incident_json.get("panel_evidence_summary", {}).get("screenshots"):
-                for screenshot_data in incident_json["panel_evidence_summary"][
-                    "screenshots"
-                ]:
-                    file_name = (
-                        f"{screenshot_data.get('image_id', '').replace('img:', '')}.png"
-                    )
+                for screenshot_data in incident_json["panel_evidence_summary"]["screenshots"]:
+                    file_name = f"{screenshot_data.get('image_id', '').replace('img:', '')}.png"
                     file_data = screenshot_data.get("base64", "")
                     file = fileResult(file_name, base64.b64decode(file_data))
                     attachment = {
@@ -251,9 +242,7 @@ def get_client(proxies: dict) -> Client:
     base_url = demisto_params.get("server_url", "").rstrip("/")
     verify_ssl = not demisto_params.get("unsecure", False)
 
-    api_token = demisto_params.get("credential", {}).get(
-        "password"
-    ) or demisto_params.get("token")
+    api_token = demisto_params.get("credential", {}).get("password") or demisto_params.get("token")
 
     if not api_token:
         return_error(message="Please provide a valid API token")
@@ -303,8 +292,7 @@ def main() -> None:
                         message = error.get("result", {})["message"]
                 except Exception:
                     message = (
-                        "Unknown error. Please verify that the API"
-                        f" URL and Token are correctly configured. RAW Error: {err}"
+                        "Unknown error. Please verify that the API" f" URL and Token are correctly configured. RAW Error: {err}"
                     )
                 raise DemistoException(f"Failed due to - {message}")
 
