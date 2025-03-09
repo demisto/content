@@ -38,7 +38,7 @@ class Client(BaseClient):  # pragma: no cover
     ) -> None:
         self.company_id = company_id
         super().__init__(base_url, verify_certificate, proxy)
-        self._headers = {"Authorization": f'JWT {self.get_jwt_token(api_key, scopes)}'}
+        self._headers = {"Authorization": f"JWT {self.get_jwt_token(api_key, scopes)}"}
 
     def client_error_handler(self, res) -> Any:
         try:
@@ -57,9 +57,7 @@ class Client(BaseClient):  # pragma: no cover
             return jwt_key["jwt"]
         except DemistoException as e:
             if "No company found for API key" in str(e):
-                raise DemistoException(
-                    "Authorization Error: make sure the API Key is set correctly"
-                )
+                raise DemistoException("Authorization Error: make sure the API Key is set correctly")
             raise e
 
     def get_incident(self, incident_id: int) -> Dict[str, Any]:
@@ -69,10 +67,13 @@ class Client(BaseClient):  # pragma: no cover
         )
 
     def get_open_incident_ids(self) -> List[int]:
-        return self._http_request(
-            method="GET",
-            url_suffix=f"/incident/{self.company_id}/open/",
-        ).get("incident_ids") or []
+        return (
+            self._http_request(
+                method="GET",
+                url_suffix=f"/incident/{self.company_id}/open/",
+            ).get("incident_ids")
+            or []
+        )
 
 
 """ HELPER FUNCTIONS """
@@ -150,11 +151,11 @@ def get_open_incident_ids_to_fetch(
 
 def incident_to_events(incident: Dict[str, Any]) -> List[Dict[str, Any]]:
     """Creates an event for each report in the current incident.
-        Returns the list of events.
+    Returns the list of events.
     """
+
     def report_to_event(report_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Transforms a single report data of the incident to an event.
-        """
+        """Transforms a single report data of the incident to an event."""
         event = copy.deepcopy(incident)
         event["_time"] = event["first_reported_date"]
         del event["reports"]
@@ -166,12 +167,9 @@ def incident_to_events(incident: Dict[str, Any]) -> List[Dict[str, Any]]:
 """ COMMAND FUNCTIONS """
 
 
-def get_events_command(
-    client: Client,
-    args: Dict[str, Any]
-) -> Tuple[CommandResults, List[Dict[str, Any]]]:
-    limit: int = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
-    since_time = arg_to_datetime(args.get('since_time') or DEFAULT_FIRST_FETCH, settings=DATEPARSER_SETTINGS)
+def get_events_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandResults, List[Dict[str, Any]]]:
+    limit: int = arg_to_number(args.get("limit")) or DEFAULT_LIMIT
+    since_time = arg_to_datetime(args.get("since_time") or DEFAULT_FIRST_FETCH, settings=DATEPARSER_SETTINGS)
     assert isinstance(since_time, datetime)
     events, _ = fetch_events_command(client, since_time, limit)
 
