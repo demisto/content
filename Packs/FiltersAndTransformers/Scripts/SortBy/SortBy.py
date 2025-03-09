@@ -22,6 +22,7 @@ def demisto_get(obj: Any, path: Any) -> Any:
     :param path: The path to get values in the node.
     :return: The value(s) specified with `path` in the node.
     """
+
     def split_context_path(path: str) -> List[str]:
         """
         Get keys in order from the path which supports a syntax of path escaped with backslash.
@@ -33,17 +34,17 @@ def demisto_get(obj: Any, path: Any) -> Any:
         node = []
         itr = iter(path)
         for c in itr:
-            if c == '\\':
+            if c == "\\":
                 try:
                     node.append(next(itr))
                 except StopIteration:
-                    node.append('\\')
-            elif c == '.':
-                nodes.append(''.join(node))
+                    node.append("\\")
+            elif c == ".":
+                nodes.append("".join(node))
                 node = []
             else:
                 node.append(c)
-        nodes.append(''.join(node))
+        nodes.append("".join(node))
         return nodes
 
     if not isinstance(obj, dict):
@@ -116,14 +117,13 @@ class Key:
 def main():
     try:
         args = assign_params(**demisto.args())
-        if value := args.get('value', []):
-            descending_keys = argToList(args.get('descending_keys'))
-            if paths := argToList(args.get('keys')):
+        if value := args.get("value", []):
+            descending_keys = argToList(args.get("descending_keys"))
+            if paths := argToList(args.get("keys")):
                 for path in reversed(paths):
-                    value.sort(key=lambda x: Key(x, path).get(),
-                               reverse=path in descending_keys)
+                    value.sort(key=lambda x: Key(x, path).get(), reverse=path in descending_keys)
             else:
-                descending = len(descending_keys) == 1 and descending_keys[0] == '*'
+                descending = len(descending_keys) == 1 and descending_keys[0] == "*"
                 value.sort(key=lambda x: Key(x, None).get(), reverse=descending)
 
         return_results(value)
@@ -132,5 +132,5 @@ def main():
         raise DemistoException(str(err))
 
 
-if __name__ in ('__builtin__', 'builtins', '__main__'):
+if __name__ in ("__builtin__", "builtins", "__main__"):
     main()

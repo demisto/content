@@ -5,8 +5,8 @@ from netaddr import IPAddress, IPNetwork
 
 
 def main():
-    ip_addresses = argToList(demisto.args()['value'])
-    cidr_range_list = argToList(demisto.args()['cidr_ranges'])
+    ip_addresses = argToList(demisto.args()["value"])
+    cidr_range_list = argToList(demisto.args()["cidr_ranges"])
 
     excluded_addresses = []
 

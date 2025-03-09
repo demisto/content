@@ -20,6 +20,7 @@ def demisto_get(obj: Any, path: Any) -> Any:
     :param path: The path to get values in the node.
     :return: The value(s) specified with `path` in the node.
     """
+
     def split_context_path(path: str) -> List[str]:
         """
         Get keys in order from the path which supports a syntax of path escaped with backslash.
@@ -31,17 +32,17 @@ def demisto_get(obj: Any, path: Any) -> Any:
         node = []
         itr = iter(path)
         for c in itr:
-            if c == '\\':
+            if c == "\\":
                 try:
                     node.append(next(itr))
                 except StopIteration:
-                    node.append('\\')
-            elif c == '.':
-                nodes.append(''.join(node))
+                    node.append("\\")
+            elif c == ".":
+                nodes.append("".join(node))
                 node = []
             else:
                 node.append(c)
-        nodes.append(''.join(node))
+        nodes.append("".join(node))
         return nodes
 
     if not isinstance(obj, dict):
@@ -110,9 +111,9 @@ class Key(object):
 def main():
     try:
         args = assign_params(**demisto.args())
-        if value := args.get('value', []):
+        if value := args.get("value", []):
             temp = {}
-            if paths := argToList(args.get('keys')):
+            if paths := argToList(args.get("keys")):
                 for v in value:
                     k: Union[tuple, Key] = tuple(Key(v, path) for path in paths)
                     if k not in temp:
@@ -130,5 +131,5 @@ def main():
         raise DemistoException(str(err))
 
 
-if __name__ in ('__builtin__', 'builtins', '__main__'):
+if __name__ in ("__builtin__", "builtins", "__main__"):
     main()

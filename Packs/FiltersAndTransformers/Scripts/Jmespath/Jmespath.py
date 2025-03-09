@@ -26,5 +26,5 @@ def main():
     return_results(result)
 
 
-if __name__ in ['__builtin__', 'builtins']:
+if __name__ in ["__builtin__", "builtins"]:
     main()
