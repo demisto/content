@@ -21,7 +21,7 @@ def mapvalues(value, input_values, mapped_values):
     # then return an error
 
     if len(input_values) != len(mapped_values):
-        return_error('Length of input_values and mapped_values are not the same')
+        return_error("Length of input_values and mapped_values are not the same")
 
     # Create a dictionary to look up values against
     mapper = dict()
@@ -55,13 +55,13 @@ def mapvalues(value, input_values, mapped_values):
 
 def main():
     args = demisto.args()
-    value = args.get('value')
-    input_values = args.get('input_values')
-    mapped_values = args.get('mapped_values')
+    value = args.get("value")
+    input_values = args.get("input_values")
+    mapped_values = args.get("mapped_values")
 
     value = mapvalues(value, input_values, mapped_values)
     demisto.results(value)
 
 
-if __name__ in ('__main__', 'builtin', 'builtins'):
+if __name__ in ("__main__", "builtin", "builtins"):
     main()

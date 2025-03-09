@@ -8,18 +8,15 @@ import unittest
 from typing import List, Union, Any, Optional
 
 
-def run_test(mocker: unittest.mock,
-             value: Optional[List[Any]],
-             keys: Optional[Union[str, List[str]]],
-             descending_keys: Optional[Union[str, List[str]]],
-             result: List[Any]):
-
-    mocker.patch.object(demisto, 'args', return_value={
-        'value': value,
-        'keys': keys,
-        'descending_keys': descending_keys
-    })
-    mocker.patch.object(SortBy, 'return_results')
+def run_test(
+    mocker: unittest.mock,
+    value: Optional[List[Any]],
+    keys: Optional[Union[str, List[str]]],
+    descending_keys: Optional[Union[str, List[str]]],
+    result: List[Any],
+):
+    mocker.patch.object(demisto, "args", return_value={"value": value, "keys": keys, "descending_keys": descending_keys})
+    mocker.patch.object(SortBy, "return_results")
     SortBy.main()
     assert SortBy.return_results.call_count == 1
     ret = SortBy.return_results.call_args[0][0]
@@ -27,15 +24,15 @@ def run_test(mocker: unittest.mock,
 
 
 def test_shuffleable(mocker):
-    with open('./test_data/test-shuffleable.json', 'r') as f:
+    with open("./test_data/test-shuffleable.json") as f:
         test_list = json.load(f)
 
     for case in test_list:
-        value = case['value']
-        result = case['result']
-        for args in case.get('args') or [{}]:
-            keys = args.get('keys')
-            descending_keys = args.get('descending_keys')
+        value = case["value"]
+        result = case["result"]
+        for args in case.get("args") or [{}]:
+            keys = args.get("keys")
+            descending_keys = args.get("descending_keys")
             if not value:
                 run_test(mocker, value, keys, descending_keys, result)
             elif math.factorial(len(value)) > 1000:
@@ -49,25 +46,17 @@ def test_shuffleable(mocker):
 
 def test_special_descending_symbol_is_not_for_keys(mocker):
     sorted_value_in_descending = [
+        {"key": 3},
         {
-            'key': 3
+            "key": 2,
         },
-        {
-            'key': 2,
-        },
-        {
-            'key': 1
-        }
+        {"key": 1},
     ]
     sorted_count = 0
     combination_count = 0
     for value in itertools.permutations(sorted_value_in_descending):
-        mocker.patch.object(demisto, 'args', return_value={
-            'value': list(value),
-            'keys': 'key',
-            'descending_keys': '*'
-        })
-        mocker.patch.object(SortBy, 'return_results')
+        mocker.patch.object(demisto, "args", return_value={"value": list(value), "keys": "key", "descending_keys": "*"})
+        mocker.patch.object(SortBy, "return_results")
         SortBy.main()
         assert SortBy.return_results.call_count == 1
         ret = SortBy.return_results.call_args[0][0]

@@ -16,19 +16,19 @@ class Table:
         self.__rowspan_labels: List[Tuple[int, str]] = []
 
     def __set_rowspan_labels(self, columns: Optional[List[Tag]]):
-        if not columns or not any(col.attrs.get('rowspan') for col in columns):
+        if not columns or not any(col.attrs.get("rowspan") for col in columns):
             return
 
         rowspan_labels: List[Tuple[int, str]] = []
         for col in columns:
             try:
-                rowspan = int(col.attrs.get('rowspan') or 1)
+                rowspan = int(col.attrs.get("rowspan") or 1)
             except Exception:
                 rowspan = 1
             rowspan = max(1, rowspan)
 
             try:
-                colspan = int(col.attrs.get('colspan') or 1)
+                colspan = int(col.attrs.get("colspan") or 1)
             except Exception:
                 colspan = 1
             colspan = max(1, colspan)
@@ -56,7 +56,7 @@ class Table:
         rowspan_labels = self.__rowspan_labels
 
         # Normalize labels
-        if labels and any(label.attrs.get('rowspan') for label in labels):
+        if labels and any(label.attrs.get("rowspan") for label in labels):
             self.__set_rowspan_labels(labels)
 
         normalized_labels = []
@@ -67,13 +67,13 @@ class Table:
 
             for label in labels:
                 try:
-                    colspan = int(label.attrs.get('colspan') or 1)
+                    colspan = int(label.attrs.get("colspan") or 1)
                 except Exception:
                     colspan = 1
                 normalized_labels += [label.text.strip()] * max(1, colspan)
 
         # Normalize columns
-        if any(col.attrs.get('rowspan') for col in columns):
+        if any(col.attrs.get("rowspan") for col in columns):
             self.__set_rowspan_labels(columns)
 
         normalized_columns = []
@@ -84,7 +84,7 @@ class Table:
 
         for col in columns:
             try:
-                colspan = int(col.attrs.get('colspan') or 1)
+                colspan = int(col.attrs.get("colspan") or 1)
             except Exception:
                 colspan = 1
             normalized_columns += [col.text.strip()] * max(1, colspan)
@@ -107,22 +107,22 @@ class Table:
         tbl_rows = self.__rows
         headers = self.__headers
 
-        if default_header_line and default_header_line != 'none':
+        if default_header_line and default_header_line != "none":
             if not headers and not any(labels for labels, cols in tbl_rows):
-                if default_header_line in ('first_column', 'first_row'):
+                if default_header_line in ("first_column", "first_row"):
                     # The first column or row is considered as header
-                    if default_header_line == 'first_column':
+                    if default_header_line == "first_column":
                         # transpose
                         tbl_rows = [([], list(cols)) for cols in zip(*[cols for labels, cols in tbl_rows])]
 
                     labels, headers = tbl_rows[0]
                     tbl_rows = tbl_rows[1:]
                 else:
-                    raise ValueError(f'Unknown default header line: {default_header_line}')
+                    raise ValueError(f"Unknown default header line: {default_header_line}")
 
         for labels, cols in tbl_rows:
             labels = labels[-1:]
-            headers = labels + headers[len(labels):len(headers) - len(labels)]
+            headers = labels + headers[len(labels) : len(headers) - len(labels)]
 
             if not cols:
                 continue
@@ -161,7 +161,7 @@ class Table:
                     rows.append(temp_row)
                     temp_row = {}
 
-                rows.append({headers[i] if i < len(headers) else 'cell' + str(i): col for i, col in enumerate(cols)})
+                rows.append({headers[i] if i < len(headers) else "cell" + str(i): col for i, col in enumerate(cols)})
 
         if temp_row:
             rows.append(temp_row)
@@ -171,8 +171,9 @@ class Table:
         return rows
 
 
-def find_table_title(base: Optional[Union[BeautifulSoup, Tag, NavigableString]],
-                     node: Union[BeautifulSoup, Tag, NavigableString]) -> Optional[str]:
+def find_table_title(
+    base: Optional[Union[BeautifulSoup, Tag, NavigableString]], node: Union[BeautifulSoup, Tag, NavigableString]
+) -> Optional[str]:
     """
     Search for a table title from a node.
 
@@ -180,32 +181,32 @@ def find_table_title(base: Optional[Union[BeautifulSoup, Tag, NavigableString]],
     :param node: The node from which searching starts.
     :return: A title found.
     """
-    title = ''
+    title = ""
     orig = node
     prev = node.previous_element
     while prev and node is not base:
         node = prev
-        if isinstance(node, Tag) and node.name in ('h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
-            title = ' '.join(node.text.strip().split())
+        if isinstance(node, Tag) and node.name in ("h1", "h2", "h3", "h4", "h5", "h6"):
+            title = " ".join(node.text.strip().split())
             break
 
         prev = node.previous_element
 
-    if not title or title.count(' ') >= TITLE_THRESHOLD:
-        message = ''
+    if not title or title.count(" ") >= TITLE_THRESHOLD:
+        message = ""
         node = orig
         prev = node.previous_element
         while prev and node is not base:
             node = prev
             if isinstance(node, NavigableString):
                 message = (str(node) if message else str(node).rstrip()) + message
-                if message.lstrip() and any(c in message for c in ('\n', '\r')):
+                if message.lstrip() and any(c in message for c in ("\n", "\r")):
                     break
 
             prev = node.previous_element
 
-        message = ' '.join(message.strip().split())
-        title = title if title and message.count(' ') >= title.count(' ') else message
+        message = " ".join(message.strip().split())
+        title = title if title and message.count(" ") >= title.count(" ") else message
 
     return title
 
@@ -220,13 +221,13 @@ def list_columns(node: Union[BeautifulSoup, Tag, NavigableString], name: str) ->
     """
     vals = []
     ancestor = node
-    name_list = ['table', 'td', 'th', name]
+    name_list = ["table", "td", "th", name]
     node = node.find(name_list)
     while node and is_descendant(ancestor, node):
         if node.name in name_list:
             if node.name == name:
                 tnode = copy.copy(node)
-                for t in tnode.find_all('table'):
+                for t in tnode.find_all("table"):
                     t.decompose()
                 vals.append(tnode)
             node = node.find_next_sibling(True)
@@ -235,8 +236,9 @@ def list_columns(node: Union[BeautifulSoup, Tag, NavigableString], name: str) ->
     return vals
 
 
-def is_descendant(ancestor: Optional[Union[BeautifulSoup, Tag, NavigableString]],
-                  node: Optional[Union[BeautifulSoup, Tag, NavigableString]]) -> bool:
+def is_descendant(
+    ancestor: Optional[Union[BeautifulSoup, Tag, NavigableString]], node: Optional[Union[BeautifulSoup, Tag, NavigableString]]
+) -> bool:
     """
     Check if a node is descendant in the tree.
 
@@ -247,8 +249,9 @@ def is_descendant(ancestor: Optional[Union[BeautifulSoup, Tag, NavigableString]]
     return ancestor is not None and node is not None and any([ancestor is p for p in node.parents])
 
 
-def parse_table(base: Optional[Union[BeautifulSoup, Tag, NavigableString]],
-                table_node: Union[BeautifulSoup, Tag, NavigableString]) -> Generator[Table, None, None]:
+def parse_table(
+    base: Optional[Union[BeautifulSoup, Tag, NavigableString]], table_node: Union[BeautifulSoup, Tag, NavigableString]
+) -> Generator[Table, None, None]:
     """
     Parse a HTML table and enumerate tables found in the table.
 
@@ -256,29 +259,29 @@ def parse_table(base: Optional[Union[BeautifulSoup, Tag, NavigableString]],
     :param table_node: The table node to parse.
     :return: Tables found.
     """
-    table = Table(title=find_table_title(base, table_node) or 'No Title')
+    table = Table(title=find_table_title(base, table_node) or "No Title")
     has_nested_tables = False
 
-    node = table_node.find(['table', 'tr'])
+    node = table_node.find(["table", "tr"])
     while node and is_descendant(table_node, node):
-        if node.name == 'tr':
-            ths = list_columns(node, 'th')
-            tds = list_columns(node, 'td')
+        if node.name == "tr":
+            ths = list_columns(node, "th")
+            tds = list_columns(node, "td")
             if tds:
                 table.add_row(columns=tds, labels=ths)
             if ths and not table.get_header_labels():
                 table.set_header_labels(ths)
 
-            node = node.find_next(['table', 'tr'])
+            node = node.find_next(["table", "tr"])
 
-        elif node.name == 'table':
+        elif node.name == "table":
             has_nested_tables = True
             yield from parse_table(base, node)
 
             base = node.previous_element
             node = node.find_next_sibling(True)
         else:
-            node = node.find_next(['table', 'tr'])
+            node = node.find_next(["table", "tr"])
 
     # Not to make a table if tr only has tables
     has_table = True
@@ -301,7 +304,7 @@ def parse_tables(node: Union[BeautifulSoup, Tag, NavigableString]) -> Generator[
     :return: Tables found.
     """
     base = None
-    node = node.find('table')
+    node = node.find("table")
     while node:
         yield from parse_table(base, node)
         base = node.next_sibling
@@ -309,10 +312,10 @@ def parse_tables(node: Union[BeautifulSoup, Tag, NavigableString]) -> Generator[
         while node:
             next = node.find_next_sibling(True)
             if next:
-                if next.name == 'table':
+                if next.name == "table":
                     break
 
-                next = next.find_next('table')
+                next = next.find_next("table")
                 if next:
                     break
             node = node.parent
@@ -321,15 +324,15 @@ def parse_tables(node: Union[BeautifulSoup, Tag, NavigableString]) -> Generator[
 
 def main():
     args = demisto.args()
-    html = args.get('value') or ''
-    overwriting_title = args.get('title')
-    filter_indexes = argToList(args.get('filter_indexes'))
-    filter_titles = argToList(args.get('filter_titles'))
-    default_header_line = args.get('default_header_line') or 'none'
+    html = args.get("value") or ""
+    overwriting_title = args.get("title")
+    filter_indexes = argToList(args.get("filter_indexes"))
+    filter_titles = argToList(args.get("filter_titles"))
+    default_header_line = args.get("default_header_line") or "none"
 
     tables = []
     try:
-        soup = BeautifulSoup(html, 'html.parser')
+        soup = BeautifulSoup(html, "html.parser")
         index = -1
         for table in parse_tables(soup):
             rows = table.make_pretty_table_rows(default_header_line)
@@ -337,9 +340,7 @@ def main():
                 continue
 
             index = index + 1
-            if filter_indexes and\
-               index not in filter_indexes and\
-               str(index) not in filter_indexes:
+            if filter_indexes and index not in filter_indexes and str(index) not in filter_indexes:
                 continue
 
             original_title = table.get_title()
@@ -355,5 +356,5 @@ def main():
     return_results(tables)
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

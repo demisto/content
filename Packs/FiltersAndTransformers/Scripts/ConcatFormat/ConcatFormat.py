@@ -4,19 +4,20 @@ from typing import Any, Callable, Dict, Optional, Tuple
 
 
 class ContextData:
-    def __init__(self,
-                 context: Optional[Dict[str, Any]] = None,
-                 inputs: Optional[Dict[str, Any]] = None,
-                 incident: Optional[Dict[str, Any]] = None):
-
+    def __init__(
+        self,
+        context: Optional[Dict[str, Any]] = None,
+        inputs: Optional[Dict[str, Any]] = None,
+        incident: Optional[Dict[str, Any]] = None,
+    ):
         self.__context = context
         self.__specials = {
-            'inputs': inputs if isinstance(inputs, dict) else {},
-            'incident': incident if isinstance(incident, dict) else {}
+            "inputs": inputs if isinstance(inputs, dict) else {},
+            "incident": incident if isinstance(incident, dict) else {},
         }
 
     def get(self, key: Optional[str] = None) -> Any:
-        """ Get the context value
+        """Get the context value
 
         :param key: The dt expressions (string within ${}).
         :return: The value.
@@ -26,8 +27,7 @@ class ContextData:
 
         dx = self.__context
         for prefix in self.__specials.keys():
-            if prefix == key or (key.startswith(prefix)
-                                 and key[len(prefix):len(prefix) + 1] in ('.', '(', '=')):
+            if prefix == key or (key.startswith(prefix) and key[len(prefix) : len(prefix) + 1] in (".", "(", "=")):
                 dx = self.__specials
                 break
         return demisto.dt(dx, key)
@@ -36,7 +36,7 @@ class ContextData:
 class Formatter:
     def __init__(self, start_marker: str, end_marker: str, keep_symbol_to_null: bool):
         if not start_marker:
-            raise ValueError('start-marker is required.')
+            raise ValueError("start-marker is required.")
 
         self.__start_marker = start_marker
         self.__end_marker = end_marker
@@ -45,25 +45,25 @@ class Formatter:
     @staticmethod
     def __is_end_mark(source: str, ci: int, end_marker: str) -> bool:
         if end_marker:
-            return source[ci:ci + len(end_marker)] == end_marker
+            return source[ci : ci + len(end_marker)] == end_marker
         else:
             c = source[ci]
             if c.isspace():
                 return True
             elif c.isascii():
-                return c != '_' and not c.isalnum()
+                return c != "_" and not c.isalnum()
             else:
                 return False
 
-    def __extract(self,
-                  source: str,
-                  extractor: Optional[Callable[[str,
-                                                Optional[ContextData]],
-                                               Any]],
-                  dx: Optional[ContextData],
-                  si: int,
-                  markers: Optional[Tuple[str, str]]) -> Tuple[Any, Optional[int]]:
-        """ Extract a template text, or an enclosed value within starting and ending marks
+    def __extract(
+        self,
+        source: str,
+        extractor: Optional[Callable[[str, Optional[ContextData]], Any]],
+        dx: Optional[ContextData],
+        si: int,
+        markers: Optional[Tuple[str, str]],
+    ) -> Tuple[Any, Optional[int]]:
+        """Extract a template text, or an enclosed value within starting and ending marks
 
         :param source: The template text, or the enclosed value starts with the next charactor of a start marker
         :param extractor: The function to extract an enclosed value as DT
@@ -85,10 +85,10 @@ class Formatter:
                 else:
                     xval = key
                 return xval, ci + len(markers[1])
-            elif extractor and source[ci:ci + len(self.__start_marker)] == self.__start_marker:
-                xval, ei = self.__extract(source, extractor, dx,
-                                          ci + len(self.__start_marker),
-                                          (self.__start_marker, self.__end_marker))
+            elif extractor and source[ci : ci + len(self.__start_marker)] == self.__start_marker:
+                xval, ei = self.__extract(
+                    source, extractor, dx, ci + len(self.__start_marker), (self.__start_marker, self.__end_marker)
+                )
                 if si != ci:
                     out = source[si:ci] if out is None else str(out) + source[si:ci]
 
@@ -103,10 +103,10 @@ class Formatter:
                 si = ci = ei
             elif markers is None:
                 ci += 1
-            elif endc := {'(': ')', '{': '}', '[': ']', '"': '"', "'": "'"}.get(source[ci]):
+            elif endc := {"(": ")", "{": "}", "[": "]", '"': '"', "'": "'"}.get(source[ci]):
                 _, ei = self.__extract(source, None, dx, ci + 1, (source[ci], endc))
                 ci = ci + 1 if ei is None else ei
-            elif source[ci] == '\\':
+            elif source[ci] == "\\":
                 ci += 2
             else:
                 ci += 1
@@ -123,24 +123,21 @@ class Formatter:
         else:
             return str(out) + source[si:], ci
 
-    def build(self,
-              template: str,
-              extractor: Optional[Callable[[str,
-                                            Optional[ContextData]],
-                                           Any]],
-              dx: Optional[ContextData]) -> Any:
-        """ Format a text from a template including DT expressions
+    def build(
+        self, template: str, extractor: Optional[Callable[[str, Optional[ContextData]], Any]], dx: Optional[ContextData]
+    ) -> Any:
+        """Format a text from a template including DT expressions
 
         :param template: The template.
         :param extractor: The extractor to get real value within ${dt}.
         :param dx: The context instance.
         :return: The text built from the template.
         """
-        return self.__extract(template, extractor, dx, 0, None)[0] if template else ''
+        return self.__extract(template, extractor, dx, 0, None)[0] if template else ""
 
 
 def extract_dt(dtstr: str, dx: Optional[ContextData]) -> Any:
-    """ Extract dt expression
+    """Extract dt expression
 
     :param dtstr: The dt expressions (string within ${}).
     :param dx: The context instance.
@@ -153,42 +150,34 @@ def extract_dt(dtstr: str, dx: Optional[ContextData]) -> Any:
 
 
 def stringify(value: Any) -> str:
-    if value is None or\
-       (isinstance(value, dict) and (not value)) or\
-       (isinstance(value, list) and (not value)):
-        return ''
+    if value is None or (isinstance(value, dict) and (not value)) or (isinstance(value, list) and (not value)):
+        return ""
     if isinstance(value, bool):
-        return 'true' if value else 'false'
+        return "true" if value else "false"
     return str(value)
 
 
 def main():
     args = assign_params(**demisto.args())
     try:
-        value = args.get('value')
-        prefix = args.get('prefix')
-        suffix = args.get('suffix')
-        variable_markers = argToList(args.get('variable_markers', '${,}'))
+        value = args.get("value")
+        prefix = args.get("prefix")
+        suffix = args.get("suffix")
+        variable_markers = argToList(args.get("variable_markers", "${,}"))
         if not variable_markers or not variable_markers[0]:
-            raise ValueError('variable_markers must have a start marker.')
+            raise ValueError("variable_markers must have a start marker.")
         elif len(variable_markers) >= 3:
-            raise ValueError('too many values for variable_markers.')
+            raise ValueError("too many values for variable_markers.")
         elif len(variable_markers) == 1:
-            variable_markers = variable_markers + ['']
+            variable_markers = variable_markers + [""]
 
-        dx = args.get('ctx_data')
+        dx = args.get("ctx_data")
         if dx and isinstance(dx, str):
             dx = json.loads(dx)
 
-        dx = ContextData(
-            context=dx,
-            inputs=args.get('ctx_inputs'),
-            incident=args.get('ctx_inc'))
+        dx = ContextData(context=dx, inputs=args.get("ctx_inputs"), incident=args.get("ctx_inc"))
 
-        formatter = Formatter(
-            variable_markers[0],
-            variable_markers[1],
-            argToBoolean(args.get('keep_symbol_to_null', False)))
+        formatter = Formatter(variable_markers[0], variable_markers[1], argToBoolean(args.get("keep_symbol_to_null", False)))
 
         prefix = stringify(prefix)
         if prefix:
@@ -206,5 +195,5 @@ def main():
     return_results(value)
 
 
-if __name__ in ('__builtin__', 'builtins', '__main__'):
+if __name__ in ("__builtin__", "builtins", "__main__"):
     main()

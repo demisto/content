@@ -25,28 +25,27 @@ def get_entry_context(identifiers: Dict[str, Any]) -> Dict[str, List[Optional[li
     """
     asset_list = []
 
-    if has_key(identifiers, key='HostName'):
-        asset_list.append(identifiers.get('HostName'))
-    elif has_key(identifiers, key='IpAddress'):
-        asset_list.append(identifiers.get('IpAddress'))
-    elif has_key(identifiers, key='MacAddress'):
-        asset_list.append(identifiers.get('MacAddress'))
+    if has_key(identifiers, key="HostName"):
+        asset_list.append(identifiers.get("HostName"))
+    elif has_key(identifiers, key="IpAddress"):
+        asset_list.append(identifiers.get("IpAddress"))
+    elif has_key(identifiers, key="MacAddress"):
+        asset_list.append(identifiers.get("MacAddress"))
 
-    ec = {'AssetIdentifiers': asset_list}
+    ec = {"AssetIdentifiers": asset_list}
     return ec
 
 
 def main() -> None:
     try:
-        artifact_identifiers = demisto.args().get('artifact_identifiers', [])
+        artifact_identifiers = demisto.args().get("artifact_identifiers", [])
 
         ec = get_entry_context(artifact_identifiers)
-        demisto.results(
-            {"Type": entryTypes['note'], "EntryContext": ec, "Contents": {}, "ContentsFormat": formats["json"]})
+        demisto.results({"Type": entryTypes["note"], "EntryContext": ec, "Contents": {}, "ContentsFormat": formats["json"]})
     except Exception as e:
-        return_error(f'Error occurred while extracting Domain(s):\n{e}')
+        return_error(f"Error occurred while extracting Domain(s):\n{e}")
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == '__builtin__' or __name__ == 'builtins':
+if __name__ == "__builtin__" or __name__ == "builtins":
     main()

@@ -61,9 +61,9 @@ def extract_inbetween(value: str, start: str, end: str) -> str:
 
 def main():
     args = demisto.args()
-    value = args.get('value')
-    start = args.get('from')
-    end = args.get('to')
+    value = args.get("value")
+    start = args.get("from")
+    end = args.get("to")
     try:
         return_results(extract_inbetween(value, start, end))
     except Exception as err:

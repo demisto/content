@@ -9,8 +9,8 @@ def get_fields(args):
     :return: hr_string as a human readable string. entry_context as a dictionary containing the
     results.
     """
-    values_to_search = argToList(args.get('value'))
-    get_field = args.get('getField')
+    values_to_search = argToList(args.get("value"))
+    get_field = args.get("getField")
 
     reduced_dicts = []
     for dict_item in values_to_search:
@@ -26,7 +26,7 @@ def get_fields(args):
     if len(reduced_dicts) == 1:
         return reduced_dicts[0]
 
-    if argToBoolean(args.get('stringify', 'false')):
+    if argToBoolean(args.get("stringify", "false")):
         return json.dumps(reduced_dicts, ensure_ascii=False)
     else:
         return reduced_dicts

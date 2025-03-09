@@ -30,13 +30,9 @@ def main() -> None:
     except KeyError:
         html = f"<div style={DIV_HTML_STYLE}><h1 style={ORANGE_HTML_STYLE}No Results Found</h1></div>"
 
-    return_results({
-        'ContentsFormat': formats['html'],
-        'Type': entryTypes['note'],
-        'Contents': html
-    })
+    return_results({"ContentsFormat": formats["html"], "Type": entryTypes["note"], "Contents": html})
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == '__builtin__' or __name__ == 'builtins':
+if __name__ == "__builtin__" or __name__ == "builtins":
     main()

@@ -29,15 +29,13 @@ def equals_object(obj1, obj2) -> bool:
 
 
 def test_1(mocker):
-    with open('./test_data/test-1.json', 'r') as f:
+    with open("./test_data/test-1.json") as f:
         test_list = json.load(f)
 
     for case in test_list:
-        mocker.patch.object(demisto, 'args', return_value={
-            **case['args']
-        })
-        mocker.patch.object(MakePair, 'return_results')
+        mocker.patch.object(demisto, "args", return_value={**case["args"]})
+        mocker.patch.object(MakePair, "return_results")
         MakePair.main()
         assert MakePair.return_results.call_count == 1
         ret = MakePair.return_results.call_args[0][0]
-        assert equals_object(ret, case['result'])
+        assert equals_object(ret, case["result"])

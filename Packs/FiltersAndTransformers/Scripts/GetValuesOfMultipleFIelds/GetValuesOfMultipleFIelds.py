@@ -12,11 +12,11 @@ def update_list(_list: List, update_with):
 
 def main():
     args: Dict = demisto.args()
-    root = args.get('key')
+    root = args.get("key")
     if root:
         if not isinstance(root, list):
             root = [root]
-        keys: List = args.get('list', '').split(',')
+        keys: List = args.get("list", "").split(",")
 
         t: List = []
         for obj in root:
@@ -25,11 +25,11 @@ def main():
                 if temp:
                     update_list(t, temp)
 
-        initial_value = args.get('value')
+        initial_value = args.get("value")
         if initial_value:
             update_list(t, initial_value)
         demisto.results(t)
 
 
-if __name__ in ('builtins', '__builtin__'):
+if __name__ in ("builtins", "__builtin__"):
     main()

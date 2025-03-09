@@ -43,10 +43,9 @@ def parse_custom_fields(custom_fields: List[str]) -> Dict[str, Any]:
     """
 
     result: Dict[str, Any] = {}
-    regex = r'(customfield_\d{5,})={1}(\w+)'
+    regex = r"(customfield_\d{5,})={1}(\w+)"
 
     for custom_field in custom_fields:
-
         field_regex_match = re.search(regex, custom_field)
 
         if field_regex_match:
@@ -78,7 +77,6 @@ def add_custom_fields(args: Dict[str, Any], custom_fields: Dict[str, Any]) -> Di
 
 def main():  # pragma: no cover
     try:
-
         args = demisto.args()
 
         demisto.debug(f"Arguments provided: \n{args}")
@@ -101,15 +99,12 @@ def main():  # pragma: no cover
                 demisto.debug("Custom fields added to command arguments")
 
         demisto.debug(f"Executing {INTEGRATION_COMMAND} with arguments: \n{args}")
-        create_issue_result = demisto.executeCommand(
-            INTEGRATION_COMMAND,
-            args
-        )
+        create_issue_result = demisto.executeCommand(INTEGRATION_COMMAND, args)
 
         return_results(create_issue_result)
     except Exception as e:
-        return_error(f'Failed to JiraCreateIssueExample command. Error: {str(e)}')
+        return_error(f"Failed to JiraCreateIssueExample command. Error: {str(e)}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
+if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
     main()
