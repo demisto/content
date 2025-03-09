@@ -301,6 +301,37 @@ def lowercase_protocol_callback(pattern: re.Match) -> str:
     return pattern.group(0).lower()
 
 
+def reputation_with_handling_error(client, section, argument, sub_section=None):
+    """Query data while handling ReadTimeout errors.
+
+    Args:
+        client: The client object used to perform the query.
+        section: The section to query (e.g., 'domain', 'file', 'url', etc.).
+        argument: The argument for the query (e.g., domain name, file hash, URL, or IP).
+        sub_section: (Optional) A sub-section for more specific queries (e.g., 'analysis' for file reputation).
+
+    Returns:
+        The raw response from the query if successful, or an empty dictionary if a ReadTimeout occurs.
+    """
+    try:
+        if sub_section:
+            return client.query(section=section, argument=argument, sub_section=sub_section)
+        return client.query(section=section, argument=argument)
+    except requests.exceptions.ReadTimeout as e:
+        if client.should_error:
+            raise e
+        demisto.info(f"An error was raised {e=}")
+        return_warning(f"{e}")
+        if section == 'url':
+            return 404
+        return {}
+    except Exception as e:
+        if client.should_error:
+            raise e
+        if 'The command could not be execute:' in str(e):
+            return_warning(str(e))
+
+
 ''' COMMANDS '''
 
 
