@@ -2,7 +2,7 @@
     "name": "Dragos Platform",
     "description": "The Dragos Platform offers customers visibility into their ICS/OT assets, vulnerabilities, threats, and response actions.",
     "support": "xsoar",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -18,6 +18,13 @@
         "OT"
     ],
     "marketplaces": [
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

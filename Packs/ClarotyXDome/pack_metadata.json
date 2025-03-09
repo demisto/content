@@ -2,7 +2,7 @@
     "name": "Claroty xDome",
     "description": "Use xDome to manage assets and alerts.",
     "support": "partner",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "Claroty",
     "url": "",
     "email": "support@claroty.com",
@@ -18,9 +18,16 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "githubUser": [
         "tomlandes"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

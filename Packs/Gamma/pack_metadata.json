@@ -2,7 +2,7 @@
     "name": "Gamma",
     "description": "Streamline discovery, classification and remediation of data loss instances across Enterprise SaaS applications (Slack, Jira, Github, Gdrive, Gmail, O365, etc.). Playbook engages with users while simultaneously allowing the Security team to instantly investigate and/or automatically remediate.",
     "support": "xsoar",
-    "currentVersion": "1.0.21",
+    "currentVersion": "1.0.22",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -41,6 +41,13 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

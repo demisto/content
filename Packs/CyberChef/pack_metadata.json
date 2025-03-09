@@ -2,7 +2,7 @@
     "name": "CyberChef",
     "description": "Integration with your CyberChef server or https://prod.apifor.io service for CyberChef.",
     "support": "community",
-    "currentVersion": "1.0.9",
+    "currentVersion": "1.0.10",
     "author": "Harri Ruuttila",
     "url": "",
     "email": "",
@@ -18,6 +18,13 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }
