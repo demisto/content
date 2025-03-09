@@ -795,6 +795,88 @@ def test_ip_function_return_timeout_error():
     assert e.value.args[0] == 'Request timed out'
 
 
+def test_ip_function_return_demistoException_504():
+    """
+    Given
+    - A client configured with should_error=True.
+    - The client's HTTP request method is mocked to raise a demistoException.
+
+    When
+    - Calling ip_command with an IP address.
+
+    Then
+    - Ensure a ReadTimeout exception is raised.
+    """
+    client = Client(base_url='aa', headers={}, verify=True, proxy=False, default_threshold='5', max_indicator_relationships='1',
+                    reliability='', should_error=True)
+    client._http_request = MagicMock()
+    client._http_request.side_effect = DemistoException("Error in API call [504] - Gateway Time-out")
+    with pytest.raises(DemistoException) as e:
+        ip_command(client, ip_address='1.2.3.4', ip_version='1.2.3.4')
+    assert e.value.args[0] == 'Error in API call [504] - Gateway Time-out'
+    
+
+def test_ip_function_return_demistoException_warning_504():
+    """
+    Given
+    - A client configured with should_error=True.
+    - The client's HTTP request method is mocked to raise a demistoException.
+
+    When
+    - Calling ip_command with an IP address.
+
+    Then
+    - Ensure a ReadTimeout exception is raised.
+    """
+    client = Client(base_url='aa', headers={}, verify=True, proxy=False, default_threshold='5', max_indicator_relationships='1',
+                    reliability='', should_error=False)
+    client._http_request = MagicMock()
+    client._http_request.side_effect = DemistoException("Error in API call [504] - Gateway Time-out")
+    result = ip_command(client, ip_address='1.2.3.4', ip_version='1.2.3.4')
+    assert result[0].readable_output == '### Results:\n|IP|Result|\n|---|---|\n| 1.2.3.4 | Not found |\n'
+    
+
+def test_ip_function_return_demistoException_502():
+    """
+    Given
+    - A client configured with should_error=True.
+    - The client's HTTP request method is mocked to raise a demistoException.
+
+    When
+    - Calling ip_command with an IP address.
+
+    Then
+    - Ensure a ReadTimeout exception is raised.
+    """
+    client = Client(base_url='aa', headers={}, verify=True, proxy=False, default_threshold='5', max_indicator_relationships='1',
+                    reliability='', should_error=True)
+    client._http_request = MagicMock()
+    client._http_request.side_effect = DemistoException("Error in API call [502] - Bad Gateway")
+    with pytest.raises(DemistoException) as e:
+        ip_command(client, ip_address='1.2.3.4', ip_version='1.2.3.4')
+    assert e.value.args[0] == 'Error in API call [502] - Bad Gateway'
+    
+
+def test_ip_function_return_demistoException_warning_502():
+    """
+    Given
+    - A client configured with should_error=True.
+    - The client's HTTP request method is mocked to raise a demistoException.
+
+    When
+    - Calling ip_command with an IP address.
+
+    Then
+    - Ensure a ReadTimeout exception is raised.
+    """
+    client = Client(base_url='aa', headers={}, verify=True, proxy=False, default_threshold='5', max_indicator_relationships='1',
+                    reliability='', should_error=False)
+    client._http_request = MagicMock()
+    client._http_request.side_effect = DemistoException("Error in API call [502] - Bad Gateway")
+    result = ip_command(client, ip_address='1.2.3.4', ip_version='1.2.3.4')
+    assert result[0].readable_output == '### Results:\n|IP|Result|\n|---|---|\n| 1.2.3.4 | Not found |\n'
+
+
 def test_ip_function_return_timeout_warning():
     """
     Given

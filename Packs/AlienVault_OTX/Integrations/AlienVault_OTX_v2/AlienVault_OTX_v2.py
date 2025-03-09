@@ -325,11 +325,22 @@ def reputation_with_handling_error(client, section, argument, sub_section=None):
         if section == 'url':
             return 404
         return {}
+    except DemistoException as e:
+        if not client.should_error and ('504' in e.message or '502' in e.message):
+            return_warning(e.message)
+            if section == 'url':
+                return 404
+            return {}
+        raise e
     except Exception as e:
-        if client.should_error:
-            raise e
-        if 'The command could not be execute:' in str(e):
+        if not client.should_error and 'The command could not be execute:' in str(e):
             return_warning(str(e))
+            if section == 'url':
+                return 404
+            return {}
+        raise e
+
+        
 
 
 ''' COMMANDS '''
