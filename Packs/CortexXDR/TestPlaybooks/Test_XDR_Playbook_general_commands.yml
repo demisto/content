@@ -1,6 +1,5 @@
 id: Test XDR Playbook general commands
-version: 2
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Test XDR Playbook general commands
 starttaskid: "0"
 tasks:
@@ -3331,4 +3330,4 @@ view: |-
   }
 inputs: []
 outputs: []
-dirtyInputs: true
+fromversion: 5.0.0
