@@ -326,6 +326,7 @@ def reputation_with_handling_error(client, section, argument, sub_section=None):
             return 404
         return {}
     except DemistoException as e:
+        demisto.debug(f"An error was raised {e=}")
         if not client.should_error and ('504' in e.message or '502' in e.message):
             return_warning(e.message)
             if section == 'url':
