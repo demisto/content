@@ -3,13 +3,13 @@ from CommonServerPython import *  # noqa: F401
 
 
 def main():
-    query = demisto.args().get('query')
-    size = demisto.args().get('size')
+    query = demisto.args().get("query")
+    size = demisto.args().get("size")
 
     if size:
-        incidents = demisto.executeCommand('SearchIncidentsV2', {'query': query, 'size': size})
+        incidents = demisto.executeCommand("SearchIncidentsV2", {"query": query, "size": size})
     else:
-        incidents = demisto.executeCommand('SearchIncidentsV2', {'query': query})
+        incidents = demisto.executeCommand("SearchIncidentsV2", {"query": query})
 
     try:
         incidents_data = incidents[0].get("Contents")[0].get("Contents").get("data")
@@ -19,8 +19,8 @@ def main():
             i = item.get("id")
             ids.append(i)
 
-        text_ids = ','.join(ids)
-        demisto.executeCommand('core-delete-incidents', {'ids': text_ids})
+        text_ids = ",".join(ids)
+        demisto.executeCommand("core-delete-incidents", {"ids": text_ids})
     except TypeError:
         demisto.results("No incidents to delete according to the query")
 
@@ -29,5 +29,5 @@ def main():
             raise Exception("Please enable Core REST API integration")
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ["__main__", "builtin", "builtins"]:
     main()

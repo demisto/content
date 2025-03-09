@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 try:
     scores = demisto.args()["cache"]["scores"]
 except Exception:
@@ -14,11 +15,11 @@ for k, v in scores.items():
 
 
 entry = {
-    'Type': entryTypes["note"],
-    'Contents': md,
-    'ContentsFormat': formats['markdown'],
-    'HumanReadable': md,
-    'ReadableContentsFormat': formats['markdown']
+    "Type": entryTypes["note"],
+    "Contents": md,
+    "ContentsFormat": formats["markdown"],
+    "HumanReadable": md,
+    "ReadableContentsFormat": formats["markdown"],
 }
 
 demisto.results(entry)
