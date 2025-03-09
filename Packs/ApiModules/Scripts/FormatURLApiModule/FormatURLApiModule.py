@@ -229,6 +229,7 @@ class URLCheck:
         index = self.base
         host: Any = ''
         is_ip = False
+        numerical_ip = False
 
         while index < len(self.modified_url) and self.modified_url[index] not in ('/', '?', '#'):
 
@@ -305,6 +306,13 @@ class URLCheck:
                 index += 1
 
         if not is_ip:
+            try:  # Check if host is a numerical representation of an IP address
+                host = int(host)
+                numerical_ip = True
+
+            except ValueError:
+                pass
+
             try:
                 ip = ipaddress.ip_address(host)
 
@@ -314,6 +322,9 @@ class URLCheck:
             except ValueError:
                 self.check_domain(host)
 
+        if numerical_ip:
+            self.url.hostname = ip.exploded
+            self.output = self.output.replace(str(host), ip.exploded)
         self.url.hostname = host
         self.check_done(index)
 
