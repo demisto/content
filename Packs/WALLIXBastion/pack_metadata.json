@@ -2,7 +2,7 @@
     "name": "WALLIX Bastion",
     "description": "Centralized Control and Monitoring of Privileged Access to Sensitive Assets.",
     "support": "partner",
-    "currentVersion": "3.1.0",
+    "currentVersion": "3.1.1",
     "author": "WALLIX",
     "url": "https://www.wallix.com/privileged-access-management/",
     "email": "cs@wallix.com",
