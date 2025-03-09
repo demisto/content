@@ -2,7 +2,7 @@
     "name": "IBM Security QRadar SOAR",
     "description": "Case management that enables visibility across your tools for continual IR improvement",
     "support": "xsoar",
-    "currentVersion": "1.2.1",
+    "currentVersion": "1.2.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
