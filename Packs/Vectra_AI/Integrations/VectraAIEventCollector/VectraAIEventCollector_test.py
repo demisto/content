@@ -35,7 +35,7 @@ client = VectraClient(url=BASE_URL, api_key=PASSWORD)
 
 
 def load_json(path: Path):
-    with open(path, mode="r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -141,9 +141,7 @@ def test_get_audits(mocker: MockerFixture):
     [(DETECTIONS, AUDITS), ({}, {}), (DETECTIONS, {}), ({}, AUDITS)],
 )
 class TestCommands:
-    def test_get_detections_cmd(
-        self, mocker: MockerFixture, detections: Dict[str, Any], audits: Dict[str, Any]
-    ):
+    def test_get_detections_cmd(self, mocker: MockerFixture, detections: Dict[str, Any], audits: Dict[str, Any]):
         """
         Test `vectra-get-events` method detections part.
         """
@@ -156,9 +154,7 @@ class TestCommands:
         else:
             assert "No detections found" in cmd_res.readable_output
 
-    def test_get_audits_cmd(
-        self, mocker: MockerFixture, detections: Dict[str, Any], audits: Dict[str, Any]
-    ):
+    def test_get_audits_cmd(self, mocker: MockerFixture, detections: Dict[str, Any], audits: Dict[str, Any]):
         """
         Test `vectra-get-events` method audits part.
         """
@@ -171,9 +167,7 @@ class TestCommands:
         else:
             assert "No audits found" in cmd_res.readable_output
 
-    def test_get_events(
-        self, mocker: MockerFixture, detections: Dict[str, Any], audits: Dict[str, Any]
-    ):
+    def test_get_events(self, mocker: MockerFixture, detections: Dict[str, Any], audits: Dict[str, Any]):
         """
         Test the `vectra-get-events` command.
 
@@ -227,9 +221,7 @@ class TestCommands:
 
         if audits_actual:
             assert len(audits_actual) == 5
-            assert next_fetch.get(AUDIT_NEXT_RUN_KEY) == AUDITS.get("audits")[-1].get(
-                "vectra_timestamp"
-            )
+            assert next_fetch.get(AUDIT_NEXT_RUN_KEY) == AUDITS.get("audits")[-1].get("vectra_timestamp")
         else:
             assert next_fetch.get(AUDIT_NEXT_RUN_KEY) == "0"
 
@@ -240,9 +232,7 @@ class TestCommands:
             assert next_fetch.get(DETECTION_TIMESTAMP_KEY) == "1969-12-29T0000"
 
     @freeze_time("2023-02-19 00:00:13")
-    def test_not_first_fetch(
-        self, mocker: MockerFixture, detections: Dict[str, Any], audits: Dict[str, Any]
-    ):
+    def test_not_first_fetch(self, mocker: MockerFixture, detections: Dict[str, Any], audits: Dict[str, Any]):
         """
         Given:
             - Not the first fetch.
@@ -275,9 +265,7 @@ class TestCommands:
 
         if audits_actual:
             assert len(audits_actual) == 3
-            assert next_fetch.get(AUDIT_NEXT_RUN_KEY) == AUDITS.get("audits")[-1].get(
-                "vectra_timestamp"
-            )
+            assert next_fetch.get(AUDIT_NEXT_RUN_KEY) == AUDITS.get("audits")[-1].get("vectra_timestamp")
 
         if detections_actual:
             assert next_fetch.get(DETECTION_TIMESTAMP_KEY) == "2022-09-14T0105"
@@ -320,9 +308,7 @@ def test_get_audits_to_send_first_fetch(audits: List[Dict[str, Any]]):
         ([], "1676764803", []),
     ],
 )
-def test_get_audits_to_send_not_first_fetch(
-    audits: List[Dict[str, Any]], prev_fetch_ts_str: str, expected: List[Dict[str, Any]]
-):
+def test_get_audits_to_send_not_first_fetch(audits: List[Dict[str, Any]], prev_fetch_ts_str: str, expected: List[Dict[str, Any]]):
     """
     Given: audits returned from the endpoint and it's not a first fetch.
 

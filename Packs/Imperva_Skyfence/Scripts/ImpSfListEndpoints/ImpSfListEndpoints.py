@@ -12,8 +12,9 @@ def main():
         data = demisto.get(resp[0], "Contents.result")
         if data:
             for i in range(len(data)):
-                data[i]['last_updated_date'] = date.fromtimestamp(
-                    float(data[i]['last_updated']) / 1000.0).strftime("%Y-%m-%d %H:%M:%S")
+                data[i]["last_updated_date"] = date.fromtimestamp(float(data[i]["last_updated"]) / 1000.0).strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                )
 
             data = data if isinstance(data, list) else [data]
             data = [{k: formatCell(row[k]) for k in row} for row in data]
@@ -23,5 +24,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ in ['__main__', '__builtin__', 'builtins']:
+if __name__ in ["__main__", "__builtin__", "builtins"]:
     main()

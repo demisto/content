@@ -5,7 +5,7 @@ import pycountry
 
 def main():
     try:
-        loc_names = demisto.args().get('value', [])
+        loc_names = demisto.args().get("value", [])
         names = []
         if not loc_names:
             demisto.results("")
@@ -16,8 +16,8 @@ def main():
     except AttributeError:
         demisto.results("")
     except Exception as e:
-        return_error(f'Error occurred while parsing country name:\n{e}')
+        return_error(f"Error occurred while parsing country name:\n{e}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
