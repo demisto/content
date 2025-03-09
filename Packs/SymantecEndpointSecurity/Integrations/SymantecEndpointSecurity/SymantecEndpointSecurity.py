@@ -365,6 +365,7 @@ def get_events(client: Client, next_fetch: dict[str, str], counter: EventCounter
         if res.status_code == 204:
             raise NoEventsReceived
 
+        demisto.debug(f"Completed API call with status_code {res.status_code}, proceeding with row iterations.")
         for line in res.iter_lines(
             chunk_size=MAX_CHUNK_SIZE_TO_READ, delimiter=DELIMITER
         ):
