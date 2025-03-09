@@ -4,11 +4,11 @@ from typing import Any, Dict
 
 
 def get_pcap() -> Dict[str, Any]:
-    alert_id = demisto.incident()['CustomFields'].get('alertid')
+    alert_id = demisto.incident()["CustomFields"].get("alertid")
     if not alert_id:
-        return_error('Forescout EyeInspect alert ID is missing inside the incident.')
+        return_error("Forescout EyeInspect alert ID is missing inside the incident.")
 
-    return demisto.executeCommand('forescout-ei-alert-pcap-get', {'alert_id': alert_id})
+    return demisto.executeCommand("forescout-ei-alert-pcap-get", {"alert_id": alert_id})
 
 
 def main():
@@ -16,8 +16,8 @@ def main():
         return_results(get_pcap())
     except Exception as e:
         demisto.error(fix_traceback_line_numbers(traceback.format_exc()))
-        return_error(f'Failed to get pcap from Forescout EyeInspect incident.\nError:\n{e}')
+        return_error(f"Failed to get pcap from Forescout EyeInspect incident.\nError:\n{e}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
