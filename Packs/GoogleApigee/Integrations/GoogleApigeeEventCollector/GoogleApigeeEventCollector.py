@@ -308,7 +308,7 @@ def add_time_and_type_to_event(events: List[Dict] = []):
     for event in events:
         create_time = arg_to_datetime(arg=event.get('timeStamp'), is_utc=True)
         event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
-        event['source_log_type'] = 'audit'
+        event['SOURCE_LOG_TYPE'] = 'audit'
 
 
 def main() -> None:  # pragma: no cover
