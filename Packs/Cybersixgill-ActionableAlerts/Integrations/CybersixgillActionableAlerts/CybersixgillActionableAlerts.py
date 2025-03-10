@@ -4,6 +4,7 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 
+import functools
 import json
 import copy
 import requests
@@ -38,6 +39,14 @@ VERIFY = not demisto.params().get("insecure", True)
 SESSION = requests.Session()
 
 ''' HELPER FUNCTIONS '''
+
+
+@functools.lru_cache(maxsize=2)
+def alerts_content_cached(sixgill_alerts_client, alert_id, organization_id):
+    content = sixgill_alerts_client.get_actionable_alert_content(actionable_alert_id=alert_id,
+                                                                 fetch_only_current_item=True,
+                                                                 organization_id=organization_id)
+    return content
 
 
 def get_incident_init_params():
@@ -134,9 +143,7 @@ def get_alert_content(content_item, item_info, incident, sixgill_alerts_client):
         attributes = '\n\n-----------\n\n'.join(attributes)
         incident['CustomFields']['cybersixgillattributes'] = attributes
     elif es_id == "Not Applicable":
-        content = sixgill_alerts_client.get_actionable_alert_content(actionable_alert_id=item_info.get('id'),
-                                                                     fetch_only_current_item=True,
-                                                                     organization_id=demisto.params().get('org_id', None))
+        content = alerts_content_cached(sixgill_alerts_client, item_info.get("id"), demisto.params().get('org_id', None))
         content_items = content.get('items')
         if content_items:
             for item in content_items:
@@ -166,8 +173,8 @@ def get_alert_content(content_item, item_info, incident, sixgill_alerts_client):
                     content_item['Created Time'] = "Created Time: " + item.get("create_time", "")
     else:
         aggregate_alert_id = item_info.get('aggregate_alert_id', None)
-        if not isinstance(aggregate_alert_id, int):
-            aggregate_alert_id = None
+        if aggregate_alert_id and aggregate_alert_id.isdigit():
+            aggregate_alert_id = int(aggregate_alert_id)
         content = sixgill_alerts_client.get_actionable_alert_content(actionable_alert_id=item_info.get('id'),
                                                                      aggregate_alert_id=aggregate_alert_id,
                                                                      fetch_only_current_item=True,
