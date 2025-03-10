@@ -155,8 +155,7 @@ class DomainToolsClient(BaseClient):
 
                 timestamp = json_feed.get("timestamp", "")
                 indicator = json_feed.get("domain")
-                indicator_type = "Domain"
-                # indicator_type = auto_detect_indicator_type(indicator)
+                indicator_type = auto_detect_indicator_type(indicator)
 
                 # for `domainrdap` feed, we have more data to display including the parsed data.
                 parsed_record = json_feed.get("parsed_record", {})
