@@ -122,7 +122,7 @@ The proxy intercepts HTTPS traffic, presents a public CA certificate, then proxi
 All HTTPS traffic that will hit the selected messaging endpoint will be directed to the HTTPS web server the integration spins up, and will then be processed.
 
 ## Setup Video
-The information in this video is for Cortex XSOAR 6 but mostly still applies to XSOAR 8, refer to the [Prerequisites](#prerequisites) section for the latest instructions.
+The information in this video is for Cortex XSOAR 6 but mostly still applies to Cortex XSOAR 8. Refer to the [Prerequisites](#prerequisites) section for the latest instructions.
 
 <video controls>
     <source src="https://github.com/demisto/content-assets/blob/master/Assets/MicrosoftTeams/FullConfigVideo.mp4?raw=true"
@@ -153,7 +153,7 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 8. Under Next Steps, click **Go to resource**.
 9. Navigate to **Settings -> Configuration** on the left bar, and fill in the **Messaging Endpoint**.
 
-    - To get the correct messaging endpoint based on the server URL, the server version, and the instance configurations. use the `microsoft-teams-create-messaging-endpoint`command.
+    - To get the correct messaging endpoint based on the server URL, the server version, and the instance configurations, use the `microsoft-teams-create-messaging-endpoint`command.
 **Note:** Using this command requires an active integration instance. This step can be done after completing the [instance configuration](#configure-microsoft-teams-on-cortex-xsoar) section.
 
 10. Store the **Microsoft App ID** value for the next steps, and navigate to **Manage** next to it.
@@ -208,7 +208,7 @@ Perform the following steps to add the needed permissions:
 
 1. Go to your Microsoft Azure portal, and from the left navigation pane select **Azure Active Directory > App registrations**.
 2. Search for and click **Demisto Bot**.
-3. Click **API permissions > Add a permission > Microsoft Graph > Delegated permissions**.
+3. Click **API permissions** > **Add a permission** > **Microsoft Graph** > **Delegated permissions**.
 4. For each permission, search for the permission, select the checkbox, and click **Add permissions**.
    **Delegated permissions required to use all auth code flow supported commands:**
 
@@ -228,7 +228,7 @@ Perform the following steps to add the needed permissions:
 5. Verify that all permissions were added, and click **Grant admin consent**.
 6. When prompted to verify granting permissions, click **Yes**, and verify that permissions were successfully added.
 7. Click **Expose an API** and add **Application ID URI**
-8. Click **Authentication > Platform configurations > Add a platform.** Choose **Web** and add Redirect URIs: <https://login.microsoftonline.com/common/oauth2/nativeclient>
+8. Click **Authentication** > **Platform configurations** > **Add a platform**. Choose **Web** and add Redirect URIs: <https://login.microsoftonline.com/common/oauth2/nativeclient>
 
 ### Configure Microsoft Teams on Cortex XSOAR
 
@@ -275,7 +275,7 @@ For more detailed instructions, refer to the [Configuring the instance with the 
 6. Save the instance.
 7. Click **Test** to validate the URLs, token, and connection.
 8. Configure the messaging endpoint if you haven't done so already (Step #9 in the [Bot Creation](#creating-the-demisto-bot-using-microsoft-azure-portal) section).
-9. [Add the Demisto Bot to a Team](#add-the-demisto-bot-to-a-team)
+9. [Add the Demisto Bot to a Team](#add-the-demisto-bot-to-a-team).
 
 ##### Authentication Using the Authorization Code Flow
 
@@ -304,27 +304,27 @@ For more detailed instructions, refer to the [Configuring the instance with the 
 3. Open the `manifest.json` file that was extracted from the ZIP file.
 4. Update the following values to use the *Bot ID* from step 5 of the [Create the Demisto Bot in Microsoft Teams](#creating-the-demisto-bot-using-microsoft-azure-portal) section:
 
-    1. The `id` field.
-    2. The `BotId` attribute in the `bots` list.
-    3. The `id` attribute in the `webApplicationInfo` field.
+    - The `id` field.
+    - The `BotId` attribute in the `bots` list.
+    - The `id` attribute in the `webApplicationInfo` field.
 
 5. Compress the 3 files (the modified `manifest.json` file, `color.png` and `outline.png`).
 6. Navigate to [Manage Apps in the Microsoft Teams admin center](https://admin.teams.microsoft.com/policies/manage-apps).
-7. Click the **Actions** button and then the **+ Upload new app** button.
-8. In the pop-up window, click the **Upload** button.
+7. Click **Actions** and then **+ Upload new app**.
+8. In the pop-up window, click **Upload**.
 9. Browse for the ZIP file you created in step 7, open it, and wait a few seconds until it loads.
 10. Search for **Demisto Bot**.
 11. In the line where `Demisto Bot` shows under **Name**, tick the V on the left.
-12. Click the **Add to team** button.
+12. Click **Add to team**.
 13. In the search box, type the name of the team to which you want to add the bot.
-14. Click the **Add** button on the wanted team and then click the **Apply** button.
+14. Click **Add** for the wanted team and then click **Apply**.
 
 ## Migration from Cortex XSOAR 6 to Cortex XSOAR 8 and Cortex XSIAM
 
 ### Using Cortex XSOAR or Cortex XSIAM rerouting
 
 1. For Cortex XSOAR 8, set the messaging endpoint in the Azure bot to be `https://ext-<CORTEXT-XSOAR-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., `https://ext-my.demisto.live/xsoar/instance/execute/teams`.
-2. For Cortex XSIAM, set the messaging endpoint in the Azure bot to be `https://ext-<CORTEXT-XSIAM-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, and replace the `xdr` in the url to `crtx`.
+2. For Cortex XSIAM, set the messaging endpoint in the Azure bot to be `https://ext-<CORTEXT-XSIAM-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, and replace the `xdr` in the URL to `crtx`.
 3. Check the **long running instance** parameter in the integration instance configuration.
 4. Set the **port** parameter. It's under the Connect section in the integration instance configuration.
 5. If using the same bot from the XSOAR 6 instance, make sure to remove the bot from the team and to add it back:
