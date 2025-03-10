@@ -292,13 +292,18 @@ def test_get_domain_command_with_invalid_arg(mock_client):
         "value": "@"
     }
 
+    mock_client.retrieve_domain_from_api.side_effect = TypeError(r'1 validation error for Request\nquery -> '
+                                                                 r'value\n  string does not match regex '
+                                        r'\"^(?:(?:(?:[[a-z0-9](?:[a-z0-9\\-]*[a-z0-9])?)\\.))*(?:[a-z0-9][a-z0-9\\-]*'
+                                        r'[a-z0-9])$\" (type=value_error.str.regex; pattern=^(?:(?:(?:[[a-z0-9](?:'
+                                        r'[a-z0-9\\-]*[a-z0-9])?)\\.))*(?:[a-z0-9][a-z0-9\\-]*[a-z0-9])$)')
+
     # Call the function
     with pytest.raises(TypeError, match=r'1 validation error for Request\nquery -> value\n  string does not match regex '
                                         r'\"^(?:(?:(?:[[a-z0-9](?:[a-z0-9\\-]*[a-z0-9])?)\\.))*(?:[a-z0-9][a-z0-9\\-]*'
                                         r'[a-z0-9])$\" (type=value_error.str.regex; pattern=^(?:(?:(?:[[a-z0-9](?:'
-                                        r'[a-z0-9\\-]*[a-z0-9])?)\\.))*(?:[a-z0-9][a-z0-9\\-]*[a-z0-9])$)') as exc_info:
+                                        r'[a-z0-9\\-]*[a-z0-9])?)\\.))*(?:[a-z0-9][a-z0-9\\-]*[a-z0-9])$)'):
         FeedCyberint.get_domain_command(mock_client, args)
-    print(exc_info.value)
 
 
 @mock.patch('FeedCyberint.is_execution_time_exceeded')
