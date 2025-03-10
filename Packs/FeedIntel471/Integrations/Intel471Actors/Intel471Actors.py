@@ -21,7 +21,7 @@ MAPPING = {
     'links_instantMessageTotalCount': 'intel471instantmessagetotalcount',
 }
 DEMISTO_VERSION = demisto.demistoVersion()
-CONTENT_PACK = f'Intel471 Feed/{str(get_pack_version('Intel471 Feed'))}'
+CONTENT_PACK = f'Intel471 Feed/{str(get_pack_version('FeedIntel471'))}'
 INTEGRATION = 'Intel471 Actors Feed'
 USER_AGENT = f'XSOAR/{DEMISTO_VERSION["version"]}.{DEMISTO_VERSION["buildNumber"]} - {CONTENT_PACK} - {INTEGRATION}'
 
