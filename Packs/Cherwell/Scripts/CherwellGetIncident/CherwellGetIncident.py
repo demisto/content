@@ -13,7 +13,7 @@ args = demisto.args()
  In this case we set it to be 'incident' as this script is in charge of retrieving incidents.
 """
 
-BUSINESS_OBJECT_TYPE = 'Incident'
+BUSINESS_OBJECT_TYPE = "Incident"
 
 """
  `OUTPUT_FIELDS` should contain all the fields you wish to include in the returned business object.
@@ -31,34 +31,31 @@ BUSINESS_OBJECT_TYPE = 'Incident'
  the `OUTPUT_PATH` variable.
 """
 OUTPUT_FIELDS = [
-    'RecordId',
-    'PublicId',
-    'Description',
-    'Priority',
-    'CustomerDisplayName',
-    'OwnedBy',
-    'Service',
-    'CreatedDateTime',
-    'TotalTasks'
+    "RecordId",
+    "PublicId",
+    "Description",
+    "Priority",
+    "CustomerDisplayName",
+    "OwnedBy",
+    "Service",
+    "CreatedDateTime",
+    "TotalTasks",
 ]
 
 """
 `OUTPUT_PATH` is the path where all retrieved business objects will appear after. You can modify this path if you wish,
 but remember to change the output prefix in the integration outputs as well.
 """
-OUTPUT_PATH = 'Cherwell.BusinessObjects'
+OUTPUT_PATH = "Cherwell.BusinessObjects"
 
 
 # ####################################################################################
 # ############################## EXECUTION PART ######################################
 # ####################################################################################
 
+
 def build_arguments():
-    arguments = {
-        'type': BUSINESS_OBJECT_TYPE,
-        'id_type': args.get('id_type'),
-        'id_value': args.get('id_value')
-    }
+    arguments = {"type": BUSINESS_OBJECT_TYPE, "id_type": args.get("id_type"), "id_value": args.get("id_value")}
     return arguments
 
 
@@ -72,26 +69,28 @@ def build_context(object_dict, filter_fileds):
 
 def build_output_list():
     output_fields = OUTPUT_FIELDS
-    if 'RecordId' not in output_fields:
-        output_fields.append('RecordId')
-    if 'PublicId' not in output_fields:
-        output_fields.append('PublicId')
+    if "RecordId" not in output_fields:
+        output_fields.append("RecordId")
+    if "PublicId" not in output_fields:
+        output_fields.append("PublicId")
     return output_fields
 
 
-result = demisto.executeCommand('cherwell-get-business-object', build_arguments())[0]
-business_object = list(result.get('EntryContext').items())[0][1]
-md = tableToMarkdown('{0}: {1}'.format(BUSINESS_OBJECT_TYPE.capitalize(), args.get("id_value")),
-                     business_object,
-                     headers=build_output_list(),
-                     headerTransform=pascalToSpace)
+result = demisto.executeCommand("cherwell-get-business-object", build_arguments())[0]
+business_object = list(result.get("EntryContext").items())[0][1]
+md = tableToMarkdown(
+    "{0}: {1}".format(BUSINESS_OBJECT_TYPE.capitalize(), args.get("id_value")),
+    business_object,
+    headers=build_output_list(),
+    headerTransform=pascalToSpace,
+)
 context = build_context(business_object, build_output_list())
-demisto.results({
-    'Type': result.get('Type'),
-    'ContentsFormat': result.get('ContentsFormat'),
-    'Contents': result.get('Contents'),
-    'HumanReadable': md,
-    'EntryContext': {
-        f'{OUTPUT_PATH}(val.RecordId == obj.RecordId)': context
+demisto.results(
+    {
+        "Type": result.get("Type"),
+        "ContentsFormat": result.get("ContentsFormat"),
+        "Contents": result.get("Contents"),
+        "HumanReadable": md,
+        "EntryContext": {f"{OUTPUT_PATH}(val.RecordId == obj.RecordId)": context},
     }
-})
+)

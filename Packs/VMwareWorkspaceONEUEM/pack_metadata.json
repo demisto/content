@@ -2,7 +2,7 @@
     "name": "VMware Workspace ONE UEM",
     "description": "VMware workspace ONE UEM allows users to search enrolled corporate or employee-owned devices, provides detailed information about each device such as its serial number, installed OS's, pending OS updates, network details, and much more leveraging Workspace ONE UEM's (formerly AirWatch MDM) API.",
     "support": "xsoar",
-    "currentVersion": "1.0.21",
+    "currentVersion": "1.0.22",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
