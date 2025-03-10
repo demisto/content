@@ -330,7 +330,7 @@ def test_bad_command(mocker, capfd):
     command = "gamma-violation-update"
     mock_demisto(mocker, args, command)
     with pytest.raises(SystemExit), capfd.disabled():
-            main()
+        main()
     assert (
         demisto.results.call_args[0][0]["Contents"] == "Failed to execute "
         "gamma-violation-update "

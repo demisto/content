@@ -139,21 +139,24 @@ def build_feed_filters(params: dict) -> dict[str, Optional[str | list]]:
 
 
 def main():  # pragma: no cover
-    params = demisto.params()
-    filters: dict[str, Optional[str | list]] = build_feed_filters(params)
-    indicators_type: list = argToList(params.get("indicator_type", []))
-    params["feed_name_to_config"] = create_fetch_configuration(indicators_type, filters, params)
+    try:
+        params = demisto.params()
+        filters: dict[str, Optional[str | list]] = build_feed_filters(params)
+        indicators_type: list = argToList(params.get("indicator_type", []))
+        params["feed_name_to_config"] = create_fetch_configuration(indicators_type, filters, params)
 
-    PACK_VERSION = get_pack_version()
-    DEMISTO_VERSION = demisto.demistoVersion()
-    DEMISTO_VERSION = f'{DEMISTO_VERSION["version"]}.{DEMISTO_VERSION["buildNumber"]}'
-    params["headers"] = {
-        "Content-Type": "application/json",
-        "auth-token": params.get("api_token").get("password"),
-        "User-Agent": f"AccentureCTI Pack/{PACK_VERSION} Palo Alto XSOAR/{DEMISTO_VERSION}",
-    }
+        PACK_VERSION = get_pack_version()
+        DEMISTO_VERSION = demisto.demistoVersion()
+        DEMISTO_VERSION = f'{DEMISTO_VERSION["version"]}.{DEMISTO_VERSION["buildNumber"]}'
+        params["headers"] = {
+            "Content-Type": "application/json",
+            "auth-token": params.get("api_token").get("password"),
+            "User-Agent": f"AccentureCTI Pack/{PACK_VERSION} Palo Alto XSOAR/{DEMISTO_VERSION}",
+        }
 
-    feed_main(params, "ACTI Indicator Feed", "acti")
+        feed_main(params, "ACTI Indicator Feed", "acti")
+    except Exception as e:
+        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
