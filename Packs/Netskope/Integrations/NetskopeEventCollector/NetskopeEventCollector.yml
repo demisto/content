@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: NetskopeEventCollector
+  id: NetskopeEventCollector POC
   version: -1
 configuration:
 - display: Server URL
@@ -57,8 +57,8 @@ configuration:
   type: 8
   required: false
 description: Netskope Event Collector integration.
-display: Netskope Event Collector
-name: NetskopeEventCollector
+display: Netskope Event Collector POC
+name: NetskopeEventCollector POC
 script:
   commands:
   - arguments:
