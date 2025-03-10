@@ -7,17 +7,18 @@ from GoogleApigeeEventCollector import (
 )
 
 
-def mock_client():
-    return Client(base_url='https://test.com', verify=False, proxy=False, org_name='org', username='user',
+def mock_client(mocker):
+    client = Client(base_url='https://test.com', verify=False, proxy=False, org_name='org', username='user',
                   password='password', zone='zone')
-
+    mocker.patch.object(Client, 'get_access_token', return_value={'access_token': 'access_token'})
+    return client
 
 def test_get_events_command(requests_mock, mocker):
     """
     Tests google-apigee-get-events command function.
     Checks the output of the command function with the expected output.
     """
-    client = mock_client()
+    client = mock_client(mocker)
     mock_response = {
         'auditRecord': [generate_mocked_event(13), generate_mocked_event(15)],
         'total_count': 2,
@@ -26,7 +27,6 @@ def test_get_events_command(requests_mock, mocker):
         'from_date': 3,
         'limit': 2,
     }
-    mocker.patch.object(Client, 'get_access_token', return_value={'access_token': 'access_token'})
     requests_mock.get(f'https://test.com/v1/audits/organizations/{client.org_name}', json=mock_response)
     events, _ = get_events_command(client, args)
 
@@ -157,8 +157,7 @@ def test_test_module(requests_mock, mocker):
     Checks the output of the command function with the expected output.
     """
     from GoogleApigeeEventCollector import test_module
-    client = mock_client()
-    mocker.patch.object(Client, 'get_access_token', return_value={'access_token': 'access_token'})
+    client = mock_client(mocker)
     requests_mock.get(f'https://test.com/v1/audits/organizations/{client.org_name}', json={})
     res = test_module(client)
 

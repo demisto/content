@@ -21,12 +21,12 @@ configuration:
   type: 9
   section: Connect
 - display: Organization Name
-  name:  org_name
+  name: org_name
   required: true
   type: 0
   section: Connect
 - display: Zone
-  name:  zone
+  name: zone
   required: false
   type: 0
   section: Connect
@@ -72,7 +72,7 @@ script:
       required: false
     description: Gets logs from Google Apigee.
     name: google-apigee-get-events
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetchevents: true
   runonce: false
   script: '-'
