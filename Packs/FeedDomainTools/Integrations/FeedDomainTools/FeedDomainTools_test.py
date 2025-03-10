@@ -120,6 +120,7 @@ def test_conversion_feed_to_indicato_obj(mocker, dt_feeds_client):
         "nod",
         "nad",
         "domaindiscovery",
+        "domainrdap"
     ],
 )
 def test_get_indicators_command(mocker, dt_feeds_client, feed_type):
@@ -137,6 +138,7 @@ def test_get_indicators_command(mocker, dt_feeds_client, feed_type):
         "nod": feed_mock_response.NOD_FEED_RESPONSE,
         "nad": feed_mock_response.NAD_FEED_RESPONSE,
         "domaindiscovery": feed_mock_response.DOMAINDISCOVERY_RESPONSE,
+        "domainrdap": feed_mock_response.DOMAINRDAP_RESPONSE,
     }
 
     mocker.patch.object(
@@ -152,6 +154,7 @@ def test_get_indicators_command(mocker, dt_feeds_client, feed_type):
         "nod": feed_mock_response.NOD_PARSED_INDICATOR_RESPONSE,
         "nad": feed_mock_response.NAD_PARSED_INDICATOR_RESPONSE,
         "domaindiscovery": feed_mock_response.DOMAINDISCOVERY_PARSED_INDICATOR_RESPONSE,
+        "domainrdap": feed_mock_response.DOMAINRDAP_PARSED_INDICATOR_RESPONSE
     }
 
     human_readable = tableToMarkdown(
@@ -160,6 +163,7 @@ def test_get_indicators_command(mocker, dt_feeds_client, feed_type):
         headers=["value", "type", "fields", "rawJSON"],
         removeNull=True,
     )
+
     assert results.readable_output == human_readable
 
 
