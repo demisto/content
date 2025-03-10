@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from typing import re
 from unittest import mock
 from unittest.mock import patch, MagicMock
 
@@ -299,10 +300,10 @@ def test_get_domain_command_with_invalid_arg(mock_client):
                                         r'[a-z0-9\\-]*[a-z0-9])?)\\.))*(?:[a-z0-9][a-z0-9\\-]*[a-z0-9])$)')
 
     # Call the function
-    with pytest.raises(TypeError, match=r'1 validation error for Request\nquery -> value\n  string does not match regex '
-                                        r'\"^(?:(?:(?:[[a-z0-9](?:[a-z0-9\\-]*[a-z0-9])?)\\.))*(?:[a-z0-9][a-z0-9\\-]*'
+    with pytest.raises(TypeError, match=re.escape(r'1 validation error for Request\nquery -> value\n  string does not match regex'
+                                        r' \"^(?:(?:(?:[[a-z0-9](?:[a-z0-9\\-]*[a-z0-9])?)\\.))*(?:[a-z0-9][a-z0-9\\-]*'
                                         r'[a-z0-9])$\" (type=value_error.str.regex; pattern=^(?:(?:(?:[[a-z0-9](?:'
-                                        r'[a-z0-9\\-]*[a-z0-9])?)\\.))*(?:[a-z0-9][a-z0-9\\-]*[a-z0-9])$)'):
+                                        r'[a-z0-9\\-]*[a-z0-9])?)\\.))*(?:[a-z0-9][a-z0-9\\-]*[a-z0-9])$)')):
         FeedCyberint.get_domain_command(mock_client, args)
 
 
