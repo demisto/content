@@ -1777,7 +1777,7 @@ script:
     - description: 'The priority of the issue, for example: High, Medium.'
       name: priority
       prettyname: Priority
-      defaultvalue : 1 - High
+      defaultValue : 1 - High
       predefined:
         - 3 - Low
         - 2 - Medium
