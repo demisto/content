@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import base64
 import hashlib
+from hashlib import pbkdf2_hmac
 import json
 import os
 import requests
