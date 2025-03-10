@@ -14,6 +14,9 @@ REQUEST_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # Old format for making requests
 EVENT_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"  # New format for processing events
 TIMEDELTA = 1
 
+# To preserve the XML template, we are ignoring the long line ruff validation
+# ruff: noqa: E501
+
 
 def get_from_time(seconds_ago: int) -> str:
     current_time = datetime.now(tz=timezone.utc)
@@ -68,8 +71,9 @@ def generate_pseudo_id(event: dict) -> str:
     try:
         unique_id = f"{checksum}_{event['Signon_DateTime']}"
     except KeyError as e:
-        raise DemistoException(f"While calculating the pseudo ID for an event, an event without a Signon_DateTime was "
-                               f"found.\nError: {e}")
+        raise DemistoException(
+            f"While calculating the pseudo ID for an event, an event without a Signon_DateTime was found.\nError: {e}"
+        )
 
     return unique_id
 
@@ -91,13 +95,11 @@ class Client(BaseClient):
         tenant_name: str,
         username: str,
         password: str,
-        api_version: str
+        api_version: str,
     ):
         headers = {"content-type": "text/xml;charset=UTF-8"}
 
-        super().__init__(
-            base_url=base_url, verify=verify_certificate, proxy=proxy, headers=headers
-        )
+        super().__init__(base_url=base_url, verify=verify_certificate, proxy=proxy, headers=headers)
 
         self.tenant_name = tenant_name
         self.username = escape(username)
@@ -191,11 +193,11 @@ class Client(BaseClient):
             """  # noqa:E501
 
     def retrieve_events(
-            self,
-            page: int,
-            count: int,
-            to_time: Optional[str] = None,
-            from_time: Optional[str] = None,
+        self,
+        page: int,
+        count: int,
+        to_time: Optional[str] = None,
+        from_time: Optional[str] = None,
     ) -> tuple:
         """
         Retrieves events from Workday.
@@ -222,15 +224,18 @@ class Client(BaseClient):
             url_suffix="",
             data=self.generate_workday_account_signons_body(page, count, to_time, from_time),
             resp_type="text",
-            timeout=120
+            timeout=120,
         )
 
         raw_json_response, account_signon_data = convert_to_json(raw_response)
 
-        total_pages = int(demisto.get(
-            obj=raw_json_response, field="Envelope.Body.Get_Workday_Account_Signons_Response.Response_Results",
-            defaultParam={}
-        ).get("Total_Pages", "1"))
+        total_pages = int(
+            demisto.get(
+                obj=raw_json_response,
+                field="Envelope.Body.Get_Workday_Account_Signons_Response.Response_Results",
+                defaultParam={},
+            ).get("Total_Pages", "1")
+        )
 
         return account_signon_data, total_pages
 
@@ -247,9 +252,7 @@ class Client(BaseClient):
 
         payload = self.generate_test_payload(from_time=from_time, to_time=to_time)
 
-        self._http_request(
-            method="POST", url_suffix="", data=payload, resp_type="text", timeout=120
-        )
+        self._http_request(method="POST", url_suffix="", data=payload, resp_type="text", timeout=120)
 
         return "ok"
 
@@ -277,9 +280,7 @@ def convert_to_json(response: str | dict) -> tuple[Dict[str, Any], Dict[str, Any
     response_data = demisto.get(raw_json_response, "Envelope.Body.Get_Workday_Account_Signons_Response")
 
     if not response_data:
-        response_data = raw_json_response.get(
-            "Get_Workday_Account_Signons_Response", {}
-        )
+        response_data = raw_json_response.get("Get_Workday_Account_Signons_Response", {})
 
     account_signon_data = response_data.get("Response_Data", {})
 
@@ -338,9 +339,7 @@ def process_and_filter_events(events: list, from_time: str, previous_run_pseudo_
     return non_duplicates, pseudo_ids_for_next_iteration
 
 
-def fetch_sign_on_logs(
-    client: Client, limit_to_fetch: int, from_date: str, to_date: str
-):
+def fetch_sign_on_logs(client: Client, limit_to_fetch: int, from_date: str, to_date: str):
     """
     Fetches Sign On logs from workday.
     Args:
@@ -355,9 +354,7 @@ def fetch_sign_on_logs(
     sign_on_logs: list = []
     page = 1  # We assume that we will need to make one call at least
     total_fetched = 0  # Keep track of the total number of events fetched
-    res, total_pages = client.retrieve_events(
-        from_time=from_date, to_time=to_date, page=1, count=999
-    )
+    res, total_pages = client.retrieve_events(from_time=from_date, to_time=to_date, page=1, count=999)
     sign_on_events_from_api = res.get("Workday_Account_Signon", [])
     sign_on_logs.extend(sign_on_events_from_api)
     demisto.debug(f"Request indicates a total of {total_pages} pages to paginate.")
@@ -369,9 +366,7 @@ def fetch_sign_on_logs(
         remaining_to_fetch = limit_to_fetch - total_fetched
         if remaining_to_fetch <= 0:
             break
-        res, _ = client.retrieve_events(
-            from_time=from_date, to_time=to_date, page=page, count=limit_to_fetch
-        )
+        res, _ = client.retrieve_events(from_time=from_date, to_time=to_date, page=page, count=limit_to_fetch)
         pages_remaining -= 1
         fetched_count = len(sign_on_events_from_api)
         total_fetched += fetched_count
@@ -385,9 +380,7 @@ def fetch_sign_on_logs(
 """ COMMAND FUNCTIONS """
 
 
-def get_sign_on_events_command(
-    client: Client, from_date: str, to_date: str, limit: int
-) -> tuple[list, CommandResults]:
+def get_sign_on_events_command(client: Client, from_date: str, to_date: str, limit: int) -> tuple[list, CommandResults]:
     """
 
     Args:
@@ -400,15 +393,11 @@ def get_sign_on_events_command(
         Sign on logs from Workday.
     """
 
-    sign_on_events = fetch_sign_on_logs(
-        client=client, limit_to_fetch=limit, from_date=from_date, to_date=to_date
-    )
+    sign_on_events = fetch_sign_on_logs(client=client, limit_to_fetch=limit, from_date=from_date, to_date=to_date)
 
     [_event.update({"_time": _event.get("Signon_DateTime")}) for _event in sign_on_events]
 
-    demisto.info(
-        f"Got a total of {len(sign_on_events)} events between the time {from_date} to {to_date}"
-    )
+    demisto.info(f"Got a total of {len(sign_on_events)} events between the time {from_date} to {to_date}")
     readable_output = tableToMarkdown(
         "Sign On Events List:",
         sign_on_events,
@@ -443,22 +432,18 @@ def fetch_sign_on_events_command(client: Client, max_fetch: int, last_run: dict)
     previous_run_pseudo_ids = last_run.get("previous_run_pseudo_ids", {})
     to_date = datetime.now(tz=timezone.utc).strftime(REQUEST_DATE_FORMAT)
     demisto.debug(f"Getting Sign On Events {from_date=}, {to_date=}.")
-    sign_on_events = fetch_sign_on_logs(
-        client=client, limit_to_fetch=max_fetch, from_date=from_date, to_date=to_date
-    )
+    sign_on_events = fetch_sign_on_logs(client=client, limit_to_fetch=max_fetch, from_date=from_date, to_date=to_date)
 
     if sign_on_events:
         demisto.debug(f"Got {len(sign_on_events)} sign_on_events. Begin processing.")
         non_duplicates, pseudo_ids_for_next_iteration = process_and_filter_events(
-            events=sign_on_events,
-            previous_run_pseudo_ids=previous_run_pseudo_ids,
-            from_time=from_date
+            events=sign_on_events, previous_run_pseudo_ids=previous_run_pseudo_ids, from_time=from_date
         )
 
         demisto.debug(f"Done processing {len(non_duplicates)} sign_on_events.")
         last_event = non_duplicates[-1]
         last_run = {
-            "last_fetch_time": last_event.get('Signon_DateTime'),
+            "last_fetch_time": last_event.get("Signon_DateTime"),
             "previous_run_pseudo_ids": pseudo_ids_for_next_iteration,
         }
         demisto.debug(f"Saving last run as {last_run}")
@@ -520,7 +505,7 @@ def main() -> None:  # pragma: no cover
             password=password,
             verify_certificate=verify_certificate,
             proxy=proxy,
-            api_version=api_version
+            api_version=api_version,
         )
 
         if command == "test-module":
@@ -528,9 +513,7 @@ def main() -> None:  # pragma: no cover
         elif command == "workday-get-sign-on-events":
             if args.get("relative_from_date", None):
                 from_time = arg_to_datetime(  # type:ignore
-                    arg=args.get('relative_from_date'),
-                    arg_name='Relative datetime',
-                    required=False
+                    arg=args.get("relative_from_date"), arg_name="Relative datetime", required=False
                 ).strftime(REQUEST_DATE_FORMAT)
                 to_time = datetime.utcnow().strftime(REQUEST_DATE_FORMAT)
             else:
@@ -549,9 +532,7 @@ def main() -> None:  # pragma: no cover
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
             demisto.debug(f"Starting new fetch with last_run as {last_run}")
-            sign_on_events, new_last_run = fetch_sign_on_events_command(
-                client=client, max_fetch=max_fetch, last_run=last_run
-            )
+            sign_on_events, new_last_run = fetch_sign_on_events_command(client=client, max_fetch=max_fetch, last_run=last_run)
             demisto.debug(f"Done fetching events, sending to XSIAM. - {sign_on_events}")
             send_events_to_xsiam(sign_on_events, vendor=VENDOR, product=PRODUCT)
             if new_last_run:
@@ -563,9 +544,7 @@ def main() -> None:  # pragma: no cover
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(
-            f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}"
-        )
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
 
 
 """ ENTRY POINT """
