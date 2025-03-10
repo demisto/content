@@ -1917,6 +1917,7 @@ script:
     description: Creates new ServiceNow ticket.
     name: servicenow-create-ticket-quick-action
     prettyname: Create ServiceNow Ticket
+    hidden: true
     quickaction: true
     outputs:
       - contextPath: ServiceNow.Ticket.ID
@@ -1965,10 +1966,10 @@ script:
   isremotesyncin: true
   isremotesyncout: true
   script: ''
-  supportsquickactions: true
   subtype: python3
   type: python
 
+supportsquickactions: true
 fromversion: 5.0.0
 tests:
 - servicenow_test_v2

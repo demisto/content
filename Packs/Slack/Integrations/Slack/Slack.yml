@@ -456,6 +456,7 @@ script:
     description: Sends a message to a user, group, or channel.
     name: send-notification-quick-action
     prettyname: Send Slack Message
+    hidden: true
     quickaction: true
     outputs:
       - contextPath: Slack.Thread.ID
@@ -465,9 +466,9 @@ script:
   longRunning: true
   runonce: false
   script: '-'
-  supportsquickactions: true
   subtype: python3
   type: python
 fromversion: 5.0.0
+supportsquickactions: true
 tests:
 - No tests (auto formatted)

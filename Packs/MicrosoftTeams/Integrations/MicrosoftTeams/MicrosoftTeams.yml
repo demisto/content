@@ -799,6 +799,7 @@ script:
       and picture to match the bot will make it appear to be from the same source.
     name: send-notification-quick-action
     prettyname: Send Teams Message
+    hidden: true
     quickaction: true
     outputs:
       - contextPath: MicrosoftTeams.Message.ID
@@ -808,7 +809,6 @@ script:
   longRunning: true
   longRunningPort: true
   script: ''
-  supportsquickactions: true
   subtype: python3
   type: python
   resetContext: true
@@ -816,4 +816,5 @@ script:
   runonce: false
 tests:
 - Microsoft Teams - Test
+supportsquickactions: true
 fromversion: 5.0.0
