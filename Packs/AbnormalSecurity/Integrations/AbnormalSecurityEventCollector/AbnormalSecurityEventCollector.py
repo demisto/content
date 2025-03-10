@@ -67,8 +67,7 @@ def get_messages_by_datetime(client: Client, threat_id: str, after: str, before:
       list:  messages filtered by the time range.
     """
     messages = []
-    params = assign_params(pageSize=1000)
-    res = client.get_threat(threat_id, params)
+    res = client.get_threat(threat_id)
     for message in res.get('messages'):
         # messages are ordered from newest to oldest
         received_time = message.get('receivedTime')
@@ -117,8 +116,7 @@ def main():
         base_url='https://api.abnormalplatform.com/v1',
         verify=verify,
         proxy=proxy,
-        headers={"Authorization": f"Bearer {token}"},
-        timeout=60
+        headers={"Authorization": f"Bearer {token}"}
     )
 
     last_run = demisto.getLastRun().get('last_run')
@@ -128,7 +126,6 @@ def main():
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     try:
-
         threats, last_run = get_events(client, after)
         if command == 'test-module':
             return_results('ok')
