@@ -16,7 +16,7 @@ This pack includes:
   - An integration that allows you to collect Admin Login reports and Admin Change audits from IBM MaaS360 Security.
   - Modeling rules for log normalization
 
-## How to collect data from IBM MaaS360 ?
+## How to collect data from IBM MaaS360:
 
 To integrate IBM MaaS360 with XSIAM please [click here](https://github.com/demisto/content/blob/master/Packs/IBMMaaS360Security/Integrations/IBMMaaS360SecurityEventCollector/README.md) and follow our step by step guide.
 
