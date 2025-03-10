@@ -1,0 +1,23 @@
+args:
+- name: file_indicator
+comment: This script takes as input an indicator of Type File and returns a dict type value that can be ingested by MISP API.
+commonfields:
+  id: misp_setfile_atributes
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.12.8.1983910
+enabled: true
+engineinfo: {}
+name: misp_setfile_atributes
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
