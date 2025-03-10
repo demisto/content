@@ -588,20 +588,19 @@ def mock_get_access_token(requests_mock, access_token_resp):
 
 
 def mock_start_subscription(requests_mock, client, start_subscription_resp):
-    start_subscription_endpoint = 'https://manage.office.com/api/v1.0/{}/activity/feed/subscriptions/' \
-                                  'start'.format(client.tenant_id)
+    start_subscription_endpoint = f'https://manage.office.com/api/v1.0/{client.tenant_id}/activity/feed/subscriptions/' \
+                                  'start'
     requests_mock.post(start_subscription_endpoint, json=start_subscription_resp)
 
 
 def mock_stop_subscription(requests_mock, client):
-    stop_subscription_endpoint = 'https://manage.office.com/api/v1.0/{}/activity/feed/subscriptions/' \
-                                 'stop'.format(client.tenant_id)
+    stop_subscription_endpoint = f'https://manage.office.com/api/v1.0/{client.tenant_id}/activity/feed/subscriptions/' \
+                                 'stop'
     requests_mock.post(stop_subscription_endpoint, json={})
 
 
 def mock_list_subscriptions(requests_mock, client, list_subscriptions_resp):
-    list_subscriptions_endpoint = 'https://manage.office.com/api/v1.0/{}/activity/feed/subscriptions/list'.format(
-        client.tenant_id)
+    list_subscriptions_endpoint = f'https://manage.office.com/api/v1.0/{client.tenant_id}/activity/feed/subscriptions/list'
     requests_mock.get(list_subscriptions_endpoint, json=list_subscriptions_resp)
 
 
@@ -691,8 +690,7 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     mocker.patch.object(MicrosoftManagementActivity, 'return_results')
     mocker.patch('MicrosoftApiModule.get_integration_context', return_value={})
 
-    list_subscriptions_endpoint = 'https://manage.office.com/api/v1.0/{}/activity/feed/subscriptions/list'.format(
-        client.tenant_id)
+    list_subscriptions_endpoint = f'https://manage.office.com/api/v1.0/{client.tenant_id}/activity/feed/subscriptions/list'
     requests_mock.get(list_subscriptions_endpoint, json=LIST_SUBSCRIPTIONS_RESPONSE_NO_SUBSCRIPTIONS)
 
     main()

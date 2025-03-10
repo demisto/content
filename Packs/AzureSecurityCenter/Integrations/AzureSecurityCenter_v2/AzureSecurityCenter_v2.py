@@ -1177,9 +1177,7 @@ def initiate_jit_command(client: MsClient, args: dict):
 
         ec = {
             "AzureSecurityCenter.JITPolicy(val.ID && val.ID ="
-            "== obj.{}).Initiate(val.endTimeUtc === obj.EndTimeUtc)".format(
-                policy_id
-            ): outputs
+            f"== obj.{policy_id}).Initiate(val.endTimeUtc === obj.EndTimeUtc)": outputs
         }
 
         demisto.results(
