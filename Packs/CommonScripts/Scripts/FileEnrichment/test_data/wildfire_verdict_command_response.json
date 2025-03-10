@@ -1,0 +1,24 @@
+[
+    {
+        "Type": 1,
+        "HumanReadable": "### WildFire Verdict\n|MD5|SHA256|Verdict|VerdictDescription|\n|---|---|---|---|---|\n| 4e76823c05048e92a4c0122d61000edf | 7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0 | 1 | Malware |\n",
+        "EntryContext": {
+            "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+                {
+                    "Indicator": "7aa15bd505a240a8bf62735a5389a530322945eec6ce9d7b6ad299ca33b2b1b0",
+                    "Reliability": "B - Usually reliable",
+                    "Score": 3,
+                    "Type": "file",
+                    "Vendor": "WildFire-v2"
+                }
+            ],
+            "WildFire.Verdicts(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5)": {
+                    "MD5": "4e76823c05048e92a4c0122d61000edf",
+                    "SHA1": "d8b426700c3c10413abb8acdcfeccaaec8f06cd9",
+                    "Verdict": 1,
+                    "VerdictDescription": "malware",
+                    "Type": "JAVA JAR"
+            }
+        }
+    }
+]
