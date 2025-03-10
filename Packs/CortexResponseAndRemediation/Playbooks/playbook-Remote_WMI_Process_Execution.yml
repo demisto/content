@@ -9,7 +9,7 @@ description: |-
 
   **Playbook Stages:**
 
-  **Enrichment:**
+  **Analysis:**
 
   * Enrich the attacker’s IP address to identify any known malicious activity.
 
@@ -31,7 +31,7 @@ description: |-
 
   * Propose endpoint isolation to prevent further compromise if malicious activity is confirmed.
 tags:
-- 'T1021 - Remote Services '
+- T1021 - Remote Services
 - TA0008 - Lateral Movement
 starttaskid: "0"
 tasks:
@@ -626,9 +626,9 @@ tasks:
       - "15"
     scriptarguments:
       closeNotes:
-        simple: The alert has been resolved, confirmed as a True Positive
+        simple: The alert has been resolved. Confirmed as a True Positive by the playbook "Remote WMI Process Execution"
       closeReason:
-        simple: Resolved - Handled by the playbook "Remote WMI Process Execution" as True Positive
+        simple: Resolved - True Positive
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -691,9 +691,9 @@ tasks:
       - "15"
     scriptarguments:
       closeNotes:
-        simple: The alert has been resolved, confirmed as a False Positive
+        simple: The alert has been resolved. Confirmed as a False Positive by the playbook "Remote WMI Process Execution"
       closeReason:
-        simple: Resolved - Handled by the playbook "Remote WMI Process Execution" as False Positive
+        simple: Resolved - False Positive
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -984,7 +984,7 @@ tasks:
     task:
       id: 7ae38b7e-4c38-4c10-8cd6-1e935e4e0e4f
       version: -1
-      name: Enrichment
+      name: Analysis
       type: title
       iscommand: false
       brand: ""
