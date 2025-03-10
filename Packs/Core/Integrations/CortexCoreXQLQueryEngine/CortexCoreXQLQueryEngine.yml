@@ -1561,6 +1561,15 @@ script:
   type: python
 marketplaces:
 - marketplacev2
+- platform
 tests:
 - XQL Query Engine - Test
 fromversion: 8.7.0
+supportedModules:
+ - C1
+ - C3
+ - X0
+ - X1
+ - X3
+ - X5
+ - ENT_PLUS

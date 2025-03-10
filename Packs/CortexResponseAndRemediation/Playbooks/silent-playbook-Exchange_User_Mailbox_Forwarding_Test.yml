@@ -129,6 +129,7 @@ tasks:
     type: regular
     view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -180\n  }\n}"
   '12':
+    continueonerror: true
     continueonerrortype: ''
     id: '12'
     ignoreworker: false
@@ -162,6 +163,7 @@ tasks:
     type: regular
     view: "{\n  \"position\": {\n    \"x\": -1050,\n    \"y\": 260\n  }\n}"
   '13':
+    continueonerror: true
     continueonerrortype: ''
     id: '13'
     ignoreworker: false
@@ -195,6 +197,7 @@ tasks:
     type: regular
     view: "{\n  \"position\": {\n    \"x\": -630,\n    \"y\": 260\n  }\n}"
   '14':
+    continueonerror: true
     continueonerrortype: ''
     id: '14'
     ignoreworker: false
