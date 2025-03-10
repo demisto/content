@@ -34,12 +34,14 @@ class Command:
         brand: str,
         name: str,
         arg_mapping: dict,
+        hard_coded_args: dict = None,
         pre_command_check: Callable = None
     ):
         self.brand = brand
         self.name = name
         self.arg_mapping = arg_mapping
         self.pre_command_check = pre_command_check
+        self.hard_coded_args = hard_coded_args
 
 
 def initialize_commands() -> list:
@@ -82,13 +84,13 @@ def initialize_commands() -> list:
             arg_mapping={'sensor_id': 'agent_id'},
             pre_command_check=None,
         ),
-        # Command(
-              # TODO waiting for its pre-command
-        #     brand='Microsoft Defender Advanced Threat Protection',
-        #     name='microsoft-atp-isolate-machine',
-        #     arg_mapping={},
-        #     pre_command_check=check_conditions_microsoft_atp_isolate_machine
-        # ),
+        Command(
+            brand='Microsoft Defender Advanced Threat Protection',
+            name='microsoft-atp-isolate-machine',
+            arg_mapping={'machine_id': 'agent_id'},
+            hard_coded_args={'isolation_type': 'Full'},
+            pre_command_check=check_conditions_microsoft_atp_isolate_machine
+        ),
     ]
     return commands
 
@@ -163,9 +165,9 @@ def check_conditions_cybereason_isolate_machine(verbose, outputs, human_readable
         arg_mapping={'machine': 'agent_hostname'},
         pre_command_check=None,
     )
-    if are_there_missing_args(cybereason_is_probe_connected_command.arg_mapping, args):
+    if are_there_missing_args(cybereason_is_probe_connected_command, args):
         return False, 'Missing args for cybereason-is-probe-connected command'
-    mapped_args = map_args(cybereason_is_probe_connected_command.arg_mapping, args)
+    mapped_args = map_args(cybereason_is_probe_connected_command, args)
     try:
         raw_response = execute_command(cybereason_is_probe_connected_command.name, mapped_args)
         demisto.debug(f'Got raw response from cybereason-is-probe-connected command {raw_response}.')
@@ -176,7 +178,22 @@ def check_conditions_cybereason_isolate_machine(verbose, outputs, human_readable
 
 
 def check_conditions_microsoft_atp_isolate_machine(verbose, outputs, human_readable_outputs, args, endpoint_data) -> bool:
-    pass
+    demisto.debug(f'This is the endpoint data from Microsoft {endpoint_data=}')
+    status = endpoint_data.get('Status')
+    agent_id = endpoint_data.get('ID', {}).get('Value')
+    if status == 'Offline' or not agent_id:
+        create_message_to_context_and_hr(args=args,
+                                         result='Fail',
+                                         message='Can not execute microsoft-atp-isolate-machine command',
+                                         outputs=outputs,
+                                         human_readable_outputs=human_readable_outputs,
+                                         verbose=verbose)
+        return False
+
+    if not args.get('agent_id'):
+        args['agent_id'] = agent_id
+    # return True # todo
+    return False
 
 
 """ HELPER FUNCTIONS """
@@ -212,7 +229,7 @@ def check_module_and_args_for_command(module_manager: ModuleManager,
                                          verbose=verbose)
         return False
 
-    missing_args = are_there_missing_args(command.arg_mapping, args)  # checks that there are not missing args
+    missing_args = are_there_missing_args(command, args)  # checks that there are not missing args
     if missing_args:
         demisto.debug(f'Missing the next args {missing_args} for command.name')
         create_message_to_context_and_hr(args=args,
@@ -299,34 +316,37 @@ def create_message_to_context_and_hr(args: dict,
         human_readable_outputs.append(hr)
 
 
-def are_there_missing_args(arg_mapping: dict, args: dict) -> bool:
+def are_there_missing_args(command: Command, args: dict) -> bool:
     """
     Checks if all required arguments are missing from the provided arguments.
 
     Args:
-        arg_mapping (dict): A dictionary mapping expected argument names.
+        command (Command): The command to use for checking the required arguments.
         args (dict): A dictionary containing the provided arguments.
 
     Returns:
         bool: True if all expected arguments are missing, False otherwise.
     """
-    if not arg_mapping:  # If there are no expected args, return False
+    if not command.arg_mapping:  # If there are no expected args, return False
         return False
-    return all(args.get(key, "") == "" for key in arg_mapping.values())  # checks if *all* args are missing
+    return all(args.get(key, "") == "" for key in command.arg_mapping.values())  # checks if *all* args are missing
 
 
-def map_args(arg_mapping: dict, args: dict) -> dict:
+def map_args(command: Command, args: dict) -> dict:
     """
     Maps provided arguments to their expected keys based on a given mapping.
 
     Args:
-        arg_mapping (dict): A dictionary mapping expected argument keys to their actual argument names.
+        command (Command): The command that its args need to be mapped.
         args (dict): A dictionary containing the provided arguments.
 
     Returns:
         dict: A dictionary with mapped arguments, using expected keys with corresponding values from args.
     """
-    return {k: args.get(v, '') for k, v in arg_mapping.items()}
+    mapped_args = {k: args.get(v, '') for k, v in command.arg_mapping.items()}
+    if command.hard_coded_args:
+        mapped_args.update(command.hard_coded_args)
+    return mapped_args
 
 
 def map_zipped_args(agent_ids: list, agent_ips: list, agent_hostnames: list):
@@ -427,7 +447,7 @@ def main():
         zipped_args = map_zipped_args(agent_ids, agent_ips, agent_hostnames)
         demisto.debug(f'zipped_args={zipped_args}')
 
-        endpoint_data_results = structure_endpoints_data(execute_command(command="get-endpoint-data-modified", args=args)) #todo to change name back
+        endpoint_data_results = structure_endpoints_data(execute_command(command="get-endpoint-data-modified", args=args))  # todo to change name back
 
         demisto.debug(f'these are the results from get_endpoint_data_results execute_command {endpoint_data_results}')
 
@@ -462,13 +482,14 @@ def main():
                                                          args):
                     continue
 
-                mapped_args = map_args(command.arg_mapping, args)
+                mapped_args = map_args(command, args)
                 raw_response = demisto.executeCommand(command.name, mapped_args)
                 demisto.debug(f'Got raw response for execute_command {command.name} with {args=}: {raw_response=}')
                 if is_error(raw_response):
                     create_message_to_context_and_hr(args=args,
                                                      result='Fail',
-                                                     message=f'Failed to execute command {command.name}. Error: ',  #todo
+                                                     message=f'Failed to execute command {command.name}.'
+                                                             f' Error:{get_error(raw_response)}',
                                                      outputs=outputs,
                                                      human_readable_outputs=human_readable_outputs,
                                                      verbose=verbose)

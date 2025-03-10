@@ -12,7 +12,7 @@ class Command:
         output_keys: List[str],
         args_mapping: dict,
         output_mapping: dict | Callable,
-        is_bang: bool = False,
+        hard_coded_args: dict = None,
         post_processing: Callable = None,
     ):
         """
@@ -21,14 +21,18 @@ class Command:
         Args:
             brand (str): The brand associated with the command.
             name (str): The name of the command.
+            output_keys (list[str]): The keys to search the context by.
             args_mapping (dict): A dictionary containing the command arguments
+            output_mapping (dict): Map the args according to the integration arguments names, including id, up, and hostname .
+            hard_coded_args (dict): Additional arguments to add for the command, arguments with hard-coded values.
+            post_processing (Callable): The function used to provide further processing that the native command does not provide.
         """
         self.brand = brand
         self.name = name
         self.output_keys = output_keys
         self.args_mapping = args_mapping
         self.output_mapping = output_mapping
-        self.is_bang = is_bang
+        self.hard_coded_args = hard_coded_args
         self.post_processing = post_processing
 
     def __repr__(self):
@@ -200,7 +204,7 @@ class EndpointCommandRunner:
         command_context_outputs = []
         human_readable_outputs = []
         command_error_outputs = []
-        demisto.debug(f'get_commands_outputs for command "{command}" with {len(results)} entry results')
+        demisto.debug(f'get_commands_outputs for command "{command}" with {len(results)} entry results {results=}')
 
         for entry in results:
             if is_error(entry):
@@ -297,13 +301,14 @@ def initialize_commands(module_manager: ModuleManager) -> tuple[EndpointCommandR
             output_mapping={},
             post_processing=cylance_filtering
         ),
-        # Command(  # TODO this is a bang command
-        #     brand='Microsoft Defender Advanced Threat Protection',
-        #     name='endpoint',
-        #     output_keys=["Endpoint"],
-        #     output_mapping={},
-        #     args_mapping={'agent_hostname': 'agent_hostname'}
-        # )
+        Command(  # this is a bang command
+            brand='Microsoft Defender Advanced Threat Protection',
+            name='endpoint',
+            output_keys=["Endpoint"],
+            output_mapping={},
+            args_mapping={'hostname': 'agent_hostname'},
+            additional_args={'using-brand': 'Microsoft Defender Advanced Threat Protection'}
+        )
     ]
 
     list_args_commands = [
@@ -499,8 +504,8 @@ def prepare_args(command: Command, endpoint_args: dict[str, Any]) -> dict[str, A
         if command_arg_value := endpoint_args.get(endpoint_arg_key):
             command_args[command_arg_key] = command_arg_value
 
-    if command.is_bang:
-        command_args['brand'] = command.brand
+    if command.hard_coded_args:
+        command_args.update(command.hard_coded_args)
 
     return command_args
 
