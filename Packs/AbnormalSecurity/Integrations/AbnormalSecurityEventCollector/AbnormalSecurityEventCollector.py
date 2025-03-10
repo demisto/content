@@ -110,14 +110,13 @@ def main():
     token = params['token']['password']
     verify = params['verify']
     proxy = params['proxy']
-    after = arg_to_datetime(arg='1 minute').strftime("%Y-%m-%dT%H:%M:%SZ")  # type: ignore
+    after = arg_to_datetime(
+        arg='1 minute').strftime("%Y-%m-%dT%H:%M:%SZ")  # type: ignore
 
-    client = Client(
-        base_url='https://api.abnormalplatform.com/v1',
-        verify=verify,
-        proxy=proxy,
-        headers={"Authorization": f"Bearer {token}"}
-    )
+    client = Client(base_url='https://api.abnormalplatform.com/v1',
+                    verify=verify,
+                    proxy=proxy,
+                    headers={"Authorization": f"Bearer {token}"})
 
     last_run = demisto.getLastRun().get('last_run')
     if last_run:
