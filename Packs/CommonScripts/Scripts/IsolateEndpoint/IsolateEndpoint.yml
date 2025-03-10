@@ -40,8 +40,11 @@ outputs:
 - contextPath: IsolateEndpointResults.EndpointName
   description: The endpoint's hostname.
   type: String
-- contextPath: IsolateEndpointResults.Results.Result
+- contextPath: IsolateEndpointResults.Results
   description: The results of the isolation.
+  type: Array
+- contextPath: IsolateEndpointResults.Results.Result
+  description: The result of the isolation.
   type: String
 - contextPath: IsolateEndpointResults.Results.Brand
   description: The used brand for the isolation.

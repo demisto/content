@@ -43,15 +43,6 @@ class Command:
 
 
 def initialize_commands() -> list:
-    #     PreCommand(
-    #         # TODO to add to get-endpoint-data
-    #         brand='Microsoft Defender Advanced Threat Protection',
-    #         name='endpoint',
-    #         arg_mapping={},
-    #         post_cmd_name='microsoft-atp-isolate-machine',
-    #     )
-    # ]
-
     commands = [
         Command(
             # need to be tested on XSIAM
@@ -107,6 +98,20 @@ def initialize_commands() -> list:
 
 class ModuleManager:
     def __init__(self, modules: dict[str, Any], brands_to_run: list[str]) -> None:
+        """
+        Initializes the instance of ModuleManager.
+
+        Args:
+            modules (dict[str, Any]): A dictionary where keys represent module names
+                                      and values are dictionaries containing module
+                                      details such as 'brand' and 'state'.
+            brands_to_run (list[str]): A list of brands to be run.
+
+        Attributes:
+            modules_context (dict[str, Any]): Stores the provided modules dictionary.
+            _brands_to_run (list[str]): Stores the provided list of brands to run.
+            _enabled_brands (set[str]): Stores a set of brands where the module's state is 'active'.
+        """
         self.modules_context = modules
         self._brands_to_run = brands_to_run
         self._enabled_brands = {
@@ -116,11 +121,33 @@ class ModuleManager:
         }
 
     def is_brand_in_brands_to_run(self, command: Command) -> bool:
+        """
+        Checks if the brand associated with the given command is in the list of brands to run.
+
+        Args:
+            command (Command): An instance of MappedCommand that contains the brand information.
+
+        Returns:
+            bool: True if the brand is in the list of brands to run, or if the list is empty; False otherwise.
+        """
         if self._brands_to_run:
             return command.brand in self._brands_to_run
         return True
 
     def is_brand_available(self, command: Command) -> bool:
+        """
+        Checks if the brand associated with the given command is available.
+
+        This function first checks if the brand is in the list of brands to run. If it is,
+        it then checks if the brand is in the set of enabled brands.
+
+        Args:
+            command (Command): An instance of MappedCommand that contains the brand information.
+
+        Returns:
+            bool: True if the brand is in both the list of brands to run and the set of enabled brands;
+                  False otherwise.
+        """
         if not self.is_brand_in_brands_to_run(command):
             return False
         return command.brand in self._enabled_brands
@@ -137,13 +164,13 @@ def check_conditions_cybereason_isolate_machine(verbose, outputs, human_readable
         pre_command_check=None,
     )
     if are_there_missing_args(cybereason_is_probe_connected_command.arg_mapping, args):
-        return False
+        return False, 'Missing args for cybereason-is-probe-connected command'
     mapped_args = map_args(cybereason_is_probe_connected_command.arg_mapping, args)
     try:
         raw_response = execute_command(cybereason_is_probe_connected_command.name, mapped_args)
         demisto.debug(f'Got raw response from cybereason-is-probe-connected command {raw_response}.')
     except Exception as e:
-        return False
+        return False, 'Could not execute cybereason-is-probe-connected command'
 
     return True
 
@@ -155,12 +182,30 @@ def check_conditions_microsoft_atp_isolate_machine(verbose, outputs, human_reada
 """ HELPER FUNCTIONS """
 
 
-def check_module_and_args_for_command(module_manager, verbose, command, outputs, human_readable_outputs, args):
+def check_module_and_args_for_command(module_manager: ModuleManager,
+                                      verbose: bool,
+                                      command: Command,
+                                      outputs: list,
+                                      human_readable_outputs: list,
+                                      args: dict) -> bool:
+    """
+    Validates whether a command can be executed by checking the brand's availability and required arguments.
+
+    Args:
+        module_manager (ModuleManager): The manager responsible for handling integrations and their availability.
+        verbose (bool): Whether to include detailed debug messages.
+        command (Command): An instance containing the command's metadata and argument mapping.
+        outputs (dict): The dictionary to store output results.
+        human_readable_outputs (list): The list to store human-readable messages.
+        args (dict): The dictionary containing the specific arguments for the command.
+
+    Returns:
+        bool: True if the command can be executed, False otherwise.
+    """
     if not module_manager.is_brand_available(command):  # checks if brand is enable
         demisto.debug(f'Brand {command.brand} is unavailable for command.name')
-        create_message_to_context_and_hr(endpoint_data=args,
+        create_message_to_context_and_hr(args=args,
                                          result='Fail',
-                                         brand=command.brand,
                                          message=f'{command.brand} integration is available.',
                                          outputs=outputs,
                                          human_readable_outputs=human_readable_outputs,
@@ -170,9 +215,8 @@ def check_module_and_args_for_command(module_manager, verbose, command, outputs,
     missing_args = are_there_missing_args(command.arg_mapping, args)  # checks that there are not missing args
     if missing_args:
         demisto.debug(f'Missing the next args {missing_args} for command.name')
-        create_message_to_context_and_hr(endpoint_data=args,
+        create_message_to_context_and_hr(args=args,
                                          result='Fail',
-                                         brand=command.brand,
                                          message=f'Missing the next args: {missing_args} for {command.name}.',
                                          outputs=outputs,
                                          human_readable_outputs=human_readable_outputs,
@@ -182,6 +226,18 @@ def check_module_and_args_for_command(module_manager, verbose, command, outputs,
 
 
 def is_endpoint_isolatable(endpoint_data: dict, force: bool, server_os_list: list) -> tuple[bool, str]:
+    """
+    Determines whether an endpoint can be isolated based on its OS, isolation status, and connectivity.
+
+    Args:
+        endpoint_data (dict): A dictionary containing endpoint details, including OS version, isolation status, and online status.
+        force (bool): If True, bypasses server OS restrictions and allows isolation.
+        server_os_list (list): A list of server OS versions that should be isolated.
+
+    Returns:
+        tuple[bool, str]: A tuple where the first value is True if the endpoint can be isolated,
+                          and the second value is a message explaining the decision.
+    """
     server = endpoint_data.get('OSVersion', {}).get('Value')
     is_isolated = endpoint_data.get('IsIsolated', {}).get('Value', 'No')
     server_status = endpoint_data.get('Status', {}).get('Value', 'Online')
@@ -206,8 +262,25 @@ def is_endpoint_isolatable(endpoint_data: dict, force: bool, server_os_list: lis
     return True, ''
 
 
-def create_message_to_context_and_hr(endpoint_data, result, brand, message, outputs, human_readable_outputs, verbose):
-    endpoint_name = endpoint_data.get('agent_hostname') or endpoint_data.get('agent_id') or endpoint_data.get('agent_ip')
+def create_message_to_context_and_hr(args: dict,
+                                     result: str,
+                                     message: str,
+                                     outputs: list,
+                                     human_readable_outputs: list,
+                                     verbose: bool) -> None:
+    """
+    Generates a structured message for context and human-readable outputs.
+
+    Args:
+        args (dict): A dictionary containing endpoint details such as hostname, ID, or IP.
+        result (str): The result status, e.g., "Success" or "Fail".
+        message (str): A message explaining the result.
+        outputs (list): A list to store the structured output for context.
+        human_readable_outputs (list): A list to store human-readable messages.
+        verbose (bool): If True, includes human-readable output.
+    """
+    endpoint_name = args.get('agent_hostname') or args.get('agent_id') or args.get('agent_ip')
+    brand = args.get('agent_brand', '')
     context = {
         'EndpointName': endpoint_name,
         'Results': {
@@ -227,16 +300,47 @@ def create_message_to_context_and_hr(endpoint_data, result, brand, message, outp
 
 
 def are_there_missing_args(arg_mapping: dict, args: dict) -> bool:
+    """
+    Checks if all required arguments are missing from the provided arguments.
+
+    Args:
+        arg_mapping (dict): A dictionary mapping expected argument names.
+        args (dict): A dictionary containing the provided arguments.
+
+    Returns:
+        bool: True if all expected arguments are missing, False otherwise.
+    """
     if not arg_mapping:  # If there are no expected args, return False
         return False
     return all(args.get(key, "") == "" for key in arg_mapping.values())  # checks if *all* args are missing
 
 
 def map_args(arg_mapping: dict, args: dict) -> dict:
+    """
+    Maps provided arguments to their expected keys based on a given mapping.
+
+    Args:
+        arg_mapping (dict): A dictionary mapping expected argument keys to their actual argument names.
+        args (dict): A dictionary containing the provided arguments.
+
+    Returns:
+        dict: A dictionary with mapped arguments, using expected keys with corresponding values from args.
+    """
     return {k: args.get(v, '') for k, v in arg_mapping.items()}
 
 
-def map_zipped_args(agent_ids, agent_ips, agent_hostnames):
+def map_zipped_args(agent_ids: list, agent_ips: list, agent_hostnames: list):
+    """
+    Combines agent IDs, IPs, and hostnames into a list of dictionaries.
+
+    Args:
+        agent_ids (list): A list of agent IDs.
+        agent_ips (list): A list of agent IPs.
+        agent_hostnames (list): A list of agent hostnames.
+
+    Returns:
+        list: A list of dictionaries, each containing 'agent_id', 'agent_ip', and 'agent_hostname'.
+    """
     return [
         {'agent_id': agent_id, 'agent_hostname': agent_hostname, 'agent_ip': agent_ip}
         for agent_id, agent_ip, agent_hostname in zip_longest(agent_ids, agent_ips, agent_hostnames, fillvalue='')
@@ -244,10 +348,19 @@ def map_zipped_args(agent_ids, agent_ips, agent_hostnames):
 
 
 def do_args_exist_in_valid(args, valid_args):
-    agent_id = args['agent_id']
-    agent_ip = args['agent_ip']
-    agent_hostname = args['agent_hostname']
-    demisto.debug(f'this is the args for do_args_exist_in_valid {valid_args=} {agent_id=} {agent_ip=} {agent_hostname=}')
+    """
+    Checks if any of the given agent details (ID, IP, or hostname) exist in a list of valid arguments.
+
+    Args:
+        args (dict): A dictionary containing 'agent_id', 'agent_ip', and 'agent_hostname'.
+        valid_args (list): A list of dictionaries representing valid agents.
+
+    Returns:
+        bool: True if any of the provided agent details match an entry in valid_args, False otherwise.
+    """
+    agent_id = args.get('agent_id', '')
+    agent_ip = args.get('agent_ip', '')
+    agent_hostname = args.get('agent_hostname', '')
     for entry in valid_args:
         if (agent_id and entry.get('agent_id') == agent_id) or \
            (agent_hostname and entry.get('agent_hostname') == agent_hostname) or \
@@ -257,6 +370,15 @@ def do_args_exist_in_valid(args, valid_args):
 
 
 def get_args_from_endpoint_data(endpoint_data: dict) -> dict:
+    """
+    Extracts agent details from endpoint data and maps them to a dictionary.
+
+    Args:
+        endpoint_data (dict): A dictionary containing endpoint details such as hostname, ID, IP address, and brand.
+
+    Returns:
+        dict: A dictionary with extracted values, including 'agent_id', 'agent_hostname', 'agent_ip', and 'agent_brand'.
+    """
     agent_hostname = endpoint_data.get('Hostname', {}).get('Value', '')
     agent_id = endpoint_data.get('ID', {}).get('Value', '')
     agent_ip = endpoint_data.get('IPAddress', {}).get('Value', '')
@@ -266,14 +388,22 @@ def get_args_from_endpoint_data(endpoint_data: dict) -> dict:
 
 
 def structure_endpoints_data(get_endpoint_data_results: dict | list | None) -> list:
-    # demisto.debug(f'These are the get-endpoint-data results before structured: {get_endpoint_data_results=}')
+    """
+    Structures and filters endpoint data, ensuring it is in list format and contains only the entry of the context.
+
+    Args:
+        get_endpoint_data_results (dict | list | None): The raw endpoint data, which may be a dictionary, list, or None.
+
+    Returns:
+        list: A structured list containing the entry of the context, excluding None values.
+    """
     if get_endpoint_data_results:
         if not isinstance(get_endpoint_data_results, list):
             get_endpoint_data_results = [get_endpoint_data_results]
         if len(get_endpoint_data_results) > 1:
             get_endpoint_data_results = [get_endpoint_data_results[-1]]
 
-        # Ensure the result is a list and remove None values
+        # remove None values
         return [item for item in get_endpoint_data_results if item is not None]
     return []
 
@@ -308,9 +438,8 @@ def main():
             args_from_endpoint_data.append(args)
             endpoint_isolatable, message = is_endpoint_isolatable(endpoint_data, force, server_os_list)
             if not endpoint_isolatable:
-                create_message_to_context_and_hr(endpoint_data=args,
+                create_message_to_context_and_hr(args=args,
                                                  result='Fail',
-                                                 brand='IsolateEndpoint',
                                                  message=message,
                                                  outputs=outputs,
                                                  human_readable_outputs=human_readable_outputs,
@@ -337,53 +466,25 @@ def main():
                 raw_response = demisto.executeCommand(command.name, mapped_args)
                 demisto.debug(f'Got raw response for execute_command {command.name} with {args=}: {raw_response=}')
                 if is_error(raw_response):
-                    create_message_to_context_and_hr(endpoint_data=args,
+                    create_message_to_context_and_hr(args=args,
                                                      result='Fail',
-                                                     brand=command.brand,
-                                                     message=f'Failed to execute command {command.name}. Error: ', #todo
+                                                     message=f'Failed to execute command {command.name}. Error: ',  #todo
                                                      outputs=outputs,
                                                      human_readable_outputs=human_readable_outputs,
                                                      verbose=verbose)
 
                 else:
-                    create_message_to_context_and_hr(endpoint_data=args,
+                    create_message_to_context_and_hr(args=args,
                                                      result='Success',
-                                                     brand=command.brand,
                                                      message=f'Command {command.name} was executed successfully.',
                                                      outputs=outputs,
                                                      human_readable_outputs=human_readable_outputs,
                                                      verbose=verbose)
-                # except Exception as e:
-                #     create_message_to_context_and_hr(endpoint_data=args,
-                #                                      result='Fail',
-                #                                      brand=command.brand,
-                #                                      message=f'Failed to execute command {command.name}. Error: {str(e)}',
-                #                                      outputs=outputs,
-                #                                      human_readable_outputs=human_readable_outputs,
-                #                                      verbose=verbose)
-                #     continue
-                # if raw_response and raw_response.get('errors', []):
-                #     create_message_to_context_and_hr(endpoint_data=args,
-                #                                      result='Fail',
-                #                                      brand=command.brand,
-                #                                      message=f'Failed to execute command {command.name}.',
-                #                                      outputs=outputs,
-                #                                      human_readable_outputs=human_readable_outputs,
-                #                                      verbose=verbose)
-                # else:
-                #     create_message_to_context_and_hr(endpoint_data=args,
-                #                                      result='Success',
-                #                                      brand=command.brand,
-                #                                      message=f'Command {command.name} was executed successfully.',
-                #                                      outputs=outputs,
-                #                                      human_readable_outputs=human_readable_outputs,
-                #                                      verbose=verbose)
 
         for args in zipped_args:
             if not do_args_exist_in_valid(args, args_from_endpoint_data):
-                create_message_to_context_and_hr(endpoint_data=args,
+                create_message_to_context_and_hr(args=args,
                                                  result='Fail',
-                                                 brand='GetEndpointData',
                                                  message=f'Did not find information on endpoint in any available brand.',
                                                  outputs=outputs,
                                                  human_readable_outputs=human_readable_outputs,
