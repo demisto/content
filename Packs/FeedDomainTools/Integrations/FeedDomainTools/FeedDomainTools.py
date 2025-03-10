@@ -176,6 +176,12 @@ class DomainToolsClient(BaseClient):
 
 
 def batch_create_indicators(indicators: list[dict[str, Any]], batch_size: int = 2000):
+    """Creates the indicators in batches of the given size.
+
+    Args:
+        indicators (list[dict[str, Any]]): The list of indicators.
+        batch_size (int, optional): The batch size. Defaults to 2000.
+    """
     for iter_ in batch(indicators, batch_size=batch_size):
         demisto.createIndicators(iter_)
 
