@@ -6,14 +6,14 @@ Pytest Unit Tests: all function names must start with "test_"
 import json
 import pytest
 from CommonServerPython import *
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, UTC
 from SymantecICDM import Client, icdm_fetch_incidents_command, \
     fetch_incidents_command, ensure_max_age, file_reputation_command, url_reputation_command, \
     domain_reputation_command, ip_reputation_command, ensure_argument, is_filtered, symantec_protection_file_command, \
     symantec_protection_cve_command, symantec_protection_network_command, get_indicator_by_type
 BASE_RELIABILITY = DBotScoreReliability.B
 
-DATE_TIME = datetime.now(tz=timezone.utc).replace(second=0, microsecond=0)
+DATE_TIME = datetime.now(tz=UTC).replace(second=0, microsecond=0)
 AN_HOUR_AGO = DATE_TIME - timedelta(hours=1)
 TWO_MONTHS_AGO = DATE_TIME - timedelta(days=60)
 
@@ -45,7 +45,7 @@ def test_icdm_fetch_incidents_command(mocker):
     client = Client('', '')
     incidents = util_load_json('test_data/icdm_incidents_without_events.json')
     mocker.patch.object(Client, '_http_request', return_value=incidents)
-    result = icdm_fetch_incidents_command(client, 100, datetime(2023, 4, 26, 0, 0, 0, tzinfo=timezone.utc))
+    result = icdm_fetch_incidents_command(client, 100, datetime(2023, 4, 26, 0, 0, 0, tzinfo=UTC))
 
     assert result.outputs == incidents.get('incidents')
 
@@ -64,7 +64,7 @@ def test_fetch_incidents_command(mocker):
     client = Client('', '')
     mocker.patch.object(Client, '_http_request', return_value=util_load_json('test_data/icdm_incidents_without_events.json'))
 
-    last_run, incidents = fetch_incidents_command(client, 100, datetime(2023, 4, 26, 0, 0, 0, tzinfo=timezone.utc))
+    last_run, incidents = fetch_incidents_command(client, 100, datetime(2023, 4, 26, 0, 0, 0, tzinfo=UTC))
     expected_incidents = util_load_json('test_data/outputs/icdm_incidents_output.json')
     assert last_run == {'last_fetch': 1682545570.4}
     assert incidents == expected_incidents

@@ -4,7 +4,7 @@ from CommonServerPython import *  # noqa: F401
 import json
 import urllib3
 import dateparser
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, UTC
 from typing import Any
 from ipaddress import ip_address
 
@@ -169,10 +169,10 @@ def ensure_max_age(value: datetime, age: timedelta = timedelta(days=29, hours=23
     Returns:
         datetime: the given datetime or a datetime that is no older than 30 days
     """
-    min_date = (datetime.now(tz=timezone.utc) - age)
+    min_date = (datetime.now(tz=UTC) - age)
 
     if value.tzinfo is None:
-        value.replace(tzinfo=timezone.utc)
+        value.replace(tzinfo=UTC)
 
     return max(value, min_date)
 
@@ -413,7 +413,7 @@ def fetch_incidents_command(client: Client, max_results: int, last_run: datetime
     """
 
     incidents: list[Dict[str, Any]] = []
-    latest_created_time = datetime.min.replace(tzinfo=timezone.utc)
+    latest_created_time = datetime.min.replace(tzinfo=UTC)
 
     incidents_raw = icdm_fetch_incidents(client, last_run)
 
@@ -428,7 +428,7 @@ def fetch_incidents_command(client: Client, max_results: int, last_run: datetime
 
         incident_created_time = dateparser.parse(incident.get('created', ''))
         if not incident_created_time:
-            incident_created_time = datetime.now(tz=timezone.utc)
+            incident_created_time = datetime.now(tz=UTC)
 
         # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
         if last_run and incident_created_time <= last_run:
