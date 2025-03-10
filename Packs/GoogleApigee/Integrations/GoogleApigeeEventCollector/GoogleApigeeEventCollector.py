@@ -274,9 +274,9 @@ def get_events_command(client: Client, args: dict, max_fetch: int = DEFAULT_LIMI
         last_run = {'last_fetch_timestamp': int(from_date.timestamp()) * MILLISECOENDS_CONVERT}
     events, _ = search_events(client, last_run, limit)  # type: ignore[arg-type]
     if events:
-        hr = tableToMarkdown(name='Audit Logs', t=events)
+        hr = tableToMarkdown(name='Google Apigee Audit Logs', t=events)
     else:
-        hr = tableToMarkdown(name='There are no log', t=events)
+        hr = tableToMarkdown(name='No logs found.', t=events)
     return events, CommandResults(readable_output=hr, raw_response=events)
 
 
