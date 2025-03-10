@@ -107,7 +107,7 @@ class Client(BaseClient):
         else:
             data['username'] = self.username
             data['password'] = self.password
-        # hard-coded value that the API requires in the header.
+        # The "Authorization" token is a hard-coded value that the API requires in the header.
         # https://docs.apigee.com/api-platform/system-administration/management-api-tokens
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
