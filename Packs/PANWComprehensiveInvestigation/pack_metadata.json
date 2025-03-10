@@ -2,7 +2,7 @@
     "name": "Comprehensive Investigation by Palo Alto Networks",
     "description": "Are you a Palo Alto Networks customer? We have just the content pack to help you orchestrate incident response across Palo Alto Networks products.",
     "support": "xsoar",
-    "currentVersion": "1.3.27",
+    "currentVersion": "1.3.28",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
