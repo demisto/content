@@ -397,3 +397,33 @@ Get the Secret Manager policy for a specific secret.
 >|ARN|Name|Policy|
 >|---|---|---|
 >| arn:aws:secretsmanager:eu-central-1:123456789012:secret:fdff-vnNyyc | fdff |  |
+
+### aws-secrets-manager-secret–policy-delete
+
+***
+Delete the resource-based permission policy attached to a secret.
+
+#### Base Command
+
+`aws-secrets-manager-secret–policy-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| secret_id | The ID or Amazon Resource Name (ARN) of the secret. | Required | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. Use to override the configured the configured "Role Arn" parameter. | Optional | 
+| roleSessionName | An identifier for the assumed role session. Use to override the configured "Role Session Name" parameter. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. Use to override the configured "Role Session Duration" parameter. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!aws-secrets-manager-secret–policy-delete secret_id="fdff"```
+
+#### Human Readable Output
+
+> The resource-based permission policy attached to the secret fdff was successfully deleted.
