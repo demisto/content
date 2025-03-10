@@ -641,7 +641,7 @@ def fetch_incidents(
     :rtype: ``Tuple[Dict, List]``
     :return: Tuple of last run object and list of fetched incidents.
     """
-    num = arg_to_number(params.get("max_fetch", "40"), arg_name="Max Fetch")  # type: ignore
+    num: int = arg_to_number(params.get("max_fetch", "40"), arg_name="Max Fetch")  # type: ignore
     _from = last_run.get("from")
     last_watchlist_names = last_run.get("last_watchlist_names")
     last_query = last_run.get("last_query")

@@ -791,12 +791,12 @@ def build_mql_query(
     query: str,
     start: str = None,
     end: str = None,
-    page_size: int | str = "",
-    limit: str | int = "",
-    offset: int | str = "",
-    groupby: str = "",
-    sort_by: str = "",
-    sort_order: str = "",
+    page_size=None,
+    limit=None,
+    offset=None,
+    groupby=None,
+    sort_by=None,
+    sort_order=None,
 ) -> str:
     """Builds MQL query from given arguments
 
