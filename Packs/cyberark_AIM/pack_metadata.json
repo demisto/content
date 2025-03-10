@@ -2,7 +2,7 @@
     "name": "CyberArk Central Credential Provider (CCP)",
     "description": "Securely pull hard-coded and embedded privileged credentials from the CyberArk Vault using CyberArk Secrets Manager.",
     "support": "partner",
-    "currentVersion": "1.0.22",
+    "currentVersion": "1.0.23",
     "author": "CyberArk",
     "url": "https://www.cyberark.com/products/secrets-management/",
     "email": "https://www.cyberark.com/services-support/technical-support-contact/",
@@ -22,6 +22,13 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

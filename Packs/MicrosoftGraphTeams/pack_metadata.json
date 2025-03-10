@@ -2,7 +2,7 @@
     "name": "MicrosoftGraphTeams",
     "description": "O365 Teams (Using Graph API) gives you authorized access to a user’s Teams enabling you to facilitate communication through teams as that user, or read conversations and/or messages of that user.",
     "support": "community",
-    "currentVersion": "1.1.10",
+    "currentVersion": "1.1.11",
     "author": "Joachim Bockland",
     "url": "",
     "email": "",
@@ -15,9 +15,16 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "githubUser": [
         "invent0r"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

@@ -2,7 +2,7 @@
     "name": "Lacework",
     "description": "Lacework provides end-to-end cloud security automation for AWS, Azure, and GCP with a comprehensive view of risks across cloud workloads and containers.",
     "support": "community",
-    "currentVersion": "2.0.2",
+    "currentVersion": "2.0.3",
     "author": "Lacework",
     "url": "https://github.com/lacework",
     "email": "",
@@ -15,6 +15,13 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

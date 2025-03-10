@@ -3,7 +3,7 @@
     "description": "Rapidly detect, analyse and respond to security threats with mnemonic's leading Managed Detection and Response (MDR) service.",
     "support": "partner",
     "certification": "certified",
-    "currentVersion": "1.1.12",
+    "currentVersion": "1.1.13",
     "author": "mnemonic",
     "url": "https://mnemonic.no",
     "email": "contact@mnemonic.no",
@@ -23,6 +23,13 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

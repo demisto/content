@@ -2,7 +2,7 @@
     "name": "Coralogix",
     "description": "Coralogix Integration can be used for searching incidents and other data from Coralogix as well as tagging interesting timestamps at Coralogix from Cortex XSOAR",
     "support": "partner",
-    "currentVersion": "1.0.9",
+    "currentVersion": "1.0.10",
     "author": "Coralogix",
     "url": "",
     "email": "support@coralogix.com",
@@ -19,6 +19,13 @@
     "certification": "certified",
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }
