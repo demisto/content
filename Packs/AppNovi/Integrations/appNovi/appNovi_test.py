@@ -87,10 +87,7 @@ def test_search_appnovi_command(client, create_search_appnovi_mock):
     assert isinstance(res.outputs["components"], list)
     component = res.outputs["components"][0]
 
-    assert (
-        component["u"]["userProperties"]["cve_name"]
-        == "Update for Microsoft OneDrive for Business (KB3115163) 64-Bit Edition"
-    )
+    assert component["u"]["userProperties"]["cve_name"] == "Update for Microsoft OneDrive for Business (KB3115163) 64-Bit Edition"
 
     res = search_appnovi_command(client, args={"search_term": "blahblahempty"})
     assert len(res.outputs["components"]) == 0
@@ -119,17 +116,13 @@ def test_search_appnovi_prop_command(client, create_search_appnovi_mock):
     assert len(res.outputs["components"]) > 0
     assert res.outputs["components"][1]["name"] == "i-00dcd8ae659de6478"
 
-    res = search_appnovi_prop_command(
-        client, args={"property": "forescout_awsInstanceType", "value": "t2.micro"}
-    )
+    res = search_appnovi_prop_command(client, args={"property": "forescout_awsInstanceType", "value": "t2.micro"})
 
     assert isinstance(res.outputs["components"], list)
     assert len(res.outputs["components"]) > 0
     assert res.outputs["components"][1]["name"] == "i-0168be9037a2db5bf"
 
-    res = search_appnovi_prop_command(
-        client, args={"property": "nonexistentprop", "value": "nonexistent"}
-    )
+    res = search_appnovi_prop_command(client, args={"property": "nonexistentprop", "value": "nonexistent"})
 
     assert isinstance(res.outputs["components"], list)
     assert len(res.outputs["components"]) == 0
@@ -160,14 +153,10 @@ def test_search_appnovi_connected_command(client, create_connected_components_mo
         test_data="test_data/connected-things-mac-40045.json",
     )
 
-    res = search_appnovi_connected_command(
-        client, args={"identity": {"_id": "Things/40045"}}
-    )
+    res = search_appnovi_connected_command(client, args={"identity": {"_id": "Things/40045"}})
     assert res.outputs[0]["_key"] == "4607"
 
-    res = search_appnovi_connected_command(
-        client, args={"identity": {"_id": "Things/40045"}, "category": "Interface"}
-    )
+    res = search_appnovi_connected_command(client, args={"identity": {"_id": "Things/40045"}, "category": "Interface"})
     assert res.outputs[0]["name"] == "48:16:76:47:40:1e"
 
     res = search_appnovi_connected_command(
@@ -176,9 +165,7 @@ def test_search_appnovi_connected_command(client, create_connected_components_mo
     )
     assert res.outputs[1]["name"] == "10.106.47.153"
 
-    res = search_appnovi_connected_command(
-        client, args={"identity": {"_id": "Things/40045"}, "type": "mac"}
-    )
+    res = search_appnovi_connected_command(client, args={"identity": {"_id": "Things/40045"}, "type": "mac"})
     assert res.outputs[0]["_key"] == "4607"
 
 

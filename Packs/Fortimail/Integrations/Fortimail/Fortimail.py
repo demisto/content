@@ -2474,9 +2474,7 @@ def modify_group_member_args_before_replace(group_members: list[str]) -> dict[st
     Returns:
         dict[str, Any]: The updated payload for the API request.
     """
-    updated_group_members_payload: dict[str, Any] = {
-        f"mkey_{i}": group_member for i, group_member in enumerate(group_members)
-    }
+    updated_group_members_payload: dict[str, Any] = {f"mkey_{i}": group_member for i, group_member in enumerate(group_members)}
     # Get the total amount of items to replaces for the API call.
     updated_group_members_payload["reqObjCount"] = len(updated_group_members_payload)
     return updated_group_members_payload

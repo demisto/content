@@ -2,7 +2,7 @@
     "name": "Agari Phishing Defense",
     "description": "Use the Agari Phishing Defense integration to retrieve Policy Events as Incidents, retrieve messages and remediate suspected messages.",
     "support": "partner",
-    "currentVersion": "1.1.17",
+    "currentVersion": "1.1.18",
     "author": "Agari",
     "url": "https://www.agari.com/support/",
     "email": "support@agari.com",

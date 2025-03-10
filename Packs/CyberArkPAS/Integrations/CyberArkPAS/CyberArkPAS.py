@@ -10,42 +10,41 @@ import traceback
 # Disable insecure warnings
 
 urllib3.disable_warnings()
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
 def parse_date_range_expire_date(date_range):
     """
-      Parses date_range string to a tuple date strings (start, end). Input must be in format 'number date_range_unit')
-      Examples: (2 hours, 4 minutes, 6 month, 1 day, etc.)
+    Parses date_range string to a tuple date strings (start, end). Input must be in format 'number date_range_unit')
+    Examples: (2 hours, 4 minutes, 6 month, 1 day, etc.)
 
-      :type date_range: ``str``
-      :param date_range: The date range to be parsed (required)
+    :type date_range: ``str``
+    :param date_range: The date range to be parsed (required)
 
-      :return: The parsed date range forward in sec (and not msec)
-      :rtype: ``int``
+    :return: The parsed date range forward in sec (and not msec)
+    :rtype: ``int``
     """
-    range_split = date_range.split(' ')
+    range_split = date_range.split(" ")
     if len(range_split) != 2:
-        return_error('date_range must be "number date_range_unit", examples: (2 hours, 4 minutes,6 months, 1 day, '
-                     'etc.)')
+        return_error('date_range must be "number date_range_unit", examples: (2 hours, 4 minutes,6 months, 1 day, ' "etc.)")
 
     number = int(range_split[0])
-    if not range_split[1] in ['minute', 'minutes', 'hour', 'hours', 'day', 'days', 'month', 'months', 'year', 'years']:
-        return_error('The unit of date_range is invalid. Must be minutes, hours, days, months or years')
+    if not range_split[1] in ["minute", "minutes", "hour", "hours", "day", "days", "month", "months", "year", "years"]:
+        return_error("The unit of date_range is invalid. Must be minutes, hours, days, months or years")
 
     start_time = datetime.now() + timedelta(hours=0)
     end_time = datetime.now() + timedelta(hours=0)
 
     unit = range_split[1]
-    if 'minute' in unit:
+    if "minute" in unit:
         end_time = start_time + timedelta(minutes=number)
-    elif 'hour' in unit:
+    elif "hour" in unit:
         end_time = start_time + timedelta(hours=number)
-    elif 'day' in unit:
+    elif "day" in unit:
         end_time = start_time + timedelta(days=number)
-    elif 'month' in unit:
+    elif "month" in unit:
         end_time = start_time + timedelta(days=number * 30)
-    elif 'year' in unit:
+    elif "year" in unit:
         end_time = start_time + timedelta(days=number * 365)
 
     return date_to_timestamp(end_time) / 1000
@@ -108,7 +107,7 @@ class Client(BaseClient):
         self._password = password
         self._max_fetch = max_fetch
         self._token = self._generate_token()
-        self._headers = {'Authorization': self._token, 'Content-Type': 'application/json'}
+        self._headers = {"Authorization": self._token, "Content-Type": "application/json"}
 
     def _generate_token(self) -> str:
         """Generate an Access token using the user name and password
@@ -119,32 +118,30 @@ class Client(BaseClient):
             "password": self._password,
         }
 
-        headers = {
-            'Content-Type': 'application/json'
-        }
+        headers = {"Content-Type": "application/json"}
         return self._http_request("POST", "/PasswordVault/API/Auth/CyberArk/Logon", headers=headers, json_data=body)
 
     def _logout(self):
         self._http_request("POST", "/PasswordVault/API/Auth/Logoff")
 
     def add_user(
-            self,
-            username: str,
-            user_type: str,
-            non_authorized_interfaces: list,
-            expiry_date: str,
-            password: str,
-            change_password_on_the_next_logon: str,
-            password_never_expires: str,
-            vault_authorization: list,
-            description: str,
-            email: str,
-            first_name: str,
-            last_name: str,
-            enable_user: str,
-            profession: str,
-            distinguished_name: str,
-            location: str
+        self,
+        username: str,
+        user_type: str,
+        non_authorized_interfaces: list,
+        expiry_date: str,
+        password: str,
+        change_password_on_the_next_logon: str,
+        password_never_expires: str,
+        vault_authorization: list,
+        description: str,
+        email: str,
+        first_name: str,
+        last_name: str,
+        enable_user: str,
+        profession: str,
+        distinguished_name: str,
+        location: str,
     ):
         url_suffix = "/PasswordVault/api/Users"
         body = {
@@ -161,9 +158,8 @@ class Client(BaseClient):
             "passwordNeverExpires": password_never_expires == "true",  # guardrails-disable-line
             "distinguishedName": distinguished_name,
             "description": description,
-            "internet":
-                {
-                    "businessEmail": email,
+            "internet": {
+                "businessEmail": email,
             },
             "personalDetails": {
                 "profession": profession,
@@ -175,23 +171,23 @@ class Client(BaseClient):
         return self._http_request("POST", url_suffix, json_data=body)
 
     def update_user(
-            self,
-            user_id: str,
-            username: str,
-            user_type: str,
-            non_authorized_interfaces: list,
-            expiry_date: str,
-            change_password_on_the_next_logon: str,
-            password_never_expires: str,
-            vault_authorization: list,
-            description: str,
-            email: str,
-            first_name: str,
-            last_name: str,
-            enable_user: str,
-            profession: str,
-            distinguished_name: str,
-            location: str
+        self,
+        user_id: str,
+        username: str,
+        user_type: str,
+        non_authorized_interfaces: list,
+        expiry_date: str,
+        change_password_on_the_next_logon: str,
+        password_never_expires: str,
+        vault_authorization: list,
+        description: str,
+        email: str,
+        first_name: str,
+        last_name: str,
+        enable_user: str,
+        profession: str,
+        distinguished_name: str,
+        location: str,
     ):
         url_suffix = f"/PasswordVault/api/Users/{user_id}"
         body = {
@@ -206,11 +202,7 @@ class Client(BaseClient):
             "internet": {
                 "businessEmail": email,
             },
-            "personalDetails": {
-                "profession": profession,
-                "firstName": first_name,
-                "lastName": last_name
-            },
+            "personalDetails": {"profession": profession, "firstName": first_name, "lastName": last_name},
             "id": user_id,
             "username": username,
             "source": "CyberArk",
@@ -221,18 +213,17 @@ class Client(BaseClient):
 
         return self._http_request("PUT", url_suffix, json_data=body)
 
-    def delete_user(self,
-                    user_id: str
-                    ):
+    def delete_user(self, user_id: str):
         url_suffix = f"/PasswordVault/api/Users/{user_id}"
 
         # json is not defined for this response, therefore we wish to get the "text" value back
-        self._http_request("DELETE", url_suffix, resp_type='text')
+        self._http_request("DELETE", url_suffix, resp_type="text")
 
-    def get_users(self,
-                  filter: str,
-                  search: str,
-                  ):
+    def get_users(
+        self,
+        filter: str,
+        search: str,
+    ):
         url_suffix = "/PasswordVault/api/Users"
 
         body = {
@@ -242,15 +233,13 @@ class Client(BaseClient):
 
         return self._http_request("GET", url_suffix, json_data=body)
 
-    def activate_user(self,
-                      user_id: str
-                      ):
+    def activate_user(self, user_id: str):
         """
         This function uses the V1 CyberArk PAS api, currently there is no matching function in V2
         """
         url_suffix = f"/PasswordVault/WebServices/PIMServices.svc/Users/{user_id}"
 
-        self._http_request("PUT", url_suffix, resp_type='text')
+        self._http_request("PUT", url_suffix, resp_type="text")
 
     def get_list_safes(self):
         url_suffix = "/PasswordVault/api/Safes"
@@ -262,15 +251,16 @@ class Client(BaseClient):
 
         return self._http_request("GET", url_suffix)
 
-    def add_safe(self,
-                 safe_name: str,
-                 description: str,
-                 OLAC_enabled: str,
-                 managing_cpm: str,
-                 number_of_versions_retention: str,
-                 number_of_days_retention: str,
-                 location: str
-                 ):
+    def add_safe(
+        self,
+        safe_name: str,
+        description: str,
+        OLAC_enabled: str,
+        managing_cpm: str,
+        number_of_versions_retention: str,
+        number_of_days_retention: str,
+        location: str,
+    ):
         url_suffix = "/PasswordVault/api/Safes"
 
         body = {
@@ -280,20 +270,21 @@ class Client(BaseClient):
             "ManagingCPM": managing_cpm,
             "NumberOfVersionsRetention": number_of_versions_retention,
             "NumberOfDaysRetention": number_of_days_retention,
-            "Location": location
+            "Location": location,
         }
         return self._http_request("POST", url_suffix, json_data=body)
 
-    def update_safe(self,
-                    safe_name: str,
-                    safe_new_name: str,
-                    description: str,
-                    OLAC_enabled: str,
-                    managing_cpm: str,
-                    number_of_versions_retention: str,
-                    number_of_days_retention: str,
-                    location: str = ""
-                    ):
+    def update_safe(
+        self,
+        safe_name: str,
+        safe_new_name: str,
+        description: str,
+        OLAC_enabled: str,
+        managing_cpm: str,
+        number_of_versions_retention: str,
+        number_of_days_retention: str,
+        location: str = "",
+    ):
         url_suffix = f"/PasswordVault/api/Safes/{safe_name}"
         if not safe_new_name:
             safe_new_name = safe_name
@@ -304,33 +295,33 @@ class Client(BaseClient):
             "ManagingCPM": managing_cpm,
             "NumberOfVersionsRetention": number_of_versions_retention,
             "NumberOfDaysRetention": number_of_days_retention,
-            "Location": location
+            "Location": location,
         }
         return self._http_request("PUT", url_suffix, json_data=body)
 
-    def delete_safe(self,
-                    safe_name: str,
-                    ):
+    def delete_safe(
+        self,
+        safe_name: str,
+    ):
         url_suffix = f"/PasswordVault/api/Safes/{safe_name}"
 
         # json is not defined for this response, therefore we wish to get the "text" value back
-        return self._http_request("DELETE", url_suffix, resp_type='text')
+        return self._http_request("DELETE", url_suffix, resp_type="text")
 
-    def list_safe_members(self,
-                          safe_name: str
-                          ):
+    def list_safe_members(self, safe_name: str):
         url_suffix = f"/PasswordVault/api/Safes/{safe_name}/Members"
 
         return self._http_request("GET", url_suffix)
 
-    def add_safe_member(self,
-                        safe_name: str,
-                        member_name: str,
-                        requests_authorization_level: str,
-                        membership_expiration_date: str,
-                        permissions: list,
-                        search_in: str,
-                        ):
+    def add_safe_member(
+        self,
+        safe_name: str,
+        member_name: str,
+        requests_authorization_level: str,
+        membership_expiration_date: str,
+        permissions: list,
+        search_in: str,
+    ):
         """
         This function uses the V1 CyberArk PAS api, currently there is no matching function in V2
         """
@@ -341,49 +332,51 @@ class Client(BaseClient):
                 "MemberName": member_name,
                 "SearchIn": search_in,
                 "MembershipExpirationDate": membership_expiration_date,
-                "Permissions":
-                    [
-                        {"Key": "UseAccounts", "Value": "UseAccounts" in permissions},
-                        {"Key": "RetrieveAccounts", "Value": "RetrieveAccounts" in permissions},
-                        {"Key": "ListAccounts", "Value": "ListAccounts" in permissions},
-                        {"Key": "AddAccounts", "Value": "AddAccounts" in permissions},
-                        {"Key": "UpdateAccountContent", "Value": "UpdateAccountContent" in permissions},
-                        {"Key": "UpdateAccountProperties", "Value": "UpdateAccountProperties" in permissions},
-                        {"Key": "InitiateCPMAccountManagementOperations",
-                         "Value": "InitiateCPMAccountManagementOperations" in permissions},
-                        {"Key": "SpecifyNextAccountContent", "Value": "SpecifyNextAccountContent" in permissions},
-                        {"Key": "RenameAccounts", "Value": "RenameAccounts" in permissions},
-                        {"Key": "DeleteAccounts", "Value": "DeleteAccounts" in permissions},
-                        {"Key": "UnlockAccounts", "Value": "UnlockAccounts" in permissions},
-                        {"Key": "ManageSafe", "Value": "ManageSafe" in permissions},
-                        {"Key": "ManageSafeMembers", "Value": "ManageSafeMembers" in permissions},
-                        {"Key": "BackupSafe", "Value": "BackupSafe" in permissions},
-                        {"Key": "ViewAuditLog", "Value": "ViewAuditLog" in permissions},
-                        {"Key": "ViewSafeMembers", "Value": "ViewSafeMembers" in permissions},
-                        {"Key": "RequestsAuthorizationLevel", "Value": int(requests_authorization_level)},
-                        {"Key": "AccessWithoutConfirmation", "Value": "AccessWithoutConfirmation" in permissions},
-                        {"Key": "CreateFolders", "Value": "CreateFolders" in permissions},
-                        {"Key": "DeleteFolders", "Value": "DeleteFolders" in permissions},
-                        {"Key": "MoveAccountsAndFolders", "Value": "MoveAccountsAndFolders" in permissions},
-                    ]
+                "Permissions": [
+                    {"Key": "UseAccounts", "Value": "UseAccounts" in permissions},
+                    {"Key": "RetrieveAccounts", "Value": "RetrieveAccounts" in permissions},
+                    {"Key": "ListAccounts", "Value": "ListAccounts" in permissions},
+                    {"Key": "AddAccounts", "Value": "AddAccounts" in permissions},
+                    {"Key": "UpdateAccountContent", "Value": "UpdateAccountContent" in permissions},
+                    {"Key": "UpdateAccountProperties", "Value": "UpdateAccountProperties" in permissions},
+                    {
+                        "Key": "InitiateCPMAccountManagementOperations",
+                        "Value": "InitiateCPMAccountManagementOperations" in permissions,
+                    },
+                    {"Key": "SpecifyNextAccountContent", "Value": "SpecifyNextAccountContent" in permissions},
+                    {"Key": "RenameAccounts", "Value": "RenameAccounts" in permissions},
+                    {"Key": "DeleteAccounts", "Value": "DeleteAccounts" in permissions},
+                    {"Key": "UnlockAccounts", "Value": "UnlockAccounts" in permissions},
+                    {"Key": "ManageSafe", "Value": "ManageSafe" in permissions},
+                    {"Key": "ManageSafeMembers", "Value": "ManageSafeMembers" in permissions},
+                    {"Key": "BackupSafe", "Value": "BackupSafe" in permissions},
+                    {"Key": "ViewAuditLog", "Value": "ViewAuditLog" in permissions},
+                    {"Key": "ViewSafeMembers", "Value": "ViewSafeMembers" in permissions},
+                    {"Key": "RequestsAuthorizationLevel", "Value": int(requests_authorization_level)},
+                    {"Key": "AccessWithoutConfirmation", "Value": "AccessWithoutConfirmation" in permissions},
+                    {"Key": "CreateFolders", "Value": "CreateFolders" in permissions},
+                    {"Key": "DeleteFolders", "Value": "DeleteFolders" in permissions},
+                    {"Key": "MoveAccountsAndFolders", "Value": "MoveAccountsAndFolders" in permissions},
+                ],
             }
         }
         return self._http_request("POST", url_suffix, json_data=body)
 
-    def add_account(self,
-                    account_name: str,
-                    address: str,
-                    username: str,
-                    platform_id: str,
-                    safe_name: str,
-                    password: str,
-                    secret_type: str,
-                    properties: dict,
-                    automatic_management_enabled: str,
-                    manual_management_reason: str,
-                    remote_machines: str,
-                    access_restricted_to_temote_machines: str
-                    ):
+    def add_account(
+        self,
+        account_name: str,
+        address: str,
+        username: str,
+        platform_id: str,
+        safe_name: str,
+        password: str,
+        secret_type: str,
+        properties: dict,
+        automatic_management_enabled: str,
+        manual_management_reason: str,
+        remote_machines: str,
+        access_restricted_to_temote_machines: str,
+    ):
         url_suffix = "/PasswordVault/api/Accounts"
 
         body = {
@@ -397,22 +390,23 @@ class Client(BaseClient):
             "platformAccountProperties": properties,
             "secretManagement": {
                 "automaticManagementEnabled": automatic_management_enabled == "true",
-                "manualManagementReason": manual_management_reason
+                "manualManagementReason": manual_management_reason,
             },
             "remoteMachinesAccess": {
                 "remoteMachines": remote_machines,
-                "accessRestrictedToRemoteMachines": access_restricted_to_temote_machines == "true"
-            }
+                "accessRestrictedToRemoteMachines": access_restricted_to_temote_machines == "true",
+            },
         }
         return self._http_request("POST", url_suffix, json_data=body)
 
-    def update_safe_member(self,
-                           safe_name: str,
-                           member_name: str,
-                           requests_authorization_level: str,
-                           membership_expiration_date: str,
-                           permissions: list,
-                           ):
+    def update_safe_member(
+        self,
+        safe_name: str,
+        member_name: str,
+        requests_authorization_level: str,
+        membership_expiration_date: str,
+        permissions: list,
+    ):
         """
         This function uses the V1 CyberArk PAS api, currently there is no matching function in V2
         """
@@ -421,158 +415,157 @@ class Client(BaseClient):
         body = {
             "member": {
                 "MembershipExpirationDate": membership_expiration_date,
-                "Permissions":
-                    [
-                        {"Key": "UseAccounts", "Value": "UseAccounts" in permissions},
-                        {"Key": "RetrieveAccounts", "Value": "RetrieveAccounts" in permissions},
-                        {"Key": "ListAccounts", "Value": "ListAccounts" in permissions},
-                        {"Key": "AddAccounts", "Value": "AddAccounts" in permissions},
-                        {"Key": "UpdateAccountContent", "Value": "UpdateAccountContent" in permissions},
-                        {"Key": "UpdateAccountProperties", "Value": "UpdateAccountProperties" in permissions},
-                        {"Key": "InitiateCPMAccountManagementOperations",
-                         "Value": "InitiateCPMAccountManagementOperations" in permissions},
-                        {"Key": "SpecifyNextAccountContent", "Value": "SpecifyNextAccountContent" in permissions},
-                        {"Key": "RenameAccounts", "Value": "RenameAccounts" in permissions},
-                        {"Key": "DeleteAccounts", "Value": "DeleteAccounts" in permissions},
-                        {"Key": "UnlockAccounts", "Value": "UnlockAccounts" in permissions},
-                        {"Key": "ManageSafe", "Value": "ManageSafe" in permissions},
-                        {"Key": "ManageSafeMembers", "Value": "ManageSafeMembers" in permissions},
-                        {"Key": "BackupSafe", "Value": "BackupSafe" in permissions},
-                        {"Key": "ViewAuditLog", "Value": "ViewAuditLog" in permissions},
-                        {"Key": "ViewSafeMembers", "Value": "ViewSafeMembers" in permissions},
-                        {"Key": "RequestsAuthorizationLevel", "Value": int(requests_authorization_level)},
-                        {"Key": "AccessWithoutConfirmation", "Value": "AccessWithoutConfirmation" in permissions},
-                        {"Key": "CreateFolders", "Value": "CreateFolders" in permissions},
-                        {"Key": "DeleteFolders", "Value": "DeleteFolders" in permissions},
-                        {"Key": "MoveAccountsAndFolders", "Value": "MoveAccountsAndFolders" in permissions},
-                    ]
+                "Permissions": [
+                    {"Key": "UseAccounts", "Value": "UseAccounts" in permissions},
+                    {"Key": "RetrieveAccounts", "Value": "RetrieveAccounts" in permissions},
+                    {"Key": "ListAccounts", "Value": "ListAccounts" in permissions},
+                    {"Key": "AddAccounts", "Value": "AddAccounts" in permissions},
+                    {"Key": "UpdateAccountContent", "Value": "UpdateAccountContent" in permissions},
+                    {"Key": "UpdateAccountProperties", "Value": "UpdateAccountProperties" in permissions},
+                    {
+                        "Key": "InitiateCPMAccountManagementOperations",
+                        "Value": "InitiateCPMAccountManagementOperations" in permissions,
+                    },
+                    {"Key": "SpecifyNextAccountContent", "Value": "SpecifyNextAccountContent" in permissions},
+                    {"Key": "RenameAccounts", "Value": "RenameAccounts" in permissions},
+                    {"Key": "DeleteAccounts", "Value": "DeleteAccounts" in permissions},
+                    {"Key": "UnlockAccounts", "Value": "UnlockAccounts" in permissions},
+                    {"Key": "ManageSafe", "Value": "ManageSafe" in permissions},
+                    {"Key": "ManageSafeMembers", "Value": "ManageSafeMembers" in permissions},
+                    {"Key": "BackupSafe", "Value": "BackupSafe" in permissions},
+                    {"Key": "ViewAuditLog", "Value": "ViewAuditLog" in permissions},
+                    {"Key": "ViewSafeMembers", "Value": "ViewSafeMembers" in permissions},
+                    {"Key": "RequestsAuthorizationLevel", "Value": int(requests_authorization_level)},
+                    {"Key": "AccessWithoutConfirmation", "Value": "AccessWithoutConfirmation" in permissions},
+                    {"Key": "CreateFolders", "Value": "CreateFolders" in permissions},
+                    {"Key": "DeleteFolders", "Value": "DeleteFolders" in permissions},
+                    {"Key": "MoveAccountsAndFolders", "Value": "MoveAccountsAndFolders" in permissions},
+                ],
             }
         }
         return self._http_request("PUT", url_suffix, json_data=body)
 
-    def delete_safe_member(self,
-                           safe_name: str,
-                           member_name: str,
-                           ):
+    def delete_safe_member(
+        self,
+        safe_name: str,
+        member_name: str,
+    ):
         """
         This function uses the V1 CyberArk PAS api, currently there is no matching function in V2
         """
         url_suffix = f"/PasswordVault/WebServices/PIMServices.svc/Safes/{safe_name}/Members/{member_name}"
 
-        self._http_request("DELETE", url_suffix, resp_type='text')
+        self._http_request("DELETE", url_suffix, resp_type="text")
 
-    def delete_account(self,
-                       account_id: str,
-                       ):
+    def delete_account(
+        self,
+        account_id: str,
+    ):
         url_suffix = f"/PasswordVault/api/Accounts/{account_id}"
 
-        self._http_request("DELETE", url_suffix, resp_type='text')
+        self._http_request("DELETE", url_suffix, resp_type="text")
 
-    def get_list_accounts(self,
-                          search: str,
-                          sort: str,
-                          offset: str,
-                          limit: str,
-                          filter: str,
-                          ):
+    def get_list_accounts(
+        self,
+        search: str,
+        sort: str,
+        offset: str,
+        limit: str,
+        filter: str,
+    ):
         url_suffix = f"/PasswordVault/api/Accounts?search={search}&sort={sort}&offset={offset}&limit={limit}&filter={filter}"
         return self._http_request("GET", url_suffix)
 
-    def get_list_account_activity(self,
-                                  account_id: str,
-                                  ):
+    def get_list_account_activity(
+        self,
+        account_id: str,
+    ):
         url_suffix = f"/PasswordVault/api/Accounts/{account_id}/Activities"
         return self._http_request("GET", url_suffix)
 
-    def get_account_details(self,
-                            account_id: str,
-                            ):
+    def get_account_details(
+        self,
+        account_id: str,
+    ):
         url_suffix = f"/PasswordVault/api/Accounts/{account_id}"
         return self._http_request("GET", url_suffix)
 
-    def change_credentials_random_password(self,
-                                           account_id: str,
-                                           ):
+    def change_credentials_random_password(
+        self,
+        account_id: str,
+    ):
         url_suffix = f"/PasswordVault/API/Accounts/{account_id}/Change"
-        body = {
-            "ChangeEntireGroup": "true"
-        }
-        self._http_request("POST", url_suffix, json_data=body, resp_type='text')
+        body = {"ChangeEntireGroup": "true"}
+        self._http_request("POST", url_suffix, json_data=body, resp_type="text")
 
-    def change_credentials_set_new_password(self,
-                                            account_id: str,
-                                            new_credentials: str,
-                                            ):
+    def change_credentials_set_new_password(
+        self,
+        account_id: str,
+        new_credentials: str,
+    ):
         url_suffix = f"/passwordvault/api/Accounts/{account_id}/SetNextPassword"
         body = {
             "ChangeImmediately": True,
             "NewCredentials": new_credentials,
         }
-        self._http_request("POST", url_suffix, json_data=body, resp_type='text')
+        self._http_request("POST", url_suffix, json_data=body, resp_type="text")
 
-    def change_credentials_in_vault_only(self,
-                                         account_id: str,
-                                         new_credentials: str,
-                                         ):
+    def change_credentials_in_vault_only(
+        self,
+        account_id: str,
+        new_credentials: str,
+    ):
         url_suffix = f"/passwordvault/api/Accounts/{account_id}/Password/Update"
         body = {
             "NewCredentials": new_credentials,
         }
-        self._http_request("POST", url_suffix, json_data=body, resp_type='text')
+        self._http_request("POST", url_suffix, json_data=body, resp_type="text")
 
-    def verify_credentials(self,
-                           account_id: str,
-                           ):
+    def verify_credentials(
+        self,
+        account_id: str,
+    ):
         """
         This function uses the V1 CyberArk PAS api, currently there is no matching function in V2
         """
         url_suffix = f"/PasswordVault/API/Accounts/{account_id}/Verify"
 
-        self._http_request("POST", url_suffix, resp_type='text')
+        self._http_request("POST", url_suffix, resp_type="text")
 
-    def reconcile_credentials(self,
-                              account_id: str,
-                              ):
+    def reconcile_credentials(
+        self,
+        account_id: str,
+    ):
         url_suffix = f"/PasswordVault/API/Accounts/{account_id}/Reconcile"
 
-        self._http_request("POST", url_suffix, resp_type='text')
+        self._http_request("POST", url_suffix, resp_type="text")
 
-    def update_account(self,
-                       account_id: str,
-                       account_name: str,
-                       address: str,
-                       username: str,
-                       platform_id: str,
-                       ):
+    def update_account(
+        self,
+        account_id: str,
+        account_name: str,
+        address: str,
+        username: str,
+        platform_id: str,
+    ):
         url_suffix = f"/PasswordVault/api/Accounts/{account_id}"
 
-        arguments = {"name": account_name,
-                     "address": address,
-                     "userName": username,
-                     "platformId": platform_id}
+        arguments = {"name": account_name, "address": address, "userName": username, "platformId": platform_id}
         body = []
         for key, value in arguments.items():
             if value:
-                body.append(
-                    {
-                        "op": "replace",
-                        "path": f"/{key}",
-                        "value": f"{value}"
-                    }
-                )
+                body.append({"op": "replace", "path": f"/{key}", "value": f"{value}"})
 
         return self._http_request("PATCH", url_suffix, data=str(body))
 
-    def get_security_events(self,
-                            next_run: str
-                            ):
+    def get_security_events(self, next_run: str):
         url_suffix = "/PasswordVault/API/pta/API/Events/"
         self._headers["lastUpdatedEventDate"] = next_run
         return self._http_request("GET", url_suffix)
 
 
 def test_module(
-        client: Client,
+    client: Client,
 ) -> str:
     """
     If a client was made then an accesses token was successfully reached,
@@ -593,23 +586,23 @@ def test_module(
 
 
 def add_user_command(
-        client: Client,
-        username: str,
-        user_type: str = "EPVUser",
-        non_authorized_interfaces: str = "",
-        expiry_date: str = "",
-        password: str = "",
-        change_password_on_the_next_logon: str = "true",
-        password_never_expires: str = "false",
-        vault_authorization: str = "",
-        description: str = "",
-        email: str = "",
-        first_name: str = "",
-        last_name: str = "",
-        enable_user: str = "true",
-        profession: str = "",
-        distinguished_name: str = "",
-        location: str = "\\"
+    client: Client,
+    username: str,
+    user_type: str = "EPVUser",
+    non_authorized_interfaces: str = "",
+    expiry_date: str = "",
+    password: str = "",
+    change_password_on_the_next_logon: str = "true",
+    password_never_expires: str = "false",
+    vault_authorization: str = "",
+    description: str = "",
+    email: str = "",
+    first_name: str = "",
+    last_name: str = "",
+    enable_user: str = "true",
+    profession: str = "",
+    distinguished_name: str = "",
+    location: str = "\\",
 ) -> CommandResults:
     """Add a new user to the vault.
     :param client: The client object with an access token
@@ -640,37 +633,46 @@ def add_user_command(
     else:
         expiry_date_epoch = ""
 
-    response = client.add_user(username, user_type, non_authorized_interfaces_list, expiry_date_epoch, password,
-                               change_password_on_the_next_logon, password_never_expires, vault_authorization_list,
-                               description, email, first_name, last_name, enable_user, profession, distinguished_name,
-                               location)
-    results = CommandResults(
-        raw_response=response,
-        outputs_prefix='CyberArkPAS.Users',
-        outputs_key_field='id',
-        outputs=response
+    response = client.add_user(
+        username,
+        user_type,
+        non_authorized_interfaces_list,
+        expiry_date_epoch,
+        password,
+        change_password_on_the_next_logon,
+        password_never_expires,
+        vault_authorization_list,
+        description,
+        email,
+        first_name,
+        last_name,
+        enable_user,
+        profession,
+        distinguished_name,
+        location,
     )
+    results = CommandResults(raw_response=response, outputs_prefix="CyberArkPAS.Users", outputs_key_field="id", outputs=response)
     return results
 
 
 def update_user_command(
-        client: Client,
-        user_id: str,
-        username: str,
-        user_type: str = "EPVUser",
-        non_authorized_interfaces: str = "",
-        expiry_date: str = "",
-        change_password_on_the_next_logon: str = "true",
-        password_never_expires: str = "false",
-        vault_authorization: str = "",
-        description: str = "",
-        email: str = "",
-        first_name: str = "",
-        last_name: str = "",
-        enable_user: str = "true",
-        profession: str = "",
-        distinguished_name: str = "",
-        location: str = "\\"
+    client: Client,
+    user_id: str,
+    username: str,
+    user_type: str = "EPVUser",
+    non_authorized_interfaces: str = "",
+    expiry_date: str = "",
+    change_password_on_the_next_logon: str = "true",
+    password_never_expires: str = "false",
+    vault_authorization: str = "",
+    description: str = "",
+    email: str = "",
+    first_name: str = "",
+    last_name: str = "",
+    enable_user: str = "true",
+    profession: str = "",
+    distinguished_name: str = "",
+    location: str = "\\",
 ) -> CommandResults:
     """Updates an existing vault user.
     :param client: The client object with an access token
@@ -700,23 +702,31 @@ def update_user_command(
         expiry_date_epoch = parse_date_range_expire_date(expiry_date)
     else:
         expiry_date_epoch = ""
-    response = client.update_user(user_id, username, user_type, non_authorized_interfaces_list, expiry_date_epoch,
-                                  change_password_on_the_next_logon, password_never_expires, vault_authorization_list,
-                                  description, email, first_name, last_name, enable_user, profession,
-                                  distinguished_name,
-                                  location)
-    results = CommandResults(
-        raw_response=response,
-        outputs_prefix='CyberArkPAS.Users',
-        outputs_key_field='id',
-        outputs=response
+    response = client.update_user(
+        user_id,
+        username,
+        user_type,
+        non_authorized_interfaces_list,
+        expiry_date_epoch,
+        change_password_on_the_next_logon,
+        password_never_expires,
+        vault_authorization_list,
+        description,
+        email,
+        first_name,
+        last_name,
+        enable_user,
+        profession,
+        distinguished_name,
+        location,
     )
+    results = CommandResults(raw_response=response, outputs_prefix="CyberArkPAS.Users", outputs_key_field="id", outputs=response)
     return results
 
 
 def delete_user_command(
-        client: Client,
-        user_id: str,
+    client: Client,
+    user_id: str,
 ) -> CommandResults:
     """Delete a specific user in the vault.
     :param client: The client object with an access token
@@ -727,16 +737,16 @@ def delete_user_command(
     client.delete_user(user_id)
     return CommandResults(
         readable_output=f"User {user_id} was deleted",
-        outputs_prefix='CyberArkPAS.Users',
-        outputs_key_field='id',
-        outputs={"id": user_id, "Deleted": True}
+        outputs_prefix="CyberArkPAS.Users",
+        outputs_key_field="id",
+        outputs={"id": user_id, "Deleted": True},
     )
 
 
 def get_users_command(
-        client: Client,
-        filter: str = "",
-        search: str = "",
+    client: Client,
+    filter: str = "",
+    search: str = "",
 ) -> CommandResults:
     """Returns a list of all existing users in the vault.
     :param client: The client object with an access token
@@ -751,16 +761,16 @@ def get_users_command(
     results = CommandResults(
         raw_response=response,
         readable_output=tableToMarkdown(headline, users),
-        outputs_prefix='CyberArkPAS.Users',
-        outputs_key_field='id',
+        outputs_prefix="CyberArkPAS.Users",
+        outputs_key_field="id",
         outputs=users,
     )
     return results
 
 
 def activate_user_command(
-        client: Client,
-        user_id: str,
+    client: Client,
+    user_id: str,
 ) -> str:
     """Activate an existing vault user who was suspended after entering incorrect credentials multiple times.
     :param client: The client object with an access token
@@ -773,7 +783,7 @@ def activate_user_command(
 
 
 def get_list_safes_command(
-        client: Client,
+    client: Client,
 ):
     """Returns information about all of the user’s Safes in the vault.
     :param client: The client object with an access token
@@ -787,22 +797,22 @@ def get_list_safes_command(
     results = CommandResults(
         raw_response=response,
         readable_output=tableToMarkdown(name=headline, t=safes),
-        outputs_prefix='CyberArkPAS.Safes',
-        outputs_key_field='SafeName',
-        outputs=safes
+        outputs_prefix="CyberArkPAS.Safes",
+        outputs_key_field="SafeName",
+        outputs=safes,
     )
     return results
 
 
 def add_safe_command(
-        client: Client,
-        safe_name: str,
-        description: str = "",
-        OLAC_enabled: str = "true",
-        managing_cpm: str = "",
-        number_of_versions_retention: str = "",
-        number_of_days_retention: str = "",
-        location: str = ""
+    client: Client,
+    safe_name: str,
+    description: str = "",
+    OLAC_enabled: str = "true",
+    managing_cpm: str = "",
+    number_of_versions_retention: str = "",
+    number_of_days_retention: str = "",
+    location: str = "",
 ) -> CommandResults:
     """Add a new safe to the vault.
     :param client: The client object with an access token
@@ -815,27 +825,25 @@ def add_safe_command(
     :param location: The location of the safe.
     :return: CommandResults
     """
-    response = client.add_safe(safe_name, description, OLAC_enabled, managing_cpm, number_of_versions_retention,
-                               number_of_days_retention, location)
+    response = client.add_safe(
+        safe_name, description, OLAC_enabled, managing_cpm, number_of_versions_retention, number_of_days_retention, location
+    )
     results = CommandResults(
-        raw_response=response,
-        outputs_prefix='CyberArkPAS.Safes',
-        outputs_key_field='SafeName',
-        outputs=response
+        raw_response=response, outputs_prefix="CyberArkPAS.Safes", outputs_key_field="SafeName", outputs=response
     )
     return results
 
 
 def update_safe_command(
-        client: Client,
-        safe_name: str,
-        safe_new_name: str = "",
-        description: str = "",
-        OLAC_enabled: str = "true",
-        managing_cpm: str = "",
-        number_of_versions_retention: str = "",
-        number_of_days_retention: str = "",
-        location: str = ""
+    client: Client,
+    safe_name: str,
+    safe_new_name: str = "",
+    description: str = "",
+    OLAC_enabled: str = "true",
+    managing_cpm: str = "",
+    number_of_versions_retention: str = "",
+    number_of_days_retention: str = "",
+    location: str = "",
 ) -> CommandResults:
     """Update a single safe in the vault.
     :param client: The client object with an access token
@@ -849,21 +857,25 @@ def update_safe_command(
     :param location: The location of the safe.
     :return: CommandResults
     """
-    response = client.update_safe(safe_name, safe_new_name, description, OLAC_enabled, managing_cpm,
-                                  number_of_versions_retention,
-                                  number_of_days_retention, location)
+    response = client.update_safe(
+        safe_name,
+        safe_new_name,
+        description,
+        OLAC_enabled,
+        managing_cpm,
+        number_of_versions_retention,
+        number_of_days_retention,
+        location,
+    )
     results = CommandResults(
-        raw_response=response,
-        outputs_prefix='CyberArkPAS.Safes',
-        outputs_key_field='SafeName',
-        outputs=response
+        raw_response=response, outputs_prefix="CyberArkPAS.Safes", outputs_key_field="SafeName", outputs=response
     )
     return results
 
 
 def delete_safe_command(
-        client: Client,
-        safe_name: str,
+    client: Client,
+    safe_name: str,
 ) -> CommandResults:
     """Delete a safe from the vault.
     :param client: The client object with an access token
@@ -874,15 +886,15 @@ def delete_safe_command(
     client.delete_safe(safe_name)
     return CommandResults(
         readable_output=f"Safe {safe_name} was deleted",
-        outputs_prefix='CyberArkPAS.Safes',
-        outputs_key_field='SafeName',
-        outputs={"SafeName": safe_name, "Deleted": True}
+        outputs_prefix="CyberArkPAS.Safes",
+        outputs_key_field="SafeName",
+        outputs={"SafeName": safe_name, "Deleted": True},
     )
 
 
 def get_safe_by_name_command(
-        client: Client,
-        safe_name: str,
+    client: Client,
+    safe_name: str,
 ) -> CommandResults:
     """Return information about a specific safe in the vault.
     :param client: The client object with an access token
@@ -891,18 +903,12 @@ def get_safe_by_name_command(
     """
     response = client.get_safe_by_name(safe_name)
     results = CommandResults(
-        raw_response=response,
-        outputs_prefix='CyberArkPAS.Safes',
-        outputs_key_field='SafeName',
-        outputs=response
+        raw_response=response, outputs_prefix="CyberArkPAS.Safes", outputs_key_field="SafeName", outputs=response
     )
     return results
 
 
-def list_safe_members_command(
-        client: Client,
-        safe_name: str
-) -> CommandResults:
+def list_safe_members_command(client: Client, safe_name: str) -> CommandResults:
     """Return a list of the members of the safe.
     :param client: The client object with an access token
     :param safe_name: The name of the safe whose safe members will be listed.
@@ -916,21 +922,21 @@ def list_safe_members_command(
     results = CommandResults(
         raw_response=response,
         readable_output=tableToMarkdown(name=headline, t=members),
-        outputs_prefix='CyberArkPAS.Safes.Members',
-        outputs_key_field='MemberName',
-        outputs=members
+        outputs_prefix="CyberArkPAS.Safes.Members",
+        outputs_key_field="MemberName",
+        outputs=members,
     )
     return results
 
 
 def add_safe_member_command(
-        client: Client,
-        safe_name: str,
-        member_name: str,
-        requests_authorization_level: str = "0",
-        membership_expiration_date: str = "",
-        permissions: str = "",
-        search_in: str = ""
+    client: Client,
+    safe_name: str,
+    member_name: str,
+    requests_authorization_level: str = "0",
+    membership_expiration_date: str = "",
+    permissions: str = "",
+    search_in: str = "",
 ) -> CommandResults:
     """Add an existing user as a safe member.
     :param client: The client object with an access token
@@ -943,23 +949,20 @@ def add_safe_member_command(
     :return: CommandResults
     """
     permissions_list = argToList(permissions)
-    response = client.add_safe_member(safe_name, member_name, requests_authorization_level, membership_expiration_date,
-                                      permissions_list, search_in)
-    results = CommandResults(
-        raw_response=response,
-        outputs_prefix='CyberArkPAS.Safes.Members',
-        outputs=response.get("member")
+    response = client.add_safe_member(
+        safe_name, member_name, requests_authorization_level, membership_expiration_date, permissions_list, search_in
     )
+    results = CommandResults(raw_response=response, outputs_prefix="CyberArkPAS.Safes.Members", outputs=response.get("member"))
     return results
 
 
 def update_safe_member_command(
-        client: Client,
-        safe_name: str,
-        member_name: str,
-        requests_authorization_level: str = "0",
-        membership_expiration_date: str = "",
-        permissions: str = "",
+    client: Client,
+    safe_name: str,
+    member_name: str,
+    requests_authorization_level: str = "0",
+    membership_expiration_date: str = "",
+    permissions: str = "",
 ) -> CommandResults:
     """Update an existing safe member.
     :param client: The client object with an access token
@@ -971,21 +974,22 @@ def update_safe_member_command(
     :return: CommandResults
     """
     permissions_list = argToList(permissions)
-    response = client.update_safe_member(safe_name, member_name, requests_authorization_level,
-                                         membership_expiration_date, permissions_list)
+    response = client.update_safe_member(
+        safe_name, member_name, requests_authorization_level, membership_expiration_date, permissions_list
+    )
     results = CommandResults(
         raw_response=response,
-        outputs_prefix='CyberArkPAS.Safes.Members',
+        outputs_prefix="CyberArkPAS.Safes.Members",
         outputs_key_field=member_name,
-        outputs=response.get("member")
+        outputs=response.get("member"),
     )
     return results
 
 
 def delete_safe_member_command(
-        client: Client,
-        safe_name: str,
-        member_name: str,
+    client: Client,
+    safe_name: str,
+    member_name: str,
 ) -> CommandResults:
     """Remove a specific member from a safe.
     :param client: The client object with an access token
@@ -997,26 +1001,26 @@ def delete_safe_member_command(
     client.delete_safe_member(safe_name, member_name)
     return CommandResults(
         readable_output=f"Member {member_name} was deleted from {safe_name} safe",
-        outputs_prefix='CyberArkPAS.Safes.Members',
-        outputs_key_field='MemberName',
-        outputs={"MemberName": member_name, "Deleted": True}
+        outputs_prefix="CyberArkPAS.Safes.Members",
+        outputs_key_field="MemberName",
+        outputs={"MemberName": member_name, "Deleted": True},
     )
 
 
 def add_account_command(
-        client: Client,
-        account_name: str = "",
-        address: str = "",
-        username: str = "",
-        platform_id: str = "",
-        safe_name: str = "",
-        password: str = "",
-        secret_type: str = "password",
-        properties: dict | str = "",
-        automatic_management_enabled: str = "true",
-        manual_management_reason: str = "",
-        remote_machines: str = "",
-        access_restricted_to_remote_machines: str = "true"
+    client: Client,
+    account_name: str = "",
+    address: str = "",
+    username: str = "",
+    platform_id: str = "",
+    safe_name: str = "",
+    password: str = "",
+    secret_type: str = "password",
+    properties: dict | str = "",
+    automatic_management_enabled: str = "true",
+    manual_management_reason: str = "",
+    remote_machines: str = "",
+    access_restricted_to_remote_machines: str = "true",
 ) -> CommandResults:
     """Add a new privileged account or SSH key to the vault.
     :param client: The client object with an access token
@@ -1050,21 +1054,18 @@ def add_account_command(
         access_restricted_to_remote_machines,
     )
     results = CommandResults(
-        raw_response=response,
-        outputs_prefix='CyberArkPAS.Accounts',
-        outputs_key_field='id',
-        outputs=response
+        raw_response=response, outputs_prefix="CyberArkPAS.Accounts", outputs_key_field="id", outputs=response
     )
     return results
 
 
 def update_account_command(
-        client: Client,
-        account_id: str = "",
-        account_name: str = "",
-        address: str = "",
-        username: str = "",
-        platform_id: str = "",
+    client: Client,
+    account_id: str = "",
+    account_name: str = "",
+    address: str = "",
+    username: str = "",
+    platform_id: str = "",
 ) -> CommandResults:
     """Update an existing account's details.
     :param client: The client object with an access token
@@ -1077,17 +1078,14 @@ def update_account_command(
     """
     response = client.update_account(account_id, account_name, address, username, platform_id)
     results = CommandResults(
-        raw_response=response,
-        outputs_prefix='CyberArkPAS.Accounts',
-        outputs_key_field='id',
-        outputs=response
+        raw_response=response, outputs_prefix="CyberArkPAS.Accounts", outputs_key_field="id", outputs=response
     )
     return results
 
 
 def delete_account_command(
-        client: Client,
-        account_id: str = "",
+    client: Client,
+    account_id: str = "",
 ) -> CommandResults:
     """Delete a specific account in the vault.
     :param client: The client object with an access token
@@ -1098,19 +1096,19 @@ def delete_account_command(
     client.delete_account(account_id)
     return CommandResults(
         readable_output=f"Account {account_id} was deleted",
-        outputs_prefix='CyberArkPAS.Accounts',
-        outputs_key_field='id',
-        outputs={"id": account_id, "Deleted": True}
+        outputs_prefix="CyberArkPAS.Accounts",
+        outputs_key_field="id",
+        outputs={"id": account_id, "Deleted": True},
     )
 
 
 def get_list_accounts_command(
-        client: Client,
-        search: str = "",
-        sort: str = "",
-        offset: str = "0",
-        limit: str = "50",
-        filter: str = "",
+    client: Client,
+    search: str = "",
+    sort: str = "",
+    offset: str = "0",
+    limit: str = "50",
+    filter: str = "",
 ) -> CommandResults:
     """Return a list of all the accounts in the vault.
     :param client: The client object with an access token
@@ -1128,16 +1126,16 @@ def get_list_accounts_command(
     results = CommandResults(
         raw_response=response,
         readable_output=tableToMarkdown(headline, accounts),
-        outputs_prefix='CyberArkPAS.Accounts',
-        outputs_key_field='id',
-        outputs=accounts
+        outputs_prefix="CyberArkPAS.Accounts",
+        outputs_key_field="id",
+        outputs=accounts,
     )
     return results
 
 
 def get_list_account_activity_command(
-        client: Client,
-        account_id: str = "",
+    client: Client,
+    account_id: str = "",
 ) -> CommandResults:
     """Returns the activities of a specific account that is identified by its account id.
     :param client: The client object with an access token
@@ -1146,17 +1144,14 @@ def get_list_account_activity_command(
     """
     response = client.get_list_account_activity(account_id)
     results = CommandResults(
-        raw_response=response,
-        outputs_prefix='CyberArkPAS.Activities',
-        outputs_key_field='',
-        outputs=response.get("Activities")
+        raw_response=response, outputs_prefix="CyberArkPAS.Activities", outputs_key_field="", outputs=response.get("Activities")
     )
     return results
 
 
 def get_account_details_command(
-        client: Client,
-        account_id: str = "",
+    client: Client,
+    account_id: str = "",
 ) -> CommandResults:
     """Returns information of a specific account that is identified by its account id.
     :param client: The client object with an access token
@@ -1165,17 +1160,14 @@ def get_account_details_command(
     """
     response = client.get_account_details(account_id)
     results = CommandResults(
-        raw_response=response,
-        outputs_prefix='CyberArkPAS.Accounts',
-        outputs_key_field='id',
-        outputs=response
+        raw_response=response, outputs_prefix="CyberArkPAS.Accounts", outputs_key_field="id", outputs=response
     )
     return results
 
 
 def change_credentials_random_password_command(
-        client: Client,
-        account_id: str,
+    client: Client,
+    account_id: str,
 ) -> str:
     """Mark an account for an immediate credentials change by the CPM to a new random value.
     :param client: The client object with an access token
@@ -1187,9 +1179,9 @@ def change_credentials_random_password_command(
 
 
 def change_credentials_set_new_password_command(
-        client: Client,
-        account_id: str,
-        new_credentials: str,
+    client: Client,
+    account_id: str,
+    new_credentials: str,
 ) -> str:
     """Enables users to set the account's credentials to use for the next CPM change.
     :param client: The client object with an access token
@@ -1202,9 +1194,9 @@ def change_credentials_set_new_password_command(
 
 
 def change_credentials_in_vault_only_command(
-        client: Client,
-        account_id: str,
-        new_credentials: str,
+    client: Client,
+    account_id: str,
+    new_credentials: str,
 ) -> str:
     """Enables users to set account credentials and change them in the vault.
     :param client: The client object with an access token
@@ -1217,8 +1209,8 @@ def change_credentials_in_vault_only_command(
 
 
 def verify_credentials_command(
-        client: Client,
-        account_id: str,
+    client: Client,
+    account_id: str,
 ) -> str:
     """Mark an account for verification by the CPM.
     :param client: The client object with an access token
@@ -1230,8 +1222,8 @@ def verify_credentials_command(
 
 
 def reconcile_credentials_command(
-        client: Client,
-        account_id: str,
+    client: Client,
+    account_id: str,
 ) -> str:
     """Marks an account for automatic reconciliation by the CPM.
     :param client: The client object with an access token
@@ -1242,11 +1234,7 @@ def reconcile_credentials_command(
     return f"The account {account_id} was marked for automatic reconciliation by the CPM."
 
 
-def get_security_events_command(
-        client: Client,
-        start_time: str,
-        limit: str = "50"
-) -> CommandResults:
+def get_security_events_command(client: Client, start_time: str, limit: str = "50") -> CommandResults:
     """Returns all PTA security events.
     :param client: The client object with an access token
     :param start_time: The starting date to get the security events from as timestamp.
@@ -1260,38 +1248,28 @@ def get_security_events_command(
     events_data = client.get_security_events(start_time_timestamp)
 
     if not events_data:
-        return CommandResults(
-            outputs="No events were found"
-        )
+        return CommandResults(outputs="No events were found")
 
     if limit:
-        events_data = events_data[0:int(limit)]
+        events_data = events_data[0 : int(limit)]
 
     results = CommandResults(
         outputs=events_data,
         raw_response=events_data,
-        outputs_prefix='CyberArkPAS.SecurityEvents',
-        outputs_key_field='id',
+        outputs_prefix="CyberArkPAS.SecurityEvents",
+        outputs_key_field="id",
     )
     return results
 
 
 def fetch_incidents(
-        client: Client,
-        last_run: dict,
-        first_fetch_time: str,
-        score: str,
-        max_fetch: str = '50'
+    client: Client, last_run: dict, first_fetch_time: str, score: str, max_fetch: str = "50"
 ) -> Tuple[dict, list]:
-
     # if first time fetching
     if not last_run:
         start_time, _ = parse_date_range(first_fetch_time)
         start_time_timestamp = str(date_to_timestamp(start_time))
-        next_run = {
-            'time': start_time_timestamp,
-            'last_event_ids': []
-        }
+        next_run = {"time": start_time_timestamp, "last_event_ids": []}
     else:
         next_run = last_run
 
@@ -1307,7 +1285,7 @@ def fetch_incidents(
 
     incidents = []
     if reverse_events_data:
-        last_event_ids = last_run.get('last_event_ids', [])
+        last_event_ids = last_run.get("last_event_ids", [])
         new_event_ids = []
         event_updated_time = None
 
@@ -1315,16 +1293,16 @@ def fetch_incidents(
 
         for event_data in reverse_events_data:
             # by reversing the list before, we can now go over the items from the oldest to the newest
-            event_id = event_data.get('id')
+            event_id = event_data.get("id")
 
             if event_id not in last_event_ids:  # check that event was not fetched in the last fetch
                 incidents_num += 1
-                event_updated_time = event_data.get('lastUpdateTime')
+                event_updated_time = event_data.get("lastUpdateTime")
                 incident = {
-                    'name': f"CyberArk PAS Incident: {event_id}.",
-                    'occurred': timestamp_to_datestring(event_updated_time),
-                    'severity': incident_priority_to_dbot_score(float(event_data.get('score'))),
-                    'rawJSON': json.dumps(event_data)
+                    "name": f"CyberArk PAS Incident: {event_id}.",
+                    "occurred": timestamp_to_datestring(event_updated_time),
+                    "severity": incident_priority_to_dbot_score(float(event_data.get("score"))),
+                    "rawJSON": json.dumps(event_data),
                 }
                 incidents.append(incident)
                 new_event_ids.append(event_id)
@@ -1335,85 +1313,75 @@ def fetch_incidents(
 
         if new_event_ids and event_updated_time:
             next_run = {
-                'time': str(event_updated_time),
-                'last_event_ids': json.dumps(new_event_ids)  # save the event IDs from the last fetch
+                "time": str(event_updated_time),
+                "last_event_ids": json.dumps(new_event_ids),  # save the event IDs from the last fetch
             }
-    demisto.debug(f'CyberArk PAS last fetch data: {str(next_run)}')
+    demisto.debug(f"CyberArk PAS last fetch data: {str(next_run)}")
     return next_run, incidents
 
 
 def main():
-
     params = demisto.params()
-    username = params.get('credentials').get('identifier')
-    password = params.get('credentials').get('password')
-    url = params.get('url')
-    use_ssl = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+    username = params.get("credentials").get("identifier")
+    password = params.get("credentials").get("password")
+    url = params.get("url")
+    use_ssl = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
 
-    max_fetch = min('200', params.get('max_fetch', '200'))
-    first_fetch_time = params.get('fetch_time', '3 days').strip()
-    score = params.get('score', "0")
+    max_fetch = min("200", params.get("max_fetch", "200"))
+    first_fetch_time = params.get("fetch_time", "3 days").strip()
+    score = params.get("score", "0")
 
     command = demisto.command()
-    LOG(f'Command being called in CyberArkPAS is: {command}')
+    LOG(f"Command being called in CyberArkPAS is: {command}")
     commands = {
-        'test-module': test_module,
-
-        'cyberark-pas-user-add': add_user_command,
-        'cyberark-pas-user-update': update_user_command,
-        'cyberark-pas-user-delete': delete_user_command,
-        'cyberark-pas-users-list': get_users_command,
-        'cyberark-pas-user-activate': activate_user_command,
-
-        'cyberark-pas-safe-add': add_safe_command,
-        'cyberark-pas-safe-update': update_safe_command,
-        'cyberark-pas-safe-delete': delete_safe_command,
-        'cyberark-pas-safes-list': get_list_safes_command,
-        'cyberark-pas-safe-get-by-name': get_safe_by_name_command,
-
-        'cyberark-pas-safe-member-add': add_safe_member_command,
-        'cyberark-pas-safe-member-update': update_safe_member_command,
-        'cyberark-pas-safe-member-delete': delete_safe_member_command,
-        'cyberark-pas-safe-members-list': list_safe_members_command,
-
-        'cyberark-pas-account-add': add_account_command,
-        'cyberark-pas-account-update': update_account_command,
-        'cyberark-pas-account-delete': delete_account_command,
-        'cyberark-pas-accounts-list': get_list_accounts_command,
-        'cyberark-pas-account-get-list-activity': get_list_account_activity_command,
-        'cyberark-pas-account-get-details': get_account_details_command,
-
-        'cyberark-pas-credentials-change-random-password': change_credentials_random_password_command,
-        'cyberark-pas-credentials-change-set-new-password': change_credentials_set_new_password_command,
-        'cyberark-pas-credentials-change-in-vault-only': change_credentials_in_vault_only_command,
-        'cyberark-pas-credentials-verify': verify_credentials_command,
-        'cyberark-pas-credentials-reconcile': reconcile_credentials_command,
-
-        'cyberark-pas-security-events-get': get_security_events_command,
+        "test-module": test_module,
+        "cyberark-pas-user-add": add_user_command,
+        "cyberark-pas-user-update": update_user_command,
+        "cyberark-pas-user-delete": delete_user_command,
+        "cyberark-pas-users-list": get_users_command,
+        "cyberark-pas-user-activate": activate_user_command,
+        "cyberark-pas-safe-add": add_safe_command,
+        "cyberark-pas-safe-update": update_safe_command,
+        "cyberark-pas-safe-delete": delete_safe_command,
+        "cyberark-pas-safes-list": get_list_safes_command,
+        "cyberark-pas-safe-get-by-name": get_safe_by_name_command,
+        "cyberark-pas-safe-member-add": add_safe_member_command,
+        "cyberark-pas-safe-member-update": update_safe_member_command,
+        "cyberark-pas-safe-member-delete": delete_safe_member_command,
+        "cyberark-pas-safe-members-list": list_safe_members_command,
+        "cyberark-pas-account-add": add_account_command,
+        "cyberark-pas-account-update": update_account_command,
+        "cyberark-pas-account-delete": delete_account_command,
+        "cyberark-pas-accounts-list": get_list_accounts_command,
+        "cyberark-pas-account-get-list-activity": get_list_account_activity_command,
+        "cyberark-pas-account-get-details": get_account_details_command,
+        "cyberark-pas-credentials-change-random-password": change_credentials_random_password_command,
+        "cyberark-pas-credentials-change-set-new-password": change_credentials_set_new_password_command,
+        "cyberark-pas-credentials-change-in-vault-only": change_credentials_in_vault_only_command,
+        "cyberark-pas-credentials-verify": verify_credentials_command,
+        "cyberark-pas-credentials-reconcile": reconcile_credentials_command,
+        "cyberark-pas-security-events-get": get_security_events_command,
     }
 
     try:
-        client = Client(server_url=url, username=username, password=password, use_ssl=use_ssl, proxy=proxy,
-                        max_fetch=int(max_fetch))
+        client = Client(
+            server_url=url, username=username, password=password, use_ssl=use_ssl, proxy=proxy, max_fetch=int(max_fetch)
+        )
 
         if command in commands:
             return_results(commands[command](client, **demisto.args()))  # type: ignore[operator]
-        elif command == 'fetch-incidents':
+        elif command == "fetch-incidents":
             next_run, incidents = fetch_incidents(
-                client=client,
-                last_run=demisto.getLastRun(),
-                first_fetch_time=first_fetch_time,
-                score=score,
-                max_fetch=max_fetch
+                client=client, last_run=demisto.getLastRun(), first_fetch_time=first_fetch_time, score=score, max_fetch=max_fetch
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
         else:
-            raise NotImplementedError(f'{command} is not an existing CyberArk PAS command')
+            raise NotImplementedError(f"{command} is not an existing CyberArk PAS command")
     except Exception as err:
-        return_error(f'Unexpected error: {str(err)}', error=traceback.format_exc())
+        return_error(f"Unexpected error: {str(err)}", error=traceback.format_exc())
     finally:
         try:
             client._logout()
@@ -1421,5 +1389,5 @@ def main():
             demisto.info(f"CyberArk PAS error: {str(err)}")
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ["__main__", "builtin", "builtins"]:
     main()
