@@ -2,29 +2,41 @@ import json
 from copy import deepcopy
 
 import pytest
-from NetscoutArborSightline import NetscoutClient, \
-    fetch_incidents_command, list_alerts_command, alert_annotation_list_command, mitigation_list_command, \
-    mitigation_template_list_command, router_list_command, tms_group_list_command, managed_object_list_command, \
-    mitigation_create_command, clean_links, validate_json_arg, build_human_readable
+from NetscoutArborSightline import (
+    NetscoutClient,
+    fetch_incidents_command,
+    list_alerts_command,
+    alert_annotation_list_command,
+    mitigation_list_command,
+    mitigation_template_list_command,
+    router_list_command,
+    tms_group_list_command,
+    managed_object_list_command,
+    mitigation_create_command,
+    clean_links,
+    validate_json_arg,
+    build_human_readable,
+)
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
 
 # from Packs
 
+
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
-client = NetscoutClient(base_url='dummy_url', verify=False, proxy=False, first_fetch='3 days', max_fetch=10)
-http_responses = util_load_json('test_data/http_responses.json')
-command_results = util_load_json('test_data/command_results.json')
+client = NetscoutClient(base_url="dummy_url", verify=False, proxy=False, first_fetch="3 days", max_fetch=10)
+http_responses = util_load_json("test_data/http_responses.json")
+command_results = util_load_json("test_data/command_results.json")
 
 
 @pytest.fixture(autouse=True)
 def setup(mocker):
-    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(demisto, "debug")
 
 
 def test_fetch_incidents_command(mocker):
@@ -38,35 +50,45 @@ def test_fetch_incidents_command(mocker):
     Then:
      - Ensure that the incidents returned are as expected.
     """
-    alerts_http_response = http_responses['incidents']
-    alerts_command_results = command_results['fetched_incidents']
+    alerts_http_response = http_responses["incidents"]
+    alerts_command_results = command_results["fetched_incidents"]
 
     mocker.patch.object(client, "list_alerts", return_value=alerts_http_response)
     mocker.patch.object(client, "calculate_amount_of_incidents", return_value=40)
-    mocker.patch.object(demisto, 'incidents')
+    mocker.patch.object(demisto, "incidents")
 
     fetch_incidents_command(client)
     demisto.incidents.assert_called_with(alerts_command_results)
 
 
 @pytest.mark.parametrize(
-    'function_to_mock, function_to_test, args, http_response_key, expected_command_results_key', [
-        ('list_alerts', list_alerts_command, {}, 'incidents', 'get_incidents'),
-        ('get_alert', list_alerts_command, {'alert_id': 1}, 'incident', 'get_incident'),
-        ('get_annotations', alert_annotation_list_command, {'alert_id': '2009'}, 'annotations', 'list_annotations'),
-        ('list_mitigations', mitigation_list_command, {'limit': '3'}, 'mitigations', 'list_mitigations'),
-        ('create_mitigation', mitigation_create_command,
-         {"description": "just desc", "ip_version": "IPv4", "name": "test_mit", "ongoing": "true",
-          "sub_object": "{\"protection_prefixes\": [\"192.0.2.0/24\"]}", "sub_type": "flowspec"}, 'mitigation',
-         'create_mitigation'),
-        ('mitigation_template_list', mitigation_template_list_command, {}, 'mitigation_templates',
-         'list_mitigation_templates'),
-        ('router_list', router_list_command, {}, 'routers', 'list_routers'),
-        ('managed_object_list', managed_object_list_command, {}, 'managed_objects', 'list_managed_objects'),
-        ('tms_group_list', tms_group_list_command, {}, 'tms_groups', 'list_tms_group'),
-    ])
-def test_commands(mocker, function_to_mock, function_to_test, args, http_response_key,
-                  expected_command_results_key):
+    "function_to_mock, function_to_test, args, http_response_key, expected_command_results_key",
+    [
+        ("list_alerts", list_alerts_command, {}, "incidents", "get_incidents"),
+        ("get_alert", list_alerts_command, {"alert_id": 1}, "incident", "get_incident"),
+        ("get_annotations", alert_annotation_list_command, {"alert_id": "2009"}, "annotations", "list_annotations"),
+        ("list_mitigations", mitigation_list_command, {"limit": "3"}, "mitigations", "list_mitigations"),
+        (
+            "create_mitigation",
+            mitigation_create_command,
+            {
+                "description": "just desc",
+                "ip_version": "IPv4",
+                "name": "test_mit",
+                "ongoing": "true",
+                "sub_object": '{"protection_prefixes": ["192.0.2.0/24"]}',
+                "sub_type": "flowspec",
+            },
+            "mitigation",
+            "create_mitigation",
+        ),
+        ("mitigation_template_list", mitigation_template_list_command, {}, "mitigation_templates", "list_mitigation_templates"),
+        ("router_list", router_list_command, {}, "routers", "list_routers"),
+        ("managed_object_list", managed_object_list_command, {}, "managed_objects", "list_managed_objects"),
+        ("tms_group_list", tms_group_list_command, {}, "tms_groups", "list_tms_group"),
+    ],
+)
+def test_commands(mocker, function_to_mock, function_to_test, args, http_response_key, expected_command_results_key):
     """
     Given:
     - NetscoutClient client.
@@ -106,11 +128,10 @@ def test_commands(mocker, function_to_mock, function_to_test, args, http_respons
     assert command_result.outputs == expected_command_results
 
 
-@pytest.mark.parametrize('http_response_key, expected_number_of_pages', [
-    ('amount_of_incidents_vanilla_case', 25),
-    ('amount_of_incidents_one_result', 1),
-    ('amount_of_incidents_no_results', 0)
-])
+@pytest.mark.parametrize(
+    "http_response_key, expected_number_of_pages",
+    [("amount_of_incidents_vanilla_case", 25), ("amount_of_incidents_one_result", 1), ("amount_of_incidents_no_results", 0)],
+)
 def test_calculate_amount_of_incidents(mocker, http_response_key, expected_number_of_pages):
     """
     Given:
@@ -129,32 +150,36 @@ def test_calculate_amount_of_incidents(mocker, http_response_key, expected_numbe
     """
     mocked_http_response = http_responses[http_response_key]
 
-    mocker.patch.object(client, 'list_alerts', return_value=mocked_http_response)
-    number_of_pages = client.calculate_amount_of_incidents('', {})
+    mocker.patch.object(client, "list_alerts", return_value=mocked_http_response)
+    number_of_pages = client.calculate_amount_of_incidents("", {})
     assert number_of_pages == expected_number_of_pages
 
 
 def test_calculate_amount_of_incidents_raise_error(mocker):
-    mocked_http_response = http_responses['amount_of_incidents_broken_last_page']
+    mocked_http_response = http_responses["amount_of_incidents_broken_last_page"]
 
-    mocker.patch.object(client, 'list_alerts', return_value=mocked_http_response)
+    mocker.patch.object(client, "list_alerts", return_value=mocked_http_response)
 
-    with pytest.raises(DemistoException,
-                       match='Could not calculate page size, last page number was not found:\n'
-                             'https://xsoar-example:57585/api/sp/v7/alerts/?'):
-        client.calculate_amount_of_incidents('', {})
+    with pytest.raises(
+        DemistoException,
+        match="Could not calculate page size, last page number was not found:\n" "https://xsoar-example:57585/api/sp/v7/alerts/?",
+    ):
+        client.calculate_amount_of_incidents("", {})
 
 
-@pytest.mark.parametrize('object_to_clean', [
-    ({}),
-    ({'some_key': 'some_value'}),
-    ({'some_key': 'some_value', 'links': {'self': 'some_link'}}),
-    ([{'some_key': 'some_value', 'links': {'self': 'some_link'}}]),
-    ({'some_key': {'links': {'self': 'some_link'}}}),
-    ({'some_key': [{'links': {'self': 'some_link'}}]}),
-    ({'some_key': [{'links': {'self': 'some_link'}}, {'links': {'self': 'some_other_link'}}]}),
-    ([{'some_key': [{'links': {'self': 'some_link'}}, {'links': {'self': 'some_other_link'}}]}]),
-])
+@pytest.mark.parametrize(
+    "object_to_clean",
+    [
+        ({}),
+        ({"some_key": "some_value"}),
+        ({"some_key": "some_value", "links": {"self": "some_link"}}),
+        ([{"some_key": "some_value", "links": {"self": "some_link"}}]),
+        ({"some_key": {"links": {"self": "some_link"}}}),
+        ({"some_key": [{"links": {"self": "some_link"}}]}),
+        ({"some_key": [{"links": {"self": "some_link"}}, {"links": {"self": "some_other_link"}}]}),
+        ([{"some_key": [{"links": {"self": "some_link"}}, {"links": {"self": "some_other_link"}}]}]),
+    ],
+)
 def test_clean_links(object_to_clean):
     """
     Given:
@@ -177,7 +202,7 @@ def test_clean_links(object_to_clean):
     copy_of_object = deepcopy(object_to_clean)
     clean_links(copy_of_object)
     str_result = json.dumps(copy_of_object)
-    assert str_result.find('link') == -1
+    assert str_result.find("link") == -1
 
 
 def test_validate_json_arg():
@@ -191,7 +216,7 @@ def test_validate_json_arg():
     Then:
      - Ensure no parsing error was returned.
     """
-    validate_json_arg('{"some_key": "some_value"}', '')
+    validate_json_arg('{"some_key": "some_value"}', "")
 
 
 def test_validate_json_arg_raise_error():
@@ -205,86 +230,99 @@ def test_validate_json_arg_raise_error():
     Then:
      - Ensure a parsing error was raised
     """
-    with pytest.raises(DemistoException, match='The value given in the  argument is not a valid JSON format:\n'
-                                               '{"some_key" "some_value"}'):
-        validate_json_arg('{"some_key" "some_value"}', '')
+    with pytest.raises(
+        DemistoException, match="The value given in the  argument is not a valid JSON format:\n" '{"some_key" "some_value"}'
+    ):
+        validate_json_arg('{"some_key" "some_value"}', "")
 
 
-@pytest.mark.parametrize('object_to_build, expected_result', [
-    ({}, {}),
-    ({'attributes': {'key_1': 'val_1'}, 'key_2': 'val_2'},
-     {'key_1': 'val_1', 'key_2': 'val_2'}),
-    ({'attributes': {'key_1': 'val_1'}, 'key_2': 'val_2', 'relationships': [{'key_3': 'val_3'}],
-      'subobject': {'key_4': 'val_4'}}, {'key_1': 'val_1', 'key_2': 'val_2'})
-])
+@pytest.mark.parametrize(
+    "object_to_build, expected_result",
+    [
+        ({}, {}),
+        ({"attributes": {"key_1": "val_1"}, "key_2": "val_2"}, {"key_1": "val_1", "key_2": "val_2"}),
+        (
+            {
+                "attributes": {"key_1": "val_1"},
+                "key_2": "val_2",
+                "relationships": [{"key_3": "val_3"}],
+                "subobject": {"key_4": "val_4"},
+            },
+            {"key_1": "val_1", "key_2": "val_2"},
+        ),
+    ],
+)
 def test_build_human_readable(object_to_build, expected_result):
     """
-   Given:
-   - Case A: A dict with two keys: 'attributes' and 'key_2`.
-   - Case B: A dict with four keys: 'attributes', 'relationships', 'subobject' and 'key_2'.
+    Given:
+    - Case A: A dict with two keys: 'attributes' and 'key_2`.
+    - Case B: A dict with four keys: 'attributes', 'relationships', 'subobject' and 'key_2'.
 
-   When:
-    - Building the human readable from a response dict.
+    When:
+     - Building the human readable from a response dict.
 
-   Then:
-    - Case A:
-        1. Keys under the 'attributes' key are extracted to the root level.
-        2. The second key - 'key_2' still appears in the object.
-    - Case B: Ensure that:
-        1. Keys under the 'attributes' key are extracted to the root level.
-        2. The second key - 'key_2' still appears in the object.
-        3. That the 'relationships' and 'subobject' keys are missing from the object.
-   """
+    Then:
+     - Case A:
+         1. Keys under the 'attributes' key are extracted to the root level.
+         2. The second key - 'key_2' still appears in the object.
+     - Case B: Ensure that:
+         1. Keys under the 'attributes' key are extracted to the root level.
+         2. The second key - 'key_2' still appears in the object.
+         3. That the 'relationships' and 'subobject' keys are missing from the object.
+    """
     result = build_human_readable(object_to_build)
     assert result == expected_result
 
 
-@pytest.mark.parametrize('args_dict, expected_json_str', [
-    (
-        {
-            "limit": "10",
-            "page": "2",
-            "alert_id": "123",
-            "alert_class": "bgp",
-            "alert_type": "bgp_hijack",
-            "classification": "Flash Crowd",
-            "importance": "1",
-            "ongoing": "true",
-            "start_time": "2021-01-11T13:15:00",
-            "stop_time": "2021-01-12T13:15:00",
-        },
-        '/data/attributes/limit=10 AND /data/attributes/page=2 AND /data/attributes/alert_id=123 AND '
-        '/data/attributes/alert_class=bgp AND /data/attributes/alert_type=bgp_hijack AND '
-        '/data/attributes/classification=Flash Crowd AND /data/attributes/importance=1 AND '
-        '/data/attributes/ongoing=true AND /data/attributes/start_time=2021-01-11T13:15:00 AND '
-        '/data/attributes/stop_time=2021-01-12T13:15:00'
-    ),
-    (
-        {
-            "importance": "1",
-            "importance_operator": "=",
-            "start_time": "2021-01-11T13:15:00",
-            "start_time_operator": ">",
-            "stop_time": "2021-01-12T13:15:00",
-            "stop_time_operator": "<"
-        },
-        '/data/attributes/importance=1 AND /data/attributes/start_time>2021-01-11T13:15:00 AND '
-        '/data/attributes/stop_time<2021-01-12T13:15:00'
-    )
-])
+@pytest.mark.parametrize(
+    "args_dict, expected_json_str",
+    [
+        (
+            {
+                "limit": "10",
+                "page": "2",
+                "alert_id": "123",
+                "alert_class": "bgp",
+                "alert_type": "bgp_hijack",
+                "classification": "Flash Crowd",
+                "importance": "1",
+                "ongoing": "true",
+                "start_time": "2021-01-11T13:15:00",
+                "stop_time": "2021-01-12T13:15:00",
+            },
+            "/data/attributes/limit=10 AND /data/attributes/page=2 AND /data/attributes/alert_id=123 AND "
+            "/data/attributes/alert_class=bgp AND /data/attributes/alert_type=bgp_hijack AND "
+            "/data/attributes/classification=Flash Crowd AND /data/attributes/importance=1 AND "
+            "/data/attributes/ongoing=true AND /data/attributes/start_time=2021-01-11T13:15:00 AND "
+            "/data/attributes/stop_time=2021-01-12T13:15:00",
+        ),
+        (
+            {
+                "importance": "1",
+                "importance_operator": "=",
+                "start_time": "2021-01-11T13:15:00",
+                "start_time_operator": ">",
+                "stop_time": "2021-01-12T13:15:00",
+                "stop_time_operator": "<",
+            },
+            "/data/attributes/importance=1 AND /data/attributes/start_time>2021-01-11T13:15:00 AND "
+            "/data/attributes/stop_time<2021-01-12T13:15:00",
+        ),
+    ],
+)
 def test_build_relationships(args_dict, expected_json_str):
     """
-   Given:
-   - Case A: A dict of possible relationship filters`.
-   - Case B: A dict of possible relationship filters in addition to special allowed operators.
+    Given:
+    - Case A: A dict of possible relationship filters`.
+    - Case B: A dict of possible relationship filters in addition to special allowed operators.
 
-   When:
-    - Building a relationship string representation to be sent in the url query.
+    When:
+     - Building a relationship string representation to be sent in the url query.
 
-   Then:
-    - Case A: Assert that all filters are uses the `=` operator and are chained using the `AND` operator.
-    - Case B: Assert that start_time uses the '>' operator, stop_time uses the '<' operator and importance uses the '='
-        operator.
-   """
+    Then:
+     - Case A: Assert that all filters are uses the `=` operator and are chained using the `AND` operator.
+     - Case B: Assert that start_time uses the '>' operator, stop_time uses the '<' operator and importance uses the '='
+         operator.
+    """
     result = client.build_data_attribute_filter(args_dict)
     assert result == expected_json_str
