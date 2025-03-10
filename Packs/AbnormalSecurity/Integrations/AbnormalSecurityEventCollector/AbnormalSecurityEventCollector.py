@@ -112,6 +112,7 @@ def main():
     proxy = params['proxy']
     after = arg_to_datetime(
         arg='1 minute').strftime("%Y-%m-%dT%H:%M:%SZ")  # type: ignore
+
     client = Client(base_url='https://api.abnormalplatform.com/v1',
                     verify=verify,
                     proxy=proxy,

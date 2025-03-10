@@ -45,5 +45,7 @@
                 "https://someurl.com"
             ]
         }
-    ]
+    ],
+    "pageNumber": 1,
+    "nextPageNumber": 2
 }
