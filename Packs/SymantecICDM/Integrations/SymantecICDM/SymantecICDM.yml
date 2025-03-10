@@ -2,6 +2,7 @@ category: Data Enrichment & Threat Intelligence
 sectionOrder:
 - Connect
 - Collect
+- Optimize
 commonfields:
   id: SymantecICDM
   version: -1
@@ -76,17 +77,18 @@ configuration:
   name: incidentFetchInterval
   required: false
   section: Collect
+  advanced: true
   type: 19
 - display: Ignore Domains (e.g. domain.local)
   additionalinfo: Comma-separated list of domains that shall be ignored for Urls and (Sub-)Domains reputation lookup
   name: ignored_domains
   required: false
-  section: Ignored
+  section: Optimize
   type: 0
 - display: Ignore Private IPs (e.g. 192.168.0.1)
   name: ignore_private_ip
   required: false
-  section: Ignored
+  section: Optimize
   type: 8
   defaultvalue: 'true'
 script:
