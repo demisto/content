@@ -213,6 +213,9 @@ After you successfully execute a command, a DBot message appears in the War Room
 55. microsoft-atp-list-vulnerabilities-by-machine
 56. microsoft-atp-list-vulnerabilities
 57. microsoft-atp-list-missing-kb-by-software
+58. microsoft-atp-get-machine-vulnerabilities
+59. microsoft-atp-get-machine-software
+60. microsoft-atp-get-machine-missing-kbs
 
 ### 1. microsoft-atp-isolate-machine
 
@@ -7324,3 +7327,186 @@ Find Machines seen with the requested internal IP in the time range of 15 minute
 | `microsoft-atp-list-alerts`             | Use the `msg-search-alerts` command in the `Microsoft Graph Security` integration instead.                                                                |
 | `microsoft-atp-update-alert`            | Use the `msg-update-alert` command in the `Microsoft Graph Security` integration instead.                                                                 |
 | `microsoft-atp-advanced-hunting`        | Use the `msg-advanced-hunting` command in the `Microsoft Graph Security` integration instead.                                                             |
+
+### microsoft-atp-get-machine-vulnerabilities
+
+***
+Run this command to get the vulnerabilities from a specific machine.
+
+#### Base Command
+
+`microsoft-atp-get-machine-vulnerabilities`
+
+#### Input
+ 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_id | Machine ID. Use the !microsoft-atp-get-machines command to get the ID. | Required |
+ 
+#### Context Output
+ 
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.PublicVulnerability.id | String | Software ID. |
+| MicrosoftATP.PublicVulnerability.name | String | Software name. |
+| MicrosoftATP.PublicVulnerability.vendor | String | Vendor name. |
+| MicrosoftATP.PublicVulnerability.weakness | Number | Amount of weaknesses |
+| MicrosoftATP.PublicVulnerability.publicExploit | Boolean | Does this have a public exploit? |
+| MicrosoftATP.PublicVulnerability.activeAlert | Boolean | Does this software have an active alert? |
+| MicrosoftATP.PublicVulnerability.exposedMachines | Number | The amount of machines exposed to this software. |
+| MicrosoftATP.PublicVulnerability.installedMachines | Number | The amount of machines with this software installed. |
+| MicrosoftATP.PublicVulnerability.impactScore | Number | The impact score of the software. |
+| MicrosoftATP.PublicVulnerability.isNormalized | Number | Is the software value normalized? |
+| MicrosoftATP.PublicVulnerability.category | String | The software category. |
+| MicrosoftATP.PublicVulnerability.distributions | String | The distributions on which this software is present. |
+
+#### Command example
+```!microsoft-atp-get-machine-vulnerabilities machine_id="12342c13fef```
+
+
+#### Context Example
+
+```json
+{
+  "MicrosoftATP": {
+      "PublicVulnerability": {
+        "@odata.context": "https://api.securitycenter.windows.com/api/$metadata#Collection(microsoft.windowsDefenderATP.api.PublicVulnerabilityDto)",
+        "cveSupportability": "Supported",
+        "cvssV3": 3.7,
+        "cvssVector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L/E:F/RL:O/RC:C",
+        "description": "Summary: Foo is vulnerable to a denial of service due to improper server configuration validation.",  # noqa: E501
+        "epss": 0,
+        "exploitInKit": False,
+        "exploitTypes": [
+            "Remote"
+        ],
+        "exploitUris": [],
+        "exploitVerified": False,
+        "exposedMachines": 1,
+        "firstDetected": "20XX-MM-DDThh:mm:ssZ",
+        "id": "CVE-20XX-1234",
+        "name": "CVE-20XX-1234",
+        "publicExploit": False,
+        "publishedOn": "20XX-MM-DDThh:mm:ssZ",
+        "severity": "Low",
+        "tags": [],
+        "updatedOn": "20XX-MM-DDThh:mm:ssZ"
+    }
+  }
+}
+```
+
+#### Human Readable Output
+
+>### Microsoft Defender ATP Vulnerability:
+>| id | name | cveSupportability | cvssV3 | cvssVector | description | epss | exploitInKit | exploitTypes | exploitVerified | exposedMachines | firstDetected | publicExploit | publishedOn | severity | updatedOn |
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| CVE-20XX-1234 | CVE-20XX-1234 | Supported | 3.7 | CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L/E:F/RL:O/RC:C | Summary: Foo is vulnerable to a denial of service due to improper server configuration validation. | 0 | false | Remote | false | 1 | 20XX
+
+### microsoft-atp-get-machine-software
+
+***
+Run this command to get the sofware installed on a specific machine.
+
+#### Base Command
+
+`microsoft-atp-get-machine-software`
+
+#### Input
+ 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_id | Machine ID. Use the !microsoft-atp-get-machines command to get the ID. | Required |
+ 
+#### Command example
+```!microsoft-atp-get-machine-software machine_id="12342c13fef```
+
+
+#### Context Example
+
+```json
+{
+  "MicrosoftATP": {
+      "Software": {
+        "@odata.context": "https://api.securitycenter.windows.com/api/$metadata#Software",
+        "id": "some_id",
+        "name": "some_name",
+        "vendor": "some_vendor",
+        "weaknesses": 0,
+        "publicExploit": false,
+        "activeAlert": false,
+        "exposedMachines": 0,
+        "installedMachines": 1,
+        "impactScore": 0,
+        "isNormalized": false,
+        "category": "",
+        "distributions": []
+    }
+  }
+}
+```
+
+#### Human Readable Output
+>### Microsoft Defender ATP Software:
+>| id         | name         | vendor         | publicExploit | activeAlert | exposedMachines | installedMachines | impactScore | isNormalized |
+>|------------|--------------|----------------|---------------|-------------|-----------------|-------------------|-------------|--------------|
+>| some_id    | some_name    | some_vendor    | false         | false       | 0               | 1                 | 0           | false        |
+>| another_id | another_name | another_vendor | true          | true        | 0               | 1                 | 0           | false        |
+
+### microsoft-atp-get-machine-missing-kbs
+
+***
+Run this command to get the missing security updates (KBs) from a specific machine.
+#### Base Command
+
+`microsoft-atp-get-machine-missing-kbs`
+
+#### Input
+ 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_id | Machine ID. Use the !microsoft-atp-get-machines command to get the ID. | Required |
+
+ 
+#### Context Output
+ 
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.PublicProductFix.id | String | Software ID. |
+| MicrosoftATP.PublicProductFix.name | String | Software name. |
+| MicrosoftATP.PublicProductFix.productsNames | String | The product names |
+| MicrosoftATP.PublicProductFix.url | String | URL. |
+| MicrosoftATP.PublicProductFix.machineMissedOn | Number | Machine missed on. |
+| MicrosoftATP.PublicProductFix.cveAddressed | Number | CVE addressed. |
+| MicrosoftATP.PublicProductFix.osBuild | String | The OS Build version |
+
+#### Command example
+```!microsoft-atp-get-machine-missing-kbs machine_id="12342c13fef,12342c13fef8f06606```
+
+#### Context Example
+
+```json
+{
+  "MicrosoftATP": {
+      "PublicProductFix": {
+        "@odata.context": "https://api.securitycenter.windows.com/api/$metadata#Collection(microsoft.windowsDefenderATP.api.PublicProductFixDto)",
+        "id": "1234567",
+        "name": "March 20XX Security Updates",
+        "productsNames": [
+            "windows_10",
+            "edge",
+            "internet_explorer"
+        ],
+        "url": "https://catalog.update.microsoft.com/v7/site/Search.aspx?q=KB1234567",
+        "machineMissedOn": 1,
+        "cveAddressed": 97,
+        "osBuild": 12345
+    }
+  }
+}
+```
+
+#### Human Readable Output
+>### Microsoft Defender ATP Security Update:
+>|id|name|osBuild|url|machineMissedOn|cveAddressed|\n|---|---|---|---|---|---|
+>| 1234567 | March 20XX Security Updates | 12345 | [https://catalog.update.microsoft.com/v7/site/Search.aspx?q=KB1234567](https://catalog.update.microsoft.com/v7/site/Search.aspx?q=KB1234567) | 1 | 97 |
