@@ -75,7 +75,8 @@ def test_second_fetch_incidents(mocker):
                    '"machineId": "43df73d1dac43593d1275e20422f44a949f6dfc3", "alertUser": null, "comments": [], '
                    '"alertFiles": [], "alertDomains": [], "alertIps": []}',
         'name': 'Microsoft Defender ATP Alert da637029414680409372_735564929',
-        'occurred': '2019-09-01T13:31:08.0252869Z', 'dbotMirrorId': 'da637029414680409372_735564929'}]
+        'occurred': '2019-09-01T13:31:08.0252869Z', 'dbotMirrorId': 'da637029414680409372_735564929',
+        'haIntegrationEventID': 'da637029414680409372_735564929'}]
 
 
 def test_third_fetch_incidents(mocker):
