@@ -791,12 +791,12 @@ def build_mql_query(
     query: str,
     start: str = None,
     end: str = None,
-    page_size: int | str = None,
-    limit: str | int = None,
-    offset: int | str = None,
-    groupby: str = None,
-    sort_by: str = None,
-    sort_order: str = None,
+    page_size: int | str = "",
+    limit: str | int = "",
+    offset: int | str = "",
+    groupby: str = "",
+    sort_by: str = "",
+    sort_order: str = "",
 ) -> str:
     """Builds MQL query from given arguments
 
@@ -862,7 +862,7 @@ def build_search_groupby_result(aggregations: dict, separator: str) -> list:
     return res
 
 
-def build_search_result(raw_response: dict, search_id: str | int = None, headers: list = None):
+def build_search_result(raw_response: dict, search_id: str | int = "", headers: list = None):
     """Builds search result from search raw_response
 
     Args:
@@ -1000,7 +1000,7 @@ def fetch_incidents(client: Client, fetch_time: str | None, last_run: dict) -> t
         new_last_run = {"time": parse_date_range(fetch_time, date_format=timestamp_format)[0]}
     else:
         new_last_run = last_run
-    incidents = list()
+    incidents = []
     raw_response = client.list_alerts(created_at__gte=new_last_run.get("time"))
     alerts = raw_response.get("results")
     if alerts:
