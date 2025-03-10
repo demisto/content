@@ -4,6 +4,7 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 
+import functools
 import json
 import copy
 import requests
@@ -36,20 +37,15 @@ TO_DEMISTO_STATUS = {
 }
 VERIFY = not demisto.params().get("insecure", True)
 SESSION = requests.Session()
-CACHE_DICT: Dict[Optional[tuple[str, str]], Optional[Dict[Any, Any]]] = {}
 
 ''' HELPER FUNCTIONS '''
 
 
-def alerts_content_cached(sixgill_alerts_client, alert_id, organization_id, cache=CACHE_DICT):
-    if (alert_id, organization_id) in cache:
-        return cache[(alert_id, organization_id)]
+@functools.lru_cache(maxsize=2)
+def alerts_content_cached(sixgill_alerts_client, alert_id, organization_id):
     content = sixgill_alerts_client.get_actionable_alert_content(actionable_alert_id=alert_id,
                                                                  fetch_only_current_item=True,
                                                                  organization_id=organization_id)
-    if len(cache) >= 2:
-        cache.clear()
-    cache[(alert_id, organization_id)] = content
     return content
 
 
@@ -177,8 +173,8 @@ def get_alert_content(content_item, item_info, incident, sixgill_alerts_client):
                     content_item['Created Time'] = "Created Time: " + item.get("create_time", "")
     else:
         aggregate_alert_id = item_info.get('aggregate_alert_id', None)
-        if not isinstance(aggregate_alert_id, int):
-            aggregate_alert_id = None
+        if aggregate_alert_id and aggregate_alert_id.isdigit():
+            aggregate_alert_id = int(aggregate_alert_id)
         content = sixgill_alerts_client.get_actionable_alert_content(actionable_alert_id=item_info.get('id'),
                                                                      aggregate_alert_id=aggregate_alert_id,
                                                                      fetch_only_current_item=True,
