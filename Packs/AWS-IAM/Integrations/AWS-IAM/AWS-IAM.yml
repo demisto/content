@@ -1609,6 +1609,25 @@ script:
       required: false
     description: Deletes a virtual MFA device.
     name: aws-iam-delete-mfa-devices
+  - arguments:
+    - description: The name of the role to update with the new policy.
+      name: roleName
+      required: true
+    - description: The updated JSON policy document that grants an entity permission to assume the role.
+      name: policyDocument
+      required: true
+    - description: The Amazon Resource Name (ARN) of the role to assume. Use to override the configured "Role Arn" parameter.
+      name: roleArn
+      required: false
+    - description: An identifier for the assumed role session. Use to override the configured "Role Session Name" parameter.
+      name: roleSessionName
+      required: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. Use to override the configured "Role Session Duration" parameter.
+      name: roleSessionDuration
+      required: false
+    description: Updates the policy that grants an IAM entity permission to assume a role. This is typically referred to as the “role trust policy”.
+    # execution: true  # potentially harmful command?
+    name: aws-iam-update-assume-role-policy
   dockerimage: demisto/boto3py3:1.0.0.1894954
   runonce: false
   script: '-'

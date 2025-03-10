@@ -2043,3 +2043,34 @@ Deactivates the specified MFA device and removes it from association with the us
 #### Context Output
 
 There is no context output for this command.
+
+### aws-iam-update-assume-role-policy
+
+***
+Updates the policy that grants an IAM entity permission to assume a role. This is typically referred to as the “role trust policy”.
+
+#### Base Command
+
+`aws-iam-update-assume-role-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| roleName | The name of the role to update with the new policy. | Required | 
+| policyDocument | The updated JSON policy document that grants an entity permission to assume the role. | Required | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. Use to override the configured "Role Arn" parameter. | Optional | 
+| roleSessionName | An identifier for the assumed role session. Use to override the configured "Role Session Name" parameter. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. Use to override the configured "Role Session Duration" parameter. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!aws-iam-update-assume-role-policy roleName=myRoleName policyDocument='{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"Service":["ec2.amazonaws.com"]},"Action":["sts:AssumeRole"]}]}'```
+
+#### Human Readable Output
+
+> Assume role policy myRoleName was successfully updated.
