@@ -1209,8 +1209,9 @@ def main():
     if not enc_key or not refresh_token or not registration_id_and_url:
         raise DemistoException("Key, Token and ID must be provided.")
     url = demisto.getLicenseCustomField("Http_Connector.url")
-    hostname = urlparse(url).hostname
-    is_fr = hostname and hostname.endswith("federal.paloaltonetworks.com")
+    parsed_url = urlparse(url)
+    hostname = parsed_url.hostname
+    is_fr = hostname and hostname.endswith(".federal.paloaltonetworks.com")
     demisto.debug(f"working on tenant with {is_fr=}")
     registration_id_and_url = registration_id_and_url.split("@")
     if len(registration_id_and_url) != 2:
