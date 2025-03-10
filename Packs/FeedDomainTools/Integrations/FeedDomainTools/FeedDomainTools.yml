@@ -42,8 +42,10 @@ configuration:
   type: 15
   options:
   - ALL
-  - NOD
-  - NAD
+  - nod
+  - nad
+  - domainrdap
+  - domaindiscovery
   additionalinfo: The DomainTools feed type fo fetch. Defaults to 'ALL'.
   section: Collect
 - display: Fetch indicators
@@ -145,7 +147,14 @@ script:
     execution: false
     arguments:
     - name: feed_type
-      defaultValue: 'nod'
+      type: String
+      auto: PREDEFINED
+      predefined:
+      - "nod"
+      - "nad"
+      - "domainrdap"
+      - "domaindiscovery"
+      defaultValue: "nod"
       description: The DomainTools integration feed type to fetch.
       isArray: false
       default: false

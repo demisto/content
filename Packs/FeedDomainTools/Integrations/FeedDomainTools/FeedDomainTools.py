@@ -21,6 +21,8 @@ class DomainToolsClient(BaseClient):
 
     NOD_FEED = "nod"
     NAD_FEED = "nad"
+    DOMAINRDAP = "domainrdap"
+    DOMAINDISCOVERY = "domaindiscovery"
 
     FEED_URL = "/v1/feed"
     DOMAINTOOLS_API_BASE_URL = "https://api.domaintools.com"
@@ -153,7 +155,8 @@ class DomainToolsClient(BaseClient):
 
                 timestamp = json_feed.get("timestamp", "")
                 indicator = json_feed.get("domain")
-                indicator_type = auto_detect_indicator_type(indicator)
+                indicator_type = "Domain"
+                # indicator_type = auto_detect_indicator_type(indicator)
 
                 if indicator and indicator_type:
                     yield {
@@ -302,22 +305,25 @@ def fetch_indicators_command(client: DomainToolsClient, params: dict[str, Any] =
 
     feed_type_ = params.get("feed_type", "ALL")
 
-    FEEDS_TO_PROCESS = {
-        client.NOD_FEED: {"top": top, "after": after, "session_id": session_id},
-        client.NAD_FEED: {"top": top, "after": after, "session_id": session_id},
-    }
+    FEEDS_TO_PROCESS = [
+        client.NOD_FEED,
+        client.NAD_FEED,
+        client.DOMAINRDAP,
+        client.DOMAINDISCOVERY
+    ]
+
+    dt_feed_kwargs = {"top": top, "after": after, "session_id": session_id}
 
     fetched_indicators = []
 
-    for feed_type, dt_feed_kwargs in FEEDS_TO_PROCESS.items():
+    for feed_type in FEEDS_TO_PROCESS:
         indicators = []
         if feed_type_ == "ALL":
             indicators = fetch_indicators(client, feed_type=feed_type, dt_feed_kwargs=dt_feed_kwargs)
-        if feed_type_ == feed_type.upper():
+        if feed_type_.upper() == feed_type.upper():
             indicators = fetch_indicators(client, feed_type=feed_type, dt_feed_kwargs=dt_feed_kwargs)
 
         fetched_indicators.extend(indicators)
-
     return fetched_indicators
 
 
@@ -334,6 +340,7 @@ def test_module(client: DomainToolsClient, args: dict[str, str], params: dict[st
     }
     try:
         next(client.build_iterator(dt_feed_kwargs=dt_feed_kwargs))
+        # fetch_indicators_command(client, params)
     except Exception as e:
         raise Exception(
             "Could not fetch DomainTools Feed\n"

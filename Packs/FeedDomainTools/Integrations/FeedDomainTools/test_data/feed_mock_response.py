@@ -24,6 +24,19 @@ NAD_FEED_RESPONSE = [
     '{"timestamp":"2025-01-13T13:37:00Z","domain":"vontresesworldofhair.ws"}',
 ]
 
+DOMAINDISCOVERY_RESPONSE = [
+    '{"timestamp":"2025-03-07T17:27:11Z","domain":"yashh.xin"}',
+    '{"timestamp":"2025-03-07T17:27:11Z","domain":"joinoramaenergy.com"}',
+    '{"timestamp":"2025-03-07T17:27:11Z","domain":"gampolaayurveda.com"}',
+    '{"timestamp":"2025-03-07T17:27:11Z","domain":"ladofitness.site"}',
+    '{"timestamp":"2025-03-07T17:27:11Z","domain":"html5game.info"}',
+    '{"timestamp":"2025-03-07T17:27:11Z","domain":"sushiwa.id.vn"}',
+    '{"timestamp":"2025-03-07T17:27:11Z","domain":"discoversp2i.com"}',
+    '{"timestamp":"2025-03-07T17:27:11Z","domain":"innovu.store"}',
+    '{"timestamp":"2025-03-07T17:27:11Z","domain":"proxstock.com"}',
+    '{"timestamp":"2025-03-07T17:27:11Z","domain":"analogsundays.store"}',
+]
+
 
 NOD_PARSED_INDICATOR_RESPONSE = [
     {
@@ -327,6 +340,140 @@ NAD_PARSED_INDICATOR_RESPONSE = [
             "value": "vontresesworldofhair.ws",
             "type": "Domain",
             "timestamp": "2025-01-13T13:37:00Z",
+        },
+    },
+]
+
+
+DOMAINDISCOVERY_PARSED_INDICATOR_RESPONSE = [
+    {
+        "value": "yashh.xin",
+        "type": "Domain",
+        "fields": {
+            "tags": "DomainToolsFeeds,domaindiscovery,",
+            "service": "DomainTools Feeds",
+        },
+        "rawJSON": {
+            "value": "yashh.xin",
+            "type": "Domain",
+            "timestamp": "2025-03-07T17:27:11Z",
+        },
+    },
+    {
+        "value": "joinoramaenergy.com",
+        "type": "Domain",
+        "fields": {
+            "tags": "DomainToolsFeeds,domaindiscovery,",
+            "service": "DomainTools Feeds",
+        },
+        "rawJSON": {
+            "value": "joinoramaenergy.com",
+            "type": "Domain",
+            "timestamp": "2025-03-07T17:27:11Z",
+        },
+    },
+    {
+        "value": "gampolaayurveda.com",
+        "type": "Domain",
+        "fields": {
+            "tags": "DomainToolsFeeds,domaindiscovery,",
+            "service": "DomainTools Feeds",
+        },
+        "rawJSON": {
+            "value": "gampolaayurveda.com",
+            "type": "Domain",
+            "timestamp": "2025-03-07T17:27:11Z",
+        },
+    },
+    {
+        "value": "ladofitness.site",
+        "type": "Domain",
+        "fields": {
+            "tags": "DomainToolsFeeds,domaindiscovery,",
+            "service": "DomainTools Feeds",
+        },
+        "rawJSON": {
+            "value": "ladofitness.site",
+            "type": "Domain",
+            "timestamp": "2025-03-07T17:27:11Z",
+        },
+    },
+    {
+        "value": "html5game.info",
+        "type": "Domain",
+        "fields": {
+            "tags": "DomainToolsFeeds,domaindiscovery,",
+            "service": "DomainTools Feeds",
+        },
+        "rawJSON": {
+            "value": "html5game.info",
+            "type": "Domain",
+            "timestamp": "2025-03-07T17:27:11Z",
+        },
+    },
+    {
+        "value": "sushiwa.id.vn",
+        "type": "Domain",
+        "fields": {
+            "tags": "DomainToolsFeeds,domaindiscovery,",
+            "service": "DomainTools Feeds",
+        },
+        "rawJSON": {
+            "value": "sushiwa.id.vn",
+            "type": "Domain",
+            "timestamp": "2025-03-07T17:27:11Z",
+        },
+    },
+    {
+        "value": "discoversp2i.com",
+        "type": "Domain",
+        "fields": {
+            "tags": "DomainToolsFeeds,domaindiscovery,",
+            "service": "DomainTools Feeds",
+        },
+        "rawJSON": {
+            "value": "discoversp2i.com",
+            "type": "Domain",
+            "timestamp": "2025-03-07T17:27:11Z",
+        },
+    },
+    {
+        "value": "innovu.store",
+        "type": "Domain",
+        "fields": {
+            "tags": "DomainToolsFeeds,domaindiscovery,",
+            "service": "DomainTools Feeds",
+        },
+        "rawJSON": {
+            "value": "innovu.store",
+            "type": "Domain",
+            "timestamp": "2025-03-07T17:27:11Z",
+        },
+    },
+    {
+        "value": "proxstock.com",
+        "type": "Domain",
+        "fields": {
+            "tags": "DomainToolsFeeds,domaindiscovery,",
+            "service": "DomainTools Feeds",
+        },
+        "rawJSON": {
+            "value": "proxstock.com",
+            "type": "Domain",
+            "timestamp": "2025-03-07T17:27:11Z",
+        },
+    },
+    {
+        "value": "analogsundays.store",
+        "type": "Domain",
+        "fields": {
+            "tags": "DomainToolsFeeds,domaindiscovery,",
+            "service": "DomainTools Feeds",
+        },
+        "rawJSON": {
+            "value": "analogsundays.store",
+            "type": "Domain",
+            "timestamp": "2025-03-07T17:27:11Z",
         },
     },
 ]
