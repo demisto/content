@@ -271,7 +271,7 @@ def get_events_command(client: Client, args: dict, max_fetch: int = DEFAULT_LIMI
     limit = arg_to_number(args.get('limit')) or max_fetch
     from_date = arg_to_datetime(args.get('from_date'))
     if from_date:
-        last_run = {'last_fetch_timestamp': int(from_date.timestamp()) * 1000}
+        last_run = {'last_fetch_timestamp': int(from_date.timestamp()) * MILLISECOENDS_CONVERT}
     events, _ = search_events(client, last_run, limit)  # type: ignore[arg-type]
     if events:
         hr = tableToMarkdown(name='Audit Logs', t=events)
