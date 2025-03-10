@@ -108,44 +108,69 @@ MAX_SAMPLES = 10
 TOKEN_EXPIRED_ERROR_CODES = {50173, 700082, }  # See: https://login.microsoftonline.com/error?code=
 REGEX_SEARCH_ERROR_DESC = r"^[^:]*:\s(?P<desc>.*?\.)"
 
+# Graph Permission Constants
+GROUP_READWRITE_ALL = 'Group.ReadWrite.All'
+GROUP_READ_ALL = 'Group.Read.All'
+GROUPMEMBER_READ_ALL = 'GroupMember.Read.All'
+USER_READWRITE_ALL = 'User.ReadWrite.All'
+USER_READ = 'User.Read'
+USER_READ_ALL = 'User.Read.All'
+CHANNEL_READBASIC_ALL = 'Channel.ReadBasic.All'
+CHANNEL_DELETE_ALL = 'Channel.Delete.All'
+CHANNEL_CREATE = 'Channel.Create'
+CHANNELMEMBER_READ_ALL = 'ChannelMember.Read.All'
+CHANNELMEMBER_READWRITE_ALL = 'ChannelMember.ReadWrite.All'
+CHAT_READ = 'Chat.Read'
+CHAT_READBASIC = 'Chat.ReadBasic'
+CHAT_READWRITE = 'Chat.ReadWrite'
+CHAT_READWRITE_ALL = 'Chat.ReadWrite.All'
+CHAT_CREATE = 'Chat.Create'
+CHATMEMBER_READWRITE = 'ChatMember.ReadWrite'
+CHATMESSAGE_SEND = 'ChatMessage.Send'
+ONLINEMEETINGS_READWRITE = 'OnlineMeetings.ReadWrite'
+ONLINEMEETINGS_READWRITE_ALL = 'OnlineMeetings.ReadWrite.All'
+TEAMSAPPINSTALLATION_READWRITESELFFORCHAT = 'TeamsAppInstallation.ReadWriteSelfForChat'
+APPCATALOG_READ_ALL = 'AppCatalog.Read.All'
+CALLS_INITIATE_ALL = 'Calls.Initiate.All'
+
 COMMANDS_REQUIRED_PERMISSIONS: dict[str, list] = {
     # Note: at the moment, the required permission names between credentials and auth code are the same.
     # Credentials require Application permissions while auth code requires delegated permissions
-    'send-notification': ['GroupMember.Read.All', 'Channel.ReadBasic.All'],
-    'mirror-investigation': ['GroupMember.Read.All', 'Channel.ReadBasic.All', 'Channel.Create', 'Channel.Delete.All'],
-    'close-channel': ['GroupMember.Read.All', 'Channel.ReadBasic.All', 'Channel.Delete.All'],
-    'microsoft-teams-ring-user': ['User.Read.All', 'Calls.Initiate.All'],
-    'microsoft-teams-add-user-to-channel': ['GroupMember.Read.All', 'User.Read.All', 'Channel.ReadBasic.All',
-                                            'ChannelMember.ReadWrite.All'],
-    'add-user-to-channel': ['GroupMember.Read.All', 'User.Read.All', 'Channel.ReadBasic.All',
-                            'ChannelMember.ReadWrite.All'],
-    'microsoft-teams-create-channel': ['GroupMember.Read.All', 'User.Read.All', 'Channel.Create'],
-    'create-channel': ['GroupMember.Read.All', 'User.Read.All', 'Channel.Create'],
-    'microsoft-teams-create-meeting': ['User.Read.All', 'OnlineMeetings.ReadWrite'],
-    'microsoft-teams-user-remove-from-channel': ['GroupMember.Read.All', 'Channel.ReadBasic.All', 'ChannelMember.ReadWrite.All'],
-    'microsoft-teams-channel-user-list': ['GroupMember.Read.All', 'Channel.ReadBasic.All', 'ChannelMember.Read.All'],
-    'microsoft-teams-chat-create': ['User.Read.All', 'Chat.Create', 'AppCatalog.Read.All',
-                                    'TeamsAppInstallation.ReadWriteSelfForChat'],
-    'microsoft-teams-message-send-to-chat': ['User.Read.All', 'Chat.Create', 'ChatMessage.Send', 'AppCatalog.Read.All',
-                                             'TeamsAppInstallation.ReadWriteSelfForChat'],
-    'microsoft-teams-chat-add-user': ['Chat.ReadBasic', 'ChatMember.ReadWrite'],
-    'microsoft-teams-chat-member-list': ['User.Read.All', 'Chat.ReadBasic', 'Chat.Create'],
-    'microsoft-teams-chat-list': ['User.Read.All', 'Chat.ReadBasic', 'Chat.Create'],
-    'microsoft-teams-chat-message-list': ['User.Read.All', 'Chat.Read', 'Chat.Create'],
-    'microsoft-teams-chat-update': ['User.Read.All', 'Chat.ReadWrite'],
+    'send-notification': [GROUPMEMBER_READ_ALL, CHANNEL_READBASIC_ALL],
+    'mirror-investigation': [GROUPMEMBER_READ_ALL, CHANNEL_READBASIC_ALL, CHANNEL_CREATE, CHANNEL_DELETE_ALL],
+    'close-channel': [GROUPMEMBER_READ_ALL, CHANNEL_READBASIC_ALL, CHANNEL_DELETE_ALL],
+    'microsoft-teams-ring-user': [USER_READ_ALL, CALLS_INITIATE_ALL],
+    'microsoft-teams-add-user-to-channel': [GROUPMEMBER_READ_ALL, USER_READ_ALL, CHANNEL_READBASIC_ALL,
+                                            CHANNELMEMBER_READWRITE_ALL],
+    'add-user-to-channel': [GROUPMEMBER_READ_ALL, USER_READ_ALL, CHANNEL_READBASIC_ALL,
+                            CHANNELMEMBER_READWRITE_ALL],
+    'microsoft-teams-create-channel': [GROUPMEMBER_READ_ALL, USER_READ_ALL, CHANNEL_CREATE],
+    'create-channel': [GROUPMEMBER_READ_ALL, USER_READ_ALL, CHANNEL_CREATE],
+    'microsoft-teams-create-meeting': [USER_READ_ALL, ONLINEMEETINGS_READWRITE],
+    'microsoft-teams-user-remove-from-channel': [GROUPMEMBER_READ_ALL, CHANNEL_READBASIC_ALL, CHANNELMEMBER_READWRITE_ALL],
+    'microsoft-teams-channel-user-list': [GROUPMEMBER_READ_ALL, CHANNEL_READBASIC_ALL, CHANNELMEMBER_READ_ALL],
+    'microsoft-teams-chat-create': [USER_READ_ALL, CHAT_CREATE, APPCATALOG_READ_ALL,
+                                    TEAMSAPPINSTALLATION_READWRITESELFFORCHAT],
+    'microsoft-teams-message-send-to-chat': [USER_READ_ALL, CHAT_CREATE, CHATMESSAGE_SEND, APPCATALOG_READ_ALL,
+                                             TEAMSAPPINSTALLATION_READWRITESELFFORCHAT],
+    'microsoft-teams-chat-add-user': [CHAT_READBASIC, CHATMEMBER_READWRITE],
+    'microsoft-teams-chat-member-list': [USER_READ_ALL, CHAT_READBASIC, CHAT_CREATE],
+    'microsoft-teams-chat-list': [USER_READ_ALL, CHAT_READBASIC, CHAT_CREATE],
+    'microsoft-teams-chat-message-list': [USER_READ_ALL, CHAT_READ, CHAT_CREATE],
+    'microsoft-teams-chat-update': [USER_READ_ALL, CHAT_READWRITE],
 }
 HIGHER_PERMISSIONS: dict[str, list] = {  # dict with some elevated permissions and some of the permissions they can replace
     # Note: This dict is not meant to be comprehensive, rather handle possible common cases of substitute permissions.
-    'Chat.ReadWrite': ['ChatMessage.Send', 'Chat.Read', 'Chat.ReadBasic', 'Chat.Create'],
-    'Chat.ReadWrite.All': ['Chat.ReadWrite', 'Chat.Read', 'ChatMessage.Send', 'Chat.ReadBasic', 'Chat.Create'],
-    'Chat.Read': ['Chat.ReadBasic'],
-    'User.Read.All': ['User.Read'],
-    'User.ReadWrite.All': ['User.Read.All', 'User.Read'],
-    'OnlineMeetings.ReadWrite.All': ['OnlineMeetings.ReadWrite'],
-    'Group.Read.All': ['GroupMember.Read.All', 'Channel.ReadBasic.All'],
-    'Group.ReadWrite.All': ['Group.Read.All', 'GroupMember.Read.All', 'Channel.Create',
-                            'Channel.ReadBasic.All', 'Channel.Delete.All'],
-    'ChannelMember.ReadWrite.All': ['ChannelMember.Read.All']
+    CHAT_READWRITE: [CHATMESSAGE_SEND, CHAT_READ, CHAT_READBASIC, CHAT_CREATE],
+    CHAT_READWRITE_ALL: [CHAT_READWRITE, CHAT_READ, CHATMESSAGE_SEND, CHAT_READBASIC, CHAT_CREATE],
+    CHAT_READ: [CHAT_READBASIC],
+    USER_READ_ALL: [USER_READ],
+    USER_READWRITE_ALL: [USER_READ_ALL, USER_READ],
+    ONLINEMEETINGS_READWRITE_ALL: [ONLINEMEETINGS_READWRITE],
+    GROUP_READ_ALL: [GROUPMEMBER_READ_ALL, CHANNEL_READBASIC_ALL],
+    GROUP_READWRITE_ALL: [GROUP_READ_ALL, GROUPMEMBER_READ_ALL, CHANNEL_CREATE,
+                          CHANNEL_READBASIC_ALL, CHANNEL_DELETE_ALL],
+    CHANNELMEMBER_READWRITE_ALL: [CHANNELMEMBER_READ_ALL]
 }
 
 # must be synced with ones in TeamsAsk
@@ -869,12 +894,10 @@ def http_request(
 
         if not response.ok:
             error: str = error_parser(response, api)
-            if response.status_code == 403:
-                detailed_error_message = insufficient_permissions_error_handler()
-                if detailed_error_message:
-                    error = f'{detailed_error_message}\n\n(Error Message): {error}'
+            if response.status_code == 403 and (detailed_error_message := insufficient_permissions_error_handler()):
+                error = f'{detailed_error_message}\n\n(Error Message): {error}'
 
-            raise ValueError(f'Error [{response.status_code}] in API call to Microsoft Teams:\n{error}')
+            raise ValueError(f'Error code [{response.status_code}] in API call to Microsoft Teams:\n{error}')
 
         if response.status_code in {202, 204}:
             # Delete channel or remove user from channel return 204 if successful
@@ -3192,7 +3215,54 @@ def auth_type_switch_handling():
         set_integration_context(integration_context)
 
 
-def insufficient_permissions_error_handler():
+def expand_permission_list(permissions: list[str]) -> set[str]:
+    """
+    Takes the given permission list and extends it to include relevant lower privileged sub permissions
+    that are supported by the given permissions. (e.g. if theres Chat.ReadWrite then Chat.Read is implicitly supported)
+    :param permissions: Permissions list extracted from the cached graph token
+
+    :return: Extended permissions list including lower privileged permissions supported by the original permissions.
+    """
+    expanded_permissions = set()
+    for permission in permissions:
+        expanded_permissions.add(permission)
+        if permission in HIGHER_PERMISSIONS:
+            expanded_permissions.update(HIGHER_PERMISSIONS[permission])
+
+    demisto.debug(f'Expanded token permission list: {expanded_permissions}')
+    return expanded_permissions
+
+
+def create_missing_permissions_section(missing_permissions: list[str], permission_type: str) -> str:
+    """
+    Generates a detailed error message for the missing permissions.
+
+    :param missing_permissions: List of missing permissions
+    :param permission_type: The type of permissions ('Application' or 'Delegated')
+    :return: Error message string
+    """
+    error_message = []
+    error_message.append('The current access token is missing the following permissions:')
+    error_message.append(f'{permission_type} - {", ".join(missing_permissions)}')
+
+    error_message.append('')
+    error_message.append('To resolve the issue, add the missing permissions to your bot in the Azure portal:')
+    error_message.append(
+        f'Click API permissions > Add a permission > Microsoft Graph > {permission_type} permissions, '
+        'add the required missing permissions and grant admin consent for Demisto.')
+    error_message.append('Once done, reset your token using the "!microsoft-teams-auth-reset" command.')
+    if AUTH_TYPE == AUTHORIZATION_CODE_FLOW:
+        error_message.append(
+            'Then, generate a new auth code using "!microsoft-teams-generate-login-url".')
+
+    error_message.append(
+        'The "!microsoft-teams-token-permissions-list" command can be used to '
+        'list the permissions of the currently used graph access token.')
+
+    return '\n'.join(error_message)
+
+
+def insufficient_permissions_error_handler() -> str:
     """
     Retrieve the known permission requirements for the failed command and give a detailed error message
     indicating the missing permissions and how to resolve the issue.
@@ -3206,7 +3276,8 @@ def insufficient_permissions_error_handler():
     required_permissions_for_command: list = COMMANDS_REQUIRED_PERMISSIONS.get(command, [])
     permission_type = 'Application' if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW else 'Delegated'
     if not required_permissions_for_command:
-        demisto.error(f'Got a permission error but could not resolve permission requirements for {command=}')
+        demisto.error('Got an insufficient permissions error from Microsoft Graph. '
+                      f'Could not resolve permission requirements for {command=}')
         return ''
 
     # Get current token permissions
@@ -3218,14 +3289,8 @@ def insufficient_permissions_error_handler():
         return ''
 
     graph_token_api_permissions = get_token_permissions(graph_access_token)
-    # Expand the permissions to include any sub permissions that may be relevant
-    expanded_permissions = set()
-    for permission in graph_token_api_permissions:
-        expanded_permissions.add(permission)
-        if permission in HIGHER_PERMISSIONS:
-            expanded_permissions.update(HIGHER_PERMISSIONS[permission])
+    expanded_permissions = expand_permission_list(graph_token_api_permissions)
 
-    demisto.debug(f'Expanded token permission list: {expanded_permissions}')
     missing_permissions = [permission for permission in required_permissions_for_command
                            if permission not in expanded_permissions]
 
@@ -3234,26 +3299,10 @@ def insufficient_permissions_error_handler():
         f'The {command} command using the {AUTH_TYPE} Flow, requires the following API permissions:')
 
     error_message.append(f'{permission_type} - {", ".join(required_permissions_for_command)}')
+    error_message.append('')
 
     if missing_permissions:
-        error_message.append('')
-        error_message.append('The current access token is missing the following permissions:')
-        error_message.append(f'{permission_type} - {", ".join(missing_permissions)}')
-
-        error_message.append('')
-        error_message.append('To resolve the issue, add the missing permissions to your bot in the Azure portal:')
-        error_message.append(
-            f'Click API permissions > Add a permission > Microsoft Graph > {permission_type} permissions, '
-            'add the required missing permissions and grant admin consent for Demisto.')
-        error_message.append('Once done, reset your token using the "!microsoft-teams-auth-reset" command.')
-        if AUTH_TYPE == AUTHORIZATION_CODE_FLOW:
-            error_message.append(
-                'Then, generate a new auth code using "!microsoft-teams-generate-login-url".')
-
-        error_message.append(
-            'The "!microsoft-teams-token-permissions-list" command can be used to '
-            'list the permissions of the currently used graph access token.')
-
+        error_message.append(create_missing_permissions_section(missing_permissions, permission_type))
     else:
         error_message.append('Your current graph access token appears to have all the required permissions.')
         error_message.append('The issue may be related to an API scope issue, or a change in the Microsoft Teams API.')

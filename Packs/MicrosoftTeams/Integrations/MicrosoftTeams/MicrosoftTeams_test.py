@@ -2855,3 +2855,55 @@ def test_message_update(mocker, requests_mock):
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0] == expected
+
+
+@pytest.mark.parametrize('permissions, expected_out', [
+    (['Group.ReadWrite.All'], {'Group.ReadWrite.All', 'Group.Read.All', 'GroupMember.Read.All', 'Channel.Create',
+                               'Channel.ReadBasic.All', 'Channel.Delete.All'}),
+    (['Chat.ReadWrite', 'Channel.Read', 'User.Read.All'], {'Chat.ReadWrite', 'Chat.Read', 'Chat.ReadBasic', 'Chat.Create',
+                                                           'ChatMessage.Send', 'Channel.Read', 'User.Read.All', 'User.Read'}),
+])
+def test_expand_permissions_list(permissions, expected_out):
+    """
+    Given:
+        - A list of Microsoft Graph permissions.
+    When:
+        - The `expand_permission_list` function is called.
+    Then:
+        - The permission list is expanded to include relevant related permissions.
+    """
+    from MicrosoftTeams import expand_permission_list
+
+    expanded_permissions = expand_permission_list(permissions)
+
+    assert expanded_permissions == expected_out
+
+
+@pytest.mark.parametrize('command, expected_missing', [
+    ('microsoft-teams-create-channel', {'Channel.Create', 'GroupMember.Read.All'}),
+    ('microsoft-teams-message-send-to-chat', {'Chat.Create', 'AppCatalog.Read.All',
+                                              'TeamsAppInstallation.ReadWriteSelfForChat'})
+])
+def test_insufficient_permissions_handler(mocker, command, expected_missing):
+    """
+    Given:
+        - Microsoft Graph API returns a 403 Forbidden error due to insufficient permissions.
+    When:
+        - The `handle_insufficient_permissions` function is called.
+    Then:
+        - Verify that the function determines the missing permissions as expected.
+    """
+    from MicrosoftTeams import insufficient_permissions_error_handler, create_missing_permissions_section
+
+    mock_permissions = ['User.Read.All', 'Channel.Read.All', 'ChatMessage.Send']
+
+    mocker.patch.object(demisto, 'command', return_value=command)
+    mocker.patch('MicrosoftTeams.get_token_permissions', return_value=mock_permissions)
+    mocker.patch('MicrosoftTeams.get_integration_context', return_value={'graph_access_token': 'mock_token'})
+    missing_permissions_mock = mocker.patch('MicrosoftTeams.create_missing_permissions_section',
+                                            side_effect=create_missing_permissions_section)
+
+    error_msg = insufficient_permissions_error_handler()
+
+    assert error_msg
+    assert set(missing_permissions_mock.call_args[0][0]) == expected_missing
