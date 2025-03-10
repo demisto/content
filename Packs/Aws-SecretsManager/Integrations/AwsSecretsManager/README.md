@@ -407,6 +407,10 @@ Delete the resource-based permission policy attached to a secret.
 
 `aws-secrets-manager-secret–policy-delete`
 
+#### Required Permissions
+
+`secretsmanager:DeleteResourcePolicy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

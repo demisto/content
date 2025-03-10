@@ -1294,7 +1294,8 @@ def get_access_key_last_used_command(args, client):
 
 
 def update_assume_role_policy_command(args: dict[str, Any], client) -> CommandResults:
-    """Updates the policy that grants an IAM entity permission to assume a role.
+    """Implements the `!aws-iam-update-assume-role-policy` command.
+    Updates the policy that grants an IAM entity permission to assume a role.
 
     Args:
         args (dict): The command arguments.
