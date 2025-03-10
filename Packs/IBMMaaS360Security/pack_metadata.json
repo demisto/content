@@ -13,8 +13,21 @@
         "IT"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "IBM",
+        "IBM MaaS360",
+        "MaaS360",
+        "MaaS",
+        "Security"
+    ],
     "marketplaces": [
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

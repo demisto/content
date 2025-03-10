@@ -2,7 +2,7 @@
     "name": "Screenshot Machine",
     "description": "This is an integration for Screenshot Machine.\nCapture any online web page with website screenshot API.",
     "support": "community",
-    "currentVersion": "1.0.6",
+    "currentVersion": "1.0.7",
     "author": "Art Norton",
     "url": "",
     "email": "",
@@ -18,6 +18,13 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

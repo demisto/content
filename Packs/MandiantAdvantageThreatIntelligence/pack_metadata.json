@@ -2,7 +2,7 @@
     "name": "Mandiant Advantage Threat Intelligence",
     "description": "Integrate your Mandiant Advantage Threat Intelligence data with Cortex XSOAR",
     "support": "partner",
-    "currentVersion": "1.1.5",
+    "currentVersion": "1.1.6",
     "author": "Mandiant",
     "hidden": false,
     "url": "https://www.mandiant.com/support",
@@ -17,10 +17,17 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "githubUser": [
         "chrishultin",
         "adamlevymandiant"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

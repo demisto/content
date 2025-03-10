@@ -1,9 +1,9 @@
 id: Handle False Positive Alerts
 version: -1
 name: Handle False Positive Alerts
-"marketplaces": [
-    "marketplacev2"
-]
+marketplaces: 
+- marketplacev2
+- platform
 description: |
   This playbook handles false positive alerts.
   It creates an alert exclusion or alert exception, or adds a file to an allow list based on the alert fields and playbook inputs.
