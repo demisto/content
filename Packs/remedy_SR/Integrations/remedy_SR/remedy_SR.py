@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import base64
 import hashlib
+from hashlib import pbkdf2_hmac
 import json
 import os
 import requests
@@ -254,8 +255,7 @@ def remedy_get_ticket(service_request_id):
     nonce = os.urandom(16)
     base64_binary = base64.b64encode(nonce).decode("ascii")
     # Password_Digest = Base64 (SHA-1 (nonce + createtime + password))
-    hash_object = hashlib.sha1(nonce + req_time.encode("utf-8") + PASSWORD.encode("utf-8"))  # nosec
-    digest_string = hash_object.digest()
+    digest_string = pbkdf2_hmac('sha256', nonce + req_time.encode("utf-8") + PASSWORD.encode("utf-8"), b'salt', 100000)
     password_digest = base64.b64encode(digest_string).decode("ascii")
 
     body = GET_TICKET_BODY.format(
