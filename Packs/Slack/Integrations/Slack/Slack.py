@@ -2174,7 +2174,6 @@ def main():
         'mirror-investigation': mirror_investigation,
         'slack-send': slack_send,
         'send-notification': slack_send,
-        'send-notification-quick-action': slack_send,
         'slack-send-file': slack_send_file,
         'slack-set-channel-topic': set_channel_topic,
         'close-channel': close_channel,
