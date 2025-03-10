@@ -283,6 +283,25 @@ def test_get_domain_command(
         assert result == response1
 
 
+@patch("FeedCyberint.tableToMarkdown")
+def test_get_domain_command_with_invalid_arg(mock_client):
+    """Test get_domain_command when value argument is invalid."""
+
+    # Mock args input with invalid limit
+    args = {
+        "value": None
+    }
+
+    # Call the function, limit should be parsed as 0
+
+    with pytest.raises(TypeError, match=r'{"error": true, "error_code": -1, "message": "1 validation error for Request\nquery" '
+                                        r'-> value\n  string does not match regex \"^(?:(?:(?:[[a-z0-9](?:[a-z0-9\\-]*[a-z0-9])'
+                                        r'?)\\.))*(?:[a-z0-9][a-z0-9\\-]*[a-z0-9])$\" (type=value_error.str.regex; '
+                                        r'pattern=^(?:(?:(?:[[a-z0-9](?:[a-z0-9\\-]*[a-z0-9])?)\\.))*(?:[a-z0-9][a-z0-9\\-]'
+                                        r'*[a-z0-9])$)", "response": {}, "status": 422, "error_details": {}}'):
+        FeedCyberint.get_domain_command(mock_client, args)
+
+
 @mock.patch('FeedCyberint.is_execution_time_exceeded')
 def test_get_file_sha256_command(
     is_execution_time_exceeded_mock,
