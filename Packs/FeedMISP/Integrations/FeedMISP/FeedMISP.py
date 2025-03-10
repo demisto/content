@@ -342,6 +342,7 @@ def build_indicators(client: Client, response: Dict[str, Any],
         demisto.debug(f"build_indicators {raw_type=}")
 
         indicator_obj = build_indicator(value_, type_, indicator, reputation)
+        demisto.debug(f"build_indicators {indicator_obj}")
 
         update_indicator_fields(indicator_obj, tlp_color, raw_type, feed_tags)
         galaxy_indicators = build_indicators_from_galaxies(indicator_obj, reputation)
@@ -392,6 +393,7 @@ def create_and_add_relationships(indicator_obj: Dict[str, Any], galaxy_indicator
     demisto.debug(f"create_and_add_relationships {indicator_obj_type=}")
     relationships_indicators = []
     for galaxy_indicator in galaxy_indicators:
+        demisto.debug(f"create_and_add_relationships {galaxy_indicator=}")
         galaxy_indicator_type = galaxy_indicator['type']
         demisto.debug(f"create_and_add_relationships {galaxy_indicator_type=}")
 
@@ -560,6 +562,7 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     tags = argToList(params.get('attribute_tags', ''))
     feed_tags = argToList(params.get("feedTags", []))
     attribute_types = argToList(params.get('attribute_types', ''))
+    demisto.debug(f"fetch_attributes_command {attribute_types=}")
     fetch_limit = client.max_indicator_to_fetch
     last_run = demisto.getLastRun()
     total_fetched_indicators = 0
