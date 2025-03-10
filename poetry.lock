@@ -717,6 +717,7 @@ python-versions = ">=3.9,<3.13"
 files = []
 develop = false
 
+
 [package.dependencies]
 autopep8 = "^2.0.4"
 bandit = "^1.7.4"
@@ -4535,3 +4536,4 @@ reference = "pypi-public"
 lock-version = "2.0"
 python-versions = "^3.9,<3.11"
 content-hash = "66bea6bfa68c488a3c6dcc6a2bc1f4604a65bc4f34e2f29f6a35f96679ca7d72"
+
