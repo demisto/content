@@ -2151,9 +2151,17 @@ def fetch_incidents():
         if not isinstance(dedup_held_messages, List):
             raise DemistoException(f"dedup_held_messages is of type {type(dedup_held_messages)}")
         current_next_page = last_run.get('held_message_next_page', '')
+        time_held_messages_for_next_page = last_run.get('time_held_messages_for_next_page')
+        time_held_messages_for_next_page_date_time = ''
+        if time_held_messages_for_next_page:
+            time_held_messages_for_next_page = datetime.strptime(time_held_messages_for_next_page, '%Y-%m-%dT%H:%M:%SZ')
+            time_held_messages_for_next_page_date_time = time_held_messages_for_next_page.strftime("%Y-%m-%dT%H:%M:%S") + '+0000'
+            current_fetch_held_message = time_held_messages_for_next_page
         demisto.debug(f"{current_next_page=}")
         demisto.debug(f"{dedup_held_messages=}")
-        next_page, next_dedup_held_messages, last_fetch_held_messages = fetch_held_messages(last_fetch_held_messages_date_time,
+        demisto.debug(f"{time_held_messages_for_next_page=}")
+        next_page, next_dedup_held_messages, new_last_fetch_held_messages = fetch_held_messages(last_fetch_held_messages_date_time,
+                                                                                                time_held_messages_for_next_page_date_time,
                                                                                             last_fetch_held_messages,
                                                                                             current_fetch_held_message,
                                                                                             dedup_held_messages,
@@ -2161,19 +2169,22 @@ def fetch_incidents():
                                                                                             incidents)
 
     time = last_fetch.isoformat().split('.')[0] + 'Z'
-    time_held_messages = last_fetch_held_messages.isoformat().split('.')[0] + 'Z'
+    time_held_messages = new_last_fetch_held_messages.isoformat().split('.')[0] + 'Z'
     new_last_run = {'time': time,
                     'dedup_held_messages': next_dedup_held_messages,
                     'time_held_messages': time_held_messages}
     if next_page:
         new_last_run["nextTrigger"] = "0"
         new_last_run['held_message_next_page'] = next_page
+        new_last_run['time_held_messages_for_next_page'] = last_fetch_held_messages.isoformat().split('.')[0] + 'Z'
     demisto.setLastRun(new_last_run)
     demisto.debug(f"Changed last_run to {new_last_run=}")
+    demisto.debug(f"saving {len(incidents)}.")
     demisto.incidents(incidents)
 
 
 def fetch_held_messages(last_fetch_held_messages_date_time,
+                        time_held_messages_for_next_page,
                         last_fetch_held_messages,
                         current_fetch_held_message,
                         dedup_held_messages,
@@ -2183,6 +2194,8 @@ def fetch_held_messages(last_fetch_held_messages_date_time,
         'start': last_fetch_held_messages_date_time,
         'admin': True
     }
+    if current_next_page:
+        search_params['start'] = time_held_messages_for_next_page
     held_messages, len_of_results, next_page = fetch_held_messages_with_pagination(
         api_endpoint='/api/gateway/get-hold-message-list',
         data=[search_params],
