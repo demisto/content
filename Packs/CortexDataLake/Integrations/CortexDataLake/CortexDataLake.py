@@ -17,6 +17,7 @@ from datetime import timedelta
 
 # disable insecure warnings
 import urllib3
+from urllib.parse import urlparse
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -918,7 +919,7 @@ def prepare_fetch_incidents_query(
         raise DemistoException("Fetch Filter parameter cannot be used with Subtype/Severity parameters.")
     query = f"SELECT {fetch_fields} FROM `{fetch_table}` "  # guardrails-disable-line # noqa: S608
     time_filter = "event_time" if "log" in fetch_table else "time_generated"
-    query += f'WHERE {time_filter} Between TIMESTAMP("{fetch_timestamp}") ' f"AND CURRENT_TIMESTAMP"
+    query += f'WHERE {time_filter} Between TIMESTAMP("{fetch_timestamp}") AND CURRENT_TIMESTAMP'
     if fetch_filter:
         query += f" AND {fetch_filter}"
     if fetch_subtype and "all" not in fetch_subtype:
@@ -1006,7 +1007,7 @@ def get_critical_logs_command(args: dict, client: Client) -> tuple[str, dict[str
     logs_amount = args.get("limit")
     query_start_time, query_end_time = query_timestamp(args)
     query = 'SELECT * FROM `firewall.threat` WHERE severity = "Critical" '  # guardrails-disable-line
-    query += f'AND time_generated BETWEEN TIMESTAMP("{query_start_time}") AND ' f'TIMESTAMP("{query_end_time}")'
+    query += f'AND time_generated BETWEEN TIMESTAMP("{query_start_time}") AND TIMESTAMP("{query_end_time}")'
 
     if not args.get("page"):
         query += f" LIMIT {logs_amount}"
@@ -1039,7 +1040,7 @@ def get_social_applications_command(args: dict, client: Client) -> tuple[str, di
     logs_amount = args.get("limit")
     query_start_time, query_end_time = query_timestamp(args)
     query = 'SELECT * FROM `firewall.traffic` WHERE app_sub_category = "social-networking" '  # guardrails-disable-line
-    query += f' AND time_generated BETWEEN TIMESTAMP("{query_start_time}") AND ' f'TIMESTAMP("{query_end_time}")'
+    query += f' AND time_generated BETWEEN TIMESTAMP("{query_start_time}") AND TIMESTAMP("{query_end_time}")'
 
     if not args.get("page"):
         query += f" LIMIT {logs_amount}"
@@ -1062,7 +1063,7 @@ def search_by_file_hash_command(args: dict, client: Client) -> tuple[str, dict[s
 
     query_start_time, query_end_time = query_timestamp(args)
     query = f'SELECT * FROM `firewall.threat` WHERE file_sha_256 = "{file_hash}" '  # guardrails-disable-line  # noqa: S608
-    query += f'AND time_generated BETWEEN TIMESTAMP("{query_start_time}") AND ' f'TIMESTAMP("{query_end_time}")'
+    query += f'AND time_generated BETWEEN TIMESTAMP("{query_start_time}") AND TIMESTAMP("{query_end_time}")'
 
     if not args.get("page"):
         query += f" LIMIT {logs_amount}"
@@ -1147,7 +1148,7 @@ def build_query(args, table_name):
     fields = "*" if "all" in fields else fields
     where = build_where_clause(args)
     query_start_time, query_end_time = query_timestamp(args)
-    timestamp_limitation = f'time_generated BETWEEN TIMESTAMP("{query_start_time}") AND ' f'TIMESTAMP("{query_end_time}") '
+    timestamp_limitation = f'time_generated BETWEEN TIMESTAMP("{query_start_time}") AND TIMESTAMP("{query_end_time}") '
     where += f" AND {timestamp_limitation}" if where else timestamp_limitation
     query = f"SELECT {fields} FROM `firewall.{table_name}` WHERE {where}"  # noqa: S608
     if not args.get("page"):
@@ -1207,7 +1208,9 @@ def main():
     enc_key = params.get("credentials_auth_key", {}).get("password") or params.get("auth_key")
     if not enc_key or not refresh_token or not registration_id_and_url:
         raise DemistoException("Key, Token and ID must be provided.")
-    is_fr = "federal.paloaltonetworks.com" in demisto.getLicenseCustomField("Http_Connector.url")
+    url = demisto.getLicenseCustomField("Http_Connector.url")
+    hostname = urlparse(url).hostname
+    is_fr = hostname and hostname.endswith("federal.paloaltonetworks.com")
     demisto.debug(f"working on tenant with {is_fr=}")
     registration_id_and_url = registration_id_and_url.split("@")
     if len(registration_id_and_url) != 2:

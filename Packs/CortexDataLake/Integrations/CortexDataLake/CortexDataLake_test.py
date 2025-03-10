@@ -70,7 +70,7 @@ def test_build_where_clause():
         ({"query": "Test"}, "Test"),
         ({"rule": "rule"}, '(rule_matched = "rule")'),
         ({"rule": "rule,another_rule"}, '(rule_matched = "rule" OR rule_matched = "another_rule")'),
-        ({"rule": "rule", "from_zone": "UTC"}, '(rule_matched = "rule") ' 'AND (from_zone = "UTC")'),
+        ({"rule": "rule", "from_zone": "UTC"}, '(rule_matched = "rule") AND (from_zone = "UTC")'),
         (
             {
                 "source_ip": "ip1,ip2",
