@@ -11248,10 +11248,7 @@ def get_pack_version(pack_id):
     :return: The pack version in which the integration/script is part of, in case not found returns empty string.
     :rtype: ``str``
     """
-    global TEST_PACK_PACK_VERSION
-    TEST_PACK_PACK_VERSION = '1.0.0'
     global_name = f"{pack_id.upper()}_PACK_VERSION"
-    gg = globals()
     if global_name in globals():
         return globals()[global_name]
     else:
