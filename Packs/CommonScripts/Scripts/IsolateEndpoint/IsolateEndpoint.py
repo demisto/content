@@ -54,7 +54,7 @@ def initialize_commands() -> list:
             pre_command_check=None
         ),
         # Command(
-              # TODO to get credentials
+        # TODO to get credentials
         #     brand='Cybereason',
         #     name='cybereason-isolate-machine',
         #     arg_mapping={'machine': 'agent_hostname'},
@@ -158,7 +158,11 @@ class ModuleManager:
 """ PREPROCESS FUNCTIONS """
 
 
-def check_conditions_cybereason_isolate_machine(verbose, outputs, human_readable_outputs, args, endpoint_data):
+def check_conditions_cybereason_isolate_machine(verbose: bool,
+                                                outputs: list,
+                                                human_readable_outputs: list,
+                                                args: dict,
+                                                endpoint_data: dict):
     cybereason_is_probe_connected_command = Command(
         brand='Cybereason',
         name='cybereason-is-probe-connected',
@@ -177,7 +181,11 @@ def check_conditions_cybereason_isolate_machine(verbose, outputs, human_readable
     return True
 
 
-def check_conditions_microsoft_atp_isolate_machine(verbose, outputs, human_readable_outputs, args, endpoint_data) -> bool:
+def check_conditions_microsoft_atp_isolate_machine(verbose: bool,
+                                                   outputs: list,
+                                                   human_readable_outputs: list,
+                                                   args: dict,
+                                                   endpoint_data: dict) -> bool:
     demisto.debug(f'This is the endpoint data from Microsoft {endpoint_data=}')
     status = endpoint_data.get('Status')
     agent_id = endpoint_data.get('ID', {}).get('Value')
@@ -262,17 +270,17 @@ def is_endpoint_isolatable(endpoint_data: dict, force: bool, server_os_list: lis
     demisto.debug(f'{server_status=}, {is_isolated=}, {server=}, {force=}')
 
     if server and (server in SERVERS_RELEASES or server in server_os_list) and not force:
-        message = f'The endpoint is a server, therefore aborting isolation.'
+        message = 'The endpoint is a server, therefore aborting isolation.'
         demisto.debug(message)
         return False, message
 
     if is_isolated == 'Yes':
-        message = f'The endpoint is already isolated.'
+        message = 'The endpoint is already isolated.'
         demisto.debug(message)
         return False, message
 
     if server_status == 'Offline':
-        message = f'The endpoint is offline.'
+        message = 'The endpoint is offline.'
         demisto.debug(message)
         return False, message
 
@@ -433,7 +441,7 @@ def main():
         args = demisto.args()
         # args = {
         #     'agent_hostname': 'WIN10X64'}
-            # 'agent_hostname': 'DC1ENV11ADC01,DC1ENV11ADC02,falcon-crowdstrike-sensor-centos7,Arts-MacBook-Pro,example1'}
+        # 'agent_hostname': 'DC1ENV11ADC01,DC1ENV11ADC02,falcon-crowdstrike-sensor-centos7,Arts-MacBook-Pro,example1'}
         agent_ids = argToList(args.get("agent_id", []))
         agent_ips = argToList(args.get("agent_ip", []))
         agent_hostnames = argToList(args.get("agent_hostname", []))
@@ -447,11 +455,14 @@ def main():
         zipped_args = map_zipped_args(agent_ids, agent_ips, agent_hostnames)
         demisto.debug(f'zipped_args={zipped_args}')
 
-        endpoint_data_results = structure_endpoints_data(execute_command(command="get-endpoint-data-modified", args=args))  # todo to change name back
+        endpoint_data_results = structure_endpoints_data(execute_command(
+            command="get-endpoint-data-modified", args=args))  # todo to change name back
 
         demisto.debug(f'these are the results from get_endpoint_data_results execute_command {endpoint_data_results}')
 
-        outputs, human_readable_outputs, args_from_endpoint_data = [], [], []
+        outputs: list = []
+        human_readable_outputs: list = []
+        args_from_endpoint_data: list = []
 
         for endpoint_data in endpoint_data_results:
             args = get_args_from_endpoint_data(endpoint_data)
@@ -506,7 +517,7 @@ def main():
             if not do_args_exist_in_valid(args, args_from_endpoint_data):
                 create_message_to_context_and_hr(args=args,
                                                  result='Fail',
-                                                 message=f'Did not find information on endpoint in any available brand.',
+                                                 message='Did not find information on endpoint in any available brand.',
                                                  outputs=outputs,
                                                  human_readable_outputs=human_readable_outputs,
                                                  verbose=verbose)

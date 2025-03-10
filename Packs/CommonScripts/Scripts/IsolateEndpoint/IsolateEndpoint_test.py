@@ -1,6 +1,5 @@
 from IsolateEndpoint import *
 import pytest
-import unittest
 
 
 @pytest.fixture
@@ -261,5 +260,3 @@ def test_is_endpoint_isolatable():
     assert is_endpoint_isolatable(endpoint_data, force=False, server_os_list=["Ubuntu Server"]) == (
         False, "The endpoint is a server, therefore aborting isolation."
     )
-
-

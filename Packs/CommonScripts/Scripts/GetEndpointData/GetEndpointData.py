@@ -307,7 +307,7 @@ def initialize_commands(module_manager: ModuleManager) -> tuple[EndpointCommandR
             output_keys=["Endpoint"],
             output_mapping={},
             args_mapping={'hostname': 'agent_hostname'},
-            additional_args={'using-brand': 'Microsoft Defender Advanced Threat Protection'}
+            hard_coded_args={'using-brand': 'Microsoft Defender Advanced Threat Protection'}
         )
     ]
 
