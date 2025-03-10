@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-''' IMPORTS '''
+""" IMPORTS """
 
 import json
 import urllib3
@@ -11,34 +11,29 @@ from enum import Enum
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-'''CONSTANTS'''
+"""CONSTANTS"""
 
 MAX_INCIDENTS_TO_FETCH = 100
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
-    """ Implements Gamma API """
+    """Implements Gamma API"""
 
     def __init__(self, demisto):
-        api_key = demisto.params().get('credentials_api_key', {}).get('password') or demisto.params()['api_key']
+        api_key = demisto.params().get("credentials_api_key", {}).get("password") or demisto.params()["api_key"]
         if not api_key:
-            raise DemistoException('Gamma API Key must be provided.')
-        headers = {'X-API-Key': api_key}
-        base_url = urljoin(demisto.params()['url'], '/api/discovery/v1/')
-        verify_certificate = not (demisto.params().get('insecure', False))
-        proxy = demisto.params().get('proxy', False)
+            raise DemistoException("Gamma API Key must be provided.")
+        headers = {"X-API-Key": api_key}
+        base_url = urljoin(demisto.params()["url"], "/api/discovery/v1/")
+        verify_certificate = not (demisto.params().get("insecure", False))
+        proxy = demisto.params().get("proxy", False)
 
-        super().__init__(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy
-        )
+        super().__init__(base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy)
 
     def get_violation_list(self, minimum_violation: int, limit: int) -> Dict[str, Any]:
-        """ Gets dict of all violations starting from the minimum ID
+        """Gets dict of all violations starting from the minimum ID
 
         :type minimum_violation: int
         :param minimum_violation: unique violation ID to begin search
@@ -48,32 +43,22 @@ class Client(BaseClient):
         """
 
         return self._http_request(
-            method="GET",
-            url_suffix="/violation/list",
-            params={
-                "minimum_violation_id": minimum_violation,
-                "limit": limit
-            }
+            method="GET", url_suffix="/violation/list", params={"minimum_violation_id": minimum_violation, "limit": limit}
         )
 
     def get_violation(self, violation: int) -> Dict[str, Any]:
-        """ Get dict of violation by unique ID
+        """Get dict of violation by unique ID
 
         :type violation: int
         :param violation: unique violation ID
         """
 
         return self._http_request(
-            method="GET",
-            url_suffix="/violation/list",
-            params={
-                "minimum_violation_id": violation,
-                "limit": 1
-            }
+            method="GET", url_suffix="/violation/list", params={"minimum_violation_id": violation, "limit": 1}
         )
 
     def update_violation(self, violation: int, status: str, notes: str) -> Dict[str, Any]:
-        """ Update a violation's status and notes
+        """Update a violation's status and notes
 
         :type violation: int
         :param violation: unique violation ID
@@ -86,26 +71,20 @@ class Client(BaseClient):
         """
 
         return self._http_request(
-            method="PUT",
-            url_suffix=f"/violation/{violation}",
-            json_data={
-                "violation_status": status,
-                "notes": notes
-            }
+            method="PUT", url_suffix=f"/violation/{violation}", json_data={"violation_status": status, "notes": notes}
         )
 
 
 class ViolationStatus(Enum):
-    OPEN = 'OPEN'
-    RESOLVED = 'RESOLVED'
-    IGNORED = 'IGNORED'
+    OPEN = "OPEN"
+    RESOLVED = "RESOLVED"
+    IGNORED = "IGNORED"
 
 
-''' COMMANDS '''
+""" COMMANDS """
 
 
 class Command:
-
     @staticmethod
     def get_violation_list(client: Client, args: Dict[str, Any]) -> CommandResults:
         """
@@ -130,13 +109,15 @@ class Command:
             raise ValueError("limit must be between 1 and 100")
 
         response = client.get_violation_list(minimum_violation, limit)
-        violations = response['response']
+        violations = response["response"]
 
-        note = ''
-        if violations[0]['violation_id'] != int(minimum_violation):
-            note += "Violation with the minimum_violation ID does not exist. " \
-                    "Showing violations pulled from the next available ID: " \
-                    f'{violations[0]["violation_id"]} \r'
+        note = ""
+        if violations[0]["violation_id"] != int(minimum_violation):
+            note += (
+                "Violation with the minimum_violation ID does not exist. "
+                "Showing violations pulled from the next available ID: "
+                f'{violations[0]["violation_id"]} \r'
+            )
 
         human_readable = get_human_readable(violations)
 
@@ -145,7 +126,7 @@ class Command:
             outputs_prefix="GammaViolation",
             outputs_key_field="violation_id",
             outputs=violations,
-            raw_response=violations
+            raw_response=violations,
         )
 
     @staticmethod
@@ -169,9 +150,9 @@ class Command:
             raise ValueError("Violation must be greater than 0")
 
         response = client.get_violation(violation_id)
-        violations = response['response']
+        violations = response["response"]
 
-        if violations[0]['violation_id'] != int(violation_id):
+        if violations[0]["violation_id"] != int(violation_id):
             raise ValueError("Violation with this ID does not exist.")
 
         human_readable = get_human_readable(violations)
@@ -181,7 +162,7 @@ class Command:
             outputs_prefix="GammaViolation",
             outputs_key_field="violation_id",
             outputs=violations,
-            raw_response=violations
+            raw_response=violations,
         )
 
     @staticmethod
@@ -213,7 +194,7 @@ class Command:
         client.update_violation(violation, status, notes)
 
         response = client.get_violation(violation)
-        updated_violation = response['response']
+        updated_violation = response["response"]
         human_readable = get_human_readable(updated_violation)
 
         return CommandResults(
@@ -221,23 +202,23 @@ class Command:
             outputs_prefix="GammaViolation",
             outputs_key_field="violation_id",
             outputs=updated_violation,
-            raw_response=updated_violation
+            raw_response=updated_violation,
         )
 
     @staticmethod
     def run(command, client, args):
-        if command == 'gamma-get-violation-list':
+        if command == "gamma-get-violation-list":
             return Command.get_violation_list(client, args)
-        elif command == 'gamma-get-violation':
+        elif command == "gamma-get-violation":
             return Command.get_violation(client, args)
-        elif command == 'gamma-update-violation':
+        elif command == "gamma-update-violation":
             return Command.update_violation(client, args)
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 
 
 def test_module(client: Client) -> str:
-    """ Tests API connectivity and authentication
+    """Tests API connectivity and authentication
 
     Returning 'ok' indicates that the integration works like it is supposed to and connection to
     the service is successful.
@@ -254,16 +235,15 @@ def test_module(client: Client) -> str:
     try:
         client.get_violation_list(minimum_violation=1, limit=10)
     except DemistoException as e:
-        if 'UNAUTHORIZED' in str(e):
-            return 'Authorization Error: Make sure Gamma Discovery API Key is correctly set'
+        if "UNAUTHORIZED" in str(e):
+            return "Authorization Error: Make sure Gamma Discovery API Key is correctly set"
         else:
             raise e
-    return 'ok'
+    return "ok"
 
 
-def fetch_incidents(client: Client, last_run_violation: dict,
-                    str_first_fetch_violation: str, str_max_results: str):
-    """ This function will run each interval (default 1 minute)
+def fetch_incidents(client: Client, last_run_violation: dict, str_first_fetch_violation: str, str_max_results: str):
+    """This function will run each interval (default 1 minute)
 
     :type client: client
     :param client: Gamma client
@@ -293,23 +273,23 @@ def fetch_incidents(client: Client, last_run_violation: dict,
         max_results = MAX_INCIDENTS_TO_FETCH
 
     # get the last violation id fetched, if exists
-    starting_violation = last_run_violation.get('starting_violation', first_fetch_violation)
+    starting_violation = last_run_violation.get("starting_violation", first_fetch_violation)
 
     most_recent_violation = starting_violation
     incidents = []
     violations = client.get_violation_list(starting_violation, max_results)
 
-    for item in violations['response']:
-        incident_violation = item['violation_id']
-        incident_time_ms = item['violation_event_timestamp'] * 1000
+    for item in violations["response"]:
+        incident_violation = item["violation_id"]
+        incident_time_ms = item["violation_event_timestamp"] * 1000
 
         if incident_violation <= most_recent_violation:
             continue
 
         incident = {
-            "name": f'Gamma Violation {incident_violation}',
+            "name": f"Gamma Violation {incident_violation}",
             "occurred": timestamp_to_datestring(incident_time_ms),
-            "rawJSON": json.dumps(item)
+            "rawJSON": json.dumps(item),
         }
 
         incidents.append(incident)
@@ -318,13 +298,13 @@ def fetch_incidents(client: Client, last_run_violation: dict,
         if incident_violation > most_recent_violation:
             most_recent_violation = incident_violation
 
-    next_run_violation = {'starting_violation': most_recent_violation}
+    next_run_violation = {"starting_violation": most_recent_violation}
 
     return next_run_violation, incidents
 
 
 def get_human_readable(violation: List[Dict[str, Any]]) -> str:
-    """ Parse results into human readable format
+    """Parse results into human readable format
 
     :type violation: List
     :param violation: List object obtaining violation data
@@ -334,14 +314,16 @@ def get_human_readable(violation: List[Dict[str, Any]]) -> str:
     """
 
     def violation_to_str(v):
-        return f'### Violation {v["violation_id"]} \r' \
-               f'|Violation ID|Status|Timestamp|Dashboard URL|User|App Name| \r' \
-               f'|---|---|---|---|---|---| \r' \
-               f'| {v["violation_id"]} | {v["violation_status"]} | ' \
-               f'{timestamp_to_datestring(v["violation_event_timestamp"] * 1000)} | ' \
-               f'{v["dashboard_url"]} | {v["user"]} | {v["app_name"]} | \r'
+        return (
+            f'### Violation {v["violation_id"]} \r'
+            f'|Violation ID|Status|Timestamp|Dashboard URL|User|App Name| \r'
+            f'|---|---|---|---|---|---| \r'
+            f'| {v["violation_id"]} | {v["violation_status"]} | '
+            f'{timestamp_to_datestring(v["violation_event_timestamp"] * 1000)} | '
+            f'{v["dashboard_url"]} | {v["user"]} | {v["app_name"]} | \r'
+        )
 
-    return '\r'.join(violation_to_str(key) for key in violation)
+    return "\r".join(violation_to_str(key) for key in violation)
 
 
 def main() -> None:
@@ -351,20 +333,19 @@ def main() -> None:
     :rtype:
     """
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f"Command being called is {demisto.command()}")
     try:
-
         client = Client(demisto)
 
-        if demisto.command() == 'fetch-incidents':
-            str_first_fetch_violation = demisto.params().get('first_fetch', 1)
-            str_max_results = demisto.params().get('max_fetch', 10)
+        if demisto.command() == "fetch-incidents":
+            str_first_fetch_violation = demisto.params().get("first_fetch", 1)
+            str_max_results = demisto.params().get("max_fetch", 10)
 
             next_run_violation, incidents = fetch_incidents(
                 client=client,
                 last_run_violation=demisto.getLastRun(),
                 str_first_fetch_violation=str_first_fetch_violation,
-                str_max_results=str_max_results
+                str_max_results=str_max_results,
             )
 
             demisto.setLastRun(next_run_violation)
@@ -377,8 +358,8 @@ def main() -> None:
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

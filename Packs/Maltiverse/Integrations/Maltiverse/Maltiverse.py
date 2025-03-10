@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-''' IMPORTS '''
+""" IMPORTS """
 from typing import Tuple, Dict, Any
 from _collections import defaultdict
 import urllib3
@@ -11,14 +11,15 @@ import hashlib
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
-SERVER_URL = 'https://api.maltiverse.com'
-DBOT_SCORE_KEY = 'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'
+""" CONSTANTS """
+SERVER_URL = "https://api.maltiverse.com"
+DBOT_SCORE_KEY = "DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)"
 DEFAULT_THRESHOLD = 5
 
 
 class Error(Exception):
     """Base class for exceptions in this module."""
+
     pass
 
 
@@ -42,68 +43,69 @@ class Client(BaseClient):
     def __init__(self, url: str, use_ssl: bool, use_proxy: bool, auth_token=None, reliability=DBotScoreReliability.C):
         self.auth_token = auth_token
         self.reliability = reliability
-        super().__init__(url, verify=use_ssl, proxy=use_proxy, headers={'Accept': 'application/json'})
+        super().__init__(url, verify=use_ssl, proxy=use_proxy, headers={"Accept": "application/json"})
         if self.auth_token:
-            self._headers.update({'Authorization': 'Bearer ' + self.auth_token})
+            self._headers.update({"Authorization": "Bearer " + self.auth_token})
 
     def http_request(self, method, url_suffix):
         ok_codes = (200, 401, 403, 404, 500)  # includes responses that are ok (200) and error responses that should be
         # handled by the client and not in the BaseClient
         try:
-            res = self._http_request(method, url_suffix, resp_type='response', ok_codes=ok_codes)
+            res = self._http_request(method, url_suffix, resp_type="response", ok_codes=ok_codes)
             if res.status_code == 200:
                 try:
                     return res.json()
                 except ValueError as exception:
-                    raise DemistoException('Failed to parse json object from response: {}'
-                                           .format(res.content), exception)
+                    raise DemistoException("Failed to parse json object from response: {}".format(res.content), exception)
 
             if res.status_code in [401, 403, 500]:
                 try:
                     err_msg = str(res.json())
                     if self.auth_token:
-                        err_msg = f'Check server URL and API key \n{err_msg}'
+                        err_msg = f"Check server URL and API key \n{err_msg}"
                     else:
-                        err_msg = f'Check server URL or try using an API key \n{err_msg}'
+                        err_msg = f"Check server URL or try using an API key \n{err_msg}"
                 except ValueError:
-                    err_msg = 'Check server URL or API key -\n' + str(res)
+                    err_msg = "Check server URL or API key -\n" + str(res)
                 raise DemistoException(err_msg)
 
             if res.status_code == 404:
-                raise NotFoundError('Page Not Found')
+                raise NotFoundError("Page Not Found")
 
         except Exception as e:
-            if '<requests.exceptions.ConnectionError>' in e.args[0]:
-                raise DemistoException('Connection error - Verify that the server URL parameter is correct and that '
-                                       'you have access to the server from your host.\n')
+            if "<requests.exceptions.ConnectionError>" in e.args[0]:
+                raise DemistoException(
+                    "Connection error - Verify that the server URL parameter is correct and that "
+                    "you have access to the server from your host.\n"
+                )
             raise e
 
     def ip_report(self, ip: str) -> dict:
         if not is_ip_valid(ip):
-            raise DemistoException('The given IP was invalid')
-        return self.http_request('GET', f'/ip/{ip}')
+            raise DemistoException("The given IP was invalid")
+        return self.http_request("GET", f"/ip/{ip}")
 
     def url_report(self, url: str) -> dict:
         sha256_url = urlToSHA256(url)
         try:
-            report = self.http_request('GET', f'/url/{sha256_url}')
+            report = self.http_request("GET", f"/url/{sha256_url}")
             return report
         except NotFoundError:
-            LOG(f'URL {url} was not found')
-            return {'NotFound': True}
+            LOG(f"URL {url} was not found")
+            return {"NotFound": True}
         except Exception as e:
             raise e
 
     def domain_report(self, domain: str) -> dict:
-        return self.http_request('GET', f'/hostname/{domain}')
+        return self.http_request("GET", f"/hostname/{domain}")
 
     def file_report(self, sha256: str) -> dict:
         try:
-            report = self.http_request('GET', f'/sample/{sha256}')
+            report = self.http_request("GET", f"/sample/{sha256}")
             return report
         except NotFoundError:
-            LOG(f'file {sha256} was not found')
-            return {'NotFound': True}
+            LOG(f"file {sha256} was not found")
+            return {"NotFound": True}
         except Exception as e:
             raise e
 
@@ -119,10 +121,10 @@ def test_module(client=None):
         'ok' if test passed, anything else will fail the test.
     """
     try:
-        client.http_request('GET', '/ip/8.8.8.8')
-        return 'ok'
+        client.http_request("GET", "/ip/8.8.8.8")
+        return "ok"
     except NotFoundError as e:
-        return_error('Check server URL - ' + e.message)
+        return_error("Check server URL - " + e.message)
     except Exception as e:
         raise e
 
@@ -142,15 +144,15 @@ def calculate_score(positive_detections: int, classification: str, threshold: in
     Returns:
         int - Demisto's score for the indicator
     """
-    if positive_detections == 0 and classification == 'neutral':
+    if positive_detections == 0 and classification == "neutral":
         return 0
-    elif classification == 'whitelist':
+    elif classification == "whitelist":
         return 1
-    elif positive_detections <= threshold and classification != 'malicious':
+    elif positive_detections <= threshold and classification != "malicious":
         if anti_virus > 1:
             return 3
         return 2
-    elif positive_detections > threshold or classification == 'malicious':
+    elif positive_detections > threshold or classification == "malicious":
         return 3
     else:  # if reached this line there is a problem with the logic
         return -1
@@ -166,7 +168,7 @@ def urlToSHA256(url: str) -> str:
     Returns:
         str - the SHA256 hash of the url
     """
-    return hashlib.sha256(url.encode('utf-8')).hexdigest()
+    return hashlib.sha256(url.encode("utf-8")).hexdigest()
 
 
 def create_blacklist_keys(blacklist):
@@ -221,51 +223,62 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         Any: the raw data from Maltiverse client (used for debugging).
     """
 
-    threshold = int(args.get('threshold', DEFAULT_THRESHOLD))
-    markdown = ''
+    threshold = int(args.get("threshold", DEFAULT_THRESHOLD))
+    markdown = ""
     context: dict = defaultdict(list)
     reports = []
 
-    for ip in argToList(args.get('ip')):
+    for ip in argToList(args.get("ip")):
         report = client.ip_report(ip)
-        positive_detections = len(report.get('blacklist', []))
+        positive_detections = len(report.get("blacklist", []))
 
-        blacklist_context = {'Blacklist': report.get('blacklist', [])}
-        blacklist_context['Blacklist'] = create_blacklist_keys(blacklist_context['Blacklist'])
-        blacklist_description = [blacklist_context['Blacklist'][i]['Description'] for i in
-                                 range(len(report.get('blacklist', [])))]
+        blacklist_context = {"Blacklist": report.get("blacklist", [])}
+        blacklist_context["Blacklist"] = create_blacklist_keys(blacklist_context["Blacklist"])
+        blacklist_description = [
+            blacklist_context["Blacklist"][i]["Description"] for i in range(len(report.get("blacklist", [])))
+        ]
 
         outputs = {
-            'Address': report.get('ip_addr', ''),
-            'Geo': {'Country': report.get('country_code', '')},
-            'PositiveDetections': positive_detections,
-            'Malicious': {'Description': blacklist_description},
-            'Tags': create_tags(report.get('tag', '')),
-            'ThreatTypes': {'threatcategory': blacklist_description}
+            "Address": report.get("ip_addr", ""),
+            "Geo": {"Country": report.get("country_code", "")},
+            "PositiveDetections": positive_detections,
+            "Malicious": {"Description": blacklist_description},
+            "Tags": create_tags(report.get("tag", "")),
+            "ThreatTypes": {"threatcategory": blacklist_description},
         }
 
-        additional_info = {'Tags': create_tags(report.get('tag', '')),
-                           'Classification': report.get('classification', ''),
-                           'Address': report.get('ip_addr', '')}
+        additional_info = {
+            "Tags": create_tags(report.get("tag", "")),
+            "Classification": report.get("classification", ""),
+            "Address": report.get("ip_addr", ""),
+        }
 
-        dbot_score = {'Indicator': report.get('ip_addr', ''), 'Type': 'ip', 'Vendor': 'Maltiverse',
-                      'Score': calculate_score(positive_detections, report.get('classification', ''), threshold),
-                      'Reliability': client.reliability}
+        dbot_score = {
+            "Indicator": report.get("ip_addr", ""),
+            "Type": "ip",
+            "Vendor": "Maltiverse",
+            "Score": calculate_score(positive_detections, report.get("classification", ""), threshold),
+            "Reliability": client.reliability,
+        }
 
         maltiverse_ip = {**blacklist_context, **additional_info}
 
-        context[outputPaths['ip']].append(outputs)
+        context[outputPaths["ip"]].append(outputs)
         context[f'Maltiverse.{outputPaths["ip"]}'].append(maltiverse_ip)
         context[DBOT_SCORE_KEY].append(dbot_score)
 
         markdown = f'## Maltiverse IP reputation for: {report["ip_addr"]}\n'
         markdown += f'IP Address: **{report.get("ip_addr", "")}**\n'
         markdown += f'Country: **{report.get("country_code", "")}**\n'
-        markdown += f'Positive Detections: **{positive_detections}**\n'
+        markdown += f"Positive Detections: **{positive_detections}**\n"
         markdown += f'Maltiverse Classification: **{report.get("classification", "")}**\n'
         if positive_detections:
-            markdown += tableToMarkdown('Blacklist', blacklist_context['Blacklist'], removeNull=True,
-                                        headers=['Source', 'Description', 'FirstSeen', 'LastSeen'])
+            markdown += tableToMarkdown(
+                "Blacklist",
+                blacklist_context["Blacklist"],
+                removeNull=True,
+                headers=["Source", "Description", "FirstSeen", "LastSeen"],
+            )
 
         reports.append(report)
 
@@ -274,73 +287,87 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
 
 def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     """
-     Executes URL enrichment against Maltiverse.
+    Executes URL enrichment against Maltiverse.
 
-     Args:
-         client (Client): Maltiverse client.
-         args (Dict[str, str]): the arguments for the command.
-     Returns:
-         str: human readable presentation of the URL report.
-         dict: the results to return into Demisto's context.
-         Any: the raw data from Maltiverse client (used for debugging).
-     """
+    Args:
+        client (Client): Maltiverse client.
+        args (Dict[str, str]): the arguments for the command.
+    Returns:
+        str: human readable presentation of the URL report.
+        dict: the results to return into Demisto's context.
+        Any: the raw data from Maltiverse client (used for debugging).
+    """
 
-    threshold = int(args.get('threshold', DEFAULT_THRESHOLD))
-    markdown = ''
+    threshold = int(args.get("threshold", DEFAULT_THRESHOLD))
+    markdown = ""
     context: dict = defaultdict(list)
     reports = []
 
-    for url in argToList(args.get('url', '')):
+    for url in argToList(args.get("url", "")):
         report = client.url_report(url)
-        if 'NotFound' in report:
-            markdown += f'No results found for {url}'
-            dbot_score = {'Indicator': url, 'Type': 'Url', 'Vendor': 'Maltiverse',
-                          'Score': 0, 'Reliability': client.reliability}
+        if "NotFound" in report:
+            markdown += f"No results found for {url}"
+            dbot_score = {"Indicator": url, "Type": "Url", "Vendor": "Maltiverse", "Score": 0, "Reliability": client.reliability}
             context[DBOT_SCORE_KEY].append(dbot_score)
             break
-        positive_detections = len(report.get('blacklist', []))
-        blacklist_context = {'Blacklist': report.get('blacklist', [])}
-        blacklist_context['Blacklist'] = create_blacklist_keys(blacklist_context['Blacklist'])
+        positive_detections = len(report.get("blacklist", []))
+        blacklist_context = {"Blacklist": report.get("blacklist", [])}
+        blacklist_context["Blacklist"] = create_blacklist_keys(blacklist_context["Blacklist"])
 
-        outputs = {'Data': report.get('url', ''),
-                   'PositiveDetections': positive_detections,
-                   'Tags': create_tags(report.get('tag', '')),
-                   'ThreatTypes': {'threatcategory': [blacklist_context['Blacklist'][i]['Description'] for i in
-                                                      range(len(report.get('blacklist', [])))]}
-                   }
+        outputs = {
+            "Data": report.get("url", ""),
+            "PositiveDetections": positive_detections,
+            "Tags": create_tags(report.get("tag", "")),
+            "ThreatTypes": {
+                "threatcategory": [
+                    blacklist_context["Blacklist"][i]["Description"] for i in range(len(report.get("blacklist", [])))
+                ]
+            },
+        }
 
-        dbot_score = {'Indicator': url, 'Type': 'Url', 'Vendor': 'Maltiverse',
-                      'Score': calculate_score(positive_detections, report.get('classification', ''), threshold),
-                      'Reliability': client.reliability}
+        dbot_score = {
+            "Indicator": url,
+            "Type": "Url",
+            "Vendor": "Maltiverse",
+            "Score": calculate_score(positive_detections, report.get("classification", ""), threshold),
+            "Reliability": client.reliability,
+        }
 
-        maltiverse_url = {string_to_context_key(field): report.get(field, '') for field in
-                          ['classification', 'modification_time', 'creation_time', 'hostname', 'domain', 'tld']}
-        maltiverse_url['Address'] = report.get('url', '')
-        maltiverse_url['Tags'] = create_tags(report.get('tag', ''))
+        maltiverse_url = {
+            string_to_context_key(field): report.get(field, "")
+            for field in ["classification", "modification_time", "creation_time", "hostname", "domain", "tld"]
+        }
+        maltiverse_url["Address"] = report.get("url", "")
+        maltiverse_url["Tags"] = create_tags(report.get("tag", ""))
         maltiverse_url = {**maltiverse_url, **blacklist_context}
 
-        markdown = f'## Maltiverse URL reputation for: {url}\n'
-        markdown += f'URL: {url}\n'
+        markdown = f"## Maltiverse URL reputation for: {url}\n"
+        markdown += f"URL: {url}\n"
         markdown += f'URL Domain: **{report.get("domain", "")}**\n'
         markdown += f'URL Creation Time: **{report.get("creation_time", "")}**\n'
         markdown += f'URL Modification Time: **{report.get("modification_time", "")}**\n'
-        markdown += f'Positive Detections: **{positive_detections}**\n'
+        markdown += f"Positive Detections: **{positive_detections}**\n"
         markdown += f'Maltiverse Classification: **{report.get("classification", "")}**\n'
 
         if positive_detections:
             malicious_info = {
-                'Malicious': {
-                    'Description': [blacklist_context['Blacklist'][i]['Description'] for i in
-                                    range(len(report.get('blacklist', [])))],
-                    'Vendor': 'Maltiverse'
+                "Malicious": {
+                    "Description": [
+                        blacklist_context["Blacklist"][i]["Description"] for i in range(len(report.get("blacklist", [])))
+                    ],
+                    "Vendor": "Maltiverse",
                 }
             }
             outputs = {**outputs, **malicious_info}
-            markdown += 'URL Malicious Vendor: **Maltiverse**\n'
-            markdown += tableToMarkdown('Blacklist', blacklist_context['Blacklist'], removeNull=True,
-                                        headers=['Source', 'Description', 'FirstSeen', 'LastSeen'])
+            markdown += "URL Malicious Vendor: **Maltiverse**\n"
+            markdown += tableToMarkdown(
+                "Blacklist",
+                blacklist_context["Blacklist"],
+                removeNull=True,
+                headers=["Source", "Description", "FirstSeen", "LastSeen"],
+            )
 
-        context[outputPaths['url']].append(outputs)
+        context[outputPaths["url"]].append(outputs)
         context[DBOT_SCORE_KEY].append(dbot_score)
         context[f'Maltiverse.{outputPaths["url"]}'].append(maltiverse_url)
 
@@ -351,51 +378,55 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
 
 def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     """
-     Executes domain enrichment against Maltiverse.
+    Executes domain enrichment against Maltiverse.
 
-     Args:
-         client (Client): Maltiverse client.
-         args (Dict[str, str]): the arguments for the command.
-     Returns:
-         str: human readable presentation of the domain report.
-         dict: the results to return into Demisto's context.
-         Any: the raw data from Maltiverse client (used for debugging).
-     """
-    threshold = int(args.get('threshold', DEFAULT_THRESHOLD))
-    markdown = ''
+    Args:
+        client (Client): Maltiverse client.
+        args (Dict[str, str]): the arguments for the command.
+    Returns:
+        str: human readable presentation of the domain report.
+        dict: the results to return into Demisto's context.
+        Any: the raw data from Maltiverse client (used for debugging).
+    """
+    threshold = int(args.get("threshold", DEFAULT_THRESHOLD))
+    markdown = ""
     context: dict = defaultdict(list)
     reports = []
 
-    for domain in argToList(args.get('domain', '')):
+    for domain in argToList(args.get("domain", "")):
         report = client.domain_report(domain)
-        positive_detections = len(report.get('blacklist', []))
+        positive_detections = len(report.get("blacklist", []))
 
-        blacklist_context = {'Blacklist': report.get('blacklist', [])}
-        blacklist_context['Blacklist'] = create_blacklist_keys(blacklist_context['Blacklist'])
+        blacklist_context = {"Blacklist": report.get("blacklist", [])}
+        blacklist_context["Blacklist"] = create_blacklist_keys(blacklist_context["Blacklist"])
 
-        outputs = {string_to_context_key(field): report.get(field, '') for field in
-                   ['creation_time', 'modification_time']
-                   }
-        outputs['Tags'] = create_tags(report.get('tag', ''))
-        outputs['TLD'] = report.get('tld', '')
-        outputs['Name'] = report.get('hostname', '')
-        outputs['ASName'] = report.get('as_name', '')
-        outputs['ThreatTypes'] = {'threatcategory': [blacklist_context['Blacklist'][i]['Description'] for i in
-                                                     range(len(report.get('blacklist', [])))]}
+        outputs = {string_to_context_key(field): report.get(field, "") for field in ["creation_time", "modification_time"]}
+        outputs["Tags"] = create_tags(report.get("tag", ""))
+        outputs["TLD"] = report.get("tld", "")
+        outputs["Name"] = report.get("hostname", "")
+        outputs["ASName"] = report.get("as_name", "")
+        outputs["ThreatTypes"] = {
+            "threatcategory": [blacklist_context["Blacklist"][i]["Description"] for i in range(len(report.get("blacklist", [])))]
+        }
 
-        dbot_score = {'Indicator': domain, 'Type': 'Domain', 'Vendor': 'Maltiverse',
-                      'Score': calculate_score(positive_detections, report.get('classification', ''), threshold),
-                      'Reliability': client.reliability}
+        dbot_score = {
+            "Indicator": domain,
+            "Type": "Domain",
+            "Vendor": "Maltiverse",
+            "Score": calculate_score(positive_detections, report.get("classification", ""), threshold),
+            "Reliability": client.reliability,
+        }
 
-        maltiverse_domain = {string_to_context_key(field): report.get(field, '') for field in
-                             ['creation_time', 'modification_time', 'classification']
-                             }
-        maltiverse_domain['TLD'] = report.get('tld', '')
-        maltiverse_domain['Tags'] = create_tags(report.get('tag', ''))
-        maltiverse_domain['Address'] = report.get('hostname', '')
+        maltiverse_domain = {
+            string_to_context_key(field): report.get(field, "")
+            for field in ["creation_time", "modification_time", "classification"]
+        }
+        maltiverse_domain["TLD"] = report.get("tld", "")
+        maltiverse_domain["Tags"] = create_tags(report.get("tag", ""))
+        maltiverse_domain["Address"] = report.get("hostname", "")
         maltiverse_domain = {**maltiverse_domain, **blacklist_context}
 
-        context[outputPaths['domain']].append(outputs)
+        context[outputPaths["domain"]].append(outputs)
         context[DBOT_SCORE_KEY].append(dbot_score)
         context[f'Maltiverse.{outputPaths["domain"]}'].append(maltiverse_domain)
 
@@ -423,68 +454,93 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
          dict: the results to return into Demisto's context.
          Any: the raw data from Maltiverse client (used for debugging).
     """
-    threshold = int(args.get('threshold', DEFAULT_THRESHOLD))
-    markdown = ''
+    threshold = int(args.get("threshold", DEFAULT_THRESHOLD))
+    markdown = ""
     context: dict = defaultdict(list)
     reports = []
 
-    for file in argToList(args.get('file', '')):
+    for file in argToList(args.get("file", "")):
         report = client.file_report(file)
-        if 'NotFound' in report:
-            markdown += f'No results found for file hash {file}'
-            dbot_score = {'Indicator': file, 'Type': 'File', 'Vendor': 'Maltiverse',
-                          'Score': 0, 'Reliability': client.reliability}
+        if "NotFound" in report:
+            markdown += f"No results found for file hash {file}"
+            dbot_score = {
+                "Indicator": file,
+                "Type": "File",
+                "Vendor": "Maltiverse",
+                "Score": 0,
+                "Reliability": client.reliability,
+            }
             context[DBOT_SCORE_KEY].append(dbot_score)
             break
-        positive_detections = len(report.get('blacklist', []))
+        positive_detections = len(report.get("blacklist", []))
 
-        blacklist_context = {'Blacklist': report.get('blacklist', [])}
-        blacklist_context['Blacklist'] = create_blacklist_keys(blacklist_context['Blacklist'])
+        blacklist_context = {"Blacklist": report.get("blacklist", [])}
+        blacklist_context["Blacklist"] = create_blacklist_keys(blacklist_context["Blacklist"])
 
-        outputs = {'Name': report['filename'][0],
-                   'MD5': report.get('md5', ''),
-                   'SHA1': report.get('sha1', ''),
-                   'SHA256': report.get('sha256', ''),
-                   'Size': report.get('size', ''),
-                   'Type': report.get('type', ''),
-                   'Extension': (report['filename'][0]).split('.')[-1],
-                   'Path': report.get('process_list', [{}])[0].get('normalizedpath'),
-                   'Tags': create_tags(report.get('tag', '')),
-                   'ThreatTypes': {'threatcategory': [blacklist_context['Blacklist'][i]['Description'] for i in
-                                                      range(len(report.get('blacklist', [])))]}
-                   }
+        outputs = {
+            "Name": report["filename"][0],
+            "MD5": report.get("md5", ""),
+            "SHA1": report.get("sha1", ""),
+            "SHA256": report.get("sha256", ""),
+            "Size": report.get("size", ""),
+            "Type": report.get("type", ""),
+            "Extension": (report["filename"][0]).split(".")[-1],
+            "Path": report.get("process_list", [{}])[0].get("normalizedpath"),
+            "Tags": create_tags(report.get("tag", "")),
+            "ThreatTypes": {
+                "threatcategory": [
+                    blacklist_context["Blacklist"][i]["Description"] for i in range(len(report.get("blacklist", [])))
+                ]
+            },
+        }
 
-        dbot_score = {'Indicator': file, 'Type': 'File', 'Vendor': 'Maltiverse',
-                      'Score': calculate_score(positive_detections, report.get('classification', ''), threshold,
-                                               len(report.get('antivirus', []))), 'Reliability': client.reliability}
+        dbot_score = {
+            "Indicator": file,
+            "Type": "File",
+            "Vendor": "Maltiverse",
+            "Score": calculate_score(
+                positive_detections, report.get("classification", ""), threshold, len(report.get("antivirus", []))
+            ),
+            "Reliability": client.reliability,
+        }
 
         process_list = {
-            'ProcessList': {
-                string_to_context_key(field): report.get('process_list', [{}])[0].get(field) for field in
-                ['name', 'normalizedpath', 'sha256', 'uid']
+            "ProcessList": {
+                string_to_context_key(field): report.get("process_list", [{}])[0].get(field)
+                for field in ["name", "normalizedpath", "sha256", "uid"]
             }
         }
         file_malicious = {
-            'Malicious': {
-                'Vendor': 'Maltiverse',
-                'Description': [blacklist_context['Blacklist'][i]['Description'] for i in
-                                range(len(report.get('blacklist', [])))],
+            "Malicious": {
+                "Vendor": "Maltiverse",
+                "Description": [
+                    blacklist_context["Blacklist"][i]["Description"] for i in range(len(report.get("blacklist", [])))
+                ],
             }
         }
 
-        maltiverse_file = {string_to_context_key(field): report.get(field, '') for field in
-                           ['score', 'classification', 'modification_time', 'creation_time', 'size', 'contacted_host',
-                            'dns_request']}
-        maltiverse_file['PositiveDetections'] = positive_detections
-        maltiverse_file['Name'] = report['filename'][0]
-        maltiverse_file['Tags'] = create_tags(report.get('tag', ''))
+        maltiverse_file = {
+            string_to_context_key(field): report.get(field, "")
+            for field in [
+                "score",
+                "classification",
+                "modification_time",
+                "creation_time",
+                "size",
+                "contacted_host",
+                "dns_request",
+            ]
+        }
+        maltiverse_file["PositiveDetections"] = positive_detections
+        maltiverse_file["Name"] = report["filename"][0]
+        maltiverse_file["Tags"] = create_tags(report.get("tag", ""))
 
         maltiverse_file = {**maltiverse_file, **process_list}
         maltiverse_file = {**maltiverse_file, **blacklist_context}
         if positive_detections > 0:
             maltiverse_file = {**maltiverse_file, **file_malicious}
 
-        context[outputPaths['file']].append(outputs)
+        context[outputPaths["file"]].append(outputs)
         context[DBOT_SCORE_KEY].append(dbot_score)
         context[f'Maltiverse.{outputPaths["file"]}'].append(maltiverse_file)
 
@@ -492,7 +548,7 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         markdown += f'File Name: {report["filename"][0]}\n'
         markdown += f'File SHA256: **{report.get("sha256", "")}**\n'
         markdown += f'File Type: **{report.get("type", "")}**\n'
-        markdown += f'Positive Detections: **{positive_detections}**\n'
+        markdown += f"Positive Detections: **{positive_detections}**\n"
         markdown += f'Maltiverse Classification: **{report.get("classification", "")}**\n'
 
         reports.append(report)
@@ -502,40 +558,42 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
 
 def main():
     params = demisto.params()
-    server_url = params.get('server_url') if params.get('server_url') else SERVER_URL
-    reliability = params.get('integrationReliability', 'C - Fairly reliable')
+    server_url = params.get("server_url") if params.get("server_url") else SERVER_URL
+    reliability = params.get("integrationReliability", "C - Fairly reliable")
 
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
         return_error("Please provide a valid value for the Source Reliability parameter.")
 
-    client = Client(url=server_url,
-                    use_ssl=not params.get('insecure', False),
-                    use_proxy=params.get('proxy', False),
-                    auth_token=params.get('credentials_api_key', {}).get('password') or params.get('api_key', None),
-                    reliability=reliability)
+    client = Client(
+        url=server_url,
+        use_ssl=not params.get("insecure", False),
+        use_proxy=params.get("proxy", False),
+        auth_token=params.get("credentials_api_key", {}).get("password") or params.get("api_key", None),
+        reliability=reliability,
+    )
 
     commands = {
-        'ip': ip_command,
-        'url': url_command,
-        'domain': domain_command,
-        'file': file_command,
+        "ip": ip_command,
+        "url": url_command,
+        "domain": domain_command,
+        "file": file_command,
     }
 
     command = demisto.command()
-    LOG(f'Command being called is {command}')
+    LOG(f"Command being called is {command}")
 
     try:
-        if command == 'test-module':
+        if command == "test-module":
             demisto.results(test_module(client))
         elif command in commands:
             return_outputs(*commands[command](client, demisto.args()))
         else:
-            return_error('Command not found.')
+            return_error("Command not found.")
     except Exception as e:
-        return_error(f'Failed to execute {command} command. Error: {e}')
+        return_error(f"Failed to execute {command} command. Error: {e}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
