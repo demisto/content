@@ -500,7 +500,7 @@ def approve_incident_command(client: Client, args: dict):
         raise ValueError(f"Incident {args.get('incident_id')} wasn't found")
 
     readable_output = tableToMarkdown(
-        name=f'Approved Incident: ' f'{raw_response.get("name", "unknown")}', t=output, headers=table_headers, removeNull=True
+        name=f'Approved Incident: {raw_response.get("name", "unknown")}', t=output, headers=table_headers, removeNull=True
     )
 
     return CommandResults(
@@ -627,14 +627,14 @@ def fetch_incidents(
     time_now = int(datetime.timestamp(datetime.now()) * 1000)
 
     if int(max_fetch) > 200:
-        raise ValueError("Max Fetch is limited to 200 incidents per fetch, " "please choose lower number than 200.")
+        raise ValueError("Max Fetch is limited to 200 incidents per fetch, please choose lower number than 200.")
 
     if fetch_filter != "":
         fetch_filter = f"and {fetch_filter}"
 
     params = {
         "pageSize": max_fetch,
-        "filter": f"createdBy.date: ['{last_fetch_timestamp_new}'..'{time_now}']" f" {fetch_filter}",
+        "filter": f"createdBy.date: ['{last_fetch_timestamp_new}'..'{time_now}'] {fetch_filter}",
         "sort": '[{"createdBy.date":"asc"}]',
     }
     raw_response = client.incidents_list(params)
@@ -689,7 +689,7 @@ def test_module(client: Client) -> str:
     except Exception as e:
         if "Authorization" in str(e):
             DemistoException(
-                "Authentication wasn't successful,\n" " Please check credentials,\n" " or specify correct Platform URL."
+                "Authentication wasn't successful,\n Please check credentials,\n or specify correct Platform URL."
             )
 
         raise

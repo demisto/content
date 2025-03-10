@@ -35,7 +35,7 @@ ERR_MSG = {
     "NO_RECORDS_FOUND": "No {} were found for the given argument(s).",
     "SEVERITIES_ERROR": "Invalid value for severity argument. Value should be in {}.",
     "ID_ERROR": "Invalid value for {} argument. Value should be a positive integer.",
-    "INVALID_MAX_FETCH": "Argument 'Maximum number of incidents per fetch' should be a positive integer between 1 and " "1000.",
+    "INVALID_MAX_FETCH": "Argument 'Maximum number of incidents per fetch' should be a positive integer between 1 and 1000.",
     "INVALID_FIRST_FETCH": "Argument 'First fetch time interval' should be a valid date or relative timestamp such as "
     "'2 days', '2 months', 'yyyy-mm-dd', 'yyyy-mm-ddTHH:MM:SSZ'",
     "REQUIRED_ARGUMENT": "Invalid argument value. 'query' is a required argument.",

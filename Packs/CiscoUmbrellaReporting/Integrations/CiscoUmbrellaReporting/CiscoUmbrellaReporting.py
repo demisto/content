@@ -328,7 +328,7 @@ def check_valid_indicator_value(indicator_type: str, indicator_value: str) -> bo
         for intrusion in intrusion_list:
             if intrusion not in ["would_block", "blocked", "detected"]:
                 raise ValueError(
-                    "Invalid input Error: supported values for " "intrusion_action are: 'would_block', 'blocked' and 'detected'."
+                    "Invalid input Error: supported values for intrusion_action are: 'would_block', 'blocked' and 'detected'."
                 )
 
     if indicator_type == CATEGORIES_PARAM:
@@ -351,7 +351,7 @@ def get_command_title_string(sub_context: str, page: int | None, page_size: int 
         Returns the title for the readable output
     """
     if page and page_size and (page > 0 and page_size > 0):
-        return f"{sub_context} List\nCurrent page size: {page_size}\n" f"Showing page {page} out of others that may exist"
+        return f"{sub_context} List\nCurrent page size: {page_size}\nShowing page {page} out of others that may exist"
 
     return f"{sub_context} List"
 
@@ -1315,7 +1315,7 @@ def get_summary_list_command(client: Client, args: dict[str, Any]):
 
     if summary_type:
         data = raw_json_response.get("data", [])
-        title = get_command_title_string(f"Summary with " f"{summary_type.split('_')[0].capitalize()}", page, page_size)
+        title = get_command_title_string(f"Summary with {summary_type.split('_')[0].capitalize()}", page, page_size)
         if data:
             readable_output = summary_markdown_dict[summary_type](data, title)
         else:

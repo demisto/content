@@ -95,7 +95,7 @@ class PolyswarmConnector:
                 total_scans += 1
 
             demisto.debug(
-                "Positives: {positives} - Total Scans: {total_scans}".format(positives=positives, total_scans=total_scans)
+                f"Positives: {positives} - Total Scans: {total_scans}"
             )
 
             md5 = result.md5
@@ -122,7 +122,7 @@ class PolyswarmConnector:
         artifacts = argToList(hashes)
 
         for artifact in artifacts:
-            title = "PolySwarm File Reputation for Hash: %s" % artifact
+            title = f"PolySwarm File Reputation for Hash: {artifact}"
 
             demisto.debug(f"[file_reputation] {title}")
 
@@ -130,7 +130,7 @@ class PolyswarmConnector:
                 results = self.polyswarm_api.search(artifact)
 
             except Exception as err:
-                return_error("{ERROR_ENDPOINT}{err}".format(ERROR_ENDPOINT=ERROR_ENDPOINT, err=err))
+                return_error(f"{ERROR_ENDPOINT}{err}")
 
             error_msg = "Error fetching results. Please try again."
 
@@ -138,7 +138,7 @@ class PolyswarmConnector:
         return command_results
 
     def detonate_file(self, entry_id: dict) -> object:
-        title = "PolySwarm File Detonation for Entry ID: %s" % entry_id
+        title = f"PolySwarm File Detonation for Entry ID: {entry_id}"
 
         demisto.debug(f"[detonate_file] {title}")
 
@@ -153,7 +153,7 @@ class PolyswarmConnector:
             result = self.polyswarm_api.wait_for(instance)
 
         except Exception as err:
-            return_error("{ERROR_ENDPOINT}{err}".format(ERROR_ENDPOINT=ERROR_ENDPOINT, err=err))
+            return_error(f"{ERROR_ENDPOINT}{err}")
 
         error_msg = "Error submitting File."
 
@@ -165,7 +165,7 @@ class PolyswarmConnector:
         artifacts = argToList(hashes)
 
         for artifact in artifacts:
-            title = "PolySwarm Rescan for Hash: %s" % artifact
+            title = f"PolySwarm Rescan for Hash: {artifact}"
 
             demisto.debug(f"[rescan_file] {title}")
 
@@ -174,7 +174,7 @@ class PolyswarmConnector:
                 result = self.polyswarm_api.wait_for(instance)
 
             except Exception as err:
-                return_error("{ERROR_ENDPOINT}{err}".format(ERROR_ENDPOINT=ERROR_ENDPOINT, err=err))
+                return_error(f"{ERROR_ENDPOINT}{err}")
 
             error_msg = "Error rescaning File."
 
@@ -190,7 +190,7 @@ class PolyswarmConnector:
             self.polyswarm_api.download_to_handle(hash_file, handle_file)
             return fileResult(hash_file, handle_file.getvalue())
         except Exception as err:
-            return_error("{ERROR_ENDPOINT}{err}".format(ERROR_ENDPOINT=ERROR_ENDPOINT, err=err))
+            return_error(f"{ERROR_ENDPOINT}{err}")
 
     def url_reputation(self, param: dict, artifact_type: str) -> list:
         command_results = []
@@ -198,7 +198,7 @@ class PolyswarmConnector:
         artifacts = argToList(param[artifact_type])
 
         for artifact in artifacts:
-            title = "PolySwarm {} Reputation for: {}".format(artifact_type.upper(), artifact)
+            title = f"PolySwarm {artifact_type.upper()} Reputation for: {artifact}"
 
             demisto.debug(f"[url_reputation] {title}")
 
@@ -212,7 +212,7 @@ class PolyswarmConnector:
                 try:
                     socket.inet_aton(artifact)
                 except OSError:
-                    return_error("Invalid IP Address: {ip}".format(ip=artifact))
+                    return_error(f"Invalid IP Address: {artifact}")
 
             try:
                 # PolySwarm API: URL, IP and Domain are artifact_type='url'
@@ -231,7 +231,7 @@ class PolyswarmConnector:
                 polyscore = result.polyscore
 
             except Exception as err:
-                return_error("{ERROR_ENDPOINT}{err}".format(ERROR_ENDPOINT=ERROR_ENDPOINT, err=err))
+                return_error(f"{ERROR_ENDPOINT}{err}")
 
             if artifact_type == "ip":
                 object_name = "IP"
@@ -272,7 +272,7 @@ class PolyswarmConnector:
         """
         UUID is equal to Hash.
         """
-        title = "PolySwarm Report for UUID: %s" % hashes
+        title = f"PolySwarm Report for UUID: {hashes}"
 
         demisto.debug(f"[get_report] {title}")
 

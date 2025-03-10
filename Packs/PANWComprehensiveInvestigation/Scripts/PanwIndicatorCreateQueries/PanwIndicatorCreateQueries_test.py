@@ -13,7 +13,7 @@ def test_generate_ip_queries():
     """
     expected1 = {"CortexTrapsIP": "SELECT * from tms.threat where endPointHeader.agentIp='8.8.8.8'"}
     expected2 = {
-        "CortexTrapsIP": "SELECT * from tms.threat where endPointHeader.agentIp='8.8.8.8' OR " "endPointHeader.agentIp='1.1.1.1'"
+        "CortexTrapsIP": "SELECT * from tms.threat where endPointHeader.agentIp='8.8.8.8' OR endPointHeader.agentIp='1.1.1.1'"
     }
     queries1_1 = generate_ip_queries(["8.8.8.8"])
     queries1_2 = generate_ip_queries(["8.8.8.8", "12345"])
@@ -63,7 +63,7 @@ def test_generate_domain_queries():
     """
     expected1 = {"CortexThreatDomain": "SELECT * from panw.threat where misc LIKE 'demisto.com'"}
     expected2 = {
-        "CortexThreatDomain": "SELECT * from panw.threat where misc LIKE 'demisto.com' OR " "misc LIKE 'paloaltonetworks.com'"
+        "CortexThreatDomain": "SELECT * from panw.threat where misc LIKE 'demisto.com' OR misc LIKE 'paloaltonetworks.com'"
     }
     queries1_1 = generate_domain_queries(["demisto.com"])
     queries2_1 = generate_domain_queries(["demisto.com", "paloaltonetworks.com"])

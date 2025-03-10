@@ -87,7 +87,7 @@ def test_create_issue_command_with_multiselect_cf(mocker, redmine_client):
                 "tracker_id": "1",
                 "custom_fields": [
                     {"id": "4", "value": ["a", "b", "c"]},
-                    {"id": "1", "value": ("hello [], my name is paloalto," " paloalto")},
+                    {"id": "1", "value": ("hello [], my name is paloalto, paloalto")},
                 ],
                 "project_id": "1",
                 "watcher_user_ids": [1],
@@ -202,7 +202,7 @@ def test_create_issue_command_with_multiselect_cf_response(mocker, redmine_clien
             "tracker": {"name": "bug", "id": "1"},
             "custom_fields": [
                 {"name": "test", "value": ["a", "b", "c"]},
-                {"name": "test2", "value": ("hello [], my name is " "paloalto, paloalto")},
+                {"name": "test2", "value": ("hello [], my name is paloalto, paloalto")},
             ],
         }
     }
@@ -354,7 +354,7 @@ def test_create_issue_command_with_file_response(mocker, redmine_client):
     assert args.get("uploads", {})[0].get("token") == "111111"
     assert args.get("uploads", {})[0].get("filename") == "test file response"
     assert result.readable_output == (
-        "### The issue you created:\n|Id|Project|Tracker|Subject|\n" "|---|---|---|---|\n| 789 | testing | bug | testResponse |\n"
+        "### The issue you created:\n|Id|Project|Tracker|Subject|\n|---|---|---|---|\n| 789 | testing | bug | testResponse |\n"
     )
 
 
@@ -457,7 +457,7 @@ def test_update_issue_command_with_multiselect_cf(mocker, redmine_client):
                 "priority_id": "1",
                 "custom_fields": [
                     {"id": "4", "value": ["a", "b", "c"]},
-                    {"id": "1", "value": ("hello [], my name is " "paloalto, paloalto")},
+                    {"id": "1", "value": ("hello [], my name is paloalto, paloalto")},
                 ],
                 "watcher_user_ids": [1],
             }
@@ -840,7 +840,7 @@ def test_get_issues_list_command_invalid_custom_field(redmine_client):
     with pytest.raises(DemistoException) as e:
         get_issues_list_command(redmine_client, {"custom_field": "frf2rg2"})
     assert e.value.message == (
-        "Invalid custom field format, please follow the command description." " Error: list index out of range."
+        "Invalid custom field format, please follow the command description. Error: list index out of range."
     )
 
 
@@ -1365,7 +1365,7 @@ def test_get_users_command_response(mocker, redmine_client):
     }
     result = get_users_command(redmine_client, {})
     assert result.readable_output == (
-        "### Users List:\n|Id|Login|Admin|Firstname|Lastname|\n|---|---|---|---|---|\n" "| 1 | admin | True | test | response |\n"
+        "### Users List:\n|Id|Login|Admin|Firstname|Lastname|\n|---|---|---|---|---|\n| 1 | admin | True | test | response |\n"
     )
 
 

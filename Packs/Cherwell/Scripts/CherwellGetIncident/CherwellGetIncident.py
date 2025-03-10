@@ -79,7 +79,7 @@ def build_output_list():
 result = demisto.executeCommand("cherwell-get-business-object", build_arguments())[0]
 business_object = list(result.get("EntryContext").items())[0][1]
 md = tableToMarkdown(
-    "{0}: {1}".format(BUSINESS_OBJECT_TYPE.capitalize(), args.get("id_value")),
+    "{}: {}".format(BUSINESS_OBJECT_TYPE.capitalize(), args.get("id_value", "")),
     business_object,
     headers=build_output_list(),
     headerTransform=pascalToSpace,

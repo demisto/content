@@ -398,9 +398,8 @@ def test_limit_validate_input(capfd):
         "from": "0",
         "limit": "-1",
     }
-    with capfd.disabled():
-        with pytest.raises(ValueError, match=f"Limit should a positive number upto 50, limit: {args.get('limit', '50')}"):
-            validate_input(args=args)
+    with capfd.disabled(), pytest.raises(ValueError, match=f"Limit should a positive number upto 50, limit: {args.get('limit', '50')}"):
+        validate_input(args=args)
 
 
 def test_sdate_validate_input(capfd):

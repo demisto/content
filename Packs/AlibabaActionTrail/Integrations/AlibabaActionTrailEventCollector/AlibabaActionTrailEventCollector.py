@@ -64,7 +64,7 @@ class AlibabaEventsClient(IntegrationEventsClient):
         headers["Date"] = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
 
         signature = get_request_authorization(
-            f"/logstores/{self.logstore_name}", self.access_key, self.request.params.dict(by_alias=True), headers
+            f"/logstores/{self.logstore_name}", self.access_key, self.request.params.dict(by_alias=True), headers   # type: ignore
         )  # type: ignore
 
         headers["Authorization"] = "LOG " + self.access_key_id + ":" + signature

@@ -20,7 +20,7 @@ HTTP_ERROR = {
     404: "The resource cannot be found.",
     407: "Proxy Error - cannot connect to proxy. Either try clearing the 'Use system proxy' check-box or"
     "check the host, authentication details and connection details for the proxy.",
-    500: "The server encountered an internal error for VMWare Workspace ONE UEM " "and was unable to complete your request.",
+    500: "The server encountered an internal error for VMWare Workspace ONE UEM and was unable to complete your request.",
 }
 ARG_TO_PARAM_OWNERSHIP = {"corporate owned": "C", "employee owned": "E", "shared": "S", "undefined": "undefined"}
 REVERSED_ARG_TO_PARAM_OWNERSHIP = {"C": "Corporate owned", "E": "Employee owned", "S": "Shared", "Undefined": "Undefined"}
@@ -110,7 +110,7 @@ class Client(BaseClient):
         elif response.status_code > 500:
             err_msg = HTTP_ERROR[500]
         elif response.status_code not in HTTP_ERROR:
-            err_msg = "Error in API call [{}] - {}".format(response.status_code, response.reason)
+            err_msg = f"Error in API call [{response.status_code}] - {response.reason}"
             headers = response.headers
             if "application/json" in headers.get("Content-Type", ""):
                 error_entry = response.json()
@@ -295,7 +295,7 @@ def prepare_context_and_hr_for_devices_search(response: dict) -> tuple[Union[dic
         compromised = "Unknown" if isinstance(compromised, str) else "Compromised" if compromised else "Not Compromised"
 
         ownership = device.get("Ownership", "")
-        ownership = REVERSED_ARG_TO_PARAM_OWNERSHIP[ownership] if ownership in REVERSED_ARG_TO_PARAM_OWNERSHIP else ""
+        ownership = REVERSED_ARG_TO_PARAM_OWNERSHIP.get(ownership, "")
 
         hr_devices_list.append(
             {

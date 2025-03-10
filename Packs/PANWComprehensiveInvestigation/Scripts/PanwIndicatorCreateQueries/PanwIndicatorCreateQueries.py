@@ -12,7 +12,7 @@ def generate_ip_queries(ips: list):
 
     queries = {}
     # Cortex traps IP
-    ip_fields = ["endPointHeader.agentIp='{}'".format(ip) for ip in ips]
+    ip_fields = [f"endPointHeader.agentIp='{ip}'" for ip in ips]
     query_cortex_traps_ip = " OR ".join(ip_fields)
     queries["CortexTrapsIP"] = (
         f"SELECT * from tms.threat where "  # guardrails-disable-line
@@ -20,7 +20,7 @@ def generate_ip_queries(ips: list):
     )
 
     # Cortex Analytics IP
-    ip_fields = ["endPointHeader.agentIp='{}'".format(ip) for ip in ips]
+    ip_fields = [f"endPointHeader.agentIp='{ip}'" for ip in ips]
     query_cortex_analytics_ip = " OR ".join(ip_fields)
     queries["CortexAnalyticsIP"] = (
         f"SELECT * from tms.analytics where "  # guardrails-disable-line
@@ -28,7 +28,7 @@ def generate_ip_queries(ips: list):
     )
 
     # Cortex Traffic IP
-    ip_fields = ["src='{0}' OR dst='{0}'".format(ip) for ip in ips]
+    ip_fields = [f"src='{ip}' OR dst='{ip}'" for ip in ips]
     query_cortex_traffic_ip = " OR ".join(ip_fields)
     queries["CortexTrafficIP"] = (
         f"SELECT * from panw.traffic where "  # guardrails-disable-line
@@ -36,7 +36,7 @@ def generate_ip_queries(ips: list):
     )
 
     # Cortex Threat IP
-    ip_fields = ["src='{0}' OR dst='{0}'".format(ip) for ip in ips]
+    ip_fields = [f"src='{ip}' OR dst='{ip}'" for ip in ips]
     query_cortex_threat_ip = " OR ".join(ip_fields)
     queries["CortexThreatIP"] = (
         f"SELECT * from panw.threat where "  # guardrails-disable-line
@@ -49,7 +49,7 @@ def generate_ip_queries(ips: list):
     queries["AutofocusSessionsIP"] = json.dumps(query_autofocus_sessions_ip)
 
     # Panorama IP
-    ip_fields = ["( addr.src in {0} ) or ( addr.dst in {0} )".format(ip) for ip in ips]
+    ip_fields = [f"( addr.src in {ip} ) or ( addr.dst in {ip} )" for ip in ips]
     query_panorama_ip = " or ".join(ip_fields)
     queries["PanoramaIP"] = query_panorama_ip
 
@@ -62,7 +62,7 @@ def generate_hash_queries(hashes: list):
 
     queries = {}
     # Cortex traps Hash
-    hash_fields = ["messageData.files.sha256='{}'".format(hash) for hash in hashes]
+    hash_fields = [f"messageData.files.sha256='{hash}'" for hash in hashes]
     query_cortex_traps_hash = " OR ".join(hash_fields)
     queries["CortexTrapsHash"] = (
         f"SELECT * from tms.threat where "  # guardrails-disable-line
@@ -70,7 +70,7 @@ def generate_hash_queries(hashes: list):
     )
 
     # Cortex Analytics Hash
-    hash_fields = ["messageData.sha256='{}'".format(hash) for hash in hashes]
+    hash_fields = [f"messageData.sha256='{hash}'" for hash in hashes]
     query_cortex_analytics_hash = " OR ".join(hash_fields)
     queries["CortexAnalyticsHash"] = (
         f"SELECT * from tms.analytics where "  # guardrails-disable-line
@@ -78,7 +78,7 @@ def generate_hash_queries(hashes: list):
     )
 
     # Cortex Threat Hash
-    hash_fields = ["filedigest='{}'".format(hash) for hash in hashes]
+    hash_fields = [f"filedigest='{hash}'" for hash in hashes]
     query_cortex_threat_hash = " OR ".join(hash_fields)
     queries["CortexThreatHash"] = (
         f"SELECT * from panw.threat where "  # guardrails-disable-line
@@ -91,7 +91,7 @@ def generate_hash_queries(hashes: list):
     queries["AutofocusSessionsHash"] = json.dumps(query_autofocus_sessions_hash)
 
     # Panorama IP
-    hash_fields = ["( filedigest eq {} )".format(hash) for hash in hashes]
+    hash_fields = [f"( filedigest eq {hash} )" for hash in hashes]
     query_panorama_hash = " or ".join(hash_fields)
     queries["PanoramaHash"] = query_panorama_hash
 
@@ -105,7 +105,7 @@ def generate_domain_queries(domains: list):
     queries = {}
 
     # Cortex Threat Domain
-    domain_fields = ["misc LIKE '{}'".format(domain) for domain in domains]
+    domain_fields = [f"misc LIKE '{domain}'" for domain in domains]
     query_cortex_threat_domain = " OR ".join(domain_fields)
     queries["CortexThreatDomain"] = (
         f"SELECT * from panw.threat where "  # guardrails-disable-line
@@ -118,7 +118,7 @@ def generate_domain_queries(domains: list):
     queries["AutofocusSessionsDomain"] = json.dumps(query_autofocus_sessions_domain)
 
     # Panorama Domain
-    domain_fields = ["( url contains {} )".format(domain) for domain in domains]
+    domain_fields = [f"( url contains {domain} )" for domain in domains]
     query_panorama_domain = " or ".join(domain_fields)
     queries["PanoramaDomain"] = query_panorama_domain
 

@@ -13,7 +13,7 @@ MAX_LIMIT = 100
 MIN_LIMIT = 0
 
 INVALID_ID_DEMISTO_ERROR = (
-    "Error. This may be due to Invalid ID for one or more fields that request IDs. " "Please make sure all IDs are correct."
+    "Error. This may be due to Invalid ID for one or more fields that request IDs. Please make sure all IDs are correct."
 )
 RESPONSE_NOT_IN_FORMAT_ERROR = "The request succeeded, but a parse error occurred."
 
@@ -244,7 +244,7 @@ def handle_file_attachment(client: Client, args: Dict[str, Any], entry_id: str):
     except DemistoException as e:
         if "Could not upload file with entry id" in e.message:
             raise DemistoException(e.message)
-        raise DemistoException("Could not create a token for your file- please try again." f"With error {e}.")
+        raise DemistoException(f"Could not create a token for your file- please try again. With error {e}.")
 
 
 """ COMMAND FUNCTIONS """
@@ -521,7 +521,7 @@ def get_issue_by_id_command(client: Client, args: dict[str, Any]):
         return command_results
     except Exception as e:
         if "Error in API call [422]" in e.args[0] or "Error in API call [404]" in e.args[0]:
-            raise DemistoException("Invalid ID for one or more fields that request IDs " "Please make sure all IDs are correct")
+            raise DemistoException("Invalid ID for one or more fields that request IDs Please make sure all IDs are correct")
         raise
 
 

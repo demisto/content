@@ -369,15 +369,15 @@ def fetch_incidents(client, method, token, maxResults):
     :param token: server access token
     :param maxResults: limit for single fetch from server
     :return: incidents from server
-    """ ""
+    """
     last_run = demisto.getLastRun()
     args = demisto.params()
 
-    if "total_alert_count" not in last_run.keys():
+    if "total_alert_count" not in last_run:
         last_run["total_alert_count"] = 0
-    if "fetched_alert_count" not in last_run.keys():
+    if "fetched_alert_count" not in last_run:
         last_run["fetched_alert_count"] = 0
-    if "event_pull_start_date" not in last_run.keys():
+    if "event_pull_start_date" not in last_run:
         last_run["event_pull_start_date"] = date.today().strftime("%Y/%m/%d")
 
     params = {

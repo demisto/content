@@ -965,5 +965,5 @@ def test_create_cisco_umbrella_args():
         args["intrusion_action"] = "abcd"
         create_cisco_umbrella_args(50, 1, args)
     assert e.value.args[0] == (
-        "Invalid input Error: supported values for intrusion_action are:" " 'would_block', 'blocked' and 'detected'."
+        "Invalid input Error: supported values for intrusion_action are: 'would_block', 'blocked' and 'detected'."
     )

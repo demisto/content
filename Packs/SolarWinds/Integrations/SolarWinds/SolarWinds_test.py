@@ -105,7 +105,7 @@ def test_validate_common_arguments_failure_string_arg(args, error_msg):
             {"node": "temporary", "event_type": "warning"},
             " WHERE ( EventTypeName = 'warning' ) AND ( Node = 'temporary' ) ORDER BY EventID ASC WITH ROWS 1 TO 50",
         ),
-        ({"event_id": "1, 2"}, " WHERE ( EventID = 1 OR EventID = 2 ) ORDER BY " "EventID ASC WITH ROWS 1 TO 50"),
+        ({"event_id": "1, 2"}, " WHERE ( EventID = 1 OR EventID = 2 ) ORDER BY EventID ASC WITH ROWS 1 TO 50"),
     ],
 )
 def test_validate_and_prepare_query_for_event_list_success(args, query):
@@ -185,7 +185,7 @@ def test_swis_event_list_failure(client):
         ({"severity": "Notice"}, " WHERE ( Severity = 4 ) ORDER BY AlertActiveID ASC WITH ROWS 1 TO 50"),
         (
             {"alert_id": "1, 2"},
-            " WHERE ( AlertActiveID = 1 OR AlertActiveID = 2 ) ORDER BY " "AlertActiveID ASC WITH ROWS 1 TO 50",
+            " WHERE ( AlertActiveID = 1 OR AlertActiveID = 2 ) ORDER BY AlertActiveID ASC WITH ROWS 1 TO 50",
         ),
     ],
 )
@@ -279,7 +279,7 @@ def test_swis_alert_list_failure(client):
 def test_convert_query_output_to_hr_success():
     from SolarWinds import convert_query_output_to_hr
 
-    expected_response = util_load_json(os.path.join(os.path.dirname(__file__), "test_data", "test_swis_query_success" ".json"))
+    expected_response = util_load_json(os.path.join(os.path.dirname(__file__), "test_data", "test_swis_query_success.json"))
     hr_response = convert_query_output_to_hr(expected_response.get("http_mock").get("results"))
     assert hr_response == expected_response.get("readable")
 
@@ -306,7 +306,7 @@ def test_convert_query_output_to_hr_no_data():
 def test_swis_query_success(http_request, client, args):
     from SolarWinds import swis_query_command
 
-    expected_response = util_load_json(os.path.join(os.path.dirname(__file__), "test_data", "test_swis_query_success" ".json"))
+    expected_response = util_load_json(os.path.join(os.path.dirname(__file__), "test_data", "test_swis_query_success.json"))
     http_request.return_value = expected_response["http_mock"]
     response = swis_query_command(client, args)
     assert response.outputs == expected_response.get("http_mock").get("results")
@@ -346,7 +346,7 @@ def test_swis_query_failure_no_query_argument(client, args):
 def test_fetch_incidents_alerts_success(http_request, client):
     from SolarWinds import fetch_incidents
 
-    expected_response = util_load_json(os.path.join(os.path.dirname(__file__), "test_data", "test_fetch_incidents" ".json"))[
+    expected_response = util_load_json(os.path.join(os.path.dirname(__file__), "test_data", "test_fetch_incidents.json"))[
         "alerts"
     ]
     params = {
@@ -357,7 +357,7 @@ def test_fetch_incidents_alerts_success(http_request, client):
         "object_types": ["Node"],
     }
     raw_response = util_load_json(
-        os.path.join(os.path.dirname(__file__), "test_data", "test_fetch_incidents_raw_response" ".json")
+        os.path.join(os.path.dirname(__file__), "test_data", "test_fetch_incidents_raw_response.json")
     )["alerts"]
     http_request.return_value = raw_response
 
@@ -370,12 +370,12 @@ def test_fetch_incidents_alerts_success(http_request, client):
 def test_fetch_incidents_events_success(http_request, client):
     from SolarWinds import fetch_incidents
 
-    expected_response = util_load_json(os.path.join(os.path.dirname(__file__), "test_data", "test_fetch_incidents" ".json"))[
+    expected_response = util_load_json(os.path.join(os.path.dirname(__file__), "test_data", "test_fetch_incidents.json"))[
         "events"
     ]
     params = {"fetch_type": "Event", "max_fetch": "5", "first_fetch": "2 days ago", "event_types": ["Alert Triggered"]}
     raw_response = util_load_json(
-        os.path.join(os.path.dirname(__file__), "test_data", "test_fetch_incidents_raw_response" ".json")
+        os.path.join(os.path.dirname(__file__), "test_data", "test_fetch_incidents_raw_response.json")
     )["events"]
     http_request.return_value = raw_response
 

@@ -213,11 +213,11 @@ class Client:
         refresh_prefix = "refresh_token:"
         if AUTH_CODE.startswith(refresh_prefix):  # for testing we allow setting the refresh token directly
             demisto.debug("Using refresh token set as auth_code")
-            return AUTH_CODE[len(refresh_prefix) :]
+            return AUTH_CODE[len(refresh_prefix):]
         demisto.info(f"Going to obtain refresh token from google's oauth service. For client id: {CLIENT_ID}")
         code = AUTH_CODE
         if AUTH_CODE.lower().startswith(AUTH_CODE_UNQUOTE_PREFIX):
-            code = urllib.parse.unquote(AUTH_CODE[len(AUTH_CODE_UNQUOTE_PREFIX) :])
+            code = urllib.parse.unquote(AUTH_CODE[len(AUTH_CODE_UNQUOTE_PREFIX):])
         body = {
             "client_id": CLIENT_ID,
             "grant_type": "authorization_code",
@@ -227,7 +227,7 @@ class Client:
             # old OOB authentication
             verifier = integration_context.get("verifier")
             if not verifier:
-                raise ValueError("Missing verifier. Make sure to follow the auth flow." " Start by running !gmail-auth-link.")
+                raise ValueError("Missing verifier. Make sure to follow the auth flow. Start by running !gmail-auth-link.")
             body["code_verifier"] = verifier
             body["redirect_uri"] = "urn:ietf:wg:oauth:2.0:oob"
         else:
@@ -238,7 +238,7 @@ class Client:
         resp, content = h.request(TOKEN_URL, "POST", urllib.parse.urlencode(body), TOKEN_FORM_HEADERS)
         if resp.status not in {200, 201}:
             raise ValueError(
-                f"Error obtaining refresh token. Make sure to follow auth flow. " f"{resp.status} {resp.reason} {content}"
+                f"Error obtaining refresh token. Make sure to follow auth flow. {resp.status} {resp.reason} {content}"
             )
         resp_json = json.loads(content)
         if not resp_json.get("refresh_token"):
@@ -492,11 +492,13 @@ class Client:
             context_gmail["Body"], context_gmail["Html"], context_gmail["Attachments"] = self.parse_mail_parts(
                 email_data.get("payload", {}).get("parts", [])
             )
-            context_gmail["Attachment Names"] = ", ".join([attachment["Name"] for attachment in context_gmail["Attachments"]])  # type: ignore
+            context_gmail["Attachment Names"] = ", ".join([attachment["Name"]
+                                                          for attachment in context_gmail["Attachments"]])  # type: ignore
             context_email["Body/Text"], context_email["Body/HTML"], context_email["Attachments"] = self.parse_mail_parts(
                 email_data.get("payload", {}).get("parts", [])
             )
-            context_email["Attachment Names"] = ", ".join([attachment["Name"] for attachment in context_email["Attachments"]])  # type: ignore
+            context_email["Attachment Names"] = ", ".join([attachment["Name"]
+                                                          for attachment in context_email["Attachments"]])  # type: ignore
 
         return context_gmail, headers, context_email, occurred, occurred_is_valid
 
@@ -785,7 +787,7 @@ class Client:
                 "ID": cid,
             }
             attachments.append(attachment)
-            cleanBody += htmlBody[lastIndex : m.start(1)] + "cid:" + attachment["cid"]
+            cleanBody += htmlBody[lastIndex: m.start(1)] + "cid:" + attachment["cid"]
             lastIndex = m.end() - 1
 
         cleanBody += htmlBody[lastIndex:]
@@ -1073,7 +1075,7 @@ class Client:
                 raise DemistoException(f'Invalid redirect URI: "{REDIRECT_URI}". The URI should start with "http".')
             if CLIENT_ID == OOB_CLIENT_ID:
                 raise DemistoException(
-                    "Client ID is not set. " "Make sure to set the Client ID param of the integration configuration."
+                    "Client ID is not set. Make sure to set the Client ID param of the integration configuration."
                 )
             url_params["redirect_uri"] = REDIRECT_URI
             url_params["access_type"] = "offline"

@@ -153,7 +153,7 @@ EXPECTED_GMAIL_CONTEXT = {
     "Headers": [
         {
             "Name": "Received",
-            "Value": "from 1041831412594 named " "unknown by gmailapi.google.com with HTTPREST; Mon, 28 Oct 2019 04:32:15 -0400",
+            "Value": "from 1041831412594 named unknown by gmailapi.google.com with HTTPREST; Mon, 28 Oct 2019 04:32:15 -0400",
         },
         {"Name": "Content-Type", "Value": 'mixed; boundary="===============4922146810840031257=="'},
         {"Name": "MIME-Version", "Value": "1.0"},
@@ -182,7 +182,7 @@ def test_header_to_date():
     semi_valid_header_date = Client.get_date_from_email_header("26 Aug 2019 14:40:04 +0300")
     header_date_no_tz = Client.get_date_from_email_header("26 Aug 2019 11:40:04")
     header_x_received = Client.get_date_from_email_header(
-        "by 2002:a17:90a:77cb:0:0:0:0 with SMTP id e11csp4670216pjs;        " "Mon, 26 Aug 2019 03:40:04 -0800 (PST)"
+        "by 2002:a17:90a:77cb:0:0:0:0 with SMTP id e11csp4670216pjs;        Mon, 26 Aug 2019 03:40:04 -0800 (PST)"
     )
     # all should be the same
     assert valid_header_date == semi_valid_header_date
