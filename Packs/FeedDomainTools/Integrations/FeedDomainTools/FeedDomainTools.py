@@ -158,6 +158,9 @@ class DomainToolsClient(BaseClient):
                 indicator_type = "Domain"
                 # indicator_type = auto_detect_indicator_type(indicator)
 
+                # for `domainrdap` feed, we have more data to display including the parsed data.
+                parsed_record = json_feed.get("parsed_record", {})
+
                 if indicator and indicator_type:
                     yield {
                         "value": indicator,
@@ -165,6 +168,7 @@ class DomainToolsClient(BaseClient):
                         "timestamp": timestamp,
                         "tags": ["DomainToolsFeeds", self.feed_type] + ud_tags,
                         "tlp_color": self.tlp_color,
+                        "parsed_record": parsed_record
                     }
 
                     limit_counter += 1
@@ -210,6 +214,7 @@ def fetch_indicators(
             timestamp_ = item.get("timestamp")
             tags_ = item.get("tags", [])
             tlp_color_ = item.get("tlp_color")
+            parsed_record_ = item.get("parsed_record")
 
             indicator_tags = ",".join(tags_).rstrip(",")
 
@@ -218,6 +223,9 @@ def fetch_indicators(
                 "type": type_,
                 "timestamp": timestamp_,
             }
+
+            if parsed_record_:
+                raw_data["parsed_record"] = parsed_record_
 
             # Create indicator object for each value.
             indicator_obj = {
