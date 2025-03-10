@@ -1723,6 +1723,26 @@ def test_get_container_scan_results_command(requests_mock):
     assert get_container_scan_results(client, args).raw_response == response
 
 
+def test_get_container_scan_results_command_with_all_results(mocker):
+    """
+    Given:
+        - A Prisma Cloud Compute client instance.
+        - Arguments indicating that all container scan results should be retrieved.
+
+    When:
+        - Calling the `get_container_scan_results` function with all_results param = True.
+
+    Then:
+        - Verify that the `_get_all_results` method of `PrismaCloudComputeClient` is called.
+    """
+    from PaloAltoNetworks_PrismaCloudCompute import get_container_scan_results, PrismaCloudComputeClient
+    mock_helper = mocker.patch.object(PrismaCloudComputeClient, "_get_all_results")
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
+    args = {"all_results": "true"}
+    get_container_scan_results(client, args)
+    mock_helper.assert_called_once()
+
+
 def test_get_hosts_info_command(requests_mock):
     """
     Given:
