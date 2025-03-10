@@ -403,7 +403,8 @@ def disconnect_active_session_command(client: Client, args: Dict[str, Any]) -> C
     Disconnects an active session by the session_id which is a mandatory field.
     """
     session_id = args['session_id']
-    url_suffix = f"/session/{session_id}/disconnect"
+    encoded_session_id = urllib.parse.quote(session_id, safe='')
+    url_suffix = f"/session/{encoded_session_id}/disconnect"
     body = {"id": session_id, "confirm_disconnect": True}
 
     res = client.prepare_request(method='POST', params={}, url_suffix=url_suffix, body=body)
