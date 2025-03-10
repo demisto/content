@@ -87,7 +87,7 @@ class Client(BaseClient):
             REFRESH_TOKEN_STR: refresh_token,
         }
         set_integration_context(context=integration_context)
-        demisto.info('successfully updated access token')
+        demisto.debug('successfully updated access token')
 
         return access_token
 
