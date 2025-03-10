@@ -389,35 +389,38 @@ def get_events_for_type(
     client: Client, last_run: dict, event_type: str, max_fetch: int, start_date: str = "", end_date: str = ""
 ) -> tuple[list[dict], dict]:
     """
-    Fetches events from the Jamf Protect API within a specified date range.
+    Fetches events of a specified type from the Jamf Protect API.
 
-    This function fetches computer type events from the Jamf Protect API based on the provided start date.
-    It fetches events up to the maximum number specified by max_fetch.
-    The function also uses the information from the last run to continue fetching from where it left off in the previous run.
+    Determines the start date using `last_run` and fetches up to `max_fetch` events. Handles pagination and filters duplicates
+    to ensure continuity between runs.
 
     Args:
-        client (Client): An instance of the Client class for interacting with the API.
-        start_date (str): The start date for fetching events in '%Y-%m-%dT%H:%M:%SZ' format.
-        max_fetch (int): The maximum number of events to fetch.
-        last_run (dict): A dictionary containing information about the last run.
+        client (Client): API client instance.
+        last_run (dict): The `last_run` data for the specific event type.
+        event_type (str): Type of events to fetch.
+        max_fetch (int): Max number of events to retrieve.
+        start_date (str, optional): Start date ('%Y-%m-%dT%H:%M:%SZ'). Defaults to "".
+        end_date (str, optional): End date (same format). Defaults to "".
 
     Returns:
-        tuple: A tuple containing two elements:
-            - A list of dictionaries. Each dictionary represents an event.
-            - A dictionary with new last run values,
-             the end date of the fetched events and a continuance token if the fetched reached the max limit.
+        tuple: (List of events, updated `last_run` data).
     """
     created, current_date = calculate_fetch_dates(start_date, last_run, end_date)
     command_args = {"created": created, "end_date": current_date}
     next_page = last_run.get("next_page", "")
 
     events, page_info = get_events(client, event_type, max_fetch, next_page, command_args)
-    filtered_events = [event for event in events if (event.get("date") or event.get(
-        "created")) != last_run.get("last_fetch")] if events else events
-    demisto.debug(f"Filtered out {len(events)-len(filtered_events)} duplicate events.")
 
-    latest_event = max(filter(None, (arg_to_datetime(event.get("created") or event.get("date"), DATE_FORMAT)
-                                     for event in filtered_events))).strftime(DATE_FORMAT) if filtered_events else current_date
+    filtered_events = [
+        event for event in events
+        if (event_time := event.get("date") or event.get("created"))
+        and arg_to_datetime(event_time) != arg_to_datetime(last_run.get("last_fetch"))
+    ] if events and last_run.get("last_fetch") else events
+
+    demisto.debug(f"Filtered out {len(events) - len(filtered_events)} duplicate events.")
+
+    latest_event = max(filter(None, (arg_to_datetime(event.get("created") or event.get("date")) for event in filtered_events))
+                       ).strftime(DATE_FORMAT) if filtered_events else current_date
 
     new_last_fetch_date = max(created, latest_event)
     new_last_run = {"last_fetch": new_last_fetch_date}
