@@ -6,19 +6,19 @@ from datetime import timedelta
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-VENDOR = 'aruba'
-PRODUCT = 'central'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+VENDOR = "aruba"
+PRODUCT = "central"
 MAX_GET_AUDIT_LIMIT = 100  # Maximum limit accepted by get audit events API
 MAX_AUDIT_API_REQS = 10
 MAX_GET_EVENTS_LIMIT = 1000  # Maximum limit accepted by get events API
 MAX_EVENT_API_REQS = 5
-AUDIT_TS = 'ts'
-NETWORKING_TS = 'timestamp'
+AUDIT_TS = "ts"
+NETWORKING_TS = "timestamp"
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
@@ -36,37 +36,35 @@ class Client(BaseClient):
 
     def get_access_token(self, use_cached_token=True) -> str:
         """
-         Get access token for Aruba Central API.
-         If one exists in the integration context and is not expired, returns it.
-         Otherwise, refreshes the access token using the refresh token and returns the new token.
+        Get access token for Aruba Central API.
+        If one exists in the integration context and is not expired, returns it.
+        Otherwise, refreshes the access token using the refresh token and returns the new token.
 
-         Args:
-         use_cached_token (bool): Whether to use the cached access token if it exists and is not expired.
-                                  If set to false, the token will either be refreshed or a new one will be created.
+        Args:
+        use_cached_token (bool): Whether to use the cached access token if it exists and is not expired.
+                                 If set to false, the token will either be refreshed or a new one will be created.
 
-         Returns:
-             Valid access token to the Aruba Central API.
+        Returns:
+            Valid access token to the Aruba Central API.
         """
         integration_context = get_integration_context()
-        access_token = integration_context.get('access_token')
-        expiry_time = integration_context.get('expiry_time', 0)
-        refresh_token = integration_context.get('refresh_token')
+        access_token = integration_context.get("access_token")
+        expiry_time = integration_context.get("expiry_time", 0)
+        refresh_token = integration_context.get("refresh_token")
 
         if use_cached_token and access_token and expiry_time > int(time.time()):
-            demisto.debug('Returning cached access token')
+            demisto.debug("Returning cached access token")
             return access_token
         elif isinstance(refresh_token, str):
-            demisto.debug('Refreshing access token.')
+            demisto.debug("Refreshing access token.")
             access_token, refresh_token, validity_duration = self.refresh_access_token(refresh_token)
         else:
-            demisto.debug('Acquiring new access token via oauth.')
+            demisto.debug("Acquiring new access token via oauth.")
             access_token, refresh_token, validity_duration = self.oauth_sequence()
 
-        integration_context.update({
-            'access_token': access_token,
-            'expiry_time': int(time.time()) + validity_duration,
-            'refresh_token': refresh_token
-        })
+        integration_context.update(
+            {"access_token": access_token, "expiry_time": int(time.time()) + validity_duration, "refresh_token": refresh_token}
+        )
         set_integration_context(integration_context)
 
         return access_token
@@ -83,30 +81,30 @@ class Client(BaseClient):
             refresh_token (str): The next refresh token.
             expires_in (int): The validity duration of the new access token in seconds.
         """
-        headers = {'Content-Type': 'application/json'}
+        headers = {"Content-Type": "application/json"}
         params = {
-            'grant_type': 'refresh_token',
-            'client_id': self.client_id,
-            'client_secret': self.client_secret,
-            'refresh_token': refresh_token
+            "grant_type": "refresh_token",
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
+            "refresh_token": refresh_token,
         }
 
         try:
             token_resp = self._http_request(
-                method='POST',
-                url_suffix='/oauth2/token',
+                method="POST",
+                url_suffix="/oauth2/token",
                 headers=headers,
                 params=params,
             )
 
         except DemistoException as e:
             if "Invalid refresh_token" in str(e):
-                demisto.debug('Refresh token is invalid, acquiring new access token via oauth.')
+                demisto.debug("Refresh token is invalid, acquiring new access token via oauth.")
                 return self.oauth_sequence()
 
             raise e
 
-        return token_resp['access_token'], token_resp['refresh_token'], token_resp['expires_in']
+        return token_resp["access_token"], token_resp["refresh_token"], token_resp["expires_in"]
 
     def oauth_sequence(self) -> tuple[str, str, int]:
         """
@@ -130,30 +128,31 @@ class Client(BaseClient):
             session (str): Session object obtained from login request
         """
         headers = {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
+            "Content-Type": "application/json",
+            "Accept": "application/json",
         }
         params = {
-            'client_id': self.client_id,
+            "client_id": self.client_id,
         }
         json_data = {
-            'username': self.user_name,
-            'password': self.user_password,
+            "username": self.user_name,
+            "password": self.user_password,
         }
         response: requests.Response = self._http_request(
-            method='POST',
-            url_suffix='/oauth2/authorize/central/api/login',
+            method="POST",
+            url_suffix="/oauth2/authorize/central/api/login",
             headers=headers,
             params=params,
             json_data=json_data,
-            resp_type='response',
+            resp_type="response",
         )
-        csrf_token = response.cookies.get('csrftoken')
-        session = response.cookies.get('session')
+        csrf_token = response.cookies.get("csrftoken")
+        session = response.cookies.get("session")
         if not csrf_token or not session:
-            raise DemistoException('Failed to acquire CSRF token and session from login request. '
-                                   'Check if the credentials are valid.')
-        demisto.debug(f'Login request response: {csrf_token=}, {session=}')
+            raise DemistoException(
+                "Failed to acquire CSRF token and session from login request. " "Check if the credentials are valid."
+            )
+        demisto.debug(f"Login request response: {csrf_token=}, {session=}")
         return csrf_token, session
 
     def request_auth_code(self, csrf_token: str, session: str) -> str:
@@ -168,27 +167,27 @@ class Client(BaseClient):
             auth_code (str): Authorization code obtained from the auth code request
         """
         headers = {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': csrf_token,
-            'Cookie': f'session={session}',
+            "Content-Type": "application/json",
+            "X-CSRF-Token": csrf_token,
+            "Cookie": f"session={session}",
         }
         params = {
-            'client_id': self.client_id,
-            'response_type': 'code',
-            'scope': 'read',
+            "client_id": self.client_id,
+            "response_type": "code",
+            "scope": "read",
         }
         json_data = {
-            'customer_id': self.customer_id,
+            "customer_id": self.customer_id,
         }
         response = self._http_request(
-            method='POST',
-            url_suffix='/oauth2/authorize/central/api',
+            method="POST",
+            url_suffix="/oauth2/authorize/central/api",
             headers=headers,
             params=params,
             json_data=json_data,
         )
-        demisto.debug(f'Auth code request response: {response}')
-        return response.get('auth_code')
+        demisto.debug(f"Auth code request response: {response}")
+        return response.get("auth_code")
 
     def request_access_token(self, auth_code: str) -> tuple[str, str, int]:
         """
@@ -203,24 +202,24 @@ class Client(BaseClient):
             validity_duration (int): The validity duration of the access token in seconds
         """
         headers = {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
         }
         json_data = {
-            'client_id': self.client_id,
-            'client_secret': self.client_secret,
-            'grant_type': 'authorization_code',
-            'code': auth_code,
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
+            "grant_type": "authorization_code",
+            "code": auth_code,
         }
         response = self._http_request(
-            method='POST',
-            url_suffix='/oauth2/token',
+            method="POST",
+            url_suffix="/oauth2/token",
             headers=headers,
             json_data=json_data,
         )
-        demisto.debug(f'Access token request response: {response}')
-        return response.get('access_token'), response.get('refresh_token'), response.get('expires_in')
+        demisto.debug(f"Access token request response: {response}")
+        return response.get("access_token"), response.get("refresh_token"), response.get("expires_in")
 
-    def http_request(self, method: str, url_suffix: str = '', params: dict = {}):
+    def http_request(self, method: str, url_suffix: str = "", params: dict = {}):
         """
         Make an http request to the Aruba Central API with the provided parameters.
 
@@ -233,8 +232,8 @@ class Client(BaseClient):
             Response from the Aruba Central API
         """
         headers = {
-            'accept': 'application/json',
-            'authorization': f'Bearer {self.get_access_token()}',
+            "accept": "application/json",
+            "authorization": f"Bearer {self.get_access_token()}",
         }
 
         try:
@@ -245,9 +244,9 @@ class Client(BaseClient):
                 headers=headers,
             )
         except DemistoException as e:
-            if 'access token is invalid' in str(e):
-                demisto.debug('Access token is invalid, refreshing and retrying the request')
-                headers['authorization'] = f'Bearer {self.get_access_token(use_cached_token=False)}'
+            if "access token is invalid" in str(e):
+                demisto.debug("Access token is invalid, refreshing and retrying the request")
+                headers["authorization"] = f"Bearer {self.get_access_token(use_cached_token=False)}"
                 response = self._http_request(
                     method=method,
                     url_suffix=url_suffix,
@@ -273,37 +272,37 @@ class Client(BaseClient):
             events (list): list of audit events
         """
         if amount_to_fetch > MAX_AUDIT_API_REQS * MAX_GET_AUDIT_LIMIT:
-            demisto.debug('API requests required to satisfy limit exceeded maximum allowed. Fetching up to the allowed max.')
+            demisto.debug("API requests required to satisfy limit exceeded maximum allowed. Fetching up to the allowed max.")
             amount_to_fetch = MAX_AUDIT_API_REQS * MAX_GET_AUDIT_LIMIT
         events = []
         offset = 0
 
-        demisto.debug(f'{amount_to_fetch=}')
+        demisto.debug(f"{amount_to_fetch=}")
         while amount_to_fetch > 0:
             response = self.http_request(
-                method='GET',
-                url_suffix='/auditlogs/v1/events',
+                method="GET",
+                url_suffix="/auditlogs/v1/events",
                 params={
-                    'limit': MAX_GET_AUDIT_LIMIT,
-                    'offset': offset,
-                    'start_time': start_time,
-                    'end_time': end_time,
-                }
+                    "limit": MAX_GET_AUDIT_LIMIT,
+                    "offset": offset,
+                    "start_time": start_time,
+                    "end_time": end_time,
+                },
             )
-            if response['total'] > amount_to_fetch + offset:
+            if response["total"] > amount_to_fetch + offset:
                 # manually skip to the end since the API has no option for ascending sort
-                demisto.debug('Total entries for timeframe are larger than amount to fetch, skipping to get the earliest ones')
-                offset = response['total'] - amount_to_fetch
+                demisto.debug("Total entries for timeframe are larger than amount to fetch, skipping to get the earliest ones")
+                offset = response["total"] - amount_to_fetch
                 continue
 
-            response_events = response.get('events', [])
+            response_events = response.get("events", [])
             filtered_events = filter_and_reverse_audit_events(response_events, last_run)
             filtered_events = filtered_events[:amount_to_fetch]  # filtered_events return in ascending order
 
             events.extend(filtered_events)
             offset += len(response_events)
             amount_to_fetch -= len(filtered_events)
-            if not response.get('remaining_records'):
+            if not response.get("remaining_records"):
                 break
 
         return events
@@ -322,25 +321,25 @@ class Client(BaseClient):
             events (list): list of networking events
         """
         if amount_to_fetch > MAX_EVENT_API_REQS * MAX_GET_EVENTS_LIMIT:
-            demisto.debug('API requests required to satisfy limit exceeded maximum allowed. Fetching up to the allowed max.')
+            demisto.debug("API requests required to satisfy limit exceeded maximum allowed. Fetching up to the allowed max.")
             amount_to_fetch = MAX_EVENT_API_REQS * MAX_GET_EVENTS_LIMIT
         events = []
         offset = 0
 
-        demisto.debug(f'{amount_to_fetch=}')
+        demisto.debug(f"{amount_to_fetch=}")
         while amount_to_fetch > 0:
             response = self.http_request(
-                method='GET',
-                url_suffix='/monitoring/v2/events',
+                method="GET",
+                url_suffix="/monitoring/v2/events",
                 params={
-                    'limit': MAX_GET_EVENTS_LIMIT,
-                    'offset': offset,
-                    'from_timestamp': start_time,
-                    'to_timestamp': end_time,
-                    'sort': '+timestamp',
-                }
+                    "limit": MAX_GET_EVENTS_LIMIT,
+                    "offset": offset,
+                    "from_timestamp": start_time,
+                    "to_timestamp": end_time,
+                    "sort": "+timestamp",
+                },
             )
-            response_events = response.get('events', [])
+            response_events = response.get("events", [])
             filtered_events = filter_networking_events(response_events, last_run)
             filtered_events = filtered_events[:amount_to_fetch]
 
@@ -353,7 +352,7 @@ class Client(BaseClient):
         return events
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def filter_and_reverse_audit_events(events: list[dict], last_run: dict) -> list[dict]:
@@ -367,8 +366,8 @@ def filter_and_reverse_audit_events(events: list[dict], last_run: dict) -> list[
     Returns:
         events (list[dict]): events list with filtered duplicates, in ascending timestamp order
     """
-    last_audit_ts = int(last_run.get('last_audit_ts', 0))
-    last_audit_ids = last_run.get('last_audit_event_ids', [])
+    last_audit_ts = int(last_run.get("last_audit_ts", 0))
+    last_audit_ids = last_run.get("last_audit_event_ids", [])
 
     if not last_audit_ts or not last_audit_ids:
         return list(reversed(events))
@@ -376,10 +375,10 @@ def filter_and_reverse_audit_events(events: list[dict], last_run: dict) -> list[
     filtered_events: list[dict] = []
     for i, event in reversed(list(enumerate(events))):
         if event[AUDIT_TS] > last_audit_ts:
-            filtered_events.extend(reversed(events[:i + 1]))
+            filtered_events.extend(reversed(events[: i + 1]))
             break
 
-        if event['id'] not in last_audit_ids:
+        if event["id"] not in last_audit_ids:
             filtered_events.append(event)
 
     return filtered_events
@@ -396,15 +395,15 @@ def filter_networking_events(events: list[dict], last_run: dict) -> list[dict]:
     Returns:
         events (list[dict]): events list with filtered duplicates, in ascending timestamp order
     """
-    last_event_ts_ms = int(last_run.get('last_networking_ts', 0)) * 1000
-    last_event_ids = last_run.get('last_networking_event_ids', [])
+    last_event_ts_ms = int(last_run.get("last_networking_ts", 0)) * 1000
+    last_event_ids = last_run.get("last_networking_event_ids", [])
     filtered_events = []
     for i, event in enumerate(events):
         if event[NETWORKING_TS] > last_event_ts_ms:
             filtered_events.extend(events[i:])
             break
 
-        if event['event_uuid'] not in last_event_ids:
+        if event["event_uuid"] not in last_event_ids:
             filtered_events.append(event)
 
     return filtered_events
@@ -427,35 +426,35 @@ def create_next_run(audit_events: list[dict], networking_events: list[dict] | No
     end_time_ms = end_time * 1000
     if audit_events:
         last_audit_ts = audit_events[-1].get(AUDIT_TS, end_time)
-        next_run['last_audit_ts'] = str(last_audit_ts)
+        next_run["last_audit_ts"] = str(last_audit_ts)
         last_audit_event_ids = []
         for event in reversed(audit_events):
             # Save all event IDs with the latest timestamp
             if event.get(AUDIT_TS, 0) < last_audit_ts:
                 break
 
-            last_audit_event_ids.append(event.get('id'))
+            last_audit_event_ids.append(event.get("id"))
 
-        next_run['last_audit_event_ids'] = last_audit_event_ids
+        next_run["last_audit_event_ids"] = last_audit_event_ids
 
     else:
-        next_run['last_audit_ts'] = str(end_time)
+        next_run["last_audit_ts"] = str(end_time)
 
     if networking_events:
         last_networking_ts = int(networking_events[-1].get(NETWORKING_TS, end_time_ms) / 1000)
-        next_run['last_networking_ts'] = str(last_networking_ts)
+        next_run["last_networking_ts"] = str(last_networking_ts)
         last_networking_event_ids = []
         for event in reversed(networking_events):
             # Save all event IDs with the latest timestamp
             if event.get(NETWORKING_TS, 0) < last_networking_ts:
                 break
 
-            last_networking_event_ids.append(event.get('event_uuid'))
+            last_networking_event_ids.append(event.get("event_uuid"))
 
-        next_run['last_networking_event_ids'] = last_networking_event_ids
+        next_run["last_networking_event_ids"] = last_networking_event_ids
 
     else:
-        next_run['last_networking_ts'] = str(end_time)
+        next_run["last_networking_ts"] = str(end_time)
 
     return next_run
 
@@ -474,7 +473,7 @@ def add_time_to_events(events: list[dict] | None, time_arg: str):
     if events:
         for event in events:
             create_time = arg_to_datetime(arg=event.get(time_arg))
-            event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
+            event["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
 
 
 def push_events(audit_events: list | None, networking_events: list | None):
@@ -502,11 +501,16 @@ def push_events(audit_events: list | None, networking_events: list | None):
         )
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
-def test_module(client: Client, first_fetch_time: int, fetch_networking_events: bool,
-                max_audit_events_per_fetch: int, max_networking_events_per_fetch: int) -> str:
+def test_module(
+    client: Client,
+    first_fetch_time: int,
+    fetch_networking_events: bool,
+    max_audit_events_per_fetch: int,
+    max_networking_events_per_fetch: int,
+) -> str:
     """
     Tests API connectivity and authentication
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
@@ -523,11 +527,13 @@ def test_module(client: Client, first_fetch_time: int, fetch_networking_events: 
     """
 
     if not max_audit_events_per_fetch or max_audit_events_per_fetch > MAX_AUDIT_API_REQS * MAX_GET_AUDIT_LIMIT:
-        raise DemistoException('The maximum number of audit events per fetch should not exceed '
-                               f'{MAX_AUDIT_API_REQS * MAX_GET_AUDIT_LIMIT}.')
+        raise DemistoException(
+            "The maximum number of audit events per fetch should not exceed " f"{MAX_AUDIT_API_REQS * MAX_GET_AUDIT_LIMIT}."
+        )
     if not max_networking_events_per_fetch or max_networking_events_per_fetch > MAX_EVENT_API_REQS * MAX_GET_EVENTS_LIMIT:
-        raise DemistoException('The maximum number of networking events per fetch should not exceed '
-                               f'{MAX_EVENT_API_REQS * MAX_GET_EVENTS_LIMIT}.')
+        raise DemistoException(
+            "The maximum number of networking events per fetch should not exceed " f"{MAX_EVENT_API_REQS * MAX_GET_EVENTS_LIMIT}."
+        )
 
     try:
         fetch_events(
@@ -540,16 +546,17 @@ def test_module(client: Client, first_fetch_time: int, fetch_networking_events: 
         )
 
     except Exception as e:
-        if 'Forbidden' in str(e) or 'UNAUTHORIZED' in str(e):
-            return 'Authorization Error: make sure credentials are correctly set'
+        if "Forbidden" in str(e) or "UNAUTHORIZED" in str(e):
+            return "Authorization Error: make sure credentials are correctly set"
         else:
             raise e
 
-    return 'ok'
+    return "ok"
 
 
-def get_events(client: Client, fetch_networking_events: bool, args: dict) -> tuple[list[dict],
-                                                                                   list[dict] | None, list[CommandResults]]:
+def get_events(
+    client: Client, fetch_networking_events: bool, args: dict
+) -> tuple[list[dict], list[dict] | None, list[CommandResults]]:
     """
     Get events from the Aruba Central API.
 
@@ -563,19 +570,19 @@ def get_events(client: Client, fetch_networking_events: bool, args: dict) -> tup
         networking_events (list[dict] | None): List of networking events fetched from Aruba Central API
         results (list[CommandResults]): List of CommandResults objects to be returned to the war-room.
     """
-    limit = arg_to_number(args.get('limit'), required=True)
+    limit = arg_to_number(args.get("limit"), required=True)
     max_limit = max(MAX_GET_AUDIT_LIMIT * MAX_AUDIT_API_REQS, MAX_GET_EVENTS_LIMIT * MAX_EVENT_API_REQS)
     if not limit or limit > max_limit:
-        raise DemistoException(f'Requested limit ({limit}) exceeds maximum allowed limit of {max_limit}')
+        raise DemistoException(f"Requested limit ({limit}) exceeds maximum allowed limit of {max_limit}")
 
     audit_limit = limit or MAX_GET_AUDIT_LIMIT * MAX_AUDIT_API_REQS
     networking_limit = limit or MAX_GET_EVENTS_LIMIT * MAX_EVENT_API_REQS
-    if 'from_date' in args:
-        start_time = int(date_to_timestamp(arg_to_datetime(args.get('from_date'))) / 1000)
+    if "from_date" in args:
+        start_time = int(date_to_timestamp(arg_to_datetime(args.get("from_date"))) / 1000)
     else:
         start_time = int(time.time()) - timedelta(hours=3).seconds
 
-    demisto.debug(f'Running get_events with {start_time=}')
+    demisto.debug(f"Running get_events with {start_time=}")
     _, audit_events, networking_events = fetch_events(
         client=client,
         last_run={},
@@ -584,22 +591,23 @@ def get_events(client: Client, fetch_networking_events: bool, args: dict) -> tup
         fetch_networking_events=fetch_networking_events,
         num_networking_events_to_fetch=networking_limit,
     )
-    audit_hr = tableToMarkdown(name='Audit Events', t=audit_events)
+    audit_hr = tableToMarkdown(name="Audit Events", t=audit_events)
     results = [CommandResults(readable_output=audit_hr)]
     if fetch_networking_events:
-        networking_hr = tableToMarkdown(name='Networking Events', t=networking_events)
+        networking_hr = tableToMarkdown(name="Networking Events", t=networking_events)
         results.append(CommandResults(readable_output=networking_hr))
 
     return audit_events, networking_events, results
 
 
-def fetch_events(client: Client,
-                 last_run: dict,
-                 first_fetch_time: int,
-                 num_audit_events_to_fetch: int,
-                 fetch_networking_events: bool,
-                 num_networking_events_to_fetch: int,
-                 ) -> tuple[dict, list[dict], list[dict] | None]:
+def fetch_events(
+    client: Client,
+    last_run: dict,
+    first_fetch_time: int,
+    num_audit_events_to_fetch: int,
+    fetch_networking_events: bool,
+    num_networking_events_to_fetch: int,
+) -> tuple[dict, list[dict], list[dict] | None]:
     """
     Fetches events from the Aruba Central API
 
@@ -618,37 +626,37 @@ def fetch_events(client: Client,
         networking_events(list): List of fetched networking events.
     """
     if not num_audit_events_to_fetch or num_audit_events_to_fetch > MAX_AUDIT_API_REQS * MAX_GET_AUDIT_LIMIT:
-        raise DemistoException('The maximum number of audit events per fetch should not exceed '
-                               f'{MAX_AUDIT_API_REQS * MAX_GET_AUDIT_LIMIT}.')
+        raise DemistoException(
+            "The maximum number of audit events per fetch should not exceed " f"{MAX_AUDIT_API_REQS * MAX_GET_AUDIT_LIMIT}."
+        )
     if not num_networking_events_to_fetch or num_networking_events_to_fetch > MAX_EVENT_API_REQS * MAX_GET_EVENTS_LIMIT:
-        raise DemistoException('The maximum number of networking events per fetch should not exceed '
-                               f'{MAX_EVENT_API_REQS * MAX_GET_EVENTS_LIMIT}.')
+        raise DemistoException(
+            "The maximum number of networking events per fetch should not exceed " f"{MAX_EVENT_API_REQS * MAX_GET_EVENTS_LIMIT}."
+        )
 
-    audit_start_time = int(last_run.get('last_audit_ts', first_fetch_time))
-    networking_start_time = int(last_run.get('last_networking_ts', first_fetch_time))
+    audit_start_time = int(last_run.get("last_audit_ts", first_fetch_time))
+    networking_start_time = int(last_run.get("last_networking_ts", first_fetch_time))
     end_time = int(time.time())
-    demisto.debug(f'Fetching {num_audit_events_to_fetch} audit events from {audit_start_time} to {end_time}.')
-    audit_events = client.fetch_audit_events(start_time=audit_start_time,
-                                             end_time=end_time,
-                                             amount_to_fetch=num_audit_events_to_fetch,
-                                             last_run=last_run)
-    demisto.debug(f'Got {len(audit_events)} audit events.')
+    demisto.debug(f"Fetching {num_audit_events_to_fetch} audit events from {audit_start_time} to {end_time}.")
+    audit_events = client.fetch_audit_events(
+        start_time=audit_start_time, end_time=end_time, amount_to_fetch=num_audit_events_to_fetch, last_run=last_run
+    )
+    demisto.debug(f"Got {len(audit_events)} audit events.")
 
     networking_events = None
     if fetch_networking_events:
-        demisto.debug(f'Fetching {num_networking_events_to_fetch} networking events from {networking_start_time} to {end_time}.')
-        networking_events = client.fetch_networking_events(start_time=networking_start_time,
-                                                           end_time=end_time,
-                                                           amount_to_fetch=num_networking_events_to_fetch,
-                                                           last_run=last_run)
-        demisto.debug(f'Got {len(networking_events)} networking events.')
+        demisto.debug(f"Fetching {num_networking_events_to_fetch} networking events from {networking_start_time} to {end_time}.")
+        networking_events = client.fetch_networking_events(
+            start_time=networking_start_time, end_time=end_time, amount_to_fetch=num_networking_events_to_fetch, last_run=last_run
+        )
+        demisto.debug(f"Got {len(networking_events)} networking events.")
 
     next_run = create_next_run(audit_events=audit_events, networking_events=networking_events, end_time=end_time)
-    demisto.debug(f'Returning {next_run=}.')
+    demisto.debug(f"Returning {next_run=}.")
     return next_run, audit_events, networking_events
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:  # pragma: no cover
@@ -659,21 +667,21 @@ def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    client_id = params.get('credentials', {}).get('identifier')
-    client_secret = params.get('credentials', {}).get('password')
-    user_name = params.get('user', {}).get('identifier')
-    user_password = params.get('user', {}).get('password')
-    customer_id = params.get('customer_id', {}).get('password')
-    base_url = params.get('url', '')
-    fetch_networking_events = params.get('fetch_networking_events', False)
-    max_audit_events_per_fetch = arg_to_number(params.get('max_audit_events_per_fetch')) or 0
-    max_networking_events_per_fetch = arg_to_number(params.get('max_networking_events_per_fetch')) or 0
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+    client_id = params.get("credentials", {}).get("identifier")
+    client_secret = params.get("credentials", {}).get("password")
+    user_name = params.get("user", {}).get("identifier")
+    user_password = params.get("user", {}).get("password")
+    customer_id = params.get("customer_id", {}).get("password")
+    base_url = params.get("url", "")
+    fetch_networking_events = params.get("fetch_networking_events", False)
+    max_audit_events_per_fetch = arg_to_number(params.get("max_audit_events_per_fetch")) or 0
+    max_networking_events_per_fetch = arg_to_number(params.get("max_networking_events_per_fetch")) or 0
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
 
     first_fetch_time = int(time.time())
 
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
     try:
         client = Client(
             base_url=base_url,
@@ -683,25 +691,28 @@ def main() -> None:  # pragma: no cover
             user_password=user_password,
             customer_id=customer_id,
             verify=verify_certificate,
-            proxy=proxy)
+            proxy=proxy,
+        )
 
-        if command == 'test-module':
-            result = test_module(client,
-                                 first_fetch_time=first_fetch_time,
-                                 fetch_networking_events=fetch_networking_events,
-                                 max_audit_events_per_fetch=max_audit_events_per_fetch,
-                                 max_networking_events_per_fetch=max_networking_events_per_fetch)
+        if command == "test-module":
+            result = test_module(
+                client,
+                first_fetch_time=first_fetch_time,
+                fetch_networking_events=fetch_networking_events,
+                max_audit_events_per_fetch=max_audit_events_per_fetch,
+                max_networking_events_per_fetch=max_networking_events_per_fetch,
+            )
             return_results(result)
 
-        elif command == 'aruba-central-get-events':
-            should_push_events = argToBoolean(args.pop('should_push_events'))
+        elif command == "aruba-central-get-events":
+            should_push_events = argToBoolean(args.pop("should_push_events"))
             audit_events, networking_events, results = get_events(client, fetch_networking_events, args)
             return_results(results)
 
             if should_push_events:
                 push_events(audit_events, networking_events)
 
-        elif command == 'fetch-events':
+        elif command == "fetch-events":
             last_run = demisto.getLastRun()
             next_run, audit_events, networking_events = fetch_events(
                 client=client,
@@ -717,10 +728,10 @@ def main() -> None:  # pragma: no cover
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
