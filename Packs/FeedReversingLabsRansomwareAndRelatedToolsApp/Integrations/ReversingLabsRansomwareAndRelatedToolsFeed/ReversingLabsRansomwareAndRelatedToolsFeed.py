@@ -18,7 +18,7 @@ INDICATOR_TYPE_MAP = {
 
 class Client(BaseClient):
     RANSOMWARE_INDICATORS_ENDPOINT = (
-        "/api/public/v1/ransomware/indicators?hours={hours}&" "indicatorTypes={indicator_types}&tagFormat=dict"
+        "/api/public/v1/ransomware/indicators?hours={hours}&indicatorTypes={indicator_types}&tagFormat=dict"
     )
 
     def __init__(self, base_url, auth, headers, verify):

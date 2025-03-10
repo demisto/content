@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 import urllib3
-from typing import Dict, Any
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -245,7 +245,7 @@ def create_human_readable_search(dict_list: list[dict]) -> list[dict]:
     return list_dict_response
 
 
-def twitter_tweet_search_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def twitter_tweet_search_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     """Gets args and client and returns CommandResults of Tweets according to the reqested search.
     Args:
         client: client -  A Twitter client.
@@ -287,7 +287,7 @@ def twitter_tweet_search_command(client: Client, args: Dict[str, Any]) -> List[C
     return command_results
 
 
-def twitter_user_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def twitter_user_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Retruns users information according to the requested user's names.
     Args:
         client: client -  A Twitter client.
@@ -336,8 +336,7 @@ def main() -> None:
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
-        headers: Dict = {"Authorization": f"Bearer {bearer_token}"}
-        headers
+        headers: dict = {"Authorization": f"Bearer {bearer_token}"}
         client = Client(base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy)
 
         if demisto.command() == "test-module":

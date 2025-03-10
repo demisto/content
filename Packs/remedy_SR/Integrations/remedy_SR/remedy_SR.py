@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import base64
 import hashlib
-from hashlib import pbkdf2_hmac
 import json
 import os
 import requests
@@ -191,10 +190,8 @@ def http_request(body=""):  # pragma: no cover
 
     json_result = json.loads(xml2json(response.content))
 
-    if "Envelope" in json_result:
-        if "Body" in json_result["Envelope"]:
-            if "Fault" in json_result["Envelope"]["Body"]:
-                return_error("Request Failed. Reason is: " + json_result["Envelope"]["Body"]["Fault"]["faultstring"])
+    if "Envelope" in json_result and "Body" in json_result["Envelope"] and "Fault" in json_result["Envelope"]["Body"]:
+        return_error("Request Failed. Reason is: " + json_result["Envelope"]["Body"]["Fault"]["faultstring"])
 
     return json_result
 
@@ -210,10 +207,9 @@ def prettify_get_ticket(json_result):
         "ServiceRequestStatus": ticket["ServiceRequestStatus"],
         "Priority": ticket["Priority"],
     }
-    if "Created" in ticket:
-        if "When" in ticket["Created"]:
-            pretty_ticket["Date"] = ticket["Created"]["When"]["Date"]
-            pretty_ticket["Time"] = ticket["Created"]["When"]["Time"]
+    if "Created" in ticket and "When" in ticket["Created"]:
+        pretty_ticket["Date"] = ticket["Created"]["When"]["Date"]
+        pretty_ticket["Time"] = ticket["Created"]["When"]["Time"]
 
     if "Details" in ticket:
         pretty_ticket["Details"] = ticket["Details"]
@@ -362,10 +358,10 @@ def remedy_create_ticket_command():
     args = demisto.args()
     details = args["details"]
     requester_ntid = args["requester_ntid"]
-    requester_pernr = args["requester_pernr"] if "requester_pernr" in args else None
-    contact_email = args["contact_email"] if "contact_email" in args else None
-    contact_name = args["contact_name"] if "contact_name" in args else None
-    contact_phone = args["contact_phone"] if "contact_phone" in args else None
+    requester_pernr = args.get("requester_pernr", None)
+    contact_email = args.get("contact_email", None)
+    contact_name = args.get("contact_name", None)
+    contact_phone = args.get("contact_phone", None)
     requester_email = args["requester_email"]
     requester_name = args["requester_name"]
     requester_phone = args["requester_phone"]
@@ -425,7 +421,7 @@ def remedy_update_ticket_command():
 
 
 """ EXECUTION CODE """
-LOG("command is %s" % (demisto.command(),))
+LOG(f"command is {demisto.command()}")
 try:
     if demisto.command() == "test-module":
         remedy_get_ticket("SR000552078")

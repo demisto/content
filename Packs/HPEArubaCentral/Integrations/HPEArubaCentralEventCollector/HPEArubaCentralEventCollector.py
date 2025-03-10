@@ -150,7 +150,7 @@ class Client(BaseClient):
         session = response.cookies.get("session")
         if not csrf_token or not session:
             raise DemistoException(
-                "Failed to acquire CSRF token and session from login request. " "Check if the credentials are valid."
+                "Failed to acquire CSRF token and session from login request. Check if the credentials are valid."
             )
         demisto.debug(f"Login request response: {csrf_token=}, {session=}")
         return csrf_token, session
@@ -528,11 +528,11 @@ def test_module(
 
     if not max_audit_events_per_fetch or max_audit_events_per_fetch > MAX_AUDIT_API_REQS * MAX_GET_AUDIT_LIMIT:
         raise DemistoException(
-            "The maximum number of audit events per fetch should not exceed " f"{MAX_AUDIT_API_REQS * MAX_GET_AUDIT_LIMIT}."
+            f"The maximum number of audit events per fetch should not exceed {MAX_AUDIT_API_REQS * MAX_GET_AUDIT_LIMIT}."
         )
     if not max_networking_events_per_fetch or max_networking_events_per_fetch > MAX_EVENT_API_REQS * MAX_GET_EVENTS_LIMIT:
         raise DemistoException(
-            "The maximum number of networking events per fetch should not exceed " f"{MAX_EVENT_API_REQS * MAX_GET_EVENTS_LIMIT}."
+            f"The maximum number of networking events per fetch should not exceed {MAX_EVENT_API_REQS * MAX_GET_EVENTS_LIMIT}."
         )
 
     try:
@@ -627,11 +627,11 @@ def fetch_events(
     """
     if not num_audit_events_to_fetch or num_audit_events_to_fetch > MAX_AUDIT_API_REQS * MAX_GET_AUDIT_LIMIT:
         raise DemistoException(
-            "The maximum number of audit events per fetch should not exceed " f"{MAX_AUDIT_API_REQS * MAX_GET_AUDIT_LIMIT}."
+            f"The maximum number of audit events per fetch should not exceed {MAX_AUDIT_API_REQS * MAX_GET_AUDIT_LIMIT}."
         )
     if not num_networking_events_to_fetch or num_networking_events_to_fetch > MAX_EVENT_API_REQS * MAX_GET_EVENTS_LIMIT:
         raise DemistoException(
-            "The maximum number of networking events per fetch should not exceed " f"{MAX_EVENT_API_REQS * MAX_GET_EVENTS_LIMIT}."
+            f"The maximum number of networking events per fetch should not exceed {MAX_EVENT_API_REQS * MAX_GET_EVENTS_LIMIT}."
         )
 
     audit_start_time = int(last_run.get("last_audit_ts", first_fetch_time))

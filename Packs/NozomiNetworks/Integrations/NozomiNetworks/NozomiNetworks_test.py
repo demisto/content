@@ -311,14 +311,14 @@ def test_ip_from_mac(requests_mock):
             [
                 {
                     "json": __load_test_data("./test_data/find_by_mac.json"),
-                    "path": "/api/open/query/do?query=nodes | select ip mac_address " "| where mac_address == 00:d0:c9:ca:bd:6a",
+                    "path": "/api/open/query/do?query=nodes | select ip mac_address | where mac_address == 00:d0:c9:ca:bd:6a",
                 }
             ],
             requests_mock,
         ),
     )
     assert (
-        result["readable_output"] == "Nozomi Networks - Results for the Ip from Mac Search is " "['10.196.97.231', '172.16.0.4']"
+        result["readable_output"] == "Nozomi Networks - Results for the Ip from Mac Search is ['10.196.97.231', '172.16.0.4']"
     )
     assert result["outputs"] == {"ips": ["10.196.97.231", "172.16.0.4"], "mac": mac}
     assert result["outputs_prefix"] == "Nozomi.IpByMac"
@@ -332,7 +332,7 @@ def test_ip_from_mac_not_found(requests_mock):
             [
                 {
                     "json": __load_test_data("./test_data/empty_find_by_mac.json"),
-                    "path": "/api/open/query/do?query=nodes | select ip mac_address " "| where mac_address == 12:33:44:55:bd:6a",
+                    "path": "/api/open/query/do?query=nodes | select ip mac_address | where mac_address == 12:33:44:55:bd:6a",
                 }
             ],
             requests_mock,

@@ -159,7 +159,7 @@ class IronDefenseTest(TestCase):
             ]
         )
         # check to see if the jwt was stored
-        assert {"JWT": mock_jwt_value} == demisto.getIntegrationContext()
+        assert demisto.getIntegrationContext() == {"JWT": mock_jwt_value}
         assert test_response.status_code == 200, "Unexpected status code"
         assert self.mock_session.request.call_count == 2, "_http_request should have made 2 calls"
 
@@ -1902,7 +1902,7 @@ class IronDefenseTest(TestCase):
             }
         }
         expected_cognitive_system_score_readable_output = (
-            f'### Cognitive System Score: ' f'{mock_resp.get("cognitive_system_score")}'
+            f'### Cognitive System Score: {mock_resp.get("cognitive_system_score")}'
         )
         expected_cognitive_system_score_raw = mock_resp.get("cognitive_system_score")
 
@@ -1979,7 +1979,7 @@ class IronDefenseTest(TestCase):
         irondefense_module.IRON_DEFENSE.get_alert_irondome_information.assert_called_with(expected_alert_id)
         return_outputs_mock.assert_has_calls(expected_calls, any_order=True)
         irondefense_module.IRON_DEFENSE.create_dome_markdown_link.assert_called_with(
-            "Open IronDome information in " "IronVue", expected_alert_id
+            "Open IronDome information in IronVue", expected_alert_id
         )
 
     @mock.patch("IronDefense.return_outputs")
@@ -2084,7 +2084,7 @@ class IronDefenseTest(TestCase):
         # Expectations
         link_text = "asdf"
         alert_id = "abc"
-        expected_markdown_link = f"[asdf](https://{self.host}/alerts/irondome?filter=alertId%3D%3" f"D{alert_id})"
+        expected_markdown_link = f"[asdf](https://{self.host}/alerts/irondome?filter=alertId%3D%3D{alert_id})"
 
         # Execute test
         actual_markdown_link = self.class_under_test.create_dome_markdown_link(link_text, alert_id)

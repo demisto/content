@@ -33,7 +33,7 @@ def delete_rule(ruleType):
                     {
                         "Type": entryTypes["error"],
                         "ContentsFormat": formats["markdown"],
-                        "Contents": "You cannot uses both **tritonsystem** and " "**remoteaccessname**. Please choose one.",
+                        "Contents": "You cannot uses both **tritonsystem** and **remoteaccessname**. Please choose one.",
                     }
                 )
                 return
@@ -45,7 +45,7 @@ def delete_rule(ruleType):
                 {
                     "Type": entryTypes["error"],
                     "ContentsFormat": formats["markdown"],
-                    "Contents": "You must provide either **tritonsystem** or" " **remoteaccessname** as arguments.",
+                    "Contents": "You must provide either **tritonsystem** or **remoteaccessname** as arguments.",
                 }
             )
             return

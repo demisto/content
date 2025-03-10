@@ -804,7 +804,7 @@ def main():  # pragma: no cover
                             demisto.createIndicators([indicator])
                         except Exception as err:
                             demisto.debug(
-                                f"createIndicators Error: failed to create the following indicator:" f" {indicator}\n {err}"
+                                f"createIndicators Error: failed to create the following indicator: {indicator}\n {err}"
                             )
                     raise
 

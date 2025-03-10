@@ -43,7 +43,7 @@ def set_rule(policy, ruleType):
                     {
                         "Type": entryTypes["error"],
                         "ContentsFormat": formats["markdown"],
-                        "Contents": "You cannot uses both **tritonsystem** and **remoteaccessname**. " "Please choose one.",
+                        "Contents": "You cannot uses both **tritonsystem** and **remoteaccessname**. Please choose one.",
                     }
                 )
                 sys.exit(0)
@@ -55,7 +55,7 @@ def set_rule(policy, ruleType):
                 {
                     "Type": entryTypes["error"],
                     "ContentsFormat": formats["markdown"],
-                    "Contents": "You must provide either **tritonsystem** or **remoteaccessname** " "as arguments.",
+                    "Contents": "You must provide either **tritonsystem** or **remoteaccessname** as arguments.",
                 }
             )
             sys.exit(0)

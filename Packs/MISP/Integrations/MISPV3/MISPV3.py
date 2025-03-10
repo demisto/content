@@ -34,10 +34,10 @@ def handle_connection_errors(error):
         )
     if "NewConnectionError" in error:
         return_error(
-            "Unable to connect to MISP because of a NewConnectionError, " "Please make sure your MISP server url is correct."
+            "Unable to connect to MISP because of a NewConnectionError, Please make sure your MISP server url is correct."
         )
     if "Please make sure the API key and the URL are correct" in error:
-        return_error("Unable to connect to MISP, " "Please make sure the API key is correct.")
+        return_error("Unable to connect to MISP, Please make sure the API key is correct.")
     return_error(error)
 
 
@@ -348,7 +348,7 @@ def replace_keys_from_misp_to_context_data(obj_to_build: dict | list | str) -> d
     if isinstance(obj_to_build, dict):
         return {
             (
-                MISP_ENTITIES_TO_CONTEXT_DATA[key] if key in MISP_ENTITIES_TO_CONTEXT_DATA else key
+                MISP_ENTITIES_TO_CONTEXT_DATA.get(key, key)
             ): replace_keys_from_misp_to_context_data(value)
             for key, value in obj_to_build.items()
         }
@@ -549,7 +549,7 @@ def get_new_misp_event_object(args):
     sharing_group_id = args.get("sharing_group_id")
     if event.distribution == 4 and not sharing_group_id:
         raise DemistoException(
-            "Error: When setting distribution to be 'Sharing_group', you have to specify the " "'sharing_group_id' argument."
+            "Error: When setting distribution to be 'Sharing_group', you have to specify the 'sharing_group_id' argument."
         )
     if sharing_group_id:
         event.sharing_group_id = arg_to_number(sharing_group_id)  # type: ignore[assignment]
@@ -922,7 +922,7 @@ def get_events_related_to_scored_tag(all_attributes, found_tag):
 def remove_duplicated_related_events(related_events):
     related_events_no_duplicates = []
     for i in range(len(related_events)):
-        if related_events[i] not in related_events[i + 1 :]:
+        if related_events[i] not in related_events[i + 1:]:
             related_events_no_duplicates.append(related_events[i])
     return related_events_no_duplicates
 

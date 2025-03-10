@@ -387,7 +387,7 @@ def additional_fields_to_args(args, additional_fields_arg_name):
             field_and_val = field_and_val.split("=")
             # If the length doesn't equal 2, means there were either no equal signs or more than one
             if len(field_and_val) != 2:
-                err_msg = "It appears you entered either too many or too few" " equal signs in the 'additional_fields' argument."
+                err_msg = "It appears you entered either too many or too few equal signs in the 'additional_fields' argument."
                 return_error(err_msg)
             field = field_and_val[0].strip()
             val = field_and_val[1]
@@ -648,7 +648,7 @@ def determine_identifier(args):
         # Otherwise assume it's an email address
         args["email"] = identifier
     else:
-        err_msg = "The entered value for the 'identifier' argument must " "be either a Twitter handle or an Email Address."
+        err_msg = "The entered value for the 'identifier' argument must be either a Twitter handle or an Email Address."
         return_error(err_msg)
     # Delete identifier field from args since it doesn't match API expected inputs
     del args["identifier"]
@@ -1880,7 +1880,7 @@ commands = {
     "fd-search-tickets": search_tickets_command,
 }
 
-LOG("Command being called is %s" % (demisto.command()))
+LOG(f"Command being called is {demisto.command()}")
 
 try:
     if demisto.command() == "test-module":
