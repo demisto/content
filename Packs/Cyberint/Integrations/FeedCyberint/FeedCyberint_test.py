@@ -295,7 +295,7 @@ def test_get_domain_command_with_invalid_arg(mock_client):
         "^(?:(?:(?:[[a-z0-9](?:[a-z0-9\\-]*[a-z0-9])?)\\.))*(?:[a-z0-9][a-z0-9\\-]*[a-z0-9])$)"
     )
 
-    # Mock args input with invalid limit
+    # Mock args input with invalid value
     args = {
         "value": "@"
     }
@@ -305,6 +305,67 @@ def test_get_domain_command_with_invalid_arg(mock_client):
     # Call the function
     with pytest.raises(TypeError, match=re.escape(err_msg)):
         FeedCyberint.get_domain_command(mock_client, args)
+
+
+@patch("FeedCyberint.tableToMarkdown")
+def test_get_url_command_with_invalid_arg(mock_client):
+    """Test get_url_command when value argument is invalid."""
+
+    err_msg = (
+        "1 validation error for Request\nquery -> value\n  invalid or missing URL scheme (type=value_error.url.scheme)"
+    )
+
+    # Mock args input with invalid value
+    args = {
+        "value": "@"
+    }
+
+    mock_client.retrieve_url_from_api.side_effect = TypeError(err_msg)
+
+    # Call the function
+    with pytest.raises(TypeError, match=re.escape(err_msg)):
+        FeedCyberint.get_url_command(mock_client, args)
+
+
+@patch("FeedCyberint.tableToMarkdown")
+def test_get_ipv4_command_with_invalid_arg(mock_client):
+    """Test get_ipv4_command when value argument is invalid."""
+
+    err_msg = (
+        "1 validation error for Request\nquery -> value\n  value is not a valid IPv4 address (type=value_error.ipv4address)"
+    )
+
+    # Mock args input with invalid value
+    args = {
+        "value": "@"
+    }
+
+    mock_client.retrieve_ipv4_from_api.side_effect = TypeError(err_msg)
+
+    # Call the function
+    with pytest.raises(TypeError, match=re.escape(err_msg)):
+        FeedCyberint.get_ipv4_command(mock_client, args)
+
+
+@patch("FeedCyberint.tableToMarkdown")
+def test_get_file_sha256_command_with_invalid_arg(mock_client):
+    """Test get_file_sha256_command when value argument is invalid."""
+
+    err_msg = (
+        "1 validation error for Request\nquery -> value\n  string does not match regex "
+        '"^[a-f0-9]{64}$" (type=value_error.str.regex; pattern=^[a-f0-9]{64}$)'
+    )
+
+    # Mock args input with invalid value
+    args = {
+        "value": "@"
+    }
+
+    mock_client.retrieve_file_sha256_from_api.side_effect = TypeError(err_msg)
+
+    # Call the function
+    with pytest.raises(TypeError, match=re.escape(err_msg)):
+        FeedCyberint.get_file_sha256_command(mock_client, args)
 
 
 @mock.patch('FeedCyberint.is_execution_time_exceeded')
