@@ -9,16 +9,18 @@ from CommonServerPython import *
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
-USECS_ENTRIES_MAPPING = {'boot_time_in_usecs': 'boot_time',
-                         'create_time_usecs': 'create_time',
-                         'start_time_usecs': 'start_time',
-                         'complete_time_usecs': 'complete_time',
-                         'last_updated_time_usecs': 'last_updated',
-                         'created_time_stamp_in_usecs': 'created_time',
-                         'last_occurrence_time_stamp_in_usecs': 'last_occurrence',
-                         'acknowledged_time_stamp_in_usecs': 'acknowledged_time',
-                         'resolved_time_stamp_in_usecs': 'resolved_time'}
+""" CONSTANTS """
+USECS_ENTRIES_MAPPING = {
+    "boot_time_in_usecs": "boot_time",
+    "create_time_usecs": "create_time",
+    "start_time_usecs": "start_time",
+    "complete_time_usecs": "complete_time",
+    "last_updated_time_usecs": "last_updated",
+    "created_time_stamp_in_usecs": "created_time",
+    "last_occurrence_time_stamp_in_usecs": "last_occurrence",
+    "acknowledged_time_stamp_in_usecs": "acknowledged_time",
+    "resolved_time_stamp_in_usecs": "resolved_time",
+}
 
 HOST_FIELDS_NOT_VERBOSE = {
     "service_vmid",
@@ -49,7 +51,7 @@ HOST_FIELDS_NOT_VERBOSE = {
     "cluster_uuid",
     "has_csr",
     "host_type",
-    "boot_time"
+    "boot_time",
 }
 
 ALERT_FIELDS_NOT_VERBOSE = {
@@ -79,22 +81,28 @@ ALERT_FIELDS_NOT_VERBOSE = {
     "user_defined",
     "affected_entities",
     "created_time",
-    "last_occurrence"
+    "last_occurrence",
 }
 
 TIMEOUT_INTERVAL = 1
 
-UTC_TIMEZONE = pytz.timezone('utc')
+UTC_TIMEZONE = pytz.timezone("utc")
 
-NUTANIX_HOST_FIELDS_TO_REMOVE = {'disk_hardware_configs', 'cpu_frequency_in_hz', 'cpu_capacity_in_hz',
-                                 'memory_capacity_in_bytes', 'stats', 'usage_stats'}
+NUTANIX_HOST_FIELDS_TO_REMOVE = {
+    "disk_hardware_configs",
+    "cpu_frequency_in_hz",
+    "cpu_capacity_in_hz",
+    "memory_capacity_in_bytes",
+    "stats",
+    "usage_stats",
+}
 
-BASE_URL_SUFFIX = '/PrismGateway/services/rest/v2.0'
-''' CLIENT CLASS '''
+BASE_URL_SUFFIX = "/PrismGateway/services/rest/v2.0"
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
-    CONTENT_JSON = {'content-type': 'application/json'}
+    CONTENT_JSON = {"content-type": "application/json"}
 
     def __init__(self, base_url, verify, proxy, auth):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, auth=auth, headers=self.CONTENT_JSON)
@@ -115,137 +123,123 @@ class Client(BaseClient):
 
         """
         try:
-            return self._http_request(
-                method=method,
-                url_suffix=url_suffix,
-                params=params,
-                json_data=json_data
-            )
+            return self._http_request(method=method, url_suffix=url_suffix, params=params, json_data=json_data)
         except DemistoException as e:
-            if 'Invalid filter criteria specified.' in str(e):
-                raise DemistoException('''Filter criteria given is invalid or is not written in the correct format.
-                 Use the 'filter' argument description 'to build your filter correctly.''')
+            if "Invalid filter criteria specified." in str(e):
+                raise DemistoException("""Filter criteria given is invalid or is not written in the correct format.
+                 Use the 'filter' argument description 'to build your filter correctly.""")
 
-            if 'Unrecognized field' in str(e):
-                raise DemistoException('Filter criteria given is invalid.')
+            if "Unrecognized field" in str(e):
+                raise DemistoException("Filter criteria given is invalid.")
 
-            if 'General error parsing FIQL expression' in str(e):
+            if "General error parsing FIQL expression" in str(e):
                 raise DemistoException(
-                    'Filter criteria given is not written in a valid format. The correct format can be found in the '
-                    'argument description.')
+                    "Filter criteria given is not written in a valid format. The correct format can be found in the "
+                    "argument description."
+                )
             raise e
 
     def fetch_incidents(self, params: Dict, last_run: Dict):
-        alert_status_filters = params.get('alert_status_filters')
-        auto_resolved = get_alert_status_filter('Auto Resolved', 'Not Auto Resolved', alert_status_filters)
-        resolved = get_alert_status_filter('Resolved', 'Unresolved', alert_status_filters)
-        acknowledged = get_alert_status_filter('Acknowledged', 'Unacknowledged', alert_status_filters)
+        alert_status_filters = params.get("alert_status_filters")
+        auto_resolved = get_alert_status_filter("Auto Resolved", "Not Auto Resolved", alert_status_filters)
+        resolved = get_alert_status_filter("Resolved", "Unresolved", alert_status_filters)
+        acknowledged = get_alert_status_filter("Acknowledged", "Unacknowledged", alert_status_filters)
 
         if auto_resolved is not None and resolved is False:
-            raise DemistoException(
-                f'''The combination of 'resolved=false' and 'auto_resolved={auto_resolved}' is not allowed.''')
+            raise DemistoException(f"""The combination of 'resolved=false' and 'auto_resolved={auto_resolved}' is not allowed.""")
         resolved = True if auto_resolved else resolved
 
-        severity = params.get('severity')
-        alert_type_ids = params.get('alert_type_ids')
-        impact_types = params.get('impact_types')
+        severity = params.get("severity")
+        alert_type_ids = params.get("alert_type_ids")
+        impact_types = params.get("impact_types")
 
-        fetch_time = params.get('first_fetch', '5 days').strip()
+        fetch_time = params.get("first_fetch", "5 days").strip()
         # to match the shape of the time returned by Nutanix service.
         first_fetch_time = get_optional_time_parameter_as_epoch(fetch_time)
-        last_fetch_epoch_time = last_run.get('last_fetch_epoch_time', first_fetch_time)
+        last_fetch_epoch_time = last_run.get("last_fetch_epoch_time", first_fetch_time)
 
-        response = self.get_nutanix_hypervisor_alerts_list(start_time=last_fetch_epoch_time, end_time=None,
-                                                           resolved=resolved,
-                                                           auto_resolved=auto_resolved, acknowledged=acknowledged,
-                                                           severity=severity, alert_type_ids=alert_type_ids,
-                                                           impact_types=impact_types, entity_types=None, page=None,
-                                                           limit=None)
+        response = self.get_nutanix_hypervisor_alerts_list(
+            start_time=last_fetch_epoch_time,
+            end_time=None,
+            resolved=resolved,
+            auto_resolved=auto_resolved,
+            acknowledged=acknowledged,
+            severity=severity,
+            alert_type_ids=alert_type_ids,
+            impact_types=impact_types,
+            entity_types=None,
+            page=None,
+            limit=None,
+        )
 
-        alerts = sanitize_outputs(response.get('entities'))
+        alerts = sanitize_outputs(response.get("entities"))
 
         incidents: List[Dict[str, Any]] = []
 
         for alert in alerts:
-            alert_created_time = alert.get('created_time_stamp_in_usecs')
+            alert_created_time = alert.get("created_time_stamp_in_usecs")
 
             try:
                 occurred = convert_epoch_time_to_datetime(alert_created_time)
             except TypeError:
-                demisto.debug(f'The following incident was found invalid and was skipped: {alert}')
+                demisto.debug(f"The following incident was found invalid and was skipped: {alert}")
                 continue
 
             incident = {
-                'name': alert.get('alert_title'),
-                'type': 'Nutanix Hypervisor Alert',
-                'occurred': occurred,
-                'rawJSON': json.dumps(remove_empty_elements(alert))
+                "name": alert.get("alert_title"),
+                "type": "Nutanix Hypervisor Alert",
+                "occurred": occurred,
+                "rawJSON": json.dumps(remove_empty_elements(alert)),
             }
 
             incidents.append(incident)
 
-        return incidents, {'last_fetch_epoch_time': int(datetime.utcnow().timestamp() * 1000000)}
+        return incidents, {"last_fetch_epoch_time": int(datetime.utcnow().timestamp() * 1000000)}
 
     def get_nutanix_hypervisor_hosts_list(self, filter_: Optional[str], limit: Optional[int], page: Optional[int]):
         return self.http_request(
-            method='GET',
-            url_suffix='hosts',
-            params=assign_params(
-                filter_criteria=filter_,
-                count=limit,
-                page=page
-            )
+            method="GET", url_suffix="hosts", params=assign_params(filter_criteria=filter_, count=limit, page=page)
         )
 
     def get_nutanix_hypervisor_vms_list(self, filter_: Optional[str], offset: Optional[int], limit: Optional[int]):
         return self.http_request(
-            method='GET',
-            url_suffix='vms',
-            params=assign_params(
-                filter=filter_,
-                offset=offset,
-                length=limit
-            )
+            method="GET", url_suffix="vms", params=assign_params(filter=filter_, offset=offset, length=limit)
         )
 
-    def nutanix_hypervisor_vm_power_status_change(self, uuid: Optional[str], host_uuid: Optional[str],
-                                                  transition: Optional[str]):
+    def nutanix_hypervisor_vm_power_status_change(self, uuid: Optional[str], host_uuid: Optional[str], transition: Optional[str]):
         return self.http_request(
-            method='POST',
-            url_suffix=f'vms/{uuid}/set_power_state',
-            json_data=assign_params(
-                uuid=uuid,
-                host_uuid=host_uuid,
-                transition=transition
-            )
+            method="POST",
+            url_suffix=f"vms/{uuid}/set_power_state",
+            json_data=assign_params(uuid=uuid, host_uuid=host_uuid, transition=transition),
         )
 
     def nutanix_hypervisor_task_results(self, completed_tasks: List[str]):
         return self.http_request(
-            method='POST',
-            url_suffix='tasks/poll',
-            json_data=assign_params(
-                completed_tasks=completed_tasks,
-                timeout_interval=TIMEOUT_INTERVAL
-            )
+            method="POST",
+            url_suffix="tasks/poll",
+            json_data=assign_params(completed_tasks=completed_tasks, timeout_interval=TIMEOUT_INTERVAL),
         )
 
     def nutanix_hypervisor_task_details(self, task_id: str):
-        return self.http_request(
-            method='GET',
-            url_suffix=f'tasks/{task_id}'
-        )
+        return self.http_request(method="GET", url_suffix=f"tasks/{task_id}")
 
-    def get_nutanix_hypervisor_alerts_list(self, start_time: Optional[int], end_time: Optional[int],
-                                           resolved: Optional[bool],
-                                           auto_resolved: Optional[bool], acknowledged: Optional[bool],
-                                           severity: Optional[str],
-                                           alert_type_ids: Optional[str], impact_types: Optional[str],
-                                           entity_types: Optional[str], page: Optional[int],
-                                           limit: Optional[int]):
+    def get_nutanix_hypervisor_alerts_list(
+        self,
+        start_time: Optional[int],
+        end_time: Optional[int],
+        resolved: Optional[bool],
+        auto_resolved: Optional[bool],
+        acknowledged: Optional[bool],
+        severity: Optional[str],
+        alert_type_ids: Optional[str],
+        impact_types: Optional[str],
+        entity_types: Optional[str],
+        page: Optional[int],
+        limit: Optional[int],
+    ):
         return self.http_request(
-            method='GET',
-            url_suffix='alerts',
+            method="GET",
+            url_suffix="alerts",
             params=assign_params(
                 start_time_in_usecs=start_time,
                 end_time_in_usecs=end_time,
@@ -257,58 +251,68 @@ class Client(BaseClient):
                 impact_types=impact_types,
                 entity_type=entity_types,
                 page=page,
-                count=limit
-            )
+                count=limit,
+            ),
         )
 
     def post_nutanix_hypervisor_alert_acknowledge(self, alert_id: Optional[str]):
         return self.http_request(
-            method='POST',
-            url_suffix=f'alerts/{alert_id}/acknowledge',
+            method="POST",
+            url_suffix=f"alerts/{alert_id}/acknowledge",
         )
 
     def post_nutanix_hypervisor_alert_resolve(self, alert_id: Optional[str]):
         return self.http_request(
-            method='POST',
-            url_suffix=f'alerts/{alert_id}/resolve',
+            method="POST",
+            url_suffix=f"alerts/{alert_id}/resolve",
         )
 
-    def post_nutanix_hypervisor_alerts_acknowledge_by_filter(self, start_time: Optional[int], end_time: Optional[int],
-                                                             severity: Optional[str], impact_types: Optional[str],
-                                                             entity_types: Optional[str],
-                                                             limit: Optional[int]):
+    def post_nutanix_hypervisor_alerts_acknowledge_by_filter(
+        self,
+        start_time: Optional[int],
+        end_time: Optional[int],
+        severity: Optional[str],
+        impact_types: Optional[str],
+        entity_types: Optional[str],
+        limit: Optional[int],
+    ):
         return self.http_request(
-            method='POST',
-            url_suffix='alerts/acknowledge',
+            method="POST",
+            url_suffix="alerts/acknowledge",
             params=assign_params(
                 start_time_in_usecs=start_time,
                 end_time_in_usecs=end_time,
                 severity=severity,
                 impact_types=impact_types,
                 entity_type=entity_types,
-                count=limit
-            )
+                count=limit,
+            ),
         )
 
-    def post_nutanix_hypervisor_alerts_resolve_by_filter(self, start_time: Optional[int], end_time: Optional[int],
-                                                         severity: Optional[str], impact_types: Optional[str],
-                                                         entity_types: Optional[str],
-                                                         limit: Optional[int]):
+    def post_nutanix_hypervisor_alerts_resolve_by_filter(
+        self,
+        start_time: Optional[int],
+        end_time: Optional[int],
+        severity: Optional[str],
+        impact_types: Optional[str],
+        entity_types: Optional[str],
+        limit: Optional[int],
+    ):
         return self.http_request(
-            method='POST',
-            url_suffix='alerts/resolve',
+            method="POST",
+            url_suffix="alerts/resolve",
             params=assign_params(
                 start_time_in_usecs=start_time,
                 end_time_in_usecs=end_time,
                 severity=severity,
                 impact_types=impact_types,
                 entity_type=entity_types,
-                count=limit
-            )
+                count=limit,
+            ),
         )
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def get_optional_time_parameter_as_epoch(arg: Optional[str]) -> Optional[int]:
@@ -329,8 +333,7 @@ def get_optional_time_parameter_as_epoch(arg: Optional[str]) -> Optional[int]:
     if not maybe_unaware_date:
         return None
 
-    aware_time_date = maybe_unaware_date if maybe_unaware_date.tzinfo else UTC_TIMEZONE.localize(
-        maybe_unaware_date)
+    aware_time_date = maybe_unaware_date if maybe_unaware_date.tzinfo else UTC_TIMEZONE.localize(maybe_unaware_date)
     return int(aware_time_date.timestamp() * 1000000)
 
 
@@ -372,8 +375,7 @@ def convert_epoch_time_to_datetime(epoch_time: Optional[int]) -> Optional[str]:
     return maybe_date_time.isoformat()
 
 
-def get_alert_status_filter(true_value: str, false_value: str, alert_status_filters: Optional[List[str]]) -> \
-        Optional[bool]:
+def get_alert_status_filter(true_value: str, false_value: str, alert_status_filters: Optional[List[str]]) -> Optional[bool]:
     """
     Receives alert_status filters, which contains all the alert status filters chosen by the user.
     checks if the argument name which corresponds to true value ('true_value') is found, or
@@ -398,7 +400,8 @@ def get_alert_status_filter(true_value: str, false_value: str, alert_status_filt
         return None
     if true_value in alert_status_filters and false_value in alert_status_filters:
         raise DemistoException(
-            f'Invalid alert status filters configurations, only one of {true_value},{false_value} can be chosen.')
+            f"Invalid alert status filters configurations, only one of {true_value},{false_value} can be chosen."
+        )
     result_value = None
     if true_value in alert_status_filters:
         result_value = True
@@ -466,7 +469,7 @@ def task_exists(client: Client, task_id: str) -> bool:
         client.nutanix_hypervisor_task_details(task_id)
         return True
     except DemistoException as e:
-        if e.message and f'{task_id} is not found' in e.message:
+        if e.message and f"{task_id} is not found" in e.message:
             return False
         raise e
 
@@ -486,7 +489,7 @@ def sanitize_outputs(outputs: List[Dict]) -> List[Dict]:
     return outputs_without_empty_elements
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_module_command(client: Client, params: Dict) -> str:
@@ -505,12 +508,12 @@ def test_module_command(client: Client, params: Dict) -> str:
     """
     try:
         client.fetch_incidents(params, {})
-        return 'ok'
+        return "ok"
     except DemistoException as e:
-        if e.message and 'Error in API call [401] - UNAUTHORIZED' in e.message:
-            raise DemistoException('Unauthorized - make sure you have the right credentials')
-        if e.message and 'Error in API call [404] - NOT FOUND' in e.message:
-            raise DemistoException('''Page not found - make sure 'Server URL' parameter is correct''')
+        if e.message and "Error in API call [401] - UNAUTHORIZED" in e.message:
+            raise DemistoException("Unauthorized - make sure you have the right credentials")
+        if e.message and "Error in API call [404] - NOT FOUND" in e.message:
+            raise DemistoException("""Page not found - make sure 'Server URL' parameter is correct""")
         raise e
 
 
@@ -554,33 +557,29 @@ def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
     Returns:
         CommandResults.
     """
-    filter_ = args.get('filter')
-    limit = arg_to_number(args.get('limit', 50))
-    page = arg_to_number(args.get('page'))
-    verbose = get_optional_boolean_arg(args, 'verbose')
+    filter_ = args.get("filter")
+    limit = arg_to_number(args.get("limit", 50))
+    page = arg_to_number(args.get("page"))
+    verbose = get_optional_boolean_arg(args, "verbose")
 
     raw_response = client.get_nutanix_hypervisor_hosts_list(filter_, limit, page)
-    raw_outputs = raw_response.get('entities')
+    raw_outputs = raw_response.get("entities")
 
     # if verbose - remove fields that should be removed always
     if verbose:
-        outputs = [{k: v for k, v in raw_output.items()
-                    if k not in NUTANIX_HOST_FIELDS_TO_REMOVE}
-                   for raw_output in raw_outputs]
+        outputs = [{k: v for k, v in raw_output.items() if k not in NUTANIX_HOST_FIELDS_TO_REMOVE} for raw_output in raw_outputs]
     # if not verbose - output only fields that should be outputted.
     else:
-        outputs = [{k: v for k, v in raw_output.items()
-                    if k in HOST_FIELDS_NOT_VERBOSE}
-                   for raw_output in raw_outputs]
+        outputs = [{k: v for k, v in raw_output.items() if k in HOST_FIELDS_NOT_VERBOSE} for raw_output in raw_outputs]
 
     final_outputs = sanitize_outputs(outputs)
 
     return CommandResults(
-        outputs_prefix='NutanixHypervisor.Host',
-        outputs_key_field='uuid',
+        outputs_prefix="NutanixHypervisor.Host",
+        outputs_key_field="uuid",
         outputs=final_outputs,
-        readable_output=tableToMarkdown('Nutanix Hosts List', final_outputs, get_human_readable_headers(final_outputs)),
-        raw_response=raw_response
+        readable_output=tableToMarkdown("Nutanix Hosts List", final_outputs, get_human_readable_headers(final_outputs)),
+        raw_response=raw_response,
     )
 
 
@@ -605,21 +604,20 @@ def nutanix_hypervisor_vms_list_command(client: Client, args: Dict):
     Returns:
         CommandResults.
     """
-    filter_ = args.get('filter')
-    offset = arg_to_number(args.get('offset'))
-    limit = arg_to_number(args.get('limit', 50))
+    filter_ = args.get("filter")
+    offset = arg_to_number(args.get("offset"))
+    limit = arg_to_number(args.get("limit", 50))
 
     raw_response = client.get_nutanix_hypervisor_vms_list(filter_, offset, limit)
 
-    outputs = sanitize_outputs(raw_response.get('entities'))
+    outputs = sanitize_outputs(raw_response.get("entities"))
 
     return CommandResults(
-        outputs_prefix='NutanixHypervisor.VM',
-        outputs_key_field='uuid',
+        outputs_prefix="NutanixHypervisor.VM",
+        outputs_key_field="uuid",
         outputs=outputs,
-        readable_output=tableToMarkdown('Nutanix Virtual Machines List', outputs,
-                                        get_human_readable_headers(outputs)),
-        raw_response=raw_response
+        readable_output=tableToMarkdown("Nutanix Virtual Machines List", outputs, get_human_readable_headers(outputs)),
+        raw_response=raw_response,
     )
 
 
@@ -643,17 +641,17 @@ def nutanix_hypervisor_vm_power_status_change_command(client: Client, args: Dict
     Returns:
         CommandResults.
     """
-    vm_uuid = args.get('vm_uuid')
-    host_uuid = args.get('host_uuid')
-    transition = args.get('transition')
+    vm_uuid = args.get("vm_uuid")
+    host_uuid = args.get("host_uuid")
+    transition = args.get("transition")
 
     raw_response = client.nutanix_hypervisor_vm_power_status_change(vm_uuid, host_uuid, transition)
 
     return CommandResults(
-        outputs_prefix='NutanixHypervisor.VMPowerStatus',
-        outputs_key_field='task_uuid',
+        outputs_prefix="NutanixHypervisor.VMPowerStatus",
+        outputs_key_field="task_uuid",
         outputs=raw_response,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
 
 
@@ -676,27 +674,27 @@ def nutanix_hypervisor_task_results_get_command(client: Client, args: Dict):
     Returns:
         CommandResults.
     """
-    task_ids_list: List[str] = argToList(args.get('task_ids'))
+    task_ids_list: List[str] = argToList(args.get("task_ids"))
 
     raw_response = client.nutanix_hypervisor_task_results(task_ids_list)
-    outputs = copy.deepcopy(raw_response.get('completed_tasks_info', []))
+    outputs = copy.deepcopy(raw_response.get("completed_tasks_info", []))
 
     for output in outputs:
-        task_id = output.get('uuid')
+        task_id = output.get("uuid")
         task_ids_list.remove(task_id)
 
     for uncompleted_task_id in task_ids_list:
-        progress_status = 'In Progress' if task_exists(client, uncompleted_task_id) else 'Task Was Not Found'
-        outputs.append({'uuid': uncompleted_task_id, 'progress_status': progress_status})
+        progress_status = "In Progress" if task_exists(client, uncompleted_task_id) else "Task Was Not Found"
+        outputs.append({"uuid": uncompleted_task_id, "progress_status": progress_status})
 
     final_outputs = sanitize_outputs(outputs)
 
     return CommandResults(
-        outputs_prefix='NutanixHypervisor.Task',
-        outputs_key_field='uuid',
-        readable_output=tableToMarkdown('Nutanix Hypervisor Tasks Status', final_outputs),
+        outputs_prefix="NutanixHypervisor.Task",
+        outputs_key_field="uuid",
+        readable_output=tableToMarkdown("Nutanix Hypervisor Tasks Status", final_outputs),
         outputs=final_outputs,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
 
 
@@ -741,45 +739,51 @@ def nutanix_hpyervisor_alerts_list_command(client: Client, args: Dict):
     Returns:
         CommandResults.
     """
-    start_time = get_optional_time_parameter_as_epoch(args.get('start_time'))
-    end_time = get_optional_time_parameter_as_epoch(args.get('end_time'))
+    start_time = get_optional_time_parameter_as_epoch(args.get("start_time"))
+    end_time = get_optional_time_parameter_as_epoch(args.get("end_time"))
 
-    auto_resolved = get_optional_boolean_arg(args, 'auto_resolved')
-    resolved = get_optional_boolean_arg(args, 'resolved')
+    auto_resolved = get_optional_boolean_arg(args, "auto_resolved")
+    resolved = get_optional_boolean_arg(args, "resolved")
 
     if auto_resolved is not None and resolved is False:
-        raise DemistoException(
-            f'''The combination of 'resolved=false' and 'auto_resolved={auto_resolved}' is not allowed.''')
+        raise DemistoException(f"""The combination of 'resolved=false' and 'auto_resolved={auto_resolved}' is not allowed.""")
     resolved = True if auto_resolved else resolved
 
-    acknowledged = get_optional_boolean_arg(args, 'acknowledged')
-    severity = args.get('severity')
-    alert_type_ids = args.get('alert_type_ids')
-    impact_types = args.get('impact_types')
-    entity_types = args.get('entity_types')
-    page = arg_to_number(args.get('page'))
-    limit = arg_to_number(args.get('limit', 50))
-    verbose = get_optional_boolean_arg(args, 'verbose')
+    acknowledged = get_optional_boolean_arg(args, "acknowledged")
+    severity = args.get("severity")
+    alert_type_ids = args.get("alert_type_ids")
+    impact_types = args.get("impact_types")
+    entity_types = args.get("entity_types")
+    page = arg_to_number(args.get("page"))
+    limit = arg_to_number(args.get("limit", 50))
+    verbose = get_optional_boolean_arg(args, "verbose")
 
-    raw_response = client.get_nutanix_hypervisor_alerts_list(start_time, end_time, resolved, auto_resolved,
-                                                             acknowledged, severity,
-                                                             alert_type_ids, impact_types, entity_types,
-                                                             page, limit)
+    raw_response = client.get_nutanix_hypervisor_alerts_list(
+        start_time,
+        end_time,
+        resolved,
+        auto_resolved,
+        acknowledged,
+        severity,
+        alert_type_ids,
+        impact_types,
+        entity_types,
+        page,
+        limit,
+    )
 
-    outputs = sanitize_outputs(raw_response.get('entities'))
+    outputs = sanitize_outputs(raw_response.get("entities"))
 
     # if not verbose - output only fields that should be outputted.
     if not verbose:
-        outputs = [{k: v for k, v in raw_output.items()
-                    if k in ALERT_FIELDS_NOT_VERBOSE}
-                   for raw_output in outputs]
+        outputs = [{k: v for k, v in raw_output.items() if k in ALERT_FIELDS_NOT_VERBOSE} for raw_output in outputs]
 
     return CommandResults(
-        outputs_prefix='NutanixHypervisor.Alerts',
-        outputs_key_field='id',
+        outputs_prefix="NutanixHypervisor.Alerts",
+        outputs_key_field="id",
         outputs=outputs,
-        readable_output=tableToMarkdown('Nutanix Alert List', outputs, get_human_readable_headers(outputs)),
-        raw_response=raw_response
+        readable_output=tableToMarkdown("Nutanix Alert List", outputs, get_human_readable_headers(outputs)),
+        raw_response=raw_response,
     )
 
 
@@ -799,15 +803,15 @@ def nutanix_hypervisor_alert_acknowledge_command(client: Client, args: Dict):
     Returns:
         CommandResults.
     """
-    alert_id = args.get('alert_id')
+    alert_id = args.get("alert_id")
 
     raw_response = client.post_nutanix_hypervisor_alert_acknowledge(alert_id)
 
     return CommandResults(
-        outputs_prefix='NutanixHypervisor.AcknowledgedAlerts',
-        outputs_key_field='id',
+        outputs_prefix="NutanixHypervisor.AcknowledgedAlerts",
+        outputs_key_field="id",
         outputs=remove_empty_elements(raw_response),
-        raw_response=raw_response
+        raw_response=raw_response,
     )
 
 
@@ -827,15 +831,15 @@ def nutanix_hypervisor_alert_resolve_command(client: Client, args: Dict):
     Returns:
         CommandResults.
     """
-    alert_id = args.get('alert_id')
+    alert_id = args.get("alert_id")
 
     raw_response = client.post_nutanix_hypervisor_alert_resolve(alert_id)
 
     return CommandResults(
-        outputs_prefix='NutanixHypervisor.ResolvedAlerts',
-        outputs_key_field='id',
+        outputs_prefix="NutanixHypervisor.ResolvedAlerts",
+        outputs_key_field="id",
         outputs=remove_empty_elements(raw_response),
-        raw_response=raw_response
+        raw_response=raw_response,
     )
 
 
@@ -868,27 +872,23 @@ def nutanix_hypervisor_alerts_acknowledge_by_filter_command(client: Client, args
     Returns:
         CommandResults.
     """
-    start_time = get_optional_time_parameter_as_epoch(args.get('start_time'))
-    end_time = get_optional_time_parameter_as_epoch(args.get('end_time'))
-    severity = args.get('severity')
-    impact_types = args.get('impact_types')
-    entity_types = args.get('entity_types')
-    limit = arg_to_number(args.get('limit', 50))
+    start_time = get_optional_time_parameter_as_epoch(args.get("start_time"))
+    end_time = get_optional_time_parameter_as_epoch(args.get("end_time"))
+    severity = args.get("severity")
+    impact_types = args.get("impact_types")
+    entity_types = args.get("entity_types")
+    limit = arg_to_number(args.get("limit", 50))
 
-    raw_response = client.post_nutanix_hypervisor_alerts_acknowledge_by_filter(start_time, end_time, severity,
-                                                                               impact_types,
-                                                                               entity_types,
-                                                                               limit)
-
-    outputs = {'num_successful_updates': raw_response.get('num_successful_updates', 0),
-               'num_failed_updates': raw_response.get('num_failed_updates', 0)
-               }
-
-    return CommandResults(
-        outputs_prefix='NutanixHypervisor.AcknowledgedFilterAlerts',
-        outputs=outputs,
-        raw_response=raw_response
+    raw_response = client.post_nutanix_hypervisor_alerts_acknowledge_by_filter(
+        start_time, end_time, severity, impact_types, entity_types, limit
     )
+
+    outputs = {
+        "num_successful_updates": raw_response.get("num_successful_updates", 0),
+        "num_failed_updates": raw_response.get("num_failed_updates", 0),
+    }
+
+    return CommandResults(outputs_prefix="NutanixHypervisor.AcknowledgedFilterAlerts", outputs=outputs, raw_response=raw_response)
 
 
 def nutanix_hypervisor_alerts_resolve_by_filter_command(client: Client, args: Dict):
@@ -920,28 +920,26 @@ def nutanix_hypervisor_alerts_resolve_by_filter_command(client: Client, args: Di
     Returns:
         CommandResults.
     """
-    start_time = get_optional_time_parameter_as_epoch(args.get('start_time'))
-    end_time = get_optional_time_parameter_as_epoch(args.get('end_time'))
-    severity = args.get('severity')
-    impact_types = args.get('impact_types')
-    entity_types = args.get('entity_types')
-    limit = arg_to_number(args.get('limit', 50))
+    start_time = get_optional_time_parameter_as_epoch(args.get("start_time"))
+    end_time = get_optional_time_parameter_as_epoch(args.get("end_time"))
+    severity = args.get("severity")
+    impact_types = args.get("impact_types")
+    entity_types = args.get("entity_types")
+    limit = arg_to_number(args.get("limit", 50))
 
-    raw_response = client.post_nutanix_hypervisor_alerts_resolve_by_filter(start_time, end_time, severity, impact_types,
-                                                                           entity_types, limit)
-
-    outputs = {'num_successful_updates': raw_response.get('num_successful_updates', 0),
-               'num_failed_updates': raw_response.get('num_failed_updates', 0)
-               }
-
-    return CommandResults(
-        outputs_prefix='NutanixHypervisor.ResolvedFilterAlerts',
-        outputs=outputs,
-        raw_response=raw_response
+    raw_response = client.post_nutanix_hypervisor_alerts_resolve_by_filter(
+        start_time, end_time, severity, impact_types, entity_types, limit
     )
 
+    outputs = {
+        "num_successful_updates": raw_response.get("num_successful_updates", 0),
+        "num_failed_updates": raw_response.get("num_failed_updates", 0),
+    }
 
-''' MAIN FUNCTION '''
+    return CommandResults(outputs_prefix="NutanixHypervisor.ResolvedFilterAlerts", outputs=outputs, raw_response=raw_response)
+
+
+""" MAIN FUNCTION """
 
 
 def main() -> None:
@@ -949,54 +947,50 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
 
-    credentials = params.get('credentials')
-    username = credentials.get('identifier')
-    password = credentials.get('password')
+    credentials = params.get("credentials")
+    username = credentials.get("identifier")
+    password = credentials.get("password")
 
-    base_url = params.get('base_url') + BASE_URL_SUFFIX
+    base_url = params.get("base_url") + BASE_URL_SUFFIX
 
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f"Command being called is {demisto.command()}")
     try:
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            proxy=proxy,
-            auth=(username, password))
+        client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy, auth=(username, password))
 
-        if command == 'test-module':
+        if command == "test-module":
             return_results(test_module_command(client, params))
 
-        elif command == 'fetch-incidents':
+        elif command == "fetch-incidents":
             fetch_incidents_command(client, params)
 
-        elif command == 'nutanix-hypervisor-hosts-list':
+        elif command == "nutanix-hypervisor-hosts-list":
             return_results(nutanix_hypervisor_hosts_list_command(client, args))
 
-        elif command == 'nutanix-hypervisor-vms-list':
+        elif command == "nutanix-hypervisor-vms-list":
             return_results(nutanix_hypervisor_vms_list_command(client, args))
 
-        elif command == 'nutanix-hypervisor-vm-powerstatus-change':
+        elif command == "nutanix-hypervisor-vm-powerstatus-change":
             return_results(nutanix_hypervisor_vm_power_status_change_command(client, args))
 
-        elif command == 'nutanix-hypervisor-task-results-get':
+        elif command == "nutanix-hypervisor-task-results-get":
             return_results(nutanix_hypervisor_task_results_get_command(client, args))
 
-        elif command == 'nutanix-hypervisor-alerts-list':
+        elif command == "nutanix-hypervisor-alerts-list":
             return_results(nutanix_hpyervisor_alerts_list_command(client, args))
 
-        elif command == 'nutanix-hypervisor-alert-acknowledge':
+        elif command == "nutanix-hypervisor-alert-acknowledge":
             return_results(nutanix_hypervisor_alert_acknowledge_command(client, args))
 
-        elif command == 'nutanix-hypervisor-alert-resolve':
+        elif command == "nutanix-hypervisor-alert-resolve":
             return_results(nutanix_hypervisor_alert_resolve_command(client, args))
 
-        elif command == 'nutanix-hypervisor-alerts-acknowledge-by-filter':
+        elif command == "nutanix-hypervisor-alerts-acknowledge-by-filter":
             return_results(nutanix_hypervisor_alerts_acknowledge_by_filter_command(client, args))
 
-        elif command == 'nutanix-hypervisor-alerts-resolve-by-filter':
+        elif command == "nutanix-hypervisor-alerts-resolve-by-filter":
             return_results(nutanix_hypervisor_alerts_resolve_by_filter_command(client, args))
 
         else:
@@ -1004,10 +998,10 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
