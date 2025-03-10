@@ -15,7 +15,7 @@ This integration was integrated and tested with version 2 of FreshworksFreshserv
     | Trust any certificate (not secure) |  | False |
     | Fetch incidents | Enable fetch incidents. Only incidents created after the specified "First fetch timestamp" will be retrieved. | False |
     | First fetch timestamp | First alert created date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago" | False |
-    | Maximum incidents per fetch | Maximum number of incidents per fetch. Default is 50. The maximum is 100. | False |
+    | Maximum incidents per fetch | Maximum number of incidents per fetch. Default is 100. | False |
     | Ticket type to fetch as incidents.  |  | False |
     | None | Incident priorities to fetch. The default is All. You can choose multiple priorities. | False |
     | Ticket Impact | Incident impacts to fetch. The default is All. You can choose multiple impacts. | False |
