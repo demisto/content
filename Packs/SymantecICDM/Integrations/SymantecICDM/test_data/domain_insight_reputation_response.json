@@ -1,0 +1,33 @@
+{
+    "network": "elblogdeloscachanillas.com.mx",
+    "threatRiskLevel": {
+        "level": 10
+    },
+    "categorization": {
+        "categories": [
+            {
+                "id": 43,
+                "name": "Malicious Sources/Malnets"
+            }
+        ]
+    },
+    "reputation": "BAD",
+    "prevalence": "Low",
+    "firstSeen": "2019-08-30",
+    "lastSeen": "2024-01-24",
+    "targetOrgs": {
+        "topCountries": [
+            "qa",
+            "il",
+            "tw",
+            "gb",
+            "ec",
+            "us"
+        ],
+        "topIndustries": [
+            "Utilities",
+            "Financial Services",
+            "Information Technology"
+        ]
+    }
+}
