@@ -175,6 +175,11 @@ class DomainToolsClient(BaseClient):
             )
 
 
+def batch_create_indicators(indicators: list[dict[str, Any]], batch_size: int = 2000):
+    for iter_ in batch(indicators, batch_size=batch_size):
+        demisto.createIndicators(iter_)
+
+
 def fetch_indicators(
     client: DomainToolsClient, feed_type: str = "nod", dt_feed_kwargs: dict[str, Any] = {}
 ) -> list[dict]:
@@ -197,7 +202,7 @@ def fetch_indicators(
             tags_ = item.get("tags", [])
             tlp_color_ = item.get("tlp_color")
 
-            indicator_tags = ",".join(tags_)
+            indicator_tags = ",".join(tags_).rstrip(",")
 
             raw_data = {
                 "value": value_,
@@ -212,7 +217,8 @@ def fetch_indicators(
                 "fields": {
                     "tags": indicator_tags,
                     "service": "DomainTools Feeds",
-                    "firstseenbysource": timestamp_
+                    "firstseenbysource": timestamp_,
+                    "sourcebrands": "FeedDomainTools"
                 },
                 "rawJSON": raw_data,
             }
@@ -265,9 +271,12 @@ def get_indicators_command(client: DomainToolsClient, args: dict[str, str], para
         removeNull=True,
     )
 
+    batch_create_indicators(indicators, batch_size=100)
+
     return CommandResults(
         readable_output=human_readable,
         raw_response=indicators,
+        ignore_auto_extract=True
     )
 
 
@@ -355,8 +364,7 @@ def main():
 
         elif command == "fetch-indicators":
             indicators = fetch_indicators_command(client, params)
-            for iter_ in batch(indicators, batch_size=2000):
-                demisto.createIndicators(iter_)
+            batch_create_indicators(indicators)
         else:
             raise NotImplementedError(f"Command {command} is not supported")
 
