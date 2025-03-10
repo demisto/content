@@ -6,6 +6,8 @@ from CommonServerUserPython import *
 
 import urllib3
 import urllib.parse
+import dateparser
+import math
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -15,8 +17,8 @@ urllib3.disable_warnings()
 
 class Client(BaseClient):
 
-    def __init__(self, proxy, use_ssl, base_url, client_id, client_secret):
-        super().__init__(base_url=base_url, verify=use_ssl, proxy=proxy)
+    def __init__(self, proxy, use_ssl, base_url, client_id, client_secret, timeout):
+        super().__init__(base_url=base_url, verify=use_ssl, proxy=proxy, timeout=timeout)
         access_token = self.get_oath_token(client_id, client_secret)
         headers = {'Content-Type': 'application/json',
                    'Authorization': f'Bearer {access_token}'}
@@ -404,6 +406,64 @@ def vulndb_get_cve_command(args: dict, client: Client, dbot_score_reliability: D
     return_results(command_results)
 
 
+def vulndb_fetch_incidents_command(args: dict, max_size: int, first_fetch: datetime,
+                                   all_cvss: bool, include_cpe: bool, client: Client):
+    demisto.info('[VulnDB]: Running Fetch Incidents')
+    last_run = demisto.getLastRun()
+    hours_ago: int = math.ceil((datetime.now(timezone.utc) - first_fetch).total_seconds() / 3600)
+    # Calculate the hours difference since the last run
+    last_timestamp: datetime = datetime(1, 1, 1, 0, 0, 0, 0, timezone.utc)
+    last_id: int = 0
+    if last_run and 'start_time' in last_run:
+        last_id = int(last_run.get('last_id', 0))
+        start_time = datetime.fromisoformat(last_run['start_time'])
+        last_timestamp = start_time
+        if start_time:
+            delta: timedelta = datetime.now(timezone.utc) - start_time
+            hours_ago = math.ceil(delta.total_seconds() / 3600)
+    hours_ago = max(1, hours_ago)  # Make sure we use at least one hour
+    demisto.info(f'[VulnDB]: VulnDB Fetch For last {hours_ago} hours')
+
+    incidents: list[dict] = []
+    total_results = max_size + 1
+    count = 0
+    page = 1
+    while count < total_results:
+        url_suffix = f'/vulnerabilities/find_by_time?page={page}&hours_ago={hours_ago}'  # noqa: E501
+        if all_cvss:
+            url_suffix = f'{url_suffix}&show_cvss_v3=true&show_cvss=true'
+        if include_cpe:
+            url_suffix = f'{url_suffix}&show_cpe_full=true'
+
+        res = client.http_request(url_suffix, 100)
+        page = page + 1
+        results = res.get('results', [])
+        count = count + len(results)
+        total_results = res.get('total_entries', 0)
+        demisto.info(f'[VulnDB]: Total count: {total_results}')
+        demisto.info(f'[VulnDB]: Count: {count}')
+        for result in results:
+            result_date = dateparser.parse(result.get('vulndb_last_modified'))
+            if result_date and (result_date < last_timestamp
+                                or (result_date == last_timestamp and int(result['vulndb_id']) <= last_id)):
+                continue  # Skip entries, that are from before the last run date
+            mirror_id = f'{result["vulndb_id"]}@{result.get("vulndb_last_modified", datetime.now(timezone.utc).isoformat())}'
+            incidents.append({'name': result.get('title', ''),  # name is required field, must be set
+                              'occured': result.get('vulndb_last_modified'),  # must be string of a format ISO8601
+                              'rawJSON': json.dumps(result),
+                              'dbotMirrorId': mirror_id
+                              })
+
+    incidents = sorted(incidents, key=lambda x: x['occured'])
+    incidents_slice = incidents[:max_size] if len(incidents) > max_size else incidents
+    last_date = last_timestamp.isoformat()
+    if len(incidents_slice) > 0:
+        last_date = incidents_slice[-1]['occured']
+        last_id = json.loads(incidents_slice[-1]['rawJSON']).get('vulndb_id', last_id)
+    demisto.setLastRun({'start_time': last_date, 'last_id': last_id})
+    demisto.incidents(incidents_slice)
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -413,13 +473,17 @@ def main():
     api_url = params['api_url']
     client_id = params.get('credentials', {}).get('identifier') or params.get('client_id')
     client_secret = params.get('credentials', {}).get('password') or params.get('client_secret')
+    timeout = params.get('requestTimeout', 60)
     if not (client_id and client_secret):
         return_error('Please provide a Client ID and Secret')
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     dbot_score_reliability = params['integration_reliability']
-    client = Client(proxy, use_ssl, api_url, client_id, client_secret)
+    client = Client(proxy, use_ssl, api_url, client_id, client_secret, timeout)
     args = demisto.args()
+    first_fetch = dateparser.parse(params['first_fetch'], settings={'RETURN_AS_TIMEZONE_AWARE': True})
+    if not first_fetch:
+        first_fetch = datetime.now(timezone.utc) - timedelta(hours=24)
     command = demisto.command()
     LOG(f'Command being called is {command}')
     try:
@@ -427,7 +491,11 @@ def main():
             # This is the call made when pressing the integration test button.
             test_module(client, client_id, client_secret)
             demisto.results('ok')
-        if command == 'vulndb-get-vuln-by-id':
+        if command == 'fetch-incidents':
+            vulndb_fetch_incidents_command(args, int(params['max_fetch']), first_fetch,
+                                           params.get('include_all_cvss', False),
+                                           params.get('include_cpe', False), client)
+        elif command == 'vulndb-get-vuln-by-id':
             vulndb_get_vuln_by_id_command(args, client)
         elif command == 'vulndb-get-vuln-by-vendor-and-product-name':
             vulndb_get_vuln_by_vendor_and_product_name_command(args, client)
