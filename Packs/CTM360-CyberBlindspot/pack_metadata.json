@@ -2,7 +2,7 @@
     "name": "CTM360",
     "description": "Take action on incidents derived from threat intelligence that is directly linked to your organization.",
     "support": "partner",
-    "currentVersion": "2.1.0",
+    "currentVersion": "2.1.1",
     "author": "CTM360",
     "url": "https://www.ctm360.com",
     "email": "xsoar@ctm360.com",
