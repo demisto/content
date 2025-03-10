@@ -1293,6 +1293,37 @@ def get_access_key_last_used_command(args, client):
                                f"\nencountered the following exception: {str(e)}")
 
 
+def update_assume_role_policy_command(args: dict[str, Any], client) -> CommandResults:
+    """Updates the policy that grants an IAM entity permission to assume a role. 
+
+    Args:
+        args (dict): The command arguments.
+        client (boto3.client): A client session instance from AWSApiModule.
+
+    Raises:
+        ValueError: If the `roleName` or `policyDocument` arguments were not specified.
+        DemistoException: If the API call returned an HTTP error status code in the response.
+
+    Returns:
+        CommandResults: The command results including a human-readable output and the raw API response.
+    """
+    role_name = args.get('roleName')
+    if not role_name:
+        raise ValueError("The 'roleName' argument should be specified.")
+
+    policy_document = args.get('policyDocument')
+    if not policy_document:
+        raise ValueError("The 'policyDocument' argument should be specified.")
+
+    raw_response = client.update_assume_role_policy(RoleName=role_name, PolicyDocument=policy_document)
+
+    if raw_response.get('ResponseMetadata', {}).get('HTTPStatusCode') != 200:
+        raise DemistoException(f'Got unexpected result: {raw_response.get("ResponseMetadata")}.')
+
+    human_readable = f'Assume role policy {role_name} was successfully updated.'
+    return CommandResults(readable_output=human_readable, raw_response=raw_response)
+
+
 def test_function(client):
     response = client.list_users()
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
@@ -1455,10 +1486,11 @@ def main():     # pragma: no cover
             return_results(get_access_key_last_used_command(args, client))
         elif command == 'aws-iam-list-attached-role-policies':
             return_results(list_attached_role_policies_command(args, client))
+        elif command == 'aws-iam-update-assume-role-policy':
+            return_results(update_assume_role_policy_command(args, client))
     except Exception as e:
         LOG(str(e))
-        return_error('Error has occurred in the AWS IAM Integration: {code}\n {message}'.format(
-            code=type(e), message=str(e)))
+        return_error(f'Error has occurred in the AWS IAM Integration: {type(e)}\n {str(e)}')
 
 
 from AWSApiModule import *  # noqa: E402

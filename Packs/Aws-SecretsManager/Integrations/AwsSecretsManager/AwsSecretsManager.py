@@ -262,22 +262,25 @@ def should_create_credential(secret_as_dict):
     return any(key in ["username", "password", "workgroup", "certificate"] for key in secret_as_dict)
 
 
-def aws_secrets_manager_secret_policy_delete_command(client: AWSClient, args: dict[str, Any]):
+def aws_secrets_manager_secret_policy_delete_command(client: AWSClient, args: dict[str, Any]) -> CommandResults:
     """Implements the `!aws-secrets-manager-secret–policy-delete` command.
     Deletes the resource-based permission policy attached to a secret whose ID is given in the command arguments.
 
     Args:
-        client (AWSClient): An instance of AWSClient from the AWSApiModule.
+        client (AWSClient): An instance of `AWSClient` from the AWSApiModule.
         args (dict): The command arguments.
 
     Raises:
-        ValueError: If `secret_id` argument was not specified.
+        ValueError: If the `secret_id` argument was not specified.
         DemistoException: If the API call returned an HTTP error status code in the response.
+
+    Returns:
+        CommandResults: The command results including a human-readable output and the raw API response.
     """
     secret_id = args.get('secret_id')
     if not secret_id:
         raise ValueError("The 'secret_id' argument should be specified.")
-    
+
     session = client.aws_session(
         service=SERVICE,
         role_arn=args.get('roleArn'),
@@ -290,7 +293,7 @@ def aws_secrets_manager_secret_policy_delete_command(client: AWSClient, args: di
         raise DemistoException(f'Got unexpected result: {raw_response.get("ResponseMetadata")}.')
 
     human_readable = f'The resource-based permission policy attached to the secret {secret_id} was successfully deleted.'
-    return_results(CommandResults(readable_output=human_readable, raw_response=raw_response))
+    return CommandResults(readable_output=human_readable, raw_response=raw_response)
 
 
 def main():  # pragma: no cover:
@@ -298,7 +301,7 @@ def main():  # pragma: no cover:
         params = demisto.params()
         command = demisto.command()
         args = demisto.args()
-        
+
         if argToBoolean(params.get('disable_sensitive_commands')) and command in SENSITIVE_COMMANDS:
             raise ValueError('Sensitive commands are disabled. You can reenable them in the integration settings.')
         aws_default_region = params.get('defaultRegion')
@@ -334,7 +337,7 @@ def main():  # pragma: no cover:
         elif command == 'fetch-credentials':
             fetch_credentials(aws_client, args)
         elif command == 'aws-secrets-manager-secret–policy-delete':
-            aws_secrets_manager_secret_policy_delete_command(aws_client, args)
+            return_results(aws_secrets_manager_secret_policy_delete_command(aws_client, args))
         else:
             raise NotImplementedError(f'Unknown command {command!r}')
 
