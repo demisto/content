@@ -347,7 +347,6 @@ def test_module(client: DomainToolsClient, args: dict[str, str], params: dict[st
     }
     try:
         next(client.build_iterator(dt_feed_kwargs=dt_feed_kwargs))
-        # fetch_indicators_command(client, params)
     except Exception as e:
         raise Exception(
             "Could not fetch DomainTools Feed\n"
