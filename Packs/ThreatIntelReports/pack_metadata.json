@@ -2,7 +2,7 @@
     "name": "Threat Intel Reports (BETA)",
     "description": "Threat Intel Reports gives the user the ability to create, review, publish, and export threat intelligence reports.",
     "support": "xsoar",
-    "currentVersion": "1.0.21",
+    "currentVersion": "1.0.22",
     "serverMinVersion": "6.5.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
