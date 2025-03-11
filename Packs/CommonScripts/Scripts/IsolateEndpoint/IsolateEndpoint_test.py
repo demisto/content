@@ -173,48 +173,74 @@ def test_map_zipped_args():
 def test_map_args():
     """
     Given:
-        - A dictionary mapping keys (`arg_mapping`) to different keys in `args`.
+        - A Command object with `arg_mapping` defining how to map keys in `args`.
+        - Optional hard-coded arguments that should be included in the output.
     When:
-        - The map_args function is called.
+        - The `map_args` function is called.
     Then:
         - It correctly maps the values from `args` based on `arg_mapping`.
+        - It includes hard-coded arguments in the output.
         - It returns an empty string for missing keys instead of raising an error.
     """
-    arg_mapping = {"new_key1": "old_key1", "new_key2": "old_key2"}
+    base_command = Command(
+        brand="test_brand",
+        name="test_command",
+        arg_mapping={}
+    )
+
+    base_command.arg_mapping = {"new_key1": "old_key1", "new_key2": "old_key2"}
     args = {"old_key1": "value1", "old_key2": "value2"}
     expected_output = {"new_key1": "value1", "new_key2": "value2"}
-    assert map_args(arg_mapping, args) == expected_output
+    assert map_args(base_command, args) == expected_output
 
-    arg_mapping = {"new_key1": "old_key1", "new_key2": "missing_key"}
+    base_command.arg_mapping = {"new_key1": "old_key1", "new_key2": "missing_key"}
     args = {"old_key1": "value1"}
     expected_output = {"new_key1": "value1", "new_key2": ""}
-    assert map_args(arg_mapping, args) == expected_output
+    assert map_args(base_command, args) == expected_output
 
-    assert map_args({}, {}) == {}
-    assert map_args({"new_key": "old_key"}, {}) == {"new_key": ""}
+    base_command.arg_mapping = {}
+    assert map_args(base_command, {}) == {}
+
+    base_command.arg_mapping = {"new_key": "old_key"}
+    assert map_args(base_command, {}) == {"new_key": ""}
+
+    base_command.arg_mapping = {"new_key1": "old_key1"}
+    base_command.hard_coded_args = {"fixed_key": "fixed_value"}
+    args = {"old_key1": "value1"}
+    expected_output = {"new_key1": "value1", "fixed_key": "fixed_value"}
+    assert map_args(base_command, args) == expected_output
+
+    base_command.hard_coded_args = None
 
 
 def test_are_there_missing_args():
     """
     Given:
-        - A mapping of argument names and their corresponding keys in args.
+        - A Command object with `arg_mapping` defining expected argument keys.
     When:
         - The function checks if all mapped arguments are missing.
     Then:
         - It correctly identifies when arguments are missing or present.
     """
-    arg_mapping = {"new_key1": "old_key1", "new_key2": "old_key2"}
+    base_command = Command(
+        brand="test_brand",
+        name="test_command",
+        arg_mapping={}
+    )
+
+    base_command.arg_mapping = {"new_key1": "old_key1", "new_key2": "old_key2"}
     args = {"old_key1": "value1", "old_key2": "value2"}
-    assert are_there_missing_args(arg_mapping, args) is False
+    assert are_there_missing_args(base_command, args) is False
 
-    arg_mapping = {"new_key1": "old_key1", "new_key2": "missing_key"}
+    base_command.arg_mapping = {"new_key1": "old_key1", "new_key2": "missing_key"}
     args = {"old_key1": "value1"}
-    assert are_there_missing_args(arg_mapping, args) is False
+    assert are_there_missing_args(base_command, args) is False
 
-    arg_mapping = {"new_key1": "old_key1", "new_key2": "old_key2"}
-    assert are_there_missing_args(arg_mapping, {}) is True
+    base_command.arg_mapping = {"new_key1": "old_key1", "new_key2": "old_key2"}
+    assert are_there_missing_args(base_command, {}) is True
 
-    assert are_there_missing_args({}, {}) is False
+    base_command.arg_mapping = {}
+    assert are_there_missing_args(base_command, {}) is False
 
 
 def test_is_endpoint_isolatable():
