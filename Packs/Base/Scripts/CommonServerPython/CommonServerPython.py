@@ -7587,7 +7587,6 @@ def return_error(message, error='', outputs=None):
             'EntryContext': outputs,
         })
         sys.exit(0)
-    sys.exit(0)
 
 
 def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_extract=False):
@@ -12348,7 +12347,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         ).format(xsiam_url=xsiam_url, headers=json.dumps(headers, indent=8), status_code=res.status_code, error=error)
 
         demisto.error(header_msg + api_call_info)
-        raise DemistoException(header_msg + error, DemistoException)
+        # raise DemistoException(header_msg + error, DemistoException)
 
     client = BaseClient(base_url=xsiam_url, proxy=add_proxy_to_request)
     data_chunks = split_data_to_chunks(data, chunk_size)
