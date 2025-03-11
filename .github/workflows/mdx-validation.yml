@@ -23,23 +23,24 @@ jobs:
 
       - name: Validate README.md files
         run: |
-          for file in $(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} | grep 'README.md'); do
+          for file in $(git diff --name-only origin/${{ github.event.pull_request.base.ref }} origin/${{ github.event.pull_request.head.ref }} | grep 'README.md'); do
             echo "Validating $file"
             node - << 'EOF'
-          const cli = require('commander');
           const { readFile } = require('fs-extra');
           const mdx = require('@mdx-js/mdx');
 
           async function parseMDX(file) {
-              const contents = await readFile(file, 'utf8');
-              parsed = await mdx(contents);
-              console.log(`${parsed}`);
+              try {
+                  const contents = await readFile(file, 'utf8');
+                  let parsed = await mdx(contents);
+                  console.log('Successfully parsed MDX');
+              } catch (error) {
+                  console.error("MDX parse failure: " + error);
+                  process.exit(1);
+              }
           }
 
           const file = process.argv[2];
-          parseMDX(file).catch((reason) => {
-              console.error(reason);
-              process.exit(1);
-          });
+          parseMDX(file);
           EOF
           done
