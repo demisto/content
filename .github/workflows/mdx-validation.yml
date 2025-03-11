@@ -108,22 +108,21 @@ jobs:
             exit 0
           fi
           for file in $READMES; do
-            node - <<  `EOF'
+            node - "$file" << 'EOF'
           const { readFile } = require('fs-extra');
           const mdx = require('@mdx-js/mdx');
 
           async function parseMDX(file) {
               try {
                   const contents = await readFile(file, 'utf8');
-                  let parsed = await mdx(contents);
-                  console.log(`Successfully parsed MDX: ${file}`);
+                  await mdx(contents);
               } catch (error) {
                   console.error(`MDX parse failure in ${file}: ` + error);
                   process.exit(1);
               }
           }
 
-          const files = process.argv.slice(2);
-          files.forEach(parseMDX);
-          EOF 
+          const file = process.argv[2];
+          parseMDX(file);
+          EOF
           done
