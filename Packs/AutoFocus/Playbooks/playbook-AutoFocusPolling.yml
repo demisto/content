@@ -265,3 +265,8 @@ outputs:
   description: Results of Autofocus tags search
 tests:
 - Autofocus Query Samples, Sessions and Tags Test Playbook
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
