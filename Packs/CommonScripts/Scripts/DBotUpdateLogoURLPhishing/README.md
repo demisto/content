@@ -1,4 +1,4 @@
-Add, remove, or modify logos for the URL Phishing model to compare to suspicious websites.
+Add, remove, or modify logos from the URL Phishing model.
 
 ## Script Data
 ---
