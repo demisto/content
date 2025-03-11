@@ -98,11 +98,23 @@ class Client(BaseClient):
         return response
 
     def get_details_of_a_threat_request(self, threat_id, subtenant=None, page_size=None, page_number=None):
+        """
+        Get details of a specific threat with pagination support.
+        
+        Args:
+            threat_id (str): The ID of the threat to get details for
+            subtenant (str, optional): The subtenant ID
+            page_size (int, optional): The number of items per page
+            page_number (int, optional): The page number (zero-based)
+            
+        Returns:
+            dict: The threat details with pagination
+        """
         headers = self._headers
         params = assign_params(subtenant=subtenant, pageSize=page_size, pageNumber=page_number)
 
         response = self._http_request('get', f'threats/{threat_id}', params=params, headers=headers)
-
+        response = self._remove_keys_from_response(response, ["pageNumber", "nextPageNumber"])
         return response
 
     def get_details_of_an_abnormal_case_request(self, case_id, subtenant=None):
