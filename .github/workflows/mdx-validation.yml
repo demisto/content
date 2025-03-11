@@ -1,82 +1,45 @@
-name: MDX Validation
+name: Validate README.md with MDX
 
-on: [pull_request]
+on:
+  pull_request:
+    paths:
+      - '**/README.md'
 
 jobs:
   validate-mdx:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Repository
+      - name: Checkout code
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 2  # Fetch at least two commits for diff comparison
 
-      - name: Install Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: '20'
 
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Fetch Base Branch
-        run: git fetch origin ${{ github.base_ref }} --depth=1
-
-      - name: Get Changed README.md Files
-        id: changed-files
+      - name: Install dependencies
         run: |
-          FILES=$(git diff --name-only origin/${{ github.base_ref }} -- '*.md')
+          npm install commander fs-extra @mdx-js/mdx
 
-          if [[ -z "$FILES" ]]; then
-            echo "✅ No changed README.md files in this PR."
-            exit 0
-          fi
-
-          {
-          echo "FILES<<EOF"
-          echo "$FILES"
-          echo `EOF'
-          } >> $GITHUB_ENV
-
-      - name: Validate MDX
+      - name: Validate README.md files
         run: |
-          NO_HTML="# NO_HTML"
-          YES_HTML="# YES_HTML"
+          for file in $(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} | grep 'README.md'); do
+            echo "Validating $file"
+            node - << 'EOF'
+          const cli = require('commander');
+          const { readFile } = require('fs-extra');
+          const mdx = require('@mdx-js/mdx');
 
-          is_html_doc() {
-              grep -qE "^($YES_HTML|<p>|<!DOCTYPE html>|<thead>.*<tbody>)" "$1"
+          async function parseMDX(file) {
+              const contents = await readFile(file, 'utf8');
+              parsed = await mdx(contents);
+              console.log(`${parsed}`);
           }
 
-          FILES_TO_VALIDATE=()
-
-          for file in $FILES; do
-              if [[ $(basename "$file") == "README.md" ]] && ! is_html_doc "$file"; then
-                  FILES_TO_VALIDATE+=("$file")
-              fi
-          done
-
-          if [[ ${#FILES_TO_VALIDATE[@]} -eq 0 ]]; then
-              echo "✅ No eligible README.md files changed in PR."
-              exit 0
-          fi
-
-          echo "Running MDX validation on changed files..."
-
-          for file in "${FILES_TO_VALIDATE[@]}"; do
-              node --input-type=module - "$file" <<'EOF'
-              import { readFileSync } from 'fs';
-              import { compile } from '@mdx-js/mdx';
-
-              const file = process.argv[1];
-
-              try {
-                  const contents = readFileSync(file, 'utf8');
-                  await compile(contents);
-                  console.log(`✅ MDX validation passed: ${file}`);
-              } catch (error) {
-                  console.error(`❌ MDX validation failed: ${file}\n`, error.message);
-                  process.exit(1);
-              }
-              EOF
+          const file = process.argv[2];
+          parseMDX(file).catch((reason) => {
+              console.error(reason);
+              process.exit(1);
+          });
+          EOF
           done
