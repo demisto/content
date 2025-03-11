@@ -1269,19 +1269,6 @@ script:
     description: Removes a policy binding to the IAM policy of a project, given a project ID and the binding. One binding consists of a member and a role. This is a potentially harmful command since it modifies access permissions to Google Cloud resources.
     execution: true   # potentially harmful command
     name: gcp-iam-project-iam-policy-binding-remove
-  - arguments:
-    - description: 'The name of the project associated with the IAM deny policy. For example: projects/my-project-123.'
-      name: project_name
-      required: true
-    - description: A descriptive and friendly name of the IAM deny policy.
-      name: display_name
-      required: true
-    - description: 'The IAM deny policy excluding the "displayName" field in the [GCP IAM deny policy format](https://cloud.google.com/iam/docs/deny-overview#deny-policy-structure).'
-      name: deny_rule
-      required: true
-    description: Creates an IAM deny policy that restricts access to specific Google Cloud resources. Deny policies define deny rules that prevent certain principals from using certain permissions, regardless of the roles they are granted. This is a potentially harmful command since it modifies access permissions to Google Cloud resources.
-    execution: true   # potentially harmful command
-    name: gcp-iam-project-iam-deny-policy-create
   dockerimage: demisto/google-api-py3:1.0.0.2462338
   runonce: false
   script: '-'

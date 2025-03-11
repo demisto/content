@@ -3907,11 +3907,6 @@ def gcp_iam_policy_binding_remove_command(client: Client, args: dict[str, Any]) 
     return CommandResults(readable_output=human_readable, raw_response=raw_response)
 
 
-def gcp_iam_deny_policy_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    demisto.debug(f'Calling {client} with {args=}')
-    return CommandResults(readable_output="")
-
-
 def test_module(service_account_key: str, proxy: bool, verify_certificate: bool) -> None:
     try:
         client: Client = Client(client_secret=service_account_key, proxy=proxy, verify_certificate=verify_certificate)
@@ -4008,7 +4003,6 @@ def main() -> None:
             'gcp-iam-role-list': gcp_iam_predefined_role_list_command,
             'gcp-iam-tagbindings-list': gcp_iam_tagbindings_list_command,
             'gcp-iam-project-iam-policy-binding-remove': gcp_iam_policy_binding_remove_command,
-            'gcp-iam-project-iam-deny-policy-create': gcp_iam_deny_policy_create_command,
         }
 
         if command in commands:

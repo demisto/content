@@ -2564,26 +2564,3 @@ Removes a policy binding to the IAM policy of a project, given a project ID and 
 #### Context Output
 
 There is no context output for this command.
-
-### gcp-iam-project-iam-deny-policy-create
-
-***
-Creates an IAM deny policy that restricts access to specific Google Cloud resources. Deny policies define deny rules that prevent certain principals from using certain permissions, regardless of the roles they are granted. This is a potentially harmful command since it modifies access permissions to Google Cloud resources.
-
-#### Base Command
-
-`gcp-iam-project-iam-deny-policy-create`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| project_name | The name of the project associated with the IAM deny policy. For example: projects/my-project-123. | Required | 
-| display_name | A descriptive and friendly name of the IAM deny policy. | Required | 
-| deny_rule | The IAM deny policy excluding the "displayName" field in the [GCP IAM deny policy format](https://cloud.google.com/iam/docs/deny-overview#deny-policy-structure). | Required | 
-
-#### Context Output
-
-There is no context output for this command.
-
-<!-- LINE ABOVE NOT TRUE! need to document outputs GCPIAM.DenyPolicy.* -->
