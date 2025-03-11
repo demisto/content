@@ -2210,9 +2210,9 @@ class MsClient:
     def get_software_by_machine_id(self, machine_id: str) -> dict:
         """Retrieve a list of the installed software from the defined machine_id .
             Args:
-                software_id (str): Software ID.
+                machine_id (str): Machine ID.
             Returns:
-                dict: list vulnerabilities by software.
+                dict:  machine specific software inventory.
         """
         cmd_url = f'/machines/{machine_id}/software'
         return self.ms_client.http_request(method="GET", url_suffix=cmd_url)
