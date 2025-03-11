@@ -1,10 +1,42 @@
-name: Validate README.md with MDX
+#name: Validate README.md with MDX
+#
+#on:
+#  pull_request:
+#
+#jobs:
+#  validate-mdx:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v3
+#
+#      - name: Set up Node.js
+#        uses: actions/setup-node@v3
+#        with:
+#          node-version: '20'
+#
+#      - name: Install dependencies
+#        run: |
+#          npm install commander fs-extra @mdx-js/mdx
+#
+#      - name: Find and count all README.md files
+#        run: |
+#          COUNT=$(find . -type f -name "README.md" | wc -l)
+#          echo "Found $COUNT README.md files for validation."
+#          echo "VALIDATION_COUNT=$COUNT" >> $GITHUB_ENV
+#
+#      - name: Print number of validated files
+#        run: |
+#          echo "Total README.md files validated: $VALIDATION_COUNT"
+
+
+name: Validate Root README.md with MDX
 
 on:
   pull_request:
 
 jobs:
-  validate-mdx:
+  validate-root-readme:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -19,12 +51,28 @@ jobs:
         run: |
           npm install commander fs-extra @mdx-js/mdx
 
-      - name: Find and count all README.md files
+      - name: Validate root README.md file
         run: |
-          COUNT=$(find . -type f -name "README.md" | wc -l)
-          echo "Found $COUNT README.md files for validation."
-          echo "VALIDATION_COUNT=$COUNT" >> $GITHUB_ENV
+          ROOT_README="README.md"
+          if [ -f "$ROOT_README" ]; then
+            echo "Validating $ROOT_README"
+            node - << 'EOF'
+          const { readFile } = require('fs-extra');
+          const mdx = require('@mdx-js/mdx');
 
-      - name: Print number of validated files
-        run: |
-          echo "Total README.md files validated: $VALIDATION_COUNT"
+          async function parseMDX(file) {
+              try {
+                  const contents = await readFile(file, 'utf8');
+                  let parsed = await mdx(contents);
+                  console.log('Successfully parsed MDX');
+              } catch (error) {
+                  console.error("MDX parse failure: " + error);
+                  process.exit(1);
+              }
+          }
+
+          parseMDX("README.md");
+          EOF
+          else
+            echo "No README.md found at root. Skipping validation."
+          fi
