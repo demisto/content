@@ -107,10 +107,7 @@ jobs:
             echo "No README.md files found. Skipping validation."
             exit 0
           fi
-          echo "Validating the following README.md files:"
-          echo "$READMES"
           for file in $READMES; do
-            echo "Validating $file"
             node - << 'EOF'
           const { readFile } = require('fs-extra');
           const mdx = require('@mdx-js/mdx');
