@@ -252,7 +252,7 @@ def test_query_gp_logs_command():
         def query_loggings(self, query, page_number=None, page_size=None):
             return cdl_records, []
 
-    _, results_xform, _ = query_gp_logs_command({'limit': '1'}, MockClient())
+    _, results_xform, _ = query_gp_logs_command({'limit': '1', 'start_time': '1970-01-01 00:00:00'}, MockClient())
 
     assert results_xform == {'CDL.Logging.GlobalProtect': cdl_records_xform}
        
