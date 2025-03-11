@@ -2,7 +2,7 @@
     "name": "Phishing URL",
     "description": "Phishing URL is a project with the goal of detecting phishing URLs using machine learning",
     "support": "xsoar",
-    "currentVersion": "1.1.23",
+    "currentVersion": "1.1.24",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
