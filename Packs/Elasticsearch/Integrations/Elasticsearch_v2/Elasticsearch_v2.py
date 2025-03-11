@@ -187,7 +187,12 @@ def elasticsearch_builder(proxies):
             connection_args["http_auth"] = (USERNAME, PASSWORD)
 
     es = Elasticsearch(**connection_args)  # type: ignore[arg-type]
-    demisto.debug(f'Elasticsearch client built with connection args: {connection_args}')
+    # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
+    if API_KEY_ID and hasattr(es, 'transport'):
+        # In some versions of the ES library, the transport object does not have a get_session func
+        if hasattr(es.transport, 'get_connection'):
+            es.transport.get_connection().session.headers['authorization'] = get_api_key_header_val(  # type: ignore[attr-defined]
+                API_KEY)
 
     return es
 
@@ -951,6 +956,7 @@ def get_mapping_fields_command():
             update_elastic_mapping(res_json, elastic_mapping, index)
 
     return elastic_mapping
+
 
 def build_eql_body(query, fields, size, tiebreaker_field, timestamp_field, event_category_field, filter):
     body = {}
