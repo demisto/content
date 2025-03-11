@@ -235,7 +235,7 @@ def test_query_logs_command_transform_sysmtem_logs():
 
 
 def test_query_gp_logs_command():
-     """
+    """
     Given:
         - a list of CDL query results from the firewall.globalprotect table.
     When
