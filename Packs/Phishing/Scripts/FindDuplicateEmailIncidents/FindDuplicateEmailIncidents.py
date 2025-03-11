@@ -140,7 +140,7 @@ def eliminate_urls_extensions(text):
     formatted_urls_list = format_urls(urls_list)
     for url, formatted_url in zip(urls_list, formatted_urls_list):
         parsed_uri = urlparse(formatted_url)
-        url_with_no_path = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
+        url_with_no_path = f'{parsed_uri.scheme}://{parsed_uri.netloc}/'
         text = text.replace(url, url_with_no_path)
     return text
 
@@ -295,10 +295,9 @@ def close_new_incident_and_link_to_existing(new_incident, duplicate_incidents_df
     incident = 'incidents' if len(duplicate_incidents_df) > 1 else 'incident'
 
     if max_similarity > min_similarity:
-        title = "Duplicate {} found with similarity {:.1f}%-{:.1f}%".format(incident, min_similarity * 100,
-                                                                            max_similarity * 100)
+        title = f"Duplicate {incident} found with similarity {min_similarity * 100:.1f}%-{max_similarity * 100:.1f}%"
     else:
-        title = "Duplicate {} found with similarity {:.1f}%".format(incident, max_similarity * 100)
+        title = f"Duplicate {incident} found with similarity {max_similarity * 100:.1f}%"
     message = tableToMarkdown(title,
                               formatted_incident, headers)
     if demisto.args().get('closeAsDuplicate', 'true') == 'true':
@@ -340,7 +339,7 @@ def create_new_incident_low_similarity(duplicate_incidents_df):
         formatted_incident, headers = format_incident_hr(duplicate_incidents_df)
         message += tableToMarkdown("Most similar incidents found", formatted_incident, headers=headers)
         message += 'The threshold for considering 2 incidents as duplicate is a similarity ' \
-                   'of {:.1f}%.\n'.format(SIMILARITY_THRESHOLD * 100)
+                   f'of {SIMILARITY_THRESHOLD * 100:.1f}%.\n'
         message += 'Therefore these 2 incidents will not be considered as duplicate and the current incident ' \
                    'will remain active.\n'
     return_entry(message)
@@ -369,8 +368,8 @@ def main():
     try:
         max_incidents_to_return = int(max_incidents_to_return)
     except Exception:
-        return_error('Illegal value of arguement "maxIncidentsToReturn": {}. '
-                     'Value should be an integer'.format(max_incidents_to_return))
+        return_error(f'Illegal value of arguement "maxIncidentsToReturn": {max_incidents_to_return}. '
+                     'Value should be an integer')
     new_incident = demisto.incidents()[0]
     type_field = input_args.get('incidentTypeFieldName', 'type')
     existing_incidents = get_existing_incidents(input_args, new_incident.get(type_field, IGNORE_INCIDENT_TYPE_VALUE))

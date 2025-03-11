@@ -386,3 +386,8 @@ tests:
 - PAN-OS DAG Configuration Test
 - Panorama Query Logs - Test
 - PAN-OS - Block IP - Custom Block Rule Test
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
