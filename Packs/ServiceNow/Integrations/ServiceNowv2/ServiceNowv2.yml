@@ -1708,9 +1708,9 @@ script:
       name: urgency
       prettyname: Urgency
       predefined:
-        - 3 - Low
-        - 2 - Medium
         - 1 - High
+        - 2 - Medium
+        - 3 - Low
     - auto: PREDEFINED
       description: Ticket severity. You can either select from the predefined options or enter another value. For example, "Urgent" or "5".
       name: severity
@@ -1718,16 +1718,16 @@ script:
       required: true
       defaultValue: 1 - High
       predefined:
-        - 3 - Low
-        - 2 - Medium
         - 1 - High
+        - 2 - Medium
+        - 3 - Low
     - auto: PREDEFINED
       description: Ticket impact.
       name: impact
       predefined:
-        - 3 - Low
-        - 2 - Medium
         - 1 - High
+        - 2 - Medium
+        - 3 - Low
     - auto: PREDEFINED
       description: Whether to set the ticket as Active. Can be "true" or "false".
       name: active
