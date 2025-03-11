@@ -1144,10 +1144,11 @@ def my_test_func(i):
     }
 
     # A POST request to the API
-    requests.post(url, json=data)
-
+    response = requests.post(url, json=data)
+    demisto.info(f"[test] Response status code: {response.status_code}")
     # Print the response
     # raise DemistoException("test test test", DemistoException)
+    return i
 
 
 ############################################## end of CSP copy-paste part ##############################################
@@ -1192,6 +1193,7 @@ def main():  # pragma: no cover
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
         elif command == "fetch-events":
+            data_size = 0
             support_multithreading()
             futures = []
             executor = concurrent.futures.ThreadPoolExecutor(max_workers=NUM_OF_WORKERS)
