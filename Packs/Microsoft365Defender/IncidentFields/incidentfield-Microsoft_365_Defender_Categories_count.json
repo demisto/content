@@ -8,148 +8,30 @@
     "closeForm": false,
     "columns": [
         {
-            "displayName": "Initial access",
+            "displayName": "Category",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "initialaccess",
+            "key": "category",
             "required": false,
             "script": "",
             "selectValues": null,
-            "type": "number",
-            "width": 150
+            "type": "shortText",
+            "width": 150,
+            "orgType": ""
         },
         {
-            "displayName": "Execution",
+            "displayName": "Count",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "execution",
+            "key": "count",
             "required": false,
             "script": "",
             "selectValues": null,
             "type": "number",
-            "width": 150
-        },
-        {
-            "displayName": "Persistence",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "persistence",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "number",
-            "width": 150
-        },
-        {
-            "displayName": "Privilege escalation",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "privilegeescalation",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "number",
-            "width": 150
-        },
-        {
-            "displayName": "Defense evasion",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "defenseevasion",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "number",
-            "width": 150
-        },
-        {
-            "displayName": "Credential access",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "credentialaccess",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "number",
-            "width": 150
-        },
-        {
-            "displayName": "Discovery",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "discovery",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "number",
-            "width": 150
-        },
-        {
-            "displayName": "Lateral movement",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "lateralmovement",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "number",
-            "width": 150
-        },
-        {
-            "displayName": "Collection",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "collection",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "number",
-            "width": 150
-        },
-        {
-            "displayName": "Command and control",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "commandandcontrol",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "number",
-            "width": 150
-        },
-        {
-            "displayName": "Exfiltration",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "exfiltration",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "number",
-            "width": 150
-        },
-        {
-            "displayName": "Exfiltration",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "exfiltration",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "number",
-            "width": 150
+            "width": 150,
+            "orgType": ""
         }
     ],
     "content": true,
@@ -176,5 +58,7 @@
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "5.5.0"
+    "fromVersion": "5.5.0",
+    "modified": "2024-12-03T15:49:01.320114032Z",
+    "openEnded": false
 }

@@ -732,6 +732,77 @@ def test_not_found_private_file_command(mocker, requests_mock):
     assert results[0].indicator.dbot_score.score == 0
 
 
+def test_private_url_command(mocker, requests_mock):
+    """
+    Given:
+    - A valid Testing private URL
+
+    When:
+    - Running the !gti-privatescanning-url command
+
+    Then:
+    - Validate the command results are valid and contains metric data
+    """
+    from GoogleThreatIntelligence import private_url_command, Client
+    import CommonServerPython
+    # Setup Mocks
+    url = 'https://www.example.com'
+    mocker.patch.object(demisto, 'args', return_value={'url': url})
+    mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+
+    # Assign arguments
+    params = demisto.params()
+    client = Client(params=params)
+
+    # Load assertions and mocked request data
+    mock_response = util_load_json('test_data/private_url.json')
+    expected_results = util_load_json('test_data/private_url_results.json')
+    requests_mock.get(f'https://www.virustotal.com/api/v3/private/urls/{encode_url_to_base64(url)}',
+                      json=mock_response)
+
+    # Run command and collect result array
+    results = private_url_command(client=client, args=demisto.args())
+
+    assert results[1].execution_metrics == [{'APICallsCount': 1, 'Type': 'Successful'}]
+    assert results[0].execution_metrics is None
+    assert results[0].outputs == expected_results
+
+
+def test_not_found_private_url_command(mocker, requests_mock):
+    """
+    Given:
+    - A valid Testing private file
+
+    When:
+    - Running the !gti-privatescanning-url command
+
+    Then:
+    - Display "Not found" message to user
+    """
+    from GoogleThreatIntelligence import private_url_command, Client
+    import CommonServerPython
+    # Setup Mocks
+    url = 'https://www.example.com'
+    mocker.patch.object(demisto, 'args', return_value={'url': url})
+    mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+
+    # Assign arguments
+    params = demisto.params()
+    client = Client(params=params)
+
+    mock_response = {'error': {'code': 'NotFoundError'}}
+    requests_mock.get(f'https://www.virustotal.com/api/v3/private/urls/{encode_url_to_base64(url)}',
+                      json=mock_response)
+
+    results = private_url_command(client=client, args=demisto.args())
+
+    assert results[0].execution_metrics is None
+    assert results[0].readable_output == f'URL "{url}" was not found in GoogleThreatIntelligence.'
+    assert results[0].indicator.dbot_score.score == 0
+
+
 def test_not_found_file_sandbox_report_command(mocker, requests_mock):
     """
     Given:
@@ -1029,11 +1100,6 @@ def test_gti_analysis_get(mocker, requests_mock):
     mock_response = {
         'data': {
             'attributes': {
-                'stats': {
-                    'threat_severity_level': '',
-                    'popular_threat_category': '',
-                    'threat_verdict': '',
-                },
                 'status': 'completed',
             }
         }
@@ -1049,13 +1115,13 @@ def test_gti_analysis_get(mocker, requests_mock):
     assert results.outputs == {'id': 'random_id', **mock_response}
 
 
-def test_gti_private_analysis_get(mocker, requests_mock):
+def test_pending_gti_private_analysis_get(mocker, requests_mock):
     """
     Given:
     - A valid analysis ID
 
     When:
-    - Running the !gti-privatescanning-analysis-get command
+    - Running the !gti-privatescanning-analysis-get command (pending)
 
     Then:
     - Validate the command results are valid
@@ -1071,26 +1137,90 @@ def test_gti_private_analysis_get(mocker, requests_mock):
     mock_response = {
         'data': {
             'attributes': {
-                'stats': {
-                    'threat_severity_level': '',
-                    'popular_threat_category': '',
-                    'threat_verdict': '',
-                },
                 'status': 'pending',
             }
         }
     }
     expected_response = mock_response.copy()
     expected_response['id'] = 'random_id'
-    expected_response['data']['attributes'].update({
-        'threat_severity_level': '',
-        'popular_threat_category': '',
-        'threat_verdict': '',
-    })
 
     mocker.patch.object(demisto, 'args', return_value={'id': 'random_id'})
     requests_mock.get('https://www.virustotal.com/api/v3/private/analyses/random_id',
                       json=mock_response)
+
+    results = private_get_analysis_command(client=client, args=demisto.args())
+
+    assert results.execution_metrics is None
+    assert results.outputs == expected_response
+
+
+def test_completed_gti_private_analysis_get(mocker, requests_mock):
+    """
+    Given:
+    - A valid analysis ID
+
+    When:
+    - Running the !gti-privatescanning-analysis-get command (completed)
+
+    Then:
+    - Validate the command results are valid
+    """
+    from GoogleThreatIntelligence import private_get_analysis_command, Client
+    import CommonServerPython
+
+    mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+    params = demisto.params()
+    client = Client(params=params)
+
+    mock_analysis_response = {
+        'data': {
+            'attributes': {
+                'status': 'completed',
+            }
+        }
+    }
+    mock_item_response = {
+        'data': {
+            'attributes': {
+                # File attributes
+                'sha256': 'random_sha256',
+                'threat_severity': {
+                    'threat_severity_level': 'SEVERITY_LOW',
+                    'threat_severity_data': {
+                        'popular_threat_category': 'random_category',
+                    },
+                },
+                'threat_verdict': 'VERDICT_UNDETECTED',
+                # URL attributes
+                'url': 'random_url',
+                'title': 'random_title',
+                'last_http_response_content_sha256': 'random_content_sha256',
+                'last_analysis_stats': {
+                    'malicious': 1,
+                    'undetected': 4,
+                }
+            }
+        }
+    }
+    expected_response = mock_analysis_response.copy()
+    expected_response['id'] = 'random_id'
+    expected_response['data']['attributes'].update({
+        'sha256': 'random_sha256',
+        'threat_severity_level': 'LOW',
+        'popular_threat_category': 'random_category',
+        'threat_verdict': 'UNDETECTED',
+        'url': 'random_url',
+        'title': 'random_title',
+        'last_http_response_content_sha256': 'random_content_sha256',
+        'positives': '1/5',
+    })
+
+    mocker.patch.object(demisto, 'args', return_value={'id': 'random_id'})
+    requests_mock.get('https://www.virustotal.com/api/v3/private/analyses/random_id',
+                      json=mock_analysis_response)
+    requests_mock.get('https://www.virustotal.com/api/v3/private/analyses/random_id/item',
+                      json=mock_item_response)
 
     results = private_get_analysis_command(client=client, args=demisto.args())
 
@@ -1130,6 +1260,46 @@ def test_url_scan_command(mocker, requests_mock):
                        json=mock_response)
 
     results = scan_url_command(client=client, args=demisto.args())
+
+    assert results.execution_metrics is None
+    assert results.outputs == {
+        'GoogleThreatIntelligence.Submission(val.id && val.id === obj.id)': mock_response['data'],
+        'vtScanID': 'random_id',
+    }
+
+
+def test_private_url_scan_command(mocker, requests_mock):
+    """
+    Given:
+    - A valid URL
+
+    When:
+    - Running the !gti-privatescanning-url-scan command
+
+    Then:
+    - Validate the command results are valid
+    """
+    from GoogleThreatIntelligence import private_scan_url_command, Client
+    import CommonServerPython
+
+    mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+    params = demisto.params()
+    client = Client(params=params)
+
+    url = 'https://www.example.com'
+    mock_response = {
+        'data': {
+            'id': 'random_id',
+            'url': url,
+        }
+    }
+
+    mocker.patch.object(demisto, 'args', return_value={'url': url})
+    requests_mock.post('https://www.virustotal.com/api/v3/private/urls',
+                       json=mock_response)
+
+    results = private_scan_url_command(client=client, args=demisto.args())
 
     assert results.execution_metrics is None
     assert results.outputs == {

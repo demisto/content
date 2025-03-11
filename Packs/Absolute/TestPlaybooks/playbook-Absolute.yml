@@ -1,20 +1,20 @@
 id: Absolute_TestPlaybook
-version: 7
+version: -1
 fromversion: 6.0.0
-vcShouldKeepItemLegacyProdMachine: false
 name: Absolute_TestPlaybook
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: cfd192f5-710f-4ce8-83bc-fc25d2c519f1
+    taskid: 957ca09c-ca16-43ab-8173-f9bcddf6932e
     type: start
     task:
-      id: cfd192f5-710f-4ce8-83bc-fc25d2c519f1
+      id: 957ca09c-ca16-43ab-8173-f9bcddf6932e
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -24,7 +24,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": -140
+          "y": 70
         }
       }
     note: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: fed4bf5d-4aa6-4e70-8359-3821f3756425
+    taskid: 29938bf8-1ac4-4e8e-830f-e8fc0b76fd4a
     type: regular
     task:
-      id: fed4bf5d-4aa6-4e70-8359-3821f3756425
+      id: 29938bf8-1ac4-4e8e-830f-e8fc0b76fd4a
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -48,7 +48,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "29"
+      - "28"
     scriptarguments:
       all:
         simple: "yes"
@@ -58,7 +58,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 15
+          "y": 205
         }
       }
     note: false
@@ -70,10 +70,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 2fb52862-d6d1-4665-89ad-7aa9798d17d3
+    taskid: 56ffa031-8aea-40b4-8f47-f154fc28bf89
     type: regular
     task:
-      id: 2fb52862-d6d1-4665-89ad-7aa9798d17d3
+      id: 56ffa031-8aea-40b4-8f47-f154fc28bf89
       version: -1
       name: absolute-custom-device-field-list
       script: Absolute|||absolute-custom-device-field-list
@@ -85,71 +85,18 @@ tasks:
       - "4"
     scriptarguments:
       device_id:
-        simple: ${Absolute.Device.[0].Id}
+        simple: ${Absolute.Device.Id}
+      all_results:
+        simple: "false"
+      limit:
+        simple: "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 355
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: b2595909-6c75-4cb9-8f88-e4320b4f103b
-    type: condition
-    task:
-      id: b2595909-6c75-4cb9-8f88-e4320b4f103b
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "5"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Absolute.CustomDeviceField.DeviceUID
-            iscontext: true
-          right:
-            value:
-              simple: 8eabaac8-cda9-4cd4-bd86-25d769b1196b
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Absolute.CustomDeviceField.ESN
-            iscontext: true
-          right:
-            value:
-              simple: 629GRW8SWDAA47GZ0005
-      - - operator: in
-          left:
-            value:
-              simple: TPB
-          right:
-            value:
-              simple: Absolute.CustomDeviceField.CDFValues.FieldValue
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
+          "y": 555
         }
       }
     note: false
@@ -161,10 +108,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: e2974de9-e3b5-41cc-8f06-e4339db106d5
+    taskid: cfc732f4-c5aa-4c23-81ea-00de78ec6824
     type: regular
     task:
-      id: e2974de9-e3b5-41cc-8f06-e4339db106d5
+      id: cfc732f4-c5aa-4c23-81ea-00de78ec6824
       version: -1
       name: absolute-custom-device-field-update
       script: Absolute|||absolute-custom-device-field-update
@@ -173,21 +120,21 @@ tasks:
       brand: Absolute
     nexttasks:
       '#none#':
-      - "3"
+      - "5"
     scriptarguments:
       cdf_uid:
-        simple: ${Absolute.CustomDeviceField.CDFValues.[1].CDFUID}
+        simple: K0ly5AiQDKsgVVcjqCqw
       device_id:
         simple: 1d18b639-fec9-4536-9d77-8713665a7bca
       value:
-        simple: TPB
+        simple: "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 530
+          "y": 730
         }
       }
     note: false
@@ -199,10 +146,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: f36134dc-81a5-49be-8b44-570ede9dcc73
+    taskid: 4008d890-2cc4-4b0f-8ba4-bc294d186663
     type: regular
     task:
-      id: f36134dc-81a5-49be-8b44-570ede9dcc73
+      id: 4008d890-2cc4-4b0f-8ba4-bc294d186663
       version: -1
       name: absolute-device-freeze-request
       script: Absolute|||absolute-device-freeze-request
@@ -216,7 +163,7 @@ tasks:
       device_freeze_type:
         simple: Scheduled
       device_ids:
-        simple: ${Absolute.Device.[0].Id}
+        simple: 1d18b639-fec9-4536-9d77-8713665a7bca
       html_message:
         simple: TPB-freeze
       message_name:
@@ -247,10 +194,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 7d493ba5-803d-4a80-8afb-4d7fcd1261b3
+    taskid: a25a2895-18c6-4bff-8404-02182ae22ada
     type: regular
     task:
-      id: 7d493ba5-803d-4a80-8afb-4d7fcd1261b3
+      id: a25a2895-18c6-4bff-8404-02182ae22ada
       version: -1
       name: absolute-device-remove-freeze-request
       script: Absolute|||absolute-device-remove-freeze-request
@@ -262,7 +209,7 @@ tasks:
       - "8"
     scriptarguments:
       device_ids:
-        simple: ${Absolute.Device.[0].Id}
+        simple: e93f2464-2766-4a6b-8f00-66c8fb13e23a
       remove_offline:
         simple: "false"
       remove_scheduled:
@@ -285,10 +232,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: de779de5-e70a-47a8-8bc6-43e94d884d52
+    taskid: 522a27a2-c8e0-4b0e-842c-1385cf4fba7e
     type: regular
     task:
-      id: de779de5-e70a-47a8-8bc6-43e94d884d52
+      id: 522a27a2-c8e0-4b0e-842c-1385cf4fba7e
       version: -1
       name: absolute-device-freeze-request-get
       script: Absolute|||absolute-device-freeze-request-get
@@ -297,7 +244,7 @@ tasks:
       brand: Absolute
     nexttasks:
       '#none#':
-      - "10"
+      - "12"
     scriptarguments:
       request_uid:
         simple: ${Absolute.FreezeRequest.RequestUID}
@@ -319,10 +266,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 4b508b59-9737-437b-8457-600fafd508aa
+    taskid: b3d49737-19ca-4a72-8ae1-4a0c915b5165
     type: regular
     task:
-      id: 4b508b59-9737-437b-8457-600fafd508aa
+      id: b3d49737-19ca-4a72-8ae1-4a0c915b5165
       version: -1
       name: absolute-device-freeze-message-list
       script: Absolute|||absolute-device-freeze-message-list
@@ -331,14 +278,14 @@ tasks:
       brand: Absolute
     nexttasks:
       '#none#':
-      - "12"
+      - "18"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 2300
         }
       }
     note: false
@@ -348,12 +295,15 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    scriptarguments:
+      limit:
+        simple: "1"
   "12":
     id: "12"
-    taskid: 92ba6632-37bd-46d8-8e75-e969b0ba395f
+    taskid: 21fbc4b1-51fb-4904-8b0a-65f749180542
     type: regular
     task:
-      id: 92ba6632-37bd-46d8-8e75-e969b0ba395f
+      id: 21fbc4b1-51fb-4904-8b0a-65f749180542
       version: -1
       name: absolute-device-freeze-message-create
       script: Absolute|||absolute-device-freeze-message-create
@@ -374,7 +324,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1600
         }
       }
     note: false
@@ -386,10 +336,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: eb409423-3392-4987-805c-1c582b0cae3e
+    taskid: 47271bd1-974b-4650-88ab-546c49fde520
     type: condition
     task:
-      id: eb409423-3392-4987-805c-1c582b0cae3e
+      id: 47271bd1-974b-4650-88ab-546c49fde520
       version: -1
       name: Verify Outputs
       type: condition
@@ -414,7 +364,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 1760
         }
       }
     note: false
@@ -426,10 +376,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: d2872a19-0da9-4c13-8c4e-ab5d88f3d5a4
+    taskid: b39aa441-6410-421b-8435-cf7317620553
     type: regular
     task:
-      id: d2872a19-0da9-4c13-8c4e-ab5d88f3d5a4
+      id: b39aa441-6410-421b-8435-cf7317620553
       version: -1
       name: absolute-device-freeze-message-update
       script: Absolute|||absolute-device-freeze-message-update
@@ -443,7 +393,7 @@ tasks:
       html_message:
         simple: TPB-new
       message_id:
-        simple: ${Absolute.FreezeMessage.[3].ID}
+        simple: ${Absolute.FreezeMessage.ID}
       message_name:
         simple: TPB-new
     separatecontext: false
@@ -452,7 +402,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 1960
         }
       }
     note: false
@@ -464,10 +414,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: def3da8b-dfac-4b87-8fb2-664e0dc4dd01
+    taskid: 2eb4c808-b65f-4a74-8b2a-e1bf5ac3a3df
     type: regular
     task:
-      id: def3da8b-dfac-4b87-8fb2-664e0dc4dd01
+      id: 2eb4c808-b65f-4a74-8b2a-e1bf5ac3a3df
       version: -1
       name: absolute-device-freeze-message-delete
       script: Absolute|||absolute-device-freeze-message-delete
@@ -476,17 +426,17 @@ tasks:
       brand: Absolute
     nexttasks:
       '#none#':
-      - "18"
+      - "10"
     scriptarguments:
       message_id:
-        simple: ${Absolute.FreezeMessage.[3].ID}
+        simple: ${Absolute.FreezeMessage.ID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2135
         }
       }
     note: false
@@ -498,10 +448,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: d91e9161-ccb5-48d9-8600-62dffc1dea5a
+    taskid: 1e75561e-fcad-471e-895c-ed7758a85f38
     type: regular
     task:
-      id: d91e9161-ccb5-48d9-8600-62dffc1dea5a
+      id: 1e75561e-fcad-471e-895c-ed7758a85f38
       version: -1
       name: absolute-device-application-list
       script: Absolute|||absolute-device-application-list
@@ -514,6 +464,8 @@ tasks:
     scriptarguments:
       filter:
         simple: appName eq 'Notepad++'
+      limit:
+        simple: "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -532,10 +484,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 9aa5be2b-e535-40e1-8912-63c1e9728446
+    taskid: 1efd83c2-745d-4bbf-8bf0-6747339b1fbb
     type: regular
     task:
-      id: 9aa5be2b-e535-40e1-8912-63c1e9728446
+      id: 1efd83c2-745d-4bbf-8bf0-6747339b1fbb
       version: -1
       name: absolute-device-list
       script: Absolute|||absolute-device-list
@@ -548,6 +500,8 @@ tasks:
     scriptarguments:
       agent_status:
         simple: Active
+      limit:
+        simple: "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -566,10 +520,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 975a9df5-e86b-4981-814d-7c760c5a73ff
+    taskid: 633cb99a-263a-4c05-866b-421d9dbc910a
     type: regular
     task:
-      id: 975a9df5-e86b-4981-814d-7c760c5a73ff
+      id: 633cb99a-263a-4c05-866b-421d9dbc910a
       version: -1
       name: absolute-device-get
       script: Absolute|||absolute-device-get
@@ -581,7 +535,7 @@ tasks:
       - "26"
     scriptarguments:
       device_ids:
-        simple: ${Absolute.Device.[0].Id}
+        simple: 1d18b639-fec9-4536-9d77-8713665a7bca
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -600,15 +554,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: a17c6bc0-be50-4cae-82b6-5e3f9695ed05
+    taskid: 65e15f0a-3b99-4f67-8158-b43538d39fae
     type: title
     task:
-      id: a17c6bc0-be50-4cae-82b6-5e3f9695ed05
+      id: 65e15f0a-3b99-4f67-8158-b43538d39fae
       version: -1
       name: Test Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -627,10 +582,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: fdf3241b-52e3-4eee-832f-73dcbc04ba58
+    taskid: 9985e113-4709-48cd-85c1-1beeee939919
     type: condition
     task:
-      id: fdf3241b-52e3-4eee-832f-73dcbc04ba58
+      id: 9985e113-4709-48cd-85c1-1beeee939919
       version: -1
       name: Verify Outputs
       type: condition
@@ -646,8 +601,7 @@ tasks:
       - - operator: in
           left:
             value:
-              simple: ${Absolute.Device.[0].Id}
-            iscontext: true
+              simple: 1d18b639-fec9-4536-9d77-8713665a7bca
           right:
             value:
               simple: Absolute.FreezeRequest.SucceededDeviceUIDs
@@ -672,31 +626,33 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "29":
-    id: "29"
-    taskid: 43c87722-82ef-4260-88d5-37634a9c763f
+  "28":
+    id: "28"
+    taskid: 5ef04406-de7f-47e4-80d6-2dba3d62497c
     type: regular
     task:
-      id: 43c87722-82ef-4260-88d5-37634a9c763f
+      id: 5ef04406-de7f-47e4-80d6-2dba3d62497c
       version: -1
       name: absolute-device-list
-      description: Gets a list of device records and their corresponding data that
-        meets the required filter for all devices in your account, based on your authorization
-        token.
-      script: '|||absolute-device-list'
+      script: Absolute|||absolute-device-list
       type: regular
       iscommand: true
-      brand: ""
+      brand: Absolute
     nexttasks:
       '#none#':
       - "2"
+    scriptarguments:
+      agent_status:
+        simple: Active
+      limit:
+        simple: "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 185
+          "y": 380
         }
       }
     note: false
@@ -711,13 +667,13 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3200,
+        "height": 2990,
         "width": 380,
         "x": 50,
-        "y": -140
+        "y": 70
       }
     }
   }
 inputs: []
 outputs: []
-dirtyInputs: true
+description: ''
