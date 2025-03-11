@@ -15,6 +15,7 @@ INDICATOR_TO_GALAXY_RELATION_DICT: Dict[str, Any] = {
         FeedIndicatorType.Domain: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.URL: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.Email: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.Host: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.Registry: EntityRelationship.Relationships.RELATED_TO,
         ThreatIntel.ObjectsNames.THREAT_ACTOR: EntityRelationship.Relationships.USES,
         DBotScoreType.CRYPTOCURRENCY: EntityRelationship.Relationships.RELATED_TO,
@@ -30,11 +31,13 @@ INDICATOR_TO_GALAXY_RELATION_DICT: Dict[str, Any] = {
         FeedIndicatorType.Domain: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.URL: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.Email: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.Host: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.Registry: EntityRelationship.Relationships.RELATED_TO,
         ThreatIntel.ObjectsNames.THREAT_ACTOR: EntityRelationship.Relationships.USES,
         DBotScoreType.CRYPTOCURRENCY: EntityRelationship.Relationships.RELATED_TO,
         ThreatIntel.ObjectsNames.MALWARE: EntityRelationship.Relationships.RELATED_TO,
         ThreatIntel.ObjectsNames.CAMPAIGN: EntityRelationship.Relationships.USES,
+        FeedIndicatorType.Host: EntityRelationship.Relationships.INDICATOR_OF
     },
     ThreatIntel.ObjectsNames.TOOL: {
         FeedIndicatorType.File: EntityRelationship.Relationships.INDICATOR_OF,
@@ -45,11 +48,14 @@ INDICATOR_TO_GALAXY_RELATION_DICT: Dict[str, Any] = {
         FeedIndicatorType.Domain: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.URL: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.Email: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.Host: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.Registry: EntityRelationship.Relationships.RELATED_TO,
         ThreatIntel.ObjectsNames.THREAT_ACTOR: EntityRelationship.Relationships.USES,
         DBotScoreType.CRYPTOCURRENCY: EntityRelationship.Relationships.RELATED_TO,
         ThreatIntel.ObjectsNames.MALWARE: EntityRelationship.Relationships.RELATED_TO,
         ThreatIntel.ObjectsNames.CAMPAIGN: EntityRelationship.Relationships.USES,
+        FeedIndicatorType.Host: EntityRelationship.Relationships.INDICATOR_OF
+        
     },
     ThreatIntel.ObjectsNames.INTRUSION_SET: {
         FeedIndicatorType.File: EntityRelationship.Relationships.INDICATOR_OF,
@@ -60,6 +66,7 @@ INDICATOR_TO_GALAXY_RELATION_DICT: Dict[str, Any] = {
         FeedIndicatorType.Domain: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.URL: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.Email: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.Host: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.Registry: EntityRelationship.Relationships.RELATED_TO,
         ThreatIntel.ObjectsNames.THREAT_ACTOR: EntityRelationship.Relationships.RELATED_TO,
         DBotScoreType.CRYPTOCURRENCY: EntityRelationship.Relationships.RELATED_TO,
@@ -80,6 +87,7 @@ INDICATOR_TO_GALAXY_RELATION_DICT: Dict[str, Any] = {
         DBotScoreType.CRYPTOCURRENCY: EntityRelationship.Relationships.RELATED_TO,
         ThreatIntel.ObjectsNames.MALWARE: EntityRelationship.Relationships.MITIGATED_BY,
         ThreatIntel.ObjectsNames.CAMPAIGN: EntityRelationship.Relationships.RELATED_TO,
+        FeedIndicatorType.Host: EntityRelationship.Relationships.RELATED_TO,
     }
 }
 
