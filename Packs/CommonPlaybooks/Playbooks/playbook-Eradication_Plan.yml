@@ -796,4 +796,5 @@ tests:
 - Eradication plan - Test
 marketplaces:
 - marketplacev2
+- platform
 fromversion: 6.6.0
