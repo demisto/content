@@ -619,9 +619,10 @@ def file_enrichment_script(args: dict[str, Any]) -> list[CommandResults]:
         external_enrichment=external_enrichment,
     )
 
+    # Create a list of CommandResults objects to return to the incident war room
     command_results = [summary_command_results]
     if verbose:
-        # If `verbose` argument is True, CommandResults are returned for every executed command
+        # If `verbose` argument is True, CommandResults are returned for every executed command in the script
         command_results.extend(verbose_command_results)
 
     return command_results
