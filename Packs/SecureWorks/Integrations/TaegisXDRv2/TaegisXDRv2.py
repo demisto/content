@@ -515,23 +515,23 @@ def fetch_alerts_command(client: Client, env: str, args=None):
 
     if args.get("ids"):
         field = "alertsServiceRetrieveAlertsById"
-        query = """
-        query alertsServiceRetrieveAlertsById($ids: [String!]) {
+        query = f"""
+        query alertsServiceRetrieveAlertsById($ids: [String!]) {{
             alertsServiceRetrieveAlertsById(
                 in: {{
                     iDs: $ids
                 }}
             ) {{
-                {}
+                {fields}
             }}
-        }
-        """.format(fields)
+        }}
+        """
 
         variables["ids"] = argToList(variables["ids"])
     else:
         field = "alertsServiceSearch"
-        query = """
-        query alertsServiceSearch($cql_query: String, $limit: Int, $offset: Int) {
+        query = f"""
+        query alertsServiceSearch($cql_query: String, $limit: Int, $offset: Int) {{
             alertsServiceSearch(
                 in: {{
                     cql_query: $cql_query,
@@ -539,10 +539,10 @@ def fetch_alerts_command(client: Client, env: str, args=None):
                     limit: $limit
                 }}
             ) {{
-                {}
+                {fields}
             }}
-        }
-        """.format(fields)
+        }}
+        """
 
     result = client.graphql_run(query=query, variables=variables)
     alerts = result["data"][field]["alerts"]["list"]
@@ -618,15 +618,15 @@ def fetch_assets_command(client: Client, env: str, args=None):
         sensorId
         """
     )
-    query = """
-    query searchAssetsV2($input: SearchAssetsInput!, $pagination_input: SearchAssetsPaginationInput!) {
-        searchAssetsV2(input: $input, paginationInput: $pagination_input) {
-            assets {
-                {}
-            }
-        }
-    }
-    """.format(fields)
+    query = f"""
+    query searchAssetsV2($input: SearchAssetsInput!, $pagination_input: SearchAssetsPaginationInput!) {{
+        searchAssetsV2(input: $input, paginationInput: $pagination_input) {{
+            assets {{
+                {fields}
+            }}
+        }}
+    }}
+    """
 
     result = client.graphql_run(query=query, variables=variables)
     try:
@@ -673,13 +673,13 @@ def fetch_comment_command(client: Client, env: str, args=None):
         """
     )
 
-    query = """
-    query comment ($comment_id: ID!) {
-        comment(comment_id: $comment_id) {
-            {}
-        }
-    }
-    """.format(fields)
+    query = f"""
+    query comment ($comment_id: ID!) {{
+        comment(comment_id: $comment_id) {{
+            {fields}
+        }}
+    }}
+    """
 
     variables = {"comment_id": comment_id}
 
@@ -726,15 +726,15 @@ def fetch_comments_command(client: Client, env: str, args=None):
         """
     )
 
-    query = """
-    query commentsV2 ($arguments: CommentsV2Arguments!) {
-        commentsV2(arguments: $arguments) {
-            comments {
-                {}
-            }
-        }
-    }
-    """.format(fields)
+    query = f"""
+    query commentsV2 ($arguments: CommentsV2Arguments!) {{
+        commentsV2(arguments: $arguments) {{
+            comments {{
+                {fields}
+            }}
+        }}
+    }}
+    """
 
     variables = {
         "arguments": {
@@ -793,13 +793,13 @@ def fetch_endpoint_command(client: Client, env: str, args=None):
         """
     )
 
-    query = """
-    query assetEndpointInfo($id: ID!) {
-      assetEndpointInfo(id: $id) {
-        {}
-      }
-    }
-    """.format(fields)
+    query = f"""
+    query assetEndpointInfo($id: ID!) {{
+      assetEndpointInfo(id: $id) {{
+        {fields}
+      }}
+    }}
+    """
 
     result = client.graphql_run(query=query, variables=variables)
     try:
@@ -1083,13 +1083,13 @@ def fetch_investigation_alerts_command(client: Client, env: str, args=None):
         """
     )
 
-    query = """
-    query investigationAlerts($investigation_id: ID!, $page: Int, $perPage: Int) {
-        investigationAlerts(investigation_id: $investigation_id, page: $page, perPage: $perPage) {
-            {}
-        }
-    }
-    """.format(fields)
+    query = f"""
+    query investigationAlerts($investigation_id: ID!, $page: Int, $perPage: Int) {{
+        investigationAlerts(investigation_id: $investigation_id, page: $page, perPage: $perPage) {{
+            {fields}
+        }}
+    }}
+    """
 
     variables = {"page": page, "perPage": page_size, "investigation_id": investigation_id}
     result = client.graphql_run(query=query, variables=variables)
@@ -1152,13 +1152,13 @@ def fetch_investigation_command(client: Client, env: str, args=None):
             """
         )
 
-        query = """
-        query investigationV2($arguments: InvestigationV2Arguments!) {
-            investigationV2(arguments: $arguments) {
-                {}
-            }
-        }
-        """.format(fields)
+        query = f"""
+        query investigationV2($arguments: InvestigationV2Arguments!) {{
+            investigationV2(arguments: $arguments) {{
+                {fields}
+            }}
+        }}
+        """
 
         variables = {"arguments": {"id": args.get("id")}}
         result = client.graphql_run(query=query, variables=variables)
@@ -1246,28 +1246,28 @@ def fetch_investigation_command(client: Client, env: str, args=None):
             """
         )
 
-        query = """
+        query = f"""
         query investigationsSearch(
             $page: Int,
             $perPage: Int,
             $orderByField: OrderFieldInput,
             $orderDirection: OrderDirectionInput,
             $query: String
-        ) {
+        ) {{
             investigationsSearch(
                 page: $page
                 perPage: $perPage
                 orderByField: $orderByField
                 orderDirection: $orderDirection
                 query: $query
-            ) {
+            ) {{
                 totalCount
-                investigations {
-                    {}
-                }
-            }
-        }
-        """.format(fields)
+                investigations {{
+                    {fields}
+                }}
+            }}
+        }}
+        """
         variables = {
             "page": arg_to_number(args.get("page", 0)),
             "perPage": arg_to_number(args.get("page_size", 10)),
@@ -1331,13 +1331,13 @@ def fetch_playbook_execution_command(client: Client, env: str, args=None):
         """
     )
 
-    query = """
-    query playbookExecution($playbookExecutionId: ID!) {
-      playbookExecution(playbookExecutionId: $playbookExecutionId) {
-        {}
-      }
-    }
-    """.format(fields)
+    query = f"""
+    query playbookExecution($playbookExecutionId: ID!) {{
+      playbookExecution(playbookExecutionId: $playbookExecutionId) {{
+        {fields}
+      }}
+    }}
+    """
 
     variables = {"playbookExecutionId": execution_id}
 
@@ -1381,24 +1381,24 @@ def fetch_users_command(client: Client, env: str, args=None):
         if not args["id"].startswith("auth0"):
             raise ValueError("id MUST be in 'auth0|12345' format")
 
-        query = """
-        query ($ids: [String!]) {
-            tdrusersByIDs (userIDs: $ids) {
-                {}
-            }
-        }
-        """.format(fields)
+        query = f"""
+        query ($ids: [String!]) {{
+            tdrusersByIDs (userIDs: $ids) {{
+                {fields}
+            }}
+        }}
+        """
         variables = {"ids": [args["id"]]}
     else:
-        query = """
-        query ($filters: TDRUsersSearchInput) {
-            tdrUsersSearch (filters: $filters) {
-                results {
-                    {}
-                }
-            }
-        }
-        """.format(fields)
+        query = f"""
+        query ($filters: TDRUsersSearchInput) {{
+            tdrUsersSearch (filters: $filters) {{
+                results {{
+                    {fields}
+                }}
+            }}
+        }}
+        """
 
     if args.get("email"):
         variables["filters"]["emails"] = args["email"]
@@ -1438,13 +1438,13 @@ def isolate_asset_command(client: Client, env: str, args=None):
 
     fields: str = args.get("fields") or "id"
 
-    query = """
-    mutation isolateAsset ($id: ID!, $reason: String!) {
-      isolateAsset (id: $id, reason: $reason) {
-        {}
-      }
-    }
-    """.format(fields)
+    query = f"""
+    mutation isolateAsset ($id: ID!, $reason: String!) {{
+      isolateAsset (id: $id, reason: $reason) {{
+        {fields}
+      }}
+    }}
+    """
 
     result = client.graphql_run(query=query, variables=variables)
 
@@ -1488,8 +1488,8 @@ def update_alert_status_command(client: Client, env: str, args=None):
 
     fields: str = args.get("fields") or "resolution_status reason"
 
-    query = """
-    mutation alertsServiceUpdateResolutionInfo($alert_ids: [String!], $reason: String, $resolution_status: ResolutionStatus) {
+    query = f"""
+    mutation alertsServiceUpdateResolutionInfo($alert_ids: [String!], $reason: String, $resolution_status: ResolutionStatus) {{
       alertsServiceUpdateResolutionInfo(
         in: {{
           alert_ids: $alert_ids,
@@ -1500,7 +1500,7 @@ def update_alert_status_command(client: Client, env: str, args=None):
         {fields}
       }}
     }}
-    """.format(fields=fields)
+    """
 
     result = client.graphql_run(query=query, variables=variables)
 
@@ -1533,13 +1533,13 @@ def update_comment_command(client: Client, env: str, args=None):
 
     fields: str = args.get("fields") or "id"
 
-    query = """
-    mutation updateInvestigationComment($input: UpdateInvestigationCommentInput!) {
-        updateInvestigationComment(input: $input) {
-            {}
-        }
-    }
-    """.format(fields)
+    query = f"""
+    mutation updateInvestigationComment($input: UpdateInvestigationCommentInput!) {{
+        updateInvestigationComment(input: $input) {{
+            {fields}
+        }}
+    }}
+    """
     variables = {
         "input": {
             "commentId": args.get("id"),
@@ -1575,13 +1575,13 @@ def update_investigation_command(client: Client, env: str, args=None):
 
     fields: str = args.get("fields") or "id shortId"
 
-    query = """
-    mutation updateInvestigationV2($input: UpdateInvestigationV2Input!) {
-        updateInvestigationV2(input: $input) {
-            {}
-        }
-    }
-    """.format(fields)
+    query = f"""
+    mutation updateInvestigationV2($input: UpdateInvestigationV2Input!) {{
+        updateInvestigationV2(input: $input) {{
+            {fields}
+        }}
+    }}
+    """
 
     variables = {"input": {"id": args.get("id")}}
 
@@ -1643,13 +1643,13 @@ def archive_investigation_command(client: Client, env: str, args=None):
 
     fields: str = args.get("fields") or "id"
 
-    query = """
-    mutation ($investigation_id: ID!) {
-      archiveInvestigation(investigation_id: $investigation_id) {
-        {}
-      }
-    }
-    """.format(fields)
+    query = f"""
+    mutation ($investigation_id: ID!) {{
+      archiveInvestigation(investigation_id: $investigation_id) {{
+        {fields}
+      }}
+    }}
+    """
 
     variables = {"investigation_id": investigation_id}
     result = client.graphql_run(query=query, variables=variables)
@@ -1689,13 +1689,13 @@ def unarchive_investigation_command(client: Client, env: str, args=None):
 
     fields: str = args.get("fields") or "id"
 
-    query = """
-    mutation ($investigation_id: ID!) {
-      unArchiveInvestigation(investigation_id: $investigation_id) {
-        {}
-      }
-    }
-    """.format(fields)
+    query = f"""
+    mutation ($investigation_id: ID!) {{
+      unArchiveInvestigation(investigation_id: $investigation_id) {{
+        {fields}
+      }}
+    }}
+    """
 
     variables = {"investigation_id": investigation_id}
     result = client.graphql_run(query=query, variables=variables)
