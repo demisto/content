@@ -47,14 +47,13 @@ class Client(BaseClient):
         )
 
     def classify_incident(
-            self,
-            incident_id: str,
-            classification: str,
-            prev_classification: str,
-            classifying_user_email: str,
-            company_id=None,
+        self,
+        incident_id: str,
+        classification: str,
+        prev_classification: str,
+        classifying_user_email: str,
+        company_id=None,
     ) -> str:
-
         if not company_id:
             company_id = self.company_id
 
@@ -71,10 +70,9 @@ class Client(BaseClient):
         )
 
     def get_open_incidents(
-            self,
-            company_id=None,
+        self,
+        company_id=None,
     ) -> Dict[str, Any]:
-
         if not company_id:
             company_id = self.company_id
 
@@ -120,9 +118,7 @@ def classify_incident_command(client: Client, args: Dict[str, Any]) -> str:
     if not (incident_id or classification or prev_classification or email):
         raise ValueError("Missing arguments!")
 
-    classify = client.classify_incident(
-        incident_id, classification, prev_classification, email, company_id
-    )
+    classify = client.classify_incident(incident_id, classification, prev_classification, email, company_id)
 
     if classify:
         return "Classification Succeeded!"
