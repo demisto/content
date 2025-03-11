@@ -2,7 +2,7 @@
     "name": "Base",
     "description": "The base pack for Cortex XSOAR.",
     "support": "xsoar",
-    "currentVersion": "1.39.21",
+    "currentVersion": "1.39.22",
     "author": "Cortex XSOAR",
     "serverMinVersion": "6.0.0",
     "url": "https://www.paloaltonetworks.com/cortex",
@@ -23,6 +23,16 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "xpanse"
+        "xpanse",
+        "platform"
+    ],
+    "supportedModules": [
+        "C1",
+        "C3",
+        "X0",
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }
