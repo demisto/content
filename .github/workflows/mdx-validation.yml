@@ -156,10 +156,11 @@ jobs:
             exit 0
           fi
           errors=()
-          for file in $READMES; do
-            node - "$file" << 'EOF'
+          node - << 'EOF'
           const { readFile } = require('fs-extra');
           const mdx = require('@mdx-js/mdx');
+          const files = process.argv.slice(1);
+          let failedFiles = [];
 
           async function parseMDX(file) {
               try {
@@ -167,25 +168,19 @@ jobs:
                   await mdx(contents);
               } catch (error) {
                   console.error(`MDX parse failure in ${file}: ` + error);
-                  process.exit(1);
+                  failedFiles.push(file);
               }
           }
 
-          const file = process.argv[2];
-          parseMDX(file);
-          EOF
-            if [ $? -ne 0 ]; then
-              errors+=("$file")
-            fi
-          done
-          
-          if [ ${#errors[@]} -ne 0 ]; then
-            echo "\n==============================="
-            echo "The following README.md files failed MDX validation:"
-            echo "===============================\n"
-            for err in "${errors[@]}"; do
-              echo "- $err"
-            done
-            echo "\n==============================="
-            exit 1
-          fi
+          (async () => {
+              await Promise.all(files.map(parseMDX));
+              if (failedFiles.length > 0) {
+                  console.error("\n===============================");
+                  console.error("The following README.md files failed MDX validation:");
+                  console.error("===============================\n");
+                  failedFiles.forEach(file => console.error("- " + file));
+                  console.error("\n===============================");
+                  process.exit(1);
+              }
+          })();
+          EOF $READMES
