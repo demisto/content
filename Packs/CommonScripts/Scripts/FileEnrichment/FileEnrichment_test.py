@@ -167,9 +167,9 @@ def test_flatten_list():
     """
     from FileEnrichment import flatten_list
 
-    nested_list = ["1", "2", ["3", "4"], "5"]
+    nested_list = [1, 2, 3, [4, 5], 4, 6, [7, [8]]]
 
-    assert sorted(flatten_list(nested_list)) == ["1", "2", "3", "4", "5"]
+    assert flatten_list(nested_list) == [1, 2, 3, 4, 5, 4, 6, 7, 8]
 
 
 def test_add_source_brand_to_values():
@@ -404,7 +404,7 @@ def test_search_file_indicator(mocker: MockerFixture):
     mocker.patch("FileEnrichment.IndicatorsSearcher.__iter__", return_value=iter(indicator_search_results))
 
     per_command_context, verbose_command_results = {}, []
-    search_file_indicator(SHA_256_HASH, per_command_context, verbose_command_results, False)
+    search_file_indicator(SHA_256_HASH, per_command_context, verbose_command_results)
 
     expected_output = util_load_json("test_data/search_file_indicator_expected.json")
     assert per_command_context["findIndicators"] == expected_output["Context"]
@@ -557,10 +557,11 @@ def test_main_invalid_hash(mocker: MockerFixture):
     from FileEnrichment import main
 
     mocker.patch("FileEnrichment.demisto.args", return_value={"file_hash": "123"})
+    mocker.patch("FileEnrichment.demisto.error")  # mocked to avoid logging to STDERR when running unit test
     mock_return_error = mocker.patch("FileEnrichment.return_error")
 
     expected_error_message = (
-        "Failed to execute file-enrichment command. "
+        "Failed to execute file-enrichment script. "
         "Error: A valid file hash must be provided. Supported types are: MD5, SHA1, SHA256, and SHA512."
     )
 

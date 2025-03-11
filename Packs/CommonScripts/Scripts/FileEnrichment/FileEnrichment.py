@@ -4,7 +4,6 @@ from CommonServerPython import *
 from enum import Enum
 from typing import Any
 from collections.abc import Callable
-import itertools
 
 
 """ CONSTANTS """
@@ -55,8 +54,11 @@ class Command:
         Returns:
             bool: True if the command brand has an enabled instance. Otherwise, False.
         """
+        if not self.brand:
+            return True
+
         enabled_brands = {module.get("brand") for module in modules.values() if module.get("state") == "active"}
-        return bool(self.brand and self.brand.value in enabled_brands)
+        return bool(self.brand.value in enabled_brands)
 
     def prepare_human_readable(self, human_readable: str, is_error: bool = False) -> CommandResults:
         """
@@ -69,13 +71,10 @@ class Command:
         Returns:
             CommandResults: CommandResult object with the formatted output.
         """
-        title = f"Result for {self}" if not is_error else f"Error for {self}"
+        if not is_error:
+            return CommandResults(readable_output=f"#### Result for {self}\n{human_readable}")
 
-        return CommandResults(
-            readable_output=f"#### {title}\n{human_readable}",
-            entry_type=EntryType.NOTE if not is_error else EntryType.ERROR,
-            mark_as_note=True,
-        )
+        return CommandResults(readable_output=f"#### Error for {self}\n{human_readable}", entry_type=EntryType.ERROR)
 
     def execute(self) -> tuple[list[dict], list[CommandResults]]:
         """
@@ -209,7 +208,15 @@ def flatten_list(nested_list: list[Any]) -> list[Any]:
     Returns:
         list: A flattened list.
     """
-    return list(itertools.chain.from_iterable(nested_list))
+    flattened: list[Any] = []
+
+    for item in nested_list:
+        if isinstance(item, list):
+            flattened.extend(flatten_list(item))  # Recursive call for nested lists
+        else:
+            flattened.append(item)
+
+    return flattened
 
 
 def add_source_brand_to_values(mapping: dict[str, Any], brand: Brands | str, excluded_keys: list[str] | None = None) -> dict:
@@ -302,7 +309,8 @@ def execute_file_reputation(command: Command) -> tuple[dict, list[CommandResults
 
     for context_item in entry_context:
         if files := get_from_context(context_item, ContextPaths.FILE):
-            context_output.update(files[0])
+            for _file in files:
+                context_output.update(_file)
 
         if dbot_scores := get_from_context(context_item, ContextPaths.DBOT_SCORE):
             for dbot_score in dbot_scores:
@@ -403,12 +411,7 @@ def enrich_with_command(
 """ FLOW STAGES FUNCTIONS """
 
 
-def search_file_indicator(
-    file_hash: str,
-    per_command_context: dict[str, Any],
-    verbose_command_results: list,
-    external_enrichment: bool,
-) -> None:
+def search_file_indicator(file_hash: str, per_command_context: dict[str, Any], verbose_command_results: list) -> None:
     """
     Searches for the file indicator using the file hash value in the Thread Intelligence Module (TIM). If found, it transforms
     the Indicator of Compromise (IOC) into a standard context output by extracting the `File` dictionary. It also adds source
@@ -418,7 +421,6 @@ def search_file_indicator(
         file_hash (str): The hash of the file.
         per_command_context (dict[str, Any]): Dictionary of the entry context (value) of each command name (key).
         verbose_command_results (list[CommandResults]): : List of CommandResults with human-readable output.
-        external_enrichment (bool): Whether to enrich the file indicator from external source brands.
     """
     demisto.debug(f"Starting to search for File indicator with value: {file_hash}.")
     try:
@@ -437,6 +439,7 @@ def search_file_indicator(
     if not iocs:
         demisto.debug(f"Could not find File indicator with value: {file_hash}.")
         readable_command_results = CommandResults(readable_output="#### Result for Search Indicators\nNo Indicators found.")
+        verbose_command_results.append(readable_command_results)
         return
 
     demisto.debug(f"Found {len(iocs)} File indicators with value: {file_hash}.")
@@ -445,7 +448,7 @@ def search_file_indicator(
 
     # Handle context output
     file_context = get_file_from_ioc_custom_fields(ioc_custom_fields)
-    context_output = add_source_brand_to_values(file_context, brand=Brands.TIM) if external_enrichment else file_context
+    context_output = add_source_brand_to_values(file_context, brand=Brands.TIM)
     per_command_context["findIndicators"] = assign_params(**context_output)
 
     # Prepare human-readable output
@@ -564,6 +567,8 @@ def file_enrichment_script(args: dict[str, Any]) -> list[CommandResults]:
     Returns:
         list[CommandResults]: List of CommandResults objects.
     """
+    demisto.debug(f"Parsing and validating script args: {args}.")
+
     external_enrichment: bool = argToBoolean(args.get("external_enrichment", False))
     verbose: bool = argToBoolean(args.get("verbose", False))
     file_reputation_brands: list = argToList(args.get("enrichment_brands"))  # brands to use for `!file` reputation command
@@ -577,19 +582,18 @@ def file_enrichment_script(args: dict[str, Any]) -> list[CommandResults]:
     per_command_context: dict = {}
     verbose_command_results: list[CommandResults] = []
 
-    # 1. Search indicators in TIM
+    demisto.debug(f"Running Step 1: Search File indicator in TIM with value {file_hash}.")
     search_file_indicator(
         file_hash=file_hash,
         per_command_context=per_command_context,
         verbose_command_results=verbose_command_results,
-        external_enrichment=external_enrichment,
     )
 
     if external_enrichment:
         demisto.debug("Getting integration instances on tenant.")
         modules = demisto.getModules()
 
-        # 2. Run external enrichment using various source brand commands
+        demisto.debug(f"Running Step 2: External enrichment commands on {file_hash} using brands: {file_reputation_brands}.")
         run_external_enrichment(
             file_hash=file_hash,
             hash_type=hash_type,
@@ -599,7 +603,7 @@ def file_enrichment_script(args: dict[str, Any]) -> list[CommandResults]:
             verbose_command_results=verbose_command_results,
         )
 
-    # 3. Summarize all command results
+    demisto.debug(f"Running Step 3: Summarizing command results on {file_hash} and consolidating context output.")
     summary_command_results = summarize_command_results(
         file_hash=file_hash,
         per_command_context=per_command_context,
@@ -619,13 +623,16 @@ def file_enrichment_script(args: dict[str, Any]) -> list[CommandResults]:
 
 
 def main():  # pragma: no cover
+    demisto.debug("Stating to run file-enrichment script.")
     try:
         args = demisto.args()
         command_results = file_enrichment_script(args)
         return_results(command_results)
+        demisto.debug(f"Finishing running file-enrichment script. Got context output: {command_results[0].outputs}.")
 
     except Exception as e:
-        return_error(f"Failed to execute file-enrichment command. Error: {str(e)}")
+        demisto.error(f"Encountered error during execution of file-enrichment script: {traceback.format_exc()}.")
+        return_error(f"Failed to execute file-enrichment script. Error: {str(e)}")
 
 
 """ ENTRY POINT """
