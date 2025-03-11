@@ -1407,3 +1407,72 @@ Searches the GlobalProtect VPN log table.
 | CDL.Logging.GlobalProtect.TimeGenerated | unknown | Time when the log was generated on the firewall's data plane. | 
 | CDL.Logging.GlobalProtect.TunnelType | unknown | Tunnel Type i.e. SSL or VPN. | 
 | CDL.Logging.GlobalProtect.VendorName | unknown | The vendor that produced the data. | 
+
+##### Command Example
+```!cdl-query-gp-logs time_range="10 days" limit="1"```
+
+##### Context Example
+```
+{
+  "CDL.Logging.GlobalProtect": [
+    {
+      "AttemptedGateways": "gateway1,500,1;",
+      "AuthMethod": "SAML",
+      "ConnectMethod": "user-logon",
+      "ConnectionErrorID": "",
+      "ConnectionErrorValue": "",
+      "CountOfRepeats": 1,
+      "CustomerID": "117270019",
+      "EndpointDeviceName": "device1",
+      "EndpointGPVersion": "328198",
+      "EndpointOSType": "Windows",
+      "EndpointOSVersion": "",
+      "EndpointSN": "12345",
+      "EventID": "gateway-auth",
+      "Gateway": "gateway1"
+      "GatewayPriority": "1",
+      "GatewaySelectionType": "automatic",
+      "HostID": "12341234-1234-1234-1234-123412341234",
+      "IsDuplicateLog": false,
+      "IsExported": false,
+      "IsForwarded": false,
+      "IsPrismaBranch": false,
+      "IsPrismaMobile": false,
+      "LogSource": "gw",
+      "LogSourceID": "007251000070976",
+      "LogSourceName": "gw1",
+      "LogTime": "2025-03-10T20:58:12",
+      "LogType": "globalprotect",
+      "LoginDuration": 1000,
+      "Opaque": "",
+      "PanoramaSN": "12345",
+      "PlatformType": "",
+      "Portal": "portal1",
+      "PrivateIPv4": "10.0.0.1",
+      "PrivateIPv6": "",
+      "ProjectName": "",
+      "PublicIPv4": "206.116.22.23",
+      "PublicIPv6": "",
+      "QuarantineReason": "",
+      "SequenceNo": 123,
+      "SourceRegion": "US",
+      "SourceUser": "user1",
+      "SourceUserDomain": "domain1",
+      "SourceUserName": "user1",
+      "SourceUserUUID": "12341234-1234-1234-1234-123412341234",
+      "SSLResponseTime": 500,
+      "Stage": "login",
+      "EventStatus": "success",
+      "Subtype": "globalprotect",
+      "TimeGenerated": "2025-03-10T20:58:11",
+      "TunnelType": "IPSec",
+      "VendorName": "Palo Alto Networks"
+    }
+  ]
+}
+```
+##### Human Readable Output
+### Logs globalprotect table
+|AttemptedGateways|AuthMethod|ConnectMethod|ConnectionErrorID|ConnectionErrorValue|CountOfRepeats|CustomerID|EndpointDeviceName|EndpointGPVersion|EndpointOSType|EndpointOSVersion|EndpointSN|EventID|Gateway|GatewayPriority|GatewaySelectionType|HostID|IsDuplicateLog|IsExported|IsForwarded|IsPrismaBranch|IsPrismaMobile|LogSource|LogSourceID|LogSourceName|LogTime|LogType|LoginDuration|Opaque|PanoramaSN|PlatformType|Portal|PrivateIPv4|PrivateIPv6|ProjectName|PublicIPv4|PublicIPv6|QuarantineReason|SequenceNo|SourceRegion|SourceUser|SourceUserDomain|SourceUserName|SourceUserUUID|SSLResponseTime|Stage|EventStatus|Subtype|TimeGenerated|TunnelType|VendorName|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| gateway1,500,1; | SAML | user-logon |  |  | 1 | 117270019 | device1 | 328198 | Windows |  | 12345 | gateway-auth | gateway1 | 1 | automatic | 12341234-1234-1234-1234-123412341234 | false | false | false | false | false | gw | 007251000070976 | gw1 | 2025-03-10T20 | globalprotect | 1000 |  | 12345 |  | portal1 | 10.0.0.1 |  |  | 206.116.22.23 |  |  | 123 | US | user1 | domain1 | user1 | 12341234-1234-1234-1234-123412341234 | 500 | login | success | globalprotect | 2025-03-10T20 | IPSec | Palo Alto Networks |
