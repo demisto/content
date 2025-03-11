@@ -55,10 +55,18 @@ class Command:
             bool: True if the command brand has an enabled instance. Otherwise, False.
         """
         if not self.brand:
+            demisto.debug(f"Command: {self} is not associated with any integration brand. Command will be executed.")
             return True
 
         enabled_brands = {module.get("brand") for module in modules.values() if module.get("state") == "active"}
-        return bool(self.brand.value in enabled_brands)
+        demisto.debug(f"Found {len(enabled_brands)} enabled integration brands.")
+
+        if self.brand.value in enabled_brands:
+            demisto.debug(f"Command: {self} has an enabled instance of {self.brand}. Command will be executed.")
+            return True
+
+        demisto.debug(f"Command: {self} has an no enabled instance of {self.brand}. Command will be skipped.")
+        return False
 
     def prepare_human_readable(self, human_readable: str, is_error: bool = False) -> CommandResults:
         """
@@ -427,7 +435,7 @@ def search_file_indicator(file_hash: str, per_command_context: dict[str, Any], v
         search_results = IndicatorsSearcher(query=f"type:File and {file_hash}", size=1)
 
     except Exception as e:
-        demisto.debug(f"Error searching for File indicator with value: {file_hash}. Error: {str(e)}.")
+        demisto.debug(f"Error searching for File indicator with value: {file_hash}. Error: {str(e)}.\n{traceback.format_exc()}")
         readable_command_results = CommandResults(
             readable_output=f"#### Error for Search Indicators\n{str(e)}",
             entry_type=EntryType.ERROR,
