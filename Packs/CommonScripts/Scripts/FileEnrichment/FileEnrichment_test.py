@@ -191,10 +191,9 @@ def test_add_source_brand_to_values():
         "Key2": "ValD",
         "Key3": 4,
         "Key4": {"KeyE": "InnerValE"},
-        "Key5": "ValF",
     }
     brand = Brands.CORE_IR
-    updated_context = add_source_brand_to_values(original_context, brand, excluded_keys=["Key5"])
+    updated_context = add_source_brand_to_values(original_context, brand)
 
     assert "Key5" not in updated_context
     assert updated_context == {

@@ -227,26 +227,23 @@ def flatten_list(nested_list: list[Any]) -> list[Any]:
     return flattened
 
 
-def add_source_brand_to_values(mapping: dict[str, Any], brand: Brands | str, excluded_keys: list[str] | None = None) -> dict:
+def add_source_brand_to_values(mapping: dict[str, Any], brand: Brands | str) -> dict:
     """
     Recursively creates nested dictionaries under the mapping key where each dictionary has `Value` and `Source` keys.
 
     Args:
         mapping (dict[str, Any]): Dictionary containing key-value pairs that need to be transformed.
         brand (Brands | str): The source brand to be added under the `Source` key in the nested dictionaries.
-        excluded_keys (list[str] | None): Optional list of keys to be excluded from the transformed output.
 
     Returns:
         dict: Dictionary without excluded keys where each key has a dictionary value that contains:
             `Value` - holding the original value from `mapping`
             `Source` - holding the source brand's name.
     """
+    demisto.debug(f"Adding Value and Source fields to values in {mapping}.")
     result: dict = {}
 
     for key, value in mapping.items():
-        if excluded_keys and key in excluded_keys:
-            continue
-
         if isinstance(value, list) and len(value) == 1:
             value = value[0]
 
