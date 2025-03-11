@@ -1429,7 +1429,7 @@ Searches the GlobalProtect VPN log table.
       "EndpointOSVersion": "",
       "EndpointSN": "12345",
       "EventID": "gateway-auth",
-      "Gateway": "gateway1"
+      "Gateway": "gateway1",
       "GatewayPriority": "1",
       "GatewaySelectionType": "automatic",
       "HostID": "12341234-1234-1234-1234-123412341234",
