@@ -1688,7 +1688,8 @@ script:
       name: short_description
       prettyname: Name
       required: true
-      defaultValue: "${issue.ID} ${issue.Name}"
+      predefined:
+        - "${issue.ID} ${issue.Name}"
     - auto: PREDEFINED
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", "sn_si_incident" or "std_change_template". Default is "incident".
@@ -1716,7 +1717,6 @@ script:
       name: severity
       prettyname: Severity
       required: true
-      defaultValue: 1 - High
       predefined:
         - 1 - High
         - 2 - Medium
@@ -1795,7 +1795,8 @@ script:
       name: description
       prettyname: Description
       required: true
-      defaultValue: ${issue.Description}
+      predefined:
+        - ${issue.Description}
     - description: 'Ticket due date, in the format: YYYY-MM-DD HH:MM:SS.'
       name: due_date
     - description: 'Expected start date/time, in the format: YYYY-MM-DD HH:MM:SS.'

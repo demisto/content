@@ -509,9 +509,11 @@ script:
       name: message
       prettyname: Message
       required: true
-      defaultValue: "${issue.Name} ${issue.Description}"
+      predefined:
+        - "${issue.Name} ${issue.Description}"
     - description: The user to whom to send the message. Can be either the username or email address.
       name: to
+      prettyname: User
     - description: The name of the Slack channel to which to send the message.
       name: channel
       prettyname: Channel

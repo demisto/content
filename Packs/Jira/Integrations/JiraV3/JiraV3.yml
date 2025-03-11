@@ -1751,7 +1751,8 @@ script:
     - description: The summary of the issue (Summary value is required, either from the "summary" argument, or from the "issue_json" argument).
       name: summary
       prettyname: Summary
-      defaultValue: "${issue.ID} ${issue.Name}"
+      predefined:
+        - "${issue.ID} ${issue.Name}"
       required: true
     - description: The project key with which to associate the issue (Project Key or name is required).
       name: project_key
@@ -1760,7 +1761,8 @@ script:
     - description: 'Selects an issue type by name, for example: "Problem". (Issue type name or id is required).'
       name: issue_type_name
       prettyname: Issue Type
-      defaultValue: 'Task'
+      predefined:
+        - 'Task'
       required: true
     - description: Selects an issue type by its numeric ID (Issue type name or id is required).
       name: issue_type_id
@@ -1769,7 +1771,8 @@ script:
     - description: A description of the issue.
       name: description
       prettyname: Description
-      defaultValue: ${issue.Description}
+      predefined:
+        - ${issue.Description}
       required: true
     - description: A CSV list of labels.
       isArray: true
@@ -1777,7 +1780,6 @@ script:
     - description: 'The priority of the issue, for example: High, Medium.'
       name: priority
       prettyname: Priority
-      defaultValue : 1 - High
       predefined:
         - 1 - High
         - 2 - Medium

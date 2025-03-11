@@ -775,7 +775,8 @@ script:
       name: message
       prettyname: Message
       required: true
-      defaultValue: "${issue.Name} ${issue.Description}"
+      predefined:
+        - "${issue.Name} ${issue.Description}"
     - description: Display name or email address of the team member to send the message to.
       name: team_member
       prettyname: Team member
