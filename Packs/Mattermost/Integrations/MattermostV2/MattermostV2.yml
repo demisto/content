@@ -411,6 +411,7 @@ script:
       name: entry
       required: false
     - description: The username or email of the user to send the file to.
+      isArray: true
       name: to
       required: false
     - description: Adds the War Room link to the message.
@@ -546,84 +547,87 @@ script:
       description: How many results to retrieve. Will override the page and page_size
         arguments if given.
     - name: group
-      description: Search for a specific user group by this pattern.
-    name: mattermost-list-usergroups
+      description: Search for a specific group by this pattern.
+    name: mattermost-list-groups
     outputs:
     - contextPath: Mattermost.Groups.id
-      description: The ID of the user group.
+      description: The ID of the group.
       type: String
     - contextPath: Mattermost.Groups.create_at
-      description: When was the user group created.
+      description: When was the group created.
       type: Unknown
     - contextPath: Mattermost.Groups.update_at
-      description: When was the user group updated.
+      description: When was the group updated.
       type: Unknown
     - contextPath: Mattermost.Groups.delete_at
-      description: When was the user group deleted.
+      description: When was the group deleted.
       type: Unknown
     - contextPath: Mattermost.Groups.display_name
-      description: The display name of the user group.
+      description: The display name of the group.
       type: String
     - contextPath: Mattermost.Groups.name
-      description: The name of the user group.
+      description: The name of the group.
       type: String
     - contextPath: Mattermost.Groups.description
-      description: The description of the user group.
+      description: The description of the group.
       type: String
     - contextPath: Mattermost.Groups.source
-      description: The source of the user group.
+      description: The source of the group.
       type: String
     - contextPath: Mattermost.Groups.remote_id
-      description: The remote id of the user group.
+      description: The remote id of the group.
       type: String
     - contextPath: Mattermost.Groups.has_syncables
-      description: If the user group has any syncables.
+      description: If the group has any syncables.
       type: boolean
-    description: Lists user groups.
-  - name: mattermost-list-usergroup-members
+    description: Lists groups.
+  - name: mattermost-list-group-members
     arguments:
-    - name: group
+    - name: group_id
       required: true
-      description: The group name of the user group to add the user to.
+      description: The group id of the group to list members for. Use the command
+        'mattermost-list-groups' to fetch the group ID.
     outputs:
-    - contextPath: Mattermost.Groups.name
-      description: The name of the user group.
-      type: String
     - contextPath: Mattermost.Groups.id
-      description: The ID of the user group.
+      description: The ID of the group.
       type: String
     - contextPath: Mattermost.Groups.total_member_count
-      description: The total count of members in the user group.
+      description: The total count of members in the group.
       type: Unknown
     - contextPath: Mattermost.Groups.members
-      description: Detailed list of the user group members.
+      description: Detailed list of the group members.
       type: Unknown
-    description: Lists user group members.
-  - name: mattermost-add-usergroup-member
+    description: Lists group members.
+  - name: mattermost-add-group-member
     arguments:
-    - name: group
+    - name: group_id
       required: true
-      description: The group name of the user group to add the user to.
+      description: The group id of the group to add the user to. Use the command
+        'mattermost-list-groups' to fetch the group ID.
     - name: user_ids
       required: true
+      isArray: true
       description: The ID(s) of the user(s) to add. Use the command 'mattermost-list-users'
         to fetch the user ID(s).
-    description: Add user group member(s).
-  - name: mattermost-remove-usergroup-member
+    description: Add group member(s).
+  - name: mattermost-remove-group-member
     arguments:
     - name: group
       required: true
-      description: The group name of the user group to remove the user from.
+      description: The group id of the group to remove the user from. Use the command
+        'mattermost-list-groups' to fetch the group ID.
     - name: user_ids
       required: true
+      isArray: true
       description: The ID(s) of the user(s) to remove. Use the command 'mattermost-list-users'
         to fetch the user ID(s).
-    description: Remove user group member(s).
+    description: Remove group member(s).
   - name: mattermost-set-channel-role
     arguments:
     - name: channel_id
       required: true
-      description: The channel id to set the role in.
+      description: The channel ID to set the role in. Use the command 'mattermost-list-channels'
+        to fetch the channel ID.
     - name: user_id
       required: true
       description: The ID of the user to set role for. Use the command 'mattermost-list-users'

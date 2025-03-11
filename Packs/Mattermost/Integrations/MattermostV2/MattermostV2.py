@@ -1247,15 +1247,18 @@ def list_private_channels_for_user_command(client: HTTPClient, args: dict[str, A
     """ Lists private channels for user """
     team_name = args.get('team_name', client.team_name)
     user_id = args.get('user_id', '')
-    channels = []
+    list_private_channels = []
 
     team_details = client.get_team_request(team_name)
 
-    user_channels = client.list_channels_for_user_request(team_details.get('id', ''), user_id)
+    all_user_channels = client.list_channels_for_user_request(team_details.get('id', ''), user_id)
 
     params: dict[Any, Any] = {}
-    channels = client.list_channel_request(team_details.get('id', ''), params, get_private=True)
-    channels = [channel for channel in channels if channel['id'] in [c['channel_id'] for c in user_channels]]
+    list_private_channels = client.list_channel_request(team_details.get('id', ''), params, get_private=True)
+    channels = [
+        private_channel for private_channel in list_private_channels
+        if private_channel['id'] in [channel['channel_id'] for channel in all_user_channels]
+    ]
 
     user_details = client.get_user_request(user_id)
 
@@ -1268,6 +1271,7 @@ def list_private_channels_for_user_command(client: HTTPClient, args: dict[str, A
             'id': user_id,
             'channels': channels
         },
+        raw_response=all_user_channels,
         readable_output=hr,
     )
 
@@ -1689,7 +1693,8 @@ def send_notification(client: HTTPClient, **args):
         demisto.debug(f'MM: Found entitlement, saving message to context: {entitlement}')
         save_entitlement(entitlement, message_id, reply, expiry, default_response, to if to else channel_id)
     return CommandResults(
-        readable_output=f'Message sent to MatterMost successfully. Message ID is: {message_id}'
+        readable_output=f'Message sent to MatterMost successfully. Message ID is: {message_id}',
+        raw_response=raw_data
     )
 
 
@@ -1707,65 +1712,47 @@ def list_groups_command(client: HTTPClient, args: dict[str, Any]) -> CommandResu
     params = {'page': page, 'per_page': page_size, 'q': q}
     group_details = client.list_groups_request(params)
 
-    hr = tableToMarkdown('User groups:', group_details, headers=['name', 'display_name', 'description', 'id'])
+    hr = tableToMarkdown('Groups:', group_details, headers=['name', 'display_name', 'description', 'id'])
     return CommandResults(
         outputs_prefix='Mattermost.Groups',
-        outputs_key_field='name',
+        outputs_key_field='id',
         outputs=group_details,
+        raw_response=group_details,
         readable_output=hr,
     )
 
 
 def list_group_members_command(client: HTTPClient, args: dict[str, Any]) -> CommandResults:
     """ List the members of a user group """
-    group_name = args.get('group', '')
+    group_id = args.get('group_id', '')
     member_details = {}
 
-    params = {'q': group_name}
-    group_details = client.list_groups_request(params)
+    member_details = client.list_group_members_request(group_id)
+    member_details['id'] = group_id
 
-    if len(group_details) == 1:
-        group_detail = group_details[0]
-    elif len(group_details) == 0:
-        raise DemistoException('No matching user group found')
-    else:
-        raise DemistoException('User group pattern is not unique:\n' + '\n'.join([x['name'] for x in group_details]))
-
-    member_details = client.list_group_members_request(group_detail.get('id', ''))
-    member_details['id'] = group_detail.get('id', '')
-    member_details['name'] = group_detail.get('name', group_name)
-
-    hr = tableToMarkdown('User group members:', member_details.get("members"), headers=['username', 'email', 'id'])
+    hr = tableToMarkdown('Group members:', member_details.get("members"), headers=['username', 'email', 'id'])
     return CommandResults(
         outputs_prefix='Mattermost.Groups',
-        outputs_key_field='name',
+        outputs_key_field='id',
         outputs=member_details,
         readable_output=hr,
+        raw_response=member_details
     )
 
 
 def add_group_member_command(client: HTTPClient, args: dict[str, Any]) -> CommandResults:
     """ Adds a member to a user group """
-    group_name = args.get('group', '')
+    group_id = args.get('group_id', '')
     user_ids = argToList(args.get('user_ids', ''))
 
-    params = {'q': group_name}
-    group_details = client.list_groups_request(params)
-
-    if len(group_details) == 1:
-        group_detail = group_details[0]
-    elif len(group_details) == 0:
-        raise DemistoException('No matching user group found')
-    else:
-        raise DemistoException('User group pattern is not unique:\n' + '\n'.join([x['name'] for x in group_details]))
-
     data = {'user_ids': user_ids}
-    response = client.add_group_member_request(group_detail.get('id', ''), data)
+    response = client.add_group_member_request(group_id, data)
 
     hr = []
     for user in user_ids:
         user_details = client.get_user_request(user)
-        hr.append(f'The member {user_details.get("username", user)} was added to the user group successfully, with group ID: {group_detail.get("id")}')   # noqa: E501
+        hr.append(f'The member {user_details.get("username", user)} was added to the group successfully, with group ID: '
+                  f'{group_id}')
 
     return CommandResults(
         readable_output="\n".join(hr),
@@ -1775,26 +1762,17 @@ def add_group_member_command(client: HTTPClient, args: dict[str, Any]) -> Comman
 
 def remove_group_member_command(client: HTTPClient, args: dict[str, Any]) -> CommandResults:
     """ Removes a member form a user group """
-    group_name = args.get('group', '')
+    group_id = args.get('group_id', '')
     user_ids = argToList(args.get('user_ids', ''))
 
-    params = {'q': group_name}
-    group_details = client.list_groups_request(params)
-
-    if len(group_details) == 1:
-        group_detail = group_details[0]
-    elif len(group_details) == 0:
-        raise DemistoException('No matching user group found')
-    else:
-        raise DemistoException('User group pattern is not unique:\n' + '\n'.join([x['name'] for x in group_details]))
-
     data = {'user_ids': user_ids}
-    response = client.remove_group_member_request(group_detail.get('id', ''), data)
+    response = client.remove_group_member_request(group_id, data)
 
     hr = []
     for user in user_ids:
         user_details = client.get_user_request(user)
-        hr.append(f'The member {user_details.get("username", user)} was removed from the user group successfully, with group ID: {group_detail.get("id")}')   # noqa: E501
+        hr.append(f'The member {user_details.get("username", user)} was removed from the group successfully, with group ID:'
+                  f' {group_id}')
 
     return CommandResults(
         readable_output="\n".join(hr),
@@ -1806,12 +1784,13 @@ def set_channel_role_command(client: HTTPClient, args: dict[str, Any]) -> Comman
     """ Set channel role for a channel member """
     channel_id = args.get('channel_id', '')
     user_id = args.get('user_id', '')
-    channel_role = "channel_user" + (" channel_admin" if args.get("role", "admin").lower() == "admin" else "")
+    channel_role = "channel_user" + (" channel_admin" if args.get("role", "member").lower() == "admin" else "")
 
     client.set_channel_role_request(channel_id, user_id, channel_role)
 
     user_details = client.get_user_request(user_id)
-    hr = f'Set channel role for {user_details.get("username", user_id)} successfully to {"Admin" if args.get("role", "admin").lower() == "admin" else "Member"}.'   # noqa: E501
+    hr = f'Set channel role for {user_details.get("username", user_id)} successfully to ' \
+         f'{"Admin" if args.get("role", "admin").lower() == "admin" else "Member"}.'
 
     return CommandResults(
         readable_output=hr
@@ -1934,13 +1913,13 @@ def main():  # pragma: no cover
             return_results(close_channel_command(client, args))
         elif command == 'mattermost-send-file':
             return_results(send_file_command(client, args))
-        elif command == 'mattermost-list-usergroups':
+        elif command == 'mattermost-list-groups':
             return_results(list_groups_command(client, args))
-        elif command == 'mattermost-list-usergroup-members':
+        elif command == 'mattermost-list-group-members':
             return_results(list_group_members_command(client, args))
-        elif command == 'mattermost-add-usergroup-member':
+        elif command == 'mattermost-add-group-member':
             return_results(add_group_member_command(client, args))
-        elif command == 'mattermost-remove-usergroup-member':
+        elif command == 'mattermost-remove-group-member':
             return_results(remove_group_member_command(client, args))
         elif command == 'mattermost-set-channel-role':
             return_results(set_channel_role_command(client, args))

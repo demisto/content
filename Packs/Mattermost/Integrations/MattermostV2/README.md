@@ -221,6 +221,10 @@ manage_system
 ***
 Get all private channel memberships for a user on a specific team.
 
+#### Required Permissions
+
+Must have manage_system permission.
+
 #### Base Command
 
 `mattermost-list-channels-for-user`
@@ -703,10 +707,10 @@ No permissions channel.
 
 There is no context output for this command.
 
-### mattermost-list-usergroups
+### mattermost-list-groups
 
 ***
-Lists user groups.
+Lists groups.
 
 #### Required Permissions
 
@@ -714,7 +718,7 @@ No permissions required.
 
 #### Base Command
 
-`mattermost-list-usergroups`
+`mattermost-list-groups`
 
 #### Input
 
@@ -723,26 +727,26 @@ No permissions required.
 | page | The page number to retrieve. Default value is 0. | Optional | 
 | page_size | The size of the page to retrieve. Default value is 50. | Optional | 
 | limit | How many results to retrieve. Will override the page and page_size arguments if given. | Optional | 
-| group | Search for a specific user group by this pattern. | Optional | 
+| group | Search for a specific user by this pattern. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Mattermost.Groups.id | String | The ID of the user group. | 
-| Mattermost.Groups.create_at | Unknown | When was the user group created. | 
-| Mattermost.Groups.update_at | Unknown | When was the user group updated. | 
-| Mattermost.Groups.delete_at | Unknown | When was the user group deleted. | 
-| Mattermost.Groups.display_name | String | The display name of the user group. | 
-| Mattermost.Groups.name | String | The name of the user group. | 
-| Mattermost.Groups.description | String | The description of the user group. | 
-| Mattermost.Groups.source | String | The source of the user group. | 
-| Mattermost.Groups.remote_id | String | The remote id of the user group. | 
-| Mattermost.Groups.has_syncables | boolean | If the user group has any syncables. | 
+| Mattermost.Groups.id | String | The ID of the group. | 
+| Mattermost.Groups.create_at | Unknown | When was the group created. | 
+| Mattermost.Groups.update_at | Unknown | When was the group updated. | 
+| Mattermost.Groups.delete_at | Unknown | When was the group deleted. | 
+| Mattermost.Groups.display_name | String | The display name of the group. | 
+| Mattermost.Groups.name | String | The name of the group. | 
+| Mattermost.Groups.description | String | The description of the group. | 
+| Mattermost.Groups.source | String | The source of the group. | 
+| Mattermost.Groups.remote_id | String | The remote id of the group. | 
+| Mattermost.Groups.has_syncables | boolean | If the group has any syncables. | 
 
 #### Command example
 
-```!mattermost-list-usergroups```
+```!mattermost-list-groups```
 
 #### Context Example
 
@@ -781,17 +785,17 @@ No permissions required.
 
 #### Human Readable Output
 
->### User groups:
+>### Groups:
 
 >|name|display_name|description|id|
 >|---|---|---|---|
 >| name | display name |  | 0815abc |
 >| name | display name | description | 0815xyz |
 
-### mattermost-list-usergroup-members
+### mattermost-list-group-members
 
 ***
-Lists user group members.
+Lists group members.
 
 #### Required Permissions
 
@@ -799,40 +803,39 @@ Must have manage_system permission.
 
 #### Base Command
 
-`mattermost-list-usergroup-members`
+`mattermost-list-group-members`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group | The group name of the user group to add the user to. | Required | 
+| group_id | The group id of the user group to list members for. Use the command 'mattermost-list-groups' to fetch the group ID. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Mattermost.Groups.name | String | The name of the user group. | 
 | Mattermost.Groups.id | String | The ID of the user group. | 
 | Mattermost.Groups.total_member_count | Unknown | The total count of members in the user group. | 
 | Mattermost.Groups.members | Unknown | Detailed list of the user group members. | 
 
 #### Command example
 
-```!mattermost-list-usergroup-members group=usergroup```
+```!mattermost-list-group-members group_id=group_id```
 
 #### Human Readable Output
 
->### User group members:
+>### Group members:
 
 >|username|email|id|
 >|---|---|---|
 >| username1 | admin@admin.com | 8a6t7whumbdbxrawretujh6rre |
 >| username2 | admin@ddev.com | o9hpcwz73fdwxe9adue8jxo16o |
 
-### mattermost-add-usergroup-member
+### mattermost-add-group-member
 
 ***
-Add user group member(s).
+Add group member(s).
 
 #### Required Permissions
 
@@ -840,13 +843,13 @@ Must have custom_group_manage_members permission for the given group.
 
 #### Base Command
 
-`mattermost-add-usergroup-member`
+`mattermost-add-group-member`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group | The group name of the user group to add the user to. | Required | 
+| group_id | The group id of the user group to list members for. Use the command 'mattermost-list-groups' to fetch the group ID. | Required | 
 | user_ids | The ID(s) of the user(s) to add. Use the command 'mattermost-list-users' to fetch the user ID(s). | Required | 
 
 #### Context Output
@@ -855,16 +858,16 @@ There is no context output for this command.
 
 #### Command example
 
-```!mattermost-add-usergroup-member group=usergroup user_ids=user_ids```
+```!mattermost-add-group-member group_id=group_id user_ids=user_ids```
 
 #### Human Readable Output
 
->The member username was added to the user group successfully, with group ID: moi9ygz8qby1pr1xgkcfuqww9r
+>The member username was added to the group successfully, with group ID: moi9ygz8qby1pr1xgkcfuqww9r
 
-### mattermost-remove-usergroup-member
+### mattermost-remove-group-member
 
 ***
-Remove user group member(s).
+Remove group member(s).
 
 #### Required Permissions
 
@@ -872,13 +875,13 @@ Must have custom_group_manage_members permission for the given group.
 
 #### Base Command
 
-`mattermost-remove-usergroup-member`
+`mattermost-remove-group-member`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group | The group name of the user group to remove the user from. | Required | 
+| group_id | The group id of the user group to list members for. Use the command 'mattermost-list-groups' to fetch the group ID. | Required | 
 | user_ids | The ID(s) of the user(s) to remove. Use the command 'mattermost-list-users' to fetch the user ID(s). | Required | 
 
 #### Context Output
@@ -887,16 +890,20 @@ There is no context output for this command.
 
 #### Command example
 
-```!mattermost-remove-usergroup-member group=usergroup user_ids=user_ids```
+```!mattermost-remove-group-member group_id=group_id user_ids=user_ids```
 
 #### Human Readable Output
 
-The member username was removed from user group successfully, with group ID: moi9ygz8qby1pr1xgkcfuqww9r
+The member username was removed from group successfully, with group ID: moi9ygz8qby1pr1xgkcfuqww9r
 
 ### mattermost-set-channel-role
 
 ***
 Update a user's roles for a channel.
+
+#### Required Permissions
+
+Must have manage_channel_roles permission for the channel.
 
 #### Base Command
 
@@ -906,7 +913,7 @@ Update a user's roles for a channel.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| channel_id | The channel id to set the role in. | Required | 
+| channel_id | The channel ID to set the role in. Use the command 'mattermost-list-channels' to fetch the channel ID. | Required | 
 | user_id | The ID of the user to set role for. Use the command 'mattermost-list-users' to fetch the user ID. | Required | 
 | role | The role to set for the user. Possible values are: Admin, Member. Default is Member. | Optional | 
 

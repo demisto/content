@@ -41,12 +41,16 @@ def http_mock(method: str, url_suffix: str = "", full_url: str = "", params: dic
     elif (url_suffix == '/api/v4/users/email/user_email' or url_suffix == '/api/v4/users/username/username'
           or url_suffix == '/api/v4/users/me' or url_suffix == '/api/v4/users/user_id'):
         return util_load_json("test_data/list_users_response.json")[0]
+    elif url_suffix == '/api/v4/users/username/username2':
+        return util_load_json("test_data/list_users_response.json")[1]
     elif url_suffix == '/api/v4/channels/direct':
         channel = util_load_json("test_data/create_channel_response.json")
+        channel["id"] = "direct_id"
         channel["type"] = 'D'
         return channel
     elif url_suffix == '/api/v4/channels/group':
         channel = util_load_json("test_data/create_channel_response.json")
+        channel["id"] = "group_id"
         channel["type"] = 'G'
         return channel
     elif url_suffix == '/api/v4/groups':
@@ -239,11 +243,21 @@ def test_send_file_command(http_client, mocker):
 def test_get_channel_id_to_send_notif(http_client, mocker):
     """
     Given: A mock MatterMost client.
-    When: Running get_channel_id_to_send_notif.
+    When: Running get_channel_id_to_send_notif for a single user.
     Then: Ensure we get the result.
     """
-    results = get_channel_id_to_send_notif(http_client, 'username', 'channel_name', 'investigation_id')
-    assert results == 'id'
+    results = get_channel_id_to_send_notif(http_client, ['username'], 'channel_name', 'investigation_id')
+    assert results == 'direct_id'
+
+
+def test_get_channel_id_to_send_notif_multiple_users(http_client, mocker):
+    """
+    Given: A mock MatterMost client.
+    When: Running get_channel_id_to_send_notif for two users.
+    Then: Ensure we get the result.
+    """
+    results = get_channel_id_to_send_notif(http_client, ['username', 'username2'], 'channel_name', 'investigation_id')
+    assert results == 'group_id'
 
 
 def test_get_channel_id_from_context(mocker):
@@ -438,32 +452,13 @@ def test_send_notification_command(http_client, mocker):
     assert result.readable_output == 'Message sent to MatterMost successfully. Message ID is: message_id'
 
 
-def test_send_notification_to_two_users(http_client, mocker):
-    """
-    Given -
-        client
-    When -
-        send message to channel
-    Then -
-        Validate that
-    """
-    mocker.patch.object(http_client, "send_notification_request", return_value={'id': 'message_id'})
-    result = send_notification(http_client,
-                               user_id='user1',
-                               message='Hello',
-                               to='user1,user2',
-                               )
-
-    assert result.readable_output == 'Message sent to MatterMost successfully. Message ID is: message_id'
-
-
 def test_list_groups_command(http_client):
     """
     Given -
         client
         arguments
     When -
-        list user group
+        list group
     Then -
         Validate that the function returns the expected CommandResults.
     """
@@ -478,13 +473,13 @@ def test_list_group_members_command(http_client):
         client
         arguments
     When -
-        list user group members
+        list group members
     Then -
         Validate that the function returns the expected CommandResults.
     """
-    args = {'group': 'user_group', }
+    args = {'group_id': 'group_id', }
     results = list_group_members_command(http_client, args)
-    assert results.outputs.get('name') == 'user_group'
+    assert results.outputs.get('id') == 'group_id'
 
 
 def test_add_group_member_command(http_client):
@@ -493,13 +488,13 @@ def test_add_group_member_command(http_client):
         client
         arguments
     When -
-        add user group member
+        add group member
     Then -
         Validate that the function returns the expected CommandResults.
     """
-    args = {'group': 'user_group', "user_ids": "user_id"}
+    args = {'group_id': 'group_id', "user_ids": "user_id"}
     results = add_group_member_command(http_client, args)
-    assert results.readable_output == 'The member username was added to the user group successfully, with group ID: group_id'
+    assert results.readable_output == 'The member username was added to the group successfully, with group ID: group_id'
 
 
 def test_remove_group_member_command(http_client):
@@ -508,13 +503,13 @@ def test_remove_group_member_command(http_client):
         client
         arguments
     When -
-        remove user group member
+        remove group member
     Then -
         Validate that the function returns the expected CommandResults.
     """
-    args = {'group': 'user_group', "user_ids": "user_id"}
+    args = {'group_id': 'group_id', "user_ids": "user_id"}
     results = remove_group_member_command(http_client, args)
-    assert results.readable_output == 'The member username was removed from the user group successfully, with group ID: group_id'
+    assert results.readable_output == 'The member username was removed from the group successfully, with group ID: group_id'
 
 
 def test_set_channel_role_command(http_client, mocker):
