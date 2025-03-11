@@ -1953,7 +1953,8 @@ def slack_send():
         if tags and not any(elem in entry_tags for elem in tags):
             return
 
-        if entry:
+        is_file = bool(entry_object.get('fileID', None))
+        if is_file:
             send_mirrored_file_to_slack(
                 entry,
                 message=message,
