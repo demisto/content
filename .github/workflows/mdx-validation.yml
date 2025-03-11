@@ -108,7 +108,7 @@ jobs:
             exit 0
           fi
           for file in $READMES; do
-            node - << 'EOF'
+            node - <<  `EOF'
           const { readFile } = require('fs-extra');
           const mdx = require('@mdx-js/mdx');
 
@@ -125,5 +125,5 @@ jobs:
 
           const files = process.argv.slice(2);
           files.forEach(parseMDX);
-          EOF $file
+          EOF 
           done
