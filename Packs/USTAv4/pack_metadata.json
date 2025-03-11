@@ -36,11 +36,18 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "devEmail": [
         "integration@prodaft.com"
     ],
     "githubUser": [],
-    "defaultDataSource": "USTA Account Takeover Prevention"
+    "defaultDataSource": "USTA Account Takeover Prevention",
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }
