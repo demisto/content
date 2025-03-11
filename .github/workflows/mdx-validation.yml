@@ -2,15 +2,19 @@ name: Validate README.md with MDX
 
 on:
   pull_request:
-    paths:
-      - '**/README.md'
 
 jobs:
   validate-mdx:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout code with submodules
         uses: actions/checkout@v3
+        with:
+          submodules: recursive  # Ensure submodules are initialized
+
+      - name: Update submodules
+        run: |
+          git submodule update --init --recursive
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -21,9 +25,9 @@ jobs:
         run: |
           npm install commander fs-extra @mdx-js/mdx
 
-      - name: Validate README.md files
+      - name: Find and Validate all README.md files (including submodules)
         run: |
-          for file in $(git diff --name-only origin/${{ github.event.pull_request.base.ref }} origin/${{ github.event.pull_request.head.ref }} | grep 'README.md'); do
+          find . -type f -name "README.md" | while read file; do
             echo "Validating $file"
             node - << 'EOF'
           const { readFile } = require('fs-extra');
