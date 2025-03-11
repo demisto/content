@@ -7548,45 +7548,45 @@ def return_error(message, error='', outputs=None):
         :return: Error entry object
         :rtype: ``dict``
     """
-    # is_command = hasattr(demisto, 'command')
-    # try:
-    #     is_server_handled = is_command and demisto.command() in ('fetch-incidents',
-    #                                                              'fetch-credentials',
-    #                                                              'long-running-execution',
-    #                                                              'fetch-indicators')
-    # except Exception:
-    #     is_server_handled = False
-    # message = LOG(message)
-    # if error:
-    #     LOG(str(error))
-    # if any(sys.exc_info()):  # Checking that an exception occurred
-    #     fixed_traceback = fix_traceback_line_numbers(traceback.format_exc())
-    #     LOG('\n{}'.format(fixed_traceback))
-    #     if is_debug_mode():
-    #         message = '{}\n\n{}'.format(message, fixed_traceback)
+    is_command = hasattr(demisto, 'command')
+    try:
+        is_server_handled = is_command and demisto.command() in ('fetch-incidents',
+                                                                 'fetch-credentials',
+                                                                 'long-running-execution',
+                                                                 'fetch-indicators')
+    except Exception:
+        is_server_handled = False
+    message = LOG(message)
+    if error:
+        LOG(str(error))
+    if any(sys.exc_info()):  # Checking that an exception occurred
+        fixed_traceback = fix_traceback_line_numbers(traceback.format_exc())
+        LOG('\n{}'.format(fixed_traceback))
+        if is_debug_mode():
+            message = '{}\n\n{}'.format(message, fixed_traceback)
 
-    # LOG.print_log()
-    # if not isinstance(message, str):
-    #     message = message.encode('utf8') if hasattr(message, 'encode') else str(message)
+    LOG.print_log()
+    if not isinstance(message, str):
+        message = message.encode('utf8') if hasattr(message, 'encode') else str(message)
 
-    # if is_command and demisto.command() == 'get-modified-remote-data':
-    #     if (error and not isinstance(error, NotImplementedError)) or sys.exc_info()[0] != NotImplementedError:
-    #         message = 'skip update. error: ' + message
+    if is_command and demisto.command() == 'get-modified-remote-data':
+        if (error and not isinstance(error, NotImplementedError)) or sys.exc_info()[0] != NotImplementedError:
+            message = 'skip update. error: ' + message
 
-    # if is_server_handled:
-    #     raise Exception(message)
-    # else:
-    #     if len(message) > MAX_ERROR_MESSAGE_LENGTH:
-    #         half_length = MAX_ERROR_MESSAGE_LENGTH // 2
-    #         message = message[:half_length] + "...This error body was truncated..." + message[half_length * (-1):]
+    if is_server_handled:
+        raise Exception(message)
+    else:
+        if len(message) > MAX_ERROR_MESSAGE_LENGTH:
+            half_length = MAX_ERROR_MESSAGE_LENGTH // 2
+            message = message[:half_length] + "...This error body was truncated..." + message[half_length * (-1):]
 
-    #     demisto.results({
-    #         'Type': entryTypes['error'],
-    #         'ContentsFormat': formats['text'],
-    #         'Contents': message,
-    #         'EntryContext': outputs,
-    #     })
-    #     sys.exit(0)
+        demisto.results({
+            'Type': entryTypes['error'],
+            'ContentsFormat': formats['text'],
+            'Contents': message,
+            'EntryContext': outputs,
+        })
+        sys.exit(0)
     sys.exit(0)
 
 
@@ -12348,7 +12348,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         ).format(xsiam_url=xsiam_url, headers=json.dumps(headers, indent=8), status_code=res.status_code, error=error)
 
         demisto.error(header_msg + api_call_info)
-        raise DemistoException(header_msg + error, DemistoException)
+        # raise DemistoException(header_msg + error, DemistoException)
 
     client = BaseClient(base_url=xsiam_url, proxy=add_proxy_to_request)
     data_chunks = split_data_to_chunks(data, chunk_size)

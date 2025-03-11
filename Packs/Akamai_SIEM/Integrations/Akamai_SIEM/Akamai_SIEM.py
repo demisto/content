@@ -1271,8 +1271,9 @@ def main():  # pragma: no cover
                         data_size += future.result()
                     e = "failure."
                     err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
-                    demisto.info("[test] throwing an error.")
+                    demisto.info("[test] returning an error.")
                     return_error(err_msg, error=e)
+                    demisto.info("[test] finished returning an error.")
                     demisto.info(f"Done sending {data_size} events to xsiam."
                                  f"sent {total_events_count} events to xsiam in total during this interval.")
                 set_integration_context({"offset": offset})
