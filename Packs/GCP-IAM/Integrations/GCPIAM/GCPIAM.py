@@ -200,34 +200,6 @@ class Client:
 
         return response
 
-    def gcp_iam_project_iam_policy_binding_remove_request(
-        self,
-        project_name: str,
-        role: str,
-        members_to_remove: list[str],
-        ) -> dict:
-        """_summary_
-
-        Args:
-            project_name (str): _description_
-
-        Returns:
-            dict: _description_
-        """
-        request = self.cloud_resource_manager_service.projects().getIamPolicy(resource=project_name)
-        response = request.execute()
-
-        for binding in response.get("bindings", []):
-            demisto.debug(binding)
-
-            if binding.get("role") != role:
-                continue
-
-            binding_members = [member for member in binding.get("members", []) if member not in members_to_remove]
-            demisto.debug(f"Got role {role}. Updated members: {binding_members}.")
-
-        return response
-
     def gcp_iam_folder_list_request(self, parent: str, limit: int = None, page_token: str = None,
                                     show_deleted: bool = False) -> dict:
         """
@@ -1246,6 +1218,45 @@ def update_time_format(data: Union[dict, list], keys: list) -> list:
                 item[key] = arg_to_datetime(item[key]).isoformat()  # type: ignore[union-attr]
 
     return data
+
+
+def remove_iam_policy_role_member_binding(
+    client: Client,
+    project_name: str,
+    role: str,
+    members_to_remove: list[str],
+) -> dict[str, Any]:
+    """Gets the IAM access control policy, removes the binding of members to a specific role, and sets the updated policy.
+
+    Args:
+        client (Client): GCP API Client.
+        project_name (str): The name of the project for which the policy is being updated.
+        role (str): The role to remove members from.
+        members_to_remove (list): List of members to remove from the specified role.
+
+    Returns:
+        dict: Raw API response of "Set IAM policy" request.
+    """
+    demisto.debug(f"Getting IAM policy for project: {project_name}.")
+    original_policy = client.gcp_iam_project_iam_policy_get_request(project_name)
+
+    updated_bindings: list[dict] = []
+    for binding in original_policy.get("bindings", []):
+
+        if binding.get("role") == role:
+            demisto.debug(f"Found matching role: {role} to remove members from.")
+            original_members = binding.get("members", [])
+            updated_members = [member for member in original_members if member not in members_to_remove]
+
+            if not updated_members:
+                demisto.debug(f"Role: {role} has no members after update. Excluding from IAM policy.")
+            else:
+                demisto.debug(f"Updated role: {role}. Removed {len(original_members) - len(updated_members)} members.")
+                updated_binding = binding | {"members": updated_members}
+                updated_bindings.append(updated_binding)
+
+    demisto.debug(f"Setting IAM policy for project: {project_name} with {len(updated_bindings)} updated bindings.")
+    return client.gcp_iam_project_iam_policy_set_request(project_name, updated_bindings)
 
 
 def generate_iam_policy_command_output(response: dict, resource_name: str = None,
@@ -3890,7 +3901,7 @@ def gcp_iam_policy_binding_remove_command(client: Client, args: dict[str, Any]) 
     if not (members_to_remove := argToList(args.get('members'))):
         raise ValueError("The 'members' argument should be specified.")
 
-    raw_response = client.gcp_iam_project_iam_policy_binding_remove_request(project_name, role, members_to_remove)
+    raw_response = remove_iam_policy_role_member_binding(client, project_name, role, members_to_remove)
 
     human_readable = f'The role {role} was updated successfully. Binding to members {",".join(members_to_remove)} was removed.'
     return CommandResults(readable_output=human_readable, raw_response=raw_response)
