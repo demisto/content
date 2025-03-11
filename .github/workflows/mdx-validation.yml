@@ -36,7 +36,7 @@ jobs:
           {
           echo "FILES<<EOF"
           echo "$FILES"
-          echo "EOF"
+          echo `EOF'
           } >> $GITHUB_ENV
 
       - name: Validate MDX
