@@ -2,6 +2,7 @@ import demistomock as demisto
 import pytest
 from CommonServerPython import *  # noqa: F401
 from requests import Response
+from MicrosoftTeams import GraphPermissions as Perms
 
 entryTypes['warning'] = 11
 
@@ -2858,10 +2859,12 @@ def test_message_update(mocker, requests_mock):
 
 
 @pytest.mark.parametrize('permissions, expected_out', [
-    (['Group.ReadWrite.All'], {'Group.ReadWrite.All', 'Group.Read.All', 'GroupMember.Read.All', 'Channel.Create',
-                               'Channel.ReadBasic.All', 'Channel.Delete.All'}),
-    (['Chat.ReadWrite', 'Channel.Read', 'User.Read.All'], {'Chat.ReadWrite', 'Chat.Read', 'Chat.ReadBasic', 'Chat.Create',
-                                                           'ChatMessage.Send', 'Channel.Read', 'User.Read.All', 'User.Read'}),
+    ([Perms.GROUP_READWRITE_ALL], {
+        Perms.GROUP_READWRITE_ALL, Perms.GROUP_READ_ALL, Perms.GROUPMEMBER_READ_ALL,
+        Perms.CHANNEL_CREATE, Perms.CHANNEL_READBASIC_ALL, Perms.CHANNEL_DELETE_ALL}),
+    ([Perms.CHAT_READWRITE, Perms.USER_READ_ALL, 'UnknownPerm.Read'], {
+        Perms.CHAT_READWRITE, Perms.CHAT_READ, Perms.CHAT_READBASIC, Perms.CHAT_CREATE,
+        Perms.CHATMESSAGE_SEND, Perms.USER_READ_ALL, Perms.USER_READ, 'UnknownPerm.Read'}),
 ])
 def test_expand_permissions_list(permissions, expected_out):
     """
@@ -2880,9 +2883,9 @@ def test_expand_permissions_list(permissions, expected_out):
 
 
 @pytest.mark.parametrize('command, expected_missing', [
-    ('microsoft-teams-create-channel', {'Channel.Create', 'GroupMember.Read.All'}),
-    ('microsoft-teams-message-send-to-chat', {'Chat.Create', 'AppCatalog.Read.All',
-                                              'TeamsAppInstallation.ReadWriteSelfForChat'})
+    ('microsoft-teams-create-channel', {Perms.CHANNEL_CREATE, Perms.GROUPMEMBER_READ_ALL}),
+    ('microsoft-teams-message-send-to-chat', {Perms.CHAT_CREATE, Perms.APPCATALOG_READ_ALL,
+                                              Perms.TEAMSAPPINSTALLATION_READWRITESELFFORCHAT})
 ])
 def test_insufficient_permissions_handler(mocker, command, expected_missing):
     """
@@ -2895,7 +2898,7 @@ def test_insufficient_permissions_handler(mocker, command, expected_missing):
     """
     from MicrosoftTeams import insufficient_permissions_error_handler, create_missing_permissions_section
 
-    mock_permissions = ['User.Read.All', 'Channel.Read.All', 'ChatMessage.Send']
+    mock_permissions = [Perms.USER_READ_ALL, Perms.CHATMESSAGE_SEND]
 
     mocker.patch.object(demisto, 'command', return_value=command)
     mocker.patch('MicrosoftTeams.get_token_permissions', return_value=mock_permissions)

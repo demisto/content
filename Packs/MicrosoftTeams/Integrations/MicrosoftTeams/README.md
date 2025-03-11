@@ -314,7 +314,7 @@ For more detailed instructions, refer to the [Configuring the instance with the 
 8. In the pop-up window, click **Upload**.
 9. Browse for the ZIP file you created in step 7, open it, and wait a few seconds until it loads.
 10. Search for **Demisto Bot**.
-11. In the line where `Demisto Bot` shows under **Name**, tick the V on the left.
+11. In the line where `Demisto Bot` shows under **Name**, click the checkbox on the left.
 12. Click **Add to team**.
 13. In the search box, type the name of the team to which you want to add the bot.
 14. Click **Add** for the wanted team and then click **Apply**.
