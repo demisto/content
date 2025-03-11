@@ -30,13 +30,62 @@
 #          echo "Total README.md files validated: $VALIDATION_COUNT"
 
 
-name: Validate Root README.md with MDX
+#name: Validate Root README.md with MDX
+#
+#on:
+#  pull_request:
+#
+#jobs:
+#  validate-root-readme:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v3
+#
+#      - name: Set up Node.js
+#        uses: actions/setup-node@v3
+#        with:
+#          node-version: '20'
+#
+#      - name: Install dependencies
+#        run: |
+#          npm install commander fs-extra @mdx-js/mdx
+#
+#      - name: Validate root README.md file
+#        run: |
+#          ROOT_README="README.md"
+#          if [ -f "$ROOT_README" ]; then
+#            echo "Validating $ROOT_README"
+#            node - << 'EOF'
+#          const { readFile } = require('fs-extra');
+#          const mdx = require('@mdx-js/mdx');
+#
+#          async function parseMDX(file) {
+#              try {
+#                  const contents = await readFile(file, 'utf8');
+#                  let parsed = await mdx(contents);
+#                  console.log('Successfully parsed MDX');
+#              } catch (error) {
+#                  console.error("MDX parse failure: " + error);
+#                  process.exit(1);
+#              }
+#          }
+#
+#          parseMDX("README.md");
+#          EOF
+#          else
+#            echo "No README.md found at root. Skipping validation."
+#          fi
+
+
+
+name: Validate All README.md Files with MDX
 
 on:
   pull_request:
 
 jobs:
-  validate-root-readme:
+  validate-readmes:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -51,11 +100,17 @@ jobs:
         run: |
           npm install commander fs-extra @mdx-js/mdx
 
-      - name: Validate root README.md file
+      - name: Find and Validate all README.md files
         run: |
-          ROOT_README="README.md"
-          if [ -f "$ROOT_README" ]; then
-            echo "Validating $ROOT_README"
+          READMES=$(find . -type f -name "README.md")
+          if [ -z "$READMES" ]; then
+            echo "No README.md files found. Skipping validation."
+            exit 0
+          fi
+          echo "Validating the following README.md files:"
+          echo "$READMES"
+          for file in $READMES; do
+            echo "Validating $file"
             node - << 'EOF'
           const { readFile } = require('fs-extra');
           const mdx = require('@mdx-js/mdx');
@@ -64,15 +119,14 @@ jobs:
               try {
                   const contents = await readFile(file, 'utf8');
                   let parsed = await mdx(contents);
-                  console.log('Successfully parsed MDX');
+                  console.log(`Successfully parsed MDX: ${file}`);
               } catch (error) {
-                  console.error("MDX parse failure: " + error);
+                  console.error(`MDX parse failure in ${file}: ` + error);
                   process.exit(1);
               }
           }
 
-          parseMDX("README.md");
-          EOF
-          else
-            echo "No README.md found at root. Skipping validation."
-          fi
+          const files = process.argv.slice(2);
+          files.forEach(parseMDX);
+          EOF $file
+          done
