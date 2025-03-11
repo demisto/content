@@ -115,7 +115,7 @@ class Client:
             config=self.config,
         )
 
-    def return_error_based_on_status_code(self, status_code, error_message: str) -> None | None:
+    def return_error_based_on_status_code(self, status_code, error_message: str):
         """
         Return error message based on status code.
         Throws a ValueError based on respected status code.
@@ -132,6 +132,8 @@ class Client:
             raise ValueError(MESSAGES["NOT_FOUND_ERROR"] + error_message)
         elif status_code >= 500:
             raise ValueError(MESSAGES["SERVER_ERROR"] + error_message)
+        else:
+            raise ValueError(f"failed with status code {status_code}, error: {error_message}")
 
     def request_list_objects(
         self, feed_type: str, max_keys: int = 1000, start_after: str = "", prefix: str = ""

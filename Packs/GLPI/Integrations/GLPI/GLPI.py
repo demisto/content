@@ -730,7 +730,9 @@ def fetch_incidents(client, last_run, max_results, first_fetch_time):
             demisto.params().get("work_notes_tag"),
         ]
         demisto.debug(
-            f'Incident with ID {ticket_id} and name {ticket["name"]} occured: {str(incident_created_time.strftime(DATE_FORMAT))}'
+            # type: ignore[union-attr]
+            f'Incident with ID {ticket_id} and name {ticket["name"]} occured:'
+            f' {str(incident_created_time.strftime(DATE_FORMAT))}'  # type: ignore[union-attr]
         )  # type: ignore[union-attr]  # noqa: E501
 
         incident = {
