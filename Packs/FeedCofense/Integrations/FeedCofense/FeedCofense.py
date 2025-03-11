@@ -28,15 +28,15 @@ class Client(BaseClient):
     }
 
     def __init__(
-            self,
-            url: str,
-            auth: Tuple[str, str],
-            threat_type: Optional[str] = None,
-            verify: bool = False,
-            proxy: bool = False,
-            read_time_out: Optional[float] = 120.0,
-            tags: list = [],
-            tlp_color: Optional[str] = None
+        self,
+        url: str,
+        auth: Tuple[str, str],
+        threat_type: Optional[str] = None,
+        verify: bool = False,
+        proxy: bool = False,
+        read_time_out: Optional[float] = 120.0,
+        tags: list = [],
+        tlp_color: Optional[str] = None,
     ):
         """Constructor of Client and BaseClient
 
@@ -53,9 +53,7 @@ class Client(BaseClient):
             tlp_color {str} -- Traffic Light Protocol color.
         """
         self.read_time_out = read_time_out
-        self.threat_type = (
-            threat_type if threat_type in self.available_fields else "all"
-        )
+        self.threat_type = threat_type if threat_type in self.available_fields else "all"
 
         # Request related attributes
         self.suffix = "/apiv1/threat/search/"
@@ -69,9 +67,7 @@ class Client(BaseClient):
             kwargs["timeout"] = (5.0, self.read_time_out)
         return super()._http_request(*args, **kwargs)
 
-    def build_iterator(
-            self, begin_time: Optional[int] = None, end_time: Optional[int] = None
-    ) -> Generator:
+    def build_iterator(self, begin_time: Optional[int] = None, end_time: Optional[int] = None) -> Generator:
         """Builds an iterator from given data filtered by start and end times.
 
         Keyword Arguments:
@@ -140,7 +136,7 @@ class Client(BaseClient):
         else:
             value = block.get("data_1")
             # If a domain has '*' in the value it is of type domainGlob
-            if indicator_type == FeedIndicatorType.Domain and '*' in value:
+            if indicator_type == FeedIndicatorType.Domain and "*" in value:
                 indicator_type = FeedIndicatorType.DomainGlob
         return indicator_type, value
 
@@ -178,13 +174,9 @@ class Client(BaseClient):
                         "malwarefamily": malware_family.get("familyName"),
                         "description": malware_family.get("description"),
                         "sourceoriginalseverity": block.get("impact"),
-                        "threattypes": {
-                            "threatcategoryconfidence": block.get("confidence"),
-                            "threatcategory": block.get("role")
-                        },
+                        "threattypes": {"threatcategoryconfidence": block.get("confidence"), "threatcategory": block.get("role")},
                         "geocountry": ip_detail.get("countryIsoCode"),
-                        "geolocation": f'{ip_detail.get("latitude", "")},{ip_detail.get("longitude", "")}' if ip_detail
-                        else "",
+                        "geolocation": f'{ip_detail.get("latitude", "")},{ip_detail.get("longitude", "")}' if ip_detail else "",
                         "asn": ip_detail.get("asn"),
                         "cofensefeedthreatid": f'[{threat_id}]({threat.get("threatDetailURL")})',
                         "cofensefeedcontinentcode": ip_detail.get("continentCode"),
@@ -193,19 +185,20 @@ class Client(BaseClient):
                         "cofensefeedasnorganization": ip_detail.get("asnOrganization"),
                         "cofensefeedcontinentname": ip_detail.get("continentName"),
                         "countryname": ip_detail.get("countryName"),
-                        "cofensefeedinfrastructuretypedescription":
-                            block.get("infrastructureTypeSubclass", {}).get("description"),
+                        "cofensefeedinfrastructuretypedescription": block.get("infrastructureTypeSubclass", {}).get(
+                            "description"
+                        ),
                         "cofensefeedisp": ip_detail.get("isp"),
                         "organization": ip_detail.get("organization"),
                         "cofensefeedpostalcode": ip_detail.get("postalCode"),
                         "cofensefeedsubdivisionisocode": ip_detail.get("subdivisionIsoCode"),
                         "cofensefeedsubdivisionname": ip_detail.get("subdivisionName"),
-                        "cofensefeedtimezone": ip_detail.get("timeZone")
-                    }
+                        "cofensefeedtimezone": ip_detail.get("timeZone"),
+                    },
                 }
 
                 if self.tlp_color:
-                    indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color  # type: ignore
+                    indicator_obj["fields"]["trafficlightprotocol"] = self.tlp_color  # type: ignore
 
                 results.append(indicator_obj)
 
@@ -237,7 +230,7 @@ class Client(BaseClient):
             file["value"] = value
             file["type"] = indicator_type
             file["threat_id"] = f'[{threat_id}]({threat.get("threatDetailURL")})'
-            file['impact'] = file.get("severityLevel")
+            file["impact"] = file.get("severityLevel")
             malware_family: dict = file.get("malwareFamily", {})
 
             if indicator_type:
@@ -262,12 +255,13 @@ class Client(BaseClient):
                         "ssdeep": file.get("ssdeep"),
                         "fileextension": file.get("fileNameExtension"),
                         "cofensefeedentereddate": arg_to_datetime(file.get("dateEntered")).strftime(DATE_FORMAT)  # type: ignore
-                        if file.get("dateEntered") else None
-                    }
+                        if file.get("dateEntered")
+                        else None,
+                    },
                 }
 
                 if self.tlp_color:
-                    indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color  # type: ignore
+                    indicator_obj["fields"]["trafficlightprotocol"] = self.tlp_color  # type: ignore
 
                 results.append(indicator_obj)
 
@@ -289,10 +283,10 @@ def test_module(client: Client) -> Tuple[str, dict, dict]:
 
 
 def fetch_indicators_command(
-        client: Client,
-        begin_time: Optional[int] = None,
-        end_time: Optional[int] = None,
-        limit: Optional[int] = None,
+    client: Client,
+    begin_time: Optional[int] = None,
+    end_time: Optional[int] = None,
+    limit: Optional[int] = None,
 ) -> List[Dict]:
     """Fetches the indicators from client.
 
@@ -369,8 +363,7 @@ def get_indicators_command(client: Client, args: dict) -> Tuple[str, list]:
     limit = int(args.get("limit", 10))
     from_time = args.get("from_time", "3 days")
     begin_time, end_time = build_fetch_times(from_time)
-    indicators = fetch_indicators_command(
-        client, begin_time=begin_time, end_time=end_time, limit=limit)
+    indicators = fetch_indicators_command(client, begin_time=begin_time, end_time=end_time, limit=limit)
     human_readable = tableToMarkdown(
         f"Results from {INTEGRATION_NAME}:",
         [indicator.get("rawJSON") for indicator in indicators],
@@ -389,22 +382,20 @@ def get_now() -> int:
 
 
 def main():
-    """Main function
-    """
+    """Main function"""
     params = demisto.params()
     # handle params
     url = "https://www.threathq.com"
     credentials = params.get("credentials", {})
     if not credentials:
-        raise DemistoException("Credentials are empty. "
-                               "Fill up the username/password fields in the integration configuration.")
+        raise DemistoException("Credentials are empty. " "Fill up the username/password fields in the integration configuration.")
 
     auth = (credentials.get("identifier"), credentials.get("password"))
     verify = not params.get("insecure")
     proxy = params.get("proxy")
     threat_type = params.get("threat_type")
-    tags = argToList(params.get('feedTags'))
-    tlp_color = params.get('tlp_color')
+    tags = argToList(params.get("feedTags"))
+    tlp_color = params.get("tlp_color")
     client = Client(url, auth=auth, verify=verify, proxy=proxy, threat_type=threat_type, tags=tags, tlp_color=tlp_color)
 
     demisto.info(f"Command being called is {demisto.command()}")
