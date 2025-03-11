@@ -544,6 +544,7 @@ script:
   subtype: python3
   type: python
   isFetchSamples: true
+supportsquickactions: true
 fromversion: 5.5.0
 tests:
 - SlackV3 TestPB
