@@ -192,13 +192,13 @@ def add_evidence_to_investigation_command(client: Client, env: str, args=None):
 
     fields: str = args.get("fields") or "investigationId"
 
-    query = """
-    mutation addEvidenceToInvestigation($input: AddEvidenceToInvestigationInput!) {
-      addEvidenceToInvestigation(input: $input) {
-        {f}
-      }
-    }
-    """.format(f=fields)
+    query = f"""
+    mutation addEvidenceToInvestigation($input: AddEvidenceToInvestigationInput!) {{
+      addEvidenceToInvestigation(input: $input) {{
+        {fields}
+      }}
+    }}
+    """
 
     result = client.graphql_run(query=query, variables=variables)
     try:
@@ -232,13 +232,13 @@ def create_comment_command(client: Client, env: str, args=None):
 
     fields: str = args.get("fields") or "id"
 
-    query = """
-    mutation addCommentToInvestigation($input: AddCommentToInvestigationInput!) {
-        addCommentToInvestigation(input: $input) {
-            {}
-        }
-    }
-    """.format(fields)
+    query = f"""
+    mutation addCommentToInvestigation($input: AddCommentToInvestigationInput!) {{
+        addCommentToInvestigation(input: $input) {{
+            {fields}
+        }}
+    }}
+    """
 
     variables = {
         "input": {
@@ -271,13 +271,13 @@ def create_comment_command(client: Client, env: str, args=None):
 
 def create_investigation_command(client: Client, env: str, args=None):
     fields: str = args.get("fields") or "id shortId"
-    query = """
-    mutation ($input: CreateInvestigationInput!) {
-    createInvestigationV2(input: $input) {
-            {}
-        }
-    }
-    """.format(fields)
+    query = f"""
+    mutation ($input: CreateInvestigationInput!) {{
+    createInvestigationV2(input: $input) {{
+            {fields}
+        }}
+    }}
+    """
 
     variables = {
         "input": {
@@ -360,13 +360,13 @@ def create_sharelink_command(client: Client, env: str, args=None):
 
     fields: str = args.get("fields") or "id createdTime"
 
-    query = """
-    mutation ($sharelink: ShareLinkCreateInput!) {
-        createShareLink (input: $sharelink) {
-            {}
-        }
-    }
-    """.format(fields)
+    query = f"""
+    mutation ($sharelink: ShareLinkCreateInput!) {{
+        createShareLink (input: $sharelink) {{
+            {fields}
+        }}
+    }}
+    """
 
     result = client.graphql_run(query=query, variables=variables)
     try:
@@ -397,19 +397,19 @@ def execute_playbook_command(client: Client, env: str, args=None):
         raise ValueError("Cannot execute playbook, missing playbook_id")
 
     fields: str = args.get("fields") or "id"
-    query = """
+    query = f"""
     mutation executePlaybookInstance(
         $playbookInstanceId: ID!
         $parameters: JSONObject
-    ) {
+    ) {{
         executePlaybookInstance(
             playbookInstanceId: $playbookInstanceId
             parameters: $parameters
-        ) {
-            {}
-        }
-    }
-    """.format(fields)
+        ) {{
+            {fields}
+        }}
+    }}
+    """
 
     playbook_inputs = args.get("inputs", {})
 
@@ -996,7 +996,7 @@ def fetch_incidents(
             }
           }
         }
-        """ % (asset_query) # ruff: noqa: UP031
+        """ % (asset_query)  # noqa: UP031
 
         variables = {
             "orderByField": "created_at",

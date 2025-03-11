@@ -185,8 +185,7 @@ class Client(BaseClient):
                     return resp
                 else:
                     return resp.json()
-
-            return resp
+        return resp
 
     @staticmethod
     def handle_demisto_exception(e) -> None:

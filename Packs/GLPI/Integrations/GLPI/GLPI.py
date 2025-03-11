@@ -572,10 +572,9 @@ def add_link_command(client, args):
     ticket_id_2 = args.get("ticket_ID_2")
     link = TICKET_LINK.get(args.get("link"))
     res = client.add_link(ticket_id_1, ticket_id_2, link)
-    if res:
-        if "id" in res[0]:
-            result = output_format(res, "Link", "Link successfully added to ticket ID : " + str(ticket_id_1))
-            return result
+    if res and "id" in res[0]:
+        result = output_format(res, "Link", "Link successfully added to ticket ID : " + str(ticket_id_1))
+        return result
     else:
         raise DemistoException("Error when trying to add link: " + str(res))
 
