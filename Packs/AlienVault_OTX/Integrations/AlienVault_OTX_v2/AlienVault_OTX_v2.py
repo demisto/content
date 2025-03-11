@@ -85,11 +85,10 @@ class Client(BaseClient):
                     raise Exception(f'The command could not be execute: {argument} is invalid.')
                 elif e.res.status_code in (504, 502):
                     demisto.debug(f"The status code is {e.res.status_code}")
-                    if not self.should_error:
-                        return_warning(f"{e.message}")
-                        result = {}
-                    else:
+                    if self.should_error:
                         raise e
+                    return_warning(f"{e.message}")
+                    result = {}
                 else:
                     raise
             else:
