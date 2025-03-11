@@ -287,3 +287,8 @@ outputs:
 fromversion: 5.0.0
 tests:
 - No test
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
