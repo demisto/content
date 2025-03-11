@@ -2,7 +2,7 @@
     "name": "Cloud Incident Response",
     "description": "This content Pack helps you automate collection, investigation, and remediation of incidents related to cloud infrastructure activities in AWS, Azure, and GCP.",
     "support": "xsoar",
-    "currentVersion": "1.0.23",
+    "currentVersion": "1.0.24",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -25,6 +25,13 @@
     ],
     "marketplaces": [
         "marketplacev2",
-        "xsoar"
+        "xsoar",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }
