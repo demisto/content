@@ -44,9 +44,7 @@ def test_module(client, headers=None):
         try:
             resp = response.json()
         except Exception:
-            return "Could connect to server, but got unexpected response: {}".format(
-                response.text
-            )
+            return "Could connect to server, but got unexpected response: {}".format(response.text)
 
         if resp["status"].lower() == "ok":
             incidentquery = demisto.params().get("queryParameter")
@@ -66,9 +64,7 @@ def test_module(client, headers=None):
                 return "ok"
 
     else:
-        return "Bad status from server: ({}) {}".format(
-            response.status_code, response.text
-        )
+        return "Bad status from server: ({}) {}".format(response.status_code, response.text)
 
 
 def humio_query(client, args, headers):
@@ -121,20 +117,13 @@ def humio_query_job(client, args, headers):
 
 def humio_poll(client, args, headers):
     data: Dict[str, str] = {}
-    url = (
-        "/api/v1/repositories/"
-        + args.get("repository")
-        + "/queryjobs/"
-        + args.get("id")
-    )
+    url = "/api/v1/repositories/" + args.get("repository") + "/queryjobs/" + args.get("id")
     headers["Accept"] = "application/json"
     response = client.http_request("GET", url, data, headers)
     if response.status_code == 200:
         result = response.json()
         result["job_id"] = args.get("id")
-        markdown = tableToMarkdown(
-            "Humio Poll Result", result.get("events", []), removeNull=True
-        )
+        markdown = tableToMarkdown("Humio Poll Result", result.get("events", []), removeNull=True)
         outputs = {"Humio.Result(val.job_id == obj.job_id)": result}
         return markdown, outputs, result
     elif response.status_code == 404:
@@ -145,12 +134,7 @@ def humio_poll(client, args, headers):
 
 def humio_delete_job(client, args, headers):
     data: Dict[str, str] = {}
-    url = (
-        "/api/v1/repositories/"
-        + args.get("repository")
-        + "/queryjobs/"
-        + args.get("id")
-    )
+    url = "/api/v1/repositories/" + args.get("repository") + "/queryjobs/" + args.get("id")
     headers["Accept"] = "application/json"
     response = client.http_request("DELETE", url, data, headers)
     if response.status_code == 204:
@@ -208,9 +192,7 @@ def humio_create_alert(client, args, headers):
         "y",
         "yes",
     ]
-    fulldata["notifiers"] = [
-        notifier for notifier in args.get("notifiers").split(",") if notifier
-    ]
+    fulldata["notifiers"] = [notifier for notifier in args.get("notifiers").split(",") if notifier]
     fulldata["labels"] = [label for label in args.get("labels", "").split(",") if label]
     fulldata["query"] = data
     url = "/api/v1/repositories/" + args.get("repository") + "/alerts"
@@ -263,7 +245,7 @@ def humio_list_notifiers(client, args, headers):
         if not result.get("data"):
             raise ValueError(f"Failed to execute request: {response['errors'][0]['message']}")
 
-        actions = result.get('data', {}).get('searchDomain', {}).get('actions', [])
+        actions = result.get("data", {}).get("searchDomain", {}).get("actions", [])
         markdown = tableToMarkdown("Humio Notifiers", actions, removeNull=True)
         outputs = {"Humio.Notifier(val.id == obj.id)": actions}
         return markdown, outputs, actions
@@ -295,7 +277,7 @@ def humio_get_notifier_by_id(client, args, headers):
         result = response.json()
         if not result.get("data"):
             raise ValueError(f"Failed to execute request: {response['errors'][0]['message']}")
-        actions = result.get('data', {}).get('searchDomain', {}).get('action')
+        actions = result.get("data", {}).get("searchDomain", {}).get("action")
         markdown = tableToMarkdown("Humio Notifiers", actions, removeNull=True)
         outputs = {"Humio.Notifier(val.id == obj.id)": actions}
         return markdown, outputs, actions
@@ -323,16 +305,14 @@ def fetch_incidents(client, headers):
         "queryString": incidentquery,
         "end": "now",
         "isLive": False,
-        "timeZoneOffsetMinutes": int(
-            demisto.params().get("queryTimeZoneOffsetMinutes")
-        ),
-        "start": timestampfrom
+        "timeZoneOffsetMinutes": int(demisto.params().get("queryTimeZoneOffsetMinutes")),
+        "start": timestampfrom,
     }
 
     response = client.http_request("POST", url, data, headers)
     if response.status_code == 200:
         response_data = response.json()
-        if (response_data):
+        if response_data:
             for result in response_data:
                 ingest_ts = int(result.get("@ingesttimestamp"))
                 if ingest_ts > last_event_ts:
@@ -342,15 +322,11 @@ def fetch_incidents(client, headers):
             demisto.setLastRun({"time": last_event_ts})
         return form_incindents(response_data)
     else:
-        raise ValueError(
-            "Error in fetching incidents. Error from server was: " + str(response.text)
-        )
+        raise ValueError("Error in fetching incidents. Error from server was: " + str(response.text))
 
 
 def create_incident_from_humioquery(incident):
-    occurred = datetime.fromtimestamp(incident["@timestamp"] / 1000.0).strftime(
-        "%Y-%m-%dT%H:%M:%SZ"
-    )
+    occurred = datetime.fromtimestamp(incident["@timestamp"] / 1000.0).strftime("%Y-%m-%dT%H:%M:%SZ")
     keys = incident.keys()
     labels = []
     for key in keys:
