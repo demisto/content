@@ -283,7 +283,7 @@ def count_running_chromes(port):
         return 0
 
 
-def get_chrome_browser(port: str) -> pychrome.Browser | None:
+def get_headless_chrome(port: str) -> pychrome.Browser | None:
     # Verify that the process has started
     for attempt in range(DEFAULT_RETRIES_COUNT):
         running_chromes_count = count_running_chromes(port)
@@ -305,7 +305,7 @@ def get_chrome_browser(port: str) -> pychrome.Browser | None:
 
             # Use list_tab to ping the browser and make sure it's available
             tabs_count = len(browser.list_tab())
-            demisto.debug(f"get_chrome_browser, {port=}, {tabs_count=}, {MAX_CHROME_TABS_COUNT=}")
+            demisto.debug(f"get_headless_chrome, {port=}, {tabs_count=}, {MAX_CHROME_TABS_COUNT=}")
             # if tabs_count < MAX_CHROME_TABS_COUNT:
             demisto.debug(f"Connected to Chrome on port {port} with {tabs_count} tabs")
             return browser
@@ -453,7 +453,7 @@ def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binar
 
         if process:
             demisto.debug(f'New Chrome session active on {chrome_port=}: {chrome_options=} {chrome_options=}')
-            browser = get_chrome_browser(chrome_port)
+            browser = get_headless_chrome(chrome_port)
             if browser:
                 new_chrome_instance = {
                     chrome_port: {
@@ -569,7 +569,7 @@ def chrome_manager() -> tuple[Any | None, str | None]:
         return generate_new_chrome_instance(instance_id, chrome_options)
 
     chrome_port = instance_id_dict.get(instance_id, {}).get('chrome_port', '')
-    browser = get_chrome_browser(chrome_port)
+    browser = get_headless_chrome(chrome_port)
     return browser, chrome_port
 
 
@@ -613,7 +613,7 @@ def chrome_manager_one_port() -> tuple[Any | None, str | None]:
     if chrome_options in chrome_options_dict:
         demisto.debug('chrome_manager: condition chrome_options in chrome_options_dict is true'
                       f'{chrome_options in chrome_options_dict}')
-        browser = get_chrome_browser(chrome_port)
+        browser = get_headless_chrome(chrome_port)
         return browser, chrome_port
     for chrome_port_ in chrome_instances_contents:
         if chrome_port_ == 'None':
@@ -920,13 +920,11 @@ def perform_rasterize(path: str | list[str],
 
     demisto.debug(f"perform_rasterize, {paths=}, {rasterize_type=}")
 
-    # until https://issues.chromium.org/issues/379034728 is fixed, we can only use one chrome port
-    browser, chrome_port = chrome_manager_one_port()
+    browser, chrome_port = chrome_manager()
 
     if browser:
         support_multithreading()
         with ThreadPoolExecutor(max_workers=MAX_CHROME_TABS_COUNT) as executor:
-            demisto.debug(f"perform_rasterize, {paths=}, {rasterize_type=}")
             rasterization_threads = []
             rasterization_results = []
             for current_path in paths:
@@ -949,7 +947,7 @@ def perform_rasterize(path: str | list[str],
                 f"perform_rasterize Finished {len(rasterization_threads)} rasterize operations,"
                 f"active tabs len: {len(browser.list_tab())}")
 
-            chrome_instances_file_content: dict = read_json_file()  # CR fix name
+            chrome_instances_file_content: dict = read_json_file()
 
             rasterization_count = chrome_instances_file_content.get(chrome_port, {}).get(RASTERIZATION_COUNT, 0) + len(
                 rasterization_threads)

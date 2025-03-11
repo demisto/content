@@ -520,7 +520,7 @@ def test_chrome_manager_case_instance_id_exist_but_new_chrome_options(mocker):
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(rasterize, 'read_json_file', return_value=mock_file_content)
 
-    mocker.patch.object(rasterize, 'get_chrome_browser', return_value=None)
+    mocker.patch.object(rasterize, 'get_headless_chrome', return_value=None)
     terminate_chrome_mocker = mocker.patch.object(rasterize, 'terminate_chrome', return_value=None)
     generate_new_chrome_instance_mocker = mocker.patch.object(rasterize, 'generate_new_chrome_instance',
                                                               return_value=["browser_object", "chrome_port"])
@@ -560,7 +560,7 @@ def test_chrome_manager_case_instance_id_and_chrome_options_exist_and_linked(moc
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(rasterize, 'read_json_file', return_value=mock_file_content)
 
-    mocker.patch.object(rasterize, 'get_chrome_browser', return_value="browser_object")
+    mocker.patch.object(rasterize, 'get_headless_chrome', return_value="browser_object")
     terminate_chrome_mocker = mocker.patch.object(rasterize, 'terminate_chrome', return_value=None)
     generate_new_chrome_instance_mocker = mocker.patch.object(rasterize, 'generate_new_chrome_instance',
                                                               return_value=["browser_object", "chrome_port"])
@@ -597,13 +597,13 @@ def test_generate_chrome_port_no_port_available(mocker):
     assert not port
 
 
-def test_get_chrome_browser_error(mocker: MockerFixture):
+def test_get_headless_chrome_error(mocker: MockerFixture):
     """
     Given   A connection error.
     When    Launching a pychrome browser.
     Then    Make sure the error is caught and debugged properly.
     """
-    from rasterize import get_chrome_browser
+    from rasterize import get_headless_chrome
 
     def raise_connection_error(url):
         raise requests.exceptions.ConnectionError('connection error')
@@ -612,7 +612,7 @@ def test_get_chrome_browser_error(mocker: MockerFixture):
     mocker.patch('time.sleep')
     debug = mocker.patch.object(demisto, 'debug')
 
-    res = get_chrome_browser('port')
+    res = get_headless_chrome('port')
 
     assert res is None
     debug.assert_called_with(
@@ -839,7 +839,7 @@ def test_chrome_manager_one_port_use_same_port(mocker):
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(rasterize, 'read_json_file', return_value=mock_file_content)
 
-    mocker.patch.object(rasterize, 'get_chrome_browser', return_value="browser_object")
+    mocker.patch.object(rasterize, 'get_headless_chrome', return_value="browser_object")
 
     browser, chrome_port = chrome_manager_one_port()
     assert browser == "browser_object"
@@ -876,7 +876,7 @@ def test_chrome_manager_one_port_open_new_port(mocker):
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(rasterize, 'read_json_file', return_value=mock_file_content)
 
-    mocker.patch.object(rasterize, 'get_chrome_browser', return_value="browser_object")
+    mocker.patch.object(rasterize, 'get_headless_chrome', return_value="browser_object")
     terminate_chrome_mocker = mocker.patch.object(rasterize, 'terminate_chrome', return_value=None)
     generate_new_chrome_instance_mocker = mocker.patch.object(rasterize, 'generate_new_chrome_instance',
                                                               return_value=["browser_object", "chrome_port"])
