@@ -401,7 +401,7 @@ Get the Secret Manager policy for a specific secret.
 ### aws-secrets-manager-secret–policy-delete
 
 ***
-Delete the resource-based permission policy attached to a secret.
+Delete the resource-based permission policy attached to a secret. This is a potentially harmful command since it modifies access permissions to AWS Secret Manager secrets.
 
 #### Base Command
 

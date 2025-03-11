@@ -2047,8 +2047,7 @@ There is no context output for this command.
 ### aws-iam-update-assume-role-policy
 
 ***
-Updates the policy that grants an IAM entity permission to assume a role. This is typically referred to as the “role trust policy”.
-
+Updates the policy that grants an IAM entity permission to assume a role. This is typically referred to as the “role trust policy”. This is a potentially harmful command since assuming a role affects access permissions to AWS resources.
 #### Base Command
 
 `aws-iam-update-assume-role-policy`

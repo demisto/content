@@ -258,7 +258,7 @@ def fetch_credentials(client: AWSClient, args: dict[str, Any]):  # pragma: no co
     demisto.credentials(credentials)
 
 
-def should_create_credential(secret_as_dict):
+def should_create_credential(secret_as_dict: dict[str, Any]):
     return any(key in ["username", "password", "workgroup", "certificate"] for key in secret_as_dict)
 
 

@@ -200,6 +200,34 @@ class Client:
 
         return response
 
+    def gcp_iam_project_iam_policy_binding_remove_request(
+        self,
+        project_name: str,
+        role: str,
+        members_to_remove: list[str],
+        ) -> dict:
+        """_summary_
+
+        Args:
+            project_name (str): _description_
+
+        Returns:
+            dict: _description_
+        """
+        request = self.cloud_resource_manager_service.projects().getIamPolicy(resource=project_name)
+        response = request.execute()
+
+        for binding in response.get("bindings", []):
+            demisto.debug(binding)
+
+            if binding.get("role") != role:
+                continue
+
+            binding_members = [member for member in binding.get("members", []) if member not in members_to_remove]
+            demisto.debug(f"Got role {role}. Updated members: {binding_members}.")
+
+        return response
+
     def gcp_iam_folder_list_request(self, parent: str, limit: int = None, page_token: str = None,
                                     show_deleted: bool = False) -> dict:
         """
@@ -3839,6 +3867,40 @@ def gcp_iam_tagbindings_list_command(client: Client, args: Dict[str, Any]) -> Un
     return command_results
 
 
+def gcp_iam_policy_binding_remove_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Implements the `!gcp-iam-project-iam-policy-binding-remove` command.
+    Updates the IAM access control policy for the specified project by removing the binding of members to a specific role.
+
+    Args:
+        client (Client): GCP API Client.
+        args (dict): The command arguments.
+
+    Raises:
+        ValueError: If the `project_name`, `role`, or `members` arguments were not specified.
+
+    Returns:
+        CommandResults: Command results with human-readable output and raw API response.
+    """
+    if not (project_name := args.get('project_name')):
+        raise ValueError("The 'project_name' argument should be specified.")
+
+    if not (role := args.get('role')):
+        raise ValueError("The 'role' argument should be specified.")
+
+    if not (members_to_remove := argToList(args.get('members'))):
+        raise ValueError("The 'members' argument should be specified.")
+
+    raw_response = client.gcp_iam_project_iam_policy_binding_remove_request(project_name, role, members_to_remove)
+
+    human_readable = f'The role {role} was updated successfully. Binding to members {",".join(members_to_remove)} was removed.'
+    return CommandResults(readable_output=human_readable, raw_response=raw_response)
+
+
+def gcp_iam_deny_policy_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug(f'Calling {client} with {args=}')
+    return CommandResults(readable_output="")
+
+
 def test_module(service_account_key: str, proxy: bool, verify_certificate: bool) -> None:
     try:
         client: Client = Client(client_secret=service_account_key, proxy=proxy, verify_certificate=verify_certificate)
@@ -3933,7 +3995,9 @@ def main() -> None:
             'gcp-iam-grantable-role-list': gcp_iam_grantable_role_list_command,
             'gcp-iam-role-get': gcp_iam_predefined_role_get_command,
             'gcp-iam-role-list': gcp_iam_predefined_role_list_command,
-            'gcp-iam-tagbindings-list': gcp_iam_tagbindings_list_command
+            'gcp-iam-tagbindings-list': gcp_iam_tagbindings_list_command,
+            'gcp-iam-project-iam-policy-binding-remove': gcp_iam_policy_binding_remove_command,
+            'gcp-iam-project-iam-deny-policy-create': gcp_iam_deny_policy_create_command,
         }
 
         if command in commands:

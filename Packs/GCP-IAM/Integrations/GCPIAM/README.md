@@ -2542,3 +2542,48 @@ Create a short-lived access token for a service account. The generated token wil
 | --- | --- | --- |
 | service_account_email | The email address of the privilege-bearing service account for which the short-lived token is created. | Required | 
 | lifetime | Lifetime of the Access Token in seconds. Default is 3600. | Required | 
+
+
+### gcp-iam-project-iam-policy-binding-remove
+
+***
+Removes a policy binding to the IAM policy of a project, given a project ID and the binding. One binding consists of a member and a role. This is a potentially harmful command since it modifies access permissions to Google Cloud resources.
+
+#### Base Command
+
+`gcp-iam-project-iam-policy-binding-remove`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_name | The name of the project associated with the IAM policy binding. For example: projects/my-project-123. | Required | 
+| members | A comma-separated list of members to remove from the binding. Possible format for member: user:{emailid}, serviceAccount:{emailid}, group:{emailid}, deleted:user:{emailid}?uid={uniqueid}, deleted:serviceAccount:{emailid}?uid={uniqueid}, deleted:group:{emailid}?uid={uniqueid}, Domain:{domain}. For example: user:test@example.com. | Required | 
+| role | The IAM role to remove the members from. For example: roles/actions.Viewer. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+### gcp-iam-project-iam-deny-policy-create
+
+***
+Creates an IAM deny policy that restricts access to specific Google Cloud resources. Deny policies define deny rules that prevent certain principals from using certain permissions, regardless of the roles they are granted. This is a potentially harmful command since it modifies access permissions to Google Cloud resources.
+
+#### Base Command
+
+`gcp-iam-project-iam-deny-policy-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_name | The name of the project associated with the IAM deny policy. For example: projects/my-project-123. | Required | 
+| display_name | A descriptive and friendly name of the IAM deny policy. | Required | 
+| deny_rule | The IAM deny policy excluding the "displayName" field in the [GCP IAM deny policy format](https://cloud.google.com/iam/docs/deny-overview#deny-policy-structure). | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+<!-- LINE ABOVE NOT TRUE! need to document outputs GCPIAM.DenyPolicy.* -->
