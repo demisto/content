@@ -64,12 +64,12 @@ class Client(BaseClient):
             suffix = f'{section}/{sub_section}'
         demisto.debug(f"The url is {suffix=}")
         # Send a request using our http_request wrapper
-        if sub_section == 'passive_dns':
-            return self._http_request('GET',
-                                      url_suffix=suffix,
-                                      params=params,
-                                      timeout=30)
         try:
+            if sub_section == 'passive_dns':
+                return self._http_request('GET',
+                                        url_suffix=suffix,
+                                        params=params,
+                                        timeout=30)
             result = self._http_request('GET',
                                         url_suffix=suffix,
                                         params=params)
@@ -86,7 +86,7 @@ class Client(BaseClient):
                 elif e.res.status_code in (504, 502):
                     demisto.debug(f"The status code is {e.res.status_code}")
                     if not self.should_error:
-                        return_warning(e.message)
+                        return_warning(f"{e.message}")
                         result = {}
                     else:
                         raise e
