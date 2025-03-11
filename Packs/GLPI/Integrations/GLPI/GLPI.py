@@ -24,7 +24,7 @@ request. Note the double curly is used for representing only one curly."""
 UPLOAD_MANIFEST = '{{ "input": {{ "name": "{name:s}", "_filename" : ["{filename:s}"] }} }}'
 
 """Warning when we need to delete an incomplete document due to upload error."""
-WARN_DEL_DOC = "The file could not be uploaded but a document with id '{:d}' was created, " "this document will be purged."
+WARN_DEL_DOC = "The file could not be uploaded but a document with id '{:d}' was created, this document will be purged."
 
 """Warning when an invalid document could not be purged."""
 WARN_DEL_ERR = "The created document could not be purged, you may need to clean it manually: {:s}"
@@ -149,7 +149,7 @@ class myglpi(GLPI):
                 self.delete("Document", {"id": doc_id}, force_purge=True)
             except DemistoException as err:
                 demisto.error(WARN_DEL_ERR.format(doc_id + " " + str(err)), UserWarning)
-            raise DemistoException("(ERROR_GLPI_INVALID_DOCUMENT) {:s}".format(error))
+            raise DemistoException(f"(ERROR_GLPI_INVALID_DOCUMENT) {error:s}")
 
         return response.json()
 
@@ -394,7 +394,7 @@ def output_format(res, output_type=None, readable=None):
             return CommandResults(outputs_prefix="GLPI." + output_type, outputs_key_field="id", outputs=res, raw_response=res)
         else:
             keys = res.keys()
-        key_list = [key for key in keys]
+        key_list = list(keys)
         if not output_type:
             output_type = key_list[0].split(".")[0]
         if not readable:
@@ -560,10 +560,9 @@ def add_comment_command(client, args):
     ticket_id = args.get("ticket_id")
     text = args.get("comment")
     res = client.add_comment(ticket_id, text)
-    if res:
-        if "id" in res[0]:
-            result = output_format(res, "Comment", "Comment successfully added to ticket ID : " + str(ticket_id))
-            return result
+    if res and "id" in res[0]:
+        result = output_format(res, "Comment", "Comment successfully added to ticket ID : " + str(ticket_id))
+        return result
     else:
         raise DemistoException("Error when trying to add comment: " + str(res))
 
@@ -862,7 +861,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     if not parsed_args.remote_incident_id or parsed_args.incident_changed:
         if parsed_args.remote_incident_id:
             old_incident = client.get_ticket(parsed_args.remote_incident_id)
-            for changed_key in parsed_args.delta.keys():
+            for changed_key in parsed_args.delta:
                 if changed_key in TICKET_FIELDS:
                     old_incident[changed_key] = parsed_args.delta[changed_key]  # type: ignore
             parsed_args.data = old_incident
@@ -872,7 +871,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
 
     else:
         demisto.debug(
-            f"Skipping updating remote incident fields [{parsed_args.remote_incident_id}] as it is " f"not new nor changed."
+            f"Skipping updating remote incident fields [{parsed_args.remote_incident_id}] as it is not new nor changed."
         )
 
     # Close incident if relevant
@@ -912,7 +911,7 @@ def get_modified_remote_data_command(client, args, mirror_limit):
     search_range = "0-" + str(mirror_limit)
 
     raw_incidents = client.modified_incidents(last_update, search_range)
-    modified_incident_ids = list()
+    modified_incident_ids = []
     for raw_incident in raw_incidents:
         incident_id = str(raw_incident.get("2"))
         modified_incident_ids.append(incident_id)
@@ -977,10 +976,10 @@ def main():
             )
             demisto.setLastRun(new_run)
             demisto.incidents(incidents)
-        elif cmd in command_list.keys():
+        elif cmd in command_list:
             return_results(command_list[cmd](client, demisto.args()))
         else:
-            raise DemistoException('Command "%s" not implemented' % cmd)
+            raise DemistoException(f'Command "{cmd}" not implemented')
 
     # Log exceptions
     except Exception as e:

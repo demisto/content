@@ -24,7 +24,7 @@ def main():
     min_severity = int(demisto.args().get("minSeverity", 1))
 
     file_entry = demisto.getFilePath(demisto.args().get("entryID"))
-    with open(file_entry["path"], "r") as f:
+    with open(file_entry["path"]) as f:
         data = f.read(max_file_size)
 
     if data:
@@ -63,7 +63,7 @@ def main():
                     {
                         "Type": entryTypes["error"],
                         "ContentsFormat": formats["text"],
-                        "Contents": "No IP was found for asset {0}".format(str(asset)),
+                        "Contents": f"No IP was found for asset {str(asset)}",
                     }
                 )
                 sys.exit(0)
@@ -74,7 +74,7 @@ def main():
                     {
                         "Type": entryTypes["error"],
                         "ContentsFormat": formats["text"],
-                        "Contents": "No ID was found for asset {0}".format(str(asset)),
+                        "Contents": f"No ID was found for asset {str(asset)}",
                     }
                 )
                 sys.exit(0)
@@ -84,7 +84,7 @@ def main():
             if not isinstance(vulnerabilities, list):
                 vulnerabilities = [vulnerabilities]
 
-            qids = map(lambda vulnerability: demisto.get(vulnerability, "QID.#text"), vulnerabilities)
+            qids = (demisto.get(vulnerability, "QID.#text") for vulnerability in vulnerabilities)
 
             # Get only the QIDs that exists in asset and has severity >= min_severity
             qids = list(set(qids) & set(qid_severity))
@@ -93,7 +93,7 @@ def main():
                 # Search for existing open incidents with the same Vendor ID and Asset ID.
                 # Will open a new incident only if such an incident not exists.
                 resp = demisto.executeCommand(
-                    "getIncidents", {"query": "vendorid: {0} and assetid: {1} and --status:Closed".format(qid, asset_id)}
+                    "getIncidents", {"query": f"vendorid: {qid} and assetid: {asset_id} and --status:Closed"}
                 )
                 if isError(resp[0]):
                     demisto.results(resp)
@@ -118,7 +118,7 @@ def main():
                     demisto.executeCommand(
                         "createNewIncident",
                         {
-                            "name": "Vulnerability - Asset {0} QID {1} - {2}".format(asset_id, qid, generation_date),
+                            "name": f"Vulnerability - Asset {asset_id} QID {qid} - {generation_date}",
                             "vendorid": str(qid),
                             "type": incident_type,
                             "assetid": str(asset_id),

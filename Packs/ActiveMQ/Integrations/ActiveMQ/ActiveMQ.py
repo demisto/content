@@ -22,7 +22,7 @@ class MsgListener(stomp.ConnectionListener):
         self.msg_ids = []
 
     def on_error(self, frame):
-        demisto.results('received an error "%s"' % frame)
+        demisto.results(f'received an error "{frame}"')
 
     def on_message(self, frame):
         self.result_arr.append(frame.body)
@@ -87,7 +87,7 @@ def send_message(conn):
         try:
             headers_demisto = json.loads(demisto.args()["headers"])
         except Exception as e:
-            demisto.error('Failed to parse "headers". Error: {}'.format(e))
+            demisto.error(f'Failed to parse "headers". Error: {e}')
             raise ValueError('Failed to parse "headers" argument to JSON. "headers"={}'.format(demisto.args()["headers"]))
 
         conn.send(dest, body, transaction=txid, headers=headers_demisto)

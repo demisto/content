@@ -19,6 +19,7 @@ def generate_connected_components_call(load_file, post_req):
         js = request.json()
         if not js:
             context.status_code = 400
+            return []
         elif js != post_req:
             return []
         else:

@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Tuple
 
 from CommonServerUserPython import *
 
@@ -26,10 +25,10 @@ def parse_date_range_expire_date(date_range):
     """
     range_split = date_range.split(" ")
     if len(range_split) != 2:
-        return_error('date_range must be "number date_range_unit", examples: (2 hours, 4 minutes,6 months, 1 day, ' "etc.)")
+        return_error('date_range must be "number date_range_unit", examples: (2 hours, 4 minutes,6 months, 1 day, etc.)')
 
     number = int(range_split[0])
-    if not range_split[1] in ["minute", "minutes", "hour", "hours", "day", "days", "month", "months", "year", "years"]:
+    if range_split[1] not in ["minute", "minutes", "hour", "hours", "day", "days", "month", "months", "year", "years"]:
         return_error("The unit of date_range is invalid. Must be minutes, hours, days, months or years")
 
     start_time = datetime.now() + timedelta(hours=0)
@@ -1251,7 +1250,7 @@ def get_security_events_command(client: Client, start_time: str, limit: str = "5
         return CommandResults(outputs="No events were found")
 
     if limit:
-        events_data = events_data[0 : int(limit)]
+        events_data = events_data[0: int(limit)]
 
     results = CommandResults(
         outputs=events_data,
@@ -1264,7 +1263,7 @@ def get_security_events_command(client: Client, start_time: str, limit: str = "5
 
 def fetch_incidents(
     client: Client, last_run: dict, first_fetch_time: str, score: str, max_fetch: str = "50"
-) -> Tuple[dict, list]:
+) -> tuple[dict, list]:
     # if first time fetching
     if not last_run:
         start_time, _ = parse_date_range(first_fetch_time)

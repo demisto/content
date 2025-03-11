@@ -43,7 +43,7 @@ def get_sites():
     if master_sites and not isinstance(master_sites, list):
         master_sites = [master_sites]
     if master_sites:
-        for idx, site in enumerate(master_sites):
+        for idx, _site in enumerate(master_sites):
             master_sites[idx]["Type"] = "master"
             master_sites[idx]["Resource"] = master_sites[idx]["@Resource"]
             del master_sites[idx]["@Resource"]
@@ -54,7 +54,7 @@ def get_sites():
     if external_sites and not isinstance(external_sites, list):
         external_sites = [external_sites]
     if external_sites:
-        for idx, site in enumerate(external_sites):
+        for idx, _site in enumerate(external_sites):
             external_sites[idx]["Type"] = "external"
             external_sites[idx]["Resource"] = external_sites[idx]["@Resource"]
             del external_sites[idx]["@Resource"]
@@ -65,7 +65,7 @@ def get_sites():
     if operator_sites and not isinstance(operator_sites, list):
         operator_sites = [operator_sites]
     if operator_sites:
-        for idx, site in enumerate(operator_sites):
+        for idx, _site in enumerate(operator_sites):
             operator_sites[idx]["Type"] = "operator"
             operator_sites[idx]["Resource"] = operator_sites[idx]["@Resource"]
             del operator_sites[idx]["@Resource"]
@@ -77,7 +77,7 @@ def get_sites():
         custom_sites = [custom_sites]
 
     if custom_sites:
-        for idx, site in enumerate(custom_sites):
+        for idx, _site in enumerate(custom_sites):
             custom_sites[idx]["Type"] = "custom"
             custom_sites[idx]["Resource"] = custom_sites[idx]["@Resource"]
             del custom_sites[idx]["@Resource"]
@@ -187,7 +187,7 @@ def get_endpoints(should_get_endpoint_details):
     if raw_endpoints and not isinstance(raw_endpoints, list):
         raw_endpoints = [raw_endpoints]
 
-    for idx, endpoint in enumerate(raw_endpoints):
+    for idx, _endpoint in enumerate(raw_endpoints):
         raw_endpoints[idx]["Resource"] = raw_endpoints[idx]["@Resource"]
         del raw_endpoints[idx]["@Resource"]
 
@@ -515,21 +515,21 @@ def deploy_patch(site_name, computer_ids, fixlet_id, action_id):
     else:
         target = "\n".join([f"<ComputerID>{computer_id}</ComputerID>" for computer_id in computer_ids])
 
-    request_body = """<?xml version="1.0" encoding="UTF-8"?>
+    request_body = f"""<?xml version="1.0" encoding="UTF-8"?>
     <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
      <SourcedFixletAction>
        <SourceFixlet>
-         <Sitename>{}</Sitename>
-         <FixletID>{}</FixletID>
-         <Action>{}</Action>
+         <Sitename>{site_name}</Sitename>
+         <FixletID>{fixlet_id}</FixletID>
+         <Action>{action_id}</Action>
        </SourceFixlet>
        <Target>
-         {}
+         {target}
        </Target>
       <Parameter Name="_BESClient_EMsg_Detail">1000</Parameter>
      </SourcedFixletAction>
     </BES>
-    """.format(site_name, fixlet_id, action_id, target)
+    """
     LOG(f"deploy_patch - request: {request_body}")
 
     fullurl = BASE_URL + "/api/actions"

@@ -44,7 +44,7 @@ EVENT_HEADERS = ["ID", "Type", "SubType", "Severity", "Description"]
 FILE_ANALYSIS_HEADERS = ["ID", "PathName", "Priority", "FileCatalogId", "ComputerID", "DateCreated", "DateModified", "CreatedBy"]
 
 
-FILE_CATALOG_HEADERS = ["ID", "Name", "Type", "Extension", "Path", "Size" "ProductName", "Publisher", "Company"]
+FILE_CATALOG_HEADERS = ["ID", "Name", "Type", "Extension", "Path", "SizeProductName", "Publisher", "Company"]
 
 
 FILE_INSTANCE_HEADERS = ["ID", "Name", "Path", "ComputerID", "CatalogID"]
@@ -136,7 +136,7 @@ def remove_prefix(prefix, full_str):
     :return: full_str without the provided prefix
     """
     if full_str.startswith(prefix):
-        return full_str[len(prefix) :]
+        return full_str[len(prefix):]
     return full_str
 
 

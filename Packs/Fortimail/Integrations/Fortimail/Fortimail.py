@@ -1,7 +1,7 @@
 import copy
 import http
 from functools import wraps
-from typing import Callable, Tuple
+from collections.abc import Callable
 
 import demistomock as demisto  # noqa: F401
 import requests.utils
@@ -2207,7 +2207,7 @@ def convert_cidr_to_ip_range(item: str) -> str:
 def prepare_outputs_for_system_list(
     list_items: list[str],
     command_args: Dict[str, Any],
-) -> Tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     """
     Update the system list API response keys names according to Fortimail UI, for the readable output.
 
@@ -2226,7 +2226,7 @@ def prepare_outputs_for_system_list(
 def prepare_outputs_and_readable_output(
     output: list[dict[str, Any]],
     command_args: Dict[str, Any],
-) -> Tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     """
     Update the API response keys names according to Fortimail UI, for the readable output.
 

@@ -2,13 +2,14 @@ from CommonServerPython import *
 
 """IMPORTS"""
 
-from typing import Dict, Any, List, Union, Optional, Generator
+from typing import Any
+from collections.abc import Generator
 from datetime import UTC
 import csv
 import gzip
 import boto3 as s3
 import botocore
-import botocore.config as config
+from botocore import config
 import urllib3
 import dateparser
 
@@ -19,7 +20,7 @@ urllib3.disable_warnings()
 
 BATCH_SIZE = 2000
 
-BUCKETS: Dict[str, str] = {
+BUCKETS: dict[str, str] = {
     "domain": "sis-new-observations",
     "phish": "riq-sis-blacklist-phish",
     "malware": "riq-sis-blacklist-malware",
@@ -27,7 +28,7 @@ BUCKETS: Dict[str, str] = {
     "scam": "riq-sis-blacklist-scam",
 }
 
-FIELD_NAMES: Dict[str, List[str]] = {
+FIELD_NAMES: dict[str, list[str]] = {
     "domain": ["value", "Timestamp"],
     "phish": ["value", "Category", "MatchType", "Expiration"],
     "malware": ["value", "MalwareType", "MatchType", "MaliciousExpiration"],
@@ -35,7 +36,7 @@ FIELD_NAMES: Dict[str, List[str]] = {
     "scam": ["value", "Category", "MatchType", "Expiration"],
 }
 
-INDICATOR_TYPES: Dict[str, str] = {
+INDICATOR_TYPES: dict[str, str] = {
     "domain": FeedIndicatorType.Domain,
     "phish": FeedIndicatorType.URL,
     "malware": FeedIndicatorType.URL,
@@ -43,7 +44,7 @@ INDICATOR_TYPES: Dict[str, str] = {
     "scam": FeedIndicatorType.URL,
 }
 
-REGIONS: Dict[str, str] = {
+REGIONS: dict[str, str] = {
     "domain": "us-west-1",
     "phish": "us-east-1",
     "malware": "us-west-1",
@@ -51,7 +52,7 @@ REGIONS: Dict[str, str] = {
     "scam": "us-west-1",
 }
 
-MESSAGES: Dict[str, str] = {
+MESSAGES: dict[str, str] = {
     "BAD_REQUEST_ERROR": "API call failed: Bad Request. Error: ",
     "AUTHORIZATION_ERROR": "Unauthorized. S3 Access Key or S3 Secret Key is invalid. Error: ",
     "NOT_FOUND_ERROR": "Not found. Error: ",
@@ -67,7 +68,7 @@ MESSAGES: Dict[str, str] = {
     "Feed_EXTRACT_ERROR": "Unable to extract feeds. Error: ",
     "INVALID_FIRST_FETCH_INTERVAL_ERROR": 'First fetch time range must be "number time_unit", '
     "examples: (10 days, 6 months, 1 year, etc.)",
-    "INVALID_FIRST_FETCH_UNIT_ERROR": "First fetch time range field's unit is invalid. Must be in day(s), " "month(s) or year(s)",
+    "INVALID_FIRST_FETCH_UNIT_ERROR": "First fetch time range field's unit is invalid. Must be in day(s), month(s) or year(s)",
     "INVALID_MAX_INDICATORS_ERROR": "Max Indicators Per Interval must be a positive integer.",
     "NO_INDICATORS_FOUND": "No indicators found for the given argument(s).",
 }
@@ -98,7 +99,7 @@ class Client:
 
         self.s3_client: Any = None
 
-    def set_s3_client(self, region_name: Optional[str]) -> None:
+    def set_s3_client(self, region_name: str | None) -> None:
         """
         Create S3 Client instance specific to region.
 
@@ -114,7 +115,7 @@ class Client:
             config=self.config,
         )
 
-    def return_error_based_on_status_code(self, status_code, error_message: str) -> Optional[None]:
+    def return_error_based_on_status_code(self, status_code, error_message: str) -> None | None:
         """
         Return error message based on status code.
         Throws a ValueError based on respected status code.
@@ -134,7 +135,7 @@ class Client:
 
     def request_list_objects(
         self, feed_type: str, max_keys: int = 1000, start_after: str = "", prefix: str = ""
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Makes the API call to Amazon S3 using the boto3 list_objects method to retrieve the keys of objects.
 
@@ -192,7 +193,7 @@ class Client:
                 }
             },
         )
-        records: List[bytes] = []
+        records: list[bytes] = []
         for event in response.get("Payload", ""):
             if "Records" in event:
                 records.append(event["Records"]["Payload"])
@@ -265,7 +266,7 @@ class Client:
 """ HELPER FUNCTIONS """
 
 
-def validate_feeds(feed_types: List[str]) -> None:
+def validate_feeds(feed_types: list[str]) -> None:
     """
     Checks that given feeds are exist or not.
     If feed_types is empty then throws a ValueError.
@@ -281,7 +282,7 @@ def validate_feeds(feed_types: List[str]) -> None:
             raise ValueError(MESSAGES["INVALID_FEED_TYPE_ERROR"])
 
 
-def get_last_key_from_integration_context_dict(feed_type: str, integration_context: List[Any] = []) -> str:
+def get_last_key_from_integration_context_dict(feed_type: str, integration_context: list[Any] = []) -> str:
     """
     To get last fetched key of feed from integration context.
 
@@ -297,7 +298,7 @@ def get_last_key_from_integration_context_dict(feed_type: str, integration_conte
     return ""
 
 
-def set_last_key_to_integration_context_dict(feed_type: str, key: str, integration_context: List[Any]) -> None:
+def set_last_key_to_integration_context_dict(feed_type: str, key: str, integration_context: list[Any]) -> None:
     """
     To set last fetched key of feed to integration context.
 
@@ -345,8 +346,8 @@ def prepare_date_string_for_custom_fields(date_string: str) -> str:
 
 
 def indicator_field_mapping(
-    feed_type: str, indicator: Dict[str, Any], tags: List[str], tlp_color: Optional[str]
-) -> Dict[str, Any]:
+    feed_type: str, indicator: dict[str, Any], tags: list[str], tlp_color: str | None
+) -> dict[str, Any]:
     """
     Maps the indicator fields.
 
@@ -356,7 +357,7 @@ def indicator_field_mapping(
     :param tlp_color: Traffic Light Protocol color.
     :return: Dict of fields.
     """
-    fields: Dict[str, Any] = {"service": "Passive Total", "tags": tags}
+    fields: dict[str, Any] = {"service": "Passive Total", "tags": tags}
     if tlp_color:
         fields["trafficlightprotocol"] = tlp_color
 
@@ -401,7 +402,7 @@ def validate_first_fetch_interval(first_fetch_interval):
         raise ValueError(MESSAGES["INVALID_FIRST_FETCH_INTERVAL_ERROR"])
     if not range_split[0].isdigit():
         raise ValueError(MESSAGES["INVALID_FIRST_FETCH_INTERVAL_ERROR"])
-    if not range_split[1] in ["minute", "minutes", "hours", "hour", "day", "days", "month", "months", "year", "years"]:
+    if range_split[1] not in ["minute", "minutes", "hours", "hour", "day", "days", "month", "months", "year", "years"]:
         raise ValueError(MESSAGES["INVALID_FIRST_FETCH_UNIT_ERROR"])
 
 
@@ -410,7 +411,7 @@ def get_latest_key(
     feed_type: str,
     first_fetch_interval: str,
     is_get_indicators: bool = False,
-    integration_context: List[Any] = [],
+    integration_context: list[Any] = [],
 ) -> str:
     """
     Get latest key from bucket of specified feed type.
@@ -435,7 +436,7 @@ def get_latest_key(
     date_from, now = dateparser.parse(f"{first_fetch_interval} UTC"), datetime.now(UTC)
 
     # Fetching latest object keys.
-    latest_key_list: List[str] = [
+    latest_key_list: list[str] = [
         key_dict.get("Key", "") for key_dict in object_key_list if key_dict.get("LastModified", now) >= date_from
     ]
 
@@ -446,7 +447,7 @@ def get_latest_key(
 
 
 @logger
-def test_module(client: Client, feed_type: str) -> Optional[str]:
+def test_module(client: Client, feed_type: str) -> str | None:
     """
     Performs test connectivity by valid response.
     If any parameter required to get response from S3 is invalid then throws a ValueError.
@@ -476,7 +477,7 @@ def test_module(client: Client, feed_type: str) -> Optional[str]:
 @logger
 def fetch_indicators_command(
     client: Client,
-    feed_types: List[str],
+    feed_types: list[str],
     first_fetch_interval: str = "7 day",
     limit: str = None,
     search: str = None,
@@ -542,7 +543,7 @@ def fetch_indicators_command(
 
 
 @logger
-def get_indicators_command(client: Client, args: Dict[str, str]) -> Union[CommandResults, str]:
+def get_indicators_command(client: Client, args: dict[str, str]) -> CommandResults | str:
     """
     Wrapper for retrieving indicators from the feed to the war-room.
 
@@ -563,7 +564,7 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Union[Comman
     validate_feeds([feed_type])
 
     # Retrieving indicators from fetch indicators command.
-    indicators_list: List[Dict] = []
+    indicators_list: list[dict] = []
     for indicators in fetch_indicators_command(client, [feed_type], limit=limit, search=search, is_get_indicators=True):
         indicators_list.extend(indicators)
 
@@ -571,7 +572,7 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Union[Comman
     if not indicators_list:
         return MESSAGES["NO_INDICATORS_FOUND"]
 
-    human_readable = "### Total indicators fetched: {}\n".format(len(indicators_list))
+    human_readable = f"### Total indicators fetched: {len(indicators_list)}\n"
     human_readable += tableToMarkdown(
         "Indicators from Security Intelligence Services feed",
         indicators_list,
@@ -639,7 +640,7 @@ def main() -> None:
     # Log exceptions
     except Exception as e:
         demisto.error(traceback.format_exc())
-        return_error("Failed to execute {0} command. Error: {1}".format(demisto.command(), str(e)))
+        return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

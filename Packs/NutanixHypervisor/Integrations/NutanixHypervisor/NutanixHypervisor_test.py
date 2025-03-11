@@ -1,6 +1,5 @@
 """Nutanix Integration for Cortex XSOAR - Unit Tests file"""
 
-import io
 import json
 from datetime import datetime
 from typing import *
@@ -34,7 +33,7 @@ client = Client(base_url=MOCKED_BASE_URL, verify=False, proxy=False, auth=("fake
 
 
 def util_load_json(path):
-    with io.open(path, mode="r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -344,7 +343,7 @@ def test_get_alert_status_filter_invalid_case(true_value, false_value, alert_sta
     """
     with pytest.raises(
         DemistoException,
-        match=f"Invalid alert status filters configurations, only one of {true_value},{false_value} " "can be chosen.",
+        match=f"Invalid alert status filters configurations, only one of {true_value},{false_value} can be chosen.",
     ):
         get_alert_status_filter(true_value, false_value, alert_status_filters)
 
@@ -379,7 +378,7 @@ def test_add_iso_entries_to_dict():
     Then:
      - All 'usecs' keys in the dict are replaced with 'iso time' entries with correct iso values.
     """
-    tested_dict = {usec_entry: 1600000000000000 for usec_entry in USECS_ENTRIES_MAPPING.keys()}
+    tested_dict = {usec_entry: 1600000000000000 for usec_entry in USECS_ENTRIES_MAPPING}
     tested_dict["host_name"] = "Nutanix Host"
     add_iso_entries_to_dict([tested_dict])
     assert tested_dict["host_name"] == "Nutanix Host"

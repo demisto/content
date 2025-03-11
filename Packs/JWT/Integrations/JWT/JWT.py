@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import traceback
-from typing import Dict
 import jwt
 import uuid
 
@@ -182,7 +181,7 @@ def main():
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
-        headers: Dict = {}
+        headers: dict = {}
         client = Client(base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy)
         if demisto.command() == "test-module":
             result = test_module()

@@ -90,7 +90,7 @@ def test_get_activity_logs_events_command(requests_mock: RequestsMocker, client:
     with open("test_data/activity_logs.csv") as f:
         logs = f.read()
     requests_mock.get(
-        f"{BASE_URL}api/2.0/fo/activity_log/" f"?action=list&truncation_limit=0&since_datetime=2023-03-01T00%3A00%3A00Z",
+        f"{BASE_URL}api/2.0/fo/activity_log/?action=list&truncation_limit=0&since_datetime=2023-03-01T00%3A00%3A00Z",
         text=logs,
     )
     args = {"limit": 50, "since_datetime": "1 March 2023"}

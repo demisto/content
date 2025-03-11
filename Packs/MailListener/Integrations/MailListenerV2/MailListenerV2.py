@@ -34,7 +34,7 @@ class Email:
             message_bytes = self.handle_message_slashes(message_bytes)
             email_object = parse_from_bytes(message_bytes)
         except TypeError as e:
-            demisto.info(f"Failed parsing mail from bytes: [{e}]\n{traceback.format_exc()}." "\nWill try to parse from string")
+            demisto.info(f"Failed parsing mail from bytes: [{e}]\n{traceback.format_exc()}.\nWill try to parse from string")
             message_string = message_bytes.decode("ISO-8859-1")
             email_object = parse_from_string(message_string)
 

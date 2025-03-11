@@ -114,9 +114,8 @@ def fetch_incidents(
     for alert in alerts:
         incident_created_time = int(alert.get("last_update_sec", "0"))
 
-        if last_fetch:
-            if incident_created_time <= last_fetch:
-                continue
+        if last_fetch and incident_created_time <= last_fetch:
+            continue
 
         incident_name = "SOC Case " + str(alert.get("reference"))
 

@@ -1400,10 +1400,10 @@ def test_fetch_all_incidents(requests_mock):
         json={"data": test_incidents},
     )
     requests_mock.get(
-        BASE_URL + "/plugin/products/detect3/api/v1/alerts?" "&state=unresolved&sort=-createdAt&limit=500&offset=500", json=[]
+        BASE_URL + "/plugin/products/detect3/api/v1/alerts?&state=unresolved&sort=-createdAt&limit=500&offset=500", json=[]
     )
     requests_mock.get(
-        BASE_URL + "/plugin/products/threat-response/api/v1/alerts?" "state=unresolved&sort=-createdAt&limit=500&offset=500",
+        BASE_URL + "/plugin/products/threat-response/api/v1/alerts?state=unresolved&sort=-createdAt&limit=500&offset=500",
         json=[],
     )
     requests_mock.get(BASE_URL + "/plugin/products/detect3/api/v1/intels/11", json={"name": "test"})
@@ -1441,18 +1441,18 @@ def test_fetch_new_incidents(requests_mock):
     test_incidents = util_load_json("test_data/fetch_incidents_new.json")
     requests_mock.post(BASE_URL + "/api/v2/session/login", json={"data": {"session": "session-id"}})
     requests_mock.get(
-        BASE_URL + "/plugin/products/detect3/api/v1/alerts?" "&state=unresolved&sort=-createdAt&limit=500&offset=0",
+        BASE_URL + "/plugin/products/detect3/api/v1/alerts?&state=unresolved&sort=-createdAt&limit=500&offset=0",
         json=test_incidents,
     )
     requests_mock.get(
-        BASE_URL + "/plugin/products/threat-response/api/v1/alerts?" "state=unresolved&sort=-createdAt&limit=500&offset=0",
+        BASE_URL + "/plugin/products/threat-response/api/v1/alerts?state=unresolved&sort=-createdAt&limit=500&offset=0",
         json={"data": test_incidents},
     )
     requests_mock.get(
-        BASE_URL + "/plugin/products/detect3/api/v1/alerts?" "&state=unresolved&sort=-createdAt&limit=500&offset=500", json=[]
+        BASE_URL + "/plugin/products/detect3/api/v1/alerts?&state=unresolved&sort=-createdAt&limit=500&offset=500", json=[]
     )
     requests_mock.get(
-        BASE_URL + "/plugin/products/threat-response/api/v1/alerts?" "state=unresolved&sort=-createdAt&limit=500&offset=500",
+        BASE_URL + "/plugin/products/threat-response/api/v1/alerts?state=unresolved&sort=-createdAt&limit=500&offset=500",
         json=[],
     )
     requests_mock.get(BASE_URL + "/plugin/products/detect3/api/v1/intels/11", json={"name": "test"})

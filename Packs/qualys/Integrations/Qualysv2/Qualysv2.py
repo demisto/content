@@ -2855,7 +2855,7 @@ def truncate_asset_size(asset):
         # For extra debugging in case other/additional keys has oversize data
         for key, val in asset.items():
             if (val_size := get_size_of_object(val)) > ASSET_SIZE_LIMIT:  # 1 MB
-                demisto.debug(f'Data under key "{key}" has size of {val_size}:\n' f"{str(val)[:10000]}...")
+                demisto.debug(f'Data under key "{key}" has size of {val_size}:\n{str(val)[:10000]}...')
 
 
 def get_detections_from_hosts(hosts):
@@ -2931,7 +2931,7 @@ def send_assets_and_vulnerabilities_to_xsiam(
     total_assets_to_report = 1 if has_next_page else cumulative_assets_count
     total_vulns_to_report = 1 if has_next_page else cumulative_vulns_count
 
-    demisto.debug(f"Sending {len(assets)} assets to XSIAM. " f"Total assets collected so far: {cumulative_assets_count}")
+    demisto.debug(f"Sending {len(assets)} assets to XSIAM. Total assets collected so far: {cumulative_assets_count}")
 
     send_data_to_xsiam(
         data=assets,
@@ -3148,7 +3148,8 @@ def fetch_vulnerabilities(client: Client, last_run: dict[str, Any], detection_qi
         vulnerabilities = get_vulnerabilities(client, detection_qids=detection_qids)
     else:
         since_datetime = (
-            last_run.get("since_datetime") or arg_to_datetime(ASSETS_FETCH_FROM, required=True).strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
+            last_run.get("since_datetime") or arg_to_datetime(ASSETS_FETCH_FROM,
+                                                              required=True).strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
         )
         demisto.debug(f"Getting vulnerabilities modified after {since_datetime}")
         vulnerabilities = get_vulnerabilities(client, since_datetime=since_datetime)
@@ -3231,7 +3232,7 @@ def get_activity_logs_events_command(client: Client, args, first_fetch_time):
         since_datetime=since_datetime,
         max_fetch=0,
     )
-    limited_activity_logs_events = activity_logs_events[offset : limit + offset]  # type: ignore[index,operator]
+    limited_activity_logs_events = activity_logs_events[offset: limit + offset]  # type: ignore[index,operator]
     activity_logs_hr = tableToMarkdown(name="Activity Logs", t=limited_activity_logs_events)
     results = CommandResults(
         readable_output=activity_logs_hr,
@@ -3362,7 +3363,7 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
             new_last_run = set_assets_last_run_with_new_limit(last_run, last_run.get("limit", HOST_LIMIT))
         else:
             cumulative_assets_count: int = new_last_run["total_assets"]
-            demisto.debug(f"Sending {len(assets)} assets to XSIAM. " f"Total assets collected so far: {cumulative_assets_count}")
+            demisto.debug(f"Sending {len(assets)} assets to XSIAM. Total assets collected so far: {cumulative_assets_count}")
 
             send_data_to_xsiam(
                 data=assets,

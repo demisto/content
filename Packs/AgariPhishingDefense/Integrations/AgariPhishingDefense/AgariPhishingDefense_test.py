@@ -22,7 +22,7 @@ AUTHENTICATION_RESP_HEADER = {
     "created_at": 1604920579,
 }
 
-PAYLOAD = "client_id=client_dummy_id&client_secret" "=client_dummy_secret "
+PAYLOAD = "client_id=client_dummy_id&client_secret=client_dummy_secret "
 
 MOCK_INTEGRATION_CONTEXT = {
     "api_token": API_TOKEN,
@@ -85,7 +85,7 @@ def mock_http_response(
     mock_resp.content = content
     if headers:
         mock_resp.headers = headers
-    mock_resp.ok = True if status < 400 else False
+    mock_resp.ok = status < 400
     # add json data if provided
     if json_data:
         mock_resp.json = mock.Mock(return_value=json_data)

@@ -553,7 +553,7 @@ def test_load_empty_client_cert_and_key_():
         (None, None),
         # 1 credential
         (
-            "-----BEGIN CERTIFICATE----- " "LINE1 " "LINE2 " "-----END CERTIFICATE-----",
+            "-----BEGIN CERTIFICATE----- LINE1 LINE2 -----END CERTIFICATE-----",
             """-----BEGIN CERTIFICATE-----
 LINE1
 LINE2

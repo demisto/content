@@ -482,14 +482,14 @@ def alarm_to_incident(client, alarm):  # pragma: no cover
     intel_doc = ""
     if intel_doc_id := alarm.get("intelDocId", ""):
         raw_response = client.do_request(
-            "GET", "/plugin/products/" f"{client.get_threat_response_endpoint()}" f"/api/v1/intels/{intel_doc_id}"
+            "GET", f"/plugin/products/{client.get_threat_response_endpoint()}/api/v1/intels/{intel_doc_id}"
         )
         raw_response_data = normalize_api_response(raw_response)
         intel_doc = raw_response_data.get("name")
         alarm["intelDocDetails"] = raw_response_data
         intel_doc_labels = []
         intel_doc_labels_resp = client.do_request(
-            "GET", "/plugin/products/" f"{client.get_threat_response_endpoint()}" f"/api/v1/intels/{intel_doc_id}/labels"
+            "GET", f"/plugin/products/{client.get_threat_response_endpoint()}/api/v1/intels/{intel_doc_id}/labels"
         )
 
         labels_list = normalize_api_response(intel_doc_labels_resp)
@@ -599,7 +599,7 @@ def fetch_incidents(
 
     if len(incidents) > max_fetch:
         demisto.debug("Re-sizing incidents list.")
-        incidents = incidents[len(incidents) - max_fetch :]
+        incidents = incidents[len(incidents) - max_fetch:]
 
     if incidents:
         last_incident = incidents[0]
@@ -632,7 +632,7 @@ def get_intel_doc(client: Client, data_args: dict) -> tuple[str, dict, Union[lis
     id_ = data_args.get("intel_doc_id")
     try:
         raw_response = client.do_request(
-            "GET", "/plugin/products/" f"{client.get_threat_response_endpoint()}" f"/api/v1/intels/{id_}"
+            "GET", f"/plugin/products/{client.get_threat_response_endpoint()}/api/v1/intels/{id_}"
         )
     # If the user provided a intel doc ID which does not exist, the do_request will throw HTTPError exception
     # with a "Not Found" message.
@@ -682,7 +682,7 @@ def get_intel_docs(client: Client, data_args: dict) -> tuple[str, dict, Union[li
         else {}
     )
     raw_response = client.do_request(
-        "GET", "/plugin/products/" f"{client.get_threat_response_endpoint()}" f"/api/v1/intels/", params=params
+        "GET", f"/plugin/products/{client.get_threat_response_endpoint()}/api/v1/intels/", params=params
     )
 
     intel_docs = []
@@ -720,7 +720,7 @@ def get_intel_docs_labels_list(client: Client, data_args: dict) -> tuple[str, di
     id_ = data_args.get("intel_doc_id")
     try:
         raw_response = client.do_request(
-            "GET", "/plugin/products/" f"{client.get_threat_response_endpoint()}" f"/api/v1/intels/{id_}/labels"
+            "GET", f"/plugin/products/{client.get_threat_response_endpoint()}/api/v1/intels/{id_}/labels"
         )
     except requests.HTTPError as e:
         raise DemistoException(f"Check the intel doc ID and try again.\n({str(e)})")
@@ -762,7 +762,7 @@ def add_intel_docs_label(client: Client, data_args: dict) -> tuple[str, dict, Un
     try:
         raw_response = client.do_request(
             "PUT",
-            "/plugin/products/" f"{client.get_threat_response_endpoint()}" f"/api/v1/intels/{intel_doc_id}/labels",
+            f"/plugin/products/{client.get_threat_response_endpoint()}/api/v1/intels/{intel_doc_id}/labels",
             data=params,
         )
     # If the user provided a intel doc ID which does not exist, the do_request will throw HTTPError exception
@@ -880,7 +880,7 @@ def create_intel_doc(client: Client, data_args: dict) -> tuple[str, dict, Union[
 
     raw_response = client.do_request(
         "POST",
-        "/plugin/products/" f"{client.get_threat_response_endpoint()}/api/v1/intels",
+        f"/plugin/products/{client.get_threat_response_endpoint()}/api/v1/intels",
         headers={"Content-Disposition": f"attachment; filename=file.{file_extension}", "Content-Type": "application/xml"},
         body=file_content,
     )
@@ -920,7 +920,7 @@ def update_intel_doc(client: Client, data_args: dict) -> tuple[str, dict, Union[
     try:
         # get intel doc intrinsicId
         raw_response = client.do_request(
-            "GET", "/plugin/products/" f"{client.get_threat_response_endpoint()}" f"/api/v1/intels/{id_}"
+            "GET", f"/plugin/products/{client.get_threat_response_endpoint()}/api/v1/intels/{id_}"
         )
         raw_response_data = normalize_api_response(raw_response)
         intrinsic_id = raw_response_data.get("intrinsicId")
@@ -951,7 +951,7 @@ def update_intel_doc(client: Client, data_args: dict) -> tuple[str, dict, Union[
     content_disposition = f"attachment; {content_disposition}"
     raw_response = client.do_request(
         "PUT",
-        "/plugin/products/" f"{client.get_threat_response_endpoint()}" f"/api/v1/intels/{id_}",
+        f"/plugin/products/{client.get_threat_response_endpoint()}/api/v1/intels/{id_}",
         headers={"Content-Disposition": content_disposition, "Content-Type": "application/xml"},
         body=updated_content,
     )
@@ -976,7 +976,7 @@ def delete_intel_doc(client, data_args):
     params = {"id": data_args.get("intel_doc_id")}
     try:
         raw_response = client.do_request(
-            "DELETE", "/plugin/products/" f"{client.get_threat_response_endpoint()}" f"/api/v1/intels/", params=params
+            "DELETE", f"/plugin/products/{client.get_threat_response_endpoint()}/api/v1/intels/", params=params
         )
 
     # If the user provided a intel doc ID which does not exist, the do_request will throw HTTPError exception
@@ -1113,7 +1113,7 @@ def get_alerts(client, data_args) -> tuple[str, dict, Union[list, dict]]:
     )
 
     raw_response = client.do_request(
-        "GET", "/plugin/products/" f"{client.get_threat_response_endpoint()}" f"/api/v1/alerts/", params=params
+        "GET", f"/plugin/products/{client.get_threat_response_endpoint()}/api/v1/alerts/", params=params
     )
 
     alerts = []
@@ -1156,7 +1156,7 @@ def get_alert(client, data_args) -> tuple[str, dict, Union[list, dict]]:
     """
     alert_id = data_args.get("alert_id")
     raw_response = client.do_request(
-        "GET", "/plugin/products/" f"{client.get_threat_response_endpoint()}" f"/api/v1/alerts/{alert_id}"
+        "GET", f"/plugin/products/{client.get_threat_response_endpoint()}/api/v1/alerts/{alert_id}"
     )
     raw_response_data = raw_response.get("data", raw_response)
     alert = get_alert_item(raw_response_data)
@@ -1586,7 +1586,7 @@ def get_labels(client, data_args) -> tuple[str, dict, Union[list, dict]]:
     """
     limit = arg_to_number(data_args.get("limit", 50))
     offset = arg_to_number(data_args.get("offset", 0))
-    raw_response = client.do_request("GET", "/plugin/products/" f"{client.get_threat_response_endpoint()}" f"/api/v1/labels/")
+    raw_response = client.do_request("GET", f"/plugin/products/{client.get_threat_response_endpoint()}/api/v1/labels/")
     assert offset is not None
     raw_response_data = normalize_api_response(raw_response)
     from_idx = min(offset, len(raw_response_data))
@@ -1615,7 +1615,7 @@ def get_label(client, data_args) -> tuple[str, dict, Union[list, dict]]:
     """
     label_id = data_args.get("label_id")
     raw_response = client.do_request(
-        "GET", "/plugin/products/" f"{client.get_threat_response_endpoint()}" f"/api/v1/labels/{label_id}"
+        "GET", f"/plugin/products/{client.get_threat_response_endpoint()}/api/v1/labels/{label_id}"
     )
 
     raw_response_data = normalize_api_response(raw_response)

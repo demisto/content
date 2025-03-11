@@ -6,7 +6,7 @@ from CommonServerUserPython import *
 
 import dateparser
 from requests import Response
-from typing import Dict, Any, Union, Tuple
+from typing import Any
 from requests.exceptions import (
     MissingSchema,
     InvalidSchema,
@@ -37,21 +37,21 @@ MAX_WORKERS = 5
 TOKEN_TIME_DIFF = 60
 INTEGRATION_VERSION = "v1.0"
 
-URL_SUFFIX: Dict[str, str] = {
+URL_SUFFIX: dict[str, str] = {
     "GET_TOKEN": "/token",
     "GET_EVENTS": "/policy_events",
     "REMEDIATE_MSG": "/messages/{}/remediate",
     "GET_MESSAGES": "/messages",
 }
 
-MESSAGES: Dict[str, str] = {
+MESSAGES: dict[str, str] = {
     "BAD_REQUEST_ERROR": "An error occurred while fetching the data.",
     "AUTHENTICATION_ERROR": "Unauthenticated. Check the configured API Key and Secret Key.",
     "PROXY_ERROR": "Proxy Error - cannot connect to proxy. Either try clearing the 'Use system proxy' check-box or "
     "check the host, authentication details and connection details for the proxy.",
     "SSL_CERT_ERROR": "SSL Certificate Verification Failed - try selecting 'Trust any certificate' checkbox in the "
     "integration configuration.",
-    "INTERNAL_SERVER_ERROR": "The server encountered an internal error for Agari and was unable to complete " "your request.",
+    "INTERNAL_SERVER_ERROR": "The server encountered an internal error for Agari and was unable to complete your request.",
     "MISSING_SCHEMA_ERROR": "Invalid API URL. No schema supplied: http(s).",
     "INVALID_SCHEMA_ERROR": "Invalid API URL. Supplied schema is invalid, supports http(s).",
     "INVALID_API_URL": "Invalid API URL.",
@@ -70,7 +70,7 @@ MESSAGES: Dict[str, str] = {
     '"Message Alert". ',
 }
 
-HR_MESSAGES: Dict[str, str] = {"REMEDIATE_MSG_SUCCESS": "Message ID - {} remediated successfully with operation '{}'."}
+HR_MESSAGES: dict[str, str] = {"REMEDIATE_MSG_SUCCESS": "Message ID - {} remediated successfully with operation '{}'."}
 
 
 def strip_blank(args: dict) -> dict:
@@ -185,8 +185,8 @@ class Client(BaseClient):
                     return resp
                 else:
                     return resp.json()
-            else:
-                return resp
+
+            return resp
 
     @staticmethod
     def handle_demisto_exception(e) -> None:
@@ -305,7 +305,7 @@ def get_fetch_limit(fetch_limit) -> int:
     :param fetch_limit: The maximum number of incident want to fetch.
     :return: fetch limit
     """
-    fetch_limit = DEFAULT_FETCH_LIMIT if not fetch_limit else fetch_limit
+    fetch_limit = fetch_limit if fetch_limit else DEFAULT_FETCH_LIMIT
     try:
         fetch_limit_int = int(fetch_limit)
         if not 1 <= fetch_limit_int <= 200:
@@ -334,7 +334,7 @@ def validate_fetch_policy_action(fetch_policy_action) -> bool:
     if fetch_policy_action == "" or fetch_policy_action is None:
         return True
 
-    if not (fetch_policy_action in policy_actions):
+    if fetch_policy_action not in policy_actions:
         raise ValueError(MESSAGES["INVALID_POLICY_ACTION_TYPE"])
     return False
 
@@ -351,7 +351,7 @@ def validate_exclude_alert_type(exclude_alert_type) -> bool:
     if exclude_alert_type == "" or exclude_alert_type is None:
         return True
 
-    if not (exclude_alert_type in exclude_alert_types):
+    if exclude_alert_type not in exclude_alert_types:
         raise ValueError(MESSAGES["INVALID_EXCLUDE_ALERT_TYPE"])
     return False
 
@@ -478,7 +478,7 @@ def test_function(**kwargs) -> str:
     return "ok"
 
 
-def get_events_params(args: Dict[str, Any], max_record=MAX_LIMIT_FOR_EVENT) -> Dict[str, Any]:
+def get_events_params(args: dict[str, Any], max_record=MAX_LIMIT_FOR_EVENT) -> dict[str, Any]:
     """
     Validates the input arguments of command and returns parameter dictionary
     or raises ValueError in case of validation failed.
@@ -540,7 +540,7 @@ def get_events_params(args: Dict[str, Any], max_record=MAX_LIMIT_FOR_EVENT) -> D
     return args
 
 
-def list_policy_events_command(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def list_policy_events_command(client: Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Retrieve list of events based on various argument(s).
     Will raise an exception if validation fails.
@@ -574,7 +574,7 @@ def list_policy_events_command(client: Client, args: Dict[str, Any]) -> Union[st
     )
 
 
-def list_message_data_command(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def list_message_data_command(client: Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Retrieve list of messages based on various argument(s).
     Will raise an exception if validation fails.
@@ -618,7 +618,7 @@ def list_message_data_command(client: Client, args: Dict[str, Any]) -> Union[str
     )
 
 
-def remediate_message_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def remediate_message_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Remediate a message by applying a remediation operation 'move' or 'delete'.
 
@@ -650,7 +650,7 @@ def remediate_message_command(client: Client, args: Dict[str, Any]) -> CommandRe
     return CommandResults(readable_output=HR_MESSAGES["REMEDIATE_MSG_SUCCESS"].format(message_id, action))
 
 
-def get_list_policies_api_endpoint(client: Client, params: Dict[str, Any]) -> Any:
+def get_list_policies_api_endpoint(client: Client, params: dict[str, Any]) -> Any:
     """
     This function gets list of policies
 
@@ -671,7 +671,7 @@ def get_list_policies_api_endpoint(client: Client, params: Dict[str, Any]) -> An
     )
 
 
-def fetch_incidents_params(**kwargs) -> Dict[str, Any]:
+def fetch_incidents_params(**kwargs) -> dict[str, Any]:
     """
     Validates the input arguments of integration for fetching incidents and returns parameter dictionary
     or raises ValueError in case of validation failed.
@@ -735,10 +735,10 @@ def get_message(client: Client, policy_id: str) -> Any:
 
 def fetch_incidents(
     client: Client,
-    last_run: Dict[str, Any],
-    args: Dict[str, Any],
+    last_run: dict[str, Any],
+    args: dict[str, Any],
     call_from_test=False,
-) -> Tuple[dict, list]:
+) -> tuple[dict, list]:
     """
     This function is called for fetching incidents.
     This function gets all policies, then after using ThreadPoolExecutor, for each policy in all policies, get each
@@ -760,7 +760,7 @@ def fetch_incidents(
 
     first_fetch = args.get("first_fetch")
     # Set first fetch time as default if user leave empty
-    first_fetch = DEFAULT_FIRST_FETCH if not first_fetch else first_fetch
+    first_fetch = first_fetch if first_fetch else DEFAULT_FIRST_FETCH
 
     fetch_limit = args.get("max_fetch", DEFAULT_FETCH_LIMIT)
 
@@ -870,7 +870,7 @@ def main() -> None:
             first_fetch_time = demisto.params().get("first_fetch")
 
             # Set first fetch time as default if user leave empty
-            first_fetch_time = DEFAULT_FIRST_FETCH if not first_fetch_time else first_fetch_time
+            first_fetch_time = first_fetch_time if first_fetch_time else DEFAULT_FIRST_FETCH
 
             incident_type = demisto.params().get("incidentType")
 

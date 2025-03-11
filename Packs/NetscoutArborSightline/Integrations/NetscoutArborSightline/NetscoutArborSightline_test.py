@@ -162,7 +162,7 @@ def test_calculate_amount_of_incidents_raise_error(mocker):
 
     with pytest.raises(
         DemistoException,
-        match="Could not calculate page size, last page number was not found:\n" "https://xsoar-example:57585/api/sp/v7/alerts/?",
+        match="Could not calculate page size, last page number was not found:\nhttps://xsoar-example:57585/api/sp/v7/alerts/?",
     ):
         client.calculate_amount_of_incidents("", {})
 
@@ -231,7 +231,7 @@ def test_validate_json_arg_raise_error():
      - Ensure a parsing error was raised
     """
     with pytest.raises(
-        DemistoException, match="The value given in the  argument is not a valid JSON format:\n" '{"some_key" "some_value"}'
+        DemistoException, match='The value given in the  argument is not a valid JSON format:\n{"some_key" "some_value"}'
     ):
         validate_json_arg('{"some_key" "some_value"}', "")
 
