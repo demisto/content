@@ -62,6 +62,7 @@ class Client(BaseClient):
             suffix = f'indicators/{section}/{argument}/{sub_section}'
         else:
             suffix = f'{section}/{sub_section}'
+        demisto.debug(f"The url is {suffix=}")
         # Send a request using our http_request wrapper
         if sub_section == 'passive_dns':
             return self._http_request('GET',
@@ -73,7 +74,7 @@ class Client(BaseClient):
                                         url_suffix=suffix,
                                         params=params)
         except DemistoException as e:
-            demisto.debug(e)
+            demisto.debug(f"The DemistoException is {e.message}")
             if hasattr(e.res, 'status_code'):
                 if e.res.status_code == 404:
                     result = 404
