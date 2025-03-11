@@ -23,6 +23,7 @@ from AbnormalSecurity import (Client, check_the_status_of_an_action_requested_on
                               get_the_activity_of_a_specific_vendor_command,
                               get_a_list_of_vendor_cases_command,
                               get_the_details_of_a_vendor_case_command,
+                              get_details_of_a_threat_request,
                               get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command, fetch_incidents, ISO_8601_FORMAT)
 from CommonServerPython import DemistoException
 from datetime import datetime
@@ -82,6 +83,10 @@ def mock_get_a_list_of_threats_request(mocker):
     mocker.patch("AbnormalSecurity.Client.get_a_list_of_threats_request").return_value \
         = util_load_json('test_data/test_get_list_of_abnormal_threats.json')
 
+@pytest.fixture
+def mock_get_details_of_a_threat_request(mocker):
+    mocker.patch("AbnormalSecurity.Client.get_details_of_a_threat_request").return_value \
+        = util_load_json('test_data/test_get_details_of_a_threat.json')
 
 @pytest.fixture
 def mock_get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(mocker):
@@ -515,3 +520,22 @@ def test_fetch_abuse_campaign_incidents(mocker, mock_get_a_list_of_campaigns_sub
         fetch_threats=False
     )
     assert len(incidents) == 1
+
+def test_get_details_of_a_threat_request(mocker, mock_get_details_of_a_threat_request):
+    client = mock_client(mocker, util_load_json('test_data/test_get_details_of_a_threat.json'))
+    results = get_details_of_a_threat_request(client, {})
+    assert results.outputs.get('threats')[0].get('threatId') == 'asdf097sdf907'
+    assert results.outputs_prefix == 'AbnormalSecurity.inline_response_200'
+
+def test_get_details_of_a_threat_request_page_2(mocker, mock_get_details_of_a_threat_request):
+    client = mock_client(mocker, util_load_json('test_data/test_get_details_of_a_threat.json'))
+    results = get_details_of_a_threat_request(client, {'page_number': 2})
+    assert results.outputs.get('threats')[0].get('threatId') == 'asdf097sdf907'
+    assert results.outputs_prefix == 'AbnormalSecurity.inline_response_200'
+
+def test_get_details_of_a_threat_request_nanosecond_timestamp(mocker, mock_get_details_of_a_threat_request):
+    client = mock_client(mocker, util_load_json('test_data/test_get_details_of_a_threat.json'))
+    results = get_details_of_a_threat_request(client, {})
+    assert results.outputs.get('threats')[0].get('threatId') == 'asdf097sdf907'
+    assert results.outputs_prefix == 'AbnormalSecurity.inline_response_200'
+    assert results.outputs.get('threats')[0].get('messages')[0].get('receivedTime') == '2023-12-03T19:26:36.123456'
