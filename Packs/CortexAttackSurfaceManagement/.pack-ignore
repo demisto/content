@@ -19,6 +19,9 @@ ignore=RN115
 [file:layoutscontainer-ASM_Alert_Layout.json]
 ignore=LO107
 
+[file:RankServiceOwners/RankServiceOwners.py]
+ignore=GR103
+
 [known_words]
 ASM
 CMDB
