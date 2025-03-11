@@ -84,7 +84,7 @@ class Client(STIX2XSOARParser):
                     except requests.exceptions.HTTPError as e:
                         if e.response.status_code == 502:
                             demisto.debug("Received 502 error, retrying...")
-                            time.sleep(25)
+                            time.sleep(25)  # pylint: disable=E9003
                         else:
                             raise
 

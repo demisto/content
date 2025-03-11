@@ -104,7 +104,7 @@ async def handle_get(
 
         return Response(content=list_response.get("body"))
     except Exception as e:
-        return f"{e}"
+        return e
 
 
 def main() -> None:
