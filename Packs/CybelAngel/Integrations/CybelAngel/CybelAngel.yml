@@ -2,50 +2,50 @@ commonfields:
   id: CybelAngel
   version: -1
 configuration:
-- section: Authentication
+- section: Connect
   additionalinfo: Client ID & Secret for OAuth 2.0 Authentication for CybelAngel API
   display: CybelAngel Client ID
   name: credentials
   required: true
   type: 9
-- section: Authentication
+- section: Connect
   additionalinfo: CybelAngel Tenant ID to create comments on reports
   display: CybelAngel Tenant ID
   name: tenant_id
   required: true
   type: 0
-- section: Fetching
+- section: Collect
   defaultvalue: 7
   display: First fetch Interval (Select amount of days to fetch back in time)
   name: first_fetch
   required: true
   type: 0
-- section: Server Configuration
+- section: Collect
   additionalinfo: Base Url for CybelAngel platform
   defaultvalue: https://platform.cybelangel.com
   display: Base URL
   name: base_url
   required: false
   type: 0
-- section: Fetching
+- section: Collect
   additionalinfo: Maximum number of incidents to fetch per fetch cycle (This doesn't do anything)
   defaultvalue: 50
   display: Max Fetch
   name: max_fetch
   required: false
   type: 0
-- section: Fetching
+- section: Collect
   display: Fetch incidents
   name: isFetch
   required: false
   type: 8
-- section: Fetching
+- section: Collect
   defaultvalue: "1"
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   required: false
   type: 19
-- section: Fetching
+- section: Collect
   display: Incident type
   name: incidentType
   required: false
@@ -162,6 +162,5 @@ tests:
 - No tests (auto formatted)
 category: "Data Enrichment & Threat Intelligence"
 sectionorder:
-- Authentication
 - Connect
 - Collect
