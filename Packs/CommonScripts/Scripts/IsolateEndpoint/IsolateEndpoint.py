@@ -88,7 +88,7 @@ def initialize_commands() -> list:
             brand='Microsoft Defender Advanced Threat Protection',
             name='microsoft-atp-isolate-machine',
             arg_mapping={'machine_id': 'agent_id'},
-            hard_coded_args={'isolation_type': 'Full'},
+            hard_coded_args={'isolation_type': 'Full', 'comment': 'Isolated endpoint with IsolateEndpoint command.'},
             pre_command_check=check_conditions_microsoft_atp_isolate_machine
         ),
     ]
@@ -177,7 +177,7 @@ def check_conditions_cybereason_isolate_machine(verbose: bool,
         demisto.debug(f'Got raw response from cybereason-is-probe-connected command {raw_response}.')
     except Exception as e:
         return False, 'Could not execute cybereason-is-probe-connected command'
-
+    # TODO
     return True
 
 
@@ -200,8 +200,8 @@ def check_conditions_microsoft_atp_isolate_machine(verbose: bool,
 
     if not args.get('agent_id'):
         args['agent_id'] = agent_id
-    # return True # todo
-    return False
+    demisto.debug(f'Appened agent id to args {args=}.')
+    return True
 
 
 """ HELPER FUNCTIONS """
@@ -428,9 +428,6 @@ def structure_endpoints_data(get_endpoint_data_results: dict | list | None) -> l
     if get_endpoint_data_results:
         if not isinstance(get_endpoint_data_results, list):
             get_endpoint_data_results = [get_endpoint_data_results]
-        if len(get_endpoint_data_results) > 1:
-            get_endpoint_data_results = [get_endpoint_data_results[-1]]
-
         # remove None values
         return [item for item in get_endpoint_data_results if item is not None]
     return []
@@ -455,8 +452,8 @@ def main():
         zipped_args = map_zipped_args(agent_ids, agent_ips, agent_hostnames)
         demisto.debug(f'zipped_args={zipped_args}')
 
-        endpoint_data_results = structure_endpoints_data(execute_command(
-            command="get-endpoint-data-modified", args=args))  # todo to change name back
+        endpoint_data_results = execute_command(
+            command="get-endpoint-data-modified", args=args)  # todo to change name back
 
         demisto.debug(f'these are the results from get_endpoint_data_results execute_command {endpoint_data_results}')
 
