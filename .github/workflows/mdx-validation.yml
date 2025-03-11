@@ -180,9 +180,12 @@ jobs:
           done
           
           if [ ${#errors[@]} -ne 0 ]; then
+            echo "\n==============================="
             echo "The following README.md files failed MDX validation:"
+            echo "===============================\n"
             for err in "${errors[@]}"; do
               echo "- $err"
             done
+            echo "\n==============================="
             exit 1
           fi
