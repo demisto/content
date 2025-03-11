@@ -79,6 +79,54 @@
 
 
 
+#name: Validate All README.md Files with MDX
+#
+#on:
+#  pull_request:
+#
+#jobs:
+#  validate-readmes:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v3
+#
+#      - name: Set up Node.js
+#        uses: actions/setup-node@v3
+#        with:
+#          node-version: '20'
+#
+#      - name: Install dependencies
+#        run: |
+#          npm install commander fs-extra @mdx-js/mdx
+#
+#      - name: Find and Validate all README.md files
+#        run: |
+#          READMES=$(find . -type f -name "README.md")
+#          if [ -z "$READMES" ]; then
+#            echo "No README.md files found. Skipping validation."
+#            exit 0
+#          fi
+#          for file in $READMES; do
+#            node - "$file" << 'EOF'
+#          const { readFile } = require('fs-extra');
+#          const mdx = require('@mdx-js/mdx');
+#
+#          async function parseMDX(file) {
+#              try {
+#                  const contents = await readFile(file, 'utf8');
+#                  await mdx(contents);
+#              } catch (error) {
+#                  console.error(`MDX parse failure in ${file}: ` + error);
+#                  process.exit(1);
+#              }
+#          }
+#
+#          const file = process.argv[2];
+#          parseMDX(file);
+#          EOF
+#          done
+
 name: Validate All README.md Files with MDX
 
 on:
@@ -107,6 +155,7 @@ jobs:
             echo "No README.md files found. Skipping validation."
             exit 0
           fi
+          errors=()
           for file in $READMES; do
             node - "$file" << 'EOF'
           const { readFile } = require('fs-extra');
@@ -125,4 +174,15 @@ jobs:
           const file = process.argv[2];
           parseMDX(file);
           EOF
+            if [ $? -ne 0 ]; then
+              errors+=("$file")
+            fi
           done
+          
+          if [ ${#errors[@]} -ne 0 ]; then
+            echo "The following README.md files failed MDX validation:"
+            for err in "${errors[@]}"; do
+              echo "- $err"
+            done
+            exit 1
+          fi
