@@ -7,7 +7,8 @@ from sigma.modifiers import reverse_modifier_mapping
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-MITRE_TECHNIQUE_CACHE = {}
+MITRE_TECHNIQUE_CACHE: dict[str, str] = {}
+
 
 def get_mitre_technique_name(mitre_id: str, indicator_type: str) -> str:
     """
@@ -22,7 +23,7 @@ def get_mitre_technique_name(mitre_id: str, indicator_type: str) -> str:
     """
     if mitre_id in MITRE_TECHNIQUE_CACHE:
         return MITRE_TECHNIQUE_CACHE[mitre_id]
-    
+
     try:
         query = f'type:"{indicator_type}" and {mitre_id}'
         demisto.debug(f'Querying for {query} in TIM')
@@ -37,11 +38,11 @@ def get_mitre_technique_name(mitre_id: str, indicator_type: str) -> str:
             indicator = response[0].get("value", "")
             MITRE_TECHNIQUE_CACHE[mitre_id] = indicator
             demisto.debug(f'Found attack-pattern - {indicator}')
-        
+
         else:
             demisto.debug(f'Could not find the attack-pattern - {mitre_id}')
             indicator = ''
-        
+
         return indicator
 
     except Exception as e:
@@ -73,8 +74,9 @@ def create_indicator_relationships(indicator: str, product: str, relationships: 
                                                            relationship["type"],
                                                            relation_type="detects"))
 
-    #return_results(CommandResults(readable_output=f'Created A new Sigma Rule indicator:\n{indicator}'))
+    # return_results(CommandResults(readable_output=f'Created A new Sigma Rule indicator:\n{indicator}'))
     return final_relationships
+
 
 def create_relationship(indicator_value: str, entity_b: str, entity_b_type: str, relation_type: str) -> EntityRelationship:
     """
@@ -149,7 +151,7 @@ def parse_tags(tags: list) -> tuple[list[dict[str, str]], list[str], str]:
             if tag.name.lower().startswith("t"):
                 indicator_type = "Attack Pattern"
                 mitre_name = get_mitre_technique_name(tag.name, indicator_type)
-                
+
             else:
                 indicator_type = "Tool"
                 mitre_name = get_mitre_technique_name(tag.name, indicator_type)
@@ -207,9 +209,9 @@ def parse_and_create_indicator(rule: SigmaRule, raw_rule: str) -> dict[str, Any]
         "sigmadetection": parse_detection_field(rule),
         "sigmafalsepositives": [{"reason": fp} for fp in rule.falsepositives],
         "publications": [{"link": ref,
-                        "source": "Sigma Rule",
-                        "title": rule.title,
-                        "date": f'{rule.date}'} for ref in rule.references]
+                          "source": "Sigma Rule",
+                          "title": rule.title,
+                          "date": f'{rule.date}'} for ref in rule.references]
     }
 
     if hasattr(rule.logsource, "custom_attributes"):
@@ -229,8 +231,9 @@ def parse_and_create_indicator(rule: SigmaRule, raw_rule: str) -> dict[str, Any]
 
     return {"indicator": indicator, "relationships": relationships}
 
+
 def extract_rules_from_zip(file_path: str) -> list[dict[str, Any]]:
-    
+
     indicators = []
 
     # Extract zip file to the temp directory
@@ -239,7 +242,7 @@ def extract_rules_from_zip(file_path: str) -> list[dict[str, Any]]:
         demisto.debug(f'SGM: Attempting to unzip {file_path} and extract files')
         file_list = [f for f in zip_ref.namelist() if f.endswith('.yml') and not f.startswith(('__', '.'))]
         total_files = len(file_list)
-        
+
         for index, file_name in enumerate(file_list):
             with zip_ref.open(file_name) as file:
                 file_contents = file.read().decode('utf-8')
@@ -248,16 +251,16 @@ def extract_rules_from_zip(file_path: str) -> list[dict[str, Any]]:
                 rule = SigmaRule.from_yaml(file_contents)
                 indicator_data = parse_and_create_indicator(rule, file_contents)
                 indicators.append(indicator_data)
-                
+
             except Exception as e:
                 demisto.error(f'SGM: Error parsing Sigma rule from file "{file_name}": {str(e)}')
                 continue
-        
+
             if index % 100 == 0:
-                demisto.debug(f'SGM: Processing file {index+1}/{total_files}')
-                
+                demisto.debug(f'SGM: Processing file {index + 1}/{total_files}')
+
     demisto.debug(f'Extraction took {time.time() - start:.2f} seconds for {total_files} files')
-    
+
     return indicators
 
 
@@ -272,7 +275,7 @@ def main() -> None:
         args = demisto.args()
         sigma_rule_str = args.get("sigma_rule_str", "")
         sigma_rule_entry_id = args.get("entry_id", "")
-        #zip_entry_id = args.get("zip_entry_id", "")
+        # zip_entry_id = args.get("zip_entry_id", "")
         create_indicators = argToBoolean(args.get("create_indicators", "True"))
 
         # Check if both arguments are empty
@@ -286,15 +289,15 @@ def main() -> None:
         elif sigma_rule_entry_id:
             # Get the file contents using entry_id
             res = demisto.getFilePath(sigma_rule_entry_id)
-            
+
             if not res:
                 return_error(f"File entry {sigma_rule_entry_id} not found")
-            
+
             file_path = res['path']
-            
+
             if res.get("name", "").endswith("zip"):
                 indicators = extract_rules_from_zip(file_path)
-            
+
             else:
                 with open(file_path) as file:
                     sigma_rule_str = file.read()
