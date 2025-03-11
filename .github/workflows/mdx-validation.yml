@@ -33,9 +33,11 @@ jobs:
             exit 0
           fi
 
-          echo "FILES<<EOF" >> $GITHUB_ENV
-          echo "$FILES" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          {
+          echo "FILES<<EOF"
+          echo "$FILES"
+          echo "EOF"
+          } >> $GITHUB_ENV
 
       - name: Validate MDX
         run: |
