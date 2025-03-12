@@ -41,15 +41,11 @@ class TestRCSScan(unittest.TestCase):
         Test the behavior of rcs_scan_start with provided arguments and a mocked demisto object.
         """
         demisto = MagicMock()
-        demisto.executeCommand.return_value = [
-            {"Type": None, "Contents": {"reply": {"scanId": "12345"}}}
-        ]
+        demisto.executeCommand.return_value = [{"Type": None, "Contents": {"reply": {"scanId": "12345"}}}]
         service_id = "1"
         attack_surface_rule_id = "2"
         alert_internal_id = "3"
-        result = rcs_scan_start(
-            service_id, attack_surface_rule_id, alert_internal_id, demisto
-        )
+        result = rcs_scan_start(service_id, attack_surface_rule_id, alert_internal_id, demisto)
         self.assertEqual(result, "RCSScanId Key Value set")
 
     def test_rcs_scan_start_error_response(self):
@@ -71,9 +67,7 @@ class TestRCSScan(unittest.TestCase):
         exception_raised = False
 
         try:
-            rcs_scan_start(
-                service_id, attack_surface_rule_id, alert_internal_id, demisto
-            )
+            rcs_scan_start(service_id, attack_surface_rule_id, alert_internal_id, demisto)
         except Exception:
             exception_raised = True
 

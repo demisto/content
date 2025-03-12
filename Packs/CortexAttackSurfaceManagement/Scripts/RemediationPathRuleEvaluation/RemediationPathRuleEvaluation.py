@@ -40,9 +40,7 @@ def match_remediation_rule(alert_context: dict[str, Any], rules: list) -> list:
         match = True
         conditions = rule["criteria"]
         if len(conditions) == 0:
-            demisto.info(
-                "Invalid Remediation Path Rule - no criteria condition to evaluate."
-            )
+            demisto.info("Invalid Remediation Path Rule - no criteria condition to evaluate.")
             match = False
         else:
             # check criteria conjunction
@@ -52,9 +50,7 @@ def match_remediation_rule(alert_context: dict[str, Any], rules: list) -> list:
                     if not rule_matched:
                         match = False
             else:
-                demisto.info(
-                    f"Criteria conjunction {rule.get('criteria_conjunction')} not supported at this time."
-                )
+                demisto.info(f"Criteria conjunction {rule.get('criteria_conjunction')} not supported at this time.")
                 match = False
 
         if match:
@@ -62,9 +58,7 @@ def match_remediation_rule(alert_context: dict[str, Any], rules: list) -> list:
 
     # sort matched rules by created_at timestamp in descending order
     # return the most recent one
-    matched_rules_sorted = sorted(
-        matched_rules, key=lambda x: x["created_at"], reverse=True
-    )
+    matched_rules_sorted = sorted(matched_rules, key=lambda x: x["created_at"], reverse=True)
     if len(matched_rules_sorted) > 0:
         return [matched_rules_sorted[0]]
     else:
@@ -104,16 +98,10 @@ def evaluate_criteria(cond: dict, alert_context: dict) -> bool:
                 return True
             return False
         # boolean fields
-        elif (
-            field == "development_environment"
-            or field == "cloud_managed"
-            or field == "service_owner_identified"
-        ):
+        elif field == "development_environment" or field == "cloud_managed" or field == "service_owner_identified":
             if value == "true" and (alert_context_value is True or alert_context_value):
                 return True
-            elif value == "false" and (
-                alert_context_value is False or not alert_context_value
-            ):
+            elif value == "false" and (alert_context_value is False or not alert_context_value):
                 return True
             return False
         # text match fields
@@ -122,9 +110,7 @@ def evaluate_criteria(cond: dict, alert_context: dict) -> bool:
             if alert_context_value:
                 if isinstance(alert_context_value, str):
                     alert_context_value = [alert_context_value]
-                providers_set = {
-                    provider.lower() for provider in alert_context_value
-                }
+                providers_set = {provider.lower() for provider in alert_context_value}
                 if value in providers_set:
                     return True
             return False
@@ -198,24 +184,14 @@ def main():
         matched_rule = match_remediation_rule(alert_context, rules)
 
         if len(matched_rule) > 0:
-            demisto.executeCommand(
-                "setAlert", {"asmremediationpathrule": matched_rule[0]}
-            )
-            return_results(
-                CommandResults(readable_output="Remediation path rule match found")
-            )
+            demisto.executeCommand("setAlert", {"asmremediationpathrule": matched_rule[0]})
+            return_results(CommandResults(readable_output="Remediation path rule match found"))
         else:
-            return_results(
-                CommandResults(
-                    readable_output="No matched remediation path rules found"
-                )
-            )
+            return_results(CommandResults(readable_output="No matched remediation path rules found"))
 
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(
-            f"Failed to execute Remediation Path Rule Evaluation. Error: {str(ex)}"
-        )
+        return_error(f"Failed to execute Remediation Path Rule Evaluation. Error: {str(ex)}")
 
 
 """ ENTRY POINT """
