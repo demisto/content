@@ -1,8 +1,8 @@
 {
-  "id": "BreachRx Incident",
+  "id": "BreachRx Privacy Incident",
   "version": -1,
   "locked": false,
-  "name": "BreachRx Incident",
+  "name": "BreachRx Privacy Incident",
   "color": "#42a8d2",
   "playbookId": "BreachRx - Create Incident and get Active Tasks",
   "hours": 0,
