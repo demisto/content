@@ -3,7 +3,8 @@
         "CONTRIBUTION_REVIEWERS": "A list of GitHub username for the contribution team reviewers pool",
         "ON_CALL_DEVS": "A list of on-call users, Use PANW account username",
         "DOC_REVIEWER": "The GitHub username for documentation reviews owner",
-        "TIM_REVIEWER": "The GitHub username for TIM reviews owner"
+        "TIM_REVIEWER": "The GitHub username for TIM reviews owner",
+        "AUTO_UPDATE_DOCKER_REVIEWER": "The GitHub username for auto-update-docker PRs reviews owner"
     },
     "CONTRIBUTION_REVIEWERS": [
         "sapirshuker",
@@ -17,5 +18,6 @@
         "okarkkatz"
     ],
     "DOC_REVIEWER": "ShirleyDenkberg",
-    "TIM_REVIEWER": "MLainer1"
+    "TIM_REVIEWER": "MLainer1",
+    "AUTO_UPDATE_DOCKER_REVIEWER": "MosheEichler"
 }
