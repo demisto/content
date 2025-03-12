@@ -373,12 +373,6 @@ repos:
     - git diff HEAD
     skip: true
 
-- repo: https://github.com/igorshubovych/markdownlint-cli
-  rev: v0.44.0  # Check for the latest version
-  hooks:
-    - id: markdownlint
-      files: \.md$
-
 - repo: local
   hooks:
     - id: mdx-validation
@@ -387,3 +381,10 @@ repos:
       language: system
       types: [file]
       files: "^README\\.md$"
+
+- repo: https://github.com/igorshubovych/markdownlint-cli
+  rev: v0.36.0  # Check for the latest version
+  hooks:
+    - id: markdownlint
+      files: \.md$
+
