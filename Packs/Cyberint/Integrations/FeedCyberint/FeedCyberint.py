@@ -367,7 +367,7 @@ def get_indicators_command(
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix="Cyberint",
+        outputs_prefix="Cyberint_indicators",
         outputs_key_field="value",
         raw_response=indicators,
         outputs=indicators,
@@ -451,7 +451,7 @@ def get_url_command(
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix="Cyberint",
+        outputs_prefix="Cyberint_url",
         outputs_key_field="value",
         raw_response=indicator,
         outputs=indicator,
@@ -546,7 +546,7 @@ def get_ipv4_command(
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix="Cyberint",
+        outputs_prefix="Cyberint_ipv4",
         outputs_key_field="value",
         raw_response=indicator,
         outputs=indicator,
@@ -659,7 +659,7 @@ def get_domain_command(
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix="Cyberint",
+        outputs_prefix="Cyberint_domain",
         outputs_key_field="value",
         raw_response=indicator,
         outputs=indicator,
@@ -751,7 +751,7 @@ def get_file_sha256_command(
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix="Cyberint",
+        outputs_prefix="Cyberint_file_sha256",
         outputs_key_field="value",
         raw_response=indicator,
         outputs=indicator,
