@@ -43,10 +43,7 @@ tasks:
       id: b66537ca-cc94-4509-8985-3bb247c163a9
       version: -1
       name: CrowdStrike Falcon - Search Endpoints By Hash
-      description: This playbook is part of the 'Malware Investigation And Response'
-        pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
-        This playbook searches across the organization for other endpoints associated
-        with a specific SHA256 hash.
+      description: This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response. This playbook searches across the organization for other endpoints associated with a specific SHA256 hash.
       playbookName: CrowdStrike Falcon - Search Endpoints By Hash
       type: playbook
       iscommand: false
@@ -89,8 +86,7 @@ tasks:
       id: 481954b9-682a-4722-8790-1547663edb81
       version: -1
       name: Search Endpoints By Hash - Carbon Black Protection
-      description: Hunt for endpoint activity involving hash IOCs, using Carbon Black
-        Protection.
+      description: Hunt for endpoint activity involving hash IOCs, using Carbon Black Protection.
       playbookName: Search Endpoints By Hash - Carbon Black Protection
       type: playbook
       iscommand: false
@@ -286,8 +282,7 @@ tasks:
       - "12"
     scriptarguments:
       Hash:
-        simple: ${.=Object.keys(val.inputs).map(function(f) { return val.inputs[f];
-          }).reduce(function(a, b){ return a.concat(b); }, [])}
+        simple: ${.=Object.keys(val.inputs).map(function(f) { return val.inputs[f]; }).reduce(function(a, b){ return a.concat(b); }, [])}
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -461,7 +456,7 @@ inputs:
       accessor: MD5
   required: false
   description: MD5 Hash
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: SHA1Hash
   value:
     complex:
@@ -469,7 +464,7 @@ inputs:
       accessor: SHA1
   required: false
   description: SHA1 Hash
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: SHA256Hash
   value:
     complex:
@@ -477,7 +472,7 @@ inputs:
       accessor: SHA256
   required: false
   description: SHA256 Hash
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Endpoint.Hostname
   description: Device hostname
@@ -487,4 +482,9 @@ outputs:
   type: unknown
 fromversion: 5.0.0
 tests:
- -  No tests
+- No tests
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS

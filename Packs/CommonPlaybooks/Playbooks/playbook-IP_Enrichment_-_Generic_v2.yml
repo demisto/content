@@ -10,7 +10,7 @@ description: |-
   - Determine IP address reputation using the !ip command
   - Separate internal and external IP addresses
   - For internal IP addresses, get host information.
-  
+
   When executing this playbook through IP Enrichment - Generic v2, IP classification and resolution will be handled by the main playbook, improving performance.
 starttaskid: "0"
 tasks:
@@ -652,7 +652,7 @@ inputs:
   description: |-
     Whether to execute common logic, like the classification of IP addresses to ranges and resolving, in the the main (IP Enrichment - Generic v2) enrichment playbook, instead of in the sub-playbooks.
     Possible values are: True, False.
-    
+
     Setting this to True will execute the relevant commands in the main playbook instead of executing them in both sub-playbooks.
 
     Set this to True in the parent playbook if you are using the parent playbook, as opposed to using the sub-playbooks directly in your playbooks, as this will improve the performance of the playbook and reduce the overfall size of the incident.
@@ -1213,3 +1213,8 @@ outputs:
   type: string
 tests:
 - IP Enrichment - Generic v2 - Test
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS

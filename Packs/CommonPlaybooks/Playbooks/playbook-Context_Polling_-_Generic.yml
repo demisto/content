@@ -5,24 +5,24 @@ id: Context Polling - Generic
 inputs:
 - description: 'The context key to poll for a value. Can contain ''.'', for example: "ContextKey1.ContextKey2.ContextKey3"'
   key: key
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value: {}
 - description: 'The regex to check the field for. By default the regex contains .+, which matches anything other than None.'
   key: value
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value:
     simple: .+
 - description: How often to check (in minutes).
   key: frequency
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value:
     simple: "1"
 - description: When to timeout (in minutes).
   key: timeout
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value:
     simple: "10"
@@ -157,4 +157,9 @@ view: |-
     }
   }
 tests:
- -  No tests
+- No tests
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS

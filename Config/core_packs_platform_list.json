@@ -267,9 +267,6 @@
         {
             "id": "AWS-IAM",
             "supportedModules": [
-                "C1",
-                "C3",
-                "X0",
                 "X1",
                 "X3",
                 "X5",
