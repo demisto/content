@@ -2,7 +2,7 @@
     "name": "Starter Pack",
     "description": "Starter Pack for learning how to build new content in Cortex XSOAR",
     "support": "community",
-    "currentVersion": "1.0.15",
+    "currentVersion": "1.0.16",
     "author": "Cortex XSOAR",
     "url": "https://put_your_support_url_here",
     "email": "put_your_support_email@here",
