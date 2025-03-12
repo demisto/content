@@ -14,11 +14,12 @@ def etl_to_pcap(etl_file_path, output_file_path):
 
 def get_file_name(entry_id):
     ctx = demisto.context()
-    res = demisto.dt(ctx, "File(val['EntryID'] == '%s')" % entry_id)
+    res = demisto.dt(ctx, f"File(val['EntryID'] == '{entry_id}')")
     if res:
         if type(res) is list:
             res = res[0]
         return os.path.splitext(res.get("Name", ""))[0]
+    return None
 
 
 def main():

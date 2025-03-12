@@ -55,11 +55,10 @@ def main():
         workspace = ""
 
         for old, new in zip(oldgrid, newgrid):
-            if "action" in new:
-                if new["action"] == "Current" and old["action"] != "Current":
-                    workspace = new["name"]
-                    execute_command("setIncident", {"customFields": {"anythingllmworkspace": workspace}})
-                    break
+            if "action" in new and new["action"] == "Current" and old["action"] != "Current":
+                workspace = new["name"]
+                execute_command("setIncident", {"customFields": {"anythingllmworkspace": workspace}})
+                break
 
         index = 0
         updated = False

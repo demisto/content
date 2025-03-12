@@ -20,7 +20,7 @@ def check_context():
     failed_tasks = failed_tasks[0].get("Contents", {}).get("context", {}).get("GetFailedTasks")
     if not failed_tasks:
         raise DemistoException(
-            "Couldn't find failed tasks in the context under the key GetFailedTasks. Please run " "!GetFailedTasks and try again."
+            "Couldn't find failed tasks in the context under the key GetFailedTasks. Please run !GetFailedTasks and try again."
         )
     return failed_tasks
 

@@ -556,7 +556,7 @@ UPLOAD_LARGE_FILE_COMMAND_ARGS = [
 ]
 
 return_value_upload_without_upload_session = {
-    "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#sites" "(some_site)/drive/items/$entity",
+    "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#sites(some_site)/drive/items/$entity",
     "@microsoft.graph.downloadUrl": "some_url",
     "createdDateTime": "2022-12-15T12:56:27Z",
     "eTag": '"{11111111-1111-1111-1111-111111111111},11"',

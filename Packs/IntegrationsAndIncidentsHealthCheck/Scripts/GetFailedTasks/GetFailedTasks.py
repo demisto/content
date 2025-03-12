@@ -227,7 +227,7 @@ def get_rest_api_instance(rest_api_instance: str | None) -> str | None:
             demisto.debug(f"Using REST API instance: {rest_api_instance} to retrieve incident tasks.")
             if not rest_api_instance:
                 raise DemistoException(
-                    "Could not find which Rest API instance to use, " "Please specify the rest_api_instance argument."
+                    "Could not find which Rest API instance to use, Please specify the rest_api_instance argument."
                 )
     return rest_api_instance
 
@@ -311,7 +311,7 @@ def main():
         total_incidents = incidents_data if incidents_data else []
 
         demisto.debug(
-            f"got {len(total_incidents)} incidents using {max_incidents} limit. " f"Elapsed time: {time.time() - start_time}"
+            f"got {len(total_incidents)} incidents using {max_incidents} limit. Elapsed time: {time.time() - start_time}"
         )
 
         rest_api_instance = get_rest_api_instance(rest_api_instance)

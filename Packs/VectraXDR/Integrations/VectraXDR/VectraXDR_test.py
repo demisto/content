@@ -3214,18 +3214,19 @@ def test_get_modified_remote_command_successful_retrieval(client):
     - Calling the 'get_modified_remote_data_command' function with the provided client and arguments.
     """
     # Mock dateparser, get_last_mirror_run, list_entities_request, and set_last_mirror_run
-    with patch("VectraXDR.dateparser.parse", return_value=datetime(2023, 9, 20, 10)):
-        with patch("VectraXDR.get_last_mirror_run", return_value={"lastMirrorRun": "2023-09-20T10:00:00+00:00"}):
-            with patch("VectraXDR.VectraClient.list_entities_request", return_value={"results": [], "next_url": None}):
-                with patch("VectraXDR.set_last_mirror_run"):
-                    args = {"lastUpdate": "2023-09-20T10:00:00+00:00"}
-                    get_modified_remote_data_command(client, args)
+    with (patch("VectraXDR.dateparser.parse", return_value=datetime(2023, 9, 20, 10)),
+          patch("VectraXDR.get_last_mirror_run", return_value={"lastMirrorRun": "2023-09-20T10:00:00+00:00"}),
+          patch("VectraXDR.VectraClient.list_entities_request", return_value={"results": [], "next_url": None}),
+          patch("VectraXDR.set_last_mirror_run")
+          ):
+        args = {"lastUpdate": "2023-09-20T10:00:00+00:00"}
+        get_modified_remote_data_command(client, args)
 
-                    # Assertions
-                    VectraXDR.dateparser.parse.assert_called_with("2023-09-20T10:00:00+00:00", settings={"TIMEZONE": "UTC"})
-                    VectraXDR.VectraClient.list_entities_request.assert_called_once_with(
-                        last_modified_timestamp="2023-09-20T10:00:00Z", page=1, page_size=500, state=""
-                    )
+        # Assertions
+        VectraXDR.dateparser.parse.assert_called_with("2023-09-20T10:00:00+00:00", settings={"TIMEZONE": "UTC"})
+        VectraXDR.VectraClient.list_entities_request.assert_called_once_with(
+            last_modified_timestamp="2023-09-20T10:00:00Z", page=1, page_size=500, state=""
+        )
 
 
 def test_get_modified_remote_command_max_mirroring_limit_reached(client):

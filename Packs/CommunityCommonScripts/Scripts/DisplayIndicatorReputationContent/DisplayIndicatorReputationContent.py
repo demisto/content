@@ -9,7 +9,7 @@ except Exception:
 
 md = ""
 
-for k, v in scores.items():
+for _k, v in scores.items():
     md += v["content"]
     md += "\r\n\r\n"
 

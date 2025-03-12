@@ -393,7 +393,7 @@ class Code42OrgNotFoundError(Exception):
 
 class Code42InvalidWatchlistTypeError(Exception):
     def __init__(self, watchlist):
-        msg = "Invalid Watchlist type: {}, run !code42-watchlists-list to get a list of available Watchlists.".format(watchlist)
+        msg = f"Invalid Watchlist type: {watchlist}, run !code42-watchlists-list to get a list of available Watchlists."
         super().__init__(msg)
 
 
@@ -414,7 +414,7 @@ class Code42LegalHoldMatterNotFoundError(Exception):
 
 class Code42InvalidLegalHoldMembershipError(Exception):
     def __init__(self, username, matter_name):
-        super().__init__("User '{}' is not an active member of legal hold matter '{}'".format(username, matter_name))
+        super().__init__(f"User '{username}' is not an active member of legal hold matter '{matter_name}'")
 
 
 class Code42SearchFilters:
@@ -940,7 +940,7 @@ class Code42SecurityIncidentFetcher:
         incidents = [self._create_incident_from_alert(a) for a in alerts]
         save_time = datetime.now(UTC).timestamp()
         next_run = {"last_fetch": save_time}
-        return next_run, incidents[: self._fetch_limit], incidents[self._fetch_limit :]
+        return next_run, incidents[: self._fetch_limit], incidents[self._fetch_limit:]
 
     def _fetch_remaining_incidents_from_last_run(self):
         if self._integration_context:
@@ -950,7 +950,7 @@ class Code42SecurityIncidentFetcher:
                 return (
                     self._last_run,
                     remaining_incidents[: self._fetch_limit],
-                    remaining_incidents[self._fetch_limit :],
+                    remaining_incidents[self._fetch_limit:],
                 )
             return None
         return None

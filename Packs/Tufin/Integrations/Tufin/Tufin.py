@@ -363,7 +363,7 @@ def zone_match(ipaddr):
     try:
         zone_list = tos_request("st", "GET", "/securetrack/api/zones/")
         for zone in zone_list["zones"]["zone"]:
-            zone_subnets = tos_request("st", "GET", "/securetrack/api/zones/%s/entries" % zone["id"])
+            zone_subnets = tos_request("st", "GET", f"/securetrack/api/zones/{zone["id"]}/entries")
             zone.update(zone_subnets)
             for subnet in zone_subnets["zone_entries"]["zone_entry"]:
                 ipnet = "{}/{}".format(subnet["ip"], subnet["prefix"])

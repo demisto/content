@@ -23,11 +23,11 @@ excluded_providers = ["get_providers", "binary", "zip", "tar", "json_bytes", "ge
 
 
 def serialize_value(value):
-    if isinstance(value, (datetime, date)):
+    if isinstance(value, datetime | date):
         return value.isoformat()
     elif isinstance(value, Decimal):
         return float(value)
-    elif isinstance(value, (tuple, list)):
+    elif isinstance(value, tuple | list):
         return [serialize_value(v) for v in value]
     elif isinstance(value, dict):
         return {k: serialize_value(v) for k, v in value.items()}

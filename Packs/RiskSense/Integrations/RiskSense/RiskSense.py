@@ -127,7 +127,7 @@ class Client(BaseClient):
             if status_code == 400:
                 error_msg = str(resp.json().get("errors", ""))
                 demisto.debug(
-                    "RiskSense API call failed: Bad Request. One or more argument(s) are invalid. Error: {}".format(error_msg)
+                    f"RiskSense API call failed: Bad Request. One or more argument(s) are invalid. Error: {error_msg}"
                 )
                 raise ValueError("RiskSense API call failed: Bad Request. One or more argument(s) are invalid.")
             elif status_code == 401:
@@ -256,9 +256,8 @@ def prepare_filter_payload(args, projection=None):
             fieldname = RISKSENSE_FIELD_MAPPINGS[fieldname]
 
         # Check validation of IP Address in case of operator = EXACT
-        if fieldname == "ipAddress" and operator == "EXACT":
-            if not is_ip_valid(value, True):
-                raise ValueError("IP Address is invalid.")
+        if fieldname == "ipAddress" and operator == "EXACT" and not is_ip_valid(value, True):
+            raise ValueError("IP Address is invalid.")
 
         # Check validation of multiple values
         validate_values_for_between_operator(args)
@@ -1783,9 +1782,8 @@ def prepare_request_payload_for_tag(args, tag_id):
             fieldname = RISKSENSE_FIELD_MAPPINGS[fieldname]
 
         # Check validation of IP Address in case of operator = EXACT
-        if fieldname == "ipAddress" and operator == "EXACT":
-            if not is_ip_valid(value, True):
-                raise ValueError("IP Address is invalid.")
+        if fieldname == "ipAddress" and operator == "EXACT" and not is_ip_valid(value, True):
+            raise ValueError("IP Address is invalid.")
 
         # Check validation of between operator.
         validate_values_for_between_operator(args)
@@ -1867,7 +1865,7 @@ def get_hosts_command(client, args):
     ec = {}  # type: Dict[str, Any]
     hr = ""
 
-    if resp and "_embedded" in resp.keys():
+    if resp and "_embedded" in resp:
         host_context = []  # type: List[Dict[str, Any]]
         host_ticket_context = []  # type: List[Dict[str, Any]]
         risksense_host_context = []  # type: List[Dict[str, Any]]
@@ -1949,7 +1947,7 @@ def get_host_detail_command(client, args):
 
     hr = ""
     ec = {}  # type: Dict[str, Any]
-    if resp and "_embedded" in resp.keys():
+    if resp and "_embedded" in resp:
         host_context = []  # type: List[Dict[str, Any]]
         risksense_host_context = []  # type: List[Dict[str, Any]]
         host_ticket_context = []  # type: List[Dict[str, Any]]
@@ -1998,7 +1996,7 @@ def get_unique_cves_command(client, args):
 
     hr = ""
     ec = {}  # type: Dict[str, Any]
-    if resp and "_embedded" in resp.keys():
+    if resp and "_embedded" in resp:
         host_findings = resp.get("_embedded", {}).get("hostFindings", [])
         host_findings_context = []  # type: List[Dict[str, Any]]
         host_finding_cve_context = []  # type: List[Dict[str, Any]]
@@ -2085,7 +2083,7 @@ def get_host_findings_command(client, args):
     ec = {}  # type: Dict[str, Any]
     hr = ""
 
-    if resp and "_embedded" in resp.keys():
+    if resp and "_embedded" in resp:
         resp_list_hostfinding = resp.get("_embedded", {}).get("hostFindings", [])
 
         host_finding_details_hr = []  # type: List[Dict[str, Any]]
@@ -2192,7 +2190,7 @@ def get_unique_open_findings_command(client, args):
     unique_open_finding_hr = []  # type: List[Dict[str, Any]]
     ec = {}  # type: Dict[str, Any]
     hr = ""
-    if resp and "_embedded" in resp.keys():
+    if resp and "_embedded" in resp:
         unique_open_finding_list = resp.get("_embedded", {}).get("uniqueHostFindings", [])
         href = get_self_link(resp)
         for unique_open_finding in unique_open_finding_list:
@@ -2253,7 +2251,7 @@ def get_apps_command(client, args):
     if page_number >= total_pages:
         raise ValueError("Invalid page navigation.")
 
-    if resp and "_embedded" in resp.keys():
+    if resp and "_embedded" in resp:
         href = get_self_link(resp)
         apps_list = resp.get("_embedded", {}).get("applications", [])
         app_ticket_context = []  # type: List[Dict[str, Any]]
@@ -2323,7 +2321,7 @@ def get_host_finding_detail_command(client, args):
 
     ec = {}  # type: Dict[str, Any]
     hr = ""
-    if resp and "_embedded" in resp.keys():
+    if resp and "_embedded" in resp:
         host_finding_detail = resp.get("_embedded", {}).get("hostFindings", "")[0]
         host_finding_ticket_context = []  # type: List[Dict[str, Any]]
         host_finding_cve_context = []  # type: List[Dict[str, Any]]
@@ -2375,7 +2373,7 @@ def get_app_detail_command(client, args):
     if resp.get("page", {}).get("totalElements") == 0:
         return "No application detail found for the given argument.", {}, {}
 
-    if resp and "_embedded" in resp.keys():
+    if resp and "_embedded" in resp:
         app_detail_context = []  # type: List[Dict[str, Any]]
         app_ticket_context = []  # type: List[Dict[str, Any]]
         app_detail_dict = resp.get("_embedded", {}).get("applications")[0]
@@ -2501,7 +2499,7 @@ def main():
             return_outputs(*commands[command](client, demisto.args()))
 
     except Exception as e:
-        return_error("Failed to execute {} command.\nError: {}".format(demisto.command(), str(e)))
+        return_error(f"Failed to execute {demisto.command()} command.\nError: {str(e)}")
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:

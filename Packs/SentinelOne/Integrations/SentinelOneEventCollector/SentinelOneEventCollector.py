@@ -212,18 +212,15 @@ def fetch_events(
 
     demisto.debug(f"Fetched event of type: {event_type} from time {last_run}.")
     events = []
-    if "activities" in event_type:
-        if activities := client.get_activities(last_run["last_activity_created"]):
-            events.extend(activities)
-            last_run["last_activity_created"] = str(activities[-1].get("createdAt", ""))
-    if "threats" in event_type:
-        if threats := client.get_threats(last_run["last_threat_created"]):
-            events.extend(threats)
-            last_run["last_threat_created"] = str(threats[-1].get("threatInfo", {}).get("createdAt", ""))
-    if "alerts" in event_type:
-        if alerts := client.get_alerts(last_run["last_alert_created"]):
-            events.extend(alerts)
-            last_run["last_alert_created"] = str(alerts[-1].get("alertInfo", {}).get("createdAt", ""))
+    if "activities" in event_type and (activities := client.get_activities(last_run["last_activity_created"])):
+        events.extend(activities)
+        last_run["last_activity_created"] = str(activities[-1].get("createdAt", ""))
+    if "threats" in event_type and (threats := client.get_threats(last_run["last_threat_created"])):
+        events.extend(threats)
+        last_run["last_threat_created"] = str(threats[-1].get("threatInfo", {}).get("createdAt", ""))
+    if "alerts" in event_type and (alerts := client.get_alerts(last_run["last_alert_created"])):
+        events.extend(alerts)
+        last_run["last_alert_created"] = str(alerts[-1].get("alertInfo", {}).get("createdAt", ""))
 
     demisto.info(f"Setting next run {last_run}.")
     return last_run, events

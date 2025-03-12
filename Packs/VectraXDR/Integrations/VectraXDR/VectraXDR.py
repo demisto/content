@@ -72,7 +72,7 @@ ERRORS = {
     "INVALID_PAGE_RESPONSE": "page contains no results",
     "INVALID_MAX_FETCH": "Invalid Max Fetch: {}. Max Fetch must be a positive integer ranging from 1 to 200.",
     "INVALID_PAGE_SIZE": "Invalid 'page size' provided. Please ensure that the page size value is between 1 and 5000.",
-    "TRIAGE_AS_REQUIRED_WITH_DETECTION_IDS": "'triage_as' argument must be provided when using the 'detection_ids' " "argument. ",
+    "TRIAGE_AS_REQUIRED_WITH_DETECTION_IDS": "'triage_as' argument must be provided when using the 'detection_ids' argument. ",
     "INVALID_OUTCOME": "Invalid outcome value. Valid outcome values are: {}",
     "INVALID_SUPPORT_FOR_ARG": 'The argument "{}" must be set to "{}" when providing value for argument "{}".',
     "ENTITY_IDS_WITHOUT_TYPE": "When using the 'entity_ids' argument, 'entity_type' is required, and vice versa.",
@@ -1612,10 +1612,10 @@ def get_list_entity_detections_command_hr(detections: dict[Any, Any], page: Opti
         host_url = None
         if detection.get("src_account"):
             account_url = (
-                f"[{detection.get('src_account').get('name')}]" f"({trim_api_version(detection.get('src_account').get('url'))})"
+                f"[{detection.get('src_account').get('name')}]({trim_api_version(detection.get('src_account').get('url'))})"
             )
         if detection.get("src_host"):
-            host_url = f"[{detection.get('src_host').get('name')}]" f"({trim_api_version(detection.get('src_host').get('url'))})"
+            host_url = f"[{detection.get('src_host').get('name')}]({trim_api_version(detection.get('src_host').get('url'))})"
         summary = detection.get("summary")
         num_events = 0
         # For counting number of events
@@ -1956,7 +1956,7 @@ def fetch_incidents(client: VectraClient, params: dict[str, Any]) -> List:
         raise ValueError(ERRORS["INVALID_MAX_FETCH"].format(max_fetch_))
     if max_fetch_ > 200:  # type: ignore
         demisto.debug(
-            f"The max fetch value is {max_fetch_}, which is greater than the maximum allowed value " "of 200. Setting it to 200."
+            f"The max fetch value is {max_fetch_}, which is greater than the maximum allowed value of 200. Setting it to 200."
         )
     max_fetch = min(200, max_fetch_)  # type: ignore
     # Default page is 1
@@ -2304,7 +2304,7 @@ def vectra_entity_detection_list_command(client: VectraClient, args: dict[str, A
     if len(detections_ids) == 0:
         return CommandResults(
             outputs={},
-            readable_output="##### Couldn't find any matching detections for " "provided entity ID and type.",
+            readable_output="##### Couldn't find any matching detections for provided entity ID and type.",
             raw_response={},
         )
     # Call Vectra API to retrieve entities
@@ -2323,7 +2323,7 @@ def vectra_entity_detection_list_command(client: VectraClient, args: dict[str, A
     if count == 0:
         return CommandResults(
             outputs={},
-            readable_output="##### Couldn't find any matching entity detections for " "provided filters.",
+            readable_output="##### Couldn't find any matching entity detections for provided filters.",
             raw_response=response,
         )
     detections = response.get("results", {})
@@ -2372,7 +2372,7 @@ def vectra_detection_describe_command(client: VectraClient, args: dict[str, Any]
     if count == 0:
         return CommandResults(
             outputs={},
-            readable_output="##### Couldn't find any matching detections for " "provided detection ID(s).",
+            readable_output="##### Couldn't find any matching detections for provided detection ID(s).",
             raw_response=response,
         )
     detections = response.get("results", {})
@@ -2481,7 +2481,8 @@ def vectra_entity_note_update_command(client: VectraClient, args: dict[str, Any]
     note_id = arg_to_number(args.get("note_id"), arg_name="note_id", required=True)
 
     # Call Vectra API to update entity note
-    notes = client.update_entity_note_request(entity_id=entity_id, entity_type=entity_type, note=note, note_id=note_id)  # type: ignore
+    notes = client.update_entity_note_request(entity_id=entity_id, entity_type=entity_type,
+                                              note=note, note_id=note_id)  # type: ignore
     if notes:
         notes["note_id"] = notes["id"]
         notes.update({"entity_id": entity_id, "entity_type": entity_type})
@@ -3307,7 +3308,8 @@ def get_modified_remote_data_command(client: VectraClient, args: dict) -> GetMod
         GetModifiedRemoteDataResponse: List of incidents IDs which are modified since the last update.
     """
     command_args = GetModifiedRemoteDataArgs(args)
-    command_last_run_date = dateparser.parse(command_args.last_update, settings={"TIMEZONE": "UTC"}).strftime(DATE_FORMAT)  # type: ignore
+    command_last_run_date = dateparser.parse(command_args.last_update, settings={
+                                             "TIMEZONE": "UTC"}).strftime(DATE_FORMAT)  # type: ignore
     modified_entities_ids = []
 
     demisto.debug(f"Last update date of get-modified-remote-data command is {command_last_run_date}.")
@@ -3355,9 +3357,9 @@ def get_modified_remote_data_command(client: VectraClient, args: dict) -> GetMod
     # Filter out None values if there are any.
     modified_entities_ids: List[str] = list(filter(None, modified_entities_ids))  # type: ignore
     demisto.debug(
-        f"Performing get-modified-remote-data command. Numbers Entity IDs to update in XSOAR:" f" {len(modified_entities_ids)}"
+        f"Performing get-modified-remote-data command. Numbers Entity IDs to update in XSOAR: {len(modified_entities_ids)}"
     )
-    demisto.debug(f"Performing get-modified-remote-data command. Entity IDs to update in XSOAR:" f" {modified_entities_ids}")
+    demisto.debug(f"Performing get-modified-remote-data command. Entity IDs to update in XSOAR: {modified_entities_ids}")
 
     # Filter out any duplicate incident IDs.
     updated_incident_ids = list(set(modified_entities_ids))
@@ -3394,7 +3396,7 @@ def get_remote_data_command(client: VectraClient, args: dict) -> GetRemoteDataRe
     command_last_run_dt = arg_to_datetime(args.get("lastUpdate"), arg_name="lastUpdate", required=True)
     command_last_run_timestamp = command_last_run_dt.strftime(DATE_FORMAT)  # type: ignore
     demisto.debug(
-        f"The time when the last time get-remote-data command is called for current incident is " f"{command_last_run_timestamp}."
+        f"The time when the last time get-remote-data command is called for current incident is {command_last_run_timestamp}."
     )
 
     # Retrieve the latest entity data from the Vectra platform.
@@ -3461,7 +3463,7 @@ def get_remote_data_command(client: VectraClient, args: dict) -> GetRemoteDataRe
             if note_date_modified:
                 if note_date_modified <= command_last_run_dt:  # type: ignore
                     demisto.debug(
-                        f"Skipping the note {note.get('id')} as it was modified earlier than the command last run " "timestamp."
+                        f"Skipping the note {note.get('id')} as it was modified earlier than the command last run timestamp."
                     )
                     continue
             else:

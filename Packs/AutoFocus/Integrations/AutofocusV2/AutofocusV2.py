@@ -357,7 +357,7 @@ def validate_sort_and_order_and_artifact(
         true if arguments are valid for the request, false otherwise.
     """
     if artifact_source == "true" and sort:
-        raise Exception("Please remove or disable one of sort or artifact," " As they are not supported in the api together.")
+        raise Exception("Please remove or disable one of sort or artifact, As they are not supported in the api together.")
     elif sort and not order:
         raise Exception("Please specify the order of sorting (Ascending or Descending).")
     elif order and not sort:
@@ -914,7 +914,7 @@ def children_list_generator(field_name, operator, val_list):
 def validate_no_query_and_indicators(query, arg_list):
     if query and any(arg_list):
         raise DemistoException(
-            "The search command can either run a search using a custom query " "or use the builtin arguments, but not both"
+            "The search command can either run a search using a custom query or use the builtin arguments, but not both"
         )
 
 

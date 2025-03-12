@@ -32,7 +32,7 @@ def main():
                     {
                         "ContentsFormat": formats["markdown"],
                         "Type": entryTypes["note"],
-                        "Contents": tblToMd("{0} results:".format(system), data),
+                        "Contents": tblToMd(f"{system} results:", data),
                     }
                 ]
 

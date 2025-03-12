@@ -196,10 +196,10 @@ def format_alert_description(msg: str) -> str:
     """
     default_value = msg
     if msg.find("<html>") != -1 and msg.find("</html>") != -1:
-        resp = msg[msg.find("<html>") + 6 : msg.find("</html>")]
+        resp = msg[msg.find("<html>") + 6: msg.find("</html>")]
         msg = resp.strip()
         if msg.find("Detected ") != -1 and msg.find(" Please click ") != -1:
-            msg = msg[msg.find("Detected ") : msg.find(" Please click ")]
+            msg = msg[msg.find("Detected "): msg.find(" Please click ")]
             return msg
     return default_value
 
@@ -587,7 +587,7 @@ class Client(BaseClient):
         if fromtime is None:
             fromtime = str(dateparser.parse(first_fetch_time))
             fromtime = int(time.mktime(datetime.fromisoformat(fromtime).timetuple()))
-        ustring = "/events?level=10&showInfo=false&showMinor=false&" "showMajor=true&showCritical=false&" "showAnomalous=true"
+        ustring = "/events?level=10&showInfo=false&showMinor=false&showMajor=true&showCritical=false&showAnomalous=true"
         event_endpoint = f"{ustring}&fromTime={fromtime}&toTime={seconds_since_epoch}"  # disable-secrets-detection
         headers = self.headers
         if max_fetch is None:
@@ -664,12 +664,12 @@ class Client(BaseClient):
             event_time = extract_from_regex(
                 message,
                 "",
-                "#011 {}: (.*?)#011".format(field_mapper(Constants.event_time, Constants.source_syslog)),
+                f"#011 {field_mapper(Constants.event_time, Constants.source_syslog)}: (.*?)#011",
             )
             event_id = extract_from_regex(
                 message,
                 "",
-                "#011 {}: (.*?)#011".format(field_mapper(Constants.event_id, Constants.source_syslog)),
+                f"#011 {field_mapper(Constants.event_id, Constants.source_syslog)}: (.*?)#011",
             )
             incident = {
                 "facility": Constants.facility,
@@ -685,7 +685,7 @@ class Client(BaseClient):
                 "originating_program": extract_from_regex(
                     message,
                     "",
-                    r"{}: ([\w]+)+:?".format(field_mapper(Constants.originating_program, Constants.source_syslog)),
+                    rf"{field_mapper(Constants.originating_program, Constants.source_syslog)}: ([\w]+)+:?",
                 ),
             }
 
@@ -741,35 +741,35 @@ class Client(BaseClient):
                 extract_from_regex(
                     message,
                     None,
-                    r"{}:\[(.*?)\]".format(field_mapper(Constants.affected_files_count)),
+                    rf"{field_mapper(Constants.affected_files_count)}:\[(.*?)\]",
                 )
             ),
             "modified_files_count": if_zero_set_none(
                 extract_from_regex(
                     message,
                     None,
-                    r"{}FileCount:\[(.*?)\]".format(field_mapper(Constants.modified_files_count)),
+                    rf"{field_mapper(Constants.modified_files_count)}FileCount:\[(.*?)\]",
                 )
             ),
             "deleted_files_count": if_zero_set_none(
                 extract_from_regex(
                     message,
                     None,
-                    r"{}FileCount:\[(.*?)\]".format(field_mapper(Constants.deleted_files_count)),
+                    rf"{field_mapper(Constants.deleted_files_count)}FileCount:\[(.*?)\]",
                 )
             ),
             "renamed_files_count": if_zero_set_none(
                 extract_from_regex(
                     message,
                     None,
-                    r"{}FileCount:\[(.*?)\]".format(field_mapper(Constants.renamed_files_count)),
+                    rf"{field_mapper(Constants.renamed_files_count)}FileCount:\[(.*?)\]",
                 )
             ),
             "created_files_count": if_zero_set_none(
                 extract_from_regex(
                     message,
                     None,
-                    r"{}FileCount:\[(.*?)\]".format(field_mapper(Constants.created_files_count)),
+                    rf"{field_mapper(Constants.created_files_count)}FileCount:\[(.*?)\]",
                 )
             ),
             "job_start_time": datetime.utcfromtimestamp(job_start_time).strftime("%Y-%m-%d %H:%M:%S"),
@@ -1052,7 +1052,7 @@ class Client(BaseClient):
                 current_group_name = group["name"].lower()
                 if current_group_name == recovery_group_name.lower():
                     recovery_group_id = group["id"]
-                    demisto.info("Found recovery group {} with id [{}]".format(recovery_group_name, recovery_group_id))
+                    demisto.info(f"Found recovery group {recovery_group_name} with id [{recovery_group_id}]")
         return recovery_group_id
 
     def add_recovery_group(self, target_id, recovery_group_name):

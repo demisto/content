@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import collections
 import random
-from typing import Counter
+from collections import Counter
 
 
 def parse_data(playbook_names):
@@ -32,6 +32,7 @@ def parse_data(playbook_names):
                 playbook_number += 1
 
         return {"Type": 17, "ContentsFormat": "bar", "Contents": {"stats": playbooks_data, "params": {"layout": "horizontal"}}}
+    return {}
 
 
 def main():

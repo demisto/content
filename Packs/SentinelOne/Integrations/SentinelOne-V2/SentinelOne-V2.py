@@ -1072,7 +1072,7 @@ def move_agent_to_group_command(client: Client, args: dict) -> CommandResults:
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            f'Sentinel One - Moved Agents\nTotal of: {agents_groups.get("AgentsMoved", 0)}' f'agents were Moved successfully',
+            f'Sentinel One - Moved Agents\nTotal of: {agents_groups.get("AgentsMoved", 0)}agents were Moved successfully',
             context_entries,
             removeNull=True,
         ),
@@ -1477,7 +1477,7 @@ def get_star_rule(client: Client, args: dict) -> CommandResults:
             "Sentinel One - Getting List of Star Rules",
             context_entries,
             removeNull=True,
-            metadata="Provides summary information and details for all star rules that matched " "your search criteria.",
+            metadata="Provides summary information and details for all star rules that matched your search criteria.",
             headerTransform=pascalToSpace,
         ),
         outputs_prefix="SentinelOne.StarRule",
@@ -1858,7 +1858,7 @@ def get_iocs(client: Client, args: dict) -> CommandResults:
             "Sentinel One - Getting List of IOCs",
             context_entries,
             removeNull=True,
-            metadata="Provides summary information and details for all iocs that matched " "your search criteria.",
+            metadata="Provides summary information and details for all iocs that matched your search criteria.",
             headerTransform=pascalToSpace,
         ),
         outputs_prefix="SentinelOne.IOC",
@@ -1932,7 +1932,7 @@ def ping_power_query(client: Client, args: dict) -> CommandResults:
                 "Sentinel One - Ping the Power Query",
                 context_entries,
                 removeNull=True,
-                metadata="Provides summary information and details aboput the power query and its id " " your search criteria.",
+                metadata="Provides summary information and details aboput the power query and its id  your search criteria.",
                 headerTransform=pascalToSpace,
             ),
             outputs_prefix="SentinelOne.PowerQuery",
@@ -1941,7 +1941,7 @@ def ping_power_query(client: Client, args: dict) -> CommandResults:
         )
     else:
         return CommandResults(
-            readable_output="There is no data returned by the id that you provided," " please re-check the id to ping"
+            readable_output="There is no data returned by the id that you provided, please re-check the id to ping"
         )
 
 
@@ -2198,7 +2198,7 @@ def get_alerts(client: Client, args: dict) -> CommandResults:
             "Sentinel One - Getting Alert List",
             context_entries,
             removeNull=True,
-            metadata="Provides summary information and details for all the alerts" " that matched your search criteria.",
+            metadata="Provides summary information and details for all the alerts that matched your search criteria.",
             headers=headers,
             headerTransform=pascalToSpace,
         ),
@@ -2350,7 +2350,7 @@ def get_white_list_command(client: Client, args: dict) -> CommandResults:
             "Sentinel One - Listing exclusion items",
             context_entries,
             removeNull=True,
-            metadata="Provides summary information and details for all the exclusion items" " that matched your search criteria.",
+            metadata="Provides summary information and details for all the exclusion items that matched your search criteria.",
         ),
         outputs_prefix="SentinelOne.Exclusions",
         outputs_key_field="ID",
@@ -2516,7 +2516,7 @@ def get_sites_command(client: Client, args: dict) -> CommandResults:
             "Sentinel One - Getting List of Sites",
             context_entries,
             removeNull=True,
-            metadata="Provides summary information and details for all sites that matched " "your search criteria.",
+            metadata="Provides summary information and details for all sites that matched your search criteria.",
             headerTransform=pascalToSpace,
         ),
         outputs_prefix="SentinelOne.Site",
@@ -2699,7 +2699,7 @@ def list_agents_command(client: Client, args: dict) -> CommandResults:
             context_entries,
             headerTransform=pascalToSpace,
             removeNull=True,
-            metadata="Provides summary information and details for all" " the agents that matched your search criteria",
+            metadata="Provides summary information and details for all the agents that matched your search criteria",
         ),
         outputs_prefix="SentinelOne.Agents",
         outputs_key_field="ID",
@@ -3729,7 +3729,7 @@ def update_remote_incident(
             response = client.update_threat_analyst_verdict_request(threat_ids=argToList(threat_id), action=action)
             if response.get("affected") and int(response.get("affected")) > 0:
                 demisto.debug(
-                    f"Successfully updated the threat analyst verdict of incident" f" with remote ID [{threat_id}] to {action}"
+                    f"Successfully updated the threat analyst verdict of incident with remote ID [{threat_id}] to {action}"
                 )
                 note = f"XSOAR - Updated the threat analyst verdict to {sentinelone_analyst_verdict}"
                 client.write_threat_note_request(threat_ids=argToList(threat_id), note=note)
@@ -3741,7 +3741,7 @@ def update_remote_incident(
             response = client.update_threat_status_request(threat_ids=argToList(threat_id), status=action)
             if response.get("affected") and int(response.get("affected")) > 0:
                 demisto.debug(
-                    f"Successfully updated the threat status of incident" f" with remote ID [{threat_id}] and marked as resolved"
+                    f"Successfully updated the threat status of incident with remote ID [{threat_id}] and marked as resolved"
                 )
                 note = "XSOAR - Marked as resolved \n" + closing_notes
                 client.write_threat_note_request(threat_ids=argToList(threat_id), note=note)
@@ -3791,7 +3791,7 @@ def update_remote_system_command(client: Client, args: dict) -> str:
                 client, remote_incident_id, sentinelone_analyst_verdict, sentinelone_threat_status, closing_notes
             )
     except Exception as e:
-        demisto.error(f"Error in SentinelOne outgoing mirror for incident {remote_incident_id}. " f"Error message: {str(e)}")
+        demisto.error(f"Error in SentinelOne outgoing mirror for incident {remote_incident_id}. Error message: {str(e)}")
 
     return remote_incident_id
 
@@ -3873,7 +3873,7 @@ def get_remote_data_command(client: Client, args: dict, params: dict):
         return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=entries)
 
     except Exception as e:
-        demisto.debug(f"Error in SentinelOne incoming mirror for incident: {remote_incident_id}\n" f"Error message: {str(e)}")
+        demisto.debug(f"Error in SentinelOne incoming mirror for incident: {remote_incident_id}\nError message: {str(e)}")
 
         if not mirrored_data:
             mirrored_data = {"id": remote_incident_id}

@@ -14,7 +14,7 @@ USERNAME = demisto.getParam("credentials")["identifier"]
 PASSWORD = demisto.getParam("credentials")["password"]
 AUTH = (USERNAME, PASSWORD)
 USE_SSL = not demisto.params().get("insecure", False)
-IS_USING_PROXY = True if demisto.params().get("proxy") else False
+IS_USING_PROXY = demisto.params().get("proxy", False)
 LAST_TIME_KEY = "time_last"
 
 
@@ -50,7 +50,7 @@ def timestamp_to_string(timestamp):
 def dns_get_command(url):
     response = http_dns_get(url)
 
-    results = list([json.loads(line) for line in response.text.splitlines()])
+    results = [json.loads(line) for line in response.text.splitlines()]
     results = merge_by_rdata(results)
 
     records = []
@@ -235,7 +235,7 @@ def create_certificate_details(sha1, data):
 
 """ EXECUTION CODE """
 
-LOG("command is %s" % (demisto.command(),))
+LOG(f"command is {demisto.command()}")
 try:
     command = demisto.command()
     args = demisto.args()

@@ -1326,7 +1326,7 @@ def redactIP(ip):
 def redactemail(email):
     itemlist = email.split("@")
     domain = itemlist[1].split(".")
-    newdomain = ".".join(domain[0 : len(domain) - 1]) + "[.]" + str(domain[-1])
+    newdomain = ".".join(domain[0: len(domain) - 1]) + "[.]" + str(domain[-1])
     newemail = itemlist[0] + "[@]" + str(newdomain)
     return newemail
 
@@ -1343,16 +1343,15 @@ def main():
 
         redactDict = {}
         searchkeyDict = {}
-        if searchkey is not None:
-            if len(searchkey) > 1:
-                Redact_String = "<REDACTED>"
-                for item in searchkey.split(","):
-                    if item.startswith("$#="):
-                        Redact_String = item.split("=")[1]
-                    else:
-                        searchkeyDict.update({item.strip(): Redact_String})
-                for key, value in searchkeyDict.items():
-                    text = text.replace(str(key).strip(), str(value).strip())
+        if searchkey is not None and len(searchkey) > 1:
+            Redact_String = "<REDACTED>"
+            for item in searchkey.split(","):
+                if item.startswith("$#="):
+                    Redact_String = item.split("=")[1]
+                else:
+                    searchkeyDict.update({item.strip(): Redact_String})
+            for key, value in searchkeyDict.items():
+                text = text.replace(str(key).strip(), str(value).strip())
 
         for item in ip.findall(text):
             redactDict.update({item: redactIP(item)})
