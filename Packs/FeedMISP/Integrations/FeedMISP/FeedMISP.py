@@ -55,7 +55,6 @@ INDICATOR_TO_GALAXY_RELATION_DICT: Dict[str, Any] = {
         ThreatIntel.ObjectsNames.MALWARE: EntityRelationship.Relationships.RELATED_TO,
         ThreatIntel.ObjectsNames.CAMPAIGN: EntityRelationship.Relationships.USES,
         FeedIndicatorType.Host: EntityRelationship.Relationships.INDICATOR_OF
-        
     },
     ThreatIntel.ObjectsNames.INTRUSION_SET: {
         FeedIndicatorType.File: EntityRelationship.Relationships.INDICATOR_OF,
