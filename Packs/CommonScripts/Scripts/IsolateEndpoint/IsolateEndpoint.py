@@ -170,14 +170,33 @@ def check_conditions_cybereason_isolate_machine(verbose: bool,
         pre_command_check=None,
     )
     if are_there_missing_args(cybereason_is_probe_connected_command, args):
-        return False, 'Missing args for cybereason-is-probe-connected command'
+        create_message_to_context_and_hr(args=args,
+                                         result='Fail',
+                                         message='Missing args for cybereason-is-probe-connected command',
+                                         outputs=outputs,
+                                         human_readable_outputs=human_readable_outputs,
+                                         verbose=verbose)
+        return False
     mapped_args = map_args(cybereason_is_probe_connected_command, args)
-    try:
-        raw_response = execute_command(cybereason_is_probe_connected_command.name, mapped_args)
-        demisto.debug(f'Got raw response from cybereason-is-probe-connected command {raw_response}.')
-    except Exception as e:
-        return False, 'Could not execute cybereason-is-probe-connected command'
-    # TODO
+    raw_response = execute_command(cybereason_is_probe_connected_command.name, mapped_args)
+    demisto.debug(f'Got raw response from cybereason-is-probe-connected command {raw_response}.')
+    if is_error(raw_response):
+        create_message_to_context_and_hr(args=args,
+                                         result='Fail',
+                                         message='Could not execute cybereason-is-probe-connected command',
+                                         outputs=outputs,
+                                         human_readable_outputs=human_readable_outputs,
+                                         verbose=verbose)
+        return False
+    if not argToBoolean(raw_response.get('isConnected', {}).get('Value')):
+        create_message_to_context_and_hr(args=args,
+                                         result='Fail',
+                                         message='Could not execute cybereason-is-probe-connected command because'
+                                                 ' endpoint is not connected.',
+                                         outputs=outputs,
+                                         human_readable_outputs=human_readable_outputs,
+                                         verbose=verbose)
+        return False
     return True
 
 
@@ -188,7 +207,7 @@ def check_conditions_microsoft_atp_isolate_machine(verbose: bool,
                                                    endpoint_data: dict) -> bool:
     demisto.debug(f'This is the endpoint data from Microsoft {endpoint_data=}')
     status = endpoint_data.get('Status')
-    agent_id = endpoint_data.get('ID', {}).get('Value')
+    agent_id = endpoint_data.get('ID', {}).get('Value', '')
     if status == 'Offline' or not agent_id:
         create_message_to_context_and_hr(args=args,
                                          result='Fail',
@@ -200,7 +219,6 @@ def check_conditions_microsoft_atp_isolate_machine(verbose: bool,
 
     if not args.get('agent_id'):
         args['agent_id'] = agent_id
-    demisto.debug(f'Appened agent id to args {args=}.')
     return True
 
 
@@ -250,49 +268,57 @@ def check_module_and_args_for_command(module_manager: ModuleManager,
     return True
 
 
-def is_endpoint_isolatable(endpoint_data: dict, force: bool, server_os_list: list) -> tuple[bool, str]:
+def is_endpoint_isolatable(endpoint_data: dict, force: bool, server_os_list: list, args: dict, outputs: list,
+                           human_readable_outputs: list, verbose: bool) -> bool:
     """
-    Determines whether an endpoint can be isolated based on its OS, isolation status, and connectivity.
+    Determines whether an endpoint can be isolated based on its OS type, current isolation status, and connectivity.
 
     Args:
         endpoint_data (dict): A dictionary containing endpoint details, including OS version, isolation status, and online status.
-        force (bool): If True, bypasses server OS restrictions and allows isolation.
-        server_os_list (list): A list of server OS versions that should be isolated.
+        force (bool): If True, overrides server OS restrictions and allows isolation.
+        server_os_list (list): A list of server OS versions that should not be isolated unless force is True.
+        args (dict): The arguments used in the command execution.
+        outputs (list): A list to store structured output results.
+        human_readable_outputs (list): A list to store human-readable messages.
+        verbose (bool): Flag to control verbosity.
 
     Returns:
-        tuple[bool, str]: A tuple where the first value is True if the endpoint can be isolated,
-                          and the second value is a message explaining the decision.
+        bool: True if the endpoint is eligible for isolation, False otherwise.
     """
     server = endpoint_data.get('OSVersion', {}).get('Value')
     is_isolated = endpoint_data.get('IsIsolated', {}).get('Value', 'No')
     server_status = endpoint_data.get('Status', {}).get('Value', 'Online')
 
-    demisto.debug(f'{server_status=}, {is_isolated=}, {server=}, {force=}')
+    is_isolation_possible = True
+    message = ''
+
+    demisto.debug(f'Checking if endpoint is isolatable with {server_status=}, {is_isolated=}, {server=}, {force=}')
 
     if server and (server in SERVERS_RELEASES or server in server_os_list) and not force:
         message = 'The endpoint is a server, therefore aborting isolation.'
-        demisto.debug(message)
-        return False, message
+        is_isolation_possible = False
 
-    if is_isolated == 'Yes':
+    elif is_isolated == 'Yes':
         message = 'The endpoint is already isolated.'
-        demisto.debug(message)
-        return False, message
+        is_isolation_possible = False
 
-    if server_status == 'Offline':
+    elif server_status == 'Offline':
         message = 'The endpoint is offline.'
-        demisto.debug(message)
-        return False, message
+        is_isolation_possible = False
 
-    return True, ''
+    if not is_isolation_possible:
+        demisto.debug(f'Can not isolate endpoint: {message}.')
+        create_message_to_context_and_hr(args=args,
+                                         result='Fail',
+                                         message=message,
+                                         outputs=outputs,
+                                         human_readable_outputs=human_readable_outputs,
+                                         verbose=verbose)
+    return is_isolation_possible
 
 
-def create_message_to_context_and_hr(args: dict,
-                                     result: str,
-                                     message: str,
-                                     outputs: list,
-                                     human_readable_outputs: list,
-                                     verbose: bool) -> None:
+def create_message_to_context_and_hr(args: dict, result: str, message: str, outputs: list, human_readable_outputs: list,
+                                     verbose: bool):
     """
     Generates a structured message for context and human-readable outputs.
 
@@ -375,26 +401,34 @@ def map_zipped_args(agent_ids: list, agent_ips: list, agent_hostnames: list):
     ]
 
 
-def do_args_exist_in_valid(args, valid_args):
+def check_which_args_missing_in_output(zipped_args: list, valid_args: list, outputs: list, human_readable_outputs: list,
+                                       verbose: bool):
     """
     Checks if any of the given agent details (ID, IP, or hostname) exist in a list of valid arguments.
+    If no match is found, a failure message is added to the context and human-readable outputs.
 
     Args:
-        args (dict): A dictionary containing 'agent_id', 'agent_ip', and 'agent_hostname'.
-        valid_args (list): A list of dictionaries representing valid agents.
-
-    Returns:
-        bool: True if any of the provided agent details match an entry in valid_args, False otherwise.
+        zipped_args (list): A list of dictionaries, each containing 'agent_id', 'agent_ip', and 'agent_hostname'.
+        valid_args (list): A list of dictionaries representing valid agents with corresponding details.
+        outputs (list): A list to store structured output results.
+        human_readable_outputs (list): A list to store human-readable messages.
+        verbose (bool): Flag to control verbosity.
     """
-    agent_id = args.get('agent_id', '')
-    agent_ip = args.get('agent_ip', '')
-    agent_hostname = args.get('agent_hostname', '')
-    for entry in valid_args:
-        if (agent_id and entry.get('agent_id') == agent_id) or \
-           (agent_hostname and entry.get('agent_hostname') == agent_hostname) or \
-           (agent_ip and entry.get('agent_ip') == agent_ip):
-            return True
-    return False
+    for args in zipped_args:
+        agent_id = args.get('agent_id', '')
+        agent_ip = args.get('agent_ip', '')
+        agent_hostname = args.get('agent_hostname', '')
+        for entry in valid_args:
+            if (agent_id and entry.get('agent_id') == agent_id) or \
+               (agent_hostname and entry.get('agent_hostname') == agent_hostname) or \
+               (agent_ip and entry.get('agent_ip') == agent_ip):
+                return True
+        create_message_to_context_and_hr(args=args,
+                                         result='Fail',
+                                         message='Did not find information on endpoint in any available brand.',
+                                         outputs=outputs,
+                                         human_readable_outputs=human_readable_outputs,
+                                         verbose=verbose)
 
 
 def get_args_from_endpoint_data(endpoint_data: dict) -> dict:
@@ -433,6 +467,37 @@ def structure_endpoints_data(get_endpoint_data_results: dict | list | None) -> l
     return []
 
 
+def handle_raw_response_results(command: Command, raw_response: dict, args, outputs: list, human_readable_outputs: list,
+                                verbose: bool):
+    """
+    Handles the raw response of a command execution by determining success or failure and updating outputs accordingly.
+
+    Args:
+        command (Command): The executed command object.
+        raw_response (dict): The raw response returned from the command execution.
+        args (dict): The arguments used in the command execution.
+        outputs (list): A list to store structured output results.
+        human_readable_outputs (list): A list to store human-readable messages.
+        verbose (bool): Flag to control verbosity.
+    """
+    if is_error(raw_response):
+        create_message_to_context_and_hr(args=args,
+                                         result='Fail',
+                                         message=f'Failed to execute command {command.name}.'
+                                                 f' Error:{get_error(raw_response)}',
+                                         outputs=outputs,
+                                         human_readable_outputs=human_readable_outputs,
+                                         verbose=verbose)
+
+    else:
+        create_message_to_context_and_hr(args=args,
+                                         result='Success',
+                                         message=f'Command {command.name} was executed successfully.',
+                                         outputs=outputs,
+                                         human_readable_outputs=human_readable_outputs,
+                                         verbose=verbose)
+
+
 def main():
     try:
         args = demisto.args()
@@ -452,8 +517,8 @@ def main():
         zipped_args = map_zipped_args(agent_ids, agent_ips, agent_hostnames)
         demisto.debug(f'zipped_args={zipped_args}')
 
-        endpoint_data_results = execute_command(
-            command="get-endpoint-data-modified", args=args)  # todo to change name back
+        endpoint_data_results = structure_endpoints_data(execute_command(
+            command="get-endpoint-data-modified", args=args))  # todo to change name back
 
         demisto.debug(f'these are the results from get_endpoint_data_results execute_command {endpoint_data_results}')
 
@@ -464,14 +529,9 @@ def main():
         for endpoint_data in endpoint_data_results:
             args = get_args_from_endpoint_data(endpoint_data)
             args_from_endpoint_data.append(args)
-            endpoint_isolatable, message = is_endpoint_isolatable(endpoint_data, force, server_os_list)
+            endpoint_isolatable = is_endpoint_isolatable(endpoint_data, force, server_os_list, args, outputs,
+                                                                  human_readable_outputs, verbose)
             if not endpoint_isolatable:
-                create_message_to_context_and_hr(args=args,
-                                                 result='Fail',
-                                                 message=message,
-                                                 outputs=outputs,
-                                                 human_readable_outputs=human_readable_outputs,
-                                                 verbose=verbose)
                 continue
 
             for command in commands:
@@ -493,31 +553,9 @@ def main():
                 mapped_args = map_args(command, args)
                 raw_response = demisto.executeCommand(command.name, mapped_args)
                 demisto.debug(f'Got raw response for execute_command {command.name} with {args=}: {raw_response=}')
-                if is_error(raw_response):
-                    create_message_to_context_and_hr(args=args,
-                                                     result='Fail',
-                                                     message=f'Failed to execute command {command.name}.'
-                                                             f' Error:{get_error(raw_response)}',
-                                                     outputs=outputs,
-                                                     human_readable_outputs=human_readable_outputs,
-                                                     verbose=verbose)
+                handle_raw_response_results(command, raw_response, args, outputs, human_readable_outputs, verbose)
 
-                else:
-                    create_message_to_context_and_hr(args=args,
-                                                     result='Success',
-                                                     message=f'Command {command.name} was executed successfully.',
-                                                     outputs=outputs,
-                                                     human_readable_outputs=human_readable_outputs,
-                                                     verbose=verbose)
-
-        for args in zipped_args:
-            if not do_args_exist_in_valid(args, args_from_endpoint_data):
-                create_message_to_context_and_hr(args=args,
-                                                 result='Fail',
-                                                 message='Did not find information on endpoint in any available brand.',
-                                                 outputs=outputs,
-                                                 human_readable_outputs=human_readable_outputs,
-                                                 verbose=verbose)
+        check_which_args_missing_in_output(zipped_args, args_from_endpoint_data, outputs, human_readable_outputs, verbose)
 
         readable_output = tableToMarkdown(name='IsolateEndpoint Results', t=human_readable_outputs, removeNull=True)
         results = CommandResults(

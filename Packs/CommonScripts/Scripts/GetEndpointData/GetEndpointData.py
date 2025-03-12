@@ -204,7 +204,7 @@ class EndpointCommandRunner:
         command_context_outputs = []
         human_readable_outputs = []
         command_error_outputs = []
-        demisto.debug(f'get_commands_outputs for command "{command}" with {len(results)} entry results {results=}')
+        demisto.debug(f'get_commands_outputs for command "{command}" with {len(results)} entry results')
 
         for entry in results:
             if is_error(entry):

@@ -1,5 +1,6 @@
 from IsolateEndpoint import *
 import pytest
+from unittest.mock import patch, MagicMock
 
 
 @pytest.fixture
@@ -10,7 +11,7 @@ def setup_for_test_module_manager():
     }
     brands_to_run = ["BrandA", "BrandC"]
     module_manager = ModuleManager(modules=modules, brands_to_run=brands_to_run)
-    command = Command(brand="BrandA", name="TestCommand", arg_mapping={}, pre_command_check=None)
+    command = Command(brand="BrandA", name="TestCommand", arg_mapping={})
     return module_manager, command, modules, brands_to_run
 
 
@@ -112,7 +113,8 @@ def test_structure_endpoints_data():
     assert structure_endpoints_data(input_data) == expected_output
 
 
-def test_do_args_exist_in_valid():
+@patch('IsolateEndpoint.create_message_to_context_and_hr')
+def test_do_args_exist_in_valid(mock_create_message):
     """
     Given:
         Different cases where the args dictionary contains agent_id, agent_ip, or agent_hostname.
@@ -121,25 +123,26 @@ def test_do_args_exist_in_valid():
     Then:
         It returns True if any match is found, otherwise False.
     """
-    valid_args = [
-        {"agent_id": "123", "agent_hostname": "host1", "agent_ip": "192.168.1.1"},
-        {"agent_id": "456", "agent_hostname": "host2", "agent_ip": "192.168.1.2"},
+    zipped_args = [
+        {'agent_id': '123', 'agent_ip': '192.168.1.1', 'agent_hostname': 'host1'},
+        {'agent_id': '456', 'agent_ip': '192.168.1.2', 'agent_hostname': 'host2'}
     ]
+    valid_args = [
+        {'agent_id': '123', 'agent_ip': '192.168.1.1', 'agent_hostname': 'host1'},
+        {'agent_id': '789', 'agent_ip': '192.168.1.3', 'agent_hostname': 'host3'}
+    ]
+    outputs = []
+    human_readable_outputs = []
+    verbose = True
 
-    args = {"agent_id": "123", "agent_hostname": "", "agent_ip": ""}
-    assert do_args_exist_in_valid(args, valid_args) is True
+    check_which_args_missing_in_output(
+        zipped_args, valid_args, outputs, human_readable_outputs, verbose
+    )
+    zipped_args = [{'agent_id': '999', 'agent_ip': '192.168.1.5', 'agent_hostname': 'host4'}]
+    check_which_args_missing_in_output(
+        zipped_args, valid_args, outputs, human_readable_outputs, verbose)
 
-    args = {"agent_id": "", "agent_hostname": "host2", "agent_ip": ""}
-    assert do_args_exist_in_valid(args, valid_args) is True
-
-    args = {"agent_id": "", "agent_hostname": "", "agent_ip": "192.168.1.2"}
-    assert do_args_exist_in_valid(args, valid_args) is True
-
-    args = {"agent_id": "999", "agent_hostname": "unknown", "agent_ip": "10.0.0.1"}
-    assert do_args_exist_in_valid(args, valid_args) is False
-
-    args = {"agent_id": "", "agent_hostname": "", "agent_ip": ""}
-    assert do_args_exist_in_valid(args, valid_args) is False
+    mock_create_message.assert_called_once()
 
 
 def test_map_zipped_args():
@@ -216,7 +219,7 @@ def test_map_args():
 def test_are_there_missing_args():
     """
     Given:
-        - A Command object with `arg_mapping` defining expected argument keys.
+        - A Command object with arg_mapping defining expected argument keys.
     When:
         - The function checks if all mapped arguments are missing.
     Then:
@@ -257,32 +260,79 @@ def test_is_endpoint_isolatable():
         "IsIsolated": {"Value": "No"},
         "Status": {"Value": "Online"}
     }
-    assert is_endpoint_isolatable(endpoint_data, force=False, server_os_list=[]) == (
-        False, "The endpoint is a server, therefore aborting isolation."
-    )
+    assert is_endpoint_isolatable(endpoint_data, force=False, server_os_list=[], args={}, outputs=[], human_readable_outputs=[],
+                                  verbose=False) is False
 
-    assert is_endpoint_isolatable(endpoint_data, force=True, server_os_list=[]) == (True, '')
+    assert is_endpoint_isolatable(endpoint_data, force=True, server_os_list=[], args={}, outputs=[], human_readable_outputs=[],
+                                  verbose=False) is True
 
     endpoint_data["OSVersion"]["Value"] = "example"
     endpoint_data["IsIsolated"]["Value"] = "Yes"
-    assert is_endpoint_isolatable(endpoint_data, force=False, server_os_list=[]) == (
-        False, "The endpoint is already isolated."
-    )
+    assert is_endpoint_isolatable(endpoint_data, force=False, server_os_list=[], args={}, outputs=[], human_readable_outputs=[],
+                                  verbose=False) is False
 
     endpoint_data["IsIsolated"]["Value"] = "No"
     endpoint_data["Status"]["Value"] = "Offline"
-    assert is_endpoint_isolatable(endpoint_data, force=False, server_os_list=[]) == (
-        False, "The endpoint is offline."
-    )
+    assert is_endpoint_isolatable(endpoint_data, force=False, server_os_list=[], args={}, outputs=[], human_readable_outputs=[],
+                                  verbose=False) is False
 
     endpoint_data = {
         "OSVersion": {"Value": "Windows 10"},
         "IsIsolated": {"Value": "No"},
         "Status": {"Value": "Online"}
     }
-    assert is_endpoint_isolatable(endpoint_data, force=False, server_os_list=[]) == (True, '')
+    assert is_endpoint_isolatable(endpoint_data, force=False, server_os_list=[], args={}, outputs=[], human_readable_outputs=[],
+                                  verbose=False) is True
 
     endpoint_data["OSVersion"]["Value"] = "Ubuntu Server"
-    assert is_endpoint_isolatable(endpoint_data, force=False, server_os_list=["Ubuntu Server"]) == (
-        False, "The endpoint is a server, therefore aborting isolation."
-    )
+    assert is_endpoint_isolatable(endpoint_data, force=False, server_os_list=["Ubuntu Server"], args={}, outputs=[],
+                                  human_readable_outputs=[], verbose=False) is False
+
+
+def test_handle_raw_response_results():
+    """
+    Given:
+        - Mocked raw response data and arguments.
+    When:
+        - Running the handle_raw_response_results function.
+    Then:
+        - Ensure the expected functions are called and errors are logged correctly for both error and success scenarios.
+    """
+    command = Command(brand="BrandA", name="TestCommand", arg_mapping={})
+    raw_response = {'status': 'error'}
+    args = {'arg1': 'value1'}
+    outputs = []
+    human_readable_outputs = []
+    verbose = True
+
+    with patch('IsolateEndpoint.is_error') as mock_is_error, \
+         patch('IsolateEndpoint.get_error') as mock_get_error, \
+         patch('IsolateEndpoint.create_message_to_context_and_hr') as mock_create_message:
+
+        mock_is_error.return_value = True
+        mock_get_error.return_value = 'Some error occurred'
+
+        handle_raw_response_results(command, raw_response, args, outputs, human_readable_outputs, verbose)
+
+        mock_create_message.assert_called_once_with(
+            args=args,
+            result='Fail',
+            message='Failed to execute command TestCommand. Error:Some error occurred',
+            outputs=outputs,
+            human_readable_outputs=human_readable_outputs,
+            verbose=verbose
+        )
+
+        mock_is_error.return_value = False
+        mock_get_error.return_value = None
+
+        handle_raw_response_results(command, raw_response, args, outputs, human_readable_outputs, verbose)
+
+        mock_create_message.assert_called_with(
+            args=args,
+            result='Success',
+            message='Command TestCommand was executed successfully.',
+            outputs=outputs,
+            human_readable_outputs=human_readable_outputs,
+            verbose=verbose
+        )
