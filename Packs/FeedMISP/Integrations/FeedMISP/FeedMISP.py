@@ -418,6 +418,8 @@ def create_and_add_relationships(indicator_obj: Dict[str, Any], galaxy_indicator
             entity_b_type=galaxy_indicator_type,
         ).to_indicator()
 
+        demisto.debug("created indicator_relation")
+
         galaxy_relation = EntityRelationship(
             name=galaxy_to_indicator_relation,
             entity_a=galaxy_indicator['value'],
@@ -425,6 +427,8 @@ def create_and_add_relationships(indicator_obj: Dict[str, Any], galaxy_indicator
             entity_b=indicator_obj['value'],
             entity_b_type=indicator_obj_type,
         ).to_indicator()
+
+        demisto.debug("created galaxy_relation")
 
         relationships_indicators.append(indicator_relation)
         galaxy_indicator['Relationships'] = [galaxy_relation]
