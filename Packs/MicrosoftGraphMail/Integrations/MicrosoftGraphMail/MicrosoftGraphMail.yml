@@ -864,7 +864,7 @@ script:
       - flagged
     - auto: PREDEFINED
       defaultValue: Low
-      description: 'The importance of the email. Can be: "Low", "Normal", or "High". The default is Normal.'
+      description: 'The importance of the email. Can be: "Low", "Normal", or "High". The default is Low.'
       name: importance
       predefined:
       - Low
