@@ -1,6 +1,7 @@
 """
 Symantec EDR (On-prem) Integration - Unit Tests file
 """
+
 import pytest
 import CommonServerPython
 from SymantecEDR import *
@@ -15,8 +16,7 @@ def util_load_json(path):
 
 
 CommonServerPython.demisto.setIntegrationContext(
-    CommonServerPython.demisto.getIntegrationContext()
-    | {"access_token": "12345678", "access_token_timestamp": int(time.time())}
+    CommonServerPython.demisto.getIntegrationContext() | {"access_token": "12345678", "access_token_timestamp": int(time.time())}
 )
 
 client = Client(
@@ -31,15 +31,9 @@ client = Client(
 FILE_INSTANCE_RESPONSE = util_load_json("test_data/file_instance_data.json")
 DOMAIN_INSTANCE_RESPONSE = util_load_json("test_data/domain_instance_data.json")
 ENDPOINT_INSTANCE_RESPONSE = util_load_json("test_data/endpoint_instance.json")
-ENDPOINT_FILE_ASSOCIATION_RESPONSE = util_load_json(
-    "test_data/endpoint_file_association.json"
-)
-DOMAIN_FILE_ASSOCIATION_RESPONSE = util_load_json(
-    "test_data/domain_file_association.json"
-)
-ENDPOINT_DOMAIN_ASSOCIATION_RESPONSE = util_load_json(
-    "test_data/endpoint_domain_association.json"
-)
+ENDPOINT_FILE_ASSOCIATION_RESPONSE = util_load_json("test_data/endpoint_file_association.json")
+DOMAIN_FILE_ASSOCIATION_RESPONSE = util_load_json("test_data/domain_file_association.json")
+ENDPOINT_DOMAIN_ASSOCIATION_RESPONSE = util_load_json("test_data/endpoint_domain_association.json")
 DENY_LIST_RESPONSE = util_load_json("test_data/deny_list.json")
 ALLOW_LIST_RESPONSE = util_load_json("test_data/deny_list.json")
 EVENT_LIST_RESPONSE = util_load_json("test_data/event_list_data.json")
@@ -52,14 +46,10 @@ INCIDENT_LIST_RESPONSE = util_load_json("test_data/incident_list_data.json")
 INCIDENT_COMMENT_RESPONSE = util_load_json("test_data/incident_comment_data.json")
 INCIDENT_EVENT_FOR_INCIDENT = util_load_json("test_data/incident_event_data.json")
 ENDPOINT_COMMAND_STATUS = util_load_json("test_data/endpoint_command_status.json")
-ENDPOINT_COMMAND_ISOLATE = util_load_json(
-    "test_data/endpoint_command_isolate_endpoint.json"
-)
+ENDPOINT_COMMAND_ISOLATE = util_load_json("test_data/endpoint_command_isolate_endpoint.json")
 ENDPOINT_COMMAND_REJOIN = util_load_json("test_data/endpoint_command_rejoin.json")
 ENDPOINT_COMMAND_CANCEL = util_load_json("test_data/endpoint_command_cancel.json")
-ENDPOINT_COMMAND_DELETE = util_load_json(
-    "test_data/endpoint_command_delete_endpoint_file.json"
-)
+ENDPOINT_COMMAND_DELETE = util_load_json("test_data/endpoint_command_delete_endpoint_file.json")
 HEADER_LIST = util_load_json("test_data/header_list.json")
 SANDBOX_ISSUE_COMMAND = util_load_json("test_data/sandbox_issue_command.json")
 SANDBOX_STATUS_COMMAND = util_load_json("test_data/sandbox_status_command.json")
@@ -97,9 +87,7 @@ def test_get_access_token_or_login(requests_mock):
     }
 
 
-@pytest.mark.parametrize(
-    "raw_response, expected", [(FILE_INSTANCE_RESPONSE, FILE_INSTANCE_RESPONSE)]
-)
+@pytest.mark.parametrize("raw_response, expected", [(FILE_INSTANCE_RESPONSE, FILE_INSTANCE_RESPONSE)])
 def test_get_file_instance_command(mocker, raw_response, expected):
     """
     Tests get_get_file_instance_command function.
@@ -132,9 +120,7 @@ def test_get_file_instance_command(mocker, raw_response, expected):
     assert command_results.readable_output == readable_output
 
 
-@pytest.mark.parametrize(
-    "raw_response, expected", [(DOMAIN_INSTANCE_RESPONSE, DOMAIN_INSTANCE_RESPONSE)]
-)
+@pytest.mark.parametrize("raw_response, expected", [(DOMAIN_INSTANCE_RESPONSE, DOMAIN_INSTANCE_RESPONSE)])
 def test_get_domain_instance_command(mocker, raw_response, expected):
     """
     Tests get_domain_instance_command function.
@@ -167,9 +153,7 @@ def test_get_domain_instance_command(mocker, raw_response, expected):
     assert command_results.readable_output == readable_output
 
 
-@pytest.mark.parametrize(
-    "raw_response, expected", [(ENDPOINT_INSTANCE_RESPONSE, ENDPOINT_INSTANCE_RESPONSE)]
-)
+@pytest.mark.parametrize("raw_response, expected", [(ENDPOINT_INSTANCE_RESPONSE, ENDPOINT_INSTANCE_RESPONSE)])
 def test_get_endpoint_instance_command(mocker, raw_response, expected):
     """
     Tests get_endpoint_instance_command function.
@@ -307,9 +291,7 @@ def test_get_endpoint_domain_association_list_command(mocker, raw_response, expe
     assert command_results.readable_output == readable_output
 
 
-@pytest.mark.parametrize(
-    "raw_response, expected", [(DENY_LIST_RESPONSE, DENY_LIST_RESPONSE)]
-)
+@pytest.mark.parametrize("raw_response, expected", [(DENY_LIST_RESPONSE, DENY_LIST_RESPONSE)])
 def test_get_deny_list_command(mocker, raw_response, expected):
     """
     Tests get_deny_list_command function.
@@ -325,11 +307,7 @@ def test_get_deny_list_command(mocker, raw_response, expected):
     """
     args = {"limit": 10}
     mocker.patch.object(client, "get_deny_list", side_effect=[raw_response])
-    with open(
-        os.path.join(
-            "test_data", "command_readable_output/deny_list_command_readable_output.md"
-        )
-    ) as f:
+    with open(os.path.join("test_data", "command_readable_output/deny_list_command_readable_output.md")) as f:
         readable_output = f.read()
     command_results = get_deny_list_command(client, args)
 
@@ -339,9 +317,7 @@ def test_get_deny_list_command(mocker, raw_response, expected):
     assert command_results.readable_output == readable_output
 
 
-@pytest.mark.parametrize(
-    "raw_response, expected", [(ALLOW_LIST_RESPONSE, ALLOW_LIST_RESPONSE)]
-)
+@pytest.mark.parametrize("raw_response, expected", [(ALLOW_LIST_RESPONSE, ALLOW_LIST_RESPONSE)])
 def test_get_allow_list_command(mocker, raw_response, expected):
     """
     Tests get_allow_list_command function.
@@ -366,9 +342,7 @@ def test_get_allow_list_command(mocker, raw_response, expected):
     assert context_detail == expected.get("result")
 
 
-@pytest.mark.parametrize(
-    "raw_response, expected", [(EVENT_LIST_RESPONSE, EVENT_LIST_RESPONSE)]
-)
+@pytest.mark.parametrize("raw_response, expected", [(EVENT_LIST_RESPONSE, EVENT_LIST_RESPONSE)])
 def test_get_event_list_command(mocker, raw_response, expected):
     """
     Tests get_event_list_command function.
@@ -393,9 +367,7 @@ def test_get_event_list_command(mocker, raw_response, expected):
     assert context_detail == expected.get("result")
 
 
-@pytest.mark.parametrize(
-    "raw_response, expected", [(AUDIT_EVENT_RESPONSE, AUDIT_EVENT_RESPONSE)]
-)
+@pytest.mark.parametrize("raw_response, expected", [(AUDIT_EVENT_RESPONSE, AUDIT_EVENT_RESPONSE)])
 def test_get_audit_event_command(mocker, raw_response, expected):
     """
     Tests get_audit_event_command function.
@@ -420,9 +392,7 @@ def test_get_audit_event_command(mocker, raw_response, expected):
     assert context_detail == expected.get("result")
 
 
-@pytest.mark.parametrize(
-    "raw_response, expected", [(SYSTEM_ACTIVITY_RESPONSE, SYSTEM_ACTIVITY_RESPONSE)]
-)
+@pytest.mark.parametrize("raw_response, expected", [(SYSTEM_ACTIVITY_RESPONSE, SYSTEM_ACTIVITY_RESPONSE)])
 def test_get_system_activity_command(mocker, raw_response, expected):
     """
     Tests get_system_activity_command function.
@@ -447,9 +417,7 @@ def test_get_system_activity_command(mocker, raw_response, expected):
     assert context_detail == expected.get("result")
 
 
-@pytest.mark.parametrize(
-    "raw_response, expected", [(INCIDENT_LIST_RESPONSE, INCIDENT_LIST_RESPONSE)]
-)
+@pytest.mark.parametrize("raw_response, expected", [(INCIDENT_LIST_RESPONSE, INCIDENT_LIST_RESPONSE)])
 def test_get_incident_list_command(mocker, raw_response, expected):
     """
     Tests get_incident_list_command function.
@@ -505,12 +473,8 @@ def test_get_incident_uuid(mocker, raw_response, expected):
     "raw_incident, uuid_result",
     [(INCIDENT_LIST_RESPONSE, "9d6f2100-7158-11ed-da26-000000000001")],
 )
-@pytest.mark.parametrize(
-    "raw_response, expected", [(INCIDENT_COMMENT_RESPONSE, INCIDENT_COMMENT_RESPONSE)]
-)
-def test_get_incident_comments_command(
-    mocker, raw_incident, uuid_result, raw_response, expected
-):
+@pytest.mark.parametrize("raw_response, expected", [(INCIDENT_COMMENT_RESPONSE, INCIDENT_COMMENT_RESPONSE)])
+def test_get_incident_comments_command(mocker, raw_incident, uuid_result, raw_response, expected):
     """
     Tests get_incident_comments_command function.
 
@@ -563,9 +527,7 @@ def test_get_event_for_incident_list_command(mocker, raw_response, expected):
     assert context_detail == expected.get("result")
 
 
-@pytest.mark.parametrize(
-    "raw_response, expected", [(ENDPOINT_COMMAND_STATUS, ENDPOINT_COMMAND_STATUS)]
-)
+@pytest.mark.parametrize("raw_response, expected", [(ENDPOINT_COMMAND_STATUS, ENDPOINT_COMMAND_STATUS)])
 def test_get_endpoint_status_command(mocker, raw_response, expected):
     """
     Tests get_endpoint_status_command function.
@@ -598,9 +560,7 @@ def test_get_endpoint_status_command(mocker, raw_response, expected):
     assert command_results.readable_output == readable_output
 
 
-@pytest.mark.parametrize(
-    "raw_response, expected", [(ENDPOINT_COMMAND_ISOLATE, ENDPOINT_COMMAND_ISOLATE)]
-)
+@pytest.mark.parametrize("raw_response, expected", [(ENDPOINT_COMMAND_ISOLATE, ENDPOINT_COMMAND_ISOLATE)])
 def test_get_endpoint_command_isolate(mocker, raw_response, expected):
     """
     Tests get_endpoint_command isolate endpoint function.
@@ -625,9 +585,7 @@ def test_get_endpoint_command_isolate(mocker, raw_response, expected):
     ) as f:
         readable_output = f.read()
     mocker.patch.object(client, "get_isolate_endpoint", side_effect=[raw_response])
-    command_results = get_endpoint_command(
-        client, args, "symantec-edr-endpoint-isolate"
-    )
+    command_results = get_endpoint_command(client, args, "symantec-edr-endpoint-isolate")
 
     # results is CommandResults list
     context_detail = command_results.to_context()["Contents"]
@@ -635,9 +593,7 @@ def test_get_endpoint_command_isolate(mocker, raw_response, expected):
     assert command_results.readable_output == readable_output
 
 
-@pytest.mark.parametrize(
-    "raw_response, expected", [(ENDPOINT_COMMAND_REJOIN, ENDPOINT_COMMAND_REJOIN)]
-)
+@pytest.mark.parametrize("raw_response, expected", [(ENDPOINT_COMMAND_REJOIN, ENDPOINT_COMMAND_REJOIN)])
 def test_get_endpoint_command_rejoin(mocker, raw_response, expected):
     """
     Tests get_endpoint_command rejoin function.
@@ -670,9 +626,7 @@ def test_get_endpoint_command_rejoin(mocker, raw_response, expected):
     assert command_results.readable_output == readable_output
 
 
-@pytest.mark.parametrize(
-    "raw_response, expected", [(ENDPOINT_COMMAND_DELETE, ENDPOINT_COMMAND_DELETE)]
-)
+@pytest.mark.parametrize("raw_response, expected", [(ENDPOINT_COMMAND_DELETE, ENDPOINT_COMMAND_DELETE)])
 def test_get_endpoint_command_delete(mocker, raw_response, expected):
     """
     Tests get_endpoint_command delete function.
@@ -700,9 +654,7 @@ def test_get_endpoint_command_delete(mocker, raw_response, expected):
     ) as f:
         readable_output = f.read()
     mocker.patch.object(client, "get_delete_endpoint", side_effect=[raw_response])
-    command_results = get_endpoint_command(
-        client, args, "symantec-edr-endpoint-delete-file"
-    )
+    command_results = get_endpoint_command(client, args, "symantec-edr-endpoint-delete-file")
 
     # results is CommandResults list
     context_detail = command_results.to_context()["Contents"]
@@ -710,9 +662,7 @@ def test_get_endpoint_command_delete(mocker, raw_response, expected):
     assert command_results.readable_output == readable_output
 
 
-@pytest.mark.parametrize(
-    "raw_response, expected", [(ENDPOINT_COMMAND_CANCEL, ENDPOINT_COMMAND_CANCEL)]
-)
+@pytest.mark.parametrize("raw_response, expected", [(ENDPOINT_COMMAND_CANCEL, ENDPOINT_COMMAND_CANCEL)])
 def test_get_endpoint_command_cancel(mocker, raw_response, expected):
     """
     Tests get_endpoint_command cancel function.
@@ -737,9 +687,7 @@ def test_get_endpoint_command_cancel(mocker, raw_response, expected):
     ) as f:
         readable_output = f.read()
     mocker.patch.object(client, "get_cancel_endpoint", side_effect=[raw_response])
-    command_results = get_endpoint_command(
-        client, args, "symantec-edr-endpoint-cancel-command"
-    )
+    command_results = get_endpoint_command(client, args, "symantec-edr-endpoint-cancel-command")
 
     # results is CommandResults list
     context_detail = command_results.to_context()["Contents"]
@@ -772,9 +720,7 @@ def test_get_endpoint_command_cancel(mocker, raw_response, expected):
         ("File Endpoint", {"limit": 5}, 10, "File Endpoint List"),
     ],
 )
-def test_compile_command_title_string(
-    sub_context, params, total_record, expected_title
-):
+def test_compile_command_title_string(sub_context, params, total_record, expected_title):
     """
     Tests the compile_command_title_string function
 
@@ -836,9 +782,7 @@ def test_check_valid_indicator_value(indicator_type, indicator_value, expected_r
         ("md5", "eb67bdf0eaac6e", "eb67bdf0eaac6e is not a valid md5"),
     ],
 )
-def test_check_valid_indicator_value_wrong_input(
-    indicator_type, indicator_value, expected_err_msg
-):
+def test_check_valid_indicator_value_wrong_input(indicator_type, indicator_value, expected_err_msg):
     """
     Tests the check_valid_indicator_value function.
 
@@ -896,9 +840,7 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 now = str(datetime.today())
 now_iso = dateparser.parse(now, settings={"TIMEZONE": "UTC"}).strftime(DATE_FORMAT)[:-3]
 week_before = str(datetime.today() - timedelta(days=7))
-iso_datatime_week_before = dateparser.parse(
-    week_before, settings={"TIMEZONE": "UTC"}
-).strftime(DATE_FORMAT)[:-3]
+iso_datatime_week_before = dateparser.parse(week_before, settings={"TIMEZONE": "UTC"}).strftime(DATE_FORMAT)[:-3]
 
 
 @pytest.mark.parametrize(
@@ -962,9 +904,7 @@ def test_create_content_query(args, key, expected_result):
             "4dd18f001ac31d5f48f50f99e4aa1761",
         ),
         (
-            {
-                "sha256": "2b105fb153b1bcd619b95028612b3a93c60b953eef6837d3bb0099e4207aaf6b"
-            },
+            {"sha256": "2b105fb153b1bcd619b95028612b3a93c60b953eef6837d3bb0099e4207aaf6b"},
             "sha256",
             "2b105fb153b1bcd619b95028612b3a93c60b953eef6837d3bb0099e4207aaf6b",
         ),
@@ -1086,7 +1026,7 @@ def test_extract_headers_for_readable_output(raw_response, expected):
 
 @pytest.mark.parametrize(
     "raw_response, offset, limit, expected",
-    [(HEADER_LIST, 0, 3, HEADER_LIST[:3]), (HEADER_LIST, 2, 3, HEADER_LIST[2:2 + 3])],
+    [(HEADER_LIST, 0, 3, HEADER_LIST[:3]), (HEADER_LIST, 2, 3, HEADER_LIST[2 : 2 + 3])],
 )
 def test_get_data_of_current_page(raw_response, offset, limit, expected):
     """
@@ -1119,10 +1059,7 @@ def test_parse_event_object_data(raw_event_data):
             -  Checks the output of parse event object with the expected output.
     """
     results = parse_event_object_data(raw_event_data.get("result")[0])
-    assert (
-        results.get("file_file_sha2")
-        == "c4e078607db2784be7761c86048dffa6f3ef04b551354a32fcdec3b6a3450905"
-    )
+    assert results.get("file_file_sha2") == "c4e078607db2784be7761c86048dffa6f3ef04b551354a32fcdec3b6a3450905"
     assert results.get("uuid") == "6a79a590-84a9-11ed-f4c8-000000032af2"
 
 
@@ -1156,9 +1093,7 @@ def test_parse_enriched_data_sub_object(raw_event_data):
         Then:
             -  Checks the output of parse event enriched sub object and with expected output.
     """
-    results = parse_enriched_data_sub_object(
-        raw_event_data.get("result")[0].get("enriched_data")
-    )
+    results = parse_enriched_data_sub_object(raw_event_data.get("result")[0].get("enriched_data"))
     assert results.get("enriched_data_suspicion_score") == 50
     assert results.get("enriched_data_category_id") == 201
 
@@ -1182,9 +1117,7 @@ def test_parse_xattributes_sub_object(event_data, event_key, expected_output):
         Then:
             -  Checks the output of parse event actor xattributes sub object expected output.
     """
-    results = parse_xattributes_sub_object(
-        event_data.get("result")[0].get("event_actor").get("xattributes"), None
-    )
+    results = parse_xattributes_sub_object(event_data.get("result")[0].get("event_actor").get("xattributes"), None)
     assert results.get(event_key) == expected_output
 
 
@@ -1207,9 +1140,7 @@ def test_parse_user_sub_object(event_data, event_key, expected_output):
         Then:
             -  Checks the output of parse event actor user sub object output.
     """
-    results = parse_user_sub_object(
-        event_data.get("result")[0].get("event_actor").get("user"), None
-    )
+    results = parse_user_sub_object(event_data.get("result")[0].get("event_actor").get("user"), None)
     assert results.get(event_key) == expected_output
 
 
@@ -1232,9 +1163,7 @@ def test_parse_file_sub_object(event_data, event_key, expected_output):
         Then:
             -  Checks the output of parse event actor file sub object output.
     """
-    results = parse_file_sub_object(
-        event_data.get("result")[0].get("event_actor").get("file"), None
-    )
+    results = parse_file_sub_object(event_data.get("result")[0].get("event_actor").get("file"), None)
     assert results.get(event_key) == expected_output
 
 
@@ -1257,9 +1186,7 @@ def test_parse_event_actor_sub_object(event_data, event_key, expected_output):
         Then:
             -  Checks the output of parse event actor sub object output.
     """
-    results = parse_event_actor_sub_object(
-        event_data.get("result")[0].get("event_actor")
-    )
+    results = parse_event_actor_sub_object(event_data.get("result")[0].get("event_actor"))
     assert results.get(event_key) == expected_output
 
 
@@ -1332,9 +1259,7 @@ def test_parse_monitor_source_sub_object(event_data, event_key, expected_output)
         Then:
             - Checks the output of parse monitor source sub object output.
     """
-    results = parse_monitor_source_sub_object(
-        event_data.get("result")[0].get("monitor_source")
-    )
+    results = parse_monitor_source_sub_object(event_data.get("result")[0].get("monitor_source"))
     assert results.get(event_key) == expected_output
 
 
@@ -1388,9 +1313,7 @@ def test_extract_raw_data_wrong_input(event_data, expected_error):
     assert e.value.args[0] == expected_error
 
 
-@pytest.mark.parametrize(
-    "raw_response, expected", [(SANDBOX_ISSUE_COMMAND, SANDBOX_ISSUE_COMMAND)]
-)
+@pytest.mark.parametrize("raw_response, expected", [(SANDBOX_ISSUE_COMMAND, SANDBOX_ISSUE_COMMAND)])
 def test_issue_sandbox_command(mocker, raw_response, expected):
     """
     Tests issue_sandbox_command Issue function.
@@ -1407,9 +1330,7 @@ def test_issue_sandbox_command(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected output.
     """
     args = {"file": "1dc0c8d7304c177ad0e74d3d2f1002eb773f4b180685a7df6bbe75ccc24b0164"}
-    mocker.patch.object(
-        client, "submit_file_to_sandbox_analyze", side_effect=[raw_response]
-    )
+    mocker.patch.object(client, "submit_file_to_sandbox_analyze", side_effect=[raw_response])
     command_results = issue_sandbox_command(
         client,
         args,
@@ -1420,9 +1341,7 @@ def test_issue_sandbox_command(mocker, raw_response, expected):
     assert context_detail == expected
 
 
-@pytest.mark.parametrize(
-    "raw_response, expected", [(SANDBOX_STATUS_COMMAND, SANDBOX_STATUS_COMMAND)]
-)
+@pytest.mark.parametrize("raw_response, expected", [(SANDBOX_STATUS_COMMAND, SANDBOX_STATUS_COMMAND)])
 def test_check_sandbox_status(mocker, raw_response, expected):
     """
     Tests check_sandbox_status status function.
@@ -1487,9 +1406,7 @@ def test_get_sandbox_verdict(mocker, raw_response, expected, expected_dbot_score
         "sha2": "1dc0c8d7304c177ad0e74d3d2f1002eb773f4b180685a7df6bbe75ccc24b0164",
         "integration_reliability": DEFAULT_RELIABILITY,
     }
-    mocker.patch.object(
-        client, "get_sandbox_verdict_for_file", side_effect=[raw_response]
-    )
+    mocker.patch.object(client, "get_sandbox_verdict_for_file", side_effect=[raw_response])
     mocker.patch.object(client, "get_file_entity", side_effect=[raw_response])
     command_results = get_sandbox_verdict(client, args)
 
@@ -1498,10 +1415,7 @@ def test_get_sandbox_verdict(mocker, raw_response, expected, expected_dbot_score
     assert context_detail == expected
     assert command_results.indicator.dbot_score.score == expected_dbot_score
     assert command_results.indicator.dbot_score.indicator_type == DBotScoreType.FILE
-    assert (
-        command_results.indicator.dbot_score.integration_name
-        == INTEGRATION_CONTEXT_NAME
-    )
+    assert command_results.indicator.dbot_score.integration_name == INTEGRATION_CONTEXT_NAME
     assert command_results.indicator.dbot_score.reliability == DEFAULT_RELIABILITY
 
 
@@ -1530,12 +1444,8 @@ def test_email_different_reliability(mocker, reliability):
         "sha2": "1dc0c8d7304c177ad0e74d3d2f1002eb773f4b180685a7df6bbe75ccc24b0164",
         "integration_reliability": reliability,
     }
-    mocker.patch.object(
-        client, "get_sandbox_verdict_for_file", side_effect=[SANDBOX_VERDICT_COMMAND]
-    )
-    mocker.patch.object(
-        client, "get_file_entity", side_effect=[SANDBOX_VERDICT_COMMAND]
-    )
+    mocker.patch.object(client, "get_sandbox_verdict_for_file", side_effect=[SANDBOX_VERDICT_COMMAND])
+    mocker.patch.object(client, "get_file_entity", side_effect=[SANDBOX_VERDICT_COMMAND])
     command_results = get_sandbox_verdict(client, args)
 
     assert command_results.indicator.dbot_score.reliability == reliability
@@ -1676,17 +1586,11 @@ def test_get_query_limit(param, expected_result):
             - Checks the output of the command function with the expected result.
     """
     (limit, offset) = get_query_limit(param)
-    assert (
-        limit == expected_result[0]
-    ), f"Validate limit {limit} == {expected_result[0]}"
-    assert (
-        offset == expected_result[1]
-    ), f"Validate offset {offset} == {expected_result[1]}"
+    assert limit == expected_result[0], f"Validate limit {limit} == {expected_result[0]}"
+    assert offset == expected_result[1], f"Validate offset {offset} == {expected_result[1]}"
 
 
-@pytest.mark.parametrize(
-    "raw_data, expected", [(INCIDENT_LIST_RESPONSE, "SEDR Incident 100010")]
-)
+@pytest.mark.parametrize("raw_data, expected", [(INCIDENT_LIST_RESPONSE, "SEDR Incident 100010")])
 def test_fetch_incidents(mocker, raw_data, expected):
     """
     Tests fetch incidents function.
