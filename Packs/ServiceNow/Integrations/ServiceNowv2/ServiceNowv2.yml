@@ -1686,7 +1686,7 @@ script:
   - arguments:
     - description: Short description of the ticket.
       name: short_description
-      prettyname: Name
+      prettyname: Short Description
       required: true
       predefined:
         - "${issue.ID} ${issue.Name}"
