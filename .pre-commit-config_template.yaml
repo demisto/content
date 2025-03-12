@@ -378,3 +378,12 @@ repos:
   hooks:
     - id: markdownlint
       files: \.md$
+
+- repo: local
+  hooks:
+    - id: mdx-validation
+      name: Validate README.md with MDX
+      entry: node .github/hooks/validate-mdx.js
+      language: system
+      types: [file]
+      files: "^README\\.md$"
