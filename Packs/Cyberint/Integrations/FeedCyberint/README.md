@@ -296,15 +296,15 @@ Gets File SHA256 from the feed.
 
 #### Context Output
 
-| **Path**                   | **Type** | **Description** |
-|----------------------------| --- | --- |
-| Cyberint.ioc_value         | String | The indicator value. |
-| Cyberint.ioc_type          | String | The indicator type. |
-| Cyberint.description       | String | The feed description. |
-| Cyberint.detected_activity | String | The feed detected activity. |
-| Cyberint.observation_date  | String | The feed observation date. |
-| Cyberint.severity_score    | String | The feed severity score. |
-| Cyberint.confidence        | String | The feed confidence. |
+| **Path**                   | **Type** | **Description**      |
+|----------------------------| --- |----------------------|
+| Cyberint.file_sha256.type         | String | The indicator type.  |
+| Cyberint.file_sha256.value          | String | The indicator value. |
+| Cyberint.file_sha256.malicious_score       | String | Malicious score.     |
+| Cyberint.file_sha256.filenames | String | Filenames.           |
+| Cyberint.file_sha256.first_seen  | String | First seen.          |
+| Cyberint.file_sha256.download_urls    | String | Download URLs.       |
+| Cyberint.file_sha256.benign        | String | Benign.              |
 
 #### Command example
 ```!cyberint-get-file-sha256 value=6a7b02c43837dcb8e40d271edb88d13d2e723c721a74931857aaef4853317789```
@@ -368,15 +368,29 @@ Gets Domain from the feed.
 
 #### Context Output
 
-| **Path**                   | **Type** | **Description** |
-|----------------------------| --- | --- |
-| Cyberint.ioc_value         | String | The indicator value. |
-| Cyberint.ioc_type          | String | The indicator type. |
-| Cyberint.description       | String | The feed description. |
-| Cyberint.detected_activity | String | The feed detected activity. |
-| Cyberint.observation_date  | String | The feed observation date. |
-| Cyberint.severity_score    | String | The feed severity score. |
-| Cyberint.confidence        | String | The feed confidence. |
+| **Path**                                      | **Type**  | **Description** |
+|-----------------------------------------------|----------|----------------|
+| Cyberint.domain.type                          | String   | The indicator type. |
+| Cyberint.domain.value                         | String   | The indicator value. |
+| Cyberint.domain.malicious_score               | String   | Malicious score. |
+| Cyberint.domain.occurrences_count             | String   | Occurrences count. |
+| Cyberint.domain.created_date                  | String   | Created date. |
+| Cyberint.domain.updated_date                  | String   | Updated date. |
+| Cyberint.domain.expiration_date               | String   | Expiration date. |
+| Cyberint.domain.ips                           | String   | IPs. |
+| Cyberint.domain.registrant_name               | String   | Registrant name. |
+| Cyberint.domain.registrant_email              | String   | Registrant email. |
+| Cyberint.domain.registrant_organization       | String   | Registrant organization. |
+| Cyberint.domain.registrant_country            | String   | Registrant country. |
+| Cyberint.domain.registrant_telephone          | String   | Registrant telephone. |
+| Cyberint.domain.technical_contact_email       | String   | Technical contact email. |
+| Cyberint.domain.technical_contact_name        | String   | Technical contact name. |
+| Cyberint.domain.technical_contact_organization| String   | Technical contact organization. |
+| Cyberint.domain.registrar_name                | String   | Registrar name. |
+| Cyberint.domain.admin_contact_name            | String   | Admin contact name. |
+| Cyberint.domain.admin_contact_organization    | String   | Admin contact organization. |
+| Cyberint.domain.admin_contact_email           | String   | Admin contact email. |
+| Cyberint.domain.benign                        | String   | Benign. |
 
 #### Command example
 ```!cyberint-get-domain value=dummy.com```
@@ -455,15 +469,19 @@ Gets Domain from the feed.
 
 #### Context Output
 
-| **Path**                   | **Type** | **Description** |
-|----------------------------| --- | --- |
-| Cyberint.ioc_value         | String | The indicator value. |
-| Cyberint.ioc_type          | String | The indicator type. |
-| Cyberint.description       | String | The feed description. |
-| Cyberint.detected_activity | String | The feed detected activity. |
-| Cyberint.observation_date  | String | The feed observation date. |
-| Cyberint.severity_score    | String | The feed severity score. |
-| Cyberint.confidence        | String | The feed confidence. |
+| **Path**                                    | **Type**  | **Description** |
+|---------------------------------------------|----------|----------------|
+| Cyberint.ipv4.type                          | String   | The indicator type. |
+| Cyberint.ipv4.value                         | String   | The indicator value. |
+| Cyberint.ipv4.malicious_score               | String   | Malicious score. |
+| Cyberint.ipv4.occurrences_count             | String   | Occurrences count. |
+| Cyberint.ipv4.country                       | String   | Country. |
+| Cyberint.ipv4.city                          | String   | City. |
+| Cyberint.ipv4.asn_number                    | String   | ASN number. |
+| Cyberint.ipv4.asn_organization              | String   | ASN organization. |
+| Cyberint.ipv4.suspicious_urls               | String   | Suspicious URLs. |
+| Cyberint.ipv4.suspicious_domains            | String   | Suspicious domains. |
+| Cyberint.domain.benign                      | String   | Benign. |
 
 #### Command example
 ```!cyberint-get-ipv4 value=1.1.1.1```
@@ -580,15 +598,16 @@ Gets Domain from the feed.
 
 #### Context Output
 
-| **Path**                   | **Type** | **Description** |
-|----------------------------| --- | --- |
-| Cyberint.ioc_value         | String | The indicator value. |
-| Cyberint.ioc_type          | String | The indicator type. |
-| Cyberint.description       | String | The feed description. |
-| Cyberint.detected_activity | String | The feed detected activity. |
-| Cyberint.observation_date  | String | The feed observation date. |
-| Cyberint.severity_score    | String | The feed severity score. |
-| Cyberint.confidence        | String | The feed confidence. |
+| **Path**                            | **Type**  | **Description** |
+|-------------------------------------|----------|----------------|
+| Cyberint.url.type                   | String   | The indicator type. |
+| Cyberint.url.value                  | String   | The indicator value. |
+| Cyberint.url.malicious_score        | String   | Malicious score. |
+| Cyberint.url.occurrences_count      | String   | Occurrences count. |
+| Cyberint.url.ips                    | String   | IPs. |
+| Cyberint.url.hostname               | String   | Hostname. |
+| Cyberint.url.domain                 | String   | Domain. |
+| Cyberint.url.benign                 | String   | Benign. |
 
 #### Command example
 ```!cyberint-get-url value=http://dummy.com```
