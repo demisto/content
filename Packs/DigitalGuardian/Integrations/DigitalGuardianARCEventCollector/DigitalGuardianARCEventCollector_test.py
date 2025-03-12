@@ -124,29 +124,48 @@ def test_get_events_command(mocker: MockerFixture, authenticated_client: Client)
     assert table_to_markdown_kwargs['t'] == expected_events
 
 
-def test_push_events(mocker: MockerFixture, authenticated_client: Client):
+def test_push_events(mocker: MockerFixture):
     """
     Given:
         - Digital Guardian ARC client and parsed events
     When:
-        - Calling push_events with set_export_bookmark = False
+        - Calling push_events
     Assert:
-        - Ensure events are sent to XSIAM but API-managed export bookmark (pointer) is not moved.
+        - Ensure events are sent to XSIAM with the correct product and vendor.
     """
     from DigitalGuardianARCEventCollector import push_events, VENDOR, PRODUCT
 
-    last_run = {'bookmark_values': [], 'search_after_values': []}
     events = util_load_json('test_data/expected_events.json')
 
     send_events_to_xsiam = mocker.patch('DigitalGuardianARCEventCollector.send_events_to_xsiam')
-    set_export_bookmark = mocker.patch.object(authenticated_client, 'set_export_bookmark')
 
-    push_events(authenticated_client, events, last_run, EXPORT_PROFILE, set_export_bookmark=False)
+    push_events(events, EXPORT_PROFILE)
     send_events_to_xsiam_kwargs: dict = send_events_to_xsiam.call_args.kwargs
 
     assert send_events_to_xsiam.call_count == 1
-    assert set_export_bookmark.call_count == 0  # set_export_bookmark is False
-
     assert send_events_to_xsiam_kwargs['events'] == events
     assert send_events_to_xsiam_kwargs['vendor'] == VENDOR
     assert send_events_to_xsiam_kwargs['product'] == PRODUCT
+
+
+def test_set_export_bookmark(mocker: MockerFixture, authenticated_client: Client):
+    """
+    Given:
+        - Digital Guardian ARC client and events last run
+    When:
+        - Calling set_export_bookmark
+    Assert:
+        - Ensure correct API call is performed.
+    """
+    from DigitalGuardianARCEventCollector import set_export_bookmark
+
+    last_run = {'bookmark_values': [], 'search_after_values': []}
+
+    client_http_request = mocker.patch.object(authenticated_client, '_http_request')
+
+    set_export_bookmark(authenticated_client, last_run, EXPORT_PROFILE)
+    client_http_request_kwargs: dict = client_http_request.call_args.kwargs
+
+    assert client_http_request.call_count == 1
+    assert client_http_request_kwargs['method'] == 'POST'
+    assert client_http_request_kwargs['url_suffix'] == f'/rest/2.0/export_profiles/{EXPORT_PROFILE}/acknowledge'

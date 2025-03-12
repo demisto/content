@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 import urllib3
 from CommonServerUserPython import *  # noqa
 
-from typing import Dict, List, Callable, Tuple
+from collections.abc import Callable
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -13,7 +13,7 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 READABLE_DATE_FORMAT = '%d/%m/%Y %I:%M %p'
 
-BASE_URL = "https://{}:17778/SolarWinds/InformationService/v3/Json"
+BASE_URL = "https://{}:{}/SolarWinds/InformationService/v3/Json"
 
 DEFAULT_FETCH_TYPE = "Alert"
 DEFAULT_MAX_FETCH = "15"
@@ -98,9 +98,9 @@ QUERY_PARAM = {
 class Client(BaseClient):
     """Client class to interact with the service API"""
 
-    def __init__(self, server, verify, proxy, credentials):
+    def __init__(self, server, port, verify, proxy, credentials):
         auth = (credentials.get("identifier"), credentials.get('password'))
-        super().__init__(BASE_URL.format(server), verify=verify, proxy=proxy, auth=auth)
+        super().__init__(BASE_URL.format(server, port), verify=verify, proxy=proxy, auth=auth)
 
     def http_request(self, method: str, url_suffix: str, params: dict = None, json_data: dict = None, **kwargs):
         """
@@ -227,7 +227,7 @@ def prepare_query_for_fetch_events(last_run: dict, params: dict) -> str:
     return query
 
 
-def validate_common_arguments(args: Dict) -> dict:
+def validate_common_arguments(args: dict) -> dict:
     """
     Validates common arguments and raises errors for invalid values.
 
@@ -305,7 +305,7 @@ def validate_and_prepare_query_for_list_alerts(args) -> str:
     return filter_query
 
 
-def validate_and_prepare_query_for_event_list(args: Dict) -> str:
+def validate_and_prepare_query_for_event_list(args: dict) -> str:
     """
     Validates and prepare arguments for event-list command and returns query.
 
@@ -352,7 +352,7 @@ def validate_and_prepare_query_for_event_list(args: Dict) -> str:
     return query
 
 
-def convert_events_outputs_to_hr(outputs: List) -> str:
+def convert_events_outputs_to_hr(outputs: list) -> str:
     """
     Converts list of outputs received from response to human readable output.
 
@@ -382,7 +382,7 @@ def convert_events_outputs_to_hr(outputs: List) -> str:
     )
 
 
-def convert_alerts_outputs_to_hr(outputs: List) -> str:
+def convert_alerts_outputs_to_hr(outputs: list) -> str:
     """
     Converts list of outputs received from response to human readable output.
 
@@ -443,7 +443,7 @@ def test_module(client: Client, params: dict) -> str:
 
 
 @logger
-def swis_alert_list_command(client: Client, args: Dict) -> CommandResults:
+def swis_alert_list_command(client: Client, args: dict) -> CommandResults:
     """
         Retrieves a list of alerts based on the filter values provided in the command arguments.
 
@@ -470,7 +470,7 @@ def swis_alert_list_command(client: Client, args: Dict) -> CommandResults:
 
 
 @logger
-def fetch_incidents(client: Client, last_run: dict, params: Dict, is_test=False) -> Tuple[dict, list]:
+def fetch_incidents(client: Client, last_run: dict, params: dict, is_test=False) -> tuple[dict, list]:
     """Fetches incidents from Solarwinds API.
 
     :param client: client to use
@@ -523,7 +523,7 @@ def fetch_incidents(client: Client, last_run: dict, params: Dict, is_test=False)
 
 
 @logger
-def swis_event_list_command(client: Client, args: Dict) -> CommandResults:
+def swis_event_list_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves list of triggered events on the filter values provided in the command arguments.
 
@@ -568,7 +568,7 @@ def convert_query_output_to_hr(outputs) -> str:
     return tableToMarkdown("Query Result", readable_output, removeNull=True)
 
 
-def swis_query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def swis_query_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Executes a SWQL query entered by user
 
@@ -603,7 +603,7 @@ def swis_query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 def main() -> None:
     """Main function, parses params and runs command functions
     """
-    commands: Dict[str, Callable] = {
+    commands: dict[str, Callable] = {
         'swis-alert-list': swis_alert_list_command,
         'swis-event-list': swis_event_list_command,
         'swis-query': swis_query_command
@@ -614,6 +614,7 @@ def main() -> None:
         params = demisto.params()
         args = demisto.args()
         server = params['server']
+        port = params['port']
         credentials = params.get('credentials', {})
 
         verify_certificate = not params.get('insecure', False)
@@ -621,6 +622,7 @@ def main() -> None:
 
         client = Client(
             server=server,
+            port=port,
             credentials=credentials,
             verify=verify_certificate,
             proxy=proxy)

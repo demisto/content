@@ -902,8 +902,13 @@ def test_vm_object_snapshot_get_when_invalid_arguments_are_provided(client, requ
     assert str(e.value) == error
 
 
-@pytest.mark.parametrize("empty_response", [True, False])
-def test_radar_anomaly_csv_analysis_success(client, requests_mock, empty_response):
+@pytest.mark.parametrize("empty_response, download_file", [
+    (True, "True"),
+    (True, "False"),
+    (False, "True"),
+    (False, "False")
+])
+def test_radar_anomaly_csv_analysis_success(client, requests_mock, empty_response, download_file):
     """Tests success for rubrik_radar_anomaly_csv_analysis."""
     from RubrikPolaris import rubrik_radar_anomaly_csv_analysis_command
 
@@ -913,22 +918,29 @@ def test_radar_anomaly_csv_analysis_success(client, requests_mock, empty_respons
                            "test_data/radar_anomaly_csv_analysis_hr.md")) as f:
         radar_anomaly_hr = f.read()
 
-    args = {"object_id": "dummy", "cluster_id": "dummy", "snapshot_id": "dummy"}
+    args = {"object_id": "dummy", "cluster_id": "dummy", "snapshot_id": "dummy", "download_file": download_file}
+
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                           "test_data/radar_anomaly_csv_analysis_file.csv"), 'r') as f:
+        file_data = f.read()
+    requests_mock.get('https://dummy_link/snapshot_000-000-000.csv', text=file_data, status_code=200)
 
     if empty_response:
         response = radar_anomaly_response.get('empty_response')
         requests_mock.post(BASE_URL_GRAPHQL, json=response)
         response = rubrik_radar_anomaly_csv_analysis_command(client, args=args)
-        assert response.readable_output == MESSAGES['NO_RESPONSE']
+        assert response[0].readable_output == MESSAGES['NO_RESPONSE']
 
     else:
         responses = radar_anomaly_response.get('raw_response')
         requests_mock.post(BASE_URL_GRAPHQL, json=responses)
         response = rubrik_radar_anomaly_csv_analysis_command(client, args=args)
 
-        assert response.raw_response == radar_anomaly_response.get('raw_response')
-        assert response.outputs == remove_empty_elements(radar_anomaly_response.get('outputs'))
-        assert response.readable_output == radar_anomaly_hr
+        assert response[0].raw_response == radar_anomaly_response.get('raw_response')
+        assert response[0].outputs == remove_empty_elements(radar_anomaly_response.get('outputs'))
+        assert response[0].readable_output == radar_anomaly_hr
+        if download_file == 'True' and isinstance(response[1], dict):
+            assert response[1].get('File') == 'snapshot_000-000-000.csv'
 
 
 @pytest.mark.parametrize("args, error", [

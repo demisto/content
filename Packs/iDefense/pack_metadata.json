@@ -3,7 +3,7 @@
     "description": "Deprecated. Use Accenture CTI v2 & Accenture CTI Feed instead.",
     "support": "partner",
     "hidden": true,
-    "currentVersion": "3.2.13",
+    "currentVersion": "3.2.14",
     "author": "Accenture",
     "url": "https://www.accenture.com/us-en/services/security/cyber-defense",
     "email": "CTI.AcctManagement@accenture.com",

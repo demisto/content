@@ -74,9 +74,14 @@ class Client:
             **kwargs
         )
 
-        if response.status_code not in (200, 201, 202, 204):
-            demisto.info(f"Unexpected status code: {response.status_code}, path {path} Returning empty JSON.")
-            return {"result": None, "error": f"Unexpected status code: {response.status_code}"}
+        status_code = response.status_code
+
+        if status_code in (401, 403):
+            raise Exception("Authentication failure or resource forbidden.")
+
+        if status_code not in (200, 201, 202, 204):
+            demisto.info(f"Unexpected status code: {status_code}, path {path} Returning empty JSON.")
+            return {"result": None, "error": f"Unexpected status code: {status_code}"}
 
         return response.json()
 
@@ -218,12 +223,8 @@ def ack_unack_alerts(ids, status, client):
     data = []
     for id in ids:
         data.append({'id': id, 'ack': status})
-    response = client.http_post_request('/api/open/alerts/ack', {'data': data})
-
-    if 'error' in response and response['error']:
-        return None
-
-    return response.get("result", {}).get("id", None)
+    if data:
+        client.http_post_request('/api/open/alerts/ack', {'data': data})
 
 
 def ack_alerts(ids, client):

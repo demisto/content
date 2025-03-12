@@ -2,7 +2,7 @@
     "name": "Cybersixgill-DVE",
     "description": "Powered by the broadest automated collection from the deep and dark web, Cybersixgill’s Dynamic Vulnerability Exploit (DVE) Score is a feed of common known vulnerabilities, scored by their probability of getting exploited. The DVE Score feed enables Cortex XSOAR users to track threats from vulnerabilities that others define as irrelevant, but have a higher probability of being exploited. It is the only solution that predicts the immediate risks of a vulnerability based on threat actors’ intent. \n\nDVE Score is also the most comprehensive CVE enrichment solution on the market: Cortex XSOAR users gain unparalleled context and can accelerate threat response and decision making, effectively giving security teams a head start on vulnerability management.",
     "support": "partner",
-    "currentVersion": "1.0.8",
+    "currentVersion": "1.0.9",
     "author": "Cybersixgill",
     "url": "https://www.cybersixgill.com/",
     "email": "getstarted@cybersixgill.com",

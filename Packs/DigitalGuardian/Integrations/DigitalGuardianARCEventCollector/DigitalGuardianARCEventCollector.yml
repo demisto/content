@@ -21,15 +21,25 @@ configuration:
   name: credentials
   displaypassword: Client Secret
   required: true
+  section: Connect
 - display: Export Profiles
-  additionalinfo: Internal document names or GUIDs of the Digital Guardian ARC export profiles.
+  additionalinfo: Internal document names or GUIDs of the Digital Guardian ARC export profiles. Custom export profiles are not officially supported.
   name: export_profile
   required: true
   type: 16  # Multi Select
   defaultvalue: defaultExportProfile
   options:
     - defaultExportProfile
-  section: Connect
+    - demisto
+  section: Collect
+- display: Number of Export Requests per Fetch
+  additionalinfo: Number of API calls per fetch to export events for each configured Digital Guardian ARC export profile. Use with extreme caution as this might impact data ingestion quota limits and performance. Consult with the engineering team before changing this value.
+  name: export_calls_per_fetch
+  required: false
+  defaultvalue: '1'
+  type: 0
+  section: Collect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -66,7 +76,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets events from the configured Digital Guardian ARC export profile.
+    description: Gets events from the configured Digital Guardian ARC export profiles. This command is intended for development and debugging purposes and should be used with caution as it may create duplicate events.
     execution: false
     name: digital-guardian-get-events
   dockerimage: demisto/python3:3.11.10.116949

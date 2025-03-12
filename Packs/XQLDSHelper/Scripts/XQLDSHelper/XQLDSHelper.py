@@ -368,7 +368,7 @@ class QueryParams:
             )
 
         self.__query_name = query_name
-        self.__query_string = '\n'.join(x.strip() for x in query_string.splitlines())
+        self.__query_string = '\n'.join(x.strip() for x in query_string.splitlines()).strip()
         self.__earliest_time = earliest_time
         self.__latest_time = latest_time
 
@@ -413,8 +413,8 @@ class Cache:
         val: str
     ) -> dict[Hashable, str]:
         return {
-            'type': 'gz+b85',
-            'data': base64.b85encode(gzip.compress(val.encode())).decode()
+            'type': 'gz+b85x',
+            'data': base64.b85encode(gzip.compress(val.encode())).decode().replace('$', ':')
         }
 
     @staticmethod
@@ -433,7 +433,7 @@ class Cache:
         query_hash: str,
         cache_node: str,
     ) -> Any:
-        cache = demisto.get(demisto.context(), self.__key)
+        cache = self.__context.get(self.__key)
         if not isinstance(cache, dict):
             return None
 
@@ -442,17 +442,23 @@ class Cache:
 
         _data = demisto.get(cache, f'{cache_node}.data')
         _type = demisto.get(cache, f'{cache_node}.type')
-        if _type == 'gz+b85':
-            try:
+        try:
+            if _type == 'gz+b85':
                 return json.loads(
                     gzip.decompress(
                         base64.b85decode(_data.encode())
                     ).decode()
                 )
-            except Exception as e:
-                demisto.debug(f'Failed to load cache data [{cache_node}] - {e}')
+            elif _type == 'gz+b85x':
+                return json.loads(
+                    gzip.decompress(
+                        base64.b85decode(_data.replace(':', '$').encode())
+                    ).decode()
+                )
+            else:
                 return None
-        else:
+        except Exception as e:
+            demisto.debug(f'Failed to load cache data [{cache_node}] - {e}')
             return None
 
     def __save_data(
@@ -481,9 +487,11 @@ class Cache:
     def __init__(
         self,
         name: str,
+        context: ContextData,
     ) -> None:
         name = urllib.parse.quote(name).replace('.', '%2E')
         self.__key = f'XQLDSHelperCache.{name}'
+        self.__context = context
 
     def save_recordset(
         self,
@@ -1643,7 +1651,8 @@ class EntryBuilder:
         if scope not in scopes:
             return None
 
-        entry = default.get('entry')
+        entry_key = str(scope) if str(scope) in default else 'entry'
+        entry = default.get(entry_key)
         if isinstance(entry, dict):
             return entry
         elif isinstance(entry, str):
@@ -1655,7 +1664,7 @@ class EntryBuilder:
             }
         else:
             raise DemistoException(
-                f'default.entry must be of type stror dict - {type(entry)}'
+                f'default.{entry_key} must be of type stror dict - {type(entry)}'
             )
 
     def __init__(
@@ -1777,8 +1786,13 @@ class Main:
         :return: The template name and template.
         """
         templates_type = args.get('templates_type') or 'raw'
-        if templates_type == 'raw':
+        if templates_type in ('raw', 'base64'):
             templates = args.get('templates')
+            if templates_type == 'base64':
+                assert isinstance(templates, str), (
+                    f"'templates' must be of type str in templates_type = 'base64' - {type(templates)}"
+                )
+                templates = base64.b64decode(templates.encode()).decode()
         elif templates_type == 'list':
             templates = execute_command('getList', {
                 'listName': args.get('templates')
@@ -1789,7 +1803,7 @@ class Main:
         if isinstance(templates, str):
             if argToBoolean(args.get('triple_quotes_to_string', 'true')):
                 templates = re.sub(
-                    r"""(\"{3}|'{3})(.*?)\1""",
+                    r"""(\"{3}|'{3}|`{3})(.*?)\1""",
                     lambda m: json.dumps(m.group(2)),
                     templates,
                     flags=re.DOTALL
@@ -1911,6 +1925,72 @@ class Main:
         return str(var_opening), str(var_closing)
 
     @staticmethod
+    def __get_base_time(
+        args: dict[Hashable, Any],
+        query_node: dict[Hashable, Any],
+        context: ContextData,
+    ) -> tuple[datetime, datetime]:
+        """ Get the base time of earliest_time and latest_time
+
+        :param args: The argument parameters.
+        :param query_node: The `.query` node of the template.
+        :param context: The context data.
+        :return: The base time of earliest_time and latest_time.
+        """
+        round_time = demisto.get(query_node, 'time_range.round_time')
+        if round_time is None:
+            round_time = argToList(args.get('round_time'))
+            if len(round_time) == 0:
+                round_time_latest = round_time_earliest = 0
+            elif len(round_time) == 1:
+                round_time_latest = round_time_earliest = arg_to_number(round_time[0]) or 0
+            elif len(round_time) == 2:
+                round_time[0] = arg_to_number(round_time[0])
+                assert isinstance(round_time[0], int), (
+                    f'list of round_time must be number - {round_time}'
+                )
+                round_time_earliest = round_time[0]
+
+                round_time[1] = arg_to_number(round_time[1])
+                assert isinstance(round_time[1], int), (
+                    f'list of round_time must be number - {round_time}'
+                )
+                round_time_latest = round_time[1]
+            else:
+                raise DemistoException(f'Too many round_time - {round_time}')
+
+        elif isinstance(round_time, dict):
+            round_time_earliest = arg_to_number(round_time.get('earliest_time')) or 0
+            round_time_latest = arg_to_number(round_time.get('latest_time')) or 0
+        elif isinstance(round_time, str | int):
+            round_time_latest = round_time_earliest = arg_to_number(round_time) or 0
+        else:
+            raise DemistoException(f'query.time_range.round_time must be of type str or dict - {round_time}')
+
+        base_time = args.get('base_time')
+        if not base_time:
+            # Set default base time
+            for k in ['alert.occurred', 'incident.occurred', 'alert.created', 'incident.created']:
+                base_time = context.get(k)
+                if base_time and base_time != '0001-01-01T00:00:00Z':
+                    break
+            else:
+                base_time = 'now'
+
+        base_time = Main.__parse_date_time(base_time, None)
+
+        return (
+            base_time if not round_time_earliest else datetime.fromtimestamp(
+                math.floor(base_time.timestamp() / round_time_earliest) * round_time_earliest,
+                base_time.tzinfo
+            ),
+            base_time if not round_time_latest else datetime.fromtimestamp(
+                math.floor(base_time.timestamp() / round_time_latest) * round_time_latest,
+                base_time.tzinfo
+            )
+        )
+
+    @staticmethod
     def __build_query_params(
         args: dict[Hashable, Any],
         query_name: str,
@@ -1927,49 +2007,35 @@ class Main:
         :param context: The context data.
         :return: Query parameters.
         """
-        base_time = args.get('base_time')
-        if not base_time:
-            # Set default base time
-            for k in ['alert.occurred', 'incident.occurred', 'alert.created', 'incident.created']:
-                base_time = context.get(k)
-                if base_time and base_time != '0001-01-01T00:00:00Z':
-                    break
-            else:
-                base_time = 'now'
+        query_node = formatter.build(
+            template=demisto.get(template, 'query'),
+            context=context,
+        )
 
-        base_time = Main.__parse_date_time(base_time, None)
-
-        if round_time := arg_to_number(
-            demisto.get(template, 'query.time_range.round_time')
-            or args.get('round_time')
-            or 0
-        ):
-            base_time = datetime.fromtimestamp(
-                math.floor(base_time.timestamp() / round_time) * round_time,
-                base_time.tzinfo
-            )
+        earliest_time_base, latest_time_base = Main.__get_base_time(
+            args=args,
+            query_node=query_node,
+            context=context,
+        )
 
         return QueryParams(
             query_name=query_name,
-            query_string=formatter.build(
-                template=demisto.get(template, 'query.xql'),
-                context=context,
-            ),
+            query_string=query_node.get('xql'),
             earliest_time=Main.__parse_date_time(
                 demisto.get(
-                    template,
-                    'query.time_range.earliest_time',
+                    query_node,
+                    'time_range.earliest_time',
                     args.get('earliest_time', '24 hours ago')
                 ),
-                base_time
+                earliest_time_base
             ),
             latest_time=Main.__parse_date_time(
                 demisto.get(
-                    template,
-                    'query.time_range.latest_time',
+                    query_node,
+                    'time_range.latest_time',
                     args.get('latest_time', 'now')
                 ),
-                base_time
+                latest_time_base
             )
         )
 
@@ -2054,8 +2120,17 @@ class Main:
         fields = dict(fields, **(fields.get('CustomFields') or {}))
         fields.pop('CustomFields', None)
 
+        context = args.get('context_data')
+        if isinstance(context, str):
+            context = json.loads(context)
+
+        assert context is None or isinstance(context, dict), (
+            f'Context data must be of type str, dict, or null - {type(context)}'
+        )
+        context = dict(demisto.context(), **(context or {}))
+
         self.__context: ContextData = ContextData(
-            context=demisto.context(),
+            context=context,
             alert=fields if is_xsiam() else None,
             incident=None if is_xsiam() else fields,
         )
@@ -2065,7 +2140,7 @@ class Main:
         )
         self.__cache_type: str = args.get('cache_type') or CacheType.RECORDSET
         if self.__cache_type not in [str(x) for x in list(CacheType)]:
-            raise DemistoException('Invalid cache_type - {self.__cache_type}')
+            raise DemistoException(f'Invalid cache_type - {self.__cache_type}')
 
         self.__max_retries: int = self.__arg_to_int(
             'max_retries', DEFAULT_RETRY_MAX
@@ -2106,8 +2181,10 @@ class Main:
             formatter=formatter,
             context=self.__context,
         )
-        cache = Cache(self.__template_name)
-
+        cache = Cache(
+            name=self.__template_name,
+            context=self.__context
+        )
         entry = cache.load_entry(
             query_params.query_hash()
         ) if self.__cache_type == CacheType.ENTRY else None

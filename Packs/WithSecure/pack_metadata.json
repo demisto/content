@@ -2,7 +2,7 @@
     "name": "WithSecure",
     "description": "connect to SIEM with WithSecure",
     "support": "xsoar",
-    "currentVersion": "1.0.5",
+    "currentVersion": "1.0.6",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

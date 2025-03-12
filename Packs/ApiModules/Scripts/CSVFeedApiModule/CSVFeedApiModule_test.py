@@ -1,3 +1,4 @@
+
 import requests_mock
 from CSVFeedApiModule import *
 import pytest
@@ -238,7 +239,7 @@ class TestTagsParam:
                 feedTags=[]
             )
             _, _, indicators = get_indicators_command(client, args)
-            assert [] == indicators[0]['fields']['tags']
+            assert indicators[0]['fields']['tags'] == []
 
 
 def util_load_json(path):
@@ -586,3 +587,35 @@ def test_build_iterator__with_and_without_passed_time_threshold(mocker, has_pass
     client.build_iterator()
     assert mock_session.call_args[0][0].headers.get('If-None-Match') == expected_result.get('If-None-Match')
     assert mock_session.call_args[0][0].headers.get('If-Modified-Since') == expected_result.get('If-Modified-Since')
+
+
+def test_get_indicators_command(mocker):
+    """
+            Given: params with tlp_color set to RED and enrichmentExcluded set to False
+            When: Calling get_indicators_command
+            Then: validate enrichment_excluded is set to True
+    """
+    from CSVFeedApiModule import get_indicators_command
+    client_mock = mocker.Mock()
+    args = {
+        'indicator_type': 'IP',
+        'limit': '50'
+    }
+    tags = ['tag1', 'tag2']
+    tlp_color_red_params = {
+        'tlp_color': 'RED',
+        'enrichmentExcluded': False
+    }
+    mocker.patch.object(demisto, 'params', return_value=tlp_color_red_params)
+    mocker.patch('CSVFeedApiModule.is_xsiam_or_xsoar_saas', return_value=True)
+    fetch_mock = mocker.patch('CSVFeedApiModule.fetch_indicators_command', return_value=([], None))
+    get_indicators_command(client_mock, args, tags)
+
+    fetch_mock.assert_called_with(
+        client_mock,
+        'IP',
+        None,
+        50,
+        False,
+        True  # This verifies that enrichment_excluded is set to True
+    )

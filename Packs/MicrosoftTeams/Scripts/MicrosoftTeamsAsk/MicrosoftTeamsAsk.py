@@ -16,7 +16,7 @@ def main():
     team_member: str = script_arguments.get('team_member', '')
     channel: str = script_arguments.get('channel', '')
     team: str = script_arguments.get('team', '')
-    using_instance: str = script_arguments.get('using_instance', '')
+    using_instance: str = script_arguments.get('using', '')
 
     if not (team_member or channel):
         raise ValueError('Either team member or channel must be provided.')

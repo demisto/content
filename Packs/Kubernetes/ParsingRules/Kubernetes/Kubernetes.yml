@@ -1,5 +1,5 @@
 name: Kubernetes Parsing Rules
-id: Kubernetes_Parsing_Rules
+id: Kubernetes_ParsingRule
 fromversion: 8.2.0
 tags: []
 rules: ''

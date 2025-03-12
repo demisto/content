@@ -1,22 +1,25 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Cyberint Incident"
+        "AI Playground"
     ],
     "caseInsensitive": true,
-    "cliName": "cyberintfiletype",
+    "cliName": "anythingllmworkspace",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_cyberintfiletype",
+    "id": "incident_anythingllmworkspace",
     "isReadOnly": false,
     "locked": false,
-    "name": "CyberInt File Type",
+    "name": "Anything LLM Workspace",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
     "required": false,
     "sla": 0,
     "system": false,
@@ -26,5 +29,5 @@
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.10.0"
 }
