@@ -319,7 +319,7 @@ def get_indicator_outputs(resource: dict[str, Any]) -> dict[str, Any]:
                 "DomainTypes": domain_types,
                 "IPAddressTypes": ip_address_types,
                 "Relations": [
-                    f'{item.get("Type")}: {item.get("Indicator")}'
+                    f'{item.get("Type")}: {item.get("Indicator")}'    # type: ignore
                     for item in get_values(relations, return_type="list", keys=["indicator", "type"])  # type: ignore
                 ],
                 "Labels": get_values(labels, return_type="list", keys="name"),
