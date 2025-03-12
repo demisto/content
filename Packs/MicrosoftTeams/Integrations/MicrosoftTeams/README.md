@@ -936,10 +936,6 @@ Retrieves a list of members from a chat.
 
 `Chat.ReadBasic` - *Delegated*
 
-`Chat.Create` - *Delegated*
-
-Note: Chat.Create is needed only when listing one-on-one chats.
-
 #### Input
 
 | **Argument Name** | **Description**                                                                  | **Required** |
@@ -984,10 +980,6 @@ Retrieves a list of chats that the user is part of. If 'chat' is specified - ret
 `User.Read.All` - *Delegated*
 
 `Chat.ReadBasic` - *Delegated*
-
-`Chat.Create` - *Delegated*
-
-Note: Chat.Create is needed only when listing one-on-one chats.
 
 #### Input
 
@@ -1040,10 +1032,6 @@ Retrieves a list of messages in a chat.
 `User.Read.All` - *Delegated*
 
 `Chat.Read` - *Delegated*
-
-`Chat.Create` - *Delegated*
-
-Note: Chat.Create is needed only when listing one-on-one chats.
 
 #### Input
 

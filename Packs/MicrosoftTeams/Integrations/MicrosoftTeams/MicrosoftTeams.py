@@ -162,9 +162,9 @@ COMMANDS_REQUIRED_PERMISSIONS: dict[str, list[GraphPermissions]] = {
     'microsoft-teams-message-send-to-chat': [Perms.USER_READ_ALL, Perms.CHAT_CREATE, Perms.CHATMESSAGE_SEND,
                                              Perms.APPCATALOG_READ_ALL, Perms.TEAMSAPPINSTALLATION_READWRITESELFFORCHAT],
     'microsoft-teams-chat-add-user': [Perms.CHAT_READBASIC, Perms.CHATMEMBER_READWRITE],
-    'microsoft-teams-chat-member-list': [Perms.USER_READ_ALL, Perms.CHAT_READBASIC, Perms.CHAT_CREATE],
-    'microsoft-teams-chat-list': [Perms.USER_READ_ALL, Perms.CHAT_READBASIC, Perms.CHAT_CREATE],
-    'microsoft-teams-chat-message-list': [Perms.USER_READ_ALL, Perms.CHAT_READ, Perms.CHAT_CREATE],
+    'microsoft-teams-chat-member-list': [Perms.USER_READ_ALL, Perms.CHAT_READBASIC],
+    'microsoft-teams-chat-list': [Perms.USER_READ_ALL, Perms.CHAT_READBASIC],
+    'microsoft-teams-chat-message-list': [Perms.USER_READ_ALL, Perms.CHAT_READ],
     'microsoft-teams-chat-update': [Perms.USER_READ_ALL, Perms.CHAT_READWRITE],
     'microsoft-teams-message-update': [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL],
     'microsoft-teams-integration-health': [],
@@ -1118,9 +1118,10 @@ def get_team_aad_id(team_name: str) -> str:
     raise ValueError('Could not find requested team.')
 
 
-def get_chat_id_and_type(chat: str) -> tuple[str, str]:
+def get_chat_id_and_type(chat: str, create_dm_chat: bool = True) -> tuple[str, str]:
     """
     :param chat: Represents the identity of the chat - chat_name, chat_id or member in case of "oneOnOne" chat_type.
+    :param create_dm_chat: Create a new one on one chat if the one requested does not exist already.
     :return: chat_id, chat_type
     """
     demisto.debug(f'Given chat: {chat}')
@@ -1145,11 +1146,22 @@ def get_chat_id_and_type(chat: str) -> tuple[str, str]:
     user_data: list = get_user(chat)
     if not (user_data and user_data[0].get('id')):
         raise ValueError(f'Could not find chat: {chat}')
+
     demisto.debug(f"Received member as chat: {chat=}")
-    # Find the chat_id in case of 'oneOnOne' chat by calling "create_chat"
-    # If a one-on-one chat already exists, this operation will return the existing chat and not create a new one
-    chat_data: dict = create_chat("oneOnOne", [(user_data[0].get('id'), user_data[0].get('userType'))])
-    return chat_data.get('id', ''), chat_data.get('chatType', '')
+    if create_dm_chat:
+        # Find the chat_id in case of 'oneOnOne' chat by calling "create_chat"
+        # If a one-on-one chat already exists, this operation will return the existing chat and not create a new one
+        chat_data: dict = create_chat("oneOnOne", [(user_data[0].get('id'), user_data[0].get('userType'))])
+        chat_id = chat_data.get('id', '')
+        chat_type = chat_data.get('chatType', '')
+    else:
+        # Find the chat_id without trying to create a chat, raise an error if the one-on-one chat doesn't already exist
+        chat_id = get_oneonone_chat_id(user_data[0].get('id'))
+        if not chat_id:
+            raise ValueError(f'Could not find chat: {chat}')
+        chat_type = 'oneOneOne'
+
+    return chat_id, chat_type
 
 
 # def add_member_to_team(user_principal_name: str, team_id: str):
@@ -1473,6 +1485,27 @@ def get_signed_in_user() -> dict[str, str]:
     return cast(dict[str, str], http_request('GET', url))
 
 
+def get_oneonone_chat_id(user_id: str) -> str:
+    """
+    Retrieves the chat id for the one on one chat between the given user_id and the signed-in user.
+    :param user_id: ID of the other user in the one on one chat
+
+    :return: ID of the one on one chat
+    """
+    caller_id: str = get_signed_in_user().get('id', '')
+    if caller_id == user_id:  # No 'one on one' between the user and himself
+        return ''
+    url = f'{GRAPH_BASE_URL}/v1.0/me/chats'
+    params = {
+        '$expand': 'members',
+        '$filter': ("chatType eq 'oneOnOne' and "
+                    f"members/any(m:m/microsoft.graph.aadUserConversationMember/userId eq '{user_id}')")
+    }
+    chats_response = cast(dict[Any, Any], http_request('GET', url, params=params))
+    chats, _ = pages_puller(chats_response)
+    return chats[0].get('id', '') if chats else ''
+
+
 def create_chat(chat_type: str, users: list, chat_name: str = "") -> dict:
     """
     Create a new chat object.
@@ -1769,7 +1802,7 @@ def chat_message_list_command():
     """
     args = demisto.args()
     chat = args.get('chat')
-    chat_id, _ = get_chat_id_and_type(chat)
+    chat_id, _ = get_chat_id_and_type(chat, create_dm_chat=False)
     next_link = args.get('next_link', '')
 
     limit = arg_to_number(args.get('limit')) or MAX_ITEMS_PER_RESPONSE
@@ -1819,7 +1852,7 @@ def chat_list_command():
         if filter_query:
             raise ValueError("Retrieve a single chat does not support the 'filter' ODate query parameter.")
         chat_id = chat if chat.endswith((GROUP_CHAT_ID_SUFFIX, ONEONONE_CHAT_ID_SUFFIX)) else \
-            get_chat_id_and_type(chat)[0]
+            get_chat_id_and_type(chat, create_dm_chat=False)[0]
         chats_list_response: dict = get_chats_list(odata_params={'$expand': args.get('expand')}, chat_id=chat_id)
         chats_list_response.pop('@odata.context', '')
         chats_data = [chats_list_response]
@@ -1866,7 +1899,7 @@ def chat_member_list_command():
     """
 
     chat: str = demisto.args().get('chat', '')
-    chat_id, _ = get_chat_id_and_type(chat)
+    chat_id, _ = get_chat_id_and_type(chat, create_dm_chat=False)
 
     chat_members: list = get_chat_members(chat_id)
     [member.pop('@odata.type', None) for member in chat_members]
