@@ -725,7 +725,7 @@ def screenshot_image(browser: Browser, tab: Tab, path: str, wait_time: int, navi
     tab_event_handler = navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
 
     if tab_event_handler.is_mailto:
-        demisto.debug(f'URLs that start with "mailto:" cannot be rasterized.\nURL: {path}, {tab.id=}.')
+        demisto.info(f'URLs that start with "mailto:" cannot be rasterized.\nURL: {path}, {tab.id=}.')
         return None, f'URLs that start with "mailto:" cannot be rasterized.\nURL: {path}'
 
     try:
@@ -860,7 +860,7 @@ def rasterize_thread(browser: Browser, chrome_port, path: str,
         except Exception as ex:
             demisto.info(f'Failed to set the chrome tab size due to {ex}')
             raise ex
-        demisto.debug(f'Determining rasterization type: {rasterize_type}, for {path=}, {tab.id=}')
+        demisto.debug(f'Determining rasterization type: {rasterize_type=}, for {path=}, {tab.id=}')
         if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower() == RasterizeType.PNG.value:
             demisto.debug(f'Executing screenshot_image for PNG, {path=}, {tab.id=}')
             return screenshot_image(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout,
@@ -937,7 +937,7 @@ def perform_rasterize(
 
     # create a list with all the paths that start with "mailto:"
     mailto_paths = [path_value for path_value in paths if path_value.startswith('mailto:')]
-    demisto.debug(f'Identified {len(mailto_paths)} mailto paths: {mailto_paths}')
+    demisto.debug(f'Identified {len(mailto_paths)} mailto paths: {mailto_paths=}')
 
     if mailto_paths:
         # remove the mailto from the paths to rasterize
