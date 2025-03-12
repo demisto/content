@@ -23,7 +23,7 @@ def test_lookup_ou(mocker):
                         "Name": "OU-NAME",
                         "Id": "ou-2222-22222222",
                         "Arn": "arn:aws:organizations::111111111111:ou/o-2222222222/ou-2222-22222222",
-                    }
+                    },
                 }
             ]
         elif name == "aws-org-parent-list":
@@ -171,9 +171,7 @@ def test_aws_account_heirarchy_command_no_account(mocker):
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
     args = {"account_id": "111111111111"}
     result = aws_account_heirarchy(args)
-    expected_result = CommandResults(
-        readable_output="could not find specified account info"
-    )
+    expected_result = CommandResults(readable_output="could not find specified account info")
 
     assert result.readable_output == expected_result.readable_output
 
@@ -209,8 +207,6 @@ def test_aws_account_heirarchy_command_bad_parent(mocker):
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
     args = {"account_id": "111111111111"}
     result = aws_account_heirarchy(args)
-    expected_result = CommandResults(
-        readable_output="could not find specified account parent"
-    )
+    expected_result = CommandResults(readable_output="could not find specified account parent")
 
     assert result.readable_output == expected_result.readable_output
