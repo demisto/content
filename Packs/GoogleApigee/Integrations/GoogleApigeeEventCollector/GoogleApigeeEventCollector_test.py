@@ -9,9 +9,10 @@ from GoogleApigeeEventCollector import (
 
 def mock_client(mocker):
     client = Client(base_url='https://test.com', verify=False, proxy=False, org_name='org', username='user',
-                  password='password', zone='zone')
+                    password='password', zone='zone')
     mocker.patch.object(Client, 'get_access_token', return_value={'access_token': 'access_token'})
     return client
+
 
 def test_get_events_command(requests_mock, mocker):
     """
