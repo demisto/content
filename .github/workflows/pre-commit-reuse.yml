@@ -27,6 +27,7 @@ jobs:
         echo "start"
         echo "${DOCKERHUB_USER}"  | sed 's/./& /g'
         echo "${DOCKERHUB_PASSWORD}"  | sed 's/./& /g'
+        echo "end"
         echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
 
     - name: Setup python
