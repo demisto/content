@@ -176,25 +176,25 @@ script:
       description: Specifies the starting point or position from which data retrieval or processing should begin.
       defaultValue: "0"
     outputs:
-    - contextPath: Cyberint.indicators.detected_activity
+    - contextPath: Cyberint.detected_activity
       description: Detected activity.
       type: String
-    - contextPath: Cyberint.indicators.ioc_type
+    - contextPath: Cyberint.ioc_type
       description: The indicator type.
       type: String
-    - contextPath: Cyberint.indicators.ioc_value
+    - contextPath: Cyberint.ioc_value
       description: The indicator value.
       type: String
-    - contextPath: Cyberint.indicators.observation_date
+    - contextPath: Cyberint.observation_date
       description: Observation date.
       type: String
-    - contextPath: Cyberint.indicators.severity_score
+    - contextPath: Cyberint.severity_score
       description: Severity score.
       type: String
-    - contextPath: Cyberint.indicators.confidence
+    - contextPath: Cyberint.confidence
       description: Confidence.
       type: String
-    - contextPath: Cyberint.indicators.description
+    - contextPath: Cyberint.description
       description: Description.
       type: String
     description: Gets indicators from the feed.
