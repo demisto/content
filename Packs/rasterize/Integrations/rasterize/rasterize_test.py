@@ -109,10 +109,9 @@ def test_rasterize_html(mocker: MockerFixture, capfd: CaptureFixture):
         mocker.patch.object(demisto, 'getFilePath', return_value={"path": path})
         mocker.patch.object(os, 'rename')
         mocker.patch.object(os.path, 'realpath', return_value=f'{os.getcwd()}/test_data/file.html')
-        mocker_output = mocker.patch('rasterize.return_results')
         mocker.patch.object(rasterize, 'support_multithreading')
-        rasterize_html_command(args)
-        assert mocker_output.call_args.args[0]['File'] == 'email.png'
+        results = rasterize_html_command(args)
+        assert results['File'] == 'email.png'
 
 
 @pytest.fixture
@@ -179,10 +178,9 @@ def test_rasterize_image_to_pdf(mocker: MockerFixture):
     mocker.patch.object(demisto, 'getFilePath', return_value={"path": path})
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(rasterize, 'support_multithreading')
-    rasterize_image_command(args)
-    assert demisto.results.call_count == 1
+    results = rasterize_image_command(args)
+
     # call_args is tuple (args list, kwargs). we only need the first one
-    results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0][0]['Type'] == entryTypes['entryInfoFile']
 
@@ -636,6 +634,8 @@ def test_backoff(mocker: MockerFixture):
     assert res == (None, 2)
     sleep_mock.assert_called_with(1)
 
+class MockTab:
+    id = 'mock_tab_id'
 
 def test_is_mailto_urls(mocker: MockerFixture):
     """
@@ -650,7 +650,7 @@ def test_is_mailto_urls(mocker: MockerFixture):
         return_results=type('PychromeEventHandler', (), {'is_mailto': True})
     )
 
-    res = screenshot_image(None, None, 'url', None, None)
+    res = screenshot_image(None, MockTab(), 'url', None, None)
 
     assert res == (None, 'URLs that start with "mailto:" cannot be rasterized.\nURL: url')
 
@@ -939,12 +939,11 @@ def test_rasterize_email_command_png(mocker: MockerFixture):
 
     mocker.patch('rasterize.perform_rasterize', return_value=[('image_data', None)])
     mock_file_result = mocker.patch('rasterize.fileResult', return_value={'Type': 'image'})
-    mock_results = mocker.patch.object(demisto, 'results')
 
-    rasterize_email_command(mock_args)
+    result = rasterize_email_command(mock_args)
 
     mock_file_result.assert_called_once_with(filename='test_email.png', data='image_data')
-    mock_results.assert_called_once()
+    assert result == {'Type': 'image'}
 
 
 def test_rasterize_email_command_pdf(mocker: MockerFixture):
@@ -965,13 +964,11 @@ def test_rasterize_email_command_pdf(mocker: MockerFixture):
 
     mocker.patch('rasterize.perform_rasterize', return_value=[('pdf_data', None)])
     mock_file_result = mocker.patch('rasterize.fileResult', return_value={'Type': 'file'})
-    mock_results = mocker.patch.object(demisto, 'results')
 
-    rasterize_email_command(mock_args)
+    res = rasterize_email_command(mock_args)
 
     mock_file_result.assert_called_once_with(filename='test_email.pdf', data='pdf_data')
-    mock_results.assert_called_once()
-
+    assert res == {'Type': 'file'}
 
 def test_rasterize_email_command_full_screen(mocker: MockerFixture):
     """
