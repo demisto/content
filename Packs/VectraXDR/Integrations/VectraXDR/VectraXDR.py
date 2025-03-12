@@ -1546,7 +1546,7 @@ def get_entity_get_command_hr(entity: dict):
         entity_res["detection_ids"] = ", ".join(
             [
                 "[{}]({})".format(detection.split("/")[-1], trim_api_version(detection))
-                for detection in entity_res.get("detection_set")
+                for detection in entity_res.get("detection_set", [])
             ]
         )  # type: ignore
     # Entity importance value to label
@@ -2022,7 +2022,7 @@ def fetch_incidents(client: VectraClient, params: dict[str, Any]) -> List:
         # Fetch the entities list from the server using the provided parameters
         response = client.list_entities_request(
             page=page,
-            page_size=max_fetch,
+            page_size=max_fetch,    # type: ignore
             entity_type=entity_type,  # type: ignore
             is_prioritized=is_prioritized,
             last_modified_timestamp=from_timestamp,  # type: ignore
@@ -2199,7 +2199,7 @@ def vectra_entity_list_command(client: VectraClient, args: dict[str, Any]):
         last_detection_timestamp=last_detection_timestamp,
         last_modified_timestamp=last_modified_timestamp,
         ordering=ordering,
-        page=page,
+        page=page,  # type: ignore
         page_size=page_size,  # type: ignore
         is_prioritized=prioritized,
         state=state,
@@ -2819,7 +2819,7 @@ def vectra_assignment_list_command(client: VectraClient, args: dict[str, Any]):
         resolved=resolved,
         assignees=assignees,
         resolution=resolution,
-        created_after=created_after,
+        created_after=created_after,    # type: ignore
         page=page,  # type: ignore
         page_size=page_size,
     )  # type: ignore
@@ -2968,7 +2968,7 @@ def vectra_entity_assignment_resolve_command(client: VectraClient, args: dict[st
     response = client.resolve_entity_assignment_request(
         assignment_id=assignment_id,
         outcome=outcome_id,
-        note=note,
+        note=note,  # type: ignore
         triage_as=triage_as,  # type: ignore
         detection_ids=detection_ids,
     )
