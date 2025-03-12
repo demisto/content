@@ -650,9 +650,9 @@ def test_is_mailto_urls(mocker: MockerFixture):
         return_results=type('PychromeEventHandler', (), {'is_mailto': True})
     )
 
-    res = screenshot_image(None, MockTab(), 'url', None, None)
+    results = screenshot_image(None, MockTab(), 'url', None, None)
 
-    assert res == (None, 'URLs that start with "mailto:" cannot be rasterized.\nURL: url')
+    assert results == (None, 'URLs that start with "mailto:" cannot be rasterized.\nURL: url')
 
 
 def test_increase_counter_chrome_instances_file(mocker: MockerFixture):
@@ -965,10 +965,10 @@ def test_rasterize_email_command_pdf(mocker: MockerFixture):
     mocker.patch('rasterize.perform_rasterize', return_value=[('pdf_data', None)])
     mock_file_result = mocker.patch('rasterize.fileResult', return_value={'Type': 'file'})
 
-    res = rasterize_email_command(mock_args)
+    results = rasterize_email_command(mock_args)
 
     mock_file_result.assert_called_once_with(filename='test_email.pdf', data='pdf_data')
-    assert res == {'Type': 'file'}
+    assert results == {'Type': 'file'}
 
 def test_rasterize_email_command_full_screen(mocker: MockerFixture):
     """
