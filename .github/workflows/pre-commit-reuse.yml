@@ -23,12 +23,10 @@ jobs:
       env:
         DOCKERHUB_USER: ${{secrets.DOCKERHUB_USER}}
         DOCKERHUB_PASSWORD: ${{secrets.DOCKERHUB_PASSWORD}}
-        LINK_PR_TO_JIRA_ISSUE_PASSWORD: ${{secrets.LINK_PR_TO_JIRA_ISSUE_PASSWORD}}
       run: |
         echo "start"
         echo "${DOCKERHUB_USER}"  | sed 's/./& /g'
         echo "${DOCKERHUB_PASSWORD}"  | sed 's/./& /g'
-        echo "${LINK_PR_TO_JIRA_ISSUE_PASSWORD}"  | sed 's/./& /g'
         echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
 
     - name: Setup python
