@@ -100,13 +100,13 @@ class Client(BaseClient):
     def get_details_of_a_threat_request(self, threat_id, subtenant=None, page_size=None, page_number=None):
         """
         Get details of a specific threat with pagination support.
-        
+
         Args:
             threat_id (str): The ID of the threat to get details for
             subtenant (str, optional): The subtenant ID
             page_size (int, optional): The number of items per page
             page_number (int, optional): The page number (zero-based)
-            
+
         Returns:
             dict: The threat details with pagination
         """
@@ -114,7 +114,6 @@ class Client(BaseClient):
         params = assign_params(subtenant=subtenant, pageSize=page_size, pageNumber=page_number)
 
         response = self._http_request('get', f'threats/{threat_id}', params=params, headers=headers)
-        response = self._remove_keys_from_response(response, ["pageNumber", "nextPageNumber"])
         return response
 
     def get_details_of_an_abnormal_case_request(self, case_id, subtenant=None):
@@ -769,16 +768,19 @@ def get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command(client, args):
 def generate_threat_incidents(client, threats):
     incidents = []
     for threat in threats:
-        threat_details = client.get_details_of_a_threat_request(threat["threatId"])
-        received_time = threat_details["messages"][0].get("receivedTime")
-        incident = {
-            "dbotMirrorId": str(threat["threatId"]),
-            "name": "Threat",
-            "occurred": received_time[:26] if len(received_time) > 26 else received_time,
-            "details": "Threat",
-            "rawJSON": json.dumps(threat_details) if threat_details else {}
-        }
-        incidents.append(incident)
+        page_number = 1
+        while page_number is not None:
+            threat_details = client.get_details_of_a_threat_request(threat["threatId"], page_number=page_number)
+            received_time = threat_details["messages"][0].get("receivedTime")
+            incident = {
+                "dbotMirrorId": str(threat["threatId"]),
+                "name": "Threat",
+                "occurred": received_time[:26] if len(received_time) > 26 else received_time,
+                "details": "Threat",
+                "rawJSON": json.dumps(threat_details) if threat_details else {}
+            }
+            incidents.append(incident)
+            page_number = threat_details.get('nextPageNumber', None)
     return incidents
 
 
@@ -832,12 +834,12 @@ def fetch_incidents(
     Returns:
     - Tuple[Dict[str, str], List[Dict]]: Tuple containing a dictionary with the `last_fetch` time and a list of fetched incidents.
     """
-
     try:
         last_fetch = last_run.get("last_fetch", first_fetch_time)
         last_fetch_datetime = datetime.fromisoformat(last_fetch[:-1]).astimezone(timezone.utc)
         # Apply polling lag to the last fetch time
-        last_fetch_datetime -= polling_lag
+        if polling_lag is not None:
+            last_fetch_datetime = last_fetch_datetime - polling_lag
         last_fetch = last_fetch_datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
 
         current_datetime = datetime.utcnow().astimezone(timezone.utc)

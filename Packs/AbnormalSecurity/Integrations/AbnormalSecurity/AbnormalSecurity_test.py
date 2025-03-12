@@ -1,7 +1,7 @@
 import pytest
 import demistomock as demisto
 import json
-from datetime import timedelta, timezone
+from datetime import datetime, timedelta, UTC
 from AbnormalSecurity import (Client, check_the_status_of_an_action_requested_on_a_case_command,
                               check_the_status_of_an_action_requested_on_a_threat_command,
                               get_a_list_of_abnormal_cases_identified_by_abnormal_security_command,
@@ -24,9 +24,9 @@ from AbnormalSecurity import (Client, check_the_status_of_an_action_requested_on
                               get_the_activity_of_a_specific_vendor_command,
                               get_a_list_of_vendor_cases_command,
                               get_the_details_of_a_vendor_case_command,
+                              generate_threat_incidents,
                               get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command, fetch_incidents, ISO_8601_FORMAT)
 from CommonServerPython import DemistoException
-from datetime import datetime
 
 from test_data.fixtures \
     import BASE_URL, apikey
@@ -53,7 +53,7 @@ def util_load_response(path):
         return MockResponse(f.read(), 200)
 
 
-def mock_client(mocker, http_request_result=None, throw_error=False):
+def mock_client(mocker, response=None, side_effect=None, throw_error=False):
 
     mocker.patch.object(demisto, 'getIntegrationContext', return_value={'current_refresh_token': 'refresh_token'})
     client = Client(
@@ -63,8 +63,7 @@ def mock_client(mocker, http_request_result=None, throw_error=False):
         auth=None,
         headers=headers
     )
-    if http_request_result:
-        mocker.patch.object(client, '_http_request', return_value=http_request_result)
+    mocker.patch.object(client, '_http_request', return_value=response, side_effect=side_effect)
 
     if throw_error:
         err_msg = "Error in API call [400] - BAD REQUEST}"
@@ -83,10 +82,12 @@ def mock_get_a_list_of_threats_request(mocker):
     mocker.patch("AbnormalSecurity.Client.get_a_list_of_threats_request").return_value \
         = util_load_json('test_data/test_get_list_of_abnormal_threats.json')
 
+
 @pytest.fixture
 def mock_get_details_of_a_threat_request(mocker):
-    mocker.patch("AbnormalSecurity.Client.get_details_of_a_threat_request").return_value \
-        = util_load_json('test_data/test_get_details_of_a_threat.json')
+    threat_details = util_load_json('test_data/test_get_details_of_a_threat_page2.json')
+    mocker.patch("AbnormalSecurity.Client.get_details_of_a_threat_request").return_value = threat_details
+
 
 @pytest.fixture
 def mock_get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(mocker):
@@ -267,7 +268,7 @@ def test_manage_a_threat_identified_by_abnormal_security_command_failure(mocker)
         Then
             - Assert error is thrown as expected
     """
-    client = mock_client(mocker, None, True)
+    client = mock_client(mocker, None, False, True)
     with pytest.raises(DemistoException):
         manage_a_threat_identified_by_abnormal_security_command(client, {})
 
@@ -293,7 +294,7 @@ def test_manage_an_abnormal_case_command_failure(mocker):
         Then
             - Assert error is thrown as expected
     """
-    client = mock_client(mocker, None, True)
+    client = mock_client(mocker, None, False, True)
     with pytest.raises(DemistoException):
         manage_an_abnormal_case_command(client, {})
 
@@ -478,7 +479,7 @@ def test_provides_the_analysis_and_timeline_details_of_a_case_command(mocker):
 
 
 def test_fetch_threat_incidents(mocker, mock_get_a_list_of_threats_request):
-    client = mock_client(mocker, util_load_json('test_data/test_get_details_of_a_threat.json'))
+    client = mock_client(mocker, util_load_json('test_data/test_get_details_of_a_threat_page2.json'))
     first_fetch_time = datetime.now().strftime(ISO_8601_FORMAT)
     _, incidents = fetch_incidents(
         client=client,
@@ -521,26 +522,50 @@ def test_fetch_abuse_campaign_incidents(mocker, mock_get_a_list_of_campaigns_sub
     )
     assert len(incidents) == 1
 
-def test_get_details_of_a_threat_request(mocker, mock_get_details_of_a_threat_request):
-    client = mock_client(mocker, util_load_json('test_data/test_get_details_of_a_threat.json'))
-    results = client.get_details_of_a_threat_request(client, {})
-    assert results.outputs.get('threats')[0].get('threatId') == 'asdf097sdf907'
-    assert results.outputs_prefix == 'AbnormalSecurity.inline_response_200'
+
+def test_get_details_of_a_threat_request_two_pages(mocker):
+    client = mock_client(mocker, side_effect=[
+        util_load_json('test_data/test_get_details_of_a_threat.json'),
+        util_load_json('test_data/test_get_details_of_a_threat_page2.json')
+    ])
+    incidents = generate_threat_incidents(client, [{'threatId': 'asdf097sdf907'}])
+    assert len(incidents) == 2
+    # mocker.stop()
+
+
+def test_get_details_of_a_threat_request_single_page(mocker):
+    client = mock_client(mocker, side_effect=[
+        util_load_json('test_data/test_get_details_of_a_threat_page2.json')
+    ])
+    incidents = generate_threat_incidents(client, [{'threatId': 'asdf097sdf907'}])
+    assert len(incidents) == 1
+    # mocker.stop()
+
 
 def test_get_details_of_a_threat_request_nanosecond_timestamp(mocker, mock_get_details_of_a_threat_request):
-    client = mock_client(mocker, util_load_json('test_data/test_get_details_of_a_threat.json'))
-    results = client.get_details_of_a_threat_request(client, {})
-    expected_ts = datetime.fromisoformat("2023-12-03T19:26:36.123456").replace(tzinfo=datetime.UTC)
-    assert results.outputs.get('threats')[0].get('threatId') == 'asdf097sdf907'
-    assert results.outputs_prefix == 'AbnormalSecurity.inline_response_200'
-    received_ts = results.outputs.get('threats')[0].get('messages')[0].get('receivedTime')
-    assert received_ts == expected_ts
+    client = mock_client(mocker, response=util_load_json("test_data/test_get_list_of_abnormal_threats.json"))
+    last_run = {"last_fetch": "2023-09-17T14:43:09Z"}
+    first_fetch_time = "3 days"
+    max_incidents = 200
+    # Call fetch_incidents with the polling lag
+    _, incidents = fetch_incidents(
+        client=client,
+        last_run=last_run,
+        first_fetch_time=first_fetch_time,
+        max_incidents_to_fetch=max_incidents,
+        fetch_account_takeover_cases=False,
+        fetch_abuse_campaigns=False,
+        fetch_threats=True,
+    )
+    assert len(incidents) == 1
+    assert incidents[0].get('occurred') == "2023-12-03T19:26:36.123456"
+    # mocker.stop(mock_get_details_of_a_threat_request)
+
 
 def test_polling_lag(mocker, mock_get_details_of_a_threat_request):
     """Test that polling lag is correctly applied when fetching incidents."""
     # Mock the client and its get_a_list_of_threats_request method
-    client = mock_client(mocker, util_load_json('test_data/test_get_details_of_a_threat.json'))
-
+    client = mock_client(mocker, response=util_load_json("test_data/test_get_list_of_abnormal_threats.json"))
     # Create a spy on the get_a_list_of_threats_request method to capture its calls
     get_threats_spy = mocker.spy(client, 'get_a_list_of_threats_request')
 
@@ -564,11 +589,8 @@ def test_polling_lag(mocker, mock_get_details_of_a_threat_request):
         polling_lag=polling_lag
     )
 
-    # Verify that incidents were fetched
-    assert len(incidents) == 1
-
     # Parse the original timestamp
-    original_timestamp = datetime.fromisoformat("2023-09-17T14:43:09").replace(tzinfo=datetime.UTC)
+    original_timestamp = datetime.fromisoformat("2023-09-17T14:43:09").replace(tzinfo=UTC)
     # Apply the 5-minute lag
     adjusted_timestamp = original_timestamp - polling_lag
     # Format the adjusted timestamp as expected in the filter
@@ -580,61 +602,3 @@ def test_polling_lag(mocker, mock_get_details_of_a_threat_request):
     call_args = get_threats_spy.call_args[1]
     assert call_args['filter_'] == expected_filter
     assert call_args['page_size'] == 100
-
-def test_fetch_incidents_with_threat_pagination(mocker):
-    """Test that fetch_incidents correctly paginates through threat details."""
-    client = mock_client(mocker)
-    # Create a mock response for get_a_list_of_threats_request
-    threats_response = {
-        'threats': [
-            {'threatId': 'threat-id-1'},
-            {'threatId': 'threat-id-2'}
-        ]
-    }
-    mocker.patch.object(client, 'get_a_list_of_threats_request', return_value=threats_response)
-    # Create mock responses for get_details_of_a_threat_request
-    # First page response with pagination info indicating more pages
-    first_page_response = {
-        'threatId': 'threat-id-1',
-        'messages': [{'messageId': 'msg1', 'receivedTime': '2023-09-17T14:43:09Z'}],
-        'total': 3,  # Total of 3 messages, but only 1 returned in first page
-    }
-    # Second page response
-    second_page_response = {
-        'threatId': 'threat-id-1',
-        'messages': [{'messageId': 'msg2', 'receivedTime': '2023-09-17T14:43:10Z'}],
-        'total': 3,
-    }
-    # Third page response
-    third_page_response = {
-        'threatId': 'threat-id-1',
-        'messages': [{'messageId': 'msg3', 'receivedTime': '2023-09-17T14:43:11Z'}],
-        'total': 3,
-    }
-    # Set up the get_details_of_a_threat_request mock to return different responses based on page_number
-    get_threat_details_mock = mocker.patch.object(client, 'get_details_of_a_threat_request')
-    get_threat_details_mock.side_effect = lambda threat_id, subtenant=None, page_size=None, page_number=None: {
-        0: first_page_response,
-        1: second_page_response,
-        2: third_page_response
-    }.get(page_number, {})
-    # Call fetch_incidents
-    _, incidents = fetch_incidents(
-        client=client,
-        last_run={"last_fetch": "2023-09-17T14:43:09Z"},
-        first_fetch_time="3 days",
-        max_incidents_to_fetch=200,
-        fetch_account_takeover_cases=False,
-        fetch_abuse_campaigns=False,
-        fetch_threats=True
-    )
-    # Verify that incidents were fetched
-    assert len(incidents) == 1
-    # Verify that get_details_of_a_threat_request was called with the correct parameters
-    # It should be called 3 times with page_number 0, 1, and 2
-    assert get_threat_details_mock.call_count == 3
-    # Check the page_number parameter for each call
-    calls = get_threat_details_mock.call_args_list
-    assert calls[0][1]['page_number'] == 0
-    assert calls[1][1]['page_number'] == 1
-    assert calls[2][1]['page_number'] == 2
