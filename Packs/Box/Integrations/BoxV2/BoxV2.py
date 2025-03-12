@@ -940,7 +940,7 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int | N
             raise ValueError(f"Invalid date: {arg_name}")
 
         return int(date.timestamp())
-    if isinstance(arg, int |float):
+    if isinstance(arg, int | float):
         # Convert to int if the input is a float
         return int(arg)
     raise ValueError(f'Invalid date: "{arg_name}"')

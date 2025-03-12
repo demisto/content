@@ -1356,7 +1356,7 @@ def alert_user_assignment_command(client: ZFClient, args: dict[str, Any]) -> Com
     contents = get_alert_contents(alert)
 
     return CommandResults(
-        readable_output="Successful assignment " f"of {username} to alert {alert_id}.",
+        readable_output="Successful assignment of {username} to alert {alert_id}.",
         outputs=contents,
         outputs_prefix="ZeroFox.Alert",
         outputs_key_field="ID",
@@ -1627,7 +1627,7 @@ def modify_alert_notes_command(client: ZFClient, args: dict[str, Any]) -> Comman
     contents = get_alert_contents(alert)
 
     return CommandResults(
-        readable_output="Successful note modification of alert " f"with ID: {alert_id}",
+        readable_output="Successful note modification of alert with ID: {alert_id}",
         outputs=contents,
         outputs_prefix="ZeroFox.Alert",
         outputs_key_field="ID",
