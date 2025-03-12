@@ -11249,8 +11249,9 @@ def get_pack_version(pack_id):
     :rtype: ``str``
     """
     global_name = f"{pack_id.upper()}_PACK_VERSION"
-    if global_name in globals():
-        return globals()[global_name]
+    global_vars = globals()
+    if global_name in global_vars:
+        return global_vars[global_name]
     else:
         return ''
 
