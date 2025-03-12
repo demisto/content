@@ -770,7 +770,6 @@ script:
   - arguments:
     - description: The channel to which to send messages. Supports only standard channels.
       name: channel
-      prettyname: Channel
     - description: The message to send to the channel or team member.
       name: message
       prettyname: Message
@@ -779,7 +778,6 @@ script:
         - "${issue.Name} ${issue.Description}"
     - description: Display name or email address of the team member to send the message to.
       name: team_member
-      prettyname: Team member
     - description: The team in which the specified channel exists. The team must already exist, and this value will override the default channel configured in the integration parameters.
       name: team
     - description: ID of the message to send the notification to as a reply when sending to a channel.
