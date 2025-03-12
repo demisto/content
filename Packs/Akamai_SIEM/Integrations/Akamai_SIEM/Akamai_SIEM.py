@@ -588,7 +588,7 @@ def fetch_events_command(
                             event.get("httpMessage", {}).get("requestHeaders", "")  # type: ignore[attr-defined]
                         )
                         event["httpMessage"]["responseHeaders"] = decode_url(  # type: ignore[index]
-                            event.get("httpMessage", {}).get("responseHeaders", "")
+                            event.get("httpMessage", {}).get("responseHeaders", "") # type: ignore[attr-defined]
                         )
                 except Exception as e:
                     demisto.debug(f"Couldn't decode {event=}, reason: {e}")
@@ -725,7 +725,7 @@ async def process_and_send_events_to_xsiam(events: list[str], should_skip_decode
                         "ruleVersions",
                     ]:
                         event["attackData"][attack_data_key] = decode_message(  # type: ignore[index, attr-defined]
-                            event.get(
+                            event.get(  # type: ignore[attr-defined]
                                 "attackData",  # type: ignore[attr-defined]
                                 {},
                             ).get(attack_data_key, "")
@@ -820,7 +820,7 @@ async def get_events_from_akamai(
         if not events or is_last_request_smaller_than_page_size(len(events), page_size):
             if not events:
                 demisto.debug(
-                    f"Running in interval = {counter}. No events were received from Akamai, going to sleep for 60 seconds."
+                    f"Running in interval = {counter}. No events were received from Akamai,going to sleep for 60 seconds."
                 )
             else:
                 demisto.debug(
@@ -1103,7 +1103,7 @@ async def xsiam_api_call_async_with_retries(
         )
         # in the last try we should raise an exception if any error occurred, including 429
         ok_codes = (200, 429) if attempt_num < num_of_attempts else None
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession() as session:    # noqa: SIM117
             async with session.post(urljoin(xsiam_url, "/logs/v1/xsiam"), data=zipped_data, headers=headers) as response:
                 try:
                     response.raise_for_status()  # This raises an exception for non-2xx status codes
