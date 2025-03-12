@@ -367,7 +367,7 @@ def get_indicators_command(
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix="Cyberint_indicators",
+        outputs_prefix="Cyberint.indicators",
         outputs_key_field="value",
         raw_response=indicators,
         outputs=indicators,
@@ -451,7 +451,7 @@ def get_url_command(
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix="Cyberint_url",
+        outputs_prefix="Cyberint.url",
         outputs_key_field="value",
         raw_response=indicator,
         outputs=indicator,
@@ -494,7 +494,7 @@ def get_ipv4_command(
     human_readable = tableToMarkdown(
         'IPv4 Entity',
         indicator_formatted,
-        headers=["type", "value", "malicious_score", "related_entities", "ips", "occurrences_count", "benign"],
+        headers=["type", "value", "malicious_score", "occurrences_count", "country", "city", "asn_number", "asn_organization", "benign"],
         headerTransform=indicator_header_transformer,
         removeNull=False,
     )
@@ -546,7 +546,7 @@ def get_ipv4_command(
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix="Cyberint_ipv4",
+        outputs_prefix="Cyberint.ipv4",
         outputs_key_field="value",
         raw_response=indicator,
         outputs=indicator,
@@ -603,7 +603,7 @@ def get_domain_command(
     human_readable = tableToMarkdown(
         'Domain Entity',
         indicator_formatted,
-        headers=["type", "value", "malicious_score", "related_entities", "ips", "occurrences_count", "benign"],
+        headers=["type", "value", "malicious_score", "occurrences_count", "benign"],
         headerTransform=indicator_header_transformer,
         removeNull=False,
     )
@@ -612,7 +612,7 @@ def get_domain_command(
         'Domain Enrichment',
         indicator_formatted,
         date_fields=["created_date", "updated_date", "expiration_date"],
-        headers=["related_entities", "ips", "registrant_name", "registrant_email", "registrant_organization",
+        headers=["ips", "registrant_name", "registrant_email", "registrant_organization",
                  "registrant_country", "registrant_telephone", "technical_contact_email", "technical_contact_name",
                  "technical_contact_organization", "registrar_name", "admin_contact_name", "admin_contact_organization",
                  "admin_contact_email", "created_date", "updated_date", "expiration_date"],
@@ -659,7 +659,7 @@ def get_domain_command(
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix="Cyberint_domain",
+        outputs_prefix="Cyberint.domain",
         outputs_key_field="value",
         raw_response=indicator,
         outputs=indicator,
@@ -751,7 +751,7 @@ def get_file_sha256_command(
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix="Cyberint_file_sha256",
+        outputs_prefix="Cyberint.file_sha256",
         outputs_key_field="value",
         raw_response=indicator,
         outputs=indicator,

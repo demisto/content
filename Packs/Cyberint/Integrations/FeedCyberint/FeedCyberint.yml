@@ -176,25 +176,25 @@ script:
       description: Specifies the starting point or position from which data retrieval or processing should begin.
       defaultValue: "0"
     outputs:
-    - contextPath: Cyberint.detected_activity
+    - contextPath: Cyberint.indicators.detected_activity
       description: Detected activity.
       type: String
-    - contextPath: Cyberint.ioc_type
+    - contextPath: Cyberint.indicators.ioc_type
       description: The indicator type.
       type: String
-    - contextPath: Cyberint.ioc_value
+    - contextPath: Cyberint.indicators.ioc_value
       description: The indicator value.
       type: String
-    - contextPath: Cyberint.observation_date
+    - contextPath: Cyberint.indicators.observation_date
       description: Observation date.
       type: String
-    - contextPath: Cyberint.severity_score
+    - contextPath: Cyberint.indicators.severity_score
       description: Severity score.
       type: String
-    - contextPath: Cyberint.confidence
+    - contextPath: Cyberint.indicators.confidence
       description: Confidence.
       type: String
-    - contextPath: Cyberint.description
+    - contextPath: Cyberint.indicators.description
       description: Description.
       type: String
     description: Gets indicators from the feed.
@@ -203,26 +203,26 @@ script:
     - name: value
       description: SHA256 string.
     outputs:
-    - contextPath: Cyberint.detected_activity
-      description: Detected activity.
-      type: String
-    - contextPath: Cyberint.ioc_type
+    - contextPath: Cyberint.file_sha256.type
       description: The indicator type.
       type: String
-    - contextPath: Cyberint.ioc_value
+    - contextPath: Cyberint.file_sha256.value
       description: The indicator value.
       type: String
-    - contextPath: Cyberint.observation_date
-      description: Observation date.
+    - contextPath: Cyberint.file_sha256.malicious_score
+      description: Malicious score.
       type: String
-    - contextPath: Cyberint.severity_score
-      description: Severity score.
+    - contextPath: Cyberint.file_sha256.filenames
+      description: Filenames.
       type: String
-    - contextPath: Cyberint.confidence
-      description: Confidence.
+    - contextPath: Cyberint.file_sha256.first_seen
+      description: First seen.
       type: String
-    - contextPath: Cyberint.description
-      description: Description.
+    - contextPath: Cyberint.file_sha256.download_urls
+      description: Download URLs.
+      type: String
+    - contextPath: Cyberint.file_sha256.benign
+      description: Benign.
       type: String
     description: Gets File SHA256 enrichment from the feed.
   - name: cyberint-get-domain
@@ -230,26 +230,77 @@ script:
     - name: value
       description: Domain string.
     outputs:
-    - contextPath: Cyberint.detected_activity
-      description: Detected activity.
-      type: String
-    - contextPath: Cyberint.ioc_type
+    - contextPath: Cyberint.domain.type
       description: The indicator type.
       type: String
-    - contextPath: Cyberint.ioc_value
+    - contextPath: Cyberint.domain.value
       description: The indicator value.
       type: String
-    - contextPath: Cyberint.observation_date
-      description: Observation date.
+    - contextPath: Cyberint.domain.malicious_score
+      description: Malicious score.
       type: String
-    - contextPath: Cyberint.severity_score
-      description: Severity score.
+    - contextPath: Cyberint.domain.occurrences_count
+      description: Occurences count.
       type: String
-    - contextPath: Cyberint.confidence
-      description: Confidence.
+    - contextPath: Cyberint.domain.created_date
+      description: Created date.
       type: String
-    - contextPath: Cyberint.description
-      description: Description.
+    - contextPath: Cyberint.domain.updated_date
+      description: Updated date.
+      type: String
+    - contextPath: Cyberint.domain.expiration_date
+      description: Expiration date.
+      type: String
+    - contextPath: Cyberint.domain.ips
+      description: IPs.
+      type: String
+    - contextPath: Cyberint.domain.registrant_name
+      description: Registrant name.
+      type: String
+    - contextPath: Cyberint.domain.registrant_email
+      description: Registrant email.
+      type: String
+    - contextPath: Cyberint.domain.registrant_organization
+      description: Registrant organization.
+      type: String
+    - contextPath: Cyberint.domain.registrant_country
+      description: Registrant country.
+      type: String
+    - contextPath: Cyberint.domain.registrant_telephone
+      description: Registrant telephone.
+      type: String
+    - contextPath: Cyberint.domain.technical_contact_email
+      description: Technical contact email.
+      type: String
+    - contextPath: Cyberint.domain.technical_contact_name
+      description: Technical contact name.
+      type: String
+    - contextPath: Cyberint.domain.technical_contact_organization
+      description: Technical contact organization.
+      type: String
+    - contextPath: Cyberint.domain.registrar_name
+      description: Registrar name.
+      type: String
+    - contextPath: Cyberint.domain.admin_contact_name
+      description: Admin contact name.
+      type: String
+    - contextPath: Cyberint.domain.admin_contact_organization
+      description: Admin contact organization.
+      type: String
+    - contextPath: Cyberint.domain.admin_contact_email
+      description: Admin contact email.
+      type: String
+    - contextPath: Cyberint.domain.created_date
+      description: Created date.
+      type: String
+    - contextPath: Cyberint.domain.updated_date
+      description: Updated date.
+      type: String
+    - contextPath: Cyberint.domain.expiration_date
+      description: Expiration date.
+      type: String
+    - contextPath: Cyberint.domain.benign
+      description: Benign.
       type: String
     description: Gets Domain enrichment from the feed.
   - name: cyberint-get-ipv4
@@ -257,26 +308,38 @@ script:
     - name: value
       description: IPv4 string.
     outputs:
-    - contextPath: Cyberint.detected_activity
-      description: Detected activity.
-      type: String
-    - contextPath: Cyberint.ioc_type
+    - contextPath: Cyberint.ipv4.type
       description: The indicator type.
       type: String
-    - contextPath: Cyberint.ioc_value
+    - contextPath: Cyberint.ipv4.value
       description: The indicator value.
       type: String
-    - contextPath: Cyberint.observation_date
-      description: Observation date.
+    - contextPath: Cyberint.ipv4.malicious_score
+      description: Malicious score.
       type: String
-    - contextPath: Cyberint.severity_score
-      description: Severity score.
+    - contextPath: Cyberint.ipv4.occurrences_count
+      description: Occurences count.
       type: String
-    - contextPath: Cyberint.confidence
-      description: Confidence.
+    - contextPath: Cyberint.ipv4.country
+      description: Country.
       type: String
-    - contextPath: Cyberint.description
-      description: Description.
+    - contextPath: Cyberint.ipv4.city
+      description: City.
+      type: String
+    - contextPath: Cyberint.ipv4.asn_number
+      description: ASN number.
+      type: String
+    - contextPath: Cyberint.ipv4.asn_organization
+      description: ASN organization.
+      type: String
+    - contextPath: Cyberint.ipv4.suspicious_urls
+      description: Suspicious URLs.
+      type: String
+    - contextPath: Cyberint.ipv4.suspicious_domains
+      description: Suspicious domains.
+      type: String
+    - contextPath: Cyberint.domain.benign
+      description: Benign.
       type: String
     description: Gets IPv4 enrichment from the feed.
   - name: cyberint-get-url
@@ -284,26 +347,29 @@ script:
     - name: value
       description: URL string (starts with schema, e.g. https://).
     outputs:
-    - contextPath: Cyberint.detected_activity
-      description: Detected activity.
-      type: String
-    - contextPath: Cyberint.ioc_type
+    - contextPath: Cyberint.url.type
       description: The indicator type.
       type: String
-    - contextPath: Cyberint.ioc_value
+    - contextPath: Cyberint.url.value
       description: The indicator value.
       type: String
-    - contextPath: Cyberint.observation_date
-      description: Observation date.
+    - contextPath: Cyberint.url.malicious_score
+      description: Malicious score.
       type: String
-    - contextPath: Cyberint.severity_score
-      description: Severity score.
+    - contextPath: Cyberint.url.occurrences_count
+      description: Occurences count.
       type: String
-    - contextPath: Cyberint.confidence
-      description: Confidence.
+    - contextPath: Cyberint.url.ips
+      description: IPs.
       type: String
-    - contextPath: Cyberint.description
-      description: Description.
+    - contextPath: Cyberint.url.hostname
+      description: Hostname.
+      type: String
+    - contextPath: Cyberint.url.domain
+      description: Domain.
+      type: String
+    - contextPath: Cyberint.url.benign
+      description: Benign.
       type: String
     description: Gets URL enrichment from the feed.
   dockerimage: demisto/python3:3.11.11.1940698
