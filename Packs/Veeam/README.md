@@ -27,9 +27,9 @@ The content pack includes:
 
 # Screenshots
 
-![The XSOAR Dashboard](./../../Packs/Veeam/doc_files/Veeam_XSOAR_Dashboard.png)
+![The XSOAR Dashboard](./doc_files/Veeam_XSOAR_Dashboard.png)
 
-![Veeam - Start Instant VM Recovery Automatically](./../../Packs/Veeam/doc_files/Veeam_XSOAR_Playbooks.png)
+![Veeam - Start Instant VM Recovery Automatically](./doc_files/Veeam_XSOAR_Playbooks.png)
 </~XSOAR>
 <~XSIAM>
 This app allows Veeam Data Platform Advanced and Premium users to monitor various security activities in their Veeam backup infrastructure and use leverage pre-defined automation playbooks via REST API for:
@@ -66,7 +66,7 @@ The documentation also includes examples of correlation rules for Veeam security
 
 # Screenshots
 
-![The Security Dashboard](./../../Packs/Veeam/doc_files/Veeam_XSOAR_Dashboard.png)
+![The Security Dashboard](./doc_files/Veeam_XSOAR_Dashboard.png)
 
-![The Monitoring Dashboard](./../../Packs/Veeam/doc_files/Veeam_Data_Platform_Monitoring_Dashboard_image.png)
+![The Monitoring Dashboard](./doc_files/Veeam_Data_Platform_Monitoring_Dashboard_image.png)
 </~XSIAM>
