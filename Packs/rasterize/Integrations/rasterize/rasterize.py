@@ -1154,7 +1154,7 @@ def rasterize_html_command(args: dict):
     return res
 
 
-def test_module():  # pragma: no cover
+def module_test():  # pragma: no cover
     # Setting up a mock email file
     with tempfile.NamedTemporaryFile('w+') as test_file:
         test_file.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
@@ -1270,7 +1270,7 @@ def main():  # pragma: no cover
 
     try:
         if command == 'test-module':
-            return_results(test_module())
+            return_results(module_test())
 
         elif command == 'rasterize-image':
             return_results(rasterize_image_command(args))
