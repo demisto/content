@@ -182,7 +182,7 @@ def test_rasterize_image_to_pdf(mocker: MockerFixture):
 
     # call_args is tuple (args list, kwargs). we only need the first one
     assert len(results) == 1
-    assert results[0][0]['Type'] == entryTypes['entryInfoFile']
+    assert results[0]['Type'] == entryTypes['entryInfoFile']
 
 
 TEST_DATA = [
@@ -943,7 +943,7 @@ def test_rasterize_email_command_png(mocker: MockerFixture):
     result = rasterize_email_command(mock_args)
 
     mock_file_result.assert_called_once_with(filename='test_email.png', data='image_data')
-    assert result == {'Type': 'image'}
+    assert result == {'Type': 7}
 
 
 def test_rasterize_email_command_pdf(mocker: MockerFixture):
