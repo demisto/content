@@ -588,7 +588,7 @@ def fetch_events_command(
                             event.get("httpMessage", {}).get("requestHeaders", "")  # type: ignore[attr-defined]
                         )
                         event["httpMessage"]["responseHeaders"] = decode_url(  # type: ignore[index]
-                            event.get("httpMessage", {}).get("responseHeaders", "") # type: ignore[attr-defined]
+                            event.get("httpMessage", {}).get("responseHeaders", "")  # type: ignore[attr-defined]
                         )
                 except Exception as e:
                     demisto.debug(f"Couldn't decode {event=}, reason: {e}")
