@@ -357,7 +357,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm install commander fs-extra @mdx-js/mdx
+          npm install "@mdx-js/mdx@^1.6.22" "commander@^5.0.0" "fs-extra@^8.1.0"
 
       - name: Find and Validate all README.md files
         run: |
