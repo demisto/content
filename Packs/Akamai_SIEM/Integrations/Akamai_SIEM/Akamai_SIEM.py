@@ -1132,22 +1132,14 @@ def send_events_to_xsiam_akamai(events, vendor, product, data_format=None, url_k
 
 def my_test_func(i):
     import requests
-    demisto.info(f"[test] {i}")
-    # The API endpoint
-    url = "https://jsonplaceholder.typicode.com/posts"
-
-    # Data to be sent
-    data = {
-        "userID": 1,
-        "title": "Making a POST request",
-        "body": "This is the data we created."
-    }
+    demisto.info(f"[test] {i} with one thread.")
 
     # A POST request to the API
-    response = requests.post(url, json=data)
-    demisto.info(f"[test] Response status code: {response.status_code}")
+    # response = requests.post("https://jsonplaceholder.typicode.com/posts", json={})
+    # demisto.info(f"[test] [test] Response status code: {response.status_code}")
+    demisto.info("[test] [test] Response content:")
     # Print the response
-    # raise DemistoException("test test test", DemistoException)
+    raise DemistoException("test test test", DemistoException)
     return i
 
 
@@ -1197,7 +1189,7 @@ def main():  # pragma: no cover
             support_multithreading()
             futures = []
             executor = concurrent.futures.ThreadPoolExecutor(max_workers=NUM_OF_WORKERS)
-            for i in range(5):
+            for i in range(2):
                 future = executor.submit(my_test_func, i)
                 futures.append(future)
             try:

@@ -4,7 +4,6 @@ import asyncio
 from datetime import datetime
 import time
 import json
-
 import demistomock as demisto
 
 # 3-rd party packages
@@ -794,3 +793,25 @@ def test_test_fetch_events_long_running_command_flow(mocker, client, caplog):
             'Running in interval = 2. got 1 events which is less than 0.95 % of the page_size=2, going to sleep for 60 seconds.')
     asyncio.run(test_fetch_events_long_running_command_flow(mocker, client))
     caplog.clear()
+
+def test_hayun():
+    from Integrations.Akamai_SIEM.CommonServerPython import support_multithreading, return_error
+    import concurrent.futures
+    INTEGRATION_NAME = "AKAMAI"
+    data_size = 0
+    support_multithreading()
+    futures = []
+    executor = concurrent.futures.ThreadPoolExecutor(max_workers=10)
+    for i in range(2):
+        future = executor.submit(Akamai_SIEM.my_test_func, i)
+        futures.append(future)
+    try:
+        for future in concurrent.futures.as_completed(futures):
+            data_size += future.result()
+    except Exception as e:
+        demisto.info(f"[test] {e}")
+    e = "failure."
+    err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
+    demisto.info("[test] returning an error.")
+    return_error(err_msg, error=e)
+    demisto.info("[test] finished returning an error.")
