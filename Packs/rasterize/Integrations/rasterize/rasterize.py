@@ -130,7 +130,6 @@ def excepthook_recv_loop(args):
     if args.exc_type in [json.decoder.JSONDecodeError, websocket._exceptions.WebSocketConnectionClosedException]:
         # Suppress
         demisto.debug(f"Suppressed Exception in _recv_loop: {args.exc_type=}")
-        pass
     else:
         demisto.info(f"Unsuppressed Exception in _recv_loop: {args.exc_type=}")
         if exc_value:
@@ -559,7 +558,7 @@ def chrome_manager() -> tuple[Any | None, str | None]:
         }
         for key, value in chrome_instances_contents.items()
     }
-    if not chrome_instances_contents or instance_id not in instance_id_dict.keys():
+    if not chrome_instances_contents or instance_id not in instance_id_dict:
         return generate_new_chrome_instance(instance_id, chrome_options)
 
     elif chrome_options != instance_id_dict.get(instance_id, {}).get(CHROME_INSTANCE_OPTIONS, ''):
@@ -770,13 +769,13 @@ def screenshot_image(browser: Browser, tab: Tab, path: str, wait_time: int, navi
         demisto.debug(f"Including URL in image for path: {path}, {tab.id=}")
         captured_image_object = Image.open(BytesIO(captured_image))
         demisto.debug(f"Original image size: {captured_image_object.size}, {tab.id=}")
-        
+
         image_with_url = Image.new(captured_image_object.mode, (css_content_size['width'], css_content_size['height'] + 20))
         demisto.debug(f"New image size with URL: {image_with_url.size}, {tab.id=}")
 
         image_with_url.paste(captured_image_object, (0, 20))
         ImageDraw.Draw(image_with_url).text((0, 0), path, fill=(255, 255, 255))
-        
+
         img_byte_arr = BytesIO()
         image_with_url.save(img_byte_arr, format='PNG')
         img_byte_arr = img_byte_arr.getvalue()
@@ -815,7 +814,14 @@ def screenshot_image(browser: Browser, tab: Tab, path: str, wait_time: int, navi
     return ret_value, response_body
 
 
-def screenshot_pdf(browser: Browser, tab: Tab, path: str, wait_time: int, navigation_timeout: int, include_url: bool):  # pragma: no cover
+def screenshot_pdf(
+    browser: Browser,
+    tab: Tab,
+    path: str,
+    wait_time: int,
+    navigation_timeout: int,
+    include_url: bool
+):  # pragma: no cover
     navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
     header_template = ''
     if include_url:
@@ -894,18 +900,24 @@ def kill_zombie_processes():
                 continue
     except Exception as e:
         demisto.debug(f'Failed to iterate over processes. Error: {e}')
-    demisto.info(f"kill_zombie_processes completed. Processed {processed_count} processes, found and attempted to kill {zombie_count} zombies")
+    demisto.info(
+        "kill_zombie_processes completed. "
+        f"Processed {processed_count} processes, "
+        f"found and attempted to kill {zombie_count} zombies."
+    )
 
-def perform_rasterize(path: str | list[str],
-                      rasterize_type: RasterizeType = RasterizeType.PNG,
-                      wait_time: int = DEFAULT_WAIT_TIME,
-                      offline_mode: bool = False,
-                      navigation_timeout: int = DEFAULT_PAGE_LOAD_TIME,
-                      include_url: bool = False,
-                      full_screen: bool = False,
-                      width: int = DEFAULT_WIDTH,
-                      height: int = DEFAULT_HEIGHT
-                      ):
+
+def perform_rasterize(
+    path: str | list[str],
+    rasterize_type: RasterizeType = RasterizeType.PNG,
+    wait_time: int = DEFAULT_WAIT_TIME,
+    offline_mode: bool = False,
+    navigation_timeout: int = DEFAULT_PAGE_LOAD_TIME,
+    include_url: bool = False,
+    full_screen: bool = False,
+    width: int = DEFAULT_WIDTH,
+    height: int = DEFAULT_HEIGHT
+):
     """
     Capturing a snapshot of a path (url/file), using Chrome Driver
     :param offline_mode: when set to True, will block any outgoing communication
@@ -918,7 +930,7 @@ def perform_rasterize(path: str | list[str],
     :param width: window width
     :param height: window height
     """
-    
+
     # convert the path param to list in case we have only one string
     paths: list[str] = argToList(path)
     demisto.debug(f"perform_rasterize, {paths=}, {rasterize_type=}")
@@ -1255,7 +1267,7 @@ def main():  # pragma: no cover
     demisto.debug(f'Using performance params: {MAX_CHROMES_COUNT=}, {MAX_CHROME_TABS_COUNT=}, {MAX_RASTERIZATIONS_COUNT=}')
 
     threading.excepthook = excepthook_recv_loop
-    
+
     try:
         if command == 'test-module':
             return_results(test_module())

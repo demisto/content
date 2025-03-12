@@ -4,6 +4,7 @@ import demistomock as demisto
 from CommonServerPython import entryTypes
 from tempfile import NamedTemporaryFile
 from pytest_mock import MockerFixture
+from pytest import CaptureFixture
 from unittest.mock import MagicMock
 import os
 import logging
@@ -31,7 +32,7 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def test_rasterize_email_image(caplog, capfd, mocker):
+def test_rasterize_email_image(caplog, capfd, mocker: MockerFixture):
     with capfd.disabled() and NamedTemporaryFile('w+') as f:
         f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
                 '</head><body><br>---------- TEST FILE ----------<br></body></html>')
@@ -42,7 +43,7 @@ def test_rasterize_email_image(caplog, capfd, mocker):
         caplog.clear()
 
 
-def test_rasterize_email_image_array(caplog, capfd, mocker):
+def test_rasterize_email_image_array(caplog, capfd, mocker: MockerFixture):
     with capfd.disabled() and NamedTemporaryFile('w+') as f:
         f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
                 '</head><body><br>---------- TEST FILE ----------<br></body></html>')
@@ -53,7 +54,7 @@ def test_rasterize_email_image_array(caplog, capfd, mocker):
         caplog.clear()
 
 
-def test_rasterize_email_pdf(caplog, capfd, mocker):
+def test_rasterize_email_pdf(caplog, capfd, mocker: MockerFixture):
     with capfd.disabled() and NamedTemporaryFile('w+') as f:
         f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
                 '</head><body><br>---------- TEST FILE ----------<br></body></html>')
@@ -64,7 +65,7 @@ def test_rasterize_email_pdf(caplog, capfd, mocker):
         caplog.clear()
 
 
-def test_rasterize_email_pdf_offline(caplog, capfd, mocker):
+def test_rasterize_email_pdf_offline(caplog, capfd, mocker: MockerFixture):
     with capfd.disabled() and NamedTemporaryFile('w+') as f:
         f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
                 '</head><body><br>---------- TEST FILE ----------<br></body></html>')
@@ -93,7 +94,7 @@ def test_get_chrome_options():
     assert len([x for x in res if x.startswith('--user-agent')]) == 0
 
 
-def test_rasterize_large_html(capfd, mocker):
+def test_rasterize_large_html(capfd: CaptureFixture, mocker: MockerFixture):
     with capfd.disabled():
         path = os.path.realpath('test_data/large.html')
         mocker.patch.object(rasterize, 'support_multithreading')
@@ -101,16 +102,16 @@ def test_rasterize_large_html(capfd, mocker):
         assert res
 
 
-def test_rasterize_html(mocker, capfd):
+def test_rasterize_html(mocker: MockerFixture, capfd: CaptureFixture):
+    args = {'EntryID': 'test'}
     with capfd.disabled():
         path = os.path.realpath('test_data/file.html')
-        mocker.patch.object(demisto, 'args', return_value={'EntryID': 'test'})
         mocker.patch.object(demisto, 'getFilePath', return_value={"path": path})
         mocker.patch.object(os, 'rename')
         mocker.patch.object(os.path, 'realpath', return_value=f'{os.getcwd()}/test_data/file.html')
         mocker_output = mocker.patch('rasterize.return_results')
         mocker.patch.object(rasterize, 'support_multithreading')
-        rasterize_html_command()
+        rasterize_html_command(args)
         assert mocker_output.call_args.args[0]['File'] == 'email.png'
 
 
@@ -172,13 +173,13 @@ def test_rasterize_url_long_load(mocker: MockerFixture, http_wait_server, capfd)
 
 
 @pytest.mark.filterwarnings('ignore::ResourceWarning')
-def test_rasterize_image_to_pdf(mocker):
+def test_rasterize_image_to_pdf(mocker: MockerFixture):
     path = os.path.realpath('test_data/image.png')
-    mocker.patch.object(demisto, 'args', return_value={'EntryID': 'test'})
+    args = {'EntryID': 'test'}
     mocker.patch.object(demisto, 'getFilePath', return_value={"path": path})
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(rasterize, 'support_multithreading')
-    rasterize_image_command()
+    rasterize_image_command(args)
     assert demisto.results.call_count == 1
     # call_args is tuple (args list, kwargs). we only need the first one
     results = demisto.results.call_args[0]
@@ -323,7 +324,7 @@ def test_log_warning():
     assert pypdf_logger.level == logging.ERROR
 
 
-def test_excepthook_recv_loop(mocker):
+def test_excepthook_recv_loop(mocker: MockerFixture):
     """
     Given   Exceptions that might happen after the tab was closed.
     When    A chromium tab is closed.
@@ -381,7 +382,7 @@ def test_get_output_filenames():
     assert get_list_item(file_names, 4, "FOO.png") == 'FOO.png'
 
 
-def test_chrome_manager_case_chrome_instances_file_is_empty(mocker):
+def test_chrome_manager_case_chrome_instances_file_is_empty(mocker: MockerFixture):
     """
     Given   instance id and chrome options
     When    chrome instances file is empty
@@ -417,7 +418,7 @@ def test_chrome_manager_case_chrome_instances_file_is_empty(mocker):
     assert chrome_port == "chrome_port"
 
 
-def test_chrome_manager_case_chromes_options_exist_and_instance_id_not_linked(mocker):
+def test_chrome_manager_case_chromes_options_exist_and_instance_id_not_linked(mocker: MockerFixture):
     """
     Given   instance id that does not exist and chrome options that exist in the chrome instances file
     When    chrome instances file is not empty and instance id is not linked to the chrome options
@@ -454,7 +455,7 @@ def test_chrome_manager_case_chromes_options_exist_and_instance_id_not_linked(mo
     assert chrome_port == "chrome_port"
 
 
-def test_chrome_manager_case_new_chrome_options_and_instance_id(mocker):
+def test_chrome_manager_case_new_chrome_options_and_instance_id(mocker: MockerFixture):
     """
     Given   instance id and chrome options does not exist in the chrome instances file
     When    chrome instances file is not empty
@@ -492,7 +493,7 @@ def test_chrome_manager_case_new_chrome_options_and_instance_id(mocker):
     assert chrome_port == "chrome_port"
 
 
-def test_chrome_manager_case_instance_id_exist_but_new_chrome_options(mocker):
+def test_chrome_manager_case_instance_id_exist_but_new_chrome_options(mocker: MockerFixture):
     """
     Given   instance id exist and chrome options does not exist in the chrome instances file
     When    chrome instances file is not empty and instance id has different chrome options
@@ -533,7 +534,7 @@ def test_chrome_manager_case_instance_id_exist_but_new_chrome_options(mocker):
     assert chrome_port == "chrome_port"
 
 
-def test_chrome_manager_case_instance_id_and_chrome_options_exist_and_linked(mocker):
+def test_chrome_manager_case_instance_id_and_chrome_options_exist_and_linked(mocker: MockerFixture):
     """
     Given   instance id and chrome options
     When    chrome instances file is not empty, and instance id and chrome options linked.
@@ -582,7 +583,7 @@ def test_generate_chrome_port():
     assert 0 <= len(port) <= 5
 
 
-def test_generate_chrome_port_no_port_available(mocker):
+def test_generate_chrome_port_no_port_available(mocker: MockerFixture):
     """
     Given   first_chrome_port and max_chromes_count that creates empty range
     When    needed to generate new chrome port
@@ -620,7 +621,7 @@ def test_get_chrome_browser_error(mocker: MockerFixture):
         " exp_str='connection error', exp=ConnectionError('connection error')")
 
 
-def test_backoff(mocker):
+def test_backoff(mocker: MockerFixture):
     """
     Given   Waiting for a process to complete.
     When    Launching a pychrome browser.
@@ -654,7 +655,7 @@ def test_is_mailto_urls(mocker: MockerFixture):
     assert res == (None, 'URLs that start with "mailto:" cannot be rasterized.\nURL: url')
 
 
-def test_increase_counter_chrome_instances_file(mocker):
+def test_increase_counter_chrome_instances_file(mocker: MockerFixture):
     """
     Given:
         - A new Chrome instance content
@@ -680,7 +681,7 @@ def test_increase_counter_chrome_instances_file(mocker):
     assert expected_rasterization_count == mocker_json.call_args[0][0]['2222'][RASTERIZATION_COUNT]
 
 
-def test_add_new_chrome_instance(mocker):
+def test_add_new_chrome_instance(mocker: MockerFixture):
     """
     Given:
         - A new Chrome instance content
@@ -706,7 +707,7 @@ def test_add_new_chrome_instance(mocker):
     assert '9345' in mocker_json.call_args[0][0]
 
 
-def test_terminate_port_chrome_instances_file(mocker):
+def test_terminate_port_chrome_instances_file(mocker: MockerFixture):
     """
     Given:
         - A port to terminate.
@@ -728,7 +729,7 @@ def test_terminate_port_chrome_instances_file(mocker):
     assert '2222' not in mocker_json.call_args[0][0]
 
 
-def test_write_chrome_instances_empty(mocker):
+def test_write_chrome_instances_empty(mocker: MockerFixture):
     """
     Given:
         - A new Chrome instance content(first chrome instance).
@@ -748,7 +749,7 @@ def test_write_chrome_instances_empty(mocker):
     assert mocker_json.call_count == 1
 
 
-def test_read_json_file(mocker):
+def test_read_json_file(mocker: MockerFixture):
     """
     Given:
         - A JSON file at 'test_data/chrome_instances.json'
@@ -764,7 +765,7 @@ def test_read_json_file(mocker):
     assert file_result == mock_file_content
 
 
-def test_rasterize_mailto(capfd, mocker):
+def test_rasterize_mailto(capfd, mocker: MockerFixture):
     """
         Given:
             - mailto argument as path.
@@ -784,7 +785,7 @@ def test_rasterize_mailto(capfd, mocker):
     assert excinfo.value.code == 0
 
 
-def test_handle_request_paused(mocker):
+def test_handle_request_paused(mocker: MockerFixture):
     """
         Given:
             - cloudflare.com as BLOCKED_URLS parameter.
@@ -809,7 +810,7 @@ def test_handle_request_paused(mocker):
     assert mock_fail_request.call_args[1]['errorReason'] == 'Aborted'
 
 
-def test_chrome_manager_one_port_use_same_port(mocker):
+def test_chrome_manager_one_port_use_same_port(mocker: MockerFixture):
     """
     Given:
         - instance id and chrome options.
@@ -846,7 +847,7 @@ def test_chrome_manager_one_port_use_same_port(mocker):
     assert chrome_port == "2222"
 
 
-def test_chrome_manager_one_port_open_new_port(mocker):
+def test_chrome_manager_one_port_open_new_port(mocker: MockerFixture):
     """
     Given:
         - instance id and chrome options.
@@ -888,7 +889,7 @@ def test_chrome_manager_one_port_open_new_port(mocker):
     assert chrome_port == "chrome_port"
 
 
-def test_rasterize_email_command_default_arge(mocker):
+def test_rasterize_email_command_default_args(mocker: MockerFixture):
     """
     Given: A valid HTML email body
     When: The rasterize_email_command function is called
@@ -901,13 +902,13 @@ def test_rasterize_email_command_default_arge(mocker):
         'width': '1000px',
         'height': '1500px',
     }
-    mocker.patch.object(demisto, 'args', return_value=mock_args)
+    
     mock_perform_rasterize = mocker.patch('rasterize.perform_rasterize', return_value=[('image_data', None)])
     mock_file_result = mocker.patch('rasterize.fileResult', return_value={'Type': 'image'})
     mock_uuid = mocker.patch('rasterize.uuid.uuid4', return_value='abcd-1234')
     mocker.patch.object(demisto, 'results')
 
-    rasterize_email_command()
+    rasterize_email_command(mock_args)
 
     mock_file_result.assert_called_once_with(filename=f'{mock_uuid.return_value}.png', data='image_data')
     mock_perform_rasterize.assert_called_once_with(
@@ -921,7 +922,7 @@ def test_rasterize_email_command_default_arge(mocker):
     )
 
 
-def test_rasterize_email_command_png(mocker):
+def test_rasterize_email_command_png(mocker: MockerFixture):
     """
     Given: A valid HTML email body and PNG output type
     When: The rasterize_email_command function is called
@@ -935,18 +936,18 @@ def test_rasterize_email_command_png(mocker):
         'height': '600',
         'file_name': 'test_email'
     }
-    mocker.patch.object(demisto, 'args', return_value=mock_args)
+
     mocker.patch('rasterize.perform_rasterize', return_value=[('image_data', None)])
     mock_file_result = mocker.patch('rasterize.fileResult', return_value={'Type': 'image'})
     mock_results = mocker.patch.object(demisto, 'results')
 
-    rasterize_email_command()
+    rasterize_email_command(mock_args)
 
     mock_file_result.assert_called_once_with(filename='test_email.png', data='image_data')
     mock_results.assert_called_once()
 
 
-def test_rasterize_email_command_pdf(mocker):
+def test_rasterize_email_command_pdf(mocker: MockerFixture):
     """
     Given: A valid HTML email body and PDF output type
     When: The rasterize_email_command function is called
@@ -961,18 +962,18 @@ def test_rasterize_email_command_pdf(mocker):
         'type': 'pdf',
         'file_name': 'test_email'
     }
-    mocker.patch.object(demisto, 'args', return_value=mock_args)
+
     mocker.patch('rasterize.perform_rasterize', return_value=[('pdf_data', None)])
     mock_file_result = mocker.patch('rasterize.fileResult', return_value={'Type': 'file'})
     mock_results = mocker.patch.object(demisto, 'results')
 
-    rasterize_email_command()
+    rasterize_email_command(mock_args)
 
     mock_file_result.assert_called_once_with(filename='test_email.pdf', data='pdf_data')
     mock_results.assert_called_once()
 
 
-def test_rasterize_email_command_full_screen(mocker):
+def test_rasterize_email_command_full_screen(mocker: MockerFixture):
     """
     Given: A valid HTML email body and full_screen option set to true
     When: The rasterize_email_command function is called
@@ -986,12 +987,12 @@ def test_rasterize_email_command_full_screen(mocker):
         'type': 'png',
         'file_name': 'test_email'
     }
-    mocker.patch.object(demisto, 'args', return_value=mock_args)
+
     mock_perform_rasterize = mocker.patch('rasterize.perform_rasterize', return_value=[('image_data', None)])
     mock_file_result = mocker.patch('rasterize.fileResult', return_value={'Type': 'image'})
     mocker.patch.object(demisto, 'results')
 
-    rasterize_email_command()
+    rasterize_email_command(mock_args)
 
     mock_file_result.assert_called_once_with(filename='test_email.png', data='image_data')
     mock_perform_rasterize.assert_called_once_with(
@@ -1005,7 +1006,7 @@ def test_rasterize_email_command_full_screen(mocker):
     )
 
 
-def test_rasterize_email_command_offline_mode(mocker):
+def test_rasterize_email_command_offline_mode(mocker: MockerFixture):
     """
     Given: A valid HTML email body and offline mode set to true
     When: The rasterize_email_command function is called
@@ -1019,12 +1020,12 @@ def test_rasterize_email_command_offline_mode(mocker):
         'type': 'png',
         'file_name': 'test_email'
     }
-    mocker.patch.object(demisto, 'args', return_value=mock_args)
+
     mock_perform_rasterize = mocker.patch('rasterize.perform_rasterize', return_value=[('image_data', None)])
     mocker.patch('rasterize.fileResult', return_value={'Type': 'image'})
     mocker.patch.object(demisto, 'results')
 
-    rasterize_email_command()
+    rasterize_email_command(mock_args)
 
     mock_perform_rasterize.assert_called_once_with(
         path=mocker.ANY,
@@ -1037,7 +1038,7 @@ def test_rasterize_email_command_offline_mode(mocker):
     )
 
 
-def test_rasterize_email_command_custom_navigation_timeout(mocker):
+def test_rasterize_email_command_custom_navigation_timeout(mocker: MockerFixture):
     """
     Given: A valid HTML email body and a custom navigation timeout
     When: The rasterize_email_command function is called
@@ -1051,12 +1052,12 @@ def test_rasterize_email_command_custom_navigation_timeout(mocker):
         'type': 'png',
         'file_name': 'test_email'
     }
-    mocker.patch.object(demisto, 'args', return_value=mock_args)
+
     mock_perform_rasterize = mocker.patch('rasterize.perform_rasterize', return_value=[('image_data', None)])
     mocker.patch('rasterize.fileResult', return_value={'Type': 'image'})
     mocker.patch.object(demisto, 'results')
 
-    rasterize_email_command()
+    rasterize_email_command(mock_args)
 
     mock_perform_rasterize.assert_called_once_with(
         path=mocker.ANY,
@@ -1069,7 +1070,7 @@ def test_rasterize_email_command_custom_navigation_timeout(mocker):
     )
 
 
-def test_rasterize_email_command_error_handling(mocker):
+def test_rasterize_email_command_error_handling(mocker: MockerFixture):
     """
     Given: A scenario where perform_rasterize raises an exception
     When: The rasterize_email_command function is called
@@ -1082,11 +1083,11 @@ def test_rasterize_email_command_error_handling(mocker):
         'type': 'png',
         'file_name': 'test_email'
     }
-    mocker.patch.object(demisto, 'args', return_value=mock_args)
+
     mocker.patch('rasterize.perform_rasterize', side_effect=Exception('Test error'))
     mock_error = mocker.patch.object(demisto, 'error')
 
     with pytest.raises(SystemExit):
-        rasterize_email_command()
+        rasterize_email_command(mock_args)
 
     mock_error.assert_called_once_with('Test error')
