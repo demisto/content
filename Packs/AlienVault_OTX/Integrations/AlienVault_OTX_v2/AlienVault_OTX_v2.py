@@ -1,7 +1,6 @@
 from CommonServerPython import *
 
 ''' IMPORTS '''
-from typing import Dict, Tuple, Union
 import urllib3
 
 # Disable insecure warnings
@@ -26,7 +25,7 @@ INTEGRATION_CONTEXT_NAME = 'AlienVaultOTX'
 
 class Client(BaseClient):
     def __init__(self, base_url, headers, verify, proxy, default_threshold, max_indicator_relationships,
-                 reliability, create_relationships=True):
+                 reliability, create_relationships=True, should_error=True):
 
         BaseClient.__init__(self, base_url=base_url, headers=headers, verify=verify, proxy=proxy, )
 
@@ -34,8 +33,9 @@ class Client(BaseClient):
         self.create_relationships = create_relationships
         self.default_threshold = default_threshold
         self.max_indicator_relationships = 0 if not max_indicator_relationships else max_indicator_relationships
+        self.should_error = should_error
 
-    def test_module(self) -> Dict:
+    def test_module(self) -> dict:
         """Performs basic GET request to check if the API is reachable and authentication is successful.
 
         Returns:
@@ -43,7 +43,7 @@ class Client(BaseClient):
         """
         return self.query(section='IPv4', argument='8.8.8.8')
 
-    def query(self, section: str, argument: str = None, sub_section: str = 'general', params: dict = None) -> Dict:
+    def query(self, section: str, argument: str = None, sub_section: str = 'general', params: dict = None) -> dict:
         """Query the specified kwargs.
 
         Args:
@@ -89,7 +89,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def calculate_dbot_score(client: Client, raw_response: Union[dict, None]) -> float:
+def calculate_dbot_score(client: Client, raw_response: dict | None) -> float:
     """
     calculate DBot score for query
 
@@ -267,7 +267,7 @@ def create_relationships(client: Client, relevant_field: list, entity_a: str,
     return relationships
 
 
-def delete_duplicated_entities(entities_list: List[Dict], field_name: str):
+def delete_duplicated_entities(entities_list: List[dict], field_name: str):
     """delete duplicated results from a response
 
     Args:
@@ -277,14 +277,14 @@ def delete_duplicated_entities(entities_list: List[Dict], field_name: str):
     Returns:
         a list without duplicated entities.
     """
-    unique_dict: Dict = {}
+    unique_dict: dict = {}
     for entity_dict in entities_list:
-        if isinstance(entity_dict, dict) and (ind_value := entity_dict.get(field_name)) not in unique_dict.keys():
+        if isinstance(entity_dict, dict) and (ind_value := entity_dict.get(field_name)) not in unique_dict:
             unique_dict[ind_value] = entity_dict
     return list(unique_dict.values())
 
 
-def validate_string_is_not_url(entities_list: List[Dict], field_name: str):
+def validate_string_is_not_url(entities_list: List[dict], field_name: str):
     """delete url type entities from a given list.
 
     Args:
@@ -294,18 +294,44 @@ def validate_string_is_not_url(entities_list: List[Dict], field_name: str):
     Returns:
         a list without url type entities.
     """
-    return [dict for dict in entities_list if not auto_detect_indicator_type(dict.get(field_name)) == "URL"]
+    return [dict for dict in entities_list if auto_detect_indicator_type(dict.get(field_name)) != 'URL']
 
 
 def lowercase_protocol_callback(pattern: re.Match) -> str:
     return pattern.group(0).lower()
 
 
+def reputation_with_handling_error(client, section, argument, sub_section=None):
+    """Query data while handling ReadTimeout errors.
+
+    Args:
+        client: The client object used to perform the query.
+        section: The section to query (e.g., 'domain', 'file', 'url', etc.).
+        argument: The argument for the query (e.g., domain name, file hash, URL, or IP).
+        sub_section: (Optional) A sub-section for more specific queries (e.g., 'analysis' for file reputation).
+
+    Returns:
+        The raw response from the query if successful, or an empty dictionary if a ReadTimeout occurs.
+    """
+    try:
+        if sub_section:
+            return client.query(section=section, argument=argument, sub_section=sub_section)
+        return client.query(section=section, argument=argument)
+    except requests.exceptions.ReadTimeout as e:
+        if client.should_error:
+            raise e
+        demisto.info(f"An error was raised {e=}")
+        return_warning(f"{e}")
+        if section == 'url':
+            return 404
+        return {}
+
+
 ''' COMMANDS '''
 
 
 @logger
-def test_module_command(client: Client, *_) -> Tuple[None, None, str]:
+def test_module_command(client: Client, *_) -> tuple[None, None, str]:
     """Performs a basic GET request to check if the API is reachable and authentication is successful.
 
     Args:
@@ -342,8 +368,8 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> List[Command
     command_results: List[CommandResults] = []
 
     for ip_ in ips_list:
-        raw_response = client.query(section=ip_version,
-                                    argument=ip_)
+        raw_response = reputation_with_handling_error(client=client, section=ip_version, argument=ip_)
+
         if raw_response and raw_response != 404:
             ip_version = FeedIndicatorType.IP if ip_version == 'IPv4' else FeedIndicatorType.IPv6
             relationships = relationships_manager(client, entity_a=ip_, entity_a_type=ip_version,
@@ -411,7 +437,8 @@ def domain_command(client: Client, domain: str) -> List[CommandResults]:
     command_results: List[CommandResults] = []
 
     for domain in domains_list:
-        raw_response = client.query(section='domain', argument=domain)
+        raw_response = reputation_with_handling_error(client=client, section='domain', argument=domain)
+
         if raw_response and raw_response != 404:
             relationships = relationships_manager(client, entity_a=domain, indicator_type='domain',
                                                   entity_a_type=FeedIndicatorType.Domain, indicator=domain,
@@ -469,11 +496,14 @@ def file_command(client: Client, file: str) -> List[CommandResults]:
     command_results: List[CommandResults] = []
 
     for hash_ in hashes_list:
-        raw_response_analysis = client.query(section='file',
-                                             argument=hash_,
-                                             sub_section='analysis')
-        raw_response_general = client.query(section='file',
-                                            argument=hash_)
+        raw_response_analysis = reputation_with_handling_error(client=client,
+                                                               section='file',
+                                                               argument=hash_,
+                                                               sub_section='analysis')
+        raw_response_general = reputation_with_handling_error(client=client,
+                                                              section='file',
+                                                              argument=hash_)
+
         if raw_response_analysis and raw_response_general and (
                 shortcut := dict_safe_get(raw_response_analysis, ['analysis', 'info', 'results'],
                                           {})) and raw_response_general != 404 and raw_response_analysis != 404:
@@ -544,7 +574,8 @@ def url_command(client: Client, url: str) -> List[CommandResults]:
 
     for url in urls_list:
         url = re.sub(r'(\w+)://', lowercase_protocol_callback, url)
-        raw_response = client.query(section='url', argument=url)
+        raw_response = reputation_with_handling_error(client=client, section='url', argument=url)
+
         if raw_response:
             if raw_response == 404:
                 command_results.append(create_indicator_result_with_dbotscore_unknown(indicator=url,
@@ -597,7 +628,7 @@ def url_command(client: Client, url: str) -> List[CommandResults]:
 
 
 @logger
-def alienvault_search_hostname_command(client: Client, hostname: str) -> Tuple[str, Dict, Dict]:
+def alienvault_search_hostname_command(client: Client, hostname: str) -> tuple[str, dict, dict]:
     """Search for hostname details
 
     Args:
@@ -639,7 +670,7 @@ def alienvault_search_hostname_command(client: Client, hostname: str) -> Tuple[s
 
 
 @logger
-def alienvault_search_cve_command(client: Client, cve_id: str) -> Tuple[str, Dict, Dict]:
+def alienvault_search_cve_command(client: Client, cve_id: str) -> tuple[str, dict, dict]:
     """Get Common Vulnerabilities and Exposures by id
 
     Args:
@@ -680,7 +711,7 @@ def alienvault_search_cve_command(client: Client, cve_id: str) -> Tuple[str, Dic
 @logger
 def alienvault_get_related_urls_by_indicator_command(client: Client, indicator_type: str, indicator: str,
                                                      limit: str = '') \
-        -> Tuple[str, Dict, Dict]:
+        -> tuple[str, dict, dict]:
     """Get related urls by indicator (IPv4,IPv6,domain,hostname,url)
 
     Args:
@@ -717,7 +748,7 @@ def alienvault_get_related_urls_by_indicator_command(client: Client, indicator_t
 @logger
 def alienvault_get_related_hashes_by_indicator_command(client: Client, indicator_type: str, indicator: str,
                                                        limit: str = '') \
-        -> Tuple[str, Dict, Dict]:
+        -> tuple[str, dict, dict]:
     """Get related file hashes by indicator (IPv4,IPv6,domain,hostname)
 
        Args:
@@ -755,7 +786,7 @@ def alienvault_get_related_hashes_by_indicator_command(client: Client, indicator
 
 @logger
 def alienvault_get_passive_dns_data_by_indicator_command(client: Client, indicator_type: str, indicator: str,
-                                                         limit: str = '') -> Tuple[str, Dict, Dict]:
+                                                         limit: str = '') -> tuple[str, dict, dict]:
     """Get related file hashes by indicator (IPv4,IPv6,domain,hostname)
 
        Args:
@@ -794,7 +825,7 @@ def alienvault_get_passive_dns_data_by_indicator_command(client: Client, indicat
 
 
 @logger
-def alienvault_search_pulses_command(client: Client, page: str) -> Tuple[str, Dict, Dict]:
+def alienvault_search_pulses_command(client: Client, page: str) -> tuple[str, dict, dict]:
     """Get pulse page by number of the page
 
     Args:
@@ -825,7 +856,7 @@ def alienvault_search_pulses_command(client: Client, page: str) -> Tuple[str, Di
 
 
 @logger
-def alienvault_get_pulse_details_command(client: Client, pulse_id: str) -> Tuple[str, Dict, Dict]:
+def alienvault_get_pulse_details_command(client: Client, pulse_id: str) -> tuple[str, dict, dict]:
     """Get pulse by ID
 
     Args:
@@ -879,6 +910,7 @@ def main():
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
         Exception("Please provide a valid value for the Source Reliability parameter.")
+    should_error = argToBoolean(params.get('should_error', True))
 
     client = Client(
         base_url=base_url,
@@ -888,7 +920,8 @@ def main():
         default_threshold=default_threshold,
         reliability=reliability,
         create_relationships=argToBoolean(params.get('create_relationships')),
-        max_indicator_relationships=max_indicator_relationships
+        max_indicator_relationships=max_indicator_relationships,
+        should_error=should_error
     )
 
     command = demisto.command()
