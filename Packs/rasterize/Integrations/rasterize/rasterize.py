@@ -22,6 +22,7 @@ from io import BytesIO
 from PIL import Image, ImageDraw
 from pdf2image import convert_from_path
 from PyPDF2 import PdfReader
+from pychrome import Browser, Tab
 
 
 # region constants and configurations
@@ -62,7 +63,7 @@ TAB_CLOSE_WAIT_TIME = 1
 # Used it in several places
 DEFAULT_RETRIES_COUNT = 4
 DEFAULT_RETRY_WAIT_IN_SECONDS = 3
-PAGES_LIMITATION = 20
+PAGES_LIMITATION = '20'
 
 # chrome instance data keys
 INSTANCE_ID = "instance_id"
@@ -139,11 +140,11 @@ def excepthook_recv_loop(args):
 
 
 class TabLifecycleManager:
-    def __init__(self, browser, chrome_port, offline_mode):
+    def __init__(self, browser: Browser, chrome_port: str, offline_mode: bool):
         self.browser = browser
         self.chrome_port = chrome_port
         self.offline_mode = offline_mode
-        self.tab = None
+        self.tab: Tab | None = None
 
     def __enter__(self):
         try:
@@ -234,9 +235,9 @@ class PychromeEventHandler:
             demisto.debug('PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event')
             self.tab_ready_event.set()
 
-    def network_request_will_be_sent(self, documentURL, **kwargs):
+    def network_request_will_be_sent(self, documentURL: str, **kwargs):
         '''Triggered when a request is sent by the browser, catches mailto URLs.'''
-        demisto.debug(f'PychromeEventHandler.network_request_will_be_sent, {documentURL=}')
+        demisto.debug(f'PychromeEventHandler.network_request_will_be_sent, {documentURL=}, {self.is_mailto=}')
         self.is_mailto = documentURL.lower().startswith('mailto:')
 
         request_url = kwargs.get('request', {}).get('url', '')
@@ -260,7 +261,7 @@ class PychromeEventHandler:
 # endregion
 
 
-def count_running_chromes(port):
+def count_running_chromes(port) -> int:
     try:
         processes = subprocess.check_output(['ps', 'auxww'],
                                             stderr=subprocess.STDOUT,
@@ -404,7 +405,7 @@ def write_chrome_instances_file(new_chrome_content: Optional[Dict] = {}
         demisto.debug(f"An error occurred while writing to the file: {e}")
 
 
-def opt_name(opt):
+def opt_name(opt: str) -> str:
     return opt.split('=', 1)[0]
 
 
@@ -573,7 +574,7 @@ def chrome_manager() -> tuple[Any | None, str | None]:
     return browser, chrome_port
 
 
-def chrome_manager_one_port() -> tuple[Any | None, str | None]:
+def chrome_manager_one_port() -> tuple[Browser | None, str | None]:
     """
     Manages Chrome instances based on user-specified chrome options and integration instance ID.
     ONLY uses one chrome instance per chrome option, until https://issues.chromium.org/issues/379034728 is fixed.
@@ -667,7 +668,9 @@ def setup_tab_event(browser: pychrome.Browser, tab: pychrome.Tab) -> tuple[Pychr
     return tab_event_handler, tab_ready_event
 
 
-def navigate_to_path(browser, tab, path, wait_time, navigation_timeout) -> PychromeEventHandler:  # pragma: no cover
+def navigate_to_path(
+    browser: Browser, tab: Tab, path: str, wait_time: int, navigation_timeout: int
+) -> PychromeEventHandler:  # pragma: no cover
     tab_event_handler, tab_ready_event = setup_tab_event(browser, tab)
 
     try:
@@ -688,9 +691,9 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout) -> Pychr
         demisto.debug(f'After waiting for tab_ready_event on {tab.id=}')
 
         if wait_time > 0:
-            demisto.info(f'Sleeping before capturing screenshot, {wait_time=}')
+            demisto.info(f'Sleeping before capturing screenshot, {wait_time=}, {tab.id=}')
         else:
-            demisto.debug(f'Not sleeping before capturing screenshot, {wait_time=}')
+            demisto.debug(f'Not sleeping before capturing screenshot, {wait_time=}. {tab.id=}')
         time.sleep(wait_time)  # pylint: disable=E9003
         demisto.debug(f"Navigated to {path=} on {tab.id=}")
 
@@ -700,14 +703,14 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout) -> Pychr
         demisto.debug(f'heapUsage after navigation {heapUsage=} on {tab.id=}')
 
     except pychrome.exceptions.TimeoutException as ex:
-        return_error(f'Navigation timeout: {ex} thrown while trying to navigate to {path}')
+        return_error(f'Navigation timeout: {ex} thrown while trying to navigate to {path}, {tab.id=}')
     except pychrome.exceptions.PyChromeException as ex:
-        return_error(f'Exception: {ex} thrown while trying to navigate to {path}')
+        return_error(f'Exception: {ex} thrown while trying to navigate to {path}, {tab.id=}')
 
     return tab_event_handler
 
 
-def backoff(polled_item, wait_time=DEFAULT_WAIT_TIME, polling_interval=DEFAULT_POLLING_INTERVAL):
+def backoff(polled_item: Any, wait_time=DEFAULT_WAIT_TIME, polling_interval=DEFAULT_POLLING_INTERVAL) -> tuple[Any, float]:
     operation_time = 0
     while polled_item is None and operation_time < wait_time:
         time.sleep(polling_interval)  # pylint: disable=E9003
@@ -715,7 +718,7 @@ def backoff(polled_item, wait_time=DEFAULT_WAIT_TIME, polling_interval=DEFAULT_P
     return polled_item, operation_time
 
 
-def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_screen=False,
+def screenshot_image(browser: Browser, tab: Tab, path: str, wait_time: int, navigation_timeout: int, full_screen=False,
                      include_url=False, include_source=False):  # pragma: no cover
     """
     :param include_source: Whether to include the page source in the response
@@ -723,6 +726,7 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
     tab_event_handler = navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
 
     if tab_event_handler.is_mailto:
+        demisto.debug(f'URLs that start with "mailto:" cannot be rasterized.\nURL: {path}, {tab.id=}.')
         return None, f'URLs that start with "mailto:" cannot be rasterized.\nURL: {path}'
 
     try:
@@ -731,7 +735,7 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
         demisto.info(f'Failed to get tab LayoutMetrics due to {ex}')
         raise ex
 
-    demisto.debug(f"{page_layout_metrics=}")
+    demisto.debug(f"{page_layout_metrics=} {tab.id=}.")
     css_content_size = page_layout_metrics['cssContentSize']
     try:
         if full_screen:
@@ -741,7 +745,7 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
         else:
             screenshot_data = tab.Page.captureScreenshot()['data']
     except Exception as ex:
-        demisto.info(f'Failed to capture screenshot due to {ex}')
+        demisto.info(f'Failed to capture screenshot due to {ex}, {tab.id=}')
         raise ex
     # Make sure that the (asynchronous) screenshot data is available before continuing with execution
     screenshot_data, operation_time = backoff(screenshot_data)
@@ -757,19 +761,27 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
 
     captured_image = base64.b64decode(screenshot_data)
     if not captured_image:
-        demisto.info(f"Empty snapshot, {screenshot_data=}")
+        demisto.info(f"Empty snapshot, {screenshot_data=}, {tab.id=}")
     else:
-        demisto.info(f"Captured snapshot, {len(captured_image)=}")
+        demisto.info(f"Captured snapshot, {len(captured_image)=}, {tab.id=}")
 
     # Page URL, if needed
     if include_url:
+        demisto.debug(f"Including URL in image for path: {path}, {tab.id=}")
         captured_image_object = Image.open(BytesIO(captured_image))
+        demisto.debug(f"Original image size: {captured_image_object.size}, {tab.id=}")
+        
         image_with_url = Image.new(captured_image_object.mode, (css_content_size['width'], css_content_size['height'] + 20))
+        demisto.debug(f"New image size with URL: {image_with_url.size}, {tab.id=}")
+
         image_with_url.paste(captured_image_object, (0, 20))
         ImageDraw.Draw(image_with_url).text((0, 0), path, fill=(255, 255, 255))
+        
         img_byte_arr = BytesIO()
         image_with_url.save(img_byte_arr, format='PNG')
         img_byte_arr = img_byte_arr.getvalue()
+        demisto.debug(f"Size of image with URL: {len(img_byte_arr)} bytes, {tab.id=}")
+
         ret_value = img_byte_arr
     else:
         ret_value = captured_image
@@ -777,33 +789,33 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
     # Page source, if needed
     response_body = ""
     if include_source:
-        demisto.debug('screenshot_image, include_source, waiting for request_id')
+        demisto.debug(f'screenshot_image, include_source, waiting for request_id, {tab.id=}')
         request_id, request_id_operation_time = backoff(tab_event_handler.request_id)
         if request_id:
-            demisto.debug(f"request_id available after {request_id_operation_time} seconds.")
+            demisto.debug(f"request_id available after {request_id_operation_time} seconds, {tab.id=}.")
         else:
-            demisto.info(f"request_id not available after {request_id_operation_time} seconds.")
-        demisto.debug(f"Got {request_id=} after {request_id_operation_time} seconds.")
+            demisto.info(f"request_id not available after {request_id_operation_time} seconds, {tab.id=}.")
+        demisto.debug(f"Got {request_id=} after {request_id_operation_time} seconds, {tab.id=}.")
 
         try:
             response_body = tab.Network.getResponseBody(requestId=request_id, _timeout=navigation_timeout)['body']
-            demisto.debug(f'screenshot_image, {include_source=}, {response_body=}')
+            demisto.debug(f'screenshot_image, {include_source=}, {response_body=}, {tab.id=}')
 
             response_body, operation_time = backoff(response_body)
             if response_body:
-                demisto.debug(f"Response Body available after {operation_time} seconds, {len(response_body)=}")
+                demisto.debug(f"Response Body available after {operation_time} seconds, {len(response_body)=}, {tab.id=}")
             else:
-                demisto.info(f"Response Body not available after {operation_time} seconds.")
+                demisto.info(f"Response Body not available after {operation_time} seconds, {tab.id=}.")
 
         except Exception as ex:  # This exception is raised when a non-existent URL is provided.
-            demisto.info(f'Exception when calling Network.getResponseBody with {request_id=}, {ex=}')
+            demisto.info(f'Exception when calling Network.getResponseBody with {request_id=}, {ex=}, {tab.id=}')
             demisto.info(f'Failed to get URL body due to {ex}')
             response_body = 'Failed to get URL body'
 
     return ret_value, response_body
 
 
-def screenshot_pdf(browser, tab, path, wait_time, navigation_timeout, include_url):  # pragma: no cover
+def screenshot_pdf(browser: Browser, tab: Tab, path: str, wait_time: int, navigation_timeout: int, include_url: bool):  # pragma: no cover
     navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
     header_template = ''
     if include_url:
@@ -812,20 +824,20 @@ def screenshot_pdf(browser, tab, path, wait_time, navigation_timeout, include_ur
     try:
         pdf_data = tab.Page.printToPDF(headerTemplate=header_template)['data']
     except Exception as ex:
-        demisto.info(f'Failed to get PDF due to {ex}')
+        demisto.info(f'Failed to get PDF due to {ex}, {tab.id=}')
         raise ex
     # Make sure that the (asynchronous) PDF data is available before continuing with execution
     pdf_data, operation_time = backoff(pdf_data)
     if pdf_data:
-        demisto.debug(f"PDF Data available after {operation_time} seconds.")
+        demisto.debug(f"PDF Data available after {operation_time} seconds, {tab.id=}.")
     else:
-        demisto.info(f"PDF Data not available after {operation_time} seconds.")
+        demisto.info(f"PDF Data not available after {operation_time} seconds, {tab.id=}.")
 
     ret_value = base64.b64decode(pdf_data)
     return ret_value, None
 
 
-def rasterize_thread(browser, chrome_port, path: str,
+def rasterize_thread(browser: Browser, chrome_port: str, path: str,
                      rasterize_type: RasterizeType = RasterizeType.PNG,
                      wait_time: int = DEFAULT_WAIT_TIME,
                      offline_mode: bool = False,
@@ -842,16 +854,19 @@ def rasterize_thread(browser, chrome_port, path: str,
         except Exception as ex:
             demisto.info(f'Failed to set the chrome tab size due to {ex}')
             raise ex
-
+        demisto.debug(f'Determining rasterization type: {rasterize_type}, for {path=}, {tab.id=}')
         if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower() == RasterizeType.PNG.value:
+            demisto.debug(f'Executing screenshot_image for PNG, {path=}, {tab.id=}')
             return screenshot_image(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout,
                                     full_screen=full_screen, include_url=include_url)
 
         elif rasterize_type == RasterizeType.PDF or str(rasterize_type).lower() == RasterizeType.PDF.value:
+            demisto.debug(f'Executing screenshot_pdf, {path=}, {tab.id=}')
             return screenshot_pdf(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout,
                                   include_url=include_url)
 
         elif rasterize_type == RasterizeType.JSON or str(rasterize_type).lower() == RasterizeType.JSON.value:
+            demisto.debug(f'Executing screenshot_image for JSON, {path=}, {tab.id=}')
             return screenshot_image(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout,
                                     full_screen=full_screen, include_url=include_url, include_source=True)
         else:
@@ -860,21 +875,26 @@ def rasterize_thread(browser, chrome_port, path: str,
 
 def kill_zombie_processes():
     # Iterate over all running processes
+    demisto.debug("Starting kill_zombie_processes")
+    zombie_count = 0
+    processed_count = 0
     try:
         for proc in psutil.process_iter(['pid', 'name', 'status']):
+            processed_count += 1
             try:
                 # Check if the process is a zombie
                 if proc.info['status'] == psutil.STATUS_ZOMBIE:
+                    zombie_count += 1
                     demisto.info(f'found zombie process with pid {proc.pid}')
                     waitres = os.waitpid(int(proc.pid), os.WNOHANG)
                     demisto.info(f"waitpid result: {waitres}")
-            except (psutil.NoSuchProcess, psutil.AccessDenied):
+            except (psutil.NoSuchProcess, psutil.AccessDenied) as e:
                 # Handle cases where process may have already terminated or access is denied
-                demisto.info(f"failed to kill zombie with pid {proc.pid}")
+                demisto.info(f"failed to kill zombie with pid {proc.pid}. Error: {str(e)}")
                 continue
     except Exception as e:
         demisto.debug(f'Failed to iterate over processes. Error: {e}')
-
+    demisto.info(f"kill_zombie_processes completed. Processed {processed_count} processes, found and attempted to kill {zombie_count} zombies")
 
 def perform_rasterize(path: str | list[str],
                       rasterize_type: RasterizeType = RasterizeType.PNG,
@@ -898,12 +918,14 @@ def perform_rasterize(path: str | list[str],
     :param width: window width
     :param height: window height
     """
-
+    
     # convert the path param to list in case we have only one string
-    paths = argToList(path)
+    paths: list[str] = argToList(path)
+    demisto.debug(f"perform_rasterize, {paths=}, {rasterize_type=}")
 
     # create a list with all the paths that start with "mailto:"
     mailto_paths = [path_value for path_value in paths if path_value.startswith('mailto:')]
+    demisto.debug(f'Identified {len(mailto_paths)} mailto paths: {mailto_paths}')
 
     if mailto_paths:
         # remove the mailto from the paths to rasterize
@@ -918,15 +940,12 @@ def perform_rasterize(path: str | list[str],
         return_error(message)
         return None
 
-    demisto.debug(f"perform_rasterize, {paths=}, {rasterize_type=}")
-
     # until https://issues.chromium.org/issues/379034728 is fixed, we can only use one chrome port
     browser, chrome_port = chrome_manager_one_port()
 
     if browser:
         support_multithreading()
         with ThreadPoolExecutor(max_workers=MAX_CHROME_TABS_COUNT) as executor:
-            demisto.debug(f"perform_rasterize, {paths=}, {rasterize_type=}")
             rasterization_threads = []
             rasterization_results = []
             for current_path in paths:
@@ -988,15 +1007,14 @@ def return_err_or_warn(msg):  # pragma: no cover
 
 
 # region CommandHandlers
-def rasterize_image_command():
-    args = demisto.args()
+def rasterize_image_command(args: dict):
     entry_id = args.get('EntryID')
-    width, height = get_width_height(demisto.args())
-    full_screen = argToBoolean(demisto.args().get('full_screen', False))
+    width, height = get_width_height(args)
+    full_screen = argToBoolean(args.get('full_screen', False))
 
     file_name = args.get('file_name', entry_id)
 
-    file_path = demisto.getFilePath(entry_id).get('path')
+    file_path = demisto.getFilePath(entry_id)['path']
     file_name = f'{file_name}.pdf'
 
     with open(file_path, 'rb') as f:
@@ -1005,22 +1023,22 @@ def rasterize_image_command():
         res = []
         for current_output in output:
             res.append(fileResult(filename=file_name, data=current_output[0], file_type=entryTypes['entryInfoFile']))
-        demisto.results(res)
+        return res
 
 
-def rasterize_email_command():  # pragma: no cover
-    html_body = demisto.args().get('htmlBody')
-    width, height = get_width_height(demisto.args())
-    full_screen = argToBoolean(demisto.args().get('full_screen', False))
+def rasterize_email_command(args: dict[str, str]):  # pragma: no cover
+    html_body = args.get('htmlBody')
+    width, height = get_width_height(args)
+    full_screen = argToBoolean(args.get('full_screen', False))
 
-    offline = demisto.args().get('offline', 'false') == 'true'
+    offline = args.get('offline', 'false') == 'true'
 
-    rasterize_type_arg = demisto.args().get('type', 'png').lower()
-    file_name = demisto.args().get('file_name', uuid.uuid4())
+    rasterize_type_arg = args.get('type', 'png').lower()
+    file_name = args.get('file_name', uuid.uuid4())
     file_name = f'{file_name}.{rasterize_type_arg}'
     rasterize_type = RasterizeType(rasterize_type_arg)
 
-    navigation_timeout = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
+    navigation_timeout = int(args.get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
 
     try:
         with tempfile.NamedTemporaryFile(mode='w', suffix='.html', encoding='utf-8-sig') as tf:
@@ -1043,10 +1061,10 @@ def rasterize_email_command():  # pragma: no cover
     if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower() == RasterizeType.PNG.value:
         res['Type'] = entryTypes['image']
 
-    demisto.results(res)
+    return res
 
 
-def convert_pdf_to_jpeg(path: str, max_pages: str, password: str):
+def convert_pdf_to_jpeg(path: str, max_pages: str, password: str | None) -> list[bytes]:
     """
     Converts a PDF file into a jpeg image
     :param path: file's path
@@ -1080,13 +1098,13 @@ def convert_pdf_to_jpeg(path: str, max_pages: str, password: str):
         return images
 
 
-def rasterize_pdf_command():  # pragma: no cover
-    entry_id = demisto.args().get('EntryID')
-    password = demisto.args().get('pdfPassword')
-    max_pages = demisto.args().get('maxPages', PAGES_LIMITATION)
-    file_name = demisto.args().get('file_name', 'image')
+def rasterize_pdf_command(args: dict[str, str]):  # pragma: no cover
+    entry_id = args['EntryID']
+    password = args.get('pdfPassword')
+    max_pages = args.get('maxPages', PAGES_LIMITATION)
+    file_name = args.get('file_name', 'image')
 
-    file_path = demisto.getFilePath(entry_id).get('path')
+    file_path = demisto.getFilePath(entry_id)['path']
 
     file_name = f'{file_name}.jpeg'
 
@@ -1099,14 +1117,13 @@ def rasterize_pdf_command():  # pragma: no cover
             res['Type'] = entryTypes['image']
             results.append(res)
 
-        demisto.results(results)
+        return results
 
 
-def rasterize_html_command():
-    args = demisto.args()
-    entry_id = args.get('EntryID')
-    width, height = get_width_height(demisto.args())
-    full_screen = argToBoolean(demisto.args().get('full_screen', False))
+def rasterize_html_command(args: dict):
+    entry_id = args['EntryID']
+    width, height = get_width_height(args)
+    full_screen = argToBoolean(args.get('full_screen', False))
 
     rasterize_type = args.get('type', 'png').lower()
     file_name = args.get('file_name', 'email')
@@ -1122,10 +1139,10 @@ def rasterize_html_command():
     res = fileResult(filename=file_name, data=output[0][0])
     if rasterize_type == 'png':
         res['Type'] = entryTypes['image']
-    return_results(res)
+    return res
 
 
-def module_test():  # pragma: no cover
+def test_module():  # pragma: no cover
     # Setting up a mock email file
     with tempfile.NamedTemporaryFile('w+') as test_file:
         test_file.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
@@ -1136,7 +1153,7 @@ def module_test():  # pragma: no cover
         # Rasterize the file
         perform_rasterize(path=file_path, wait_time=0)
 
-    demisto.results('ok')
+    return 'ok'
 
 
 def get_list_item(list_of_items: list, index: int, default_value: str):
@@ -1153,17 +1170,17 @@ def add_filename_suffix(file_names: list, file_extension: str):
     return ret_value
 
 
-def rasterize_command():  # pragma: no cover
-    urls = demisto.getArg('url')
+def rasterize_command(args: dict) -> CommandResults | list[dict] | None:  # pragma: no cover
+    urls = args['url']
     # Do not remove this line, as rasterize does not support array in `url`.
     urls = [urls] if isinstance(urls, str) else urls
-    width, height = get_width_height(demisto.args())
-    full_screen = argToBoolean(demisto.args().get('full_screen', False))
-    rasterize_type = RasterizeType(demisto.args().get('type', 'png').lower())
-    wait_time = int(demisto.args().get('wait_time', 0))
-    navigation_timeout = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
-    file_name = demisto.args().get('file_name', 'url')
-    include_url = argToBoolean(demisto.args().get('include_url', False))
+    width, height = get_width_height(args)
+    full_screen = argToBoolean(args.get('full_screen', False))
+    rasterize_type = RasterizeType(args.get('type', 'png').lower())
+    wait_time = int(args.get('wait_time', 0))
+    navigation_timeout = int(args.get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
+    file_name = args.get('file_name', 'url')
+    include_url = argToBoolean(args.get('include_url', False))
 
     file_extension = "png"
     if rasterize_type == RasterizeType.PDF or str(rasterize_type).lower() == RasterizeType.PDF.value:
@@ -1180,15 +1197,15 @@ def rasterize_command():  # pragma: no cover
 
     for index, (current_rasterize_output, current_url) in enumerate(zip(rasterize_output, urls)):
         if isinstance(current_rasterize_output, str):
-            return_results(CommandResults(
+            return CommandResults(
                 readable_output=f'Error for URL {current_url!r}:\n{current_rasterize_output}',
                 raw_response=current_rasterize_output,
                 entry_type=EntryType.ERROR,
-            ))
+            )
         elif rasterize_type == RasterizeType.JSON or str(rasterize_type).lower() == RasterizeType.JSON.value:
             output = {'image_b64': base64.b64encode(current_rasterize_output[0]).decode('utf8'),
                       'html': current_rasterize_output[1], 'current_url': current_url}
-            return_results(CommandResults(raw_response=output, readable_output=f"Successfully rasterize url: {current_url}"))
+            return CommandResults(raw_response=output, readable_output=f"Successfully rasterize url: {current_url}")
         else:
             res = []
             current_res = fileResult(filename=get_list_item(file_names, index, f'url.{file_extension}'),
@@ -1199,17 +1216,26 @@ def rasterize_command():  # pragma: no cover
 
             res.append(current_res)
 
-            demisto.results(res)
+            return res
 
 
 # endregion
 
 
-def get_width_height(args: dict):
+def get_width_height(args: dict[str, str]) -> tuple[int, int]:
     """
-    Get commomn args.
-    :param args: dict to get args from
-    :return: width, height, rasterize mode
+    This function processes the 'width' and 'height' arguments, applying default values
+    if not provided, and ensures they do not exceed maximum allowed dimensions.
+
+    Args:
+        args (dict[str, str]): A dictionary containing input arguments.
+
+    Returns:
+        tuple[int, int]: A tuple containing the processed width and height values.
+
+    Note:
+        - Default values are used if 'width' or 'height' are not provided in args.
+        - The returned values are capped at MAX_FULLSCREEN_WIDTH and MAX_FULLSCREEN_HEIGHT respectively.
     """
     width = int(args.get('width', f"{DEFAULT_WIDTH} px").rstrip('px'))
     height = int(args.get('height', f"{DEFAULT_HEIGHT} px").rstrip('px'))
@@ -1218,41 +1244,48 @@ def get_width_height(args: dict):
     width = min(width, MAX_FULLSCREEN_WIDTH)
     height = min(height, MAX_FULLSCREEN_HEIGHT)
 
+    demisto.debug(f"Processed dimensions: width={width}, height={height}")
     return width, height
 
 
 def main():  # pragma: no cover
-    demisto.debug(f"main, {demisto.command()=}")
+    command = demisto.command()
+    args = demisto.args()
+    demisto.debug(f'Command being called is {command}')
     demisto.debug(f'Using performance params: {MAX_CHROMES_COUNT=}, {MAX_CHROME_TABS_COUNT=}, {MAX_RASTERIZATIONS_COUNT=}')
+
     threading.excepthook = excepthook_recv_loop
-
+    
     try:
-        if demisto.command() == 'test-module':
-            module_test()
+        if command == 'test-module':
+            return_results(test_module())
 
-        elif demisto.command() == 'rasterize-image':
-            rasterize_image_command()
+        elif command == 'rasterize-image':
+            return_results(rasterize_image_command(args))
 
-        elif demisto.command() == 'rasterize-email':
-            rasterize_email_command()
+        elif command == 'rasterize-email':
+            return_results(rasterize_email_command(args))
 
-        elif demisto.command() == 'rasterize-pdf':
-            rasterize_pdf_command()
+        elif command == 'rasterize-pdf':
+            return_results(rasterize_pdf_command(args))
 
-        elif demisto.command() == 'rasterize-html':
-            rasterize_html_command()
+        elif command == 'rasterize-html':
+            return_results(rasterize_html_command(args))
 
-        elif demisto.command() == 'rasterize':
-            rasterize_command()
+        elif command == 'rasterize':
+            rasterize_command(args)
 
         else:
-            return_error('Unrecognized command')
+            raise NotImplementedError(f"command {command} is not supported")
 
     except Exception as ex:
-        return_err_or_warn(f'Unexpected exception: {ex}\nTrace:{traceback.format_exc()}')
+        return_err_or_warn(
+            f'Failed to execute {command} command.'
+            f'\nUnexpected exception: {ex}\nTrace:{traceback.format_exc()}'
+        )
     finally:
         kill_zombie_processes()
 
 
-if __name__ in ["__builtin__", "builtins", '__main__']:
+if __name__ in ("__builtin__", "builtins", '__main__'):
     main()
