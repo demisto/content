@@ -27,45 +27,45 @@ configuration:
   name: insecure
   type: 8
   required: false
-description: 'Automate your privacy Incident Response workflow through the BreachRx platform.'
+description: 'Automate your Incident Response workflow through the BreachRx platform.'
 display: BreachRx
 name: BreachRx
 script:
   commands:
   - name: breachrx-incident-create
-    description: 'Create a privacy Incident on the BreachRx platform.'
+    description: 'Create an Incident on the BreachRx platform.'
     arguments:
     - name: incident_name
-      description: 'The name to use when creating the privacy Incident on the BreachRx platform.'
+      description: 'The name to use when creating the Incident on the BreachRx platform.'
     - name: description
-      description: 'A brief description to explain the privacy Incident on the BreachRx platform.'
+      description: 'A brief description to explain the Incident on the BreachRx platform.'
     outputs:
     - contextPath: BreachRx.Incident.id
-      description: 'The ID of the privacy Incident on the BreachRx platform.'
+      description: 'The ID of the Incident on the BreachRx platform.'
       type: string
     - contextPath: BreachRx.Incident.name
-      description: 'The name of the privacy Incident on the BreachRx platform.'
+      description: 'The name of the Incident on the BreachRx platform.'
       type: string
     - contextPath: BreachRx.Incident.description
-      description: 'The description of the privacy Incident on the BreachRx platform.'
+      description: 'The description of the Incident on the BreachRx platform.'
       type: string
     - contextPath: BreachRx.Incident.identifier
-      description: 'The unique identifier of the privacy Incident on the BreachRx platform.'
+      description: 'The unique identifier of the Incident on the BreachRx platform.'
       type: string
   - name: breachrx-incident-actions-get
-    description: 'Fetch all actions for a BreachRx privacy Incident.'
+    description: 'Fetch all actions for a BreachRx Incident.'
     outputs:
     - contextPath: BreachRx.Incident.Actions.id
-      description: 'The ID of an Action on a BreachRx privacy Incident.'
+      description: 'The ID of an Action on a BreachRx Incident.'
       type: string
     - contextPath: BreachRx.Incident.Actions.name
-      description: 'The name of an Action on a BreachRx privacy Incident.'
+      description: 'The name of an Action on a BreachRx Incident.'
       type: string
     - contextPath: BreachRx.Incident.Actions.description
-      description: 'The description of an Action on a BreachRx privacy Incident.'
+      description: 'The description of an Action on a BreachRx Incident.'
       type: string
     - contextPath: BreachRx.Incident.Actions.user.email
-      description: 'The email of the assigned user of an Action on a BreachRx privacy Incident, if that Action is assigned to a user (null otherwise).'
+      description: 'The email of the assigned user of an Action on a BreachRx Incident, if that Action is assigned to a user (null otherwise).'
       type: string
     arguments:
     - name: incident_name
@@ -73,7 +73,7 @@ script:
     - name: incident_identifier
       description: 'The unique identifier of the BreachRx incident to associate with this incident.'
   - name: breachrx-incident-import
-    description: 'Link a BreachRx privacy Incident with an XSOAR Incident.'
+    description: 'Link a BreachRx Incident with an XSOAR Incident.'
     arguments:
     - name: incident_name
       description: The name of the BreachRx incident to associate with this incident.
@@ -81,16 +81,16 @@ script:
       description: 'The unique identifier of the BreachRx incident to associate with this incident.'
     outputs:
     - contextPath: BreachRx.Incident.id
-      description: 'The ID of the privacy Incident on the BreachRx platform.'
+      description: 'The ID of the Incident on the BreachRx platform.'
       type: string
     - contextPath: BreachRx.Incident.name
-      description: 'The name of the privacy Incident on the BreachRx platform.'
+      description: 'The name of the Incident on the BreachRx platform.'
       type: string
     - contextPath: BreachRx.Incident.identifier
-      description: 'The unique identifier of the privacy Incident on the BreachRx platform.'
+      description: 'The unique identifier of the Incident on the BreachRx platform.'
       type: string
   - name: breachrx-incident-get
-    description: 'Find a BreachRx privacy Incident on the connected BreachRx platform.'
+    description: 'Find a BreachRx Incident on the connected BreachRx platform.'
     arguments:
     - name: incident_name
       description: The name of the BreachRx incident to associate with this incident.
@@ -98,13 +98,13 @@ script:
       description: 'The unique identifier of the BreachRx incident to associate with this incident.'
     outputs:
     - contextPath: BreachRx.Incident.id
-      description: 'The ID of the privacy Incident on the BreachRx platform.'
+      description: 'The ID of the Incident on the BreachRx platform.'
       type: string
     - contextPath: BreachRx.Incident.name
-      description: 'The name of the privacy Incident on the BreachRx platform.'
+      description: 'The name of the Incident on the BreachRx platform.'
       type: string
     - contextPath: BreachRx.Incident.identifier
-      description: 'The unique identifier of the privacy Incident on the BreachRx platform.'
+      description: 'The unique identifier of the Incident on the BreachRx platform.'
       type: string
   runonce: false
   script: '-'
