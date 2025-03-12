@@ -2065,3 +2065,28 @@ def test_gcp_iam_tagbindings_list_command(client):
     assert len(result.outputs) == 1
     assert result.outputs_prefix == 'GCPIAM.TagBindings'
     assert result.outputs == [{'key': 'environment', 'value': 'non-production'}]
+
+
+def test_gcp_iam_policy_binding_remove_command(mocker, client):
+    """
+    Given:
+     - A GCP project name, IAM role, and a principal (member) to remove from the role.
+
+    When:
+     - gcp_iam_policy_binding_remove_command is called.
+
+    Then:
+     - Ensure set IAM policy request has the correct project name and updated IAM role and member bindings.
+    """
+    from GCPIAM import gcp_iam_policy_binding_remove_command
+
+    mock_get_policy_response = load_mock_response('project/project_iam_policy_get.json')
+    mocker.patch.object(client, 'gcp_iam_project_iam_policy_get_request', return_value=mock_get_policy_response)
+
+    mock_set_policy_request = mocker.patch.object(client, 'gcp_iam_project_iam_policy_set_request')
+
+    args = {'project_name': 'project/project-name-1', 'role': 'roles/browser', 'members': 'group:poctest@xsoar.com'}
+    gcp_iam_policy_binding_remove_command(client, args)
+
+    assert mock_set_policy_request.call_args[0][0] == args['project_name']
+    assert mock_set_policy_request.call_args[0][1] == load_mock_response('project/project_iam_policy_set_bindings.json')

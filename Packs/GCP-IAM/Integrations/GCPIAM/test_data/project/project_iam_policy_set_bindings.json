@@ -1,0 +1,14 @@
+[
+    {
+        "role": "roles/anthosidentityservice.serviceAgent",
+        "members": [
+            "serviceAccount:service-account-1@project-id-1.iam.gserviceaccount.com"
+        ]
+    },
+    {
+        "role": "roles/browser",
+        "members": [
+            "serviceAccount:service-account-2@project-id-1.iam.gserviceaccount.com"
+        ]
+    }
+]
