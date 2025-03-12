@@ -377,8 +377,8 @@ repos:
   hooks:
     - id: mdx-validation
       name: Validate README.md with MDX
-      entry: node .github/hooks/validate-mdx.js
-      language: system
+      entry: .github/hooks/validate-mdx.js
+      language: node
       types: [file]
       files: "^README\\.md$"
 
