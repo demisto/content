@@ -18,6 +18,7 @@
         "platform"
     ],
     "supportedModules": [
+        "C1",
         "X1",
         "X3",
         "X5",
