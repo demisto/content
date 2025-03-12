@@ -1132,7 +1132,7 @@ def rasterize_pdf_command(args: dict[str, str]):  # pragma: no cover
         return results
 
 
-def rasterize_html_command(args: dict):
+def rasterize_html_command(args: dict) -> dict:
     entry_id = args['EntryID']
     width, height = get_width_height(args)
     full_screen = argToBoolean(args.get('full_screen', False))
@@ -1285,7 +1285,7 @@ def main():  # pragma: no cover
             return_results(rasterize_html_command(args))
 
         elif command == 'rasterize':
-            rasterize_command(args)
+            return_results(rasterize_command(args))
 
         else:
             raise NotImplementedError(f"command {command} is not supported")
