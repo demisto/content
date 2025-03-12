@@ -2,7 +2,7 @@
     "name": "RSA NetWitness",
     "description": "RSA NetWitness Platform provides systems Logs, Network, and endpoint visibility for real-time collection, detection, and automated response with the Demisto Enterprise platform. Providing full session analysis, customers can extract critical data and effectively operate security operations automated playbook.",
     "support": "partner",
-    "currentVersion": "3.2.6",
+    "currentVersion": "3.2.7",
     "author": "Netwitness",
     "url": "https://www.netwitness.com/services/technical-support/",
     "email": "nw.paloalto.support@netwitness.com",

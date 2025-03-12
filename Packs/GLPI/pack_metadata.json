@@ -2,7 +2,7 @@
     "name": "GLPI",
     "description": "GLPI open source ITSM solution",
     "support": "partner",
-    "currentVersion": "1.0.24",
+    "currentVersion": "1.0.25",
     "author": "SecInfra",
     "url": "http://secinfra.fr",
     "email": "support@secinfra.fr",
