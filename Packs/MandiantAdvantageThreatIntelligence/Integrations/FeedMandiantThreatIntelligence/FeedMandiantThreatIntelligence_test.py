@@ -17,55 +17,34 @@ MOCK_IP_INDICATOR = {
             "last_seen": "2024-06-09T00:14:03.000+0000",
             "osint": False,
             "category": [],
-            "source_name": "Mandiant"
+            "source_name": "Mandiant",
         },
         {
             "first_seen": "2024-06-07T20:30:44.000+0000",
             "last_seen": "2024-06-07T20:30:57.000+0000",
             "osint": False,
             "category": ["control-server"],
-            "source_name": "Mandiant"
-        }
+            "source_name": "Mandiant",
+        },
     ],
     "attributed_associations": [
-        {
-            "id": "threat-actor--99941acb-6bd7-5f27-8f97-2520f5976fb5",
-            "name": "ACTOR_NAME",
-            "type": "threat-actor"
-        },
-        {
-            "id": "malware--99941acb-6bd7-5f27-8f97-2520f5976fb5",
-            "name": "MALWARE_NAME",
-            "type": "malware"
-        }
+        {"id": "threat-actor--99941acb-6bd7-5f27-8f97-2520f5976fb5", "name": "ACTOR_NAME", "type": "threat-actor"},
+        {"id": "malware--99941acb-6bd7-5f27-8f97-2520f5976fb5", "name": "MALWARE_NAME", "type": "malware"},
     ],
     "threat_rating": {
         "confidence_level": "high",
         "confidence_score": 100,
         "severity_level": "high",
-        "severity_reason": [
-            "attributed"
-        ],
-        "threat_score": 100
+        "severity_reason": ["attributed"],
+        "threat_score": 100,
     },
     "last_updated": "2024-06-09T17:00:26.225Z",
     "first_seen": "2024-06-07T20:30:44.000Z",
     "last_seen": "2024-06-09T00:14:03.000Z",
     "reports": [
-        {
-            "report_id": "REPORT_ID",
-            "type": "REPORT_TYPE",
-            "title": "REPORT_TITLE",
-            "published_date": "2024-05-31T12:00:53.000Z"
-        }
+        {"report_id": "REPORT_ID", "type": "REPORT_TYPE", "title": "REPORT_TITLE", "published_date": "2024-05-31T12:00:53.000Z"}
     ],
-    "campaigns": [
-        {
-            "id": "campaign--eda94045-0c6b-5926-8e44-dcb81d538c04",
-            "name": "CAMP.123",
-            "title": "CAMPAIGN_TITLE"
-        }
-    ]
+    "campaigns": [{"id": "campaign--eda94045-0c6b-5926-8e44-dcb81d538c04", "name": "CAMP.123", "title": "CAMPAIGN_TITLE"}],
 }
 
 MOCK_DOMAIN_INDICATOR = {
@@ -81,55 +60,34 @@ MOCK_DOMAIN_INDICATOR = {
             "last_seen": "2024-06-09T00:14:03.000+0000",
             "osint": False,
             "category": [],
-            "source_name": "Mandiant"
+            "source_name": "Mandiant",
         },
         {
             "first_seen": "2024-06-07T20:30:44.000+0000",
             "last_seen": "2024-06-07T20:30:57.000+0000",
             "osint": False,
             "category": ["control-server"],
-            "source_name": "Mandiant"
-        }
+            "source_name": "Mandiant",
+        },
     ],
     "attributed_associations": [
-        {
-            "id": "threat-actor--99941acb-6bd7-5f27-8f97-2520f5976fb5",
-            "name": "ACTOR_NAME",
-            "type": "threat-actor"
-        },
-        {
-            "id": "malware--99941acb-6bd7-5f27-8f97-2520f5976fb5",
-            "name": "MALWARE_NAME",
-            "type": "malware"
-        }
+        {"id": "threat-actor--99941acb-6bd7-5f27-8f97-2520f5976fb5", "name": "ACTOR_NAME", "type": "threat-actor"},
+        {"id": "malware--99941acb-6bd7-5f27-8f97-2520f5976fb5", "name": "MALWARE_NAME", "type": "malware"},
     ],
     "threat_rating": {
         "confidence_level": "high",
         "confidence_score": 100,
         "severity_level": "high",
-        "severity_reason": [
-            "attributed"
-        ],
-        "threat_score": 10
+        "severity_reason": ["attributed"],
+        "threat_score": 10,
     },
     "last_updated": "2024-06-09T17:00:26.225Z",
     "first_seen": "2024-06-07T20:30:44.000Z",
     "last_seen": "2024-06-09T00:14:03.000Z",
     "reports": [
-        {
-            "report_id": "REPORT_ID",
-            "type": "REPORT_TYPE",
-            "title": "REPORT_TITLE",
-            "published_date": "2024-05-31T12:00:53.000Z"
-        }
+        {"report_id": "REPORT_ID", "type": "REPORT_TYPE", "title": "REPORT_TITLE", "published_date": "2024-05-31T12:00:53.000Z"}
     ],
-    "campaigns": [
-        {
-            "id": "campaign--eda94045-0c6b-5926-8e44-dcb81d538c04",
-            "name": "CAMP.123",
-            "title": "CAMPAIGN_TITLE"
-        }
-    ]
+    "campaigns": [{"id": "campaign--eda94045-0c6b-5926-8e44-dcb81d538c04", "name": "CAMP.123", "title": "CAMPAIGN_TITLE"}],
 }
 
 MOCK_URL_INDICATOR = {
@@ -145,55 +103,34 @@ MOCK_URL_INDICATOR = {
             "last_seen": "2024-06-09T00:14:03.000+0000",
             "osint": False,
             "category": [],
-            "source_name": "Mandiant"
+            "source_name": "Mandiant",
         },
         {
             "first_seen": "2024-06-07T20:30:44.000+0000",
             "last_seen": "2024-06-07T20:30:57.000+0000",
             "osint": False,
             "category": ["control-server"],
-            "source_name": "Mandiant"
-        }
+            "source_name": "Mandiant",
+        },
     ],
     "attributed_associations": [
-        {
-            "id": "threat-actor--99941acb-6bd7-5f27-8f97-2520f5976fb5",
-            "name": "ACTOR_NAME",
-            "type": "threat-actor"
-        },
-        {
-            "id": "malware--99941acb-6bd7-5f27-8f97-2520f5976fb5",
-            "name": "MALWARE_NAME",
-            "type": "malware"
-        }
+        {"id": "threat-actor--99941acb-6bd7-5f27-8f97-2520f5976fb5", "name": "ACTOR_NAME", "type": "threat-actor"},
+        {"id": "malware--99941acb-6bd7-5f27-8f97-2520f5976fb5", "name": "MALWARE_NAME", "type": "malware"},
     ],
     "threat_rating": {
         "confidence_level": "high",
         "confidence_score": 100,
         "severity_level": "high",
-        "severity_reason": [
-            "attributed"
-        ],
-        "threat_score": 25
+        "severity_reason": ["attributed"],
+        "threat_score": 25,
     },
     "last_updated": "2024-06-09T17:00:26.225Z",
     "first_seen": "2024-06-07T20:30:44.000Z",
     "last_seen": "2024-06-09T00:14:03.000Z",
     "reports": [
-        {
-            "report_id": "REPORT_ID",
-            "type": "REPORT_TYPE",
-            "title": "REPORT_TITLE",
-            "published_date": "2024-05-31T12:00:53.000Z"
-        }
+        {"report_id": "REPORT_ID", "type": "REPORT_TYPE", "title": "REPORT_TITLE", "published_date": "2024-05-31T12:00:53.000Z"}
     ],
-    "campaigns": [
-        {
-            "id": "campaign--eda94045-0c6b-5926-8e44-dcb81d538c04",
-            "name": "CAMP.123",
-            "title": "CAMPAIGN_TITLE"
-        }
-    ]
+    "campaigns": [{"id": "campaign--eda94045-0c6b-5926-8e44-dcb81d538c04", "name": "CAMP.123", "title": "CAMPAIGN_TITLE"}],
 }
 
 MOCK_FILE_INDICATOR = {
@@ -204,21 +141,13 @@ MOCK_FILE_INDICATOR = {
     "is_exclusive": True,
     "is_publishable": True,
     "associated_hashes": [
-        {
-            "id": "md5--1526529a-8489-55f5-a2f1-603ec2576f6c",
-            "type": "md5",
-            "value": "ae1747c930e9e4f45fbc970a83b52284"
-        },
-        {
-            "id": "sha1--1526529a-8489-55f5-a2f1-603ec2576f6c",
-            "type": "sha1",
-            "value": "638cde28bbe3cfe7b53aa75a7cf6991baa692a4a"
-        },
+        {"id": "md5--1526529a-8489-55f5-a2f1-603ec2576f6c", "type": "md5", "value": "ae1747c930e9e4f45fbc970a83b52284"},
+        {"id": "sha1--1526529a-8489-55f5-a2f1-603ec2576f6c", "type": "sha1", "value": "638cde28bbe3cfe7b53aa75a7cf6991baa692a4a"},
         {
             "id": "sha256--1526529a-8489-55f5-a2f1-603ec2576f6c",
             "type": "sha256",
-            "value": "f68ec69a53130a24b0fe53d1d1fe70992d86a6d67006ae45f986f9ef4f450b6c"
-        }
+            "value": "f68ec69a53130a24b0fe53d1d1fe70992d86a6d67006ae45f986f9ef4f450b6c",
+        },
     ],
     "sources": [
         {
@@ -226,65 +155,37 @@ MOCK_FILE_INDICATOR = {
             "last_seen": "2024-06-09T00:14:03.000+0000",
             "osint": False,
             "category": [],
-            "source_name": "Mandiant"
+            "source_name": "Mandiant",
         },
         {
             "first_seen": "2024-06-07T20:30:44.000+0000",
             "last_seen": "2024-06-07T20:30:57.000+0000",
             "osint": False,
             "category": ["control-server"],
-            "source_name": "Mandiant"
-        }
+            "source_name": "Mandiant",
+        },
     ],
     "attributed_associations": [
-        {
-            "id": "threat-actor--99941acb-6bd7-5f27-8f97-2520f5976fb5",
-            "name": "ACTOR_NAME",
-            "type": "threat-actor"
-        },
-        {
-            "id": "malware--99941acb-6bd7-5f27-8f97-2520f5976fb5",
-            "name": "MALWARE_NAME",
-            "type": "malware"
-        }
+        {"id": "threat-actor--99941acb-6bd7-5f27-8f97-2520f5976fb5", "name": "ACTOR_NAME", "type": "threat-actor"},
+        {"id": "malware--99941acb-6bd7-5f27-8f97-2520f5976fb5", "name": "MALWARE_NAME", "type": "malware"},
     ],
     "threat_rating": {
         "confidence_level": "high",
         "confidence_score": 100,
         "severity_level": "high",
-        "severity_reason": [
-            "attributed"
-        ],
-        "threat_score": 25
+        "severity_reason": ["attributed"],
+        "threat_score": 25,
     },
     "last_updated": "2024-06-09T17:00:26.225Z",
     "first_seen": "2024-06-07T20:30:44.000Z",
     "last_seen": "2024-06-09T00:14:03.000Z",
     "reports": [
-        {
-            "report_id": "REPORT_ID",
-            "type": "REPORT_TYPE",
-            "title": "REPORT_TITLE",
-            "published_date": "2024-05-31T12:00:53.000Z"
-        }
+        {"report_id": "REPORT_ID", "type": "REPORT_TYPE", "title": "REPORT_TITLE", "published_date": "2024-05-31T12:00:53.000Z"}
     ],
-    "campaigns": [
-        {
-            "id": "campaign--eda94045-0c6b-5926-8e44-dcb81d538c04",
-            "name": "CAMP.123",
-            "title": "CAMPAIGN_TITLE"
-        }
-    ]
+    "campaigns": [{"id": "campaign--eda94045-0c6b-5926-8e44-dcb81d538c04", "name": "CAMP.123", "title": "CAMPAIGN_TITLE"}],
 }
 
-MOCK_INDICATORS = {
-    "indicators": [
-        MOCK_IP_INDICATOR,
-        MOCK_DOMAIN_INDICATOR,
-        MOCK_FILE_INDICATOR,
-        MOCK_URL_INDICATOR
-    ]
-}
+MOCK_INDICATORS = {"indicators": [MOCK_IP_INDICATOR, MOCK_DOMAIN_INDICATOR, MOCK_FILE_INDICATOR, MOCK_URL_INDICATOR]}
 
 
 @pytest.fixture
@@ -300,7 +201,7 @@ def config():
         "feedReliability": "A - Completely reliable",
         "feedMinimumThreatScore": 80,
         "feedExcludeOSIntel": True,
-        "first_fetch": 7
+        "first_fetch": 7,
     }
 
 
@@ -380,7 +281,7 @@ def test_is_osint(indicator, expected_result):
         ({"threat_rating": {"threat_score": 100}}, 100),
         ({"threat_rating": {}}, 0),
         ({}, 0),
-        ({"threat_rating": {"threat_score": "high"}}, 0)
+        ({"threat_rating": {"threat_score": "high"}}, 0),
     ],
 )
 def test_get_threat_score(indicator, expected_result):

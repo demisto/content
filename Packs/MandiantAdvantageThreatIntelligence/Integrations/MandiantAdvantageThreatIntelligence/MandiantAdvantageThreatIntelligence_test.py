@@ -628,12 +628,8 @@ def client(requests_mock) -> MandiantAdvantageThreatIntelligence.MandiantClient:
     )
 
 
-def test_reputation_file(
-    client: MandiantAdvantageThreatIntelligence.MandiantClient, requests_mock, mocker
-):
-    requests_mock.post(
-        f"{SERVER_URL}/v4/indicator", json={"indicators": [MOCK_MD5_INDICATOR_RESPONSE]}
-    )
+def test_reputation_file(client: MandiantAdvantageThreatIntelligence.MandiantClient, requests_mock, mocker):
+    requests_mock.post(f"{SERVER_URL}/v4/indicator", json={"indicators": [MOCK_MD5_INDICATOR_RESPONSE]})
 
     requests_mock.get(
         f"{SERVER_URL}/v4/indicator/{MOCK_MD5_INDICATOR_RESPONSE['id']}/reports",
@@ -642,33 +638,21 @@ def test_reputation_file(
 
     mocker.patch.object(demisto, "command", return_value="file")
 
-    results = MandiantAdvantageThreatIntelligence.fetch_reputation(
-        client, args={"file": "0cc22fd05a3e771b09b584db0a16aaaa"}
-    )
+    results = MandiantAdvantageThreatIntelligence.fetch_reputation(client, args={"file": "0cc22fd05a3e771b09b584db0a16aaaa"})
 
     results_dict = results[0].to_context()["Contents"]
 
     assert results_dict["score"] == 3
     assert results_dict["type"] == "File"
-    assert (
-        results_dict["fields"]["stixid"] == "md5--7c8be1f2-b949-aaaa-af7f-18908175108f"
-    )
-    assert (
-        results_dict["fields"]["dbotscore"]["Indicator"]
-        == "0cc22fd05a3e771b09b584db0a16aaaa"
-    )
+    assert results_dict["fields"]["stixid"] == "md5--7c8be1f2-b949-aaaa-af7f-18908175108f"
+    assert results_dict["fields"]["dbotscore"]["Indicator"] == "0cc22fd05a3e771b09b584db0a16aaaa"
     assert results_dict["fields"]["md5"] == "0cc22fd05a3e771b09b584db0a16aaaa"
-    assert (
-        results_dict["fields"]["sha256"]
-        == "efd431ae58a6092962ee9253722cfffe85cfc93bc051ba97ba26652a490faaaa"
-    )
+    assert results_dict["fields"]["sha256"] == "efd431ae58a6092962ee9253722cfffe85cfc93bc051ba97ba26652a490faaaa"
     assert results_dict["fields"]["sha1"] == "587977c02a628b8e1070bdc8dffbe4dcd414aaaa"
     assert results_dict["fields"]["trafficlightprotocol"] == "RED"
 
 
-def test_reputation_domain(
-    client: MandiantAdvantageThreatIntelligence.MandiantClient, requests_mock, mocker
-):
+def test_reputation_domain(client: MandiantAdvantageThreatIntelligence.MandiantClient, requests_mock, mocker):
     requests_mock.post(
         f"{SERVER_URL}/v4/indicator",
         json={"indicators": [MOCK_FQDN_INDICATOR_RESPONSE]},
@@ -681,29 +665,21 @@ def test_reputation_domain(
 
     mocker.patch.object(demisto, "command", return_value="domain")
 
-    results = MandiantAdvantageThreatIntelligence.fetch_reputation(
-        client, args={"domain": "some.url.com"}
-    )
+    results = MandiantAdvantageThreatIntelligence.fetch_reputation(client, args={"domain": "some.url.com"})
 
     results_dict = results[0].to_context()["Contents"]
 
     assert results_dict["score"] == 3
     assert results_dict["type"] == "Domain"
-    assert (
-        results_dict["fields"]["stixid"] == "fqdn--be2e92a7-aaaa-5f35-8c6e-0731685aee19"
-    )
+    assert results_dict["fields"]["stixid"] == "fqdn--be2e92a7-aaaa-5f35-8c6e-0731685aee19"
     assert results_dict["fields"]["dbotscore"]["Indicator"] == "some.url.com"
     assert results_dict["fields"]["dns"] == "some.url.com"
     assert results_dict["fields"]["domain"] == "some.url.com"
     assert results_dict["fields"]["trafficlightprotocol"] == "GREEN"
 
 
-def test_reputation_ip(
-    client: MandiantAdvantageThreatIntelligence.MandiantClient, requests_mock, mocker
-):
-    requests_mock.post(
-        f"{SERVER_URL}/v4/indicator", json={"indicators": [MOCK_IP_INDICATOR_RESPONSE]}
-    )
+def test_reputation_ip(client: MandiantAdvantageThreatIntelligence.MandiantClient, requests_mock, mocker):
+    requests_mock.post(f"{SERVER_URL}/v4/indicator", json={"indicators": [MOCK_IP_INDICATOR_RESPONSE]})
 
     requests_mock.get(
         f"{SERVER_URL}/v4/indicator/{MOCK_IP_INDICATOR_RESPONSE['id']}/reports",
@@ -718,20 +694,14 @@ def test_reputation_ip(
 
     assert results_dict["score"] == 0
     assert results_dict["type"] == "IP"
-    assert (
-        results_dict["fields"]["stixid"] == "ipv4--27063181-abcd-53ec-b785-3b9772febd50"
-    )
+    assert results_dict["fields"]["stixid"] == "ipv4--27063181-abcd-53ec-b785-3b9772febd50"
     assert results_dict["fields"]["dbotscore"]["Indicator"] == "192.168.84.82"
     assert results_dict["fields"]["ip"] == "192.168.84.82"
     assert results_dict["fields"]["trafficlightprotocol"] == "GREEN"
 
 
-def test_reputation_url(
-    client: MandiantAdvantageThreatIntelligence.MandiantClient, requests_mock, mocker
-):
-    requests_mock.post(
-        f"{SERVER_URL}/v4/indicator", json={"indicators": [MOCK_URL_INDICATOR_RESPONSE]}
-    )
+def test_reputation_url(client: MandiantAdvantageThreatIntelligence.MandiantClient, requests_mock, mocker):
+    requests_mock.post(f"{SERVER_URL}/v4/indicator", json={"indicators": [MOCK_URL_INDICATOR_RESPONSE]})
 
     requests_mock.get(
         f"{SERVER_URL}/v4/indicator/{MOCK_URL_INDICATOR_RESPONSE['id']}/reports",
@@ -740,25 +710,19 @@ def test_reputation_url(
 
     mocker.patch.object(demisto, "command", return_value="url")
 
-    results = MandiantAdvantageThreatIntelligence.fetch_reputation(
-        client, args={"url": "https://someurl.com"}
-    )
+    results = MandiantAdvantageThreatIntelligence.fetch_reputation(client, args={"url": "https://someurl.com"})
 
     results_dict = results[0].to_context()["Contents"]
 
     assert results_dict["score"] == 1
     assert results_dict["type"] == "URL"
-    assert (
-        results_dict["fields"]["stixid"] == "url--02183bee-dcba-5d25-956b-765650f9e42a"
-    )
+    assert results_dict["fields"]["stixid"] == "url--02183bee-dcba-5d25-956b-765650f9e42a"
     assert results_dict["fields"]["dbotscore"]["Indicator"] == "https://someurl.com"
     assert results_dict["fields"]["url"] == "https://someurl.com"
     assert results_dict["fields"]["trafficlightprotocol"] == "RED"
 
 
-def test_reputation_cve(
-    client: MandiantAdvantageThreatIntelligence.MandiantClient, requests_mock, mocker
-):
+def test_reputation_cve(client: MandiantAdvantageThreatIntelligence.MandiantClient, requests_mock, mocker):
     requests_mock.get(
         f"{SERVER_URL}/v4/vulnerability/{MOCK_CVE_RESPONSE['cve_id']}",
         json=MOCK_CVE_RESPONSE,
@@ -766,18 +730,13 @@ def test_reputation_cve(
 
     mocker.patch.object(demisto, "command", return_value="cve")
 
-    results = MandiantAdvantageThreatIntelligence.fetch_reputation(
-        client, args={"cve": "CVE-1234-12345"}
-    )
+    results = MandiantAdvantageThreatIntelligence.fetch_reputation(client, args={"cve": "CVE-1234-12345"})
 
     results_dict = results[0].to_context()["Contents"]
 
     assert results_dict["score"] == 0
     assert results_dict["type"] == "CVE"
-    assert (
-        results_dict["fields"]["stixid"]
-        == "vulnerability--e3b6a556-abcd-dcba-b1df-8e1f0444e978"
-    )
+    assert results_dict["fields"]["stixid"] == "vulnerability--e3b6a556-abcd-dcba-b1df-8e1f0444e978"
     assert results_dict["fields"]["trafficlightprotocol"] == "RED"
     assert results_dict["fields"]["dbotscore"]["Score"] == 1
     assert results_dict["fields"]["cvss"] == "v2.0"
@@ -785,7 +744,6 @@ def test_reputation_cve(
 
 
 def test_get_actor(client: MandiantAdvantageThreatIntelligence.MandiantClient, requests_mock, mocker):
-
     requests_mock.get(
         f"{SERVER_URL}/v4/actor/{MOCK_THREATACTOR_RESPONSE['name']}",
         json=MOCK_THREATACTOR_RESPONSE,
@@ -813,9 +771,7 @@ def test_get_actor(client: MandiantAdvantageThreatIntelligence.MandiantClient, r
 
     mocker.patch.object(demisto, "command", return_value="get-actor")
 
-    results = MandiantAdvantageThreatIntelligence.fetch_threat_actor(
-        client, args={"actor_name": "FAKE_ACT0R"}
-    )
+    results = MandiantAdvantageThreatIntelligence.fetch_threat_actor(client, args={"actor_name": "FAKE_ACT0R"})
 
     results_dict = results.to_context()["Contents"][0]
 
@@ -825,27 +781,18 @@ def test_get_actor(client: MandiantAdvantageThreatIntelligence.MandiantClient, r
     assert "TARGET_INDUSTRY" in results_dict["fields"]["tags"]
     assert "OTHER_ACT0R" in results_dict["fields"]["aliases"]
     assert "TARGET_COUNTRY" in results_dict["fields"]["targets"]
-    assert (
-        results_dict["fields"]["stixid"]
-        == "threat-actor--f7fdbf0c-abcd-5b95-b005-702afffe4a72"
-    )
+    assert results_dict["fields"]["stixid"] == "threat-actor--f7fdbf0c-abcd-5b95-b005-702afffe4a72"
     assert results_dict["fields"]["name"] == "FAKE_ACT0R"
     assert results_dict["fields"]["description"] == "ACTOR DESCRIPTION GOES HERE"
     assert results_dict["fields"]["trafficlightprotocol"] == "RED"
     assert results_dict["fields"]["DBot Score"]["Type"] == "Actor"
     assert results_dict["fields"]["publications"][0]["title"] == "REPORT TITLE"
-    assert (
-        results_dict["fields"]["publications"][0]["link"]
-        == "https://advantage.mandiant.com/reports/23-00000722"
-    )
+    assert results_dict["fields"]["publications"][0]["link"] == "https://advantage.mandiant.com/reports/23-00000722"
 
     assert results_dict["relationships"][1]["entityB"] == "SOME_FREE_TOOL"
     assert results_dict["relationships"][1]["entityBType"] == "Tool"
 
-    assert (
-        results_dict["relationships"][4]["entityB"]
-        == "http://somesite.com/qb/svhost.exe"
-    )
+    assert results_dict["relationships"][4]["entityB"] == "http://somesite.com/qb/svhost.exe"
     assert results_dict["relationships"][4]["entityBType"] == "URL"
     assert results_dict["relationships"][4]["entityBFamily"] == "Indicator"
 
@@ -877,11 +824,9 @@ def test_get_malware(client: MandiantAdvantageThreatIntelligence.MandiantClient,
     )
 
     mocker.patch.object(demisto, "command", return_value="get-malware")
-    mocker.patch.object(demisto, 'searchIndicators', return_value={"total": 0})
+    mocker.patch.object(demisto, "searchIndicators", return_value={"total": 0})
 
-    results = MandiantAdvantageThreatIntelligence.fetch_malware_family(
-        client, args={"malware_name": "MALWARE_NAME"}
-    )
+    results = MandiantAdvantageThreatIntelligence.fetch_malware_family(client, args={"malware_name": "MALWARE_NAME"})
 
     results_dict = results.to_context()["Contents"][0]
 
@@ -891,10 +836,7 @@ def test_get_malware(client: MandiantAdvantageThreatIntelligence.MandiantClient,
     assert results_dict["fields"]["operatingsystemrefs"] == ["Windows"]
     assert len(results_dict["fields"]["mandiantdetections"]) == 2
     assert "Backdoor" in results_dict["fields"]["roles"]
-    assert (
-        results_dict["fields"]["stixid"]
-        == "malware--2debd90b-0000-1234-8838-1f9f58ca256b"
-    )
+    assert results_dict["fields"]["stixid"] == "malware--2debd90b-0000-1234-8838-1f9f58ca256b"
 
     assert results_dict["fields"]["description"] == "MALWARE_DESCRIPTION"
 
@@ -903,37 +845,21 @@ def test_get_malware(client: MandiantAdvantageThreatIntelligence.MandiantClient,
     assert results_dict["fields"]["Is Malware Family"]
 
     assert results_dict["fields"]["publications"][0]["title"] == "REPORT_TITLE"
-    assert (
-        results_dict["fields"]["publications"][0]["link"]
-        == "https://advantage.mandiant.com/reports/22-0000000"
-    )
+    assert results_dict["fields"]["publications"][0]["link"] == "https://advantage.mandiant.com/reports/22-0000000"
 
-    assert (
-        results_dict["relationships"][2]["entityB"]
-        == "http://ip.ip.address/sushi/pages/controllers/session_controller.php"
-    )
+    assert results_dict["relationships"][2]["entityB"] == "http://ip.ip.address/sushi/pages/controllers/session_controller.php"
     assert results_dict["relationships"][2]["entityBType"] == "URL"
     assert results_dict["relationships"][2]["entityBFamily"] == "Indicator"
 
 
-def test_fetch_indicators(
-    client: MandiantAdvantageThreatIntelligence.MandiantClient, requests_mock, mocker
-):
-    requests_mock.get(
-        f"{SERVER_URL}/v4/malware", json={"malware": [MOCK_MALWARE_RESPONSE]}
-    )
+def test_fetch_indicators(client: MandiantAdvantageThreatIntelligence.MandiantClient, requests_mock, mocker):
+    requests_mock.get(f"{SERVER_URL}/v4/malware", json={"malware": [MOCK_MALWARE_RESPONSE]})
 
-    requests_mock.get(
-        f"{SERVER_URL}/v4/actor", json={"threat-actors": [MOCK_THREATACTOR_RESPONSE]}
-    )
+    requests_mock.get(f"{SERVER_URL}/v4/actor", json={"threat-actors": [MOCK_THREATACTOR_RESPONSE]})
 
-    requests_mock.get(
-        f"{SERVER_URL}/v4/indicator", json={"indicators": [MOCK_MD5_INDICATOR_RESPONSE]}
-    )
+    requests_mock.get(f"{SERVER_URL}/v4/indicator", json={"indicators": [MOCK_MD5_INDICATOR_RESPONSE]})
 
-    requests_mock.get(
-        f"{SERVER_URL}/v4/indicator/{MOCK_MD5_INDICATOR_RESPONSE['id']}", json=MOCK_MD5_INDICATOR_RESPONSE
-    )
+    requests_mock.get(f"{SERVER_URL}/v4/indicator/{MOCK_MD5_INDICATOR_RESPONSE['id']}", json=MOCK_MD5_INDICATOR_RESPONSE)
 
     requests_mock.get(
         f"{SERVER_URL}/v4/malware/{MOCK_MALWARE_RESPONSE['id']}",
@@ -990,9 +916,7 @@ def test_fetch_indicators(
         json=MOCK_THREATACTOR_CAMPAIGNS_RESPONSE,
     )
 
-    mocker.patch.object(
-        demisto, "command", return_value="threat-intelligence-get-indicators"
-    )
+    mocker.patch.object(demisto, "command", return_value="threat-intelligence-get-indicators")
 
     results = MandiantAdvantageThreatIntelligence.fetch_indicators(client, args={"limit": 1})[0]
 
@@ -1002,10 +926,7 @@ def test_fetch_indicators(
 
     assert malware["value"] == "MALWARE_NAME"
     assert malware["fields"]["mandiantdetections"] == ["DETECTION_ONE", "DETECTION_TWO"]
-    assert (
-        malware["fields"]["publications"][0]["link"]
-        == "https://advantage.mandiant.com/reports/22-0000000"
-    )
+    assert malware["fields"]["publications"][0]["link"] == "https://advantage.mandiant.com/reports/22-0000000"
 
     assert malware["relationships"][0]["entityB"] == "FAKE_ACT0R"
     assert len(malware["relationships"][0]) == 10
@@ -1014,10 +935,7 @@ def test_fetch_indicators(
     assert actor["fields"]["tags"] == ["TARGET_INDUSTRY"]
     assert actor["fields"]["aliases"] == ["OTHER_ACT0R"]
 
-    assert (
-        actor["fields"]["publications"][0]["link"]
-        == "https://advantage.mandiant.com/reports/23-00000722"
-    )
+    assert actor["fields"]["publications"][0]["link"] == "https://advantage.mandiant.com/reports/23-00000722"
 
     assert actor["relationships"][1]["entityB"] == "SOME_FREE_TOOL"
     assert actor["relationships"][1]["name"] == "uses"
