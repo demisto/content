@@ -1,7 +1,6 @@
 variables:
-  CURRENT_BRANCH_NAME: $INFRA_BRANCH
-
+  CURRENT_BRANCH_NAME: "KK/change_get_integration_configuration"
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: $INFRA_BRANCH
+    ref: "KK/change_get_integration_configuration"
     project: "${CI_PROJECT_NAMESPACE}/infra"
