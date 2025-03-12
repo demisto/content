@@ -1,7 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import *
-SIEM_INSTANCE = demisto.args().get('syslog_sender_instance')
-PANW_IOT_INSTANCE = demisto.args().get('panw_iot_3rd_party_instance')
+
+SIEM_INSTANCE = demisto.args().get("syslog_sender_instance")
+PANW_IOT_INSTANCE = demisto.args().get("panw_iot_3rd_party_instance")
 
 VULNERABILITIES_FIELDS_MAP = [
     ("ip", "dvc="),
@@ -49,7 +50,8 @@ VULNERABILITIES_FIELDS_MAP = [
     ("AD_Username", "cs40Label=AD_Username cs40="),
     ("AD_Domain", "cs41Label=AD_Domain cs41="),
     ("Applications", "cs42Label=Applications cs42="),
-    ("Tags", "cs43Label=Tags cs43=")]
+    ("Tags", "cs43Label=Tags cs43="),
+]
 
 DEVICE_FIELDS_MAP = [
     ("ip_address", "dvc="),
@@ -98,7 +100,8 @@ DEVICE_FIELDS_MAP = [
     ("AD_Domain", "cs41Label=AD_Domain cs41="),
     ("Applications", "cs42Label=Applications cs42="),
     ("Tags", "cs43Label=Tags cs43="),
-    ("os_combined", "cs44Label=os_combined cs44=")]
+    ("os_combined", "cs44Label=os_combined cs44="),
+]
 
 
 def convert_device_map_to_cef(device_map):
@@ -125,7 +128,7 @@ def convert_alert_to_cef(alert):
     param alert: PANW IoT alert containing alert attributes
     """
     if alert is not None and "msg" in alert and "status" in alert["msg"] and alert["msg"]["status"] == "publish":
-        msg = alert['msg']
+        msg = alert["msg"]
         cef = "CEF:0|PaloAltoNetworks|PANWIOT|1.0|PaloAltoNetworks Alert:policy_alert|"
 
         if "name" in alert:
@@ -170,10 +173,10 @@ def convert_vulnerability_to_cef(vulnerability):
     Converts a PANW IoT vulnerability to CEF syslog format.
     param device_map: PANW IoT vulnerability containing vulnerability attributes
     """
-    risk_level_map = {'Critical': '10', 'High': '6', 'Medium': '3', 'Low': '1'}
+    risk_level_map = {"Critical": "10", "High": "6", "Medium": "3", "Low": "1"}
     cef = "INFO:siem-syslog:CEF:0|PaloAltoNetworks|PANWIOT|1.0|vulnerability|"
     if "vulnerability_name" in vulnerability:
-        cef += vulnerability['vulnerability_name'] + "|"
+        cef += vulnerability["vulnerability_name"] + "|"
     if "risk_level" in vulnerability:
         if vulnerability["risk_level"] in risk_level_map:
             cef += risk_level_map[vulnerability["risk_level"]] + "|"
@@ -199,9 +202,9 @@ def convert_single_asset_to_cef(asset, asset_type):
     param asset: Single PANW IoT cloud discovered asset.
     param asset_type: type of asset (device, alert or vulnerability).
     """
-    if asset_type == 'alert':
+    if asset_type == "alert":
         return convert_alert_to_cef(asset)
-    elif asset_type == 'vulnerability':
+    elif asset_type == "vulnerability":
         return convert_vulnerability_to_cef(asset)
     else:
         return convert_device_map_to_cef(asset)
@@ -214,15 +217,18 @@ def send_status_to_panw_iot_cloud(status, msg, asset_type):
     param msg: Debug message to be send to PANW IoT cloud.
     param asset_type: Type of asset (device, alert, vuln) associated with the status.
     """
-    resp = demisto.executeCommand("panw-iot-3rd-party-report-status-to-panw", {
-        "status": status,
-        "message": msg,
-        "integration_name": "siem",
-        "playbook_name": "PANW IoT 3rd Party SIEM Integration - Bulk Export to SIEM",
-        "asset_type": asset_type,
-        "timestamp": int(round(time.time() * 1000)),
-        "using": PANW_IOT_INSTANCE
-    })
+    resp = demisto.executeCommand(
+        "panw-iot-3rd-party-report-status-to-panw",
+        {
+            "status": status,
+            "message": msg,
+            "integration_name": "siem",
+            "playbook_name": "PANW IoT 3rd Party SIEM Integration - Bulk Export to SIEM",
+            "asset_type": asset_type,
+            "timestamp": int(round(time.time() * 1000)),
+            "using": PANW_IOT_INSTANCE,
+        },
+    )
 
     if isError(resp[0]):
         err_msg = f'Error, failed to send status to PANW IoT Cloud - {resp[0].get("Contents")}'
@@ -236,19 +242,15 @@ def get_assets_from_panw_iot_cloud(offset, page_size, asset_type):
     param page_size: Page size of the response being requested.
     param asset_type: Type of asset (device, alert, vuln) to be retrieved.
     """
-    resp = demisto.executeCommand("panw-iot-3rd-party-get-asset-list", {
-        "asset_type": asset_type,
-        "increment_type": None,
-        "offset": offset,
-        "pageLength": page_size,
-        "using": PANW_IOT_INSTANCE
-
-    })
+    resp = demisto.executeCommand(
+        "panw-iot-3rd-party-get-asset-list",
+        {"asset_type": asset_type, "increment_type": None, "offset": offset, "pageLength": page_size, "using": PANW_IOT_INSTANCE},
+    )
     if isError(resp[0]):
         err_msg = f'Error, could not get assets from PANW IoT Cloud - {resp[0].get("Contents")}'
         raise Exception(err_msg)
 
-    return resp[0]['Contents']
+    return resp[0]["Contents"]
 
 
 def send_asset_syslog(cef):
@@ -288,11 +290,11 @@ def get_all_panw_iot_assets_and_send_to_siem(asset_type):
             offset += page_size
         else:
             break
-    return (f'Successfully sent total {count} {asset_type_map[asset_type]} to SIEM')
+    return f"Successfully sent total {count} {asset_type_map[asset_type]} to SIEM"
 
 
 def main():
-    asset_type = demisto.args().get('asset_type')
+    asset_type = demisto.args().get("asset_type")
     try:
         status_msg = get_all_panw_iot_assets_and_send_to_siem(asset_type)
     except Exception as ex:
@@ -303,5 +305,5 @@ def main():
     return_results(status_msg)
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

@@ -13,17 +13,18 @@ def get_cisco_ise_active_instance_or_err_msg():
     # run common on all configured Cisco ISE nodes
     response = demisto.executeCommand("cisco-ise-get-nodes", {})
     for resp in response:
-        local_instance = resp['ModuleName']
+        local_instance = resp["ModuleName"]
         if isError(resp):
-            err = resp['Contents']
+            err = resp["Contents"]
             err_msg.append(f'{err.split("-")[0]} , instance name = {local_instance}')
         else:
             # Check if the output has any node that matches the local instance
             # and is also a primary or is in standalone mode
-            for node_data in resp['Contents']['CiscoISE.NodesData']:
-                if node_data['isLocalIstance']:
-                    if node_data['inDeployment'] is False or (
-                            node_data['inDeployment'] is True and node_data['primaryPapNode'] is True):
+            for node_data in resp["Contents"]["CiscoISE.NodesData"]:
+                if node_data["isLocalIstance"]:
+                    if node_data["inDeployment"] is False or (
+                        node_data["inDeployment"] is True and node_data["primaryPapNode"] is True
+                    ):
                         active_instance = local_instance
 
     return active_instance, err_msg
@@ -38,9 +39,7 @@ def main():
     if active_instance is None:
         readable_status = "No Primary/Active Cisco ISE node found = %s" % err_msg
         results = CommandResults(
-            readable_output=readable_status,
-            outputs_prefix="PaloAltoIoTIntegrationBase.NodeErrorStatus",
-            outputs=readable_status
+            readable_output=readable_status, outputs_prefix="PaloAltoIoTIntegrationBase.NodeErrorStatus", outputs=readable_status
         )
         # Write data to context and display result in war room
         return_results(results)
@@ -51,10 +50,10 @@ def main():
         results = CommandResults(
             readable_output=readable_status,
             outputs_prefix="PaloAltoIoTIntegrationBase.ActiveNodeInstance",
-            outputs=active_instance
+            outputs=active_instance,
         )
         return_results(results)
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
