@@ -42,7 +42,7 @@ def convert_environment_id_string_to_int(
     """
     try:
         environment_id_options = {
-            "300: Linux Ubuntu 16.04": 300,
+            "310: Linux Ubuntu 20": 310,
             "200: Android (static analysis)": 200,
             "160: Windows 10": 160,
             "110: Windows 7": 110,
