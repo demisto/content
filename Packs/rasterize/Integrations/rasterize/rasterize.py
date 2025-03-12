@@ -843,7 +843,7 @@ def screenshot_pdf(
     return ret_value, None
 
 
-def rasterize_thread(browser: Browser, chrome_port: str, path: str,
+def rasterize_thread(browser: Browser, chrome_port, path: str,
                      rasterize_type: RasterizeType = RasterizeType.PNG,
                      wait_time: int = DEFAULT_WAIT_TIME,
                      offline_mode: bool = False,
@@ -1229,6 +1229,7 @@ def rasterize_command(args: dict) -> CommandResults | list[dict] | None:  # prag
             res.append(current_res)
 
             return res
+    return None
 
 
 # endregion
