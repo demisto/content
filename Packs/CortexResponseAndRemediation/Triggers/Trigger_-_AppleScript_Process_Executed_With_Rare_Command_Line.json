@@ -16,8 +16,13 @@
                 "SEARCH_VALUE": "AppleScript executed with a rare command line possibly using Finder to perform operations"
                 }
                 ]
-            }
-        ]    
+        },
+      {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "NEQ",
+            "SEARCH_VALUE": "Correlation"
+      }
+        ]
     }
   }
 }

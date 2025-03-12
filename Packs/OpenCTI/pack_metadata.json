@@ -2,7 +2,7 @@
     "name": "OpenCTI",
     "description": "Manages indicators from OpenCTI.",
     "support": "xsoar",
-    "currentVersion": "2.0.0",
+    "currentVersion": "2.0.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
