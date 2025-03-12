@@ -338,6 +338,113 @@
 #            exit 1
 #          fi
 
+#name: Validate All README.md Files with MDX
+#
+#on:
+#  pull_request:
+#
+#jobs:
+#  validate-readmes:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v3
+#
+#      - name: Set up Node.js
+#        uses: actions/setup-node@v3
+#        with:
+#          node-version: '20'
+#
+#      - name: Install dependencies
+#        run: |
+#          npm install "@mdx-js/mdx@^1.6.22" "commander@^5.0.0" "fs-extra@^8.1.0"
+#
+#      - name: Find and Validate all README.md files
+#        run: |
+#          is_html_doc() {
+#            local readme_content="$1"
+#            NO_HTML="SOME_NON_HTML_IDENTIFIER"
+#            YES_HTML="SOME_HTML_IDENTIFIER"
+#
+#            if [[ "$readme_content" == "$YES_HTML"* ]] || \
+#               [[ "$readme_content" == "<p>"* ]] || \
+#               [[ "$readme_content" == "<!DOCTYPE html>"* ]] || \
+#               ([[ "$readme_content" == *"<thead>"* && "$readme_content" == *"<tbody>"* ]]); then
+#                return 0  # True (it's HTML)
+#            elif [[ "$readme_content" == "$NO_HTML"* ]]; then
+#                return 1  # False (not HTML)
+#            fi
+#            return 1  # Default to False if no conditions matched
+#          }
+#
+#          READMES=$(find . -type f -name "README.md")
+#          if [ -z "$READMES" ]; then
+#            echo "No README.md files found. Skipping validation."
+#            exit 0
+#          fi
+#          errors=()
+#          for file in $READMES; do
+#            readme_content=$(head -n 20 "$file")
+#            if is_html_doc "$readme_content"; then
+#              echo "Skipping MDX validation for $file (detected as HTML)"
+#              continue
+#            fi
+#            if ! node - "$file" << 'EOF'
+#          const { readFile, writeFile } = require('fs-extra');
+#          const mdx = require('@mdx-js/mdx');
+#
+#          function fixMdx(readmeContent) {
+#              let txt = readmeContent;
+#
+#              // Define replacement rules
+#              const replaceTuples = [
+#                  [/<br>(?!<\/br>)/gi, "<br/>"],
+#                  [/<hr>(?!<\/hr>)/gi, "<hr/>"],
+#                  [/<pre>/gi, "<pre>{`"],
+#                  [/<\/pre>/gi, "`}</pre>"]
+#              ];
+#
+#              // Apply replacements
+#              replaceTuples.forEach(([oldPattern, newValue]) => {
+#                  txt = txt.replace(oldPattern, newValue);
+#              });
+#
+#              // Remove HTML comments
+#              txt = txt.replace(/<!--.*?-->/gs, "");
+#
+#              return txt;
+#          }
+#
+#          async function parseMDX(file) {
+#              try {
+#                  let contents = await readFile(file, 'utf8');
+#                  contents = fixMdx(contents); // Apply MDX fixes
+#                  await mdx(contents);
+#              } catch (error) {
+#                  console.error(`MDX parse failure in ${file}: ` + error);
+#                  process.exit(1);
+#              }
+#          }
+#
+#          const file = process.argv[2];
+#          parseMDX(file);
+#          EOF
+#            then
+#              errors+=("$file")
+#            fi
+#          done
+#
+#          if [ ${#errors[@]} -ne 0 ]; then
+#            echo "\n==============================="
+#            echo "The following README.md files failed MDX validation:"
+#            echo "===============================\n"
+#            for err in "${errors[@]}"; do
+#              echo "- $err"
+#            done
+#            echo "\n==============================="
+#            exit 1
+#          fi
+
 name: Validate All README.md Files with MDX
 
 on:
@@ -363,8 +470,8 @@ jobs:
         run: |
           is_html_doc() {
             local readme_content="$1"
-            NO_HTML="SOME_NON_HTML_IDENTIFIER"
-            YES_HTML="SOME_HTML_IDENTIFIER"
+            NO_HTML="<!-- NOT_HTML_DOC -->"
+            YES_HTML="<!-- HTML_DOC -->"
 
             if [[ "$readme_content" == "$YES_HTML"* ]] || \
                [[ "$readme_content" == "<p>"* ]] || \
@@ -384,7 +491,7 @@ jobs:
           fi
           errors=()
           for file in $READMES; do
-            readme_content=$(head -n 20 "$file")
+            readme_content=$(cat "$file")
             if is_html_doc "$readme_content"; then
               echo "Skipping MDX validation for $file (detected as HTML)"
               continue
