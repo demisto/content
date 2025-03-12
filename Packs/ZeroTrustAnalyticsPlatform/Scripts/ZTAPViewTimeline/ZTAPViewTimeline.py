@@ -53,9 +53,7 @@ def view_timeline_command(args: dict[str, Any]) -> CommandResults:  # pragma: no
         ztap_tags.append(input_tag)
     ztap_tags.extend(output_tags)
 
-    entries = demisto.executeCommand(
-        "getEntries", {"filter": {"categories": ["notes"]}}
-    )
+    entries = demisto.executeCommand("getEntries", {"filter": {"categories": ["notes"]}})
 
     if not entries:
         entries = []

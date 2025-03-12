@@ -27,7 +27,6 @@ def extract_fields(value) -> List:
 
 
 def extract_fields_command(args: Dict[str, Any]) -> CommandResults:
-
     value = args.get("value", [])
 
     if not value:

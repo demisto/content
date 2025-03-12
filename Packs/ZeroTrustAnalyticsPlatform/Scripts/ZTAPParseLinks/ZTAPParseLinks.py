@@ -47,7 +47,6 @@ def parse_links(events) -> str:
 
 
 def parse_links_command(args: Dict[str, Any]) -> CommandResults:
-
     incident = demisto.incident()
     custom_fields = incident.get("CustomFields")
     events = custom_fields.get("ztaptriggers")

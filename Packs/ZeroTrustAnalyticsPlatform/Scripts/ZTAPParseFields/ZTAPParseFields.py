@@ -56,7 +56,6 @@ def parse_fields(events, full, max_fields, max_value_length) -> str:
 
 
 def parse_fields_command(args: Dict[str, Any]) -> CommandResults:
-
     incident = demisto.incident()
     custom_fields = incident.get("CustomFields")
     events = custom_fields.get("ztaptriggers")

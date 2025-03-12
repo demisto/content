@@ -72,9 +72,7 @@ class Client(BaseClient):
             "Authorization": api_key,
         }
 
-        super().__init__(
-            base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy
-        )
+        super().__init__(base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy)
         # Download links already include headers including a request signature,
         # The client cannot have any default headers
         self.download_client = BaseClient(base_url=None, verify=verify_certificate, proxy=proxy)
@@ -95,33 +93,25 @@ class Client(BaseClient):
         return self._active_user
 
     def http_request(self, method, url_suffix, params, json_data=None):
-        response = self._http_request(
-            method=method, url_suffix=url_suffix, params=params, json_data=json_data
-        )
+        response = self._http_request(method=method, url_suffix=url_suffix, params=params, json_data=json_data)
         return response
 
     def get_organizations(self, params):
-        response = self.http_request(
-            method="GET", url_suffix="/organizations/", params=params
-        )
+        response = self.http_request(method="GET", url_suffix="/organizations/", params=params)
         return response["objects"]
 
     def get_groups(self):
         return self.paginate(method="GET", url_suffix="/groups/", params={})
 
     def get_alerts(self, params):
-        response = self.http_request(
-            method="GET", url_suffix="/incidents/", params=params
-        )
+        response = self.http_request(method="GET", url_suffix="/incidents/", params=params)
         return response["objects"]
 
     def get_all_alerts(self, params):
         return self.paginate(method="GET", url_suffix="/incidents/", params=params)
 
     def get_alert(self, alert_id):
-        response = self.http_request(
-            method="GET", url_suffix=f"/incidents/{alert_id}/", params={}
-        )
+        response = self.http_request(method="GET", url_suffix=f"/incidents/{alert_id}/", params={})
         return response
 
     def get_escalation_path(self, alert_id):
@@ -155,9 +145,7 @@ class Client(BaseClient):
             "object_id": alert_id,
             "type": "public",
         }
-        self.http_request(
-            method="POST", url_suffix="/comments/", params={}, json_data=json_data
-        )
+        self.http_request(method="POST", url_suffix="/comments/", params={}, json_data=json_data)
 
     def close_alert(self, alert_id, description, outcome):
         json_data = {
@@ -248,9 +236,7 @@ class Client(BaseClient):
         page = 1
 
         # First request
-        response = self.http_request(
-            method=method, url_suffix=url_suffix, params=params, json_data=json_data
-        )
+        response = self.http_request(method=method, url_suffix=url_suffix, params=params, json_data=json_data)
         objects = response["objects"]
 
         view_id = response.get("view")
@@ -265,9 +251,7 @@ class Client(BaseClient):
                 break
 
             params["page"] = page
-            response = self.http_request(
-                method=method, url_suffix=url_suffix, params=params, json_data=json_data
-            )
+            response = self.http_request(method=method, url_suffix=url_suffix, params=params, json_data=json_data)
             objects.extend(response["objects"])
 
         return objects
@@ -427,12 +411,7 @@ def get_notes_for_alert(
     remote_last_closed = get_alert_last_closed(alert)
     remote_last_reopened = get_alert_last_reopened(alert)
 
-    if (
-        update_status
-        and alert["status"] == "closed"
-        and client.close_incident
-        and remote_last_closed > local_last_reopened
-    ):
+    if update_status and alert["status"] == "closed" and client.close_incident and remote_last_closed > local_last_reopened:
         # Use the last comment as a close comment
         if comments:
             last_comment = comments[-1]["comment"]
@@ -452,12 +431,7 @@ def get_notes_for_alert(
         )
         demisto.info(f"Closing incident from ZTAP {alert_id}")
 
-    if (
-        update_status
-        and alert["status"] != "closed"
-        and remote_last_reopened > local_last_closed
-        and client.reopen_incident
-    ):
+    if update_status and alert["status"] != "closed" and remote_last_reopened > local_last_closed and client.reopen_incident:
         entries.append(
             {
                 "Type": EntryType.NOTE,
@@ -499,9 +473,7 @@ def attachment_note_from_link(
     return result
 
 
-def was_alert_first_escalated(
-    client: Client, alert_id: str, org_name: str, since: datetime
-):
+def was_alert_first_escalated(client: Client, alert_id: str, org_name: str, since: datetime):
     """
     We are searching by alert org assignment time, however an alert could have
     been escalated to a different org. Make sure the alert was escalated
@@ -512,9 +484,7 @@ def was_alert_first_escalated(
     escalation_path = client.get_escalation_path(alert_id)
 
     for escalation in escalation_path:
-        if escalation["type"] == "Group" and escalation["group"].lower().endswith(
-            end_of_group
-        ):
+        if escalation["type"] == "Group" and escalation["group"].lower().endswith(end_of_group):
             escalation_time = dateparser.parse(escalation["time"])
             assert escalation_time is not None
             # Only check against the first escalation to this organization
@@ -723,9 +693,7 @@ def update_remote_system(
                 footer = ESCALATE_REASON + "\n\n" + footer
                 text = f"{contents}\n\n---\n\n{footer}"
                 try:
-                    client.reassign_alert_to_org(
-                        alert_id, client.get_escalate_org_id(), text
-                    )
+                    client.reassign_alert_to_org(alert_id, client.get_escalate_org_id(), text)
                 except Exception as e:
                     if "already assigned" in str(e):
                         client.upload_comment(alert_id, text)
@@ -767,9 +735,7 @@ def update_remote_system(
         ):
             demisto.info(f"Reopening ZTAP Alert {alert_id}")
             close_description = f"Incident reopened in XSOAR.---\n\nSent {XSOAR_EXCLUDE_MESSAGE}"
-            client.reopen_alert(
-                alert_id, client.get_reopen_group_id(), close_description
-            )
+            client.reopen_alert(alert_id, client.get_reopen_group_id(), close_description)
 
     return alert_id
 
@@ -792,9 +758,7 @@ def ztap_get_alert_entries(
         }
 
         investigation: Dict = {}
-        entries = get_notes_for_alert(
-            client, investigation, alert, epoch(), update_status=False
-        )
+        entries = get_notes_for_alert(client, investigation, alert, epoch(), update_status=False)
 
         return entries
     except Exception as e:
@@ -861,7 +825,6 @@ def main() -> None:
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
-
         client = Client(
             base_url=base_url,
             verify_certificate=verify_certificate,
@@ -884,12 +847,8 @@ def main() -> None:
         elif demisto.command() == "fetch-incidents":
             max_fetch = params.get("max_fetch", 100)
             last_run = demisto.getLastRun()
-            first_fetch_timestamp = params.get(
-                "first_fetch_timestamp", "7 days"
-            ).strip()
-            mirror_direction = MIRROR_DIRECTION.get(
-                demisto.params().get("mirror_direction", "None"), None
-            )
+            first_fetch_timestamp = params.get("first_fetch_timestamp", "7 days").strip()
+            mirror_direction = MIRROR_DIRECTION.get(demisto.params().get("mirror_direction", "None"), None)
             integration_instance = demisto.integrationInstance()
             incidents, new_last_run = fetch_incidents(
                 client=client,
@@ -927,9 +886,7 @@ def main() -> None:
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(
-            f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}"
-        )
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
 
 
 """ ENTRY POINT """
