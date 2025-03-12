@@ -49,7 +49,7 @@ def check_outdated_endpoints():
         if outdated:
             res.append("yes")
             txtSEPOutdatedVersions = "Outdated versions found:\n" + "\n".join(
-                ["%d endpoints using version %s" % (row["clientsCount"], row["version"]) for row in outdated]
+                [f"{row['clientsCount']} endpoints using version {row['version']}" for row in outdated]
             )
             demisto.setContext("txtSEPOutdatedVersions", txtSEPOutdatedVersions)
             md = tblToMd("Outdated endpoints", outdated)

@@ -87,7 +87,7 @@ class ContextData:
             key = key[1:]
         else:
             for prefix in self.__specials:
-                k = key[len(prefix) :]
+                k = key[len(prefix):]
                 if key.startswith(prefix) and k[:1] in ("", ".", "(", "="):
                     if prefix == "lists":
                         if list_name := re.split("[.(=]", k[1:], maxsplit=1)[0]:
@@ -128,7 +128,7 @@ class Formatter:
     @staticmethod
     def __is_closure(source: str, ci: int, closure_marker: str) -> bool:
         if closure_marker:
-            return source[ci : ci + len(closure_marker)] == closure_marker
+            return source[ci: ci + len(closure_marker)] == closure_marker
         else:
             c = source[ci]
             if c.isspace():
@@ -185,7 +185,7 @@ class Formatter:
                 else:
                     xval = markers[0] + key + markers[1]
                 return xval, ci + len(markers[1])
-            elif source[ci : ci + len(self.__var_opening)] == self.__var_opening:
+            elif source[ci: ci + len(self.__var_opening)] == self.__var_opening:
                 xval, ei = self.__extract(
                     source=source,
                     dx=dx,
@@ -324,7 +324,7 @@ class QueryParams:
 
         if earliest_time > latest_time:
             raise DemistoException(
-                f"latest_time ({latest_time}) must be equal to or later than" f" earliest_time ({earliest_time})."
+                f"latest_time ({latest_time}) must be equal to or later than earliest_time ({earliest_time})."
             )
 
         self.__query_name = query_name
@@ -579,7 +579,7 @@ class XQLQuery:
                     "maximum allowed number of parallel running queries has been reached",
                 ]
             ):
-                raise DemistoException("Failed to execute xdr-xql-generic-query." f" Error details:\n{error_message}")
+                raise DemistoException(f"Failed to execute xdr-xql-generic-query. Error details:\n{error_message}")
 
             time.sleep(self.__retry_interval)
 
@@ -617,7 +617,7 @@ class XQLQuery:
                 )
                 if is_error(res):
                     error_message = get_error(res)
-                    raise DemistoException("Failed to execute xdr-xql-get-query-results." f" Error details:\n{error_message}")
+                    raise DemistoException(f"Failed to execute xdr-xql-get-query-results. Error details:\n{error_message}")
 
                 response = self.__get_response(res)
             else:

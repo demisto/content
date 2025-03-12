@@ -1,7 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-from typing import Any, Callable, Dict, List, Tuple, Optional
+from typing import Any
+from collections.abc import Callable
 
 import urllib3
 from bs4 import BeautifulSoup
@@ -28,7 +29,7 @@ class Client(BaseClient):
         """
         super().__init__(base_url, verify=verify, proxy=proxy)
 
-    def build_iterator(self) -> List:
+    def build_iterator(self) -> list:
         """Retrieves all entries from the feed.
         Returns:
             A list of objects, containing the indicators.
@@ -39,16 +40,13 @@ class Client(BaseClient):
         soup = BeautifulSoup(r, "html.parser")
 
         global PATTERN
-        scraped_indicators = list(
-            set(
-                [
-                    PATTERN.match(cell.text).group(0)
-                    for cell in soup.select(  # type: ignore # noqa
-                        "tbody tr td code"
-                    )
-                    if PATTERN.match(cell.text)
-                ]
-            )
+        scraped_indicators = list(  # type: ignore # noqa
+            {
+                PATTERN.match(cell.text).group(0)
+                for cell in soup.select(  # type: ignore # noqa
+                "tbody tr td code"
+                )
+                if PATTERN.match(cell.text)}
         )
         for indicator in scraped_indicators:
             result.append(
@@ -62,7 +60,7 @@ class Client(BaseClient):
         return result
 
 
-def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], dict[Any, Any]]:
     """Builds the iterator to check that the feed is accessible.
     Args:
         client: Client object.
@@ -73,7 +71,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]
     return "ok", {}, {}
 
 
-def fetch_indicators(client: Client, feed_tags: List = [], tlp_color: Optional[str] = "", limit: int = -1) -> List[Dict]:
+def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: str | None = "", limit: int = -1) -> list[dict]:
     """Retrieves indicators from the feed
     Args:
         client (Client): Client object with request
@@ -113,8 +111,8 @@ def fetch_indicators(client: Client, feed_tags: List = [], tlp_color: Optional[s
 
 
 def get_indicators_command(
-    client: Client, params: Dict[str, str], args: Dict[str, str]
-) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+    client: Client, params: dict[str, str], args: dict[str, str]
+) -> tuple[str, dict[Any, Any], dict[Any, Any]]:
     """Wrapper for retrieving indicators from the feed to the war-room.
     Args:
         client: Client object with request
@@ -134,7 +132,7 @@ def get_indicators_command(
     return human_readable, {}, {"raw_response": indicators}
 
 
-def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List[Dict]:
+def fetch_indicators_command(client: Client, params: dict[str, str]) -> list[dict]:
     """Wrapper for fetching indicators from the feed to the Indicators tab.
     Args:
         client: Client object with request
@@ -167,7 +165,7 @@ def main():
             proxy=proxy,
         )
 
-        commands: Dict[str, Callable[[Client, Dict[str, str], Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
+        commands: dict[str, Callable[[Client, dict[str, str], dict[str, str]], tuple[str, dict[Any, Any], dict[Any, Any]]]] = {
             "test-module": test_module,
             "azure-ad-health-get-indicators": get_indicators_command,
         }

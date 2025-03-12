@@ -25,10 +25,10 @@ def test_endpoint_ip_extract(mocker):
     from SymantecEndpointProtection_V2 import endpoint_ip_extract
 
     raw_json = _get_api_response()
-    assert [
+    assert endpoint_ip_extract(raw_json) == [
         {"Address": "192.168.1.12", "Mac": "demisto-PC"},
         {"Address": "192.168.1.125", "Mac": "DESKTOP-TF35B9B"},
-    ] == endpoint_ip_extract(raw_json)
+    ]
 
 
 def test_endpoint_endpoint_extract(mocker):

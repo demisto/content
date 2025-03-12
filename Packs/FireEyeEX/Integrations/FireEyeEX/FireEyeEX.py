@@ -1,4 +1,3 @@
-from typing import Tuple
 
 from CommonServerPython import *
 
@@ -260,7 +259,7 @@ def get_reports(client: Client, args: Dict[str, Any]):
     if report_type == "alertDetailsReport":  # validate arguments
         # can use either alert_id, or infection_type and infection_id
         err_str = (
-            "The alertDetailsReport can be retrieved using alert_id argument alone, " "or by infection_type and infection_id"
+            "The alertDetailsReport can be retrieved using alert_id argument alone, or by infection_type and infection_id"
         )
         if alert_id:
             if infection_id or infection_type:
@@ -324,7 +323,7 @@ def create_allowedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     for entry in current_allowed_list:
         if entry_value == entry.get("name"):
             raise DemistoException(
-                str(f"Cannot create the entry_value {entry_value} as it is already exist in the " f"Allowedlist of type {type_}.")
+                str(f"Cannot create the entry_value {entry_value} as it is already exist in the Allowedlist of type {type_}.")
             )
 
     # gets 200 back without content if successful
@@ -347,7 +346,7 @@ def update_allowedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
             exist = True
     if not exist:
         raise DemistoException(
-            str(f"Cannot update the entry_value {entry_value} as it does not exist in the " f"Allowedlist of type {type_}.")
+            str(f"Cannot update the entry_value {entry_value} as it does not exist in the Allowedlist of type {type_}.")
         )
 
     # gets 200 back without content if successful
@@ -369,7 +368,7 @@ def delete_allowedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
             exist = True
     if not exist:
         raise DemistoException(
-            str(f"Cannot delete the entry_value {entry_value} as it does not exist in the " f"Allowedlist of type {type_}.")
+            str(f"Cannot delete the entry_value {entry_value} as it does not exist in the Allowedlist of type {type_}.")
         )
 
     # gets 200 back without content if successful
@@ -413,7 +412,7 @@ def create_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     for entry in current_blocked_list:
         if entry_value == entry.get("name"):
             raise DemistoException(
-                str(f"Cannot create the entry_value {entry_value} as it is already exist in the " f"Blockedlist of type {type_}.")
+                str(f"Cannot create the entry_value {entry_value} as it is already exist in the Blockedlist of type {type_}.")
             )
 
     # gets 200 back without content if successful
@@ -436,7 +435,7 @@ def update_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
             exist = True
     if not exist:
         raise DemistoException(
-            str(f"Cannot update the entry_value {entry_value} as it does not exist in the " f"Blockedlist of type {type_}.")
+            str(f"Cannot update the entry_value {entry_value} as it does not exist in the Blockedlist of type {type_}.")
         )
 
     # gets 200 back without content if successful
@@ -458,7 +457,7 @@ def delete_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
             exist = True
     if not exist:
         raise DemistoException(
-            str(f"Cannot delete the entry_value {entry_value} as it does not exist in the " f"Blockedlist of type {type_}.")
+            str(f"Cannot delete the entry_value {entry_value} as it does not exist in the Blockedlist of type {type_}.")
         )
 
     # gets 200 back without content if successful
@@ -470,7 +469,7 @@ def delete_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
 @logger
 def fetch_incidents(
     client: Client, last_run: dict, first_fetch: str, max_fetch: int = 50, info_level: str = "concise"
-) -> Tuple[dict, list]:
+) -> tuple[dict, list]:
     if not last_run:  # if first time fetching
         next_run = {"time": to_fe_datetime_converter(first_fetch), "last_alert_ids": []}
     else:
@@ -513,7 +512,8 @@ def fetch_incidents(
         if alert_id not in last_alert_ids:  # check that event was not fetched in the last fetch
             incident = {
                 "name": f"{INTEGRATION_NAME} Alert: {alert_id}",
-                "occurred": dateparser.parse(alert.get("occurred"), settings={"TO_TIMEZONE": "UTC"}).strftime(DATE_FORMAT),  # type: ignore
+                # type: ignore
+                "occurred": dateparser.parse(alert.get("occurred"), settings={"TO_TIMEZONE": "UTC"}).strftime(DATE_FORMAT),
                 "severity": alert_severity_to_dbot_score(alert.get("severity")),
                 "rawJSON": json.dumps(alert),
             }

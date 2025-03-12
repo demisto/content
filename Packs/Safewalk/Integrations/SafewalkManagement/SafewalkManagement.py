@@ -14,7 +14,7 @@ class Client(BaseClient):
 
         p_search = ""
         if search is not None and search != "":
-            p_search = "&search=%s" % search
+            p_search = f"&search={search}"
 
         p_locked = ""
         if locked is not None and locked:
@@ -28,7 +28,7 @@ class Client(BaseClient):
 
         p_search = ""
         if search is not None and search != "":
-            p_search = "&search=%s" % search
+            p_search = f"&search={search}"
 
         p_locked = ""
         if locked is not None and locked:
@@ -42,7 +42,7 @@ class Client(BaseClient):
 
         p_search = ""
         if search is not None and search != "":
-            p_search = "&search=%s" % search
+            p_search = f"&search={search}"
 
         p_locked = ""
         if locked is not None and locked:
@@ -54,7 +54,7 @@ class Client(BaseClient):
         return json.loads(self._http_request(method="GET", url_suffix="/ldapconfiguration/", resp_type="text"))
 
     def get_user_personalinformation(self, username) -> Dict[str, Any]:
-        return self._http_request(method="GET", url_suffix="/user/%s/" % username, resp_type="text")
+        return self._http_request(method="GET", url_suffix=f"/user/{username}/", resp_type="text")
 
     def set_user_personalinformation(self, username, email, mobile_phone) -> Dict[str, Any]:
         post_params = {}
@@ -63,19 +63,19 @@ class Client(BaseClient):
         if mobile_phone:
             post_params["mobile_phone"] = mobile_phone
 
-        return self._http_request(method="PUT", url_suffix="/user/%s/" % username, json_data=post_params, resp_type="text")
+        return self._http_request(method="PUT", url_suffix="/user/{username}/", json_data=post_params, resp_type="text")
 
     def get_user_accessattempts(self, username) -> Dict[str, Any]:
-        return self._http_request(method="GET", url_suffix="/user/%s/access_attempt/" % username, resp_type="text")
+        return self._http_request(method="GET", url_suffix=f"/user/{username}/access_attempt/", resp_type="text")
 
     def delete_user_accessattempts(self, username) -> Dict[str, Any]:
-        return self._http_request(method="DELETE", url_suffix="/user/%s/access_attempt/" % username, resp_type="text")
+        return self._http_request(method="DELETE", url_suffix=f"/user/{username}/access_attempt/", resp_type="text")
 
     # Get "params" to generalize all token types.
     # Said argument must be a dictionary or json with the data corresponding to the token to be registered
     def create_user_token(self, username, post_params) -> Dict[str, Any]:
         return self._http_request(
-            method="POST", url_suffix="/user/%s/devices/" % username, json_data=post_params, resp_type="text"
+            method="POST", url_suffix=f"/user/{username}/devices/", json_data=post_params, resp_type="text"
         )
 
     def update_user_token(self, username, token_devicetype, token_serialnumber, post_params) -> Dict[str, Any]:
@@ -87,7 +87,7 @@ class Client(BaseClient):
         )
 
     def get_user_tokens(self, username) -> Dict[str, Any]:
-        return self._http_request(method="GET", url_suffix="/user/%s/devices/" % username, resp_type="text")
+        return self._http_request(method="GET", url_suffix=f"/user/{username}/devices/", resp_type="text")
 
     def delete_user_token(self, username, token_devicetype, token_serialnumber) -> Dict[str, Any]:
         return self._http_request(
@@ -105,30 +105,30 @@ class Client(BaseClient):
         )
 
     def get_user_settings(self, username) -> Dict[str, Any]:
-        return self._http_request(method="GET", url_suffix="/user/%s/settings/" % username, resp_type="text")
+        return self._http_request(method="GET", url_suffix=f"/user/{username}/settings/", resp_type="text")
 
     # Get "params" to generalize all configuration items.
     # This argument must be a dictionary or json with the items that you want to modify
     def set_user_settings(self, username, post_params) -> Dict[str, Any]:
         return self._http_request(
-            method="PATCH", url_suffix="/user/%s/settings/" % username, json_data=post_params, resp_type="text"
+            method="PATCH", url_suffix=f"/user/{username}/settings/", json_data=post_params, resp_type="text"
         )
 
     def get_user_group(self, username) -> Dict[str, Any]:
-        return self._http_request(method="GET", url_suffix="/user/%s/group/" % username, resp_type="text")
+        return self._http_request(method="GET", url_suffix=f"/user/{username}/group/", resp_type="text")
 
     def add_user_group(self, username, new_group_name) -> Dict[str, Any]:
         post_params = {"username": username}
 
         return self._http_request(
-            method="POST", url_suffix="/group/%s/member/" % new_group_name, json_data=post_params, resp_type="text"
+            method="POST", url_suffix=f"/group/{new_group_name}/member/", json_data=post_params, resp_type="text"
         )
 
     def remove_user_group(self, username, old_group_name) -> Dict[str, Any]:
         return self._http_request(method="DELETE", url_suffix=f"/group/{old_group_name}/member/{username}/", resp_type="text")
 
     def get_user_registrationcode(self, username) -> Dict[str, Any]:
-        return self._http_request(method="GET", url_suffix="/user/%s/registrationtoken/" % username, resp_type="text")
+        return self._http_request(method="GET", url_suffix=f"/user/{username}/registrationtoken/", resp_type="text")
 
     def set_user_registrationcode(self, username, expiration, attempts_left) -> Dict[str, Any]:
         post_params = {
@@ -141,14 +141,14 @@ class Client(BaseClient):
         }
 
         return self._http_request(
-            method="POST", url_suffix="/user/%s/registrationtoken/" % username, json_data=post_params, resp_type="text"
+            method="POST", url_suffix=f"/user/{username}/registrationtoken/", json_data=post_params, resp_type="text"
         )
 
     def delete_user_registrationcode(self, username) -> Dict[str, Any]:
-        return self._http_request(method="DELETE", url_suffix="/user/%s/registrationtoken/" % username, resp_type="text")
+        return self._http_request(method="DELETE", url_suffix=f"/user/{username}/registrationtoken/", resp_type="text")
 
     def send_user_registrationcode(self, username) -> Dict[str, Any]:
-        return self._http_request(method="POST", url_suffix="/user/%s/registrationtoken/send/" % username, resp_type="text")
+        return self._http_request(method="POST", url_suffix=f"/user/{username}/registrationtoken/send/", resp_type="text")
 
     def create_user(self, username, password, firstname, lastname, mobilephone, email):
         post_params = {
@@ -163,7 +163,7 @@ class Client(BaseClient):
         return self._http_request(method="POST", url_suffix="/user/", json_data=post_params, resp_type="text")
 
     def delete_user(self, username):
-        return self._http_request(method="DELETE", url_suffix="/user/%s/" % username, resp_type="text")
+        return self._http_request(method="DELETE", url_suffix=f"/user/{username}/", resp_type="text")
 
 
 def get_transactionlog(client, args):
@@ -1370,7 +1370,7 @@ def main():
     demisto.debug(f"Command being called is {command}")
     try:
         client = Client(
-            base_url=base_url, verify=verify_certificate, headers={"Authorization": "Bearer %s" % auth_access_token}, proxy=proxy
+            base_url=base_url, verify=verify_certificate, headers={"Authorization": f"Bearer {auth_access_token}"}, proxy=proxy
         )
 
         if command == "safewalk-get-transactionlog":

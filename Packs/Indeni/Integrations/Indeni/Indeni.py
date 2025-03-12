@@ -28,7 +28,7 @@ def http_request(method, full_url, params=None, data=None):
     # Handle error responses gracefully
     if res.status_code not in {200, 201}:
         return_error(
-            "Error in API call to Indeni Integration [%d] - %s for endpoint %s" % (res.status_code, res.reason, full_url)
+            f"Error in API call to Indeni Integration [{res.status_code}] - {res.reason} for endpoint {full_url}"
         )
 
     return res.json()

@@ -113,7 +113,7 @@ def event_to_incident(event):
     """Converts a Symantec event to a Demisto incident"""
     incident = {}  # type: Dict[str, Any]
     incident["name"] = "Incident: {} ({})".format(event["IncidentNumber"], event["Classification"])
-    incident["occurred"] = event["TimeCreated"] + "+0%s:00" % DST
+    incident["occurred"] = event["TimeCreated"] + f"+0{DST}:00"
     incident["rawJSON"] = json.dumps(event)
 
     labels = []  # type: List[str]
@@ -157,9 +157,9 @@ def fetch_incidents():
 
 
 def get_incidents_list(time):
-    src_ip = demisto.args()["sourceIp"] if "sourceIp" in demisto.args() else None
-    severities = demisto.args()["severities"] if "severities" in demisto.args() else None
-    max_incidents = demisto.args()["max"] if "max" in demisto.args() else None
+    src_ip = demisto.args().get("sourceIp")
+    severities = demisto.args().get("severities")
+    max_incidents = demisto.args().get("max")
 
     # Request events
     result = get_incidents_list_request(time, src_ip, severities, max_incidents)
@@ -261,12 +261,12 @@ def update_incident():
         raise Exception("No current severity, please supply a severity parameter")
 
     # Optional params
-    ref = demisto.args()["reference"] if "reference" in demisto.args() else None
-    comments = demisto.args()["comments"] if "comments" in demisto.args() else None
+    ref = demisto.args().get("reference")
+    comments = demisto.args().get("comments")
 
     # Only one of them should exist
-    assign_to_org = demisto.args()["assignOrganization"] if "assignOrganization" in demisto.args() else None
-    assign_to_person = demisto.args()["assignPerson"] if "assignPerson" in demisto.args() else None
+    assign_to_org = demisto.args().get("assignOrganization")
+    assign_to_person = demisto.args().get("assignPerson")
 
     if assign_to_org and assign_to_person:
         raise Exception("Unable to assign to both organization and a person, please choose only one")
@@ -497,7 +497,7 @@ def query_incident_workflow_request(num):
 
 """ COMMANDS MANAGER / SWITCH PANEL """
 
-LOG("Command being called is %s" % (demisto.command()))
+LOG(f"Command being called is {demisto.command()}")
 
 try:
     handle_proxy()

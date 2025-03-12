@@ -771,7 +771,7 @@ def test_archive_sensor_command(mocker):
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=test_reponse)
     command_output = archive_sensor_command(client, args)
     assert command_output.readable_output == (
-        "The selected Sensor with Sensor ID: 5e778834ef:PYLUMCLIENT_INTEGRATION_EC2AMAZ" " is not available for archive."
+        "The selected Sensor with Sensor ID: 5e778834ef:PYLUMCLIENT_INTEGRATION_EC2AMAZ is not available for archive."
     )
 
     test_reponse = MockResponse({"key1": "val1"}, 404)
@@ -793,7 +793,7 @@ def test_unarchive_sensor_command(mocker):
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=test_reponse)
     command_output = unarchive_sensor_command(client, args)
     assert command_output.readable_output == (
-        "The selected Sensor with Sensor ID: 5e778834ef:PYLUMCLIENT_INTEGRATION_EC2AMAZ " "is not available for unarchive."
+        "The selected Sensor with Sensor ID: 5e778834ef:PYLUMCLIENT_INTEGRATION_EC2AMAZ is not available for unarchive."
     )
 
     test_reponse = MockResponse({"key1": "val1"}, 404)
@@ -821,7 +821,7 @@ def test_delete_sensor_command(mocker):
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=test_reponse)
     command_output = delete_sensor_command(client, args)
     assert command_output.readable_output == (
-        "The selected Sensor with Sensor ID: 5e778834ef:PYLUMCLIENT_INTEGRATION_EC2AMAZ " "is not available for deleting."
+        "The selected Sensor with Sensor ID: 5e778834ef:PYLUMCLIENT_INTEGRATION_EC2AMAZ is not available for deleting."
     )
 
     test_reponse = MockResponse({"key1": "val1"}, 404)
@@ -843,7 +843,7 @@ def test_start_host_scan_command(mocker):
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=test_reponse)
     command_output = start_host_scan_command(client, args)
     assert command_output.readable_output == (
-        "Given Sensor ID/ID's ['5e778834ef:PYLUMCLIENT_INTEGRATION_EC2AMAZ'] is/are " "not available for scanning."
+        "Given Sensor ID/ID's ['5e778834ef:PYLUMCLIENT_INTEGRATION_EC2AMAZ'] is/are not available for scanning."
     )
 
     test_reponse = MockResponse({"key1": "val1"}, 404)

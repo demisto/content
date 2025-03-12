@@ -57,7 +57,7 @@ class pXScoring:
             indicator_type=DBotScoreType.IP,
             integration_name="PerimeterX",
             score=pXScoring.dbotscore_from_risk(risk_score, thresholds),
-            malicious_description="High risk score indicates high probability that the requests from the IP are " "malicious ",
+            malicious_description="High risk score indicates high probability that the requests from the IP are malicious ",
             reliability=demisto.params().get("integrationReliability"),
         )
 

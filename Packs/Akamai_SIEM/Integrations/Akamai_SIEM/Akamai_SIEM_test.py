@@ -157,8 +157,8 @@ class TestCommandsFunctions:
         mocker.patch.object(Akamai_SIEM.Client, "get_events_with_offset", side_effect=events)
         mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=(False, 1))
         total_events_count = 0
-        for events, _, total_events_count, auto_trigger_next_run in Akamai_SIEM.fetch_events_command(
-            client,  # noqa: B007
+        for _events, _, total_events_count, auto_trigger_next_run in Akamai_SIEM.fetch_events_command(  # noqa: B007
+            client,
             "3 days",
             220,
             "",
@@ -191,8 +191,8 @@ class TestCommandsFunctions:
         mocker.patch.object(Akamai_SIEM.Client, "get_events_with_offset", side_effect=events)
         mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=(False, 1))
         total_events_count = 0
-        for events, _, total_events_count, _ in Akamai_SIEM.fetch_events_command(
-            client,  # noqa: B007
+        for events, _, total_events_count, _ in Akamai_SIEM.fetch_events_command(  # noqa: B007
+            client,
             "3 days",
             220,
             "",
@@ -233,8 +233,8 @@ class TestCommandsFunctions:
         )
         total_events_count = 0
 
-        for events, offset, total_events_count, _ in Akamai_SIEM.fetch_events_command(
-            client,  # noqa: B007
+        for events, offset, total_events_count, _ in Akamai_SIEM.fetch_events_command(  # noqa: B007
+            client,
             "3 days",
             limit,
             "",
@@ -263,10 +263,10 @@ class TestCommandsFunctions:
         requests_mock.get(f"{BASE_URL}/50170?limit={size}&offset={last_offset}", text=SEC_EVENTS_EMPTY_TXT)
         mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=(False, 1))
 
-        for _, offset, total_events_count, _ in Akamai_SIEM.fetch_events_command(
+        for _, offset, total_events_count, _ in Akamai_SIEM.fetch_events_command(  # noqa: B007
             client,
             "12 hours",
-            size,  # noqa: B007
+            size,
             "50170",
             {"offset": last_offset},
             size,
@@ -296,8 +296,8 @@ class TestCommandsFunctions:
         requests_mock.get(f"{BASE_URL}/50170?limit=6&from=1575966002&offset=218d9", text=SEC_EVENTS_TXT)
         requests_mock.get(f"{BASE_URL}/50170?limit=6&from=1575966002&offset=318d8", text=SEC_EVENTS_EMPTY_TXT)
 
-        for _, offset, total_events_count, _ in Akamai_SIEM.fetch_events_command(
-            client,  # noqa: B007
+        for _, offset, total_events_count, _ in Akamai_SIEM.fetch_events_command(  # noqa: B007
+            client,
             "12 hours",
             6,
             "50170",
@@ -329,8 +329,8 @@ class TestCommandsFunctions:
         requests_mock.get(f"{BASE_URL}/50170?limit=6&offset=218d9", text=SEC_EVENTS_TXT)
         requests_mock.get(f"{BASE_URL}/50170?limit=6&offset=318d8", text=SEC_EVENTS_EMPTY_TXT)
 
-        for _, offset, total_events_count, _ in Akamai_SIEM.fetch_events_command(
-            client,  # noqa: B007
+        for _, offset, total_events_count, _ in Akamai_SIEM.fetch_events_command(  # noqa: B007
+            client,
             "12 hours",
             20,
             "50170",
@@ -362,8 +362,8 @@ class TestCommandsFunctions:
         requests_mock.get(f"{BASE_URL}/50170?limit=2&from=1575966002", text=SEC_EVENTS_TWO_RESULTS_TXT)
         requests_mock.get(f"{BASE_URL}/50170?limit=2&offset=117d9", text=SEC_EVENTS_TXT)
 
-        for _, offset, total_events_count, _ in Akamai_SIEM.fetch_events_command(
-            client,  # noqa: B007
+        for _, offset, total_events_count, _ in Akamai_SIEM.fetch_events_command(  # noqa: B007
+            client,
             "12 hours",
             2,
             "50170",
@@ -395,8 +395,8 @@ class TestCommandsFunctions:
         requests_mock.get(f"{BASE_URL}/50170?limit=2&from=1575750002", text=first_response_mock)
         mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=(False, 1))
         total_events_count = 0
-        for _, offset, total_events_count, _ in Akamai_SIEM.fetch_events_command(
-            client,  # noqa: B007
+        for _, offset, total_events_count, _ in Akamai_SIEM.fetch_events_command(  # noqa: B007
+            client,
             fetch_time="3 days",
             fetch_limit=fetch_limit,
             config_ids="50170",
@@ -549,7 +549,7 @@ def test_is_interval_doesnt_have_enough_time_to_run(
     import demistomock as demisto
 
     mocker.patch.object(demisto, "callingContext", {"context": {"TimeoutDuration": 300000000000}})
-    setattr(Akamai_SIEM, "EXECUTION_START_TIME", datetime(2024, 4, 10, 10, 0, 0))
+    Akamai_SIEM.EXECUTION_START_TIME = datetime(2024, 4, 10, 10, 0, 0)
     with freeze_time(freeze_mock):
         should_break, worst_case_time = Akamai_SIEM.is_interval_doesnt_have_enough_time_to_run(min_allowed_delta, worst_case_time)
         assert expected_time == worst_case_time
@@ -693,7 +693,7 @@ async def test_get_events_from_akamai_no_events(mocker, client, requests_mock):
             pass
     assert str(e.value) == "Interrupted execution"  # Ensure the exception indeed was the planned one.
     demisto_debug.assert_called_with(
-        "Running in interval = 1. No events were received from Akamai,going" " to sleep for 60 seconds."
+        "Running in interval = 1. No events were received from Akamai,going to sleep for 60 seconds."
     )
 
 
@@ -731,7 +731,7 @@ async def test_process_and_send_events_to_xsiam_skip_events_decoding(mocker):
             mocker.call(f"Running in interval = 1. got {len(events)} events, moving to processing events data."),
             mocker.call("Running in interval = 1. Skipping decode events."),
             mocker.call(
-                f"Running in interval = 1. Sending {len(events)} events to xsiam. " "latest event time is: 2020-06-04T20:43:42Z"
+                f"Running in interval = 1. Sending {len(events)} events to xsiam. latest event time is: 2020-06-04T20:43:42Z"
             ),
         ]
     )
@@ -789,7 +789,7 @@ async def test_process_and_send_events_to_xsiam_with_events_decoding(mocker):
             mocker.call(f"Running in interval = 1. got {len(events)} events, moving to processing events data."),
             mocker.call("Running in interval = 1. decoding events."),
             mocker.call(
-                f"Running in interval = 1. Sending {len(events)} events to xsiam. " "latest event time is: 2020-06-04T20:43:42Z"
+                f"Running in interval = 1. Sending {len(events)} events to xsiam. latest event time is: 2020-06-04T20:43:42Z"
             ),
         ]
     )

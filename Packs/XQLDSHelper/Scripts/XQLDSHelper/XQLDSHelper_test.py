@@ -179,7 +179,7 @@ class MainTester:
     ) -> Any:
         if self.__xql_responses is None:
             raise RuntimeError(
-                "xql.response is not configured." " This test case may have been expected to hit the cache, but it didn't."
+                "xql.response is not configured. This test case may have been expected to hit the cache, but it didn't."
             )
 
         if self.__xql_resp_iter is None:
@@ -189,7 +189,7 @@ class MainTester:
         if isinstance(conf, str):
             conf = {"type": "file", "path": conf}
 
-        ec_key = "PaloAltoNetworksXQL.GenericQuery" "(val.execution_id && val.execution_id == obj.execution_id)"
+        ec_key = "PaloAltoNetworksXQL.GenericQuery(val.execution_id && val.execution_id == obj.execution_id)"
         if isinstance(conf, dict):
             _type = conf.get("type")
             if _type == "file":
@@ -413,7 +413,7 @@ class TestXQLDSHelper:
                     main.main()
 
     @pytest.mark.parametrize(
-        argnames=("triple_quotes_to_string" ", input_template" ", output_template"),
+        argnames=("triple_quotes_to_string, input_template, output_template"),
         argvalues=[
             (
                 "false",

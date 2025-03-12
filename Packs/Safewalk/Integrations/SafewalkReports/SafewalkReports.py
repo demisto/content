@@ -18,7 +18,7 @@ class Client(BaseClient):
     def get_associated_users(self, devicetype):
         return json.loads(
             self._http_request(
-                method="GET", url_suffix="/reports/associated_users/?device_type=%s" % (devicetype), resp_type="text"
+                method="GET", url_suffix=f"/reports/associated_users/?device_type={devicetype}", resp_type="text"
             )
         )
 
@@ -85,9 +85,7 @@ class Client(BaseClient):
         return json.loads(
             self._http_request(
                 method="GET",
-                url_suffix="/reports/registrations/?begin_date={}&end_date={}&user_information={}".format(
-                    begindate, enddate, str(userinformation)
-                ),
+                url_suffix=f"/reports/registrations/?begin_date={begindate}&end_date={enddate}&user_information={str(userinformation)}",
                 resp_type="text",
             )
         )
@@ -101,7 +99,7 @@ class Client(BaseClient):
 
         p_search = ""
         if search is not None and search != "":
-            p_search = "&search=%s" % search
+            p_search = f"&search={search}"
 
         p_locked = ""
         if locked is not None and locked:
@@ -109,7 +107,7 @@ class Client(BaseClient):
 
         p_query_filter = ""
         if query_filter is not None and search != "":
-            p_query_filter = "&q=%s" % query_filter
+            p_query_filter = f"&q={query_filter}"
 
         return json.loads(
             self._http_request(
@@ -458,7 +456,7 @@ def main():
     demisto.debug(f"Command being called is {command}")
     try:
         client = Client(
-            base_url=base_url, verify=verify_certificate, headers={"Authorization": "Bearer %s" % auth_access_token}, proxy=proxy
+            base_url=base_url, verify=verify_certificate, headers={"Authorization": f"Bearer {auth_access_token}"}, proxy=proxy
         )
 
         if command == "safewalk-get-associated-users":

@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 """ IMPORTS """
 import urllib3
 import traceback
-from typing import List, Dict, Optional, Tuple, Generator
+from collections.abc import Generator
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -30,13 +30,13 @@ class Client(BaseClient):
     def __init__(
         self,
         url: str,
-        auth: Tuple[str, str],
-        threat_type: Optional[str] = None,
+        auth: tuple[str, str],
+        threat_type: str | None = None,
         verify: bool = False,
         proxy: bool = False,
-        read_time_out: Optional[float] = 120.0,
+        read_time_out: float | None = 120.0,
         tags: list = [],
-        tlp_color: Optional[str] = None,
+        tlp_color: str | None = None,
     ):
         """Constructor of Client and BaseClient
 
@@ -67,7 +67,7 @@ class Client(BaseClient):
             kwargs["timeout"] = (5.0, self.read_time_out)
         return super()._http_request(*args, **kwargs)
 
-    def build_iterator(self, begin_time: Optional[int] = None, end_time: Optional[int] = None) -> Generator:
+    def build_iterator(self, begin_time: int | None = None, end_time: int | None = None) -> Generator:
         """Builds an iterator from given data filtered by start and end times.
 
         Keyword Arguments:
@@ -111,15 +111,15 @@ class Client(BaseClient):
                     demisto.debug(f"total_pages set to {total_pages}")
 
                 threats = data.get("threats", [])
-                for t in threats:
-                    yield t
+                yield from threats
+
                 demisto.debug(f"{INTEGRATION_NAME} - pulling {cur_page+1}/{total_pages}. page size: {_RESULTS_PER_PAGE}")
                 cur_page += 1
             else:
                 return_error(f'{INTEGRATION_NAME} - no "data" in response')
 
     @classmethod
-    def _convert_block(cls, block: dict) -> Tuple[str, str]:
+    def _convert_block(cls, block: dict) -> tuple[str, str]:
         """Gets a Cofense block from blockSet and enriches it.
 
         Args:
@@ -140,7 +140,7 @@ class Client(BaseClient):
                 indicator_type = FeedIndicatorType.DomainGlob
         return indicator_type, value
 
-    def process_item(self, threat: dict) -> List[dict]:
+    def process_item(self, threat: dict) -> list[dict]:
         """Gets a threat and processes them.
 
         Arguments:
@@ -154,8 +154,8 @@ class Client(BaseClient):
             [{'value': 'ip', 'type': 'IP', 'rawJSON': \
 {'data_1': 'ip', 'blockType': 'IPv4 Address', 'value': 'ip', 'type': 'IP', 'threat_id': 123}}]
         """
-        results = list()
-        block_set: List[dict] = threat.get("blockSet", [])
+        results = []
+        block_set: list[dict] = threat.get("blockSet", [])
         threat_id = threat.get("id")
         for block in block_set:
             indicator, value = self._convert_block(block)
@@ -204,7 +204,7 @@ class Client(BaseClient):
 
         return results
 
-    def process_file_item(self, threat: dict) -> List[dict]:
+    def process_file_item(self, threat: dict) -> list[dict]:
         """Gets a threat and processes them.
 
         Arguments:
@@ -220,8 +220,8 @@ class Client(BaseClient):
             {'md5Hex': 'f57ba3e467c72bbdb44b0a65', 'fileName': 'abc.exe', 'value': 'f57ba3e467c72bbdb44b0a65',
             'type': 'File', 'threat_id': 123}}]
         """
-        results = list()
-        file_set: List[dict] = threat.get("executableSet", [])
+        results = []
+        file_set: list[dict] = threat.get("executableSet", [])
         threat_id = threat.get("id")
         for file in file_set:
             file_type = file.get("type")
@@ -268,7 +268,7 @@ class Client(BaseClient):
         return results
 
 
-def test_module(client: Client) -> Tuple[str, dict, dict]:
+def test_module(client: Client) -> tuple[str, dict, dict]:
     """A simple test module
 
     Arguments:
@@ -284,10 +284,10 @@ def test_module(client: Client) -> Tuple[str, dict, dict]:
 
 def fetch_indicators_command(
     client: Client,
-    begin_time: Optional[int] = None,
-    end_time: Optional[int] = None,
-    limit: Optional[int] = None,
-) -> List[Dict]:
+    begin_time: int | None = None,
+    end_time: int | None = None,
+    limit: int | None = None,
+) -> list[dict]:
     """Fetches the indicators from client.
 
     Arguments:
@@ -301,7 +301,7 @@ def fetch_indicators_command(
     Returns:
         List[Dict] -- List of indicators from threat
     """
-    indicators = list()
+    indicators = []
     for threat in client.build_iterator(begin_time=begin_time, end_time=end_time):
         # get maximum of limit
         new_indicators = client.process_item(threat)
@@ -314,7 +314,7 @@ def fetch_indicators_command(
     return indicators
 
 
-def build_fetch_times(fetch_time: str, last_fetch: Optional[dict] = None) -> Tuple[int, int]:
+def build_fetch_times(fetch_time: str, last_fetch: dict | None = None) -> tuple[int, int]:
     """Build the start and end time of the fetch session.
 
     Args:
@@ -332,7 +332,7 @@ def build_fetch_times(fetch_time: str, last_fetch: Optional[dict] = None) -> Tup
     return begin_time, end_time
 
 
-def parse_date_range_no_milliseconds(from_time: str) -> Tuple[int, int]:
+def parse_date_range_no_milliseconds(from_time: str) -> tuple[int, int]:
     """Gets a range back and return time before the string and to now.
     Without milliseconds.
 
@@ -350,7 +350,7 @@ def parse_date_range_no_milliseconds(from_time: str) -> Tuple[int, int]:
     return int(begin_time / 1000), int(end_time / 1000)
 
 
-def get_indicators_command(client: Client, args: dict) -> Tuple[str, list]:
+def get_indicators_command(client: Client, args: dict) -> tuple[str, list]:
     """Getting indicators into Demisto's incident.
 
     Arguments:
@@ -388,7 +388,7 @@ def main():
     url = "https://www.threathq.com"
     credentials = params.get("credentials", {})
     if not credentials:
-        raise DemistoException("Credentials are empty. " "Fill up the username/password fields in the integration configuration.")
+        raise DemistoException("Credentials are empty. Fill up the username/password fields in the integration configuration.")
 
     auth = (credentials.get("identifier"), credentials.get("password"))
     verify = not params.get("insecure")
