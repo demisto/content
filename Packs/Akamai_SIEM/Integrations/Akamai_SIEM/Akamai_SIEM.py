@@ -578,18 +578,18 @@ def fetch_events_command(
                             "ruleVersions",
                         ]:
                             event["attackData"][attack_data_key] = decode_message(  # type: ignore[index, attr-defined]
-                                event.get(
-                                    "attackData",  # type: ignore[attr-defined]
+                                event.get(  # type: ignore[attr-defined]
+                                    "attackData",
                                     {},
                                 ).get(attack_data_key, "")
                             )
                     if "httpMessage" in event:
                         event["httpMessage"]["requestHeaders"] = decode_url(  # type: ignore[index]
-                            event.get("httpMessage", {}).get("requestHeaders", "")
-                        )  # type: ignore[attr-defined]
+                            event.get("httpMessage", {}).get("requestHeaders", "")  # type: ignore[attr-defined]
+                        )
                         event["httpMessage"]["responseHeaders"] = decode_url(  # type: ignore[index]
                             event.get("httpMessage", {}).get("responseHeaders", "")
-                        )  # type: ignore[attr-defined]
+                        )
                 except Exception as e:
                     demisto.debug(f"Couldn't decode {event=}, reason: {e}")
                 finally:
@@ -732,11 +732,11 @@ async def process_and_send_events_to_xsiam(events: list[str], should_skip_decode
                         )
                 if "httpMessage" in event:
                     event["httpMessage"]["requestHeaders"] = decode_url(  # type: ignore[index]
-                        event.get("httpMessage", {}).get("requestHeaders", "")
+                        event.get("httpMessage", {}).get("requestHeaders", "")  # type: ignore[attr-defined]
                     )  # type: ignore[attr-defined]
                     event["httpMessage"]["responseHeaders"] = decode_url(  # type: ignore[index]
-                        event.get("httpMessage", {}).get("responseHeaders", "")
-                    )  # type: ignore[attr-defined]
+                        event.get("httpMessage", {}).get("responseHeaders", "")  # type: ignore[attr-defined]
+                    )
             except Exception as e:
                 demisto.debug(f"Couldn't decode {event=}, reason: {e}")
             finally:
@@ -1103,27 +1103,27 @@ async def xsiam_api_call_async_with_retries(
         )
         # in the last try we should raise an exception if any error occurred, including 429
         ok_codes = (200, 429) if attempt_num < num_of_attempts else None
-        async with (aiohttp.ClientSession() as session,
-                    session.post(urljoin(xsiam_url, "/logs/v1/xsiam"), data=zipped_data, headers=headers) as response):
-            try:
-                response.raise_for_status()  # This raises an exception for non-2xx status codes
-                status_code = response.status
-            except aiohttp.ClientResponseError as e:
-                if ok_codes and e.status in ok_codes:
-                    continue
-                else:
-                    header_msg = f"Error sending new {data_type} into XSIAM.\n"
-                    api_call_info = (
-                        "Parameters used:\n"
-                        f"\tURL: {xsiam_url}\n"
-                        f"\tHeaders: {json.dumps(e.headers, indent=8)}\n\n"
-                        f"Response status code: {e.status}\n"
-                        f"Error received:\n\t{e.message}\n"
-                        f"additional request info: \n\t{e.request_info}"
-                    )
+        async with aiohttp.ClientSession() as session:
+            async with session.post(urljoin(xsiam_url, "/logs/v1/xsiam"), data=zipped_data, headers=headers) as response:
+                try:
+                    response.raise_for_status()  # This raises an exception for non-2xx status codes
+                    status_code = response.status
+                except aiohttp.ClientResponseError as e:
+                    if ok_codes and e.status in ok_codes:
+                        continue
+                    else:
+                        header_msg = f"Error sending new {data_type} into XSIAM.\n"
+                        api_call_info = (
+                            "Parameters used:\n"
+                            f"\tURL: {xsiam_url}\n"
+                            f"\tHeaders: {json.dumps(e.headers, indent=8)}\n\n"
+                            f"Response status code: {e.status}\n"
+                            f"Error received:\n\t{e.message}\n"
+                            f"additional request info: \n\t{e.request_info}"
+                        )
 
-                    demisto.error(header_msg + api_call_info)
-                    demisto.updateModuleHealth(header_msg + e.message, is_error=True)
+                        demisto.error(header_msg + api_call_info)
+                        demisto.updateModuleHealth(header_msg + e.message, is_error=True)
 
         demisto.debug(f"received status code: {status_code}")
         if status_code == 429:

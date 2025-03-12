@@ -87,7 +87,7 @@ def endpoint_endpoint_extract(raw_json):
 
 
 def build_query_params(params):
-    list_params = [key + "=" + str(params[key]) for key in params.keys()]
+    list_params = [key + "=" + str(params[key]) for key in params]
     query_params = "&".join(list_params)
     return "?" + query_params if query_params else ""
 

@@ -513,7 +513,7 @@ def fetch_incidents(
             incident = {
                 "name": f"{INTEGRATION_NAME} Alert: {alert_id}",
                 # type: ignore
-                "occurred": dateparser.parse(alert.get("occurred"), settings={"TO_TIMEZONE": "UTC"}).strftime(DATE_FORMAT),
+                "occurred": dateparser.parse(alert.get("occurred"), settings={"TO_TIMEZONE": "UTC"}).strftime(DATE_FORMAT), # type: ignore[union-attr]
                 "severity": alert_severity_to_dbot_score(alert.get("severity")),
                 "rawJSON": json.dumps(alert),
             }

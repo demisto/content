@@ -42,8 +42,8 @@ class Client(BaseClient):
         global PATTERN
         scraped_indicators = list(  # type: ignore # noqa
             {
-                PATTERN.match(cell.text).group(0)
-                for cell in soup.select(  # type: ignore # noqa
+                PATTERN.match(cell.text).group(0)   # type: ignore # noqa
+                for cell in soup.select(    # type: ignore # noqa
                 "tbody tr td code"
                 )
                 if PATTERN.match(cell.text)}
