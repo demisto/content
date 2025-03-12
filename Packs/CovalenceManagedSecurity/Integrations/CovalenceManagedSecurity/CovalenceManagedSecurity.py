@@ -545,7 +545,7 @@ def comment_aro_command():
     return p.comment_aro(**args)
 
 
-def list_escalation_contacts(portal_instance, args):
+def list_escalation_contacts_command(portal_instance, args):
     contacts = []
     headers = ['priority', 'first_name', 'last_name', 'job_title', 'phone_number', 'secondary_phone', 'email', 'notes']
     result = portal_instance.list_escalation_contacts(**args)
@@ -576,7 +576,7 @@ def list_escalation_contacts(portal_instance, args):
     )
 
 
-def list_organization_key_contacts(portal_instance, args):
+def list_organization_key_contacts_command(portal_instance, args):
     contacts = []
     headers = ['first_name', 'last_name', 'phone_number', 'email', 'type']
     result = portal_instance.list_organization_contacts(**args)
@@ -605,7 +605,7 @@ def list_organization_key_contacts(portal_instance, args):
     )
 
 
-def list_organization_language(portal_instance, args):
+def list_organization_language_command(portal_instance, args):
     result = portal_instance.list_organization_language(**args)
     if result:
         readable_output = tableToMarkdown('Default Organization Language', result, headerTransform=string_to_table_header)
@@ -779,11 +779,11 @@ def main():
             )
             return_results(results)
         elif command == 'cov-mgsec-list-escalation-contacts':
-            return_results(list_escalation_contacts(portal_instance, args))
+            return_results(list_escalation_contacts_command(portal_instance, args))
         elif command == 'cov-mgsec-list-key-contacts':
-            return_results(list_organization_key_contacts(portal_instance, args))
+            return_results(list_organization_key_contacts_command(portal_instance, args))
         elif command == 'cov-mgsec-list-language':
-            return_results(list_organization_language(portal_instance, args))
+            return_results(list_organization_language_command(portal_instance, args))
         elif command == 'cov-mgsec-broker-ping':
             return_results(ping_broker_command(broker_instance))
         elif command == 'cov-mgsec-broker-list-org':
