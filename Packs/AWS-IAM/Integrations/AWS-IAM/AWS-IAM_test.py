@@ -638,8 +638,6 @@ def test_update_assume_role_policy_command(mocker: MockerFixture):
     mock_response = {'ResponseMetadata': {'HTTPStatusCode': 200}}
     mocker.patch.object(Boto3Client, 'update_assume_role_policy', return_value=mock_response)
 
-    
-
     role_name = 'test-role'
     document = {
         'Version': '2012-10-17',

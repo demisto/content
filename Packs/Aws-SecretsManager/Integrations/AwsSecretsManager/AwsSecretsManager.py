@@ -292,7 +292,7 @@ def aws_secrets_manager_secret_policy_delete_command(client: AWSClient, args: di
     if raw_response.get('ResponseMetadata', {}).get('HTTPStatusCode') != 200:
         raise DemistoException(f'Got unexpected result: {raw_response.get("ResponseMetadata")}.')
 
-    human_readable = f'The resource-based permission policy attached to the secret {secret_id} was successfully deleted.'
+    human_readable = f'Resource-based permission policy attached to the secret {secret_id} was successfully deleted.'
     return CommandResults(readable_output=human_readable, raw_response=raw_response)
 
 
