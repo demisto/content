@@ -494,7 +494,8 @@ def get_ipv4_command(
     human_readable = tableToMarkdown(
         'IPv4 Entity',
         indicator_formatted,
-        headers=["type", "value", "malicious_score", "occurrences_count", "country", "city", "asn_number", "asn_organization", "benign"],
+        headers=["type", "value", "malicious_score", "occurrences_count", "country", "city", "asn_number", "asn_organization",
+                 "benign"],
         headerTransform=indicator_header_transformer,
         removeNull=False,
     )
