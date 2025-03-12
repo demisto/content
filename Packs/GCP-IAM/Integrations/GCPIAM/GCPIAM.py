@@ -3873,7 +3873,7 @@ def gcp_iam_policy_binding_remove_command(client: Client, args: dict[str, Any]) 
     raw_response = client.gcp_iam_project_iam_policy_set_request(project_name, updated_bindings)
     demisto.debug(f'Role: {role} was updated with {len(members_to_remove)} members removed.')
 
-    human_readable = f'The role {role} was updated successfully. Binding to members {",".join(members_to_remove)} was removed.'
+    human_readable = f'Role {role} was updated successfully. Binding to members {",".join(members_to_remove)} was removed.'
     return CommandResults(readable_output=human_readable, raw_response=raw_response)
 
 

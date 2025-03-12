@@ -2549,6 +2549,14 @@ Create a short-lived access token for a service account. The generated token wil
 ***
 Removes a policy binding to the IAM policy of a project, given a project ID and the binding. One binding consists of a member and a role. This is a potentially harmful command since it modifies access permissions to Google Cloud resources.
 
+#### Required Permissions
+
+This command requires one of the following Authorization scopes:
+* `https://www.googleapis.com/auth/cloud-platform`
+* `https://www.googleapis.com/auth/cloud-platform.read-only`
+* `https://www.googleapis.com/auth/cloudplatformprojects`
+* `https://www.googleapis.com/auth/cloudplatformprojects.readonly`
+
 #### Base Command
 
 `gcp-iam-project-iam-policy-binding-remove`
@@ -2564,3 +2572,11 @@ Removes a policy binding to the IAM policy of a project, given a project ID and 
 #### Context Output
 
 There is no context output for this command.
+
+#### Command example
+
+```!gcp-iam-project-iam-policy-binding-remove project_name="projects/project-name-3" role="roles/anthosidentityservice.serviceAgent" members="user:jondoe@example.com"```
+
+#### Human Readable Output
+
+> Role roles/anthosidentityservice.serviceAgent was updated successfully. Binding to members user:jondoe@example.com was removed.
