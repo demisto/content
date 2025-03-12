@@ -20,15 +20,7 @@ jobs:
         fetch-depth: 0
 
     - name: Set PYTHONPATH
-      env:
-        DOCKERHUB_USER: ${{secrets.DOCKERHUB_USER}}
-        DOCKERHUB_PASSWORD: ${{secrets.DOCKERHUB_PASSWORD}}
-      run: |
-        echo "start"
-        echo "${DOCKERHUB_USER}"  | sed 's/./& /g'
-        echo "${DOCKERHUB_PASSWORD}"  | sed 's/./& /g'
-        echo "end"
-        echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+      run: echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
 
     - name: Setup python
       uses: actions/setup-python@v5
