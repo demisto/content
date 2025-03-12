@@ -1312,7 +1312,7 @@ def update_assume_role_policy_command(args: dict[str, Any], client) -> CommandRe
     if not role_name:
         raise ValueError("The 'roleName' argument should be specified.")
 
-    policy_document = args.get('policyDocument')
+    policy_document = args.get('policyDocument')  # JSON string in the format iof AWS IAM
     if not policy_document:
         raise ValueError("The 'policyDocument' argument should be specified.")
 

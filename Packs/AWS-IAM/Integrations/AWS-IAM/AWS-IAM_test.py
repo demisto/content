@@ -1,5 +1,5 @@
 import datetime
-
+import json
 import pytest
 import importlib
 import demistomock as demisto
@@ -88,6 +88,9 @@ class Boto3Client:
         pass
 
     def list_mfa_devices(self):
+        pass
+
+    def update_assume_role_policy(self):
         pass
 
     @property
@@ -621,3 +624,38 @@ def test_list_mfa_devices(mocker: MockerFixture, page_size: int):
 
     assert len(res.outputs["Devices"]) == page_size
     assert res.outputs_prefix == "AWS.IAM.MFADevices"
+
+
+def test_update_assume_role_policy_command(mocker: MockerFixture):
+    """
+    Given:
+        - AWS IAM roleName and policyDocument arguments.
+    When:
+        - Calling `update_assume_role_policy_command` function.
+    Assert:
+        - Ensure that readable output is correct.
+    """
+    mock_response = {'ResponseMetadata': {'HTTPStatusCode': 200}}
+    mocker.patch.object(Boto3Client, 'update_assume_role_policy', return_value=mock_response)
+
+    
+
+    role_name = 'test-role'
+    document = {
+        'Version': '2012-10-17',
+        'Statement':
+            [
+                {
+                    'Effect': 'Allow',
+                    'Principal': {'Service': ['ec2.amazonaws.com']},
+                    'Action': ['sts:AssumeRole']
+                }
+            ]
+    }
+
+    args = {'roleName': role_name, 'policyDocument': json.dumps(document)}
+    client = Boto3Client()
+
+    command_results = AWS_IAM.update_assume_role_policy_command(args, client)
+
+    assert command_results.readable_output == f'Assume role policy {role_name} was successfully updated.'
