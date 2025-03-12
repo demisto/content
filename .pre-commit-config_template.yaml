@@ -40,7 +40,7 @@ repos:
     parallel: false
     min_py_version: '3.7'
     args:
-    - --unsafe-fixes
+    - --fix
     args:nightly:
     - --config=nightly_ruff.toml
     args:ci:
