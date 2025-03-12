@@ -66,7 +66,7 @@ The documentation also includes examples of correlation rules for Veeam security
 
 # Screenshots
 
-![The Security Dashboard](./doc_files/Veeam_XSOAR_Dashboard.png)
+![The Security Dashboard](./doc_files/Veeam_Security_Activities_Dashboard_image.png)
 
 ![The Monitoring Dashboard](./doc_files/Veeam_Data_Platform_Monitoring_Dashboard_image.png)
 </~XSIAM>
