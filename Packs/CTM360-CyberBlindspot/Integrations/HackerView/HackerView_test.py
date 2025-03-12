@@ -128,6 +128,7 @@ def test_log(mock_log_type, mock_log_function, mock_message, mock_asserts, caplo
         - Ensure logged message is as expected.
     """
     from HackerView import log
+
     logging.getLogger().propagate = True
     with caplog.at_level(mock_log_type[0]):
         log(mock_log_type[1], mock_message)
@@ -158,12 +159,7 @@ def test_log(mock_log_type, mock_log_function, mock_message, mock_asserts, caplo
                 "timestamp": True,
                 "input_format_string": HV_INCOMING_DATE_FORMAT,
                 "output_format": "",
-                "kwargs": {
-                    "settings": {
-                        "TIMEZONE": "UTC+3",
-                        "TO_TIMEZONE": "UTC"
-                    }
-                }
+                "kwargs": {"settings": {"TIMEZONE": "UTC+3", "TO_TIMEZONE": "UTC"}},
             },
             1670270614000,
         ),
@@ -173,12 +169,7 @@ def test_log(mock_log_type, mock_log_function, mock_message, mock_asserts, caplo
                 "timestamp": False,
                 "input_format_string": HV_INCOMING_DATE_FORMAT,
                 "output_format": "",
-                "kwargs": {
-                    "settings": {
-                        "TIMEZONE": "UTC",
-                        "TO_TIMEZONE": "UTC"
-                    }
-                }
+                "kwargs": {"settings": {"TIMEZONE": "UTC", "TO_TIMEZONE": "UTC"}},
             },
             datetime(2022, 12, 5, 23, 3, 34),
         ),
@@ -188,13 +179,7 @@ def test_log(mock_log_type, mock_log_function, mock_message, mock_asserts, caplo
                 "timestamp": False,
                 "input_format_string": HV_INCOMING_DATE_FORMAT,
                 "output_format": HV_OUTGOING_DATE_FORMAT,
-                "kwargs":
-                    {
-                        "settings": {
-                            "TIMEZONE": "UTC",
-                            "TO_TIMEZONE": "UTC"
-                        }
-                    }
+                "kwargs": {"settings": {"TIMEZONE": "UTC", "TO_TIMEZONE": "UTC"}},
             },
             "05-12-2022 23:03",
         ),
@@ -220,20 +205,23 @@ def test_convert_time_string(mock_input, mock_args, mock_asserts, capfd, caplog)
             mock_args["input_format_string"],
             mock_args["output_format"],
             mock_args["timestamp"],
-            **mock_args["kwargs"]
+            **mock_args["kwargs"],
         )
         caplog.set_level(logging.INFO)
         assert result == mock_asserts
         if caplog.text:
-            assert f"{LOGGING_PREFIX} An error was encountered at `convert_time_string()` \
-                err=ValueError('The passed date string and/or format string is not valid')" in caplog.text
+            assert (
+                f"{LOGGING_PREFIX} An error was encountered at `convert_time_string()` \
+                err=ValueError('The passed date string and/or format string is not valid')"
+                in caplog.text
+            )
 
 
 @pytest.mark.parametrize(
     "mock_input_file,mock_assert_file",
     [
         ("fetch_incidents_response_valid.json", "incident_list_cmd_result_valid.json"),
-    ]
+    ],
 )
 def test_map_and_create_incident(mock_input_file, mock_assert_file):
     """
@@ -248,9 +236,9 @@ def test_map_and_create_incident(mock_input_file, mock_assert_file):
 
     mock_fetched_incident = load_mock_response(mock_input_file)[0]
     mock_assert = load_mock_response(mock_assert_file)[0]
-    del mock_assert['rawJson']
+    del mock_assert["rawJson"]
     result = map_and_create_incident(mock_fetched_incident)
-    del result['rawJson']
+    del result["rawJson"]
 
 
 @pytest.mark.parametrize(
@@ -259,7 +247,7 @@ def test_map_and_create_incident(mock_input_file, mock_assert_file):
         ("", ([], []), ([], [])),
         ("fetch_incidents_response_valid.json", 2, ([], [])),
         ("fetch_incidents_response_valid.json", -2, ([], [])),
-    ]
+    ],
 )
 def test_deduplicate_and_create_incidents(input_file_name, mock_input, mock_asserts, mock_last_fetch_ids, capfd, caplog):
     """
@@ -273,13 +261,11 @@ def test_deduplicate_and_create_incidents(input_file_name, mock_input, mock_asse
         - Create a new list of XSOAR-ready incidents only for incidents not found in the last run.
     """
     from HackerView import deduplicate_and_create_incidents
+
     with capfd.disabled():
         caplog.set_level(logging.DEBUG)
         if input_file_name:
-            mock_input = [
-                load_mock_response(input_file_name),
-                mock_last_fetch_ids[mock_input:] if mock_input != -2 else []
-            ]
+            mock_input = [load_mock_response(input_file_name), mock_last_fetch_ids[mock_input:] if mock_input != -2 else []]
         new_ids, unique_incidents = deduplicate_and_create_incidents(mock_input[1], mock_input[0])
         assert new_ids == mock_asserts[0]
         assert unique_incidents == mock_asserts[1]
@@ -290,7 +276,7 @@ def test_deduplicate_and_create_incidents(input_file_name, mock_input, mock_asse
     [
         ("PascalCaseTest", "pascal_case_test"),
         ("camelCaseTest", "camel_case_test"),
-    ]
+    ],
 )
 def test_to_snake_case(mock_input, mock_assert):
     """
@@ -314,45 +300,39 @@ def test_to_snake_case(mock_input, mock_assert):
     [
         (
             {
-                'mirror_direction': '',
+                "mirror_direction": "",
             },
-            DemistoException('Invalid "Mirroring Direction" Value')
+            DemistoException('Invalid "Mirroring Direction" Value'),
         ),
         (
             {
-                'mirror_direction': 'None',
-                'first_fetch': 'wrong',
+                "mirror_direction": "None",
+                "first_fetch": "wrong",
             },
-            DemistoException('Invalid "First Fetch" Value')
+            DemistoException('Invalid "First Fetch" Value'),
         ),
         (
             {
-                'mirror_direction': 'None',
-                'max_fetch': '-1',
+                "mirror_direction": "None",
+                "max_fetch": "-1",
             },
-            DemistoException(f'Invalid "Max Fetch" Value. Should be between 1 to {ABSOLUTE_MAX_FETCH}')
+            DemistoException(f'Invalid "Max Fetch" Value. Should be between 1 to {ABSOLUTE_MAX_FETCH}'),
         ),
         (
             {
-                'mirror_direction': 'None',
-                'date_from': 'wrong',
+                "mirror_direction": "None",
+                "date_from": "wrong",
             },
-            DemistoException('Invalid "Date From" Value (Does not match format "%d-%m-%Y %H:%M")')
+            DemistoException('Invalid "Date From" Value (Does not match format "%d-%m-%Y %H:%M")'),
         ),
         (
             {
-                'mirror_direction': 'None',
-                'date_to': 'wrong',
+                "mirror_direction": "None",
+                "date_to": "wrong",
             },
-            DemistoException('Invalid "Date To" Value (Does not match format "%d-%m-%Y %H:%M")')
+            DemistoException('Invalid "Date To" Value (Does not match format "%d-%m-%Y %H:%M")'),
         ),
-        (
-            {
-                'mirror_direction': 'None',
-                'api_key': {'password': ''}
-            },
-            DemistoException('Invalid "API Key" Value')
-        ),
+        ({"mirror_direction": "None", "api_key": {"password": ""}}, DemistoException('Invalid "API Key" Value')),
     ],
 )
 def test_test_module(mock_params, mock_side_effect, mock_client, mocker):
@@ -414,7 +394,7 @@ def test_get_mapping_fields_command(mocker):
             "status": "Active status of Incident.",
             "technologies": "Technologies on affected asset.",
             "ticket_id": "Ticket ID",
-            "timestamp": "DB timestamp."
+            "timestamp": "DB timestamp.",
         }
     }
     assert mappings.extract_mapping() == expected_mappings
@@ -474,7 +454,7 @@ def test_fetch_incidents_command(response_files_names, mock_params, mock_last_fe
     assert len(incidents) == 2
     assert len(next_run.get("last_fetch_ids", [])) == 3
     if incidents and incidents[0].get("xsoar_mirroring", {}).get("mirror_direction"):
-        assert (incidents[0].get("xsoar_mirroring", {}).get("mirror_id") == "HVI-11136324")
+        assert incidents[0].get("xsoar_mirroring", {}).get("mirror_id") == "HVI-11136324"
     assert incidents[0].get("name") == "SSL Expiring in 30 days"
     assert incidents[0].get("CustomFields", {}).get("issue_category") == ["Web Communication"]
 
@@ -525,14 +505,15 @@ def test_ctm360_hv_incident_list_command(response_file_name, mock_args, mock_ass
         - Fetch the list of incidents from the remote server.
     """
     from HackerView import ctm360_hv_incident_list_command
+
     patched_response = load_mock_response(response_file_name) if response_file_name else []
     mocker.patch.object(mock_client, "fetch_incidents", return_value=patched_response)
     cmd_results = ctm360_hv_incident_list_command(mock_client, mock_args)
     expected_results = load_mock_response(mock_asserts_file) if mock_asserts_file else []
-    cmd_results = cmd_results.to_context().get('Contents')
+    cmd_results = cmd_results.to_context().get("Contents")
     if cmd_results and expected_results:
-        cmd_results = [{k: v for k, v in item.items() if k != 'rawJson'} for item in cmd_results]
-        expected_results = [{k: v for k, v in item.items() if k != 'rawJson'} for item in expected_results]
+        cmd_results = [{k: v for k, v in item.items() if k != "rawJson"} for item in cmd_results]
+        expected_results = [{k: v for k, v in item.items() if k != "rawJson"} for item in expected_results]
     assert cmd_results == expected_results
 
 
@@ -547,12 +528,8 @@ def test_ctm360_hv_incident_list_command(response_file_name, mock_args, mock_ass
                 "timestamp": 1725453245000,
                 "confidence": "confirmed",
                 "cve_id": "CVE-2022-1292",
-                "cwe": [
-                    "CWE-78"
-                ],
-                "issue_category": [
-                    "Common Vulnerabilities"
-                ],
+                "cwe": ["CWE-78"],
+                "issue_category": ["Common Vulnerabilities"],
                 "issue_id": 20221292,
                 "issue_name": "Openssl 3.0.2 Vulnerability detected",
                 "status": "active",
@@ -560,21 +537,15 @@ def test_ctm360_hv_incident_list_command(response_file_name, mock_args, mock_ass
                 "severity": "critical",
                 "first_seen": "04-09-2024 12:34:03",
                 "last_seen": "26-10-2024 12:30:30",
-                "environments": [
-                    "Web Server",
-                    "Library"
-                ],
+                "environments": ["Web Server", "Library"],
                 "ip": "10.161.216.126",
                 "ticket_id": "HVI-11145070",
                 "ip_type": "dedicated",
-                "technologies": [
-                    "OpenSSL",
-                    "Apache"
-                ],
+                "technologies": ["OpenSSL", "Apache"],
                 "port": 443,
                 "asset_type": "ip",
                 "asset": "10.161.216.126",
-                "last_updated": 1733839847270
+                "last_updated": 1733839847270,
             },
         ),
         (
@@ -598,7 +569,7 @@ def test_ctm360_hv_incident_details_command(response_file_name, mock_args, mock_
     patched_response = load_mock_response(response_file_name)[0] if response_file_name else {}
     mocker.patch.object(mock_client, "fetch_incident", return_value=patched_response)
     cmd_results = ctm360_hv_incident_details_command(mock_client, mock_args)
-    assert cmd_results.to_context().get('Contents') == mock_asserts
+    assert cmd_results.to_context().get("Contents") == mock_asserts
 
 
 @pytest.mark.parametrize(
@@ -635,7 +606,7 @@ def test_ctm360_hv_incident_status_change_command(response_file_name, mock_args,
 
     mocker.patch.object(mock_client, "change_incident_status", return_value=load_mock_response(response_file_name))
     cmd_results = ctm360_hv_incident_status_change_command(mock_client, mock_args)
-    assert cmd_results.to_context().get('HumanReadable') == mock_asserts
+    assert cmd_results.to_context().get("HumanReadable") == mock_asserts
 
 
 @pytest.mark.parametrize(
@@ -672,41 +643,49 @@ def test_get_remote_data(mock_last_seen, mock_last_updated, mock_status, mock_cl
     progress_statuses = [
         ("Investigating", "Your team is actively investigating and examining this particular issue."),
         ("In Progress", "Your team has concluded its investigation and has shifted its focus to resolution."),
-        ("Fixed", "Your team has implemented all necessary changes and fixes to address this issue."
-         + " Our system will automatically label issues as resolved once they are no longer present."),
+        (
+            "Fixed",
+            "Your team has implemented all necessary changes and fixes to address this issue."
+            + " Our system will automatically label issues as resolved once they are no longer present.",
+        ),
         ("False Positive", "The identified problem was incorrectly tagged and may not be relevant."),
-        ("Acceptable Risk", "your organization deems any risk(s) linked to a particular issue as acceptable."
-         + " This categorization is intended for internal classification purposes."),
+        (
+            "Acceptable Risk",
+            "your organization deems any risk(s) linked to a particular issue as acceptable."
+            + " This categorization is intended for internal classification purposes.",
+        ),
     ]
 
     for mock_progress in progress_statuses:
-
         mock_result["progress_status"] = mock_progress[0]
-        mocker.patch.object(mock_client, 'fetch_incident', return_value=deepcopy(mock_result))
+        mocker.patch.object(mock_client, "fetch_incident", return_value=deepcopy(mock_result))
         mock_result2 = map_and_create_incident(deepcopy(mock_result)) if mock_status and isinstance(mock_result, dict) else []
         if isinstance(mock_result2, dict):
-            del mock_result2['rawJson']
+            del mock_result2["rawJson"]
         result = get_remote_data_command(mock_client, mock_args)
         entry = result.entries[0] if len(result.entries) >= 1 else []
 
         if isinstance(result.mirrored_object, dict):
-            del result.mirrored_object['rawJson']
+            del result.mirrored_object["rawJson"]
 
-        if convert_time_string(
-                mock_last_seen,
-                HV_INCOMING_DATE_FORMAT,
-                in_iso_format=True, is_utc=True, timestamp=True) == mock_last_updated:
+        if (
+            convert_time_string(mock_last_seen, HV_INCOMING_DATE_FORMAT, in_iso_format=True, is_utc=True, timestamp=True)
+            == mock_last_updated
+        ):
             if mock_status == "active":
-                assert entry == {'Type': 1, 'ContentsFormat': 'json', "Contents": {"dbotIncidentReopen": True}}
+                assert entry == {"Type": 1, "ContentsFormat": "json", "Contents": {"dbotIncidentReopen": True}}
             else:
                 close_reason = f'Incident was {"resolved" if mock_progress[0].lower() == "fixed" else "closed"}.'
-                assert entry == {'Type': 1, 'ContentsFormat': 'json', "Contents": {
-                    'dbotIncidentClose': True, 'closeReason': close_reason}}
+                assert entry == {
+                    "Type": 1,
+                    "ContentsFormat": "json",
+                    "Contents": {"dbotIncidentClose": True, "closeReason": close_reason},
+                }
 
             assert result.mirrored_object == mock_result2
 
-        elif mock_status != 'inactive':
-            assert entry == {'Type': 1, 'ContentsFormat': 'text', "Contents": mock_progress[1]}
+        elif mock_status != "inactive":
+            assert entry == {"Type": 1, "ContentsFormat": "text", "Contents": mock_progress[1]}
             assert result.mirrored_object == mock_result2
         else:
             assert result.mirrored_object == []
@@ -732,19 +711,16 @@ def test_get_modified_remote_data(mock_input_file, mock_client, mocker):
     from HackerView import get_modified_remote_data_command
 
     mock_args = {
-        'date_field': 'last_updated',
-        'order': 'asc',
-        'date_from': '1704183134',
-        'max_hits': 50,
-        'lastUpdate': "2024-01-02T13:30:21.172707565Z"
+        "date_field": "last_updated",
+        "order": "asc",
+        "date_from": "1704183134",
+        "max_hits": 50,
+        "lastUpdate": "2024-01-02T13:30:21.172707565Z",
     }
     mock_result = load_mock_response(mock_input_file)
-    mocker.patch.object(
-        mock_client, 'fetch_incidents',
-        return_value=mock_result
-    )
+    mocker.patch.object(mock_client, "fetch_incidents", return_value=mock_result)
     result = get_modified_remote_data_command(mock_client, mock_args)
-    mock_assert = [item['id'] for item in mock_result]
+    mock_assert = [item["id"] for item in mock_result]
     assert result.modified_incident_ids == mock_assert
 
 
@@ -759,9 +735,9 @@ def test_get_modified_remote_data(mock_input_file, mock_client, mocker):
                 "entries": [],
                 "status": IncidentStatus.ACTIVE,
                 "incidentChanged": False,
-                "delta": {"not_empty": "value"}
+                "delta": {"not_empty": "value"},
             },
-            f"{LOGGING_PREFIX} Incident 1 was not modified locally.."
+            f"{LOGGING_PREFIX} Incident 1 was not modified locally..",
         ),
         (
             "",
@@ -771,9 +747,9 @@ def test_get_modified_remote_data(mock_input_file, mock_client, mocker):
                 "entries": [],
                 "status": IncidentStatus.ARCHIVE,
                 "incidentChanged": True,
-                "delta": {"not_empty": "value"}
+                "delta": {"not_empty": "value"},
             },
-            f"{LOGGING_PREFIX} Modification to 2 is not configured for outgoing mirroring.."
+            f"{LOGGING_PREFIX} Modification to 2 is not configured for outgoing mirroring..",
         ),
         (
             "incident_status_change_response_valid.json",
@@ -783,9 +759,9 @@ def test_get_modified_remote_data(mock_input_file, mock_client, mocker):
                 "entries": [],
                 "status": IncidentStatus.DONE,
                 "incidentChanged": True,
-                "delta": {"not_empty": "value"}
+                "delta": {"not_empty": "value"},
             },
-            f"{LOGGING_PREFIX} Closing incident 3"
+            f"{LOGGING_PREFIX} Closing incident 3",
         ),
     ],
 )
@@ -802,9 +778,8 @@ def test_update_remote_system(mock_response_file, mock_args, mock_log_asserts, m
     from HackerView import update_remote_system_command
 
     with caplog.at_level(logging.INFO):
-
         if mock_response_file:
-            mocker.patch.object(mock_client, 'change_incident_status', return_value=load_mock_response(mock_response_file))
+            mocker.patch.object(mock_client, "change_incident_status", return_value=load_mock_response(mock_response_file))
         result = update_remote_system_command(mock_client, mock_args)
-        assert result == mock_args['remoteId']
+        assert result == mock_args["remoteId"]
         assert mock_log_asserts in caplog.text
