@@ -484,7 +484,7 @@ jobs:
             return 1  # Default to False if no conditions matched
           }
 
-          READMES=$(find . -type f -name "README.md" ! -path "*/node_modules/*") -type f -name "README.md")
+          READMES=$(find . -type f -name "README.md" ! -path "*/node_modules/*")
           if [ -z "$READMES" ]; then
             echo "No README.md files found. Skipping validation."
             exit 0
