@@ -117,7 +117,7 @@ class Client:
     @logger
     def azure_sql_db_list(self, server_name: str):
         return self.http_request(
-            "GET", f"resourceGroups/{self.resource_group_name}/providers/Microsoft.Sql/servers/" f"{server_name}/databases"
+            "GET", f"resourceGroups/{self.resource_group_name}/providers/Microsoft.Sql/servers/{server_name}/databases"
         )
 
     @logger
@@ -266,7 +266,7 @@ def azure_sql_servers_list_command(client: Client, args: Dict[str, str], resourc
     if isinstance(server_list_raw, str):  # if there is 404, an error message will return
         return CommandResults(readable_output=server_list_raw)
 
-    server_list_fixed = copy.deepcopy(server_list_raw.get("value", "")[offset_int : (offset_int + limit_int)])
+    server_list_fixed = copy.deepcopy(server_list_raw.get("value", "")[offset_int: (offset_int + limit_int)])
     for server in server_list_fixed:
         if properties := server.get("properties", {}):
             server.update(properties)
@@ -307,7 +307,7 @@ def azure_sql_db_list_command(client: Client, args: Dict[str, str]) -> CommandRe
     if isinstance(database_list_raw, str):  # if there is 404, an error message will return
         return CommandResults(readable_output=database_list_raw)
 
-    database_list_fixed = copy.deepcopy(database_list_raw.get("value", "")[offset_int : (offset_int + limit_int)])
+    database_list_fixed = copy.deepcopy(database_list_raw.get("value", "")[offset_int: (offset_int + limit_int)])
 
     for db in database_list_fixed:
         properties = db.get("properties", {})
@@ -360,7 +360,7 @@ def azure_sql_db_audit_policy_list_command(client: Client, args: Dict[str, str],
     if isinstance(audit_list_raw, str):  # if there is 404 then, error message will return
         return CommandResults(readable_output=audit_list_raw)
 
-    audit_list_fixed = copy.deepcopy(audit_list_raw.get("value", "")[offset_int : (offset_int + limit_int)])
+    audit_list_fixed = copy.deepcopy(audit_list_raw.get("value", "")[offset_int: (offset_int + limit_int)])
     for db in audit_list_fixed:
         db["serverName"] = server_name
         db["databaseName"] = db_name
@@ -572,7 +572,7 @@ def azure_sql_db_threat_policy_create_update_command(
         del fixed_response["properties"]
 
     human_readable = tableToMarkdown(
-        name=f"Create Or Update Database Threat Detection Policies for " f"{resource_group_name=}",
+        name=f"Create Or Update Database Threat Detection Policies for {resource_group_name=}",
         t=fixed_response,
         headerTransform=pascalToSpace,
         removeNull=True,
