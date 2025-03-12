@@ -929,7 +929,7 @@ class Client(BaseClient):
         Returns:
             response (Response): API response from Sophos.
         """
-        url_suffix = "endpoint/v1/settings/exploit-mitigation" f"/detected-exploits/{detected_exploit_id}"
+        url_suffix = f"endpoint/v1/settings/exploit-mitigation/detected-exploits/{detected_exploit_id}"
         return self._http_request(method="GET", headers=self.headers, url_suffix=url_suffix)
 
     def isolate_endpoint(self, endpoint_id: List[str], comment: Optional[str]) -> dict:
@@ -2052,7 +2052,7 @@ def validate_item_fields(args: dict[str, str]):
     for item_type in item_types:
         if args.get("item_type") == item_type and not args.get(camel_case_to_underscore(item_type)):
             raise DemistoException(
-                f"{item_type} item requires a value " f"in the {camel_case_to_underscore(item_type)} argument."
+                f"{item_type} item requires a value in the {camel_case_to_underscore(item_type)} argument."
             )
 
 
@@ -4379,7 +4379,7 @@ def main():
             error_string = "Wrong credentials (ID and / or secret) given."
         elif "SSL Certificate Verification Failed" in str(e):
             error_string = (
-                "SSL Certificate Verification Failed: Make sure that " "Sophos Central API servers have valid SSL certificate."
+                "SSL Certificate Verification Failed: Make sure that Sophos Central API servers have valid SSL certificate."
             )
         else:
             error_string = str(e)

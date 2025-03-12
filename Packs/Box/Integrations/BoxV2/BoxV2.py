@@ -120,7 +120,7 @@ class FolderShareLink:
         self.args = args
 
         if self.folder_id == "0":
-            raise DemistoException("The root folder is incapable of being shared. Please provide a " "valid folder id.")
+            raise DemistoException("The root folder is incapable of being shared. Please provide a valid folder id.")
 
     def prepare_request_object(self):
         """
@@ -171,7 +171,7 @@ class Client(BaseClient):
                 auth_params.get("cred_json", {}).get("password") or auth_params.get("credentials_json", "{}")
             )
         except ValueError as e:
-            raise DemistoException("Failed to parse the credentials JSON. Please verify the JSON is " "valid.", exception=e)
+            raise DemistoException("Failed to parse the credentials JSON. Please verify the JSON is valid.", exception=e)
         self.credentials = self.credentials_dict.get("boxAppSettings")
         self.client_id = self.credentials.get("clientID")
         self.app_auth = self.credentials.get("appAuth")
@@ -288,7 +288,7 @@ class Client(BaseClient):
         if as_user_arg is None:
             if not self.default_as_user:
                 raise DemistoException(
-                    "A user ID has not been specified. Please configure a default, or" " add the user ID in the as_user argument."
+                    "A user ID has not been specified. Please configure a default, or add the user ID in the as_user argument."
                 )
             return self.default_as_user
         else:
@@ -307,7 +307,7 @@ class Client(BaseClient):
             # In all cases, we retrieve the first (and ideally only) entry from the query.
             matched_user_id = response.get("entries")[0].get("id")
         except Exception as exception:
-            raise DemistoException("An error occurred while attempting to match the as_user to a" " valid ID", exception)
+            raise DemistoException("An error occurred while attempting to match the as_user to a valid ID", exception)
         return str(matched_user_id)
 
     def search_content(self, as_user: str, query_object: QueryHandler) -> dict[str, Any]:
@@ -562,7 +562,7 @@ class Client(BaseClient):
                         "Content-Type": "application/octet-stream",
                         "As-User": as_user,
                         "Content-length": str(file_size),
-                        "Content-Range": "bytes %s-%s/%s" % (index, offset - 1, file_size),
+                        "Content-Range": f"bytes {index}-{offset - 1}/{file_size}",
                         "Digest": f"SHA={base64.b64encode(part_content_sha1).decode('utf-8')}",
                     }
                 )
@@ -940,7 +940,7 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int | N
             raise ValueError(f"Invalid date: {arg_name}")
 
         return int(date.timestamp())
-    if isinstance(arg, (int, float)):
+    if isinstance(arg, int |float):
         # Convert to int if the input is a float
         return int(arg)
     raise ValueError(f'Invalid date: "{arg_name}"')
@@ -1072,7 +1072,7 @@ def remove_file_share_link_command(client: Client, args: dict[str, Any]) -> Comm
     response: dict = client.crud_file_share_link(file_share_link=file_share_link_obj, as_user=as_user, is_delete=True)
 
     return CommandResults(
-        readable_output=f"File Share Link for the file_id {file_share_link_obj.file_id} was " f"removed.",
+        readable_output=f"File Share Link for the file_id {file_share_link_obj.file_id} was removed.",
         outputs_prefix="Box.ShareLink",
         outputs_key_field="id",
         outputs=response,
@@ -1504,7 +1504,7 @@ def create_user_command(client: Client, args: dict[str, Any]) -> CommandResults:
     status: str = args.get("status")  # type:ignore
 
     if is_platform_access_only is False and login is None:
-        raise DemistoException("Box requires the Login argument when the argument" " `is_platform_access_only` is False")
+        raise DemistoException("Box requires the Login argument when the argument `is_platform_access_only` is False")
 
     response = client.create_update_user(
         as_user=as_user,
@@ -1689,7 +1689,7 @@ def test_module(client: Client, params: dict, first_fetch_time: int) -> str:
         response = client.get_current_user(params.get("default_user"))  # type:ignore
     elif params.get("isFetch"):
         if not params.get("as_user"):
-            raise DemistoException("In order to use fetch, a User ID for Fetching Incidents is " "required.")
+            raise DemistoException("In order to use fetch, a User ID for Fetching Incidents is required.")
         created_after = datetime.fromtimestamp(first_fetch_time, tz=UTC).strftime(DATE_FORMAT)
         response = client.list_events(
             as_user=params.get("as_user"),  # type:ignore

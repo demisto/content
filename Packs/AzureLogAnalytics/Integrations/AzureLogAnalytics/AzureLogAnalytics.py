@@ -187,7 +187,7 @@ def flatten_saved_search_object(saved_search_obj: dict[str, Any]) -> dict[str, A
 
 
 def tags_arg_to_request_format(tags) -> list[dict[str, str]] | None:
-    bad_arg_msg = "The `tags` argument is malformed. " "Value should be in the following format: `name=value;name=value`"
+    bad_arg_msg = "The `tags` argument is malformed. Value should be in the following format: `name=value;name=value`"
     if not tags:
         return None
     try:

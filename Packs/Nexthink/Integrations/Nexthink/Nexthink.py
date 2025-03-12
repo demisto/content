@@ -24,10 +24,10 @@ package = args.get("package", None)
 
 SEARCH_DEVICE_USING_IP = f"(select (*) (from device (where device ( eq ip_addresses (ip_address '{ip}')))))"
 SEARCH_DEVICE_USING_DEVICE = f"(select (*) (from device (where device ( eq name (string {device})))))"
-SEARCH_COMPLIANCE_PACKAGE_DEVICE = """(select ((device (*)) (package (*))) (from (device package)
-(with package (where package (eq name (pattern '*{}*')))
-(where device (eq name (pattern '{}')))))
-(limit 100))""".format(package, device)
+SEARCH_COMPLIANCE_PACKAGE_DEVICE = f"""(select ((device (*)) (package (*))) (from (device package)
+(with package (where package (eq name (pattern '*{package}*')))
+(where device (eq name (pattern '{device}')))))
+(limit 100))"""
 TEST_MODULE = "(select (name) (from device ) (limit 1))"
 
 

@@ -61,7 +61,8 @@ class BoxEventsParams(BaseModel):
     stream_type: str = "admin_logs"
     created_after: Optional[str]
     # validators
-    _normalize_after = validator("created_after", pre=True, allow_reuse=True)(get_box_events_timestamp_format)  # type: ignore[type-var]
+    _normalize_after = validator("created_after", pre=True, allow_reuse=True)(
+        get_box_events_timestamp_format)  # type: ignore[type-var]
     model_config = ConfigDict(validate_assignment=True)
 
 

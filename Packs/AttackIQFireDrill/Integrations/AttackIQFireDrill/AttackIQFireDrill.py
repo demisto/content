@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 
 """ IMPORTS """
 from requests import HTTPError
-from typing import Dict, Any
+from typing import Any
 from json.decoder import JSONDecodeError
 
 import json
@@ -174,7 +174,7 @@ def build_transformed_dict(src, trans_dict):
     """
     if isinstance(src, list):
         return [build_transformed_dict(x, trans_dict) for x in src]
-    res: Dict[str, Any] = {}
+    res: dict[str, Any] = {}
     for key, val in trans_dict.items():
         if isinstance(val, dict):
             # handle nested list
@@ -273,7 +273,7 @@ def activate_assessment_command():
     ass_id = demisto.getArg("assessment_id")
     try:
         raw_res = http_request("POST", f"/v1/assessments/{ass_id}/activate")
-        hr = raw_res["message"] if "message" in raw_res else f"Assessment {ass_id} activation was sent successfully."
+        hr = raw_res.get("message", f"Assessment {ass_id} activation was sent successfully.")
         demisto.results(hr)
     except HTTPError as e:
         return_error(create_invalid_id_err_msg(str(e), ["403"]))
@@ -499,11 +499,7 @@ def run_all_tests_in_assessment_command():
     try:
         params = {"on_demand_only": on_demand_only == "True"}
         raw_res = http_request("POST", f"/v1/assessments/{ass_id}/run_all_tests", params=params)
-        hr = (
-            raw_res["message"]
-            if "message" in raw_res
-            else f"Request to run all tests for assessment {ass_id} was sent successfully."
-        )
+        hr = raw_res.get("message", f"Request to run all tests for assessment {ass_id} was sent successfully.")
         demisto.results(hr)
     except HTTPError as e:
         return_error(create_invalid_id_err_msg(str(e), ["403"]))

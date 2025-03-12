@@ -816,7 +816,7 @@ def test_sophos_central_exploit_mitigation_get_command(requests_mock) -> None:
     mock_response = load_mock_response("exploit_mitigation_single.json")
     exploit_id = "c2824651-26c1-4470-addf-7b6bb6ac90b4"
     requests_mock.get(
-        f"{BASE_URL}/endpoint/v1/settings/" f"exploit-mitigation/applications/{exploit_id}",
+        f"{BASE_URL}/endpoint/v1/settings/exploit-mitigation/applications/{exploit_id}",
         json=mock_response,
     )
     client = init_mock_client(requests_mock)
@@ -891,7 +891,7 @@ def test_sophos_central_exploit_mitigation_update_command(requests_mock) -> None
     mock_response = load_mock_response("exploit_mitigation_single.json")
     exploit_id = "c2824651-26c1-4470-addf-7b6bb6ac90b4"
     requests_mock.patch(
-        f"{BASE_URL}/endpoint/v1/settings/" f"exploit-mitigation/applications/{exploit_id}",
+        f"{BASE_URL}/endpoint/v1/settings/exploit-mitigation/applications/{exploit_id}",
         json=mock_response,
     )
     client = init_mock_client(requests_mock)
@@ -940,7 +940,7 @@ def test_sophos_central_exploit_mitigation_delete_command(requests_mock) -> None
     mock_response = load_mock_response("deleted.json")
     exploit_id = "c2824651-26c1-4470-addf-7b6bb6ac90b4"
     requests_mock.delete(
-        f"{BASE_URL}/endpoint/v1/settings/" f"exploit-mitigation/applications/{exploit_id}",
+        f"{BASE_URL}/endpoint/v1/settings/exploit-mitigation/applications/{exploit_id}",
         json=mock_response,
     )
     client = init_mock_client(requests_mock)
@@ -995,7 +995,7 @@ def test_sophos_central_detected_exploit_get_command(requests_mock) -> None:
     mock_response = load_mock_response("detected_exploit_single.json")
     exploit_id = "b81aac51-2fc0-ab6a-asdf-7b6bb6ac90b4"
     requests_mock.get(
-        f"{BASE_URL}/endpoint/v1/settings/" f"exploit-mitigation/detected-exploits/{exploit_id}",
+        f"{BASE_URL}/endpoint/v1/settings/exploit-mitigation/detected-exploits/{exploit_id}",
         json=mock_response,
     )
     client = init_mock_client(requests_mock)
@@ -1922,7 +1922,7 @@ def test_get_client_data_case4(requests_mock, creds_type) -> None:
     requests_mock.get(f"{COMMON_BASE_URL}/{creds_type}/v1/tenants/{tenant_id}", status_code=404)
 
     error_msg = (
-        f"Value provided in tenant ID is not from managed tenants of " f"configured {creds_type} whose credentials are entered"
+        f"Value provided in tenant ID is not from managed tenants of configured {creds_type} whose credentials are entered"
     )
     with pytest.raises(DemistoException, match=error_msg):
         Client.get_client_data(tenant_id=tenant_id, bearer_token="dummy-bearer-token")
@@ -3575,7 +3575,7 @@ def test_sophos_central_usergroups_membership_get_invalid_page_parameter(request
     args = {"groupId": group_id, "sourceType": "custom", "page": "0", "pageSize": "0"}
     mock_response = load_mock_response("get_users_from_usergroup_page_not_found.json")
     requests_mock.get(
-        f"{BASE_URL}/common/v1/directory/user-groups/{group_id}/users?sourceType=custom&page=2&pageSize=50&" f"pageTotal=True",
+        f"{BASE_URL}/common/v1/directory/user-groups/{group_id}/users?sourceType=custom&page=2&pageSize=50&pageTotal=True",
         json=mock_response,
     )
     client = init_mock_client(requests_mock)

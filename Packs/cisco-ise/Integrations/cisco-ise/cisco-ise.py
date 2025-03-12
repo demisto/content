@@ -377,7 +377,7 @@ def update_endpoint_custom_attribute_command():
     endpoint_details = get_endpoint_details(endpoint_id)
 
     if "ERSEndPoint" not in endpoint_details:
-        return_error("Failed to get endpoint %s" % endpoint_id)
+        return_error(f"Failed to get endpoint {endpoint_id}")
 
     attribute_names = demisto.args().get("attributeName").split(",")
     attribute_values = demisto.args().get("attributeValue").split(",")
@@ -406,9 +406,9 @@ def update_endpoint_custom_attribute_command():
             updated_fields_string = " the new custom fields are: " + json.dumps(updated_fields_dict_list[0].get("newValue"))
         else:
             updated_fields_string = (
-                ", but the fields that you've tried to update already had that specific value " "or do not exist"
+                ", but the fields that you've tried to update already had that specific value or do not exist"
             )
-        demisto.results("Successfully updated endpoint %s" % endpoint_id + updated_fields_string)
+        demisto.results(f"Successfully updated endpoint {endpoint_id + updated_fields_string}")
 
     except Exception as e:
         raise Exception(f"Exception: Failed to update endpoint {endpoint_id}: " + str(e))
@@ -445,7 +445,7 @@ def update_endpoint_group_command():
     endpoint_details = get_endpoint_details(endpoint_id)
 
     if "ERSEndPoint" not in endpoint_details:
-        return_error("Failed to get endpoint %s" % endpoint_id)
+        return_error(f"Failed to get endpoint {endpoint_id}")
 
     try:
         updated_endpoint_details = {"ERSEndPoint": {}}  # type: Dict[str, Any]
@@ -801,7 +801,7 @@ def get_session_data_by_ip():
 
 
 def main():
-    LOG("Command being called is %s" % (demisto.command()))
+    LOG(f"Command being called is {demisto.command()}")
     try:
         handle_proxy()
         if demisto.command() == "test-module":

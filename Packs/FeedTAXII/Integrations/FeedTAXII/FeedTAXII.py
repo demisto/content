@@ -613,7 +613,7 @@ class TAXIIClient:
 
         if collection is None or collection == "":
             all_collections = self.get_all_collections()
-            return_error(f"No collection set. Here is a list of all accessible collections: " f"{str(all_collections)}")
+            return_error(f"No collection set. Here is a list of all accessible collections: {str(all_collections)}")
 
     def get_all_collections(self, is_raise_error=False):
         """Gets a list of all collections listed in the discovery service instance.

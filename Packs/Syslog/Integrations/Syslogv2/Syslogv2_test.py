@@ -1,6 +1,4 @@
-import io
 import json
-from typing import List
 
 import pytest
 from freezegun import freeze_time
@@ -24,7 +22,7 @@ from datetime import datetime
 
 
 def util_load_json(path):
-    with io.open(path, mode="r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -68,7 +66,7 @@ def test_parse_rfc_format_valid(test_case: dict, func: Callable[[bytes], SyslogM
         (
             rfc_test_data["rfc-3164"]["case_weird_message"],
             parse_rfc_3164_format,
-            "Could not parse the log message. Error was: PRI part must " "have 3, 4, or 5 bytes.",
+            "Could not parse the log message. Error was: PRI part must have 3, 4, or 5 bytes.",
         ),
         (
             rfc_test_data["rfc-3164"]["case_rfc-5424_format"],
@@ -80,12 +78,12 @@ def test_parse_rfc_format_valid(test_case: dict, func: Callable[[bytes], SyslogM
         (
             rfc_test_data["rfc-3164"]["case_garbage_timestamp"],
             parse_rfc_3164_format,
-            "Could not parse the log message. Error was: Timestamp " "must be followed by a space character.",
+            "Could not parse the log message. Error was: Timestamp must be followed by a space character.",
         ),
         (
             rfc_test_data["rfc-5424"]["case_weird_message"],
             parse_rfc_5424_format,
-            "Could not parse the log message. Error was: Unable to " "parse message: 'Some message not in rfc 5424 format'",
+            "Could not parse the log message. Error was: Unable to parse message: 'Some message not in rfc 5424 format'",
         ),
         (
             rfc_test_data["rfc-5424"]["case_rfc-3164_format"],
@@ -165,7 +163,7 @@ def test_parse_rfc_not_valid(test_case: dict, func: Callable[[bytes], SyslogMess
         ],
     ],
 )
-def test_fetch_samples(samples: List[dict], mocker):
+def test_fetch_samples(samples: list[dict], mocker):
     """
     Given:
 
@@ -483,9 +481,10 @@ def test_prepare_globals_and_create_server(message_regex, certificate, private_k
     import Syslogv2
 
     server: StreamServer = prepare_globals_and_create_server(33333, message_regex, certificate, private_key)
-    assert Syslogv2.MESSAGE_REGEX == message_regex
+    assert message_regex == Syslogv2.MESSAGE_REGEX
     if certificate and private_key:
-        assert "keyfile" in server.ssl_args and "certfile" in server.ssl_args
+        assert "keyfile" in server.ssl_args
+        assert "certfile" in server.ssl_args
     else:
         assert not server.ssl_args
     assert server.address[1] == 33333

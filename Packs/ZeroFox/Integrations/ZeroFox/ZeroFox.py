@@ -1291,7 +1291,7 @@ def get_modified_remote_data_command(client: ZFClient, args: dict[str, Any]) -> 
     except Exception as e:
         raise Exception(f"There was an error {e}, skip update")
 
-    demisto.debug(f"Fetched {len(alerts)} alerts that " f" were modified since {last_update}")
+    demisto.debug(f"Fetched {len(alerts)} alerts that  were modified since {last_update}")
     modified_alert_ids = [str(alert.get("id")) for alert in alerts]
 
     return GetModifiedRemoteDataResponse(

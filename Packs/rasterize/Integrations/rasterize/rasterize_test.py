@@ -138,7 +138,7 @@ def http_wait_server():
                 self.send_header("Content-type", "text/html")
                 self.end_headers()
                 self.wfile.write(
-                    bytes("<html><head><title>Test wait handler</title></head>" "<body><p>Test Wait</p></body></html>", "utf-8")
+                    bytes("<html><head><title>Test wait handler</title></head><body><p>Test Wait</p></body></html>", "utf-8")
                 )
                 self.flush_headers()
             except BrokenPipeError:  # ignore broken pipe as socket might have been closed

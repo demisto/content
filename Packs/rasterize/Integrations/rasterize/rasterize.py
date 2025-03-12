@@ -38,7 +38,7 @@ os.environ["HOME"] = tempfile.gettempdir()
 
 CHROME_EXE = os.getenv("CHROME_EXE", "/opt/google/chrome/google-chrome")
 USER_AGENT = (
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0" " Safari/537.36"
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"
 )
 CHROME_OPTIONS = [
     "--headless",
@@ -132,7 +132,6 @@ def excepthook_recv_loop(args):
     if args.exc_type in [json.decoder.JSONDecodeError, websocket._exceptions.WebSocketConnectionClosedException]:
         # Suppress
         demisto.debug(f"Suppressed Exception in _recv_loop: {args.exc_type=}")
-        pass
     else:
         demisto.info(f"Unsuppressed Exception in _recv_loop: {args.exc_type=}")
         if exc_value:
@@ -558,7 +557,7 @@ def chrome_manager() -> tuple[Any | None, str | None]:
         value[INSTANCE_ID]: {"chrome_port": key, CHROME_INSTANCE_OPTIONS: value[CHROME_INSTANCE_OPTIONS]}
         for key, value in chrome_instances_contents.items()
     }
-    if not chrome_instances_contents or instance_id not in instance_id_dict.keys():
+    if not chrome_instances_contents or instance_id not in instance_id_dict:
         return generate_new_chrome_instance(instance_id, chrome_options)
 
     elif chrome_options != instance_id_dict.get(instance_id, {}).get(CHROME_INSTANCE_OPTIONS, ""):

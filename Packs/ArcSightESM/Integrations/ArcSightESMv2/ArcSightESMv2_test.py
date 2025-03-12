@@ -131,7 +131,7 @@ def test_decoding_incidents():
             {"type": b"Message", "value": None},
             {"type": b"End Time", "value": b"1234"},
         ],
-        "rawJSON": '{"Event ID": "1234", "Start Time": "1234", "Name": "Test XSOAR",' ' "Message": null, "End Time": "1234"}',
+        "rawJSON": '{"Event ID": "1234", "Start Time": "1234", "Name": "Test XSOAR", "Message": null, "End Time": "1234"}',
     }
     d = ArcSightESMv2.decode_arcsight_output(incident)
     try:

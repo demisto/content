@@ -73,7 +73,7 @@ class Client:
                     # replacing TZ with UTC, taking its timestamp format and rounding it up.
                     parsed_date = parse(args[key])
                     assert parsed_date is not None
-                    filter_query += f"{api_key}:" f"{operator}{int(parsed_date.replace(tzinfo=UTC).timestamp())}+"
+                    filter_query += f"{api_key}:{operator}{int(parsed_date.replace(tzinfo=UTC).timestamp())}+"
 
         if filter_query.endswith("+"):
             filter_query = filter_query[:-1]
