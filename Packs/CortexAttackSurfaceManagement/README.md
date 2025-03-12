@@ -25,9 +25,7 @@ Aditionally, [a list of integrations used for the Active Response playbook can b
 
 ### Demo Video
 
-[![Active Response in Cortex Xpanse](./doc_files/Active_Response_in_Cortex_Xpanse.jpg)](https://www.youtube.com/watch?v=rryAQ23uuqw "Active Response in Cortex Xpanse")
-
-### Automated Remediation Requirements
+[![Active Response in Cortex Xpanse](./doc_files/Active_Response_in_Cortex_Xpanse.jpg)]
 
 Automated remediation is only possible when the right conditions are met.  These are the current requirements:
 
