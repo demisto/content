@@ -31,7 +31,7 @@ def parse_data(list_content):
                 list_number += 1
 
         return lists_data
-    return []
+    return []   # pragma: no cover
 
 
 def main():

@@ -12,7 +12,7 @@ def etl_to_pcap(etl_file_path, output_file_path):
     p.communicate()
 
 
-def get_file_name(entry_id):
+def get_file_name(entry_id):    # pragma: no cover
     ctx = demisto.context()
     res = demisto.dt(ctx, f"File(val['EntryID'] == '{entry_id}')")
     if res:
@@ -22,7 +22,7 @@ def get_file_name(entry_id):
     return None
 
 
-def main():
+def main():  # pragma: no cover
     entry_id = demisto.args().get("EntryID")
     res = demisto.getFilePath(entry_id)
     if not res or res.get("path") is None:
