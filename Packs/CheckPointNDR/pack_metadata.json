@@ -2,7 +2,7 @@
     "name": "Check Point Infinity NDR",
     "description": "Collect network security events from Check Point Infinity NDR for your secured SaaS periodically",
     "support": "partner",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.1.1",
     "author": "Check Point",
     "url": "https://supportcenter.checkpoint.com/",
     "email": "ndr@checkpoint.com",
@@ -20,7 +20,8 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "devEmail": [
         "maxn@checkpoint.com"
@@ -29,5 +30,11 @@
         "chkp-maxn"
     ],
     "dependencies": {},
-    "displayedImages": []
+    "displayedImages": [],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }

@@ -1,7 +1,7 @@
 id: Cloud Enrichment - Generic
 version: -1
 name: Cloud Enrichment - Generic
-description: |-
+description: |2-
 
   ## Generic Cloud Enrichment Playbook
 
@@ -322,3 +322,8 @@ quiet: false
 tests:
 - No tests (auto formatted)
 fromversion: 6.8.0
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS

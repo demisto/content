@@ -15,7 +15,8 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "dependencies": {
         "ServiceNow": {
@@ -70,5 +71,11 @@
         "CommonPlaybooks",
         "Malware",
         "FeedMitreAttackv2"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

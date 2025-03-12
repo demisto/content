@@ -14,13 +14,20 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "githubUser": [
         "FabienMht",
         "CesarGW",
         "ThibaultReboul",
-	"clement-lyonnet"
+        "clement-lyonnet"
     ],
-    "defaultDataSource": "GCenter 103"
+    "defaultDataSource": "GCenter 103",
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }
