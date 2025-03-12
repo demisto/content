@@ -139,7 +139,7 @@ class GraphPermissions(str, Enum):
 
 
 Perms = GraphPermissions  # alias for brevity
-COMMANDS_REQUIRED_PERMISSIONS: dict[str, list] = {
+COMMANDS_REQUIRED_PERMISSIONS: dict[str, list[GraphPermissions]] = {
     # Note: at the moment, the required permission names between credentials and auth code are the same.
     # Credentials require Application permissions while auth code requires delegated permissions
     'send-notification': [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL],
@@ -166,8 +166,16 @@ COMMANDS_REQUIRED_PERMISSIONS: dict[str, list] = {
     'microsoft-teams-chat-list': [Perms.USER_READ_ALL, Perms.CHAT_READBASIC, Perms.CHAT_CREATE],
     'microsoft-teams-chat-message-list': [Perms.USER_READ_ALL, Perms.CHAT_READ, Perms.CHAT_CREATE],
     'microsoft-teams-chat-update': [Perms.USER_READ_ALL, Perms.CHAT_READWRITE],
+    'microsoft-teams-message-update': [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL],
+    'microsoft-teams-integration-health': [],
+    'microsoft-teams-create-messaging-endpoint': [],
+    'microsoft-teams-generate-login-url': [],
+    'microsoft-teams-auth-test': [],
+    'microsoft-teams-auth-reset': [],
+    'microsoft-teams-token-permissions-list': [],
 }
-HIGHER_PERMISSIONS: dict[str, list] = {  # dict with some elevated permissions and some of the permissions they can replace
+HIGHER_PERMISSIONS: dict[GraphPermissions, list[GraphPermissions]] = {
+    # dict with some elevated permissions and some of the permissions they can replace
     # Note: This dict is not meant to be comprehensive, rather handle possible common cases of substitute permissions.
     Perms.CHAT_READWRITE: [Perms.CHATMESSAGE_SEND, Perms.CHAT_READ, Perms.CHAT_READBASIC, Perms.CHAT_CREATE],
     Perms.CHAT_READWRITE_ALL: [Perms.CHAT_READWRITE, Perms.CHAT_READ, Perms.CHATMESSAGE_SEND,
@@ -3236,7 +3244,7 @@ def expand_permission_list(permissions: list[str]) -> set[str]:
     for permission in permissions:
         expanded_permissions.add(permission)
         if permission in HIGHER_PERMISSIONS:
-            expanded_permissions.update(HIGHER_PERMISSIONS[permission])
+            expanded_permissions.update(HIGHER_PERMISSIONS[GraphPermissions(permission)])
 
     demisto.debug(f'Expanded token permission list: {expanded_permissions}')
     return expanded_permissions

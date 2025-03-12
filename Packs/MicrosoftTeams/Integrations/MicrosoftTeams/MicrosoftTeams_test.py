@@ -2859,10 +2859,10 @@ def test_message_update(mocker, requests_mock):
 
 
 @pytest.mark.parametrize('permissions, expected_out', [
-    ([Perms.GROUP_READWRITE_ALL], {
+    ([Perms.GROUP_READWRITE_ALL.value], {
         Perms.GROUP_READWRITE_ALL, Perms.GROUP_READ_ALL, Perms.GROUPMEMBER_READ_ALL,
         Perms.CHANNEL_CREATE, Perms.CHANNEL_READBASIC_ALL, Perms.CHANNEL_DELETE_ALL}),
-    ([Perms.CHAT_READWRITE, Perms.USER_READ_ALL, 'UnknownPerm.Read'], {
+    ([Perms.CHAT_READWRITE.value, Perms.USER_READ_ALL.value, 'UnknownPerm.Read'], {
         Perms.CHAT_READWRITE, Perms.CHAT_READ, Perms.CHAT_READBASIC, Perms.CHAT_CREATE,
         Perms.CHATMESSAGE_SEND, Perms.USER_READ_ALL, Perms.USER_READ, 'UnknownPerm.Read'}),
 ])
@@ -2898,7 +2898,7 @@ def test_insufficient_permissions_handler(mocker, command, expected_missing):
     """
     from MicrosoftTeams import insufficient_permissions_error_handler, create_missing_permissions_section
 
-    mock_permissions = [Perms.USER_READ_ALL, Perms.CHATMESSAGE_SEND]
+    mock_permissions = [Perms.USER_READ_ALL.value, Perms.CHATMESSAGE_SEND.value]
 
     mocker.patch.object(demisto, 'command', return_value=command)
     mocker.patch('MicrosoftTeams.get_token_permissions', return_value=mock_permissions)
@@ -2910,3 +2910,25 @@ def test_insufficient_permissions_handler(mocker, command, expected_missing):
 
     assert error_msg
     assert set(missing_permissions_mock.call_args[0][0]) == expected_missing
+
+
+def test_commands_required_includes_all_commands():
+    """
+    A list of required permissions should be added to COMMANDS_REQUIRED_PERMISSIONS
+    whenever a new command is added.
+
+    Given:
+        - COMMANDS_REQUIRED_PERMISSIONS dict.
+    When:
+        - An integration command is defined in the yml.
+    Then:
+        - A permissions required entry exists in the dict for the command.
+    """
+    from MicrosoftTeams import COMMANDS_REQUIRED_PERMISSIONS
+    import yaml
+
+    with open('MicrosoftTeams.yml') as f:
+        yml = yaml.safe_load(f)
+
+    for command in yml['script']['commands']:
+        assert command['name'] in COMMANDS_REQUIRED_PERMISSIONS
