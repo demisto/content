@@ -2042,6 +2042,9 @@ def fetch_incidents():
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('time')
     last_fetch_held_messages = last_run.get('time_held_messages')
+    new_last_fetch_held_messages = None
+    held_message_next_page = None
+    next_dedup_held_messages = None
     demisto.debug(f"Before fetch {last_run=}")
 
     # handle first time fetch
@@ -2160,7 +2163,7 @@ def fetch_incidents():
         demisto.debug(f"{current_next_page=}")
         demisto.debug(f"{dedup_held_messages=}")
         demisto.debug(f"{time_held_messages_for_next_page=}")
-        next_page, next_dedup_held_messages, new_last_fetch_held_messages = fetch_held_messages(last_fetch_held_messages_date_time,
+        held_message_next_page, next_dedup_held_messages, new_last_fetch_held_messages = fetch_held_messages(last_fetch_held_messages_date_time,
                                                                                                 time_held_messages_for_next_page_date_time,
                                                                                                 last_fetch_held_messages,
                                                                                                 current_fetch_held_message,
@@ -2169,12 +2172,16 @@ def fetch_incidents():
                                                                                                 incidents)
 
     time = last_fetch.isoformat().split('.')[0] + 'Z'
-    time_held_messages = new_last_fetch_held_messages.isoformat().split('.')[0] + 'Z'
-    new_last_run = {'time': time,
-                    'dedup_held_messages': next_dedup_held_messages,
-                    'time_held_messages': time_held_messages}
-    if next_page:
-        new_last_run['held_message_next_page'] = next_page
+    new_last_run = {'time': time}
+    if next_dedup_held_messages:
+        new_last_run = {'time': time,
+                        'dedup_held_messages': next_dedup_held_messages
+        }
+    if new_last_fetch_held_messages:
+        time_held_messages = new_last_fetch_held_messages.isoformat().split('.')[0] + 'Z'
+        new_last_run['time_held_messages'] = time_held_messages
+    if held_message_next_page:
+        new_last_run['held_message_next_page'] = held_message_next_page
         new_last_run['time_held_messages_for_next_page'] = last_fetch_held_messages.isoformat().split('.')[0] + 'Z'
     demisto.setLastRun(new_last_run)
     demisto.debug(f"Changed last_run to {new_last_run=}")
