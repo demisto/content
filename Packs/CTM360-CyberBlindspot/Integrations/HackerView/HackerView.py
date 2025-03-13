@@ -274,10 +274,10 @@ def deduplicate_and_create_incidents(fetched_incidents: list, last_run_incident_
             incident_id = incident.get("id")
             new_incident_ids.append(incident_id)
         except Exception as e:
-            log(ERROR, f"Skipping insertion of current incident. Error while fetching ID from {incident=}" f"Error: {str(e)}")
+            log(ERROR, f"Skipping insertion of current incident. Error while fetching ID from {incident=}Error: {str(e)}")
             continue
         if last_run_incident_identifiers and incident_id in last_run_incident_identifiers:
-            log(INFO, "Skipping insertion of current incident since it already exists." f" \n\n {incident=}")
+            log(INFO, f"Skipping insertion of current incident since it already exists. \n\n {incident=}")
             continue
         log(DEBUG, "Creating unique incident")
         unique_mapped_incident = map_and_create_incident(incident)
@@ -385,7 +385,7 @@ def test_module(client: Client, params) -> str:
             raise DemistoException('Invalid "API Key" Value')
         incidents = client.test_configuration(args)
         if max_fetch and len(incidents) > max_fetch:
-            log(INFO, "Incidents fetched exceed the limit, " f"removing the excess {len(incidents) - max_fetch} incidents.")
+            log(INFO, f"Incidents fetched exceed the limit, removing the excess {len(incidents) - max_fetch} incidents.")
             incidents = incidents[:: max_fetch - 1]
         message = "ok"
     except DemistoException as e:
@@ -428,7 +428,7 @@ def fetch_incidents(
 
     max_fetch = arg_to_number(params.get("max_hits")) or MAX_FETCH
     if max_fetch and len(incidents) > max_fetch:
-        log(INFO, "Incidents fetched exceed the limit" f", removing the excess {len(incidents) - max_fetch} incidents.")
+        log(INFO,  f"Incidents fetched exceed the limit, removing the excess {len(incidents) - max_fetch} incidents.")
         incidents = incidents[:: max_fetch - 1]
 
     if not incidents and not last_run:
@@ -533,7 +533,7 @@ def get_remote_data_command(client: Client, args: dict) -> GetRemoteDataResponse
             entries.append(entry | {"Contents": note})
 
     else:
-        log(DEBUG, f'This status value `{updated_incident.get("status")}`' f'for incident {remote_incident_id}.')
+        log(DEBUG, f'This status value `{updated_incident.get("status")}`for incident {remote_incident_id}.')
         return GetRemoteDataResponse([], [])
     log(DEBUG, f"Updated incident {remote_incident_id}")
     mapped_updated_incident = map_and_create_incident(updated_incident)
@@ -553,7 +553,7 @@ def get_modified_remote_data_command(client: Client, args) -> GetModifiedRemoteD
     modified_incident_ids: list = []
     remote_args = GetModifiedRemoteDataArgs(args)
     last_timestamp = convert_time_string(remote_args.last_update, "", timestamp=True)
-    log(DEBUG, "Performing get-modified-remote-data command with : " f"{last_timestamp}({remote_args.last_update})")
+    log(DEBUG, f"Performing get-modified-remote-data command with : {last_timestamp}({remote_args.last_update})")
 
     params = {
         "date_field": "last_updated",
@@ -599,7 +599,7 @@ def update_remote_system_command(client: Client, args: dict) -> str:
                 log(DEBUG, f"Closing incident {remote_incident_id}")
                 client.change_incident_status({"issue_id": remote_incident_id, "t": datetime.now().timestamp()})
             else:
-                log(DEBUG, f"Modification to {remote_incident_id} " "is not configured for outgoing mirroring..")
+                log(DEBUG, f"Modification to {remote_incident_id} is not configured for outgoing mirroring..")
         else:
             log(DEBUG, f"Incident {remote_incident_id} was not modified locally..")
     except DemistoException as e:
@@ -691,7 +691,7 @@ def ctm360_hv_incident_status_change_command(client: Client, args: dict[str, Any
     params = {"issue_id": params.pop("ticket_id", ""), "issue_status": params.pop("ticket_status", ""), **params}
     result = client.change_incident_status(params)
     msg = result.get("message", "")
-    log(INFO, f'Request to change status of incident {args["ticketId"]} ' f'{"was " if result else "was un"}successful.')
+    log(INFO, f'Request to change status of incident {args["ticketId"]} {"was " if result else "was un"}successful.')
 
     return CommandResults(readable_output=msg)
 

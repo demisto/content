@@ -4,7 +4,7 @@ from CommonServerPython import *  # noqa: F401
 """
 Check Point Threat Emulation (SandBlast) API Integration for Cortex XSOAR (aka Demisto).
 """
-from typing import Dict, Any, List
+from typing import Any
 from CommonServerUserPython import *
 
 
@@ -89,13 +89,13 @@ class Client(BaseClient):
 
     def query_request(
         self,
-        features: List[str],
-        reports: List[str],
+        features: list[str],
+        reports: list[str],
         method: str,
         file_name: str = None,
-        extracted_parts_codes: List[int] = None,
+        extracted_parts_codes: list[int] = None,
         **kwargs,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Return an analysis report or status of a file that was uploaded according to a file hash.
 
@@ -137,13 +137,13 @@ class Client(BaseClient):
         file_path: str,
         file_name: str,
         file_type: str,
-        features: List[str],
-        image_ids: List[str],
-        image_revisions: List[Optional[int]],
-        reports: List[str],
+        features: list[str],
+        image_ids: list[str],
+        image_revisions: list[Optional[int]],
+        reports: list[str],
         method: str,
-        extracted_parts_codes: List[int] = None,
-    ) -> Dict[str, Any]:
+        extracted_parts_codes: list[int] = None,
+    ) -> dict[str, Any]:
         """
         Once the file has been uploaded return an analysis report or status of a file
         that was uploaded.
@@ -202,7 +202,7 @@ class Client(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="/download", params={"id": file_id}, resp_type="response")
 
-    def quota_request(self) -> Dict[str, Any]:
+    def quota_request(self) -> dict[str, Any]:
         """
         Return the quota information about current API key.
 
@@ -253,7 +253,7 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def file_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """
     Get file_hash list from user input and check if they are in the correct format.
     Client will make a Query request with every file_hash,
@@ -270,7 +270,7 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
         List[CommandResults]: Indicator for every file_hash
     """
     files = argToList(args["file"])
-    command_results: List[CommandResults] = []
+    command_results: list[CommandResults] = []
 
     for file_hash in files:
         try:
@@ -333,7 +333,7 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     return command_results
 
 
-def query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def query_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Query information of a file.
     The command will be a bridge between the client request and the presented value to the user.
@@ -399,7 +399,7 @@ def query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def upload_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def upload_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Upload a file to the server.
     The command will be a bridge between the client request and the presented value to the user.
@@ -478,7 +478,7 @@ def upload_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def download_command(client: Client, args: Dict[str, Any]) -> Any:
+def download_command(client: Client, args: dict[str, Any]) -> Any:
     """
     Download a file from the server.
     The command will be a bridge between the client request and the presented value to the user.
@@ -507,7 +507,7 @@ def download_command(client: Client, args: Dict[str, Any]) -> Any:
     return fileResult(filename=file_name, data=output.content)
 
 
-def quota_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def quota_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get quota information about an API key.
     The command will be a bridge between the client request and the presented value to the user.
@@ -545,7 +545,7 @@ def quota_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 """ POLLING COMMANDS """
 
 
-def setup_upload_polling_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def setup_upload_polling_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Initiate polling command for upload command.
 
@@ -566,7 +566,7 @@ def setup_upload_polling_command(client: Client, args: Dict[str, Any]) -> Comman
     timeout=arg_to_number(demisto.args().get("timeout_in_seconds", DEFAULT_TIMEOUT)),
     requires_polling_arg=False,
 )
-def upload_polling_command(args: Dict[str, Any], **kwargs) -> PollResult:
+def upload_polling_command(args: dict[str, Any], **kwargs) -> PollResult:
     """
     Polling command to display the progress of the upload command.
     After the first run, progress will be shown through the query command.
@@ -610,7 +610,7 @@ def upload_polling_command(args: Dict[str, Any], **kwargs) -> PollResult:
 """ HELPER FUNCTIONS """
 
 
-def get_analysis_context_output(output: Dict[str, Any]) -> Dict[str, Any]:
+def get_analysis_context_output(output: dict[str, Any]) -> dict[str, Any]:
     av = dict_safe_get(output, ["av"])
     malware_info = dict_safe_get(av, ["malware_info"])
     extraction = dict_safe_get(output, ["extraction"])
@@ -670,7 +670,7 @@ def get_analysis_context_output(output: Dict[str, Any]) -> Dict[str, Any]:
     )
 
 
-def get_analysis_readable_output(features: List[str], output: Dict[str, Any], command: str) -> Any:
+def get_analysis_readable_output(features: list[str], output: dict[str, Any], command: str) -> Any:
     """
     Get a response outputs and set them to be readable outputs with tableToMarkdown.
 
@@ -780,7 +780,7 @@ def get_analysis_readable_output(features: List[str], output: Dict[str, Any], co
     return readable_output
 
 
-def get_dbotscore(response: Dict[str, Any]) -> int:
+def get_dbotscore(response: dict[str, Any]) -> int:
     """
     Response received from the API request which holds fields that will help indicate the DBotScore.
 
@@ -814,7 +814,7 @@ def get_dbotscore(response: Dict[str, Any]) -> int:
     return score
 
 
-def get_file_indicator(file_hash: str, hash_type: str, response: Dict[str, Any], reliability: str) -> Common.File:
+def get_file_indicator(file_hash: str, hash_type: str, response: dict[str, Any], reliability: str) -> Common.File:
     """
     Returns a file indicator that could potentially be malicious and will be checked for reputation.
 
@@ -863,7 +863,7 @@ def get_date_string(timestamp_string: str = "0") -> str:
     return timestamp_to_datestring(timestamp)
 
 
-def get_quota_context_output(outputs: Dict[str, Any]) -> Dict[str, Any]:
+def get_quota_context_output(outputs: dict[str, Any]) -> dict[str, Any]:
     """
     Convert outputs keys to PascalCase and convert any timestamp to date format.
 
@@ -902,7 +902,7 @@ def get_quota_context_output(outputs: Dict[str, Any]) -> Dict[str, Any]:
         "QuotaExpiration",
     ]
 
-    output: Dict[str, Any] = {}
+    output: dict[str, Any] = {}
 
     for context_output, response in response_by_context.items():
         output[context_output] = outputs.get(response)
@@ -921,8 +921,8 @@ def main() -> None:
     Getting data from instance setting and setting up the class Client with an API key.
     Checking user input command with if statements and a dictionary.
     """
-    params: Dict[str, Any] = demisto.params()
-    args: Dict[str, Any] = demisto.args()
+    params: dict[str, Any] = demisto.params()
+    args: dict[str, Any] = demisto.args()
     command = demisto.command()
 
     api_key = params["credentials"]["password"]

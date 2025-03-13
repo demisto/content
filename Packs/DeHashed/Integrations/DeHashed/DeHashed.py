@@ -105,9 +105,9 @@ def test_module(client: Client) -> str:
 
 def validate_filter_parameters(results_from_value, results_to_value):
     if results_to_value <= 0:
-        raise DemistoException(f'Argument "results_to" expected to be greater than zero, but given:' f" {results_to_value}")
+        raise DemistoException(f'Argument "results_to" expected to be greater than zero, but given: {results_to_value}')
     elif results_from_value <= 0:
-        raise DemistoException(f'Argument "results_from" expected to be greater than zero, but given:' f" {results_from_value}")
+        raise DemistoException(f'Argument "results_from" expected to be greater than zero, but given: {results_from_value}')
     elif results_to_value > results_from_value:
         raise DemistoException('Argument "results_to" expected to be less than or equal to "results_from"')
 
@@ -128,7 +128,7 @@ def filter_results(entries: list, results_from: int | None, results_to: int | No
         results_to = len(entries)
     validate_filter_parameters(results_to, results_from)
 
-    return entries[results_from - 1 : results_to], results_from, results_to
+    return entries[results_from - 1: results_to], results_from, results_to
 
 
 def arg_to_int(arg_val: str | None, arg_name: str | None) -> int | None:

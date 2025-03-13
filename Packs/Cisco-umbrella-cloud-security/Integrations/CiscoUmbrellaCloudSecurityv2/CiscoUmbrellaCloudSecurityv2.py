@@ -113,7 +113,7 @@ class Client(BaseClient):
                     return res.get("access_token")
             except Exception as e:
                 return_error(
-                    f"Error occurred while creating an access token. Please check the instance configuration." f"\n\n{e.args[0]}"
+                    f"Error occurred while creating an access token. Please check the instance configuration.\n\n{e.args[0]}"
                 )
 
     def _get_destination_payload(
@@ -698,7 +698,7 @@ def add_destination_command(client: Client, args: dict[str, Any]) -> CommandResu
 
     return CommandResults(
         readable_output=(
-            f'The destination(s) "{destinations}" ' f'were successfully added to the destination list "{destination_list_id}"'
+            f'The destination(s) "{destinations}" were successfully added to the destination list "{destination_list_id}"'
         ),
         raw_response=raw_response,
     )

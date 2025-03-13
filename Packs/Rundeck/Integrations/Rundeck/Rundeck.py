@@ -516,7 +516,7 @@ class Client(BaseClient):
         file_path = demisto.getFilePath(entry_id).get("path", None)
         if not file_path:
             raise DemistoException(
-                f"Could not find file path to the next entry id: {entry_id}. \n" f"Please provide another one."
+                f"Could not find file path to the next entry id: {entry_id}. \nPlease provide another one."
             )
         else:
             file_name = ntpath.basename(file_path)
@@ -1201,7 +1201,7 @@ def test_module(client: Client, project_name: str | None) -> str:
             for project in projects_list:
                 if project_name == project.get("name"):
                     return "ok"
-            return f'Could not find the next project: "{project_name}"' f". please enter another one or delete it completely."
+            return f'Could not find the next project: "{project_name}". please enter another one or delete it completely.'
         else:
             return "ok"
 

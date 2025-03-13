@@ -76,8 +76,8 @@ def parse_firewall_rule(rule_str):
         match = regex.match(f)
         if match is None:
             raise ValueError(
-                "Could not parse field: {}. Please make sure you provided like so: "
-                "ipprotocol=abc,ports=123;ipprotocol=fed,ports=456".format(f)
+                f"Could not parse field: {f}. Please make sure you provided like so: "
+                "ipprotocol=abc,ports=123;ipprotocol=fed,ports=456"
             )
 
         rules.append({"IPProtocol": match.group(1), "ports": match.group(2).split(",")})
@@ -98,9 +98,7 @@ def parse_metadata_items(tags_str):
         match = regex.match(f)
         if match is None:
             raise ValueError(
-                "Could not parse field: {}. Please make sure you provided like so: " "key=abc,value=123;key=fed,value=456".format(
-                    f
-                )
+                f"Could not parse field: {f}. Please make sure you provided like so: key=abc,value=123;key=fed,value=456"
             )
 
         tags.append({"key": match.group(1), "value": match.group(2)})
@@ -121,9 +119,7 @@ def parse_named_ports(tags_str):
         match = regex.match(f)
         if match is None:
             raise ValueError(
-                "Could not parse field: {}. Please make sure you provided like so: " "name=abc,port=123;name=fed,port=456".format(
-                    f
-                )
+                f"Could not parse field: {f}. Please make sure you provided like so: name=abc,port=123;name=fed,port=456"
             )
 
         tags.append({"name": match.group(1).lower(), "port": match.group(2)})
@@ -144,9 +140,7 @@ def parse_labels(tags_str):
         match = regex.match(f)
         if match is None:
             raise ValueError(
-                "Could not parse field: {}. Please make sure you provided like so: " "key=abc,value=123;key=def,value=456".format(
-                    f
-                )
+                f"Could not parse field: {f}. Please make sure you provided like so: key=abc,value=123;key=def,value=456"
             )
 
         tags.update({match.group(1).lower(): match.group(2).lower()})
@@ -358,7 +352,7 @@ def create_instance(args):
 
     if args.get("tags"):
         tags = args.get("tags")
-        if "tags" not in config.keys():
+        if "tags" not in config:
             config.update({"tags": [{}]})
         config["tags"][0].update({"items": parse_resource_ids(tags)})
 
@@ -368,7 +362,7 @@ def create_instance(args):
 
     if args.get("tagsFingerprint"):
         tags_fingerprint = args.get("tagsFingerprint")
-        if "tags" not in config.keys():
+        if "tags" not in config:
             config.update({"tags": [{}]})
         config["tags"][0].update({"fingerprint": tags_fingerprint})
 
@@ -380,160 +374,160 @@ def create_instance(args):
 
     if args.get("network"):
         network = args.get("network")
-        if "networkInterfaces" not in config.keys():
+        if "networkInterfaces" not in config:
             config.update({"networkInterfaces": [{}]})
         config["networkInterfaces"][0].update({"network": network})
 
     if args.get("subnetwork"):
         sub_network = args.get("subnetwork")
-        if "networkInterfaces" not in config.keys():
+        if "networkInterfaces" not in config:
             config.update({"networkInterfaces": [{}]})
         config["networkInterfaces"][0].update({"subnetwork": sub_network})
 
     if args.get("networkIP"):
         network_ip = args.get("networkIP")
-        if "networkInterfaces" not in config.keys():
+        if "networkInterfaces" not in config:
             config.update({"networkInterfaces": [{}]})
         config["networkInterfaces"][0].update({"networkIP": network_ip})
 
     if args.get("networkInterfacesfingerprint"):
         network_interfaces_fingerprint = args.get("networkInterfacesfingerprint")
-        if "networkInterfaces" not in config.keys():
+        if "networkInterfaces" not in config:
             config.update({"networkInterfaces": [{}]})
         config["networkInterfaces"][0].update({"fingerprint": network_interfaces_fingerprint})
 
     if args.get("externalInternetAccess"):
         external_network = args.get("externalInternetAccess") == "true"
         if external_network:
-            if "networkInterfaces" not in config.keys():
+            if "networkInterfaces" not in config:
                 config.update({"networkInterfaces": [{}]})
-            if "accessConfigs" not in config["networkInterfaces"][0].keys():
+            if "accessConfigs" not in config["networkInterfaces"][0]:
                 config["networkInterfaces"][0].update({"accessConfigs": [{}]})
             config["networkInterfaces"][0]["accessConfigs"][0].update({"type": "ONE_TO_ONE_NAT", "name": "External NAT"})
 
     if args.get("externalNatIP"):
         nat_ip = args.get("externalNatIP")
-        if "networkInterfaces" not in config.keys():
+        if "networkInterfaces" not in config:
             config.update({"networkInterfaces": [{}]})
-        if "accessConfigs" not in config["networkInterfaces"][0].keys():
+        if "accessConfigs" not in config["networkInterfaces"][0]:
             config["networkInterfaces"][0].update({"accessConfigs": [{}]})
 
         config["networkInterfaces"][0]["accessConfigs"][0].update({"natIP": nat_ip})
 
     if args.get("setPublicPtr"):
         set_public_ptr = args.get("setPublicPtr") == "true"
-        if "networkInterfaces" not in config.keys():
+        if "networkInterfaces" not in config:
             config.update({"networkInterfaces": [{}]})
-        if "accessConfigs" not in config["networkInterfaces"][0].keys():
+        if "accessConfigs" not in config["networkInterfaces"][0]:
             config["networkInterfaces"][0].update({"accessConfigs": [{}]})
 
         config["networkInterfaces"][0]["accessConfigs"][0].update({"setPublicPtr": set_public_ptr})
 
     if args.get("publicPtrDomainName"):
         public_ptr_domain_name = args.get("setPublicPtr")
-        if "networkInterfaces" not in config.keys():
+        if "networkInterfaces" not in config:
             config.update({"networkInterfaces": [{}]})
-        if "accessConfigs" not in config["networkInterfaces"][0].keys():
+        if "accessConfigs" not in config["networkInterfaces"][0]:
             config["networkInterfaces"][0].update({"accessConfigs": [{}]})
 
         config["networkInterfaces"][0]["accessConfigs"][0].update({"publicPtrDomainName": public_ptr_domain_name})
 
     if args.get("networkTier"):
         network_tier = args.get("networkTier")
-        if "networkInterfaces" not in config.keys():
+        if "networkInterfaces" not in config:
             config.update({"networkInterfaces": [{}]})
-        if "accessConfigs" not in config["networkInterfaces"][0].keys():
+        if "accessConfigs" not in config["networkInterfaces"][0]:
             config["networkInterfaces"][0].update({"accessConfigs": [{}]})
 
         config["networkInterfaces"][0]["accessConfigs"][0].update({"networkTier": network_tier})
 
     if args.get("ipCidrRange"):
         ip_cidr_range = args.get("ipCidrRange")
-        if "networkInterfaces" not in config.keys():
+        if "networkInterfaces" not in config:
             config.update({"networkInterfaces": [{}]})
-        if "aliasIpRanges" not in config["networkInterfaces"][0].keys():
+        if "aliasIpRanges" not in config["networkInterfaces"][0]:
             config["networkInterfaces"][0].update({"aliasIpRanges": [{}]})
 
         config["networkInterfaces"][0]["aliasIpRanges"][0].update({"ipCidrRange": ip_cidr_range})
 
     if args.get("subnetworkRangeName"):
         subnet_work_range_name = args.get("subnetworkRangeName")
-        if "networkInterfaces" not in config.keys():
+        if "networkInterfaces" not in config:
             config.update({"networkInterfaces": [{}]})
-        if "aliasIpRanges" not in config["networkInterfaces"][0].keys():
+        if "aliasIpRanges" not in config["networkInterfaces"][0]:
             config["networkInterfaces"][0].update({"aliasIpRanges": [{}]})
 
         config["networkInterfaces"][0]["aliasIpRanges"][0].update({"subnetworkRangeName": subnet_work_range_name})
 
     if args.get("diskType"):
         disk_type = args.get("diskType")
-        if "disks" not in config.keys():
+        if "disks" not in config:
             config.update({"disks": [{}]})
         config["disks"][0].update({"type": disk_type})
 
     if args.get("diskMode"):
         disk_mode = args.get("diskMode")
-        if "disks" not in config.keys():
+        if "disks" not in config:
             config.update({"disks": [{}]})
         config["disks"][0].update({"mode": disk_mode})
 
     if args.get("diskSource"):
         disk_source = args.get("diskSource")
-        if "disks" not in config.keys():
+        if "disks" not in config:
             config.update({"disks": [{}]})
         config["disks"][0].update({"source": disk_source})
 
     if args.get("diskDeviceName"):
         disk_device_name = args.get("diskDeviceName")
-        if "disks" not in config.keys():
+        if "disks" not in config:
             config.update({"disks": [{}]})
         config["disks"][0].update({"deviceName": disk_device_name})
 
     if args.get("diskBoot") is not None:
         disk_boot = args.get("diskBoot") == "true"
-        if "disks" not in config.keys():
+        if "disks" not in config:
             config.update({"disks": [{}]})
         config["disks"][0].update({"boot": disk_boot})
 
     if args.get("initializeParamsDiskName"):
         initialize_params_disk_name = args.get("initializeParamsDiskName")
-        if "disks" not in config.keys():
+        if "disks" not in config:
             config.update({"disks": [{}]})
-        if "initializeParams" not in config["disks"][0].keys():
+        if "initializeParams" not in config["disks"][0]:
             config["disks"][0].update({"initializeParams": {}})
         config["disks"][0]["initializeParams"].update({"diskName": initialize_params_disk_name})
 
     if args.get("initializeParamsSourceImage"):
         image = args.get("initializeParamsSourceImage")
-        if "disks" not in config.keys():
+        if "disks" not in config:
             config.update({"disks": [{}]})
-        if "initializeParams" not in config["disks"][0].keys():
+        if "initializeParams" not in config["disks"][0]:
             config["disks"][0].update({"initializeParams": {}})
         config["disks"][0]["initializeParams"].update({"sourceImage": image})
 
     if args.get("initializeParamsdiskSizeGb"):
         initialize_params_disk_size_gb = args.get("initializeParamsdiskSizeGb")
-        if "disks" not in config.keys():
+        if "disks" not in config:
             config.update({"disks": [{}]})
-        if "initializeParams" not in config["disks"][0].keys():
+        if "initializeParams" not in config["disks"][0]:
             config["disks"][0].update({"initializeParams": {}})
         config["disks"][0]["initializeParams"].update({"diskSizeGb": int(initialize_params_disk_size_gb)})
 
     if args.get("initializeParamsDiskType"):
         initialize_params_disk_type = args.get("initializeParamsDiskType")
-        if "disks" not in config.keys():
+        if "disks" not in config:
             config.update({"disks": [{}]})
-        if "initializeParams" not in config["disks"][0].keys():
+        if "initializeParams" not in config["disks"][0]:
             config["disks"][0].update({"initializeParams": {}})
         config["disks"][0]["initializeParams"].update({"diskType": initialize_params_disk_type})
 
     if args.get("initializeParamsSourceImageEncryptionKeyRawKey"):
         initialize_params_source_image_encryption_key_raw_key = args.get("initializeParamsSourceImageEncryptionKeyRawKey")
-        if "disks" not in config.keys():
+        if "disks" not in config:
             config.update({"disks": [{}]})
-        if "initializeParams" not in config["disks"][0].keys():
+        if "initializeParams" not in config["disks"][0]:
             config["disks"][0].update({"initializeParams": {}})
-        if "sourceImageEncryptionKey" not in config["disks"][0]["initializeParams"].keys():
+        if "sourceImageEncryptionKey" not in config["disks"][0]["initializeParams"]:
             config["disks"][0]["initializeParams"].update({"sourceImageEncryptionKey": {}})
         config["disks"][0]["initializeParams"]["sourceImageEncryptionKey"].update(
             {"rawKey": initialize_params_source_image_encryption_key_raw_key}
@@ -543,11 +537,11 @@ def create_instance(args):
         initialize_params_source_image_encryption_key_kms_key_name = args.get(
             "initializeParamsSourceImageEncryptionKeykmsKeyName"
         )
-        if "disks" not in config.keys():
+        if "disks" not in config:
             config.update({"disks": [{}]})
         if "initializeParams" not in config["disks"][0].keys():
             config["disks"][0].update({"initializeParams": {}})
-        if "sourceImageEncryptionKey" not in config["disks"][0]["initializeParams"].keys():
+        if "sourceImageEncryptionKey" not in config["disks"][0]["initializeParams"]:
             config["disks"][0]["initializeParams"].update({"sourceImageEncryptionKey": {}})
         config["disks"][0]["initializeParams"]["sourceImageEncryptionKey"].update(
             {"kmsKeyName": initialize_params_source_image_encryption_key_kms_key_name}
@@ -555,36 +549,36 @@ def create_instance(args):
 
     if args.get("initializeParamsDiskLabels"):
         initialize_params_disk_labels = args.get("initializeParamsDiskLabels")
-        if "disks" not in config.keys():
+        if "disks" not in config:
             config.update({"disks": [{}]})
-        if "initializeParams" not in config["disks"][0].keys():
+        if "initializeParams" not in config["disks"][0]:
             config["disks"][0].update({"initializeParams": {}})
         config["disks"][0]["initializeParams"].update({"labels": parse_labels(initialize_params_disk_labels)})
 
     if args.get("initializeParamsDiskDescription"):
         initialize_params_disk_description = args.get("initializeParamsDiskDescription")
-        if "disks" not in config.keys():
+        if "disks" not in config:
             config.update({"disks": [{}]})
-        if "initializeParams" not in config["disks"][0].keys():
+        if "initializeParams" not in config["disks"][0]:
             config["disks"][0].update({"initializeParams": {}})
         config["disks"][0]["initializeParams"].update({"description": initialize_params_disk_description})
 
     if args.get("diskAutodelete"):
         disk_auto_delete = args.get("diskAutodelete") == "true"
-        if "disks" not in config.keys():
+        if "disks" not in config:
             config.update({"disks": [{}]})
         config["disks"][0].update({"autoDelete": disk_auto_delete})
 
     if args.get("diskInterface"):
         disk_interface = args.get("diskInterface")
-        if "disks" not in config.keys():
+        if "disks" not in config:
             config.update({"disks": [{}]})
         config["disks"][0].update({"interface": disk_interface})
 
     if args.get("diskGuestOsFeatures"):
         disk_guest_os_features = args.get("diskGuestOsFeatures")
         disk_guest_os_features = parse_resource_ids(disk_guest_os_features)
-        if "disks" not in config.keys():
+        if "disks" not in config:
             config.update({"disks": [{}]})
         config["disks"][0].update({"guestOsFeatures": []})
         for f in disk_guest_os_features:
@@ -592,17 +586,17 @@ def create_instance(args):
 
     if args.get("diskEncryptionKeyRawKey"):
         disk_encryption_key_raw_key = args.get("diskEncryptionKeyRawKey")
-        if "disks" not in config.keys():
+        if "disks" not in config:
             config.update({"disks": [{}]})
-        if "diskEncryptionKey" not in config["disks"][0].keys():
+        if "diskEncryptionKey" not in config["disks"][0]:
             config["disks"][0].update({"diskEncryptionKey": {}})
         config["disks"][0]["diskEncryptionKey"].update({"rawKey": disk_encryption_key_raw_key})
 
     if args.get("diskEncryptionKeyKmsKeyName"):
         disk_encryption_key_kms_key_name = args.get("diskEncryptionKeyKmsKeyName")
-        if "disks" not in config.keys():
+        if "disks" not in config:
             config.update({"disks": [{}]})
-        if "diskEncryptionKey" not in config["disks"][0].keys():
+        if "diskEncryptionKey" not in config["disks"][0]:
             config["disks"][0].update({"diskEncryptionKey": {}})
         config["disks"][0]["diskEncryptionKey"].update({"kmsKeyName": disk_encryption_key_kms_key_name})
 
@@ -625,19 +619,19 @@ def create_instance(args):
 
     if args.get("schedulingOnHostMaintenance"):
         scheduling_on_host_maintenance = args.get("schedulingOnHostMaintenance")
-        if "scheduling" not in config.keys():
+        if "scheduling" not in config:
             config.update({"scheduling": {}})
         config["scheduling"].update({"onHostMaintenance": scheduling_on_host_maintenance})
 
     if args.get("schedulingAutomaticRestart"):
         scheduling_automatic_restart = args.get("schedulingAutomaticRestart") == "true"
-        if "scheduling" not in config.keys():
+        if "scheduling" not in config:
             config.update({"scheduling": {}})
         config["scheduling"].update({"automaticRestart": scheduling_automatic_restart})
 
     if args.get("schedulingPreemptible"):
         scheduling_preemptible = args.get("schedulingPreemptible") == "true"
-        if "scheduling" not in config.keys():
+        if "scheduling" not in config:
             config.update({"scheduling": {}})
         config["scheduling"].update({"preemptible": scheduling_preemptible})
 
@@ -655,13 +649,13 @@ def create_instance(args):
 
     if args.get("guestAcceleratorsAcceleratorType"):
         guest_accelerators_accelerator_type = args.get("guestAcceleratorsAcceleratorType")
-        if "guestAccelerators" not in config.keys():
+        if "guestAccelerators" not in config:
             config.update({"guestAccelerators": [{}]})
         config["guestAccelerators"][0].update({"acceleratorType": guest_accelerators_accelerator_type})
 
     if args.get("guestAcceleratorsAcceleratorCount"):
         guest_accelerators_accelerator_count = args.get("guestAcceleratorsAcceleratorCount")
-        if "guestAccelerators" not in config.keys():
+        if "guestAccelerators" not in config:
             config.update({"guestAccelerators": [{}]})
         config["guestAccelerators"][0].update({"acceleratorCount": int(guest_accelerators_accelerator_count)})
 
@@ -788,7 +782,7 @@ def aggregated_list_instances(args):
         response = request.execute()
         if "items" in response:
             for _name, instances_scoped_list in response["items"].items():
-                if "warning" not in instances_scoped_list.keys():
+                if "warning" not in instances_scoped_list:
                     for inst in instances_scoped_list.get("instances", []):
                         output.append(inst)
                         data_res_item = {
@@ -1308,13 +1302,13 @@ def insert_image(args):
 
     if args.get("rawDiskSha1Checksum"):
         raw_disk_sha1_checksum = args.get("rawDiskSha1Checksum")
-        if "rawDisk" not in config.keys():
+        if "rawDisk" not in config:
             config.update({"rawDisk": {}})
         config["rawDisk"].update({"sha1Checksum": raw_disk_sha1_checksum})
 
     if args.get("rawDiskContainerType"):
         raw_disk_container_type = args.get("rawDiskContainerType")
-        if "rawDisk" not in config.keys():
+        if "rawDisk" not in config:
             config.update({"rawDisk": {}})
         config["rawDisk"].update({"containerType": raw_disk_container_type})
 
@@ -1325,7 +1319,7 @@ def insert_image(args):
 
     if args.get("deprecatedReplacement"):
         deprecated_replacement = args.get("deprecatedReplacement")
-        if "deprecated" not in config.keys():
+        if "deprecated" not in config:
             config.update({"deprecated": {}})
         config["deprecated"].update({"replacement": deprecated_replacement})
 
@@ -1355,19 +1349,19 @@ def insert_image(args):
 
     if args.get("imageEncryptionKeyKmsKeyName"):
         image_encryption_key_kms_key_name = args.get("imageEncryptionKeyKmsKeyName")
-        if "imageEncryptionKey" not in config.keys():
+        if "imageEncryptionKey" not in config:
             config.update({"imageEncryptionKey": {}})
         config["imageEncryptionKey"].update({"kmsKeyName": image_encryption_key_kms_key_name})
 
     if args.get("sourceDiskEncryptionKeyRawKey"):
         source_disk_encryption_key_raw_key = args.get("sourceDiskEncryptionKeyRawKey")
-        if "sourceDiskEncryptionKey" not in config.keys():
+        if "sourceDiskEncryptionKey" not in config:
             config.update({"sourceDiskEncryptionKey": {}})
         config["sourceDiskEncryptionKey"].update({"rawKey": source_disk_encryption_key_raw_key})
 
     if args.get("sourceDiskEncryptionKeyKmsKeyName"):
         source_disk_encryption_key_kms_key_name = args.get("sourceDiskEncryptionKeyKmsKeyName")
-        if "sourceDiskEncryptionKey" not in config.keys():
+        if "sourceDiskEncryptionKey" not in config:
             config.update({"sourceDiskEncryptionKey": {}})
         config["sourceDiskEncryptionKey"].update({"kmsKeyName": source_disk_encryption_key_kms_key_name})
 
@@ -1400,7 +1394,7 @@ def insert_image(args):
 
     if args.get("sourceImageEncryptionKeyKmsKeyName"):
         source_image_encryption_key_kms_key_name = args.get("sourceImageEncryptionKeyKmsKeyName")
-        if "sourceImageEncryptionKey" not in config.keys():
+        if "sourceImageEncryptionKey" not in config:
             config.update({"sourceImageEncryptionKey": {}})
         config["sourceImageEncryptionKey"].update({"kmsKeyName": source_image_encryption_key_kms_key_name})
 
@@ -1410,13 +1404,13 @@ def insert_image(args):
 
     if args.get("sourceSnapshotEncryptionKeyRawKey"):
         source_snapshot_encryption_key_raw_key = args.get("sourceSnapshotEncryptionKeyRawKey")
-        if "sourceSnapshotEncryptionKey" not in config.keys():
+        if "sourceSnapshotEncryptionKey" not in config:
             config.update({"sourceSnapshotEncryptionKey": {}})
         config["sourceSnapshotEncryptionKey"].update({"rawKey": source_snapshot_encryption_key_raw_key})
 
     if args.get("sourceSnapshotEncryptionKeyKmsKeyName"):
         source_snapshot_encryption_key_kms_key_name = args.get("sourceSnapshotEncryptionKeyKmsKeyName")
-        if "sourceSnapshotEncryptionKey" not in config.keys():
+        if "sourceSnapshotEncryptionKey" not in config:
             config.update({"sourceSnapshotEncryptionKey": {}})
         config["sourceSnapshotEncryptionKey"].update({"kmsKeyName": source_snapshot_encryption_key_kms_key_name})
 
@@ -1467,13 +1461,13 @@ def networks_add_peering(args):
 
     if args.get("networkPeeringNetwork"):
         network_peering_network = args.get("networkPeeringNetwork")
-        if "networkPeering" not in config.keys():
+        if "networkPeering" not in config:
             config.update({"networkPeering": {}})
         config["networkPeering"].update({"network": network_peering_network})
 
     if args.get("networkPeeringExchangeSubnetRoutes"):
         network_peering_exchange_subnet_routes = args.get("networkPeeringExchangeSubnetRoutes") == "True"
-        if "networkPeering" not in config.keys():
+        if "networkPeering" not in config:
             config.update({"networkPeering": {}})
         config["networkPeering"].update({"exchangeSubnetRoutes": network_peering_exchange_subnet_routes})
 
@@ -2041,7 +2035,7 @@ def aggregated_list_addresses(args):
         response = request.execute()
         if "items" in response:
             for _name, instances_scoped_list in response["items"].items():
-                if "warning" not in instances_scoped_list.keys():
+                if "warning" not in instances_scoped_list:
                     for addr in instances_scoped_list.get("addresses"):
                         output.append(addr)
                         data_res_item = {
@@ -2458,7 +2452,7 @@ def aggregated_list_disks(args):
         response = request.execute()
         if "items" in response:
             for _name, instances_scoped_list in response["items"].items():
-                if "warning" not in instances_scoped_list.keys():
+                if "warning" not in instances_scoped_list:
                     for disk in instances_scoped_list.get("disks", []):
                         output.append(disk)
                         data_res_item = {
@@ -2507,25 +2501,25 @@ def create_disk_snapshot(args):
 
     if args.get("snapshotEncryptionKeyRawKey"):
         raw_key = args.get("snapshotEncryptionKeyRawKey")
-        if "snapshotEncryptionKey" not in config.keys():
+        if "snapshotEncryptionKey" not in config:
             config.update({"snapshotEncryptionKey": {}})
         config["snapshotEncryptionKey"].update({"rawKey": raw_key})
 
     if args.get("snapshotEncryptionKeyKmsKeyName"):
         kms_key_name = args.get("snapshotEncryptionKeyKmsKeyName")
-        if "snapshotEncryptionKey" not in config.keys():
+        if "snapshotEncryptionKey" not in config:
             config.update({"snapshotEncryptionKey": {}})
         config["snapshotEncryptionKey"].update({"kmsKeyName": kms_key_name})
 
     if args.get("sourceDiskEncryptionKeyRawKey"):
         raw_key = args.get("sourceDiskEncryptionKeyRawKey")
-        if "sourceDiskEncryptionKey" not in config.keys():
+        if "sourceDiskEncryptionKey" not in config:
             config.update({"sourceDiskEncryptionKey": {}})
         config["sourceDiskEncryptionKey"].update({"rawKey": raw_key})
 
     if args.get("sourceDiskEncryptionKeyKmsKeyName"):
         kms_key_name = args.get("sourceDiskEncryptionKeyKmsKeyName")
-        if "sourceDiskEncryptionKey" not in config.keys():
+        if "sourceDiskEncryptionKey" not in config:
             config.update({"sourceDiskEncryptionKey": {}})
         config["sourceDiskEncryptionKey"].update({"kmsKeyName": kms_key_name})
 
@@ -2677,7 +2671,7 @@ def insert_disk(args):
 
     if args.get("diskEncryptionKeyKmsKeyName"):
         disk_encryption_key_kms_key_name = args.get("diskEncryptionKeyKmsKeyName")
-        if "diskEncryptionKey" not in config.keys():
+        if "diskEncryptionKey" not in config:
             config.update({"diskEncryptionKey": {}})
         config["diskEncryptionKey"].update({"kmsKeyName": disk_encryption_key_kms_key_name})
 
@@ -2687,19 +2681,19 @@ def insert_disk(args):
 
     if args.get("sourceImageEncryptionKeyKmsKeyName"):
         source_image_encryption_key_kms_key_name = args.get("sourceImageEncryptionKeyKmsKeyName")
-        if "sourceImageEncryptionKey" not in config.keys():
+        if "sourceImageEncryptionKey" not in config:
             config.update({"sourceImageEncryptionKey": {}})
         config["sourceImageEncryptionKey"].update({"kmsKeyName": source_image_encryption_key_kms_key_name})
 
     if args.get("sourceSnapshotEncryptionKeyRawKey"):
         source_snapshot_encryption_key_raw_key = args.get("sourceSnapshotEncryptionKeyRawKey")
-        if "sourceSnapshotEncryptionKey" not in config.keys():
+        if "sourceSnapshotEncryptionKey" not in config:
             config.update({"sourceSnapshotEncryptionKey": {}})
         config["sourceSnapshotEncryptionKey"].update({"rawKey": source_snapshot_encryption_key_raw_key})
 
     if args.get("sourceSnapshotEncryptionKeyKmsKeyName"):
         source_snapshot_encryption_key_kms_key_name = args.get("sourceSnapshotEncryptionKeyKmsKeyName")
-        if "sourceSnapshotEncryptionKey" not in config.keys():
+        if "sourceSnapshotEncryptionKey" not in config:
             config.update({"sourceSnapshotEncryptionKey": {}})
         config["sourceSnapshotEncryptionKey"].update({"kmsKeyName": source_snapshot_encryption_key_kms_key_name})
 
@@ -2902,7 +2896,7 @@ def aggregated_list_disk_types(args):
         response = request.execute()
         if "items" in response:
             for _name, instances_scoped_list in response["items"].items():
-                if "warning" not in instances_scoped_list.keys():
+                if "warning" not in instances_scoped_list:
                     for disktype in instances_scoped_list.get("diskTypes", []):
                         output.append(disktype)
                         data_res_item = {"name": disktype.get("name"), "validDiskSize": disktype.get("validDiskSize")}
@@ -3047,7 +3041,7 @@ def aggregated_list_instance_groups(args):
         response = request.execute()
         if "items" in response:
             for _name, instances_scoped_list in response["items"].items():
-                if "warning" not in instances_scoped_list.keys():
+                if "warning" not in instances_scoped_list:
                     for item in instances_scoped_list.get("instanceGroups", []):
                         output.append(item)
                         data_res_item = {
@@ -3509,7 +3503,7 @@ def aggregated_list_machine_types(args):
     response = request.execute()
     if "items" in response:
         for _name, instances_scoped_list in response["items"].items():
-            if "warning" not in instances_scoped_list.keys():
+            if "warning" not in instances_scoped_list:
                 for item in instances_scoped_list.get("machineTypes", []):
                     output.append(item)
                     data_res_item = {
@@ -4048,7 +4042,7 @@ def aggregated_list_instances_ip(args: Dict[str, Any]) -> CommandResults:
             response_comp = request_comp.execute()
             if "items" in response_comp:
                 for _, instances_scoped_list in response_comp["items"].items():
-                    if "warning" not in instances_scoped_list.keys():
+                    if "warning" not in instances_scoped_list:
                         for inst in instances_scoped_list.get("instances", []):
                             for interface in inst.get("networkInterfaces", []):
                                 for config in interface.get("accessConfigs", []):

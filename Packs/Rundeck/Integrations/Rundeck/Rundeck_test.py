@@ -41,7 +41,7 @@ def test_filter_results_when_response_is_dict(mocker):
     results_to_filter = {"key1": "val1", "key2": "val2", "key_3": "val3"}
 
     result = filter_results(results_to_filter, "key1", "_")
-    assert "key1" not in result.keys()
+    assert "key1" not in result
     assert "key3" in result
 
 
@@ -59,7 +59,7 @@ def test_filter_results_when_response_is_list(mocker):
 
     result = filter_results(results_to_filter, "key1", "_")
 
-    assert "key1" not in result[0].keys()
+    assert "key1" not in result[0]
     assert "key3" in result[1]
 
 
@@ -109,7 +109,7 @@ def test_convert_str_to_int_with_bad_input(mocker):
     except DemistoException:
         pass
     else:
-        assert 1 == 2, "error when try converting string to int should throw DemistoException"
+        assert 1 == 2, "error when try converting string to int should throw DemistoException"  # noqa: PLR0133
 
 
 def test_project_list_command(mocker):

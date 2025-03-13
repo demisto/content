@@ -56,7 +56,7 @@ def test_module(client):
     if "issues" in result:
         return "ok"
     else:
-        return_error(result)
+        return_error(result)    # noqa: RET503
 
 
 def create_output_result(resp):
@@ -81,7 +81,7 @@ def mantis_get_all_issues_command(client, args):
     Returns:
         list of Mantis issues
     """
-    if args is not None:
+    if args is not None:    # noqa: RET503
         params = args
         resp = client.get_issues(params=params).get("issues")
         issues = [create_output_result(issue) for issue in resp]
@@ -98,7 +98,7 @@ def mantis_close_issue_command(client, args):
     if "issues" in resp:
         return f"Issue {_id} has been closed"
     else:
-        return_error(resp)
+        return_error(resp)  # noqa: RET503
 
 
 def mantis_get_issue_by_id_command(client, args):
@@ -154,7 +154,7 @@ def matis_create_note_command(client, args):
     if "note" in resp:
         return "Note successfully added"
     else:
-        return_error(str(resp))
+        return_error(str(resp)) # noqa: RET503
 
 
 def main():

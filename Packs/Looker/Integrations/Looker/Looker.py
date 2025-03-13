@@ -4,7 +4,6 @@ from CommonServerUserPython import *
 
 """ IMPORTS """
 
-from typing import Dict
 import requests
 import traceback
 import json
@@ -37,7 +36,7 @@ FETCH_TIME = demisto.params().get("fetch_time", "3 days")
 # Service base URL
 BASE_URL = SERVER + "/api/3.0"
 # Request headers (preparation)
-HEADERS: Dict[str, str] = {}
+HEADERS: dict[str, str] = {}
 
 
 """ HELPER FUNCTIONS """
@@ -104,7 +103,7 @@ def get_new_token(client_id, client_secret):
     except requests.exceptions.HTTPError as ex:
         if "[404]" in str(ex):
             raise Exception(
-                "Got 404 from server - check 'API3 Client ID' and 'API3 Client Secret' fields " "in the instance configuration."
+                "Got 404 from server - check 'API3 Client ID' and 'API3 Client Secret' fields in the instance configuration."
             )
         raise
 
@@ -168,7 +167,7 @@ def parse_filters_arg(filters_arg_value):
     filters_list = argToList(filters_arg_value, ";")
     filters_list = [elem for elem in [x.strip() for x in filters_list] if elem]  # Remove empty elems
     if not filters_list:
-        return
+        return None
 
     filters = {}
     filters_and_indices_list = zip(range(len(filters_list)), filters_list)  # Track element index for error messages
@@ -397,7 +396,7 @@ def create_look(query_id, space_id, look_title, look_description=""):
 
 
 def main():
-    LOG("Command being called is %s" % (demisto.command()))
+    LOG(f"Command being called is {demisto.command()}")
     if not (CLIENT_ID and CLIENT_SECRET):
         raise DemistoException("API3 Client ID and Secret must be provided.")
     try:

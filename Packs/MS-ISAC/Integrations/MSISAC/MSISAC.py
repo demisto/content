@@ -99,16 +99,15 @@ def get_event_command(client: Client, args: Dict[str, Any]):
 
     # If there is no event ID found the API returns a 404 error
     # Have 404 as on 'ok' response in the base class, and use this JSON path to provide output
-    if "error" in event:
+    if "error" in event and event["error"]["message"] == "Event does not exist":
         # If there are ever more errors to parse we can expand this conditional
-        if event["error"]["message"] == "Event does not exist":
-            return CommandResults(
-                readable_output=f"There was no MS-ISAC event retrieved with Event ID {event_id}.\n",
-                raw_response=event,
-                outputs_prefix="MSISAC.Event",
-                outputs_key_field="event_id",
-                outputs=output,
-            )
+        return CommandResults(
+            readable_output=f"There was no MS-ISAC event retrieved with Event ID {event_id}.\n",
+            raw_response=event,
+            outputs_prefix="MSISAC.Event",
+            outputs_key_field="event_id",
+            outputs=output,
+        )
 
     # the json_data in the payload is the most verbose and should be our final output
     # However there are several keys that are not present in json_data we still want/need in the markdown and context

@@ -455,7 +455,7 @@ def test_domain_lookup_malicious(requests_mock, mocker):
     assert len(results) == 1
     assert results[0].indicator.dbot_score.score == 3
     assert results[0].outputs["categories"][0] == "Technology"
-    expected = "Status: Suspicious Url. Please see below; Unreachable - HTTP Error Code: 503; Heuristic Engine " "Detection"
+    expected = "Status: Suspicious Url. Please see below; Unreachable - HTTP Error Code: 503; Heuristic Engine Detection"
     assert results[0].indicator.dbot_score.malicious_description == expected
 
 

@@ -1523,7 +1523,7 @@ def azure_firewall_policy_attach_command(client: AzureFirewallClient, args: Dict
 
             else:
                 command_results_list.append(
-                    generate_firewall_command_output(response, readable_header=f"Successfully Updated Firewall " f'"{firewall}"')
+                    generate_firewall_command_output(response, readable_header=f'Successfully Updated Firewall "{firewall}"')
                 )
 
         except Exception as exception:
@@ -1579,7 +1579,7 @@ def azure_firewall_policy_remove_command(client: AzureFirewallClient, args: Dict
 
             else:
                 command_results_list.append(
-                    generate_firewall_command_output(response, readable_header=f"Successfully Updated Firewall " f'"{firewall}"')
+                    generate_firewall_command_output(response, readable_header=f'Successfully Updated Firewall "{firewall}"')
                 )
 
         except Exception as exception:
@@ -1780,7 +1780,7 @@ def remove_rule_from_collection(
 
         else:
             command_results_list.append(
-                generate_firewall_command_output(response, readable_header=f"Successfully Updated Firewall " f'"{firewall_name}"')
+                generate_firewall_command_output(response, readable_header=f'Successfully Updated Firewall "{firewall_name}"')
             )
 
     else:
@@ -1873,7 +1873,7 @@ def validate_predefined_argument(argument_name: str, argument_value: object, arg
     for value in argument_value:
         if value not in argument_options:
             raise Exception(
-                f"Invalid {argument_name} argument. Please provide one of the following options:" f"{str(argument_options)}"
+                f"Invalid {argument_name} argument. Please provide one of the following options:{str(argument_options)}"
             )
 
     return True
@@ -3147,7 +3147,7 @@ def main() -> None:
                 return return_results("ok" if "Success" in test_res else test_res)
 
             else:
-                return return_results("The test module is not functional, " "run the azure-firewall-auth-start command instead.")
+                return return_results("The test module is not functional, run the azure-firewall-auth-start command instead.")
 
         if command == "azure-firewall-auth-start":
             return_results(start_auth(client))

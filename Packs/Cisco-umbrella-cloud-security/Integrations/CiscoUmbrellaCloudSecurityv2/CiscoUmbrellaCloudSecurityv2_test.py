@@ -91,7 +91,7 @@ def test_list_destinations_command(requests_mock, mock_client):
     response["data"] = expected_outputs
 
     assert command_results.outputs_prefix == (
-        f"{CiscoUmbrellaCloudSecurityv2.INTEGRATION_OUTPUT_PREFIX}." f"{CiscoUmbrellaCloudSecurityv2.DESTINATION_OUTPUT_PREFIX}"
+        f"{CiscoUmbrellaCloudSecurityv2.INTEGRATION_OUTPUT_PREFIX}.{CiscoUmbrellaCloudSecurityv2.DESTINATION_OUTPUT_PREFIX}"
     )
     assert command_results.outputs_key_field == CiscoUmbrellaCloudSecurityv2.ID_OUTPUTS_KEY_FIELD
     assert command_results.outputs == expected_outputs
@@ -146,7 +146,7 @@ def test_list_destinations_command_fetch_destinations(requests_mock, mock_client
     response["data"] = expected_outputs
 
     assert command_results.outputs_prefix == (
-        f"{CiscoUmbrellaCloudSecurityv2.INTEGRATION_OUTPUT_PREFIX}." f"{CiscoUmbrellaCloudSecurityv2.DESTINATION_OUTPUT_PREFIX}"
+        f"{CiscoUmbrellaCloudSecurityv2.INTEGRATION_OUTPUT_PREFIX}.{CiscoUmbrellaCloudSecurityv2.DESTINATION_OUTPUT_PREFIX}"
     )
     assert command_results.outputs_key_field == CiscoUmbrellaCloudSecurityv2.ID_OUTPUTS_KEY_FIELD
     assert command_results.outputs == expected_outputs

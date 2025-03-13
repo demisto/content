@@ -7,7 +7,7 @@ from dateutil.parser import parse
 import enum
 import urllib3
 import re
-from typing import Dict, Any
+from typing import Any
 from functools import wraps
 import copy
 
@@ -656,7 +656,7 @@ class Client(BaseClient):
 
 def _iboss_entity_lookup(client, entity):
     response = client.get_url_reputation(entity)
-    response["categories"] = [URL_CATEGORIES_DICT[i] for i in range(0, 81) if "1" == response.get("categories", "")[i]]
+    response["categories"] = [URL_CATEGORIES_DICT[i] for i in range(0, 81) if response.get("categories", "")[i] == "1"]
     return response
 
 
@@ -996,12 +996,12 @@ def test_module(client: Client) -> str:
         ),
     ],
 )
-def ip_lookup(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def ip_lookup(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     """
     Returns IP's reputation
     """
     ips = argToList(args.get("ip"))
-    results: List[CommandResults] = list()
+    results: List[CommandResults] = []
     for ip in ips:
         if not is_ip_valid(ip, accept_v6_ips=True):  # check IP's validity
             raise ValueError(f'IP "{ip}" is not valid')
@@ -1273,9 +1273,9 @@ def ip_lookup(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
         ),
     ],
 )
-def domain_lookup(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def domain_lookup(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     domains = argToList(args.get("domain"))
-    results: List[CommandResults] = list()
+    results: List[CommandResults] = []
     for domain in domains:
         try:
             raw_response = _iboss_entity_lookup(client, domain)
@@ -1545,9 +1545,9 @@ def domain_lookup(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
         ),
     ],
 )
-def url_lookup(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def url_lookup(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     urls = argToList(args.get("url"))
-    results: List[CommandResults] = list()
+    results: List[CommandResults] = []
     for url in urls:
         try:
             raw_response = _iboss_entity_lookup(client, url)
@@ -1631,7 +1631,7 @@ def url_lookup(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
         OutputArgument(name="message", description="Operation result.", output_type=str),
     ],
 )
-def add_entity_to_block_list_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
+def add_entity_to_block_list_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """Adds domains, IPs, and/or URLs to a block list
     Args:
         client (Client): iboss client to use.
@@ -1750,7 +1750,7 @@ def add_entity_to_block_list_command(client: Client, args: Dict[str, Any]) -> li
     ],
     outputs_list=[OutputArgument(name="message", description="Operation result.", output_type=str)],
 )
-def remove_entity_from_block_list_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
+def remove_entity_from_block_list_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     entities = _get_validate_argument("entity", args, validator=lambda x: x and len(x) > 0, message="value is not specified")
 
     current_policy_being_edited = _get_validate_argument(
@@ -1835,7 +1835,7 @@ def remove_entity_from_block_list_command(client: Client, args: Dict[str, Any]) 
         OutputArgument(name="message", description="Operation result.", output_type=str),
     ],
 )
-def add_entity_to_allow_list_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
+def add_entity_to_allow_list_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """Adds domains, IPs, and/or URLs to an allow list
 
     Args:
@@ -1956,7 +1956,7 @@ def add_entity_to_allow_list_command(client: Client, args: Dict[str, Any]) -> li
     ],
     outputs_list=[OutputArgument(name="message", description="Operation result.", output_type=str)],
 )
-def remove_entity_from_allow_list_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
+def remove_entity_from_allow_list_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     entities = _get_validate_argument("entity", args, validator=lambda x: x and len(x) > 0, message="value is not specified")
 
     current_policy_being_edited = _get_validate_argument(
@@ -2007,7 +2007,7 @@ def remove_entity_from_allow_list_command(client: Client, args: Dict[str, Any]) 
     return command_results
 
 
-def add_entity_to_policy_layer_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def add_entity_to_policy_layer_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     policy_layer_name = _get_validate_argument(
         "policy_layer_name", args, validator=lambda x: x and len(x) > 0, message="value is not specified"
     )
@@ -2125,7 +2125,7 @@ def add_entity_to_policy_layer_list_command(client: Client, args: Dict[str, Any]
     )
 
 
-def remove_entity_from_policy_layer_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def remove_entity_from_policy_layer_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     policy_layer_name = _get_validate_argument(
         "policy_layer_name", args, validator=lambda x: x and len(x) > 0, message="value is not specified"
     )

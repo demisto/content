@@ -1058,7 +1058,7 @@ def custom_user_schema_update_command(client: Client, args: dict[str, Any]) -> C
     schema_key = args["schema_id"] if args.get("schema_id") else args.get("schema_name", "")
 
     url_suffix = (
-        f"{URL_SUFFIX['CUSTOM_USER_SCHEMA'].format(urllib.parse.quote(customer_id))}" f"/{urllib.parse.quote(schema_key)}"
+        f"{URL_SUFFIX['CUSTOM_USER_SCHEMA'].format(urllib.parse.quote(customer_id))}/{urllib.parse.quote(schema_key)}"
     )
 
     client.set_authorized_http(scopes=SCOPES["CUSTOM_USER_SCHEMA"])
@@ -1506,7 +1506,7 @@ def gsuite_mobile_device_list_command(client: Client, args: dict[str, str]) -> C
     outputs: dict[str, Any] = {}
     if context_data:
         outputs[
-            (f"{MobileDevicesConfig.outputs_prefix}." "MobileListObjects(val.resourceId && val.resourceId == obj.resourceId)")
+            (f"{MobileDevicesConfig.outputs_prefix}.MobileListObjects(val.resourceId && val.resourceId == obj.resourceId)")
         ] = context_data
     if next_page_token:
         markdown += f"### Next Page Token:\n{next_page_token}"
@@ -1939,7 +1939,8 @@ def policy_resolve_command(client: Client, args: dict[str, str]) -> CommandResul
         removeNull=True,
     )
     outputs = {
-        "GSuite.Policy(val.targetKey.targetResource && val.targetKey.targetResource == obj.targetKey.targetResource)": policy_resolved_resp,
+        "GSuite.Policy(val.targetKey.targetResource && val.targetKey.targetResource =="
+        " obj.targetKey.targetResource)": policy_resolved_resp,
         "GSuite(true)": {"PolicyNextToken": page_token},
     }
     return CommandResults(outputs=outputs, readable_output=readable_output, raw_response=response)
