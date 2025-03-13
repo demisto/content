@@ -14,9 +14,7 @@ COMPLEX_OBSERVATION_MODE_CREATE_ALL = "Create indicator for each observation"
 """ HELPER FUNCTIONS """
 
 
-def try_parse_integer(
-    int_to_parse: Any, err_msg: str = "Please provide a valid limit (positive integer)"
-) -> int:
+def try_parse_integer(int_to_parse: Any, err_msg: str = "Please provide a valid limit (positive integer)") -> int:
     """
     Tries to parse an integer, and if fails will throw DemistoException with given err_msg
     """
@@ -31,7 +29,7 @@ def try_parse_integer(
 
 def assert_incremental_feed_params(fetch_full_feed, is_incremental_feed):
     if fetch_full_feed == is_incremental_feed:
-        toggle_value = 'enabled' if fetch_full_feed else 'disabled'
+        toggle_value = "enabled" if fetch_full_feed else "disabled"
         raise DemistoException(f"'Full Feed Fetch' cannot be {toggle_value} when 'Incremental Feed' is {toggle_value}.")
 
 
@@ -41,9 +39,7 @@ def assert_incremental_feed_params(fetch_full_feed, is_incremental_feed):
 def module_test_command(client, limit, fetch_full_feed):
     if client.collections:
         if fetch_full_feed and limit and limit != -1:
-            return_error(
-                "Configuration Error - Max Indicators Per Fetch is disabled when Full Feed Fetch is enabled"
-            )
+            return_error("Configuration Error - Max Indicators Per Fetch is disabled when Full Feed Fetch is enabled")
         demisto.results("ok")
     else:
         return_error("Could not connect to server")
@@ -57,10 +53,13 @@ def filter_previously_fetched_indicators(indicators: list, last_run: dict) -> li
     last_indicators = last_run.get("latest_indicators")  # indicators from prev fetch
     new_indicators: list = []
     skipped_indicators: list = []
-    if not last_indicators:    # first fetch
-        last_run["latest_indicators"] = [{obj.get('rawJSON', {}).get("id"): obj.get('rawJSON', {}).get("modified")}
-                                         if obj.get("value") != "$$DummyIndicator$$" else obj
-                                         for obj in indicators]
+    if not last_indicators:  # first fetch
+        last_run["latest_indicators"] = [
+            {obj.get("rawJSON", {}).get("id"): obj.get("rawJSON", {}).get("modified")}
+            if obj.get("value") != "$$DummyIndicator$$"
+            else obj
+            for obj in indicators
+        ]
         demisto.debug("with first fetch, updated the latest_indicators")
         return indicators
     for indicator in indicators:
@@ -72,12 +71,14 @@ def filter_previously_fetched_indicators(indicators: list, last_run: dict) -> li
         # if the indicator is stored in latest_indicators -> check if it was modified
         if saved_indicator:
             saved_modified_date = saved_indicator[0].get(indicator_id)
-            new_modified_date = indicator.get('rawJSON', {}).get('modified')
+            new_modified_date = indicator.get("rawJSON", {}).get("modified")
 
             # if indicator stored in saved indicators but does not have modified field -> add to new_indicators
             if not saved_modified_date or not new_modified_date:
-                demisto.debug(f"saved indicator's modified value: {saved_modified_date}, "
-                              f"new indicator's modified value is: {new_modified_date}")
+                demisto.debug(
+                    f"saved indicator's modified value: {saved_modified_date}, "
+                    f"new indicator's modified value is: {new_modified_date}"
+                )
                 new_indicators.append(indicator)
             # the indicator is stored in latest_indicators, but got modified -> add to new_indicators
             elif new_modified_date > saved_modified_date:
@@ -96,9 +97,12 @@ def filter_previously_fetched_indicators(indicators: list, last_run: dict) -> li
     demisto.debug(f"found {len(new_indicators)} new indicators from {len(indicators)} fetched indicators")
 
     # updated lastrun with the indicators fetched in the current round
-    last_run["latest_indicators"] = [{obj.get('rawJSON', {}).get("id"): obj.get('rawJSON', {}).get("modified")}
-                                     if obj.get("value") != "$$DummyIndicator$$" else obj
-                                     for obj in indicators]
+    last_run["latest_indicators"] = [
+        {obj.get("rawJSON", {}).get("id"): obj.get("rawJSON", {}).get("modified")}
+        if obj.get("value") != "$$DummyIndicator$$"
+        else obj
+        for obj in indicators
+    ]
 
     return new_indicators
 
@@ -120,15 +124,9 @@ def fetch_indicators_command(
     :return: indicators in cortex TIM format
     """
     if initial_interval:
-        initial_interval, _ = parse_date_range(
-            initial_interval, date_format=TAXII_TIME_FORMAT
-        )
+        initial_interval, _ = parse_date_range(initial_interval, date_format=TAXII_TIME_FORMAT)
 
-    last_fetch_time = (
-        last_run_ctx.get(client.collection_to_fetch.id)
-        if client.collection_to_fetch
-        else None
-    )
+    last_fetch_time = last_run_ctx.get(client.collection_to_fetch.id) if client.collection_to_fetch else None
 
     if not client.collection_to_fetch:
         # fetch all collections
@@ -137,15 +135,13 @@ def fetch_indicators_command(
         indicators: list = []
         for collection in client.collections:
             client.collection_to_fetch = collection
-            added_after = get_added_after(
-                fetch_full_feed, initial_interval, last_run_ctx.get(collection.id)
-            )
+            added_after = get_added_after(fetch_full_feed, initial_interval, last_run_ctx.get(collection.id))
             fetched_iocs = client.build_iterator(limit, added_after=added_after)
             demisto.debug(f"fetched {len(fetched_iocs)} iocs from {collection} collection")
             indicators.extend(fetched_iocs)
-            last_run_ctx[collection.id] = client.last_fetched_indicator__modified \
-                if client.last_fetched_indicator__modified \
-                else added_after
+            last_run_ctx[collection.id] = (
+                client.last_fetched_indicator__modified if client.last_fetched_indicator__modified else added_after
+            )
             if limit >= 0:
                 limit -= len(fetched_iocs)
                 if limit <= 0:
@@ -156,19 +152,15 @@ def fetch_indicators_command(
         indicators = client.build_iterator(limit, added_after=added_after)
         demisto.debug(f"fetched {len(indicators)} iocs")
         last_run_ctx[client.collection_to_fetch.id] = (
-            client.last_fetched_indicator__modified
-            if client.last_fetched_indicator__modified
-            else added_after
+            client.last_fetched_indicator__modified if client.last_fetched_indicator__modified else added_after
         )
 
     indicators = filter_previously_fetched_indicators(indicators, last_run_ctx)
-    demisto.debug(f'{indicators=}')
+    demisto.debug(f"{indicators=}")
     return indicators, last_run_ctx
 
 
-def get_added_after(
-    fetch_full_feed, initial_interval, last_fetch_time=None
-):
+def get_added_after(fetch_full_feed, initial_interval, last_fetch_time=None):
     """
     Creates the added_after param, or extracts it from the filter_args
     :param fetch_full_feed: when set to true, will limit added_after
@@ -182,9 +174,7 @@ def get_added_after(
     return last_fetch_time or initial_interval
 
 
-def get_indicators_command(
-    client, raw="false", limit=10, added_after=None
-):
+def get_indicators_command(client, raw="false", limit=10, added_after=None):
     """
     Fetch indicators from TAXII 2 server
     :param client: Taxii2FeedClient
@@ -217,11 +207,21 @@ def get_indicators_command(
         indicators = client.build_iterator(limit=limit, added_after=added_after)
     relationships_list: list = []
     parsed_relationships: str = ""
-    if indicators and indicators[-1].get('value', ) == "$$DummyIndicator$$":
-        relationships_list = indicators[-1].get('relationships', )
+    if (
+        indicators
+        and indicators[-1].get(
+            "value",
+        )
+        == "$$DummyIndicator$$"
+    ):
+        relationships_list = indicators[-1].get(
+            "relationships",
+        )
         parsed_relationships = f"\n\n\nRelations ships:\n{tableToMarkdown('', relationships_list)}"
-        md = f"Found {len(indicators) - 1} results:\n" \
-             f"{tableToMarkdown('', indicators[:-1], ['value', 'type'])}{parsed_relationships}"
+        md = (
+            f"Found {len(indicators) - 1} results:\n"
+            f"{tableToMarkdown('', indicators[:-1], ['value', 'type'])}{parsed_relationships}"
+        )
     else:
         md = f"Found {len(indicators)} results:\n{tableToMarkdown('', indicators, ['value', 'type'])}{parsed_relationships}"
 
@@ -293,27 +293,27 @@ def main():  # pragma: no cover
     password = credentials.get("password")
     proxies = handle_proxy()
     verify_certificate = not params.get("insecure", False)
-    skip_complex_mode = params.get(
-        "observation_operator_mode"
-    ) == COMPLEX_OBSERVATION_MODE_SKIP
+    skip_complex_mode = params.get("observation_operator_mode") == COMPLEX_OBSERVATION_MODE_SKIP
     feed_tags = argToList(params.get("feedTags"))
-    tlp_color = params.get('tlp_color', '')
+    tlp_color = params.get("tlp_color", "")
 
     initial_interval = params.get("initial_interval")
     fetch_full_feed = params.get("fetch_full_feed") or False
-    is_incremental_feed = params.get('feedIncremental') or False
+    is_incremental_feed = params.get("feedIncremental") or False
     limit = try_parse_integer(params.get("limit") or -1)
     limit_per_request = try_parse_integer(params.get("limit_per_request"))
-    certificate = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('identifier'))
-                   or params.get('certificate', None))
-    key = params.get('creds_certificate', {}).get('password') or params.get('key', None)
-    objects_to_fetch = argToList(params.get('objects_to_fetch') or [])
-    default_api_root = params.get('default_api_root')
-    update_custom_fields = params.get('update_custom_fields') or False
-    enrichment_excluded = (argToBoolean(params.get('enrichmentExcluded', False))
-                           or (params.get('tlp_color') == 'RED' and is_xsiam_or_xsoar_saas()))
+    certificate = replace_spaces_in_credential(params.get("creds_certificate", {}).get("identifier")) or params.get(
+        "certificate", None
+    )
+    key = params.get("creds_certificate", {}).get("password") or params.get("key", None)
+    objects_to_fetch = argToList(params.get("objects_to_fetch") or [])
+    default_api_root = params.get("default_api_root")
+    update_custom_fields = params.get("update_custom_fields") or False
+    enrichment_excluded = argToBoolean(params.get("enrichmentExcluded", False)) or (
+        params.get("tlp_color") == "RED" and is_xsiam_or_xsoar_saas()
+    )
 
-    demisto.info(f'{objects_to_fetch=}')
+    demisto.info(f"{objects_to_fetch=}")
 
     command = demisto.command()
     demisto.info(f"Command being called in {CONTEXT_PREFIX} is {command}")
@@ -353,7 +353,7 @@ def main():  # pragma: no cover
                 limit = -1
 
             last_run_indicators = get_feed_last_run()
-            demisto.debug(f'Before fetch command last run: {last_run_indicators}')
+            demisto.debug(f"Before fetch command last run: {last_run_indicators}")
             (indicators, last_run_indicators) = fetch_indicators_command(
                 client,
                 initial_interval,
@@ -361,7 +361,7 @@ def main():  # pragma: no cover
                 last_run_indicators,
                 fetch_full_feed,
             )
-            demisto.debug(f'After fetch command last run: {last_run_indicators}')
+            demisto.debug(f"After fetch command last run: {last_run_indicators}")
             demisto.debug(f"returning {len(indicators)} indicators")
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
