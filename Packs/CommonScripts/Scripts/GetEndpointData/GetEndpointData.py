@@ -301,7 +301,7 @@ def initialize_commands(module_manager: ModuleManager) -> tuple[EndpointCommandR
             output_mapping={},
             post_processing=cylance_filtering
         ),
-        Command(  # this is a bang command
+        Command(
             brand='Microsoft Defender Advanced Threat Protection',
             name='endpoint',
             output_keys=["Endpoint"],
@@ -504,7 +504,7 @@ def prepare_args(command: Command, endpoint_args: dict[str, Any]) -> dict[str, A
         if command_arg_value := endpoint_args.get(endpoint_arg_key):
             command_args[command_arg_key] = command_arg_value
 
-    if command.hard_coded_args:
+    if command.hard_coded_args:  # Adding hard-coded arguments
         command_args.update(command.hard_coded_args)
 
     return command_args

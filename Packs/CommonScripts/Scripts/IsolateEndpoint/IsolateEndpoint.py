@@ -45,6 +45,9 @@ class Command:
 
 
 def initialize_commands() -> list:
+    """
+    Initializes the commands for the Isolate Endpoint.
+    """
     commands = [
         Command(
             # need to be tested on XSIAM
@@ -303,7 +306,7 @@ def is_endpoint_isolatable(endpoint_data: dict, force: bool, server_os_list: lis
 
 
 def create_message_to_context_and_hr(args: dict, result: str, message: str, outputs: list, human_readable_outputs: list,
-                                     verbose: bool):
+                                     verbose: bool) -> None:
     """
     Generates a structured message for context and human-readable outputs.
 
@@ -368,7 +371,7 @@ def map_args(command: Command, args: dict) -> dict:
     return mapped_args
 
 
-def map_zipped_args(agent_ids: list, agent_ips: list, agent_hostnames: list):
+def map_zipped_args(agent_ids: list, agent_ips: list, agent_hostnames: list) -> list:
     """
     Combines agent IDs, IPs, and hostnames into a list of dictionaries.
 
@@ -387,7 +390,7 @@ def map_zipped_args(agent_ids: list, agent_ips: list, agent_hostnames: list):
 
 
 def check_which_args_missing_in_output(zipped_args: list, valid_args: list, outputs: list, human_readable_outputs: list,
-                                       verbose: bool):
+                                       verbose: bool) -> None:
     """
     Checks if any of the given agent details (ID, IP, or hostname) exist in a list of valid arguments.
     If no match is found, a failure message is added to the context and human-readable outputs.
@@ -463,7 +466,7 @@ def structure_endpoints_data(get_endpoint_data_results: dict | list | None) -> l
 
 
 def handle_raw_response_results(command: Command, raw_response: dict, args, outputs: list, human_readable_outputs: list,
-                                verbose: bool):
+                                verbose: bool) -> None:
     """
     Handles the raw response of a command execution by determining success or failure and updating outputs accordingly.
 
