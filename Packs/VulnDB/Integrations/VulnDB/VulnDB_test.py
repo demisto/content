@@ -110,5 +110,12 @@ def test_vulndb_vulnerability_to_entry():
 
     result = vulndb_vulnerability_to_entry(util_load_json('test_data/vulndb_get_vuln_by_id.json').get('vulnerability'))
     assert result
-    assert list(result.keys()) == ['Vulnerability', 'CVE-ExtReference', 'CvssMetrics',
-                             'Vendor', 'Products', 'Classification', 'Timeline']
+    assert list(result.keys()) == [
+        "Vulnerability",
+        "CVE-ExtReference",
+        "CvssMetrics",
+        "Vendor",
+        "Products",
+        "Classification",
+        "Timeline",
+    ]
