@@ -2,6 +2,10 @@
 
 ### This pack includes:
 - Log Normalization - XDM mapping for key event types.
+- Log timestamp ingestion.
+
+**Pay Attention:**
+This pack should only be installed after installing the Azure Logs pack.
 
 ### Supported Event Types:
 - cluster-autoscaler
