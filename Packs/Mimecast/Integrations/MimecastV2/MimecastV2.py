@@ -153,7 +153,7 @@ def fetch_held_messages_with_pagination(api_endpoint: str, data: list, response_
     len_of_results = 0
     results = []
     dropped = 0
-    if current_next_page: # For debugging
+    if current_next_page:  # For debugging
         demisto.debug(f"current_next_page exists with value {current_next_page}")
     next_page = current_next_page or ''
     while True:
@@ -163,7 +163,7 @@ def fetch_held_messages_with_pagination(api_endpoint: str, data: list, response_
             pagination = {'pageSize': limit, 'pageToken': next_page}
         payload['meta']['pagination'] = pagination
         response = http_request('POST', api_endpoint, payload, headers=headers)
-        if failure_response:=response.get('fail'):
+        if failure_response := response.get('fail'):
             raise Exception(json.dumps(failure_response[0].get('errors')))
         if response_param:
             response_data = response.get('data')[0].get(response_param, [])
@@ -210,7 +210,7 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
         }
 
     demisto.debug(f'running {method} request with url={url}, params={json.dumps(params)}, data={json.dumps(payload)},'
-        f'is user auth={is_user_auth}')
+                  f'is user auth={is_user_auth}')
     try:
         res = requests.request(
             method,
@@ -2162,11 +2162,11 @@ def fetch_incidents():
         demisto.debug(f"{time_held_messages_for_next_page=}")
         next_page, next_dedup_held_messages, new_last_fetch_held_messages = fetch_held_messages(last_fetch_held_messages_date_time,
                                                                                                 time_held_messages_for_next_page_date_time,
-                                                                                            last_fetch_held_messages,
-                                                                                            current_fetch_held_message,
-                                                                                            dedup_held_messages,
-                                                                                            current_next_page,
-                                                                                            incidents)
+                                                                                                last_fetch_held_messages,
+                                                                                                current_fetch_held_message,
+                                                                                                dedup_held_messages,
+                                                                                                current_next_page,
+                                                                                                incidents)
 
     time = last_fetch.isoformat().split('.')[0] + 'Z'
     time_held_messages = new_last_fetch_held_messages.isoformat().split('.')[0] + 'Z'
