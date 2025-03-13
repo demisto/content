@@ -1,6 +1,6 @@
 category: Email
 commonfields:
-  id: MimecastV2-549ea45
+  id: MimecastV2
   version: -1
 configuration:
 - defaultvalue: https://api.services.mimecast.com
@@ -154,8 +154,8 @@ configuration:
   type: 19
   additionalinfo: Please set the Incidents Fetch Interval to a maximum of 15 minutes if the number of incidents is expected to exceed the specified max fetch limit in each fetch cycle.
 description: Mimecast unified email management offers cloud email services for email security, continuity and archiving emails. Please read detailed instructions in order to understand how to set the integration's parameters.
-display: Mimecast v2-549ea45
-name: MimecastV2-549ea45
+display: Mimecast v2
+name: MimecastV2
 script:
   commands:
   - arguments:
@@ -3401,7 +3401,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.1983910
 tests:
 - Mimecast test
 - Mimecast Test api 2.0
