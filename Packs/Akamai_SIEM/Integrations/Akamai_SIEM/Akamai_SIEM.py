@@ -1130,6 +1130,26 @@ def send_events_to_xsiam_akamai(events, vendor, product, data_format=None, url_k
         counter=counter
     )
 
+def my_test_func(i):
+    import requests
+    demisto.info(f"[test] {i}")
+    # The API endpoint
+    url = "https://jsonplaceholder.typicode.com/posts"
+
+    # Data to be sent
+    data = {
+        "userID": 1,
+        "title": "Making a POST request",
+        "body": "This is the data we created."
+    }
+
+    # A POST request to the API
+    response = requests.post(url, json=data)
+    demisto.info(f"[test] Response status code: {response.status_code}")
+    # Print the response
+    # raise DemistoException("test test test", DemistoException)
+    return i
+
 
 ############################################## end of CSP copy-paste part ##############################################
 
@@ -1172,6 +1192,24 @@ def main():  # pragma: no cover
                                                               last_run=demisto.getLastRun().get('lastRun'))
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
+        elif command == "fetch-events":
+            data_size = 0
+            support_multithreading()
+            futures = []
+            executor = concurrent.futures.ThreadPoolExecutor(max_workers=NUM_OF_WORKERS)
+            for i in range(5):
+                future = executor.submit(my_test_func, i)
+                futures.append(future)
+            try:
+                for future in concurrent.futures.as_completed(futures):
+                    data_size += future.result()
+            except Exception as e:
+                demisto.info(f"[test] {e}")
+            e = "failure."
+            err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
+            demisto.info("[test] returning an error.")
+            return_error(err_msg, error=e)
+            demisto.info("[test] finished returning an error.")
         elif command == "fetch-events":
             if params.get("longRunning", False):
                 raise DemistoException("Cannot run both fetch events and long-running command simultaneously.\n"
