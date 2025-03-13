@@ -273,8 +273,7 @@ class LastModifiedCondition(BaseCondition):
 
 
 class LabelCondition(BaseCondition):
-    NOT_UPDATE_RN_LABEL = "ignore-auto-bump-version"
-
+    NOT_UPDATE_RN_LABEL = "igasd"
     def generate_skip_reason(self, labels: str, **kwargs) -> str:   # type: ignore[override]
         """
         Args:
