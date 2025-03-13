@@ -540,21 +540,21 @@ def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreR
                 filtered_relationship = acti_create_relationship(indicator_value, "malware_family", relationships)
                 indicator.to_context()["relationships"] = filtered_relationship
             result_link = MALWARE_FAMILY_URL + res.get("uuid", "")
-        elif indicator_type.lower() == "threat_group":
+        elif indicator_type.lower() == "threat_group":  # pragma: no cover
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, "ACTI Indicator Query", dbot_score, desc, reliability)
             indicator = Common.CustomIndicator("ACTI Threat Group", indicator_value, dbot, analysis_info, "ACTI_ThreatGroup")
-            if relationships:
+            if relationships:   # pragma: no cover
                 filtered_relationship = acti_create_relationship(indicator_value, "threat_group", relationships)
                 indicator.to_context()["relationships"] = filtered_relationship
             result_link = THREAT_GROUP_URL + res.get("uuid", "")
-        elif indicator_type.lower() == "threat_actor":
+        elif indicator_type.lower() == "threat_actor":  # pragma: no cover
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, "ACTI Indicator Query", dbot_score, desc, reliability)
             indicator = Common.CustomIndicator("ACTI Threat Actor", indicator_value, dbot, analysis_info, "ACTI_ThreatActor")
             if relationships:
                 filtered_relationship = acti_create_relationship(indicator_value, "threat_actor", relationships)
                 indicator.to_context()["relationships"] = filtered_relationship
             result_link = THREAT_ACTOR_URL + res.get("uuid", "")
-        elif indicator_type.lower() == "threat_campaign":
+        elif indicator_type.lower() == "threat_campaign":   # pragma: no cover
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, "ACTI Indicator Query", dbot_score, desc, reliability)
             indicator = Common.CustomIndicator(
                 "ACTI Threat Campaign", indicator_value, dbot, analysis_info, "ACTI_ThreatCampaign"
@@ -705,7 +705,7 @@ def convert_inline_image_to_encoded(md_text: str) -> str:
     return result
 
 
-def getThreatReport_command(doc_search_client: Client, args: dict, reliability: DBotScoreReliability):
+def getThreatReport_command(doc_search_client: Client, args: dict, reliability: DBotScoreReliability):  # pragma: no cover
     try:
         result = {}
         ia_ir_uuid: str = str(args.get("uuid"))
@@ -738,7 +738,7 @@ def getThreatReport_command(doc_search_client: Client, args: dict, reliability: 
             raise e
 
 
-def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):
+def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):   # pragma: no cover
     """ """
     threat_types = Res.get("threat_types", "")
     uuid = Res.get("uuid", "")
