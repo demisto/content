@@ -154,6 +154,7 @@ function genericPollingScheduled(){
 
             if (currentTime >= endTime) {
                 logInfo('Polling stopped prematurely: End time reached.');
+                logInfo('Current Time: ' + currentTime + ', End Time: ' + endTime);
                 return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
             }
         }
@@ -188,6 +189,8 @@ function genericPollingScheduled(){
 
         var idsStrArr = listOfStrings(ids);
         var pendingsStrArr = listOfStrings(pendings);
+        logInfo('IDs to poll: ' + JSON.stringify(idsStrArr));
+        logInfo('Pending IDs: ' + JSON.stringify(pendingsStrArr));
         idsToPoll = intersect(idsStrArr, pendingsStrArr);
         if (idsToPoll.length === 0) {
             logInfo("Polling stopped because there were no IDs left to poll.");
