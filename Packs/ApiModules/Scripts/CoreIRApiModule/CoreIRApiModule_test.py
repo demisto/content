@@ -4562,16 +4562,16 @@ def test_run_polling_command_values_raise_error(mocker):
      ("Please confirm the XDR Identity Threat Module is enabled.\nFull error message: An error occurred while processing XDR "
       "public API: No identity threat")),
 
-    (Exception("500: No identity threat. An error occurred while processing XDR public API"),
+    (Exception('"err_code": 500: No identity threat. An error occurred while processing XDR public API'),
      "user",
-     ("Please confirm the XDR Identity Threat Module is enabled.\nFull error message: 500: No identity threat. An error occurred"
-      " while processing XDR public API")),
+     ("Please confirm the XDR Identity Threat Module is enabled.\nFull error message: \"err_code\": 500: No identity threat."
+      " An error occurred while processing XDR public API")),
 
     (DemistoException("500: The id 'test_user' was not found", res=Mock(status_code=500)),
      "user",
      "The user test_user was not found"),
 
-    (Exception("500: The id 'test_user' was not found"),
+    (Exception('"err_code": 500: The id \'test_user\' was not found'),
      "user",
      "The user test_user was not found"),
 
@@ -4584,10 +4584,10 @@ def test_run_polling_command_values_raise_error(mocker):
      ("Please confirm the XDR Identity Threat Module is enabled.\nFull error message: An error occurred while processing XDR "
       "public API: No identity threat")),
 
-    (Exception("500: No identity threat. An error occurred while processing XDR public API"),
+    (Exception('"err_code": 500: No identity threat. An error occurred while processing XDR public API'),
      "host",
-     ("Please confirm the XDR Identity Threat Module is enabled.\nFull error message: 500: No identity threat. An error occurred"
-      " while processing XDR public API")),
+     ("Please confirm the XDR Identity Threat Module is enabled.\nFull error message: \"err_code\": 500: No identity threat. "
+      "An error occurred while processing XDR public API")),
 
     (DemistoException("Some other error", res=Mock(status_code=500)), "host", None),
 
@@ -4597,7 +4597,7 @@ def test_run_polling_command_values_raise_error(mocker):
      "host",
      "The host test_host was not found"),
 
-    (Exception("500: The id 'test_host' was not found"),
+    (Exception('"err_code": 500: The id \'test_host\' was not found'),
      "host",
      "The host test_host was not found"),
 ])
