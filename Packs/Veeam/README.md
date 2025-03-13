@@ -27,9 +27,9 @@ The content pack includes:
 
 # Screenshots
 
-![The XSOAR Dashboard](https://raw.githubusercontent.com/demisto/content/master/Packs/Veeam/doc_files/Veeam_XSOAR_Dashboard.png)
+![The XSOAR Dashboard](./doc_files/Veeam_XSOAR_Dashboard.png)
 
-![Veeam - Start Instant VM Recovery Automatically](https://raw.githubusercontent.com/demisto/content/master/Packs/Veeam/doc_files/Veeam_XSOAR_Playbooks.png)
+![Veeam - Start Instant VM Recovery Automatically](./doc_files/Veeam_XSOAR_Playbooks.png)
 </~XSOAR>
 <~XSIAM>
 This app allows Veeam Data Platform Advanced and Premium users to monitor various security activities in their Veeam backup infrastructure and use leverage pre-defined automation playbooks via REST API for:
@@ -66,7 +66,7 @@ The documentation also includes examples of correlation rules for Veeam security
 
 # Screenshots
 
-![The Security Dashboard](https://raw.githubusercontent.com/demisto/content/master/Packs/Veeam/doc_files/Veeam_Security_Activities_Dashboard_image.png)
+![The Security Dashboard](./doc_files/Veeam_Security_Activities_Dashboard_image.png)
 
-![The Monitoring Dashboard](https://raw.githubusercontent.com/demisto/content/master/Packs/Veeam/doc_files/Veeam_Data_Platform_Monitoring_Dashboard_image.png)
+![The Monitoring Dashboard](./doc_files/Veeam_Data_Platform_Monitoring_Dashboard_image.png)
 </~XSIAM>

@@ -5,7 +5,7 @@
     "support": "xsoar",
     "author": "Palo Alto Networks Enterprise DLP",
     "url": "https://www.paloaltonetworks.com/enterprise-data-loss-prevention",
-    "currentVersion": "2.0.15",
+    "currentVersion": "2.0.16",
     "categories": [
         "Network Security"
     ],
