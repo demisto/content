@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 """Script for identifying and recommending the most likely owners of a discovered service
 from those surfaced by Cortex ASM Enrichment.
 """
@@ -73,30 +74,32 @@ def main():
                             # cast to list because if there's only one element, it will be returned as a dict
                             current_owners = [current_owners]
                         for email in owners:
-                            current_owners.append({
-                                "name": "n/a",
-                                "email": email,
-                                # The "Chain: " prefix is used for internal model processing and will be removed
-                                # from final service owner source; see RankServiceOwners.py::justify
-                                "source": "Chain: GCP project owner of service account",
-                                "timestamp": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-                            })
+                            current_owners.append(
+                                {
+                                    "name": "n/a",
+                                    "email": email,
+                                    # The "Chain: " prefix is used for internal model processing and will be removed
+                                    # from final service owner source; see RankServiceOwners.py::justify
+                                    "source": "Chain: GCP project owner of service account",
+                                    "timestamp": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                                }
+                            )
                         demisto.executeCommand("setAlert", {"asmserviceownerunrankedraw": current_owners})
         if found_owners:
-            return_results(CommandResults(
-                readable_output='Project owners of service accounts written to asmserviceownerunrankedraw'
-            ))
+            return_results(
+                CommandResults(readable_output="Project owners of service accounts written to asmserviceownerunrankedraw")
+            )
         else:
-            return_results(CommandResults(readable_output='No additional project owners found'))
+            return_results(CommandResults(readable_output="No additional project owners found"))
 
     except (ValueError, RuntimeError) as ex:
         demisto.info(f"Error retrieving project owners: {str(ex)}")
-        return_results(CommandResults(readable_output='No additional project owners found'))
+        return_results(CommandResults(readable_output="No additional project owners found"))
 
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute GetProjectOwners. Error: {str(ex)}')
+        return_error(f"Failed to execute GetProjectOwners. Error: {str(ex)}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
