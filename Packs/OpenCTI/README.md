@@ -1,3 +1,5 @@
+Note: Support for this Pack will be moved to the Partner on April, 21, 2025.
+
 This pack enables you to take advantage of the cyber threat intelligence database offered by OpenCTI.
 You can get lists of indicators that are linked to threats, with additional information to assist with your investigation. You can also contribute to the OpenCTI database by reporting new indicators or updating the information of existing indicators.
 
