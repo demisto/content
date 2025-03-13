@@ -1,0 +1,21 @@
+{
+    "name": "OpsGenieV3.q",
+    "description": "Fixed the bug that each time the integration was pulling all the alerts from opsgenie.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "NandyRaja",
+    "url": "",
+    "email": "",
+    "created": "2025-03-13T06:03:33Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "NandyRaja"
+    ]
+}
