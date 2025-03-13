@@ -313,9 +313,9 @@ def swap_stderr(new_stderr):
         module = smtplib
     else:
         module = sys  # type: ignore
-    old_stderr = module.stderr
+    old_stderr = module.stderr  # type: ignore[attr-defined]
     if new_stderr:
-        module.stderr = new_stderr
+        module.stderr = new_stderr  # type: ignore[attr-defined]
     return old_stderr
 
 

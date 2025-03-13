@@ -40,7 +40,7 @@ OK_CODES = (
     403,
     404,
     521,
-    *(status_code for status_code in requests.status_codes._codes if status_code >= 200 and status_code < 300),
+    *(status_code for status_code in requests.status_codes._codes if status_code >= 200 and status_code < 300), # type: ignore[attr-defined]
 )  # type: ignore
 BACKOFF_FACTOR = 7.5  # Sleep for [0s, 15s, 30s, 60s] between retries.
 DEFAULT_END_TIME = "now"
@@ -833,7 +833,9 @@ def validate_date_parameters_for_compromised_credentials(args: dict, params: dic
             raise ValueError(MESSAGES["FILTER_DATE_ERROR"].format(filter_date, FILTER_DATE_VALUES))
         if not (start_date or end_date):
             raise ValueError(MESSAGES["MISSING_DATE_ERROR"])
-        date_query = f" +breach.{filter_date}.date-time: [{start_date.strftime(DATE_FORMAT)} TO {end_date.strftime(DATE_FORMAT)}]" # type: ignore
+        # type: ignore
+        date_query = (f" +breach.{filter_date}.date-time: [{start_date.strftime(DATE_FORMAT)} TO"   # type: ignore[union-attr]
+                      f" {end_date.strftime(DATE_FORMAT)}]")    # type: ignore[union-attr]
         params["query"] += date_query
     elif start_date or end_date:
         raise ValueError(MESSAGES["MISSING_FILTER_DATE_ERROR"])
@@ -1524,11 +1526,10 @@ def ip_lookup_command(client: Client, ip: str) -> CommandResults:
                 filter_enrichments.pop("bins", None)
                 hr_indicator = {
                     "Author": indicator.get("author", EMPTY_DATA),
-                    "Date (UTC)": arg_to_datetime(indicator.get("date")).strftime(READABLE_DATE_FORMAT),  # type: ignore
-                    "First Observed Date (UTC)": arg_to_datetime(indicator.get("first_observed_at")).strftime(
+                    "Date (UTC)": arg_to_datetime(indicator.get("date")).strftime(READABLE_DATE_FORMAT),  # type: ignore[union-attr]
+                    "First Observed Date (UTC)": arg_to_datetime(indicator.get("first_observed_at")).strftime(  # type: ignore
                         READABLE_DATE_FORMAT
-                    ),  # type: ignore
-                    # type: ignore
+                    ),
                     "Last Observed Date (UTC)": arg_to_datetime(indicator.get("last_observed_at")).strftime(READABLE_DATE_FORMAT),
                     "Title": indicator.get("title", EMPTY_DATA),
                     "Site": indicator.get("site", EMPTY_DATA),

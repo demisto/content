@@ -139,7 +139,7 @@ class Actions:
         if not result_actions:
             return None  # type: ignore
 
-        command_results: list[CommandResults] = list()
+        command_results: list[CommandResults] = []
         for action in result_actions:
             if "CommandResults" in action:
                 command_results.append(CommandResults(**action["CommandResults"]))
@@ -259,7 +259,7 @@ def main() -> None:
                         message = error.get("result", {})["message"]
                 except Exception:
                     message = (
-                        "Unknown error. Please verify that the API" f" URL and Token are correctly configured. RAW Error: {err}"
+                        f"Unknown error. Please verify that the API URL and Token are correctly configured. RAW Error: {err}"
                     )
                 raise DemistoException(f"Failed due to - {message}")
 

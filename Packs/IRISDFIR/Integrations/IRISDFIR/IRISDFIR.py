@@ -121,9 +121,9 @@ class DFIRIrisAPI:
             f"{self.api_endpoint}/case/notes/groups/add", headers=self.headers, verify=verify_cert, proxies=proxies, json=body
         )
 
-        if response.status_code == 200: # noqa: RET503
+        if response.status_code == 200:
             cases = response.json()
-            if cases:
+            if cases:  # noqa: RET503
                 return cases["data"]
         else:
             raise DemistoException(f"Request failed with status code {response.status_code}.")
@@ -135,9 +135,9 @@ class DFIRIrisAPI:
             f"{self.api_endpoint}/case/notes/add", headers=self.headers, verify=verify_cert, proxies=proxies, json=body
         )
 
-        if response.status_code == 200: # noqa: RET503
+        if response.status_code == 200:
             cases = response.json()
-            if cases:
+            if cases:  # noqa: RET503
                 return cases["data"]
         else:
             raise DemistoException(f"Request failed with status code {response.status_code}.")
@@ -147,9 +147,9 @@ class DFIRIrisAPI:
             f"{self.api_endpoint}/case/notes/groups/list?cid={case_id}", headers=self.headers, verify=verify_cert, proxies=proxies
         )
 
-        if response.status_code == 200: # noqa: RET503
+        if response.status_code == 200:
             cases = response.json()
-            if cases:
+            if cases:  # noqa: RET503
                 return cases["data"]
         else:
             raise DemistoException(f"Request failed with status code {response.status_code}.")

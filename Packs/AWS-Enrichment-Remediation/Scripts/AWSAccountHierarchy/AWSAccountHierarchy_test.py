@@ -15,7 +15,7 @@ def test_lookup_ou(mocker):
     from AWSAccountHierarchy import lookup
 
     def executeCommand(name, args):
-        if name == "aws-org-organization-unit-get": # noqa: RET503
+        if name == "aws-org-organization-unit-get":  # noqa: RET503
             return [
                 {
                     "Type": 1,
