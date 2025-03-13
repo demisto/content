@@ -83,7 +83,6 @@ Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavo
 /Packs/Base/Scripts/DrawRelatedIncidentsCanvas@jlevypaloalto
 /Packs/Campaign/Scripts/FindEmailCampaign/ @jlevypaloalto
 /Packs/CortexXDR/Scripts/DBotGroupXDRIncidents/ @jlevypaloalto
-/Packs/CommonScripts/Scripts/DBotUpdateLogoURLPhishing/ @jlevypaloalto
 /Packs/Base/Scripts/FindSimilarIncidentsByText/ @jlevypaloalto
 /Packs/Base/Scripts/DBotTrainTextClassifierV2/ @jlevypaloalto
 /Packs/Base/Scripts/DBotShowClusteringModelInfo/ @jlevypaloalto
