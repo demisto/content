@@ -12,6 +12,7 @@ class Command:
         output_keys: List[str],
         args_mapping: dict,
         output_mapping: dict | Callable,
+        hard_coded_args: dict = None,
         post_processing: Callable = None,
     ):
         """
@@ -20,13 +21,18 @@ class Command:
         Args:
             brand (str): The brand associated with the command.
             name (str): The name of the command.
+            output_keys (list[str]): The keys to search the context by.
             args_mapping (dict): A dictionary containing the command arguments
+            output_mapping (dict): Map the args according to the integration arguments names, including id, up, and hostname .
+            hard_coded_args (dict): Additional arguments to add for the command, arguments with hard-coded values.
+            post_processing (Callable): The function used to provide further processing that the native command does not provide.
         """
         self.brand = brand
         self.name = name
         self.output_keys = output_keys
         self.args_mapping = args_mapping
         self.output_mapping = output_mapping
+        self.hard_coded_args = hard_coded_args
         self.post_processing = post_processing
 
     def __repr__(self):
@@ -294,6 +300,14 @@ def initialize_commands(module_manager: ModuleManager) -> tuple[EndpointCommandR
             args_mapping={},
             output_mapping={},
             post_processing=cylance_filtering
+        ),
+        Command(
+            brand='Microsoft Defender Advanced Threat Protection',
+            name='endpoint',
+            output_keys=["Endpoint"],
+            output_mapping={},
+            args_mapping={'hostname': 'agent_hostname'},
+            hard_coded_args={'using-brand': 'Microsoft Defender Advanced Threat Protection'}
         )
     ]
 
@@ -489,6 +503,9 @@ def prepare_args(command: Command, endpoint_args: dict[str, Any]) -> dict[str, A
     for command_arg_key, endpoint_arg_key in command.args_mapping.items():
         if command_arg_value := endpoint_args.get(endpoint_arg_key):
             command_args[command_arg_key] = command_arg_value
+
+    if command.hard_coded_args:  # Adding hard-coded arguments
+        command_args.update(command.hard_coded_args)
 
     return command_args
 

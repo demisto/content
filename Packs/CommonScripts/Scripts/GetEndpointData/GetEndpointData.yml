@@ -29,9 +29,9 @@ args:
   - 'false'
 comment: This script gathers endpoint data from multiple integrations and returns an endpoint entity with consolidated information to the context.
 commonfields:
-  id: get-endpoint-data
+  id: get-endpoint-data-modified # todo to change name back
   version: -1
-name: get-endpoint-data
+name: get-endpoint-data-modified # todo to change name back
 outputs:
 - contextPath: Endpoint.Hostname.value
   description: The endpoint's hostname.
@@ -163,7 +163,7 @@ script: '-'
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.11.10.116949
+dockerimage: demisto/python3:3.12.8.1983910
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
