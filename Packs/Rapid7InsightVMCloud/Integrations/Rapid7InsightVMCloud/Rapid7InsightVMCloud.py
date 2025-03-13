@@ -105,7 +105,7 @@ def get_health_check_command(client: Client) -> dict:  # type: ignore
     if response:
         return response  # type: ignore
     else:
-        return_error("no response") # noqa: RET503
+        return_error("no response")  # noqa: RET503
 
 
 def get_asset_command(client: Client, asset_id: str) -> dict:  # type: ignore
@@ -124,7 +124,7 @@ def get_asset_command(client: Client, asset_id: str) -> dict:  # type: ignore
     if response:
         return response  # type: ignore
     else:
-        return_error("no response") # noqa: RET503
+        return_error("no response")  # noqa: RET503
 
 
 def search_assets_command(client: Client, hostname: None, page: str, size: str) -> CommandResults:  # type: ignore
@@ -152,7 +152,7 @@ def search_assets_command(client: Client, hostname: None, page: str, size: str) 
         )
         return result
     else:
-        return_error("no response") # noqa: RET503
+        return_error("no response")  # noqa: RET503
 
 
 def get_scan_command(client: Client, scan_id=str) -> CommandResults:  # type: ignore
@@ -176,7 +176,7 @@ def get_scan_command(client: Client, scan_id=str) -> CommandResults:  # type: ig
         )
         return result
     else:
-        return_error("no response") # noqa: RET503
+        return_error("no response")  # noqa: RET503
 
 
 def get_scan_engines_command(client: Client, page: int, size: int) -> CommandResults:  # type: ignore
@@ -208,7 +208,7 @@ def get_scan_engines_command(client: Client, page: int, size: int) -> CommandRes
             )
             return result
         else:
-            return_error("no response") # noqa: RET503
+            return_error("no response")  # noqa: RET503
 
 
 def start_scan_command(client: Client, asset_id: str, name: str) -> CommandResults:  # type: ignore
@@ -239,7 +239,7 @@ def start_scan_command(client: Client, asset_id: str, name: str) -> CommandResul
         )
         return result
     else:
-        return_error("no response") # noqa: RET503
+        return_error("no response")  # noqa: RET503
 
 
 def last_sites_command(client: Client, page: int, size=int) -> CommandResults:  # type: ignore
@@ -271,7 +271,7 @@ def last_sites_command(client: Client, page: int, size=int) -> CommandResults:  
             )
             return result
         else:
-            return_error("no response") # noqa: RET503
+            return_error("no response")  # noqa: RET503
 
 
 def search_vulnerabilities_command(client: Client, query: str, page: int, size=int) -> dict:  # type: ignore
@@ -299,7 +299,7 @@ def search_vulnerabilities_command(client: Client, query: str, page: int, size=i
         if response:
             return response  # type: ignore
         else:
-            return_error("no response") # noqa: RET503
+            return_error("no response")  # noqa: RET503
 
 
 def stop_scan_command(client: Client, id: str) -> CommandResults:

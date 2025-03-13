@@ -207,8 +207,8 @@ class Client(BaseClient):
     def get_reopen_group(self):
         active_org_name = self.active_user["organization"]["name"]
         for group in self.get_groups():
-            if (group["organization"]["name"].lower() == active_org_name.lower() and
-                group["name"].lower() == self.reopen_group.lower()):
+            if (group["organization"]["name"].lower() == active_org_name.lower()
+                    and group["name"].lower() == self.reopen_group.lower()):
                 return group
         full_name = self.get_full_escalation_name()
         raise ValueError(f"Escalation group {full_name} not found")
@@ -712,10 +712,10 @@ def update_remote_system(
 
     # Close remote alert
     if (parsed_args.incident_changed and client.close_incident
-        and parsed_args.inc_status == IncidentStatus.DONE
-        and alert["status"] != "closed"
-        and local_last_closed > remote_last_reopened
-    ):
+            and parsed_args.inc_status == IncidentStatus.DONE
+            and alert["status"] != "closed"
+            and local_last_closed > remote_last_reopened
+            ):
         demisto.info(f"Closing ZTAP Alert {alert_id}")
         close_notes = delta_or_data(parsed_args, "closeNotes")
         close_reason = delta_or_data(parsed_args, "closeReason")
@@ -726,11 +726,11 @@ def update_remote_system(
         client.close_alert(alert_id, close_description, outcome)
 
     # Re-open remote alert
-    if (parsed_args.incident_changed and client.reopen_incident and
-        parsed_args.inc_status != IncidentStatus.DONE
-        and alert["status"] == "closed"
-        and local_last_reopened > remote_last_closed
-    ):
+    if (parsed_args.incident_changed and client.reopen_incident
+            and parsed_args.inc_status != IncidentStatus.DONE
+            and alert["status"] == "closed"
+            and local_last_reopened > remote_last_closed
+            ):
         demisto.info(f"Reopening ZTAP Alert {alert_id}")
         close_description = f"Incident reopened in XSOAR.---\n\nSent {XSOAR_EXCLUDE_MESSAGE}"
         client.reopen_alert(alert_id, client.get_reopen_group_id(), close_description)

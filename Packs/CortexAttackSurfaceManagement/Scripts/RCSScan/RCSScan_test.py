@@ -93,5 +93,6 @@ class TestRCSScan(unittest.TestCase):
 
         assert exception_raised
 
+
 if __name__ == "__main__":
     unittest.main()

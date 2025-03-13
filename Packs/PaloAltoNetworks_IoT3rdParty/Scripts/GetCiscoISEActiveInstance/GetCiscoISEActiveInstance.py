@@ -22,8 +22,8 @@ def get_cisco_ise_active_instance_or_err_msg():
             # and is also a primary or is in standalone mode
             for node_data in resp["Contents"]["CiscoISE.NodesData"]:
                 if (node_data["isLocalIstance"] and node_data["inDeployment"] is False or (
-                        node_data["inDeployment"] is True and node_data["primaryPapNode"] is True
-                    )):
+                    node_data["inDeployment"] is True and node_data["primaryPapNode"] is True
+                )):
                     active_instance = local_instance
 
     return active_instance, err_msg

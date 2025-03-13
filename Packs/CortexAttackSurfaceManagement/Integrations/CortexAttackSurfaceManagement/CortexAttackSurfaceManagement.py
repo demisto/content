@@ -647,7 +647,7 @@ def list_asset_internet_exposure_command(args: dict[str, Any], client: Client) -
         append_search_param(search_params, "business_units_list", "in", str(business_units_list).split(","))
 
     if has_bu_overrides:
-        append_search_param(search_params, "has_bu_overrides", "eq", not has_bu_overrides.lower() == "false")
+        append_search_param(search_params, "has_bu_overrides", "eq", has_bu_overrides.lower() != "false")
 
     if mac_addresses:
         append_search_param(search_params, "mac_addresses", "contains", mac_addresses)

@@ -535,8 +535,8 @@ def fetch_incidents(client: Client, first_fetch_time, last_run, items, time):
         event_doc["lumu_incidentId"] = inc_id
         event_doc["lumu_status"] = event_doc.get("status", "N/A")
 
-        if (lumu_event_type_name in status_msg_types and
-            is_msg_from_third_party(key=client.api_key, comment=event_doc.get("comment", "na"))):
+        if (lumu_event_type_name in status_msg_types
+                and is_msg_from_third_party(key=client.api_key, comment=event_doc.get("comment", "na"))):
             # ignore to avoid a loop
             demisto.debug(
                 f"Ignoring Message ({lumu_event_type_name} - {inc_id}) from Cortex to not create a loop between both "

@@ -60,7 +60,7 @@ def rcs_scan_start(service_id: str, attack_surface_rule_id: str, alert_internal_
 
     scan_id = output_scan_start[0].get("Contents").get("reply").get("scanId")
 
-    if scan_id: # noqa: RET503
+    if scan_id:  # noqa: RET503
         return rcs_scan_set_context(scan_id, demisto)
 
 
