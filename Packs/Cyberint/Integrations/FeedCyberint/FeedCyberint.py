@@ -412,7 +412,7 @@ def get_url_command(
         removeNull=False,
     )
 
-    detected_activities: list = indicator.get("data", {}).get("risk", {}).get("detected_activities", [])
+    detected_activities: list = indicator.get("data", {}).get("risk", {}).get("detected_activities") or []
 
     for activity in detected_activities:
         activities_formatted = [{
@@ -697,7 +697,7 @@ def get_file_sha256_command(
     }]
 
     human_readable = tableToMarkdown(
-        'File SHA256',
+        'File SHA256 Entity',
         indicator_formatted,
         headers=["type", "value", "malicious_score", "benign"],
         headerTransform=indicator_header_transformer,
@@ -708,7 +708,7 @@ def get_file_sha256_command(
         'File SHA256 Enrichment',
         indicator_formatted,
         date_fields=["first_seen"],
-        headers=["related_entities", "filenames", "first_seen", "download_urls"],
+        headers=["filenames", "first_seen", "download_urls"],
         headerTransform=indicator_header_transformer,
         removeNull=False,
     )
@@ -725,7 +725,7 @@ def get_file_sha256_command(
         }]
 
         human_readable += tableToMarkdown(
-            'Domain Detected activities',
+            'File SHA256 Detected activities',
             activities_formatted,
             date_fields=["observation_date"],
             headers=["type", "observation_date", "description", "confidence", "occurrences_count"],
@@ -743,7 +743,7 @@ def get_file_sha256_command(
         }]
 
         human_readable += tableToMarkdown(
-            'Domain Related Entities',
+            'File SHA256 Related Entities',
             entities_formatted,
             headers=["entity_id", "entity_type", "entity_name"],
             headerTransform=indicator_header_transformer,
