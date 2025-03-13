@@ -1,0 +1,21 @@
+{
+    "name": "PlaybooksUsingScripts",
+    "description": "This script will find custom scripts and integration dependencies of playbooks.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "albmartinez813",
+    "url": "",
+    "email": "",
+    "created": "2025-03-11T19:51:39Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "albmartinez813"
+    ]
+}
