@@ -44,14 +44,15 @@
     "version": -1,
     "fromVersion": "6.0.0",
     "openEnded": true,
-	"Aliases": [
-		{
-			"cliName": "events",
-			"type": "shortText",
-			"name": "Events"
-		}
-	],
+    "Aliases": [
+        {
+            "cliName": "events",
+            "type": "shortText",
+            "name": "Events"
+        }
+    ],
     "marketplaces": [
-		"marketplacev2"
-	]
+        "marketplacev2",
+        "platform"
+    ]
 }
