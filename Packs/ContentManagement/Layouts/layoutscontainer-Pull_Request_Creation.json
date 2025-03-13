@@ -341,7 +341,11 @@
                     {
                         "fieldId": "incident_details",
                         "isVisible": true
-                    }
+                    },
+                    {
+						"fieldId": "incident_dontreplace",
+						"isVisible": true
+					}
                 ],
                 "isVisible": true,
                 "name": "Basic Information",

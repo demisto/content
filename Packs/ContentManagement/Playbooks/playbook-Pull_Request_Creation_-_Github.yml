@@ -127,6 +127,8 @@ tasks:
       '#none#':
       - "20"
     scriptarguments:
+      dont_replace:
+        simple: ${inputs.DontReplace}
       branch:
         complex:
           root: BranchName
@@ -1088,6 +1090,11 @@ inputs:
   required: true
   description: The name of the branch you want the changes pulled into, which must be an existing branch on the current repository.
   playbookInputQuery:
+- key: DontReplace
+  value: {}
+  required: false
+  description: Should the files be committed without changing any content with ${} to the data in the context.
+  playbookInputQuery: null
 outputs: []
 tests:
 - No tests (auto formatted)

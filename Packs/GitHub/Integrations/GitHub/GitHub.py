@@ -1666,6 +1666,7 @@ def commit_file_command():
     entry_id = args.get('entry_id')
     file_text = args.get('file_text')
     file_sha = args.get('file_sha')
+    is_bit_64 = argToBoolean(args.get('is_bit_64', False))
 
     if not entry_id and not file_text:
         raise DemistoException('You must specify either the "file_text" or the "entry_id" of the file.')
@@ -1673,6 +1674,8 @@ def commit_file_command():
         file_path = demisto.getFilePath(entry_id).get('path')
         with open(file_path, 'rb') as f:
             content = f.read()
+    elif  is_bit_64:
+        content = base64.b64decode(file_text)
     else:
         content = bytes(file_text, encoding='utf8')
 

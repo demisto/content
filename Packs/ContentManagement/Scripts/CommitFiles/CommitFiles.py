@@ -77,7 +77,7 @@ def get_file_sha(branch_name: str, content_file: ContentFile, get_files_command:
     return file_path_to_sha.get(full_path)
 
 
-def commit_content_item(branch_name: str, content_file: ContentFile, new_files: List, modified_files: List):
+def commit_content_item(branch_name: str, content_file: ContentFile, new_files: List, modified_files: List, dont_replace: bool = False):
     commit_args = {'commit_message': f'Added {content_file.file_name}',
                    'path_to_file': f'{content_file.path_to_file}/{content_file.file_name}',
                    'branch_name': branch_name, 'file_text': content_file.file_text}
@@ -94,6 +94,9 @@ def commit_content_item(branch_name: str, content_file: ContentFile, new_files: 
         modified_files.append(content_file.file_name)
     else:
         # new file added
+        if content_file.file_name.lower().endswith('.yml') and dont_replace:
+           commit_args['file_text'] = base64.b64encode(content_file.file_text.encode('utf-8')).decode("utf-8")
+           commit_args['is_bit_64'] = "True"
         new_files.append(content_file.file_name)
 
     status, commit_res = execute_command('Github-commit-file', commit_args, fail_on_error=False)

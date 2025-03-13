@@ -1,4 +1,8 @@
 args:
+- description: Should the script not replace all content with ${} to the data in the context
+  isArray: false
+  name: dont_replace
+  defaultValue: true
 - description: The files to commit.
   isArray: true
   name: files

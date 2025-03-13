@@ -2506,6 +2506,8 @@ script:
     description: Commits a given file.
     name: Github-commit-file
   - arguments:
+    - description: Is file text encoded to bit64
+      name: is_bit_64
     - description: The name of the release.
       name: name
     - description: The name of the release tag.
