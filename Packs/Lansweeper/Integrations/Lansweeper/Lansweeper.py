@@ -4,10 +4,10 @@ import traceback
 from typing import Any, Callable
 
 import urllib3
-from CommonServerUserPython import *  # noqa
+from CommonServerUserPython import *  # noq
 
 # Disable insecure warnings
-urllib3.disable_warnings()
+urllib3.disable_warnings()n
 
 ''' CONSTANTS '''
 
@@ -382,7 +382,7 @@ def lansweeper_ip_hunt_command(client: Client, args: Dict[str, str]) -> CommandR
         response = client.asset_list(query)
         records = response.get("data", {}).get("site", {}).get("assetResources", {}).get("items", [])
         for record in records:
-            record['assetId'] = record.pop('_id')
+            record['assetId'] = site.get('_id')
             record['siteId'] = site.get('id')
             record['siteName'] = site.get('name')
             total_records.append(remove_empty_elements(record))
@@ -434,7 +434,7 @@ def lansweeper_mac_hunt_command(client: Client, args: Dict[str, str]) -> Command
         response = client.asset_list(query)
         records = response.get("data", {}).get("site", {}).get("assetResources", {}).get("items", [])
         for record in records:
-            record['assetId'] = record.pop('_id')
+            record['assetId'] = site.get('_id')
             record['siteId'] = site.get('id')
             record['siteName'] = site.get('name')
             total_records.append(remove_empty_elements(record))
@@ -450,6 +450,56 @@ def lansweeper_mac_hunt_command(client: Client, args: Dict[str, str]) -> Command
 
     )
 
+def lansweeper_assetname_hunt_command(client: Client, args: Dict[str, str]) -> CommandResults:
+    """
+    Retrieves the list of assets
+    :type client: ``Client``
+    :param client: Client object to be used.
+
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+
+    :return: Standard command result or no records found message.
+    :rtype: ``CommandResults``
+    """
+    total_records = []
+    site_list = prepare_site_list(client, args)
+    limit = arg_to_number(args.get('limit', 50))
+    asset_name_list = argToList(args['asset_name'])
+    LOG(asset_name_list)
+
+    if not asset_name_list:
+        raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format('asset_name'))
+
+    if limit <= 0 or limit > 500:  # type:ignore
+        raise ValueError(MESSAGES["INVALID_LIMIT"].format(limit))
+
+    asset_name_condition = ""
+    for assetname in asset_name_list:
+        asset_name_condition += ("""{operator: EQUAL,path: "assetBasicInfo.name",value: "%s"},""" % assetname)
+    if not asset_name_condition:
+        raise ValueError(MESSAGES["INVALID_ASSET_NAME"])
+
+    for site in site_list:
+        query = prepare_query(site.get('id'), asset_name_condition[:-1])
+        response = client.asset_list(query)
+        records = response.get("data", {}).get("site", {}).get("assetResources", {}).get("items", [])
+        for record in records:
+            record['assetId'] = site.get('_id')
+            record['siteId'] = site.get('id')
+            record['siteName'] = site.get('name')
+            total_records.append(remove_empty_elements(record))
+
+    context = total_records[:limit]
+    readable_hr = prepare_hr_for_asset(context)
+    return CommandResults(
+        outputs_prefix="Lansweeper.AssetName",
+        outputs_key_field="assetId",
+        outputs=context,
+        readable_output=readable_hr,
+        raw_response=response
+
+    )
 
 def test_module(client: Client) -> str:
     """Tests API connectivity and authentication'
@@ -486,7 +536,8 @@ def main():
     # Commands dictionary
     commands: Dict[str, Callable] = {
         'ls-ip-hunt': lansweeper_ip_hunt_command,
-        'ls-mac-hunt': lansweeper_mac_hunt_command
+        'ls-mac-hunt': lansweeper_mac_hunt_command,
+        'ls-assetname-hunt': lansweeper_assetname_hunt_command
 
     }
 
