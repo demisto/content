@@ -1400,6 +1400,8 @@ script:
       description: Whether this rule "reporting only" or is also "enforcing".
       type: String
   - arguments:
+    - description: TO Deleted.
+      name: delete
     - description: (String) Hash associated with this rule. This parameter is not required if the fileCatalogId is supplied.
       name: hash
     - auto: PREDEFINED
