@@ -143,13 +143,14 @@ def add_entry_to_componentlist():
             r = requests.put(url=full_url + list_id + "/append", headers=CLIENT_HEADERS, data=list_entry_json, verify=VERIFY_CERT)
             if 200 <= r.status_code <= 299:
                 demisto.results(
-                    "added componentlist entry ({}) to componentlist name ({})".format(componentlist_entry, componentlist_name)
+                    f"added componentlist entry ({componentlist_entry}) to componentlist name ({componentlist_name})"
                 )
             else:
                 return_error(
-                    "Failed to add componentlist entry({}) to componentlist name ({}). The response failed with status "
-                    "code {}. The "
-                    "response was: {}".format(componentlist_entry, componentlist_name, r.status_code, r.text)
+                    f"Failed to add componentlist entry({componentlist_entry}) to componentlist name ({componentlist_name})."
+                    f" The response failed with status "
+                    f"code {r.status_code}. The "
+                    f"response was: {r.text}"
                 )
         else:
             return_error("Failed to find componentlist name ({})").format(componentlist_name)
@@ -210,12 +211,13 @@ def rm_entry_from_componentlist():
     r = requests.post(url=full_url + list_id + "/delete", headers=CLIENT_HEADERS, data=list_entry_json, verify=VERIFY_CERT)
     if 200 <= r.status_code <= 299:
         demisto.results(
-            "removed componentlist entry ({}) from componentlist name ({})".format(componentlist_entry, componentlist_name)
+            f"removed componentlist entry ({componentlist_entry}) from componentlist name ({componentlist_name})"
         )
     else:
         return_error(
-            "Failed to remove componentlist entry({}) from componentlist name ({}). The response failed with "
-            "status code {}. The response was: {}".format(componentlist_entry, componentlist_name, r.status_code, r.text)
+            f"Failed to remove componentlist entry({componentlist_entry}) from componentlist name"
+            f" ({componentlist_name}). The response failed with "
+            f"status code {r.status_code}. The response was: {r.text}"
         )
 
 
@@ -238,8 +240,9 @@ def add_entry_to_watchlist():
         demisto.results(f"added watchlist entry ({watchlist_entry}) to watchlist name ({watchlist_name})")
     else:
         return_error(
-            "Failed to add watchlist entry({}) to watchlist name ({}). The response failed with status code {}. "
-            "The response was: {}".format(watchlist_entry, watchlist_name, r.status_code, r.text)
+            f"Failed to add watchlist entry({watchlist_entry}) to watchlist name ({watchlist_name})."
+            f" The response failed with status code {r.status_code}. "
+            f"The response was: {r.text}"
         )
 
 
@@ -285,8 +288,9 @@ def rm_entry_from_watchlist():
         demisto.results(f"removed watchlist entry ({watchlist_entry}) from watchlist name ({watchlist_name})")
     else:
         return_error(
-            "Failed to remove watchlist entry({}) from watchlist name ({}). The response failed with status code {}. "
-            "The response was: {}".format(watchlist_entry, watchlist_name, r.status_code, r.text)
+            f"Failed to remove watchlist entry({watchlist_entry}) from watchlist name ({watchlist_name})."
+            f" The response failed with status code {r.status_code}. "
+            f"The response was: {r.text}"
         )
 
 

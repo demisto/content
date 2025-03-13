@@ -20,7 +20,8 @@ def test_domains_list_suffix():
     suffix = prepare_suffix(page=page, limit="")
     assert "page=1" in suffix
     suffix = prepare_suffix(page=page, limit=limit)
-    assert "page=1" in suffix and "limit=50" in suffix
+    assert "page=1" in suffix
+    assert "limit=50" in suffix
 
 
 def test_domain_event_add_command_happy_path(mocker):

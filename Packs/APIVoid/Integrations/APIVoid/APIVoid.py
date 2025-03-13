@@ -273,7 +273,7 @@ def dns_lookup_command(client, args):
         return_error("Command Failed: " + str(raw_response["error"]))
 
     records = raw_response.get("data", {}).get("records", None)
-    entries = list()
+    entries = []
     if records:
         md_data = copy.deepcopy(records)
         md_data["Host"] = host

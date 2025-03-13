@@ -45,7 +45,7 @@ class Client(BaseClient):
         return self.prepare_request(method="GET", url_suffix=f"/sw-reporting/v1/tenants/{tenant_id}")
 
     def list_tags(self, tenant_id: str):
-        return self.prepare_request(method="GET", url_suffix=f"/sw-reporting/v1/tenants/{tenant_id}" f"/internalHosts/tags")
+        return self.prepare_request(method="GET", url_suffix=f"/sw-reporting/v1/tenants/{tenant_id}/internalHosts/tags")
 
     def get_tag(self, tenant_id: str, tag_id: str):
         url = f"/smc-configuration/rest/v1/tenants/{tenant_id}/tags/{tag_id}"
@@ -600,7 +600,7 @@ def main():
     # Log exceptions
     except Exception as error:
         if "Entity not found." in str(error) or "Not Found." in str(error):
-            return_results("Entity not found: one or more of the IDs you've entered is illegal, " "or was not found.")
+            return_results("Entity not found: one or more of the IDs you've entered is illegal, or was not found.")
         else:
             return_error(f"Failed to execute {demisto.command()} command. Error: {str(error)}")
 

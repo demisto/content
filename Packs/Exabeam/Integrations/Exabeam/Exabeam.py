@@ -112,9 +112,7 @@ class Client(BaseClient):
             return True
         if self.username == TOKEN_INPUT_IDENTIFIER:
             return True
-        if self.api_key:
-            return True
-        return False
+        return bool(self.api_key)
 
     def test_module_request(self):
         """

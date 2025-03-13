@@ -420,7 +420,7 @@ def test_file(requests_mock):
         - Validate that the DbotScore outputs are created properly
     """
     dbot_score_key = (
-        "DBotScore(val.Indicator && val.Indicator == obj.Indicator &&" " val.Vendor == obj.Vendor && val.Type == obj.Type)"
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)"
     )
     requests_mock.get(f"{MOCK_BASE_URL}/malware/{MOCK_HASH}", json=MOCK_HASH_RESP)
 

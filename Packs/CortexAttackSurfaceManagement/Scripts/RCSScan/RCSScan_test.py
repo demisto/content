@@ -12,7 +12,7 @@ class TestRCSScan(unittest.TestCase):
         demisto.context.return_value = {}
         demisto.executeCommand.return_value = None
         result = rcs_scan_set_context("12345", demisto)
-        self.assertEqual(result, "RCSScanId Key Value set")
+        assert result == "RCSScanId Key Value set"
 
     def test_rcs_scan_set_context_update_key(self):
         """
@@ -23,7 +23,7 @@ class TestRCSScan(unittest.TestCase):
         demisto.context.return_value = {"RCSScanId": "12345"}
         demisto.executeCommand.return_value = None
         result = rcs_scan_set_context("67890", demisto)
-        self.assertEqual(result, "Updated RCSScanId Key Value")
+        assert result == "Updated RCSScanId Key Value"
 
     def test_rcs_scan_set_context_same_key(self):
         """
@@ -34,7 +34,7 @@ class TestRCSScan(unittest.TestCase):
         demisto.context.return_value = {"RCSScanId": "12345"}
         demisto.executeCommand.return_value = None
         result = rcs_scan_set_context("12345", demisto)
-        self.assertEqual(result, "RCSScanId remains unchanged")
+        assert result == "RCSScanId remains unchanged"
 
     def test_rcs_scan_start(self):
         """
@@ -46,7 +46,7 @@ class TestRCSScan(unittest.TestCase):
         attack_surface_rule_id = "2"
         alert_internal_id = "3"
         result = rcs_scan_start(service_id, attack_surface_rule_id, alert_internal_id, demisto)
-        self.assertEqual(result, "RCSScanId Key Value set")
+        assert result == "RCSScanId Key Value set"
 
     def test_rcs_scan_start_error_response(self):
         """
@@ -70,8 +70,7 @@ class TestRCSScan(unittest.TestCase):
             rcs_scan_start(service_id, attack_surface_rule_id, alert_internal_id, demisto)
         except Exception:
             exception_raised = True
-
-        self.assertTrue(exception_raised)
+        assert exception_raised
 
     def test_main_exception_handling(self):
         """
@@ -92,8 +91,7 @@ class TestRCSScan(unittest.TestCase):
         except Exception:
             exception_raised = True
 
-        self.assertTrue(exception_raised)
-
+        assert exception_raised
 
 if __name__ == "__main__":
     unittest.main()

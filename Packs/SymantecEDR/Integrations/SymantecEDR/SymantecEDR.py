@@ -25,14 +25,14 @@ INTEGRATION_CONTEXT_NAME = "SymantecEDR"
 DEFAULT_OFFSET = 0
 DEFAULT_PAGE_SIZE = 50
 PAGE_NUMBER_ERROR_MSG = (
-    "Invalid Input Error: page number should be greater than zero. " "Note: Page must be used along with page_size"
+    "Invalid Input Error: page number should be greater than zero. Note: Page must be used along with page_size"
 )
 PAGE_SIZE_ERROR_MSG = (
-    "Invalid Input Error: page size should be greater than zero. " "Note: Page must be used along with page_size"
+    "Invalid Input Error: page size should be greater than zero. Note: Page must be used along with page_size"
 )
 
 INVALID_QUERY_ERROR_MSG = (
-    'Invalid query arguments. Either use any optional filter in lieu of "query" ' 'or explicitly use only "query" argument'
+    'Invalid query arguments. Either use any optional filter in lieu of "query" or explicitly use only "query" argument'
 )
 
 INCIDENT_PATCH_ACTION = ["add_comment", "close_incident", "update_resolution"]
@@ -768,7 +768,7 @@ def get_data_of_current_page(response_data: list[dict[str, Any]], offset: int = 
     """
 
     if offset >= 0 and limit >= 0:
-        return response_data[offset : (offset + limit)]
+        return response_data[offset: (offset + limit)]
     return response_data[:limit]
 
 
@@ -799,7 +799,7 @@ def compile_command_title_string(context_name: str, args: dict, record: int) -> 
             page_size = record
 
     if (page and page_size) and (page > 0 and page_size > 0):
-        return f"{context_name} List\nShowing page {page}\n" f"Showing {page_size} out of {record} Record(s) Found."
+        return f"{context_name} List\nShowing page {page}\nShowing {page_size} out of {record} Record(s) Found."
 
     return f"{context_name} List"
 
@@ -1911,7 +1911,7 @@ def get_incident_comments_command(client: Client, args: dict[str, Any]) -> Comma
     incident_id = args.pop("incident_id", None)
     if uuid is None:
         raise ValueError(
-            f"Incident ID {incident_id} was not found. " f"If it's older than 30 days, try increasing the time range arguments"
+            f"Incident ID {incident_id} was not found. If it's older than 30 days, try increasing the time range arguments"
         )
 
     return common_wrapper_command(
@@ -2128,7 +2128,7 @@ def get_endpoint_command(client: Client, args: dict[str, Any], command: str) -> 
             action_type = "Delete Endpoint"
         else:
             raise DemistoException(
-                "Invalid Arguments. " 'Both "device_id" and "sha2" arguments are required for endpoint delete action'
+                'Invalid Arguments. Both "device_id" and "sha2" arguments are required for endpoint delete action'
             )
     elif command == "symantec-edr-endpoint-isolate":
         action_type = "Isolate Endpoint"
@@ -2542,7 +2542,7 @@ def run_polling_command(client: Client, args: dict, cmd: str, status_func: Calla
 
             return CommandResults(
                 scheduled_command=scheduled_command,
-                readable_output=f"Waiting for the polling execution.." f"Command id {command_id}",
+                readable_output=f"Waiting for the polling execution..Command id {command_id}",
                 ignore_auto_extract=True,
             )
 

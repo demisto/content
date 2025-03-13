@@ -113,10 +113,7 @@ def convert_device_map_to_cef(device_map):
     for t in DEVICE_FIELDS_MAP:
         input_field = t[0]
         output_field = t[1]
-        if input_field in device_map:
-            val = device_map[input_field]
-        else:
-            val = ""
+        val = device_map.get(input_field, "")
         if output_field and val:
             cef += str(output_field) + str(val) + " "
     return cef
@@ -136,23 +133,23 @@ def convert_alert_to_cef(alert):
         if "severityNumber" in alert:
             cef += str(alert["severityNumber"]) + "|"
         if "deviceid" in alert:
-            cef += "dvcmac=%s " % alert["deviceid"]
+            cef += f"dvcmac={alert['deviceid']} "
         if "fromip" in msg:
-            cef += "src=%s " % msg["fromip"]
+            cef += f"src={msg['fromip']} "
         if "toip" in msg:
-            cef += "dst=%s " % msg["toip"]
+            cef += f"dst={msg['toip']} "
         if "hostname" in msg:
-            cef += "shost=%s " % msg["hostname"]
+            cef += f"shost={msg['hostname']} "
         if "toURL" in msg:
-            cef += "dhost=%s " % msg["toURL"]
+            cef += f"dhost={msg['toURL']} "
         if "id" in msg:
-            cef += "fileId=%s " % msg["id"]
+            cef += f"fileId={msg['id']} "
             cef += "fileType=alert "
 
         if "date" in alert:
-            cef += "rt=%s " % str(msg["id"])
+            cef += f"rt={str(msg['id'])} "
         if "generationTimestamp" in msg:
-            cef += "deviceCustomDate1=%s " % str(msg["generationTimestamp"])
+            cef += f"deviceCustomDate1={str(msg['generationTimestamp'])} "
 
         description = None
         values = []
@@ -161,8 +158,8 @@ def convert_alert_to_cef(alert):
         if "values" in msg:
             values = msg["values"]
 
-        cef += "cs1Label=Description cs1=%s " % description
-        cef += "cs2Label=Values cs2=%s " % str(values)
+        cef += f"cs1Label=Description cs1={description} "
+        cef += f"cs2Label=Values cs2={str(values)} "
         return cef
     else:
         return None
@@ -187,10 +184,7 @@ def convert_vulnerability_to_cef(vulnerability):
         input_field = t[0]
         output_field = t[1]
         # print input_field, output_field
-        if input_field in vulnerability:
-            val = vulnerability[input_field]
-        else:
-            val = ""
+        val = vulnerability.get(input_field, "")
         if output_field and val:
             cef += str(output_field) + str(val) + " "
     return cef

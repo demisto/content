@@ -109,10 +109,7 @@ def include_in_feed(indicator: Dict, exclude_osint: bool, min_threat_score: int)
     if exclude_osint and is_osint(indicator):
         return False
 
-    if get_threat_score(indicator) < min_threat_score:
-        return False
-
-    return True
+    return not get_threat_score(indicator) < min_threat_score
 
 
 def get_hash_value(indicator: dict, hash_type: str) -> str:

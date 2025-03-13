@@ -94,9 +94,7 @@ def evaluate_criteria(cond: dict, alert_context: dict) -> bool:
     if operator == "eq":
         # severity
         if field == "severity":
-            if SEVERITY_MAP.get(value) == alert_context_value:
-                return True
-            return False
+            return SEVERITY_MAP.get(value) == alert_context_value
         # boolean fields
         elif field == "development_environment" or field == "cloud_managed" or field == "service_owner_identified":
             if value == "true" and (alert_context_value is True or alert_context_value):
@@ -116,9 +114,7 @@ def evaluate_criteria(cond: dict, alert_context: dict) -> bool:
             return False
         elif isinstance(alert_context_value, str):
             if field == "ip":
-                if value == alert_context_value.lower():
-                    return True
-                return False
+                return value == alert_context_value.lower()
             else:
                 demisto.info(f"Criteria field {field} not supported at this time.")
                 return False
@@ -131,9 +127,7 @@ def evaluate_criteria(cond: dict, alert_context: dict) -> bool:
                     tags.add(tag.get("value").lower())
                     tags.add(tag.get("key").lower())
 
-                if value in tags:
-                    return True
-                return False
+                return value in tags
             else:
                 demisto.info(f"Criteria field {field} not supported at this time.")
                 return False

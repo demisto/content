@@ -222,7 +222,7 @@ def detection_to_incident(threatconnect_data: dict, threatconnect_date: str) -> 
     threatconnect_type: str = threatconnect_data.get("riskEventType", "")
     threatconnect_detail: str = threatconnect_data.get("riskDetail", "")
     incident = {
-        "name": f"Threatconnect:" f" {threatconnect_id} {threatconnect_type} {threatconnect_detail}",
+        "name": f"Threatconnect: {threatconnect_id} {threatconnect_type} {threatconnect_detail}",
         "occurred": f"{threatconnect_date}",
         "rawJSON": json.dumps(threatconnect_data),
     }
@@ -975,7 +975,8 @@ def tc_get_indicator_command(client: Client, args: dict) -> None:  # pragma: no 
         # If not we'll treat it as a summary
         summary = indicator  # type: ignore
 
-    response = tc_get_indicators(client, indicator_id=indicator_id, summary=summary, fields_to_return=fields_to_return)  # type: ignore
+    response = tc_get_indicators(client, indicator_id=indicator_id, summary=summary,
+                                 fields_to_return=fields_to_return)  # type: ignore
     ec, human_readable = create_context(response, include_dbot_score=True, fields_to_return=fields_to_return)
     if not ec:
         return_results(
@@ -1097,7 +1098,7 @@ def create_document_group(client: Client, args: dict) -> None:  # pragma: no cov
         client,
         args,
         security_labels=security_label,  # type: ignore
-        name=name,
+        name=name,  # type: ignore
         group_type="Document",
         description=description,
     )  # type: ignore
@@ -1188,9 +1189,9 @@ def tc_create_incident_command(client: Client, args: dict) -> None:  # pragma: n
         client,
         args,
         group_type="Incident",
-        tags=tags,
+        tags=tags,  # type: ignore
         name=name,  # type: ignore
-        security_labels=security_labels,
+        security_labels=security_labels,    # type: ignore
     )  # type: ignore
 
     ec = {
@@ -1739,7 +1740,7 @@ def get_group_indicators(client: Client, args: dict) -> None:  # pragma: no cove
         args,
         return_raw=True,
         include_associated_indicators="true",  # type: ignore
-        group_id=group_id,
+        group_id=group_id,  # type: ignore
     )  # type: ignore
 
     indicators = response[0].get("associatedIndicators", {}).get("data", [])
@@ -1839,7 +1840,7 @@ def get_group_security_labels(client: Client, args: dict) -> None:  # pragma: no
         )
 
     context = {
-        "TC.Group.SecurityLabel(val.GroupID && val.GroupID === obj.GroupID && val.Name && val.Name === " "obj.Name)": contents
+        "TC.Group.SecurityLabel(val.GroupID && val.GroupID === obj.GroupID && val.Name && val.Name === obj.Name)": contents
     }
 
     return_results(

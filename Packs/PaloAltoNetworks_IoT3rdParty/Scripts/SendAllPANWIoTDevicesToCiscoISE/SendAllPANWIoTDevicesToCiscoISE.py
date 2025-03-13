@@ -219,8 +219,8 @@ def create_or_update_ep(mac, attr_map):
         # instance is possible.
         elif err_msg == "Connection Error" or err_msg == "401":
             # Failover can take up to 10 minutes, its ok to just wait even if its a standalone ISE noe.
-            msg = "ISE instance is down. Trying again in 10 minutes. Error = %s" % err_msg
-            demisto.info("PANW_IOT_3RD_PARTY_BASE %s" % msg)
+            msg = f"ISE instance is down. Trying again in 10 minutes. Error = {err_msg}"
+            demisto.info(f"PANW_IOT_3RD_PARTY_BASE {msg}")
             send_status_to_panw_iot_cloud("error", msg)
             time.sleep(10 * 60)
             # Try again to get a new active instance

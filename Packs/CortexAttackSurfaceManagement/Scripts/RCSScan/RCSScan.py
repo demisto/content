@@ -18,14 +18,14 @@ def rcs_scan_set_context(scan_id: str, demisto: Any):
     context_get = demisto.context()
 
     # If the context was not previously set
-    if "RCSScanId" not in context_get.keys():
+    if "RCSScanId" not in context_get:
         args_set_scan = {"key": "RCSScanId", "value": scan_id}
         demisto.executeCommand("Set", args_set_scan)
         return "RCSScanId Key Value set"
 
     # If the context was previously set, then check if it is same as new value.
     # If its the same value, dont do anything, otherwise, delete old value and set new value
-    elif "RCSScanId" in context_get.keys() and scan_id != context_get["RCSScanId"]:
+    elif "RCSScanId" in context_get and scan_id != context_get["RCSScanId"]:
         # Delete Old Scan ID
         delete_args = {"key": "RCSScanId"}
         demisto.executeCommand("DeleteContext", delete_args)
@@ -60,7 +60,7 @@ def rcs_scan_start(service_id: str, attack_surface_rule_id: str, alert_internal_
 
     scan_id = output_scan_start[0].get("Contents").get("reply").get("scanId")
 
-    if scan_id:
+    if scan_id: # noqa: RET503
         return rcs_scan_set_context(scan_id, demisto)
 
 

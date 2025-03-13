@@ -198,15 +198,11 @@ def validate_hmac_sha256(key: str, comment_w_hmac: str, separator="hmacsha256:")
     if len(result) != 2:
         return False
     comment, hash_mac = result
-    if get_hmac_sha256(key, comment) == hash_mac:
-        return True
-    return False
+    return get_hmac_sha256(key, comment) == hash_mac
 
 
 def is_msg_from_third_party(key, comment):
-    if comment and validate_hmac_sha256(key=key, comment_w_hmac=comment):
-        return True
-    return False
+    return comment and validate_hmac_sha256(key=key, comment_w_hmac=comment)
 
 
 def add_prefix_to_comment(commnet: Optional[str]) -> str:
@@ -539,14 +535,14 @@ def fetch_incidents(client: Client, first_fetch_time, last_run, items, time):
         event_doc["lumu_incidentId"] = inc_id
         event_doc["lumu_status"] = event_doc.get("status", "N/A")
 
-        if lumu_event_type_name in status_msg_types:
-            if is_msg_from_third_party(key=client.api_key, comment=event_doc.get("comment", "na")):
-                # ignore to avoid a loop
-                demisto.debug(
-                    f"Ignoring Message ({lumu_event_type_name} - {inc_id}) from Cortex to not create a loop between both "
-                    f"parties"
-                )
-                continue
+        if (lumu_event_type_name in status_msg_types and
+            is_msg_from_third_party(key=client.api_key, comment=event_doc.get("comment", "na"))):
+            # ignore to avoid a loop
+            demisto.debug(
+                f"Ignoring Message ({lumu_event_type_name} - {inc_id}) from Cortex to not create a loop between both "
+                f"parties"
+            )
+            continue
 
         event_doc["comment"] = event_doc.get("comment") or "from fetching process"
 
@@ -562,7 +558,7 @@ def fetch_incidents(client: Client, first_fetch_time, last_run, items, time):
 
         incident = {
             "name": f'lumu - {event_doc.get("description","")} - {inc_id}',
-            "occurred": event_doc["timestamp"] if "timestamp" in event_doc else today,
+            "occurred": event_doc.get("timestamp", today),
             "dbotMirrorId": str(inc_id),
             "rawJSON": json.dumps(event_doc),
         }

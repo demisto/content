@@ -21,11 +21,10 @@ def get_cisco_ise_active_instance_or_err_msg():
             # Check if the output has any node that matches the local instance
             # and is also a primary or is in standalone mode
             for node_data in resp["Contents"]["CiscoISE.NodesData"]:
-                if node_data["isLocalIstance"]:
-                    if node_data["inDeployment"] is False or (
+                if (node_data["isLocalIstance"] and node_data["inDeployment"] is False or (
                         node_data["inDeployment"] is True and node_data["primaryPapNode"] is True
-                    ):
-                        active_instance = local_instance
+                    )):
+                    active_instance = local_instance
 
     return active_instance, err_msg
 
@@ -37,7 +36,7 @@ def main():
         return_error(str(ex))
 
     if active_instance is None:
-        readable_status = "No Primary/Active Cisco ISE node found = %s" % err_msg
+        readable_status = f"No Primary/Active Cisco ISE node found = {err_msg}"
         results = CommandResults(
             readable_output=readable_status, outputs_prefix="PaloAltoIoTIntegrationBase.NodeErrorStatus", outputs=readable_status
         )
@@ -46,7 +45,7 @@ def main():
         # Also return error, so we can detect it in the playbook
         return_error(err_msg)
     else:
-        readable_status = "Found active Cisco ISE node = %s" % active_instance
+        readable_status = f"Found active Cisco ISE node = {active_instance}"
         results = CommandResults(
             readable_output=readable_status,
             outputs_prefix="PaloAltoIoTIntegrationBase.ActiveNodeInstance",

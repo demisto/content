@@ -6,7 +6,6 @@ import traceback
 import re
 import urllib3
 
-from typing import Dict
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -208,9 +207,9 @@ class Client(BaseClient):
     def get_reopen_group(self):
         active_org_name = self.active_user["organization"]["name"]
         for group in self.get_groups():
-            if group["organization"]["name"].lower() == active_org_name.lower():
-                if group["name"].lower() == self.reopen_group.lower():
-                    return group
+            if (group["organization"]["name"].lower() == active_org_name.lower() and
+                group["name"].lower() == self.reopen_group.lower()):
+                return group
         full_name = self.get_full_escalation_name()
         raise ValueError(f"Escalation group {full_name} not found")
 
@@ -275,7 +274,7 @@ def delta_or_data(remote_args, key):
         return remote_args.data.get(key)
 
 
-def alert_to_incident(alert: Dict):
+def alert_to_incident(alert: dict):
     alert_id = alert["id"]
     description = alert["description"]
     return {
@@ -383,8 +382,8 @@ def comments_to_notes(client: Client, comments: List):
 
 def get_notes_for_alert(
     client: Client,
-    investigation: Dict,
-    alert: Dict,
+    investigation: dict,
+    alert: dict,
     last_update: datetime,
     update_status: bool,
 ):
@@ -446,14 +445,14 @@ def get_notes_for_alert(
     return entries
 
 
-def get_comment_links(comment: Dict):
+def get_comment_links(comment: dict):
     # Format [description](link)
     # Extract description, link
     link_regex = re.compile(r"\[([^\]]+)\]\(([^)]+incident_uploads[^)]+)\)")
     return link_regex.findall(comment["comment"])
 
 
-def strip_comment_links(comment: Dict):
+def strip_comment_links(comment: dict):
     # Format [description](link)
     # Remove the (link)
     strip_regex = re.compile(r"(\[[^\]]+\])\([^)]+incident_uploads[^)]+\)")
@@ -518,7 +517,7 @@ def extract_trigger_kv(trigger_events: list):
 
 def fetch_incidents(
     client: Client,
-    last_run: Dict,
+    last_run: dict,
     first_fetch_time: str,
     max_fetch: int,
     mirror_direction: Optional[str],
@@ -556,7 +555,8 @@ def fetch_incidents(
     escalation_time = oldest_alert_time
     for alert in alerts:
         alert_orig_escalation_time = get_alert_org_escalation_time(alert)
-        assert alert_orig_escalation_time is not None and alert_orig_escalation_time is not None
+        assert alert_orig_escalation_time is not None
+        assert alert_orig_escalation_time is not None
         escalation_time = max(escalation_time, alert_orig_escalation_time)
         alert_id = str(alert["id"])
 
@@ -609,8 +609,8 @@ def get_mapping_fields():
 
 def get_remote_data(
     client: Client,
-    investigation: Dict,
-    args: Dict,
+    investigation: dict,
+    args: dict,
 ):
     """
     Gets updated data from ZTAP for an alert that has changed
@@ -649,7 +649,7 @@ def get_remote_data(
         raise Exception(str(e))
 
 
-def get_modified_remote_data(client: Client, args: Dict):
+def get_modified_remote_data(client: Client, args: dict):
     """
     Gets ZTAP alerts that have been modified since the last check
     """
@@ -674,8 +674,8 @@ def get_modified_remote_data(client: Client, args: Dict):
 
 def update_remote_system(
     client: Client,
-    investigation: Dict,
-    args: Dict,
+    investigation: dict,
+    args: dict,
 ):
     """
     Updates ZTAP with new comments and/or closes the alert if closed in XSOAR
@@ -711,38 +711,36 @@ def update_remote_system(
     remote_last_reopened = get_alert_last_reopened(alert)
 
     # Close remote alert
-    if parsed_args.incident_changed and client.close_incident:
-        if (
-            parsed_args.inc_status == IncidentStatus.DONE
-            and alert["status"] != "closed"
-            and local_last_closed > remote_last_reopened
-        ):
-            demisto.info(f"Closing ZTAP Alert {alert_id}")
-            close_notes = delta_or_data(parsed_args, "closeNotes")
-            close_reason = delta_or_data(parsed_args, "closeReason")
-            close_description = f"{close_notes}\n\nClose Reason: {close_reason}"
-            close_description += "\n\n---\n\nIncident closed in XSOAR."
-            close_description += f"\n\nSent {XSOAR_EXCLUDE_MESSAGE}"
-            outcome = XSOAR_STATUS_TO_ZTAP.get(close_reason, "unresolved")
-            client.close_alert(alert_id, close_description, outcome)
+    if (parsed_args.incident_changed and client.close_incident
+        and parsed_args.inc_status == IncidentStatus.DONE
+        and alert["status"] != "closed"
+        and local_last_closed > remote_last_reopened
+    ):
+        demisto.info(f"Closing ZTAP Alert {alert_id}")
+        close_notes = delta_or_data(parsed_args, "closeNotes")
+        close_reason = delta_or_data(parsed_args, "closeReason")
+        close_description = f"{close_notes}\n\nClose Reason: {close_reason}"
+        close_description += "\n\n---\n\nIncident closed in XSOAR."
+        close_description += f"\n\nSent {XSOAR_EXCLUDE_MESSAGE}"
+        outcome = XSOAR_STATUS_TO_ZTAP.get(close_reason, "unresolved")
+        client.close_alert(alert_id, close_description, outcome)
 
     # Re-open remote alert
-    if parsed_args.incident_changed and client.reopen_incident:
-        if (
-            parsed_args.inc_status != IncidentStatus.DONE
-            and alert["status"] == "closed"
-            and local_last_reopened > remote_last_closed
-        ):
-            demisto.info(f"Reopening ZTAP Alert {alert_id}")
-            close_description = f"Incident reopened in XSOAR.---\n\nSent {XSOAR_EXCLUDE_MESSAGE}"
-            client.reopen_alert(alert_id, client.get_reopen_group_id(), close_description)
+    if (parsed_args.incident_changed and client.reopen_incident and
+        parsed_args.inc_status != IncidentStatus.DONE
+        and alert["status"] == "closed"
+        and local_last_reopened > remote_last_closed
+    ):
+        demisto.info(f"Reopening ZTAP Alert {alert_id}")
+        close_description = f"Incident reopened in XSOAR.---\n\nSent {XSOAR_EXCLUDE_MESSAGE}"
+        client.reopen_alert(alert_id, client.get_reopen_group_id(), close_description)
 
     return alert_id
 
 
 def ztap_get_alert_entries(
     client: Client,
-    args: Dict,
+    args: dict,
 ):
     """
     Gets all entries (comments/attachments) for an alert
@@ -757,7 +755,7 @@ def ztap_get_alert_entries(
             "datetime_closed": None,
         }
 
-        investigation: Dict = {}
+        investigation: dict = {}
         entries = get_notes_for_alert(client, investigation, alert, epoch(), update_status=False)
 
         return entries

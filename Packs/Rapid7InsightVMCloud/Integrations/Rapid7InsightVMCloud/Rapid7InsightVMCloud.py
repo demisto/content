@@ -4,8 +4,6 @@ from CommonServerPython import *  # noqa: F401
 """IMPORTS"""
 
 
-from typing import Dict, Optional, Union
-
 import urllib3
 from requests import Response
 
@@ -27,12 +25,12 @@ class Client(BaseClient):
         self,
         method: str,
         url_suffix: str,
-        params: Optional[Dict] = None,
-        data: Optional[Dict] = None,
-        json_data: Optional[Dict] = None,
+        params: dict | None = None,
+        data: dict | None = None,
+        json_data: dict | None = None,
         timeout: float = 10,
         resp_type: str = "json",
-    ) -> Union[Response, Dict]:
+    ) -> Response | dict:
         """
             Performs API request to the specified endpoint and reutrns the full Response object
 
@@ -84,7 +82,7 @@ def test_module_command(client: Client, *_) -> str:
     url_suffix: str = "/admin/health"
 
     try:
-        response: Union[Response, Dict] = client.make_request(method=method, url_suffix=url_suffix, resp_type="response")
+        response: Response | dict = client.make_request(method=method, url_suffix=url_suffix, resp_type="response")
         if isinstance(response, Response) and response.status_code == 200:
             return "ok"
         raise DemistoException(f"Test module failed, {response}")
@@ -107,7 +105,7 @@ def get_health_check_command(client: Client) -> dict:  # type: ignore
     if response:
         return response  # type: ignore
     else:
-        return_error("no response")
+        return_error("no response") # noqa: RET503
 
 
 def get_asset_command(client: Client, asset_id: str) -> dict:  # type: ignore
@@ -126,7 +124,7 @@ def get_asset_command(client: Client, asset_id: str) -> dict:  # type: ignore
     if response:
         return response  # type: ignore
     else:
-        return_error("no response")
+        return_error("no response") # noqa: RET503
 
 
 def search_assets_command(client: Client, hostname: None, page: str, size: str) -> CommandResults:  # type: ignore
@@ -154,7 +152,7 @@ def search_assets_command(client: Client, hostname: None, page: str, size: str) 
         )
         return result
     else:
-        return_error("no response")
+        return_error("no response") # noqa: RET503
 
 
 def get_scan_command(client: Client, scan_id=str) -> CommandResults:  # type: ignore
@@ -178,7 +176,7 @@ def get_scan_command(client: Client, scan_id=str) -> CommandResults:  # type: ig
         )
         return result
     else:
-        return_error("no response")
+        return_error("no response") # noqa: RET503
 
 
 def get_scan_engines_command(client: Client, page: int, size: int) -> CommandResults:  # type: ignore
@@ -196,7 +194,7 @@ def get_scan_engines_command(client: Client, page: int, size: int) -> CommandRes
     params = {"page": page, "size": size}
     endpoint = "/v4/integration/scan/engine"
     if int(size) > 500:
-        return_error("You're over the maximum size limit(500), please choose a lower size value")
+        return_error("You're over the maximum size limit(500), please choose a lower size value")   # noqa: RET503
     else:
         response = client.make_request(method=method, url_suffix=endpoint, params=params)
         if response:
@@ -210,7 +208,7 @@ def get_scan_engines_command(client: Client, page: int, size: int) -> CommandRes
             )
             return result
         else:
-            return_error("no response")
+            return_error("no response") # noqa: RET503
 
 
 def start_scan_command(client: Client, asset_id: str, name: str) -> CommandResults:  # type: ignore
@@ -241,7 +239,7 @@ def start_scan_command(client: Client, asset_id: str, name: str) -> CommandResul
         )
         return result
     else:
-        return_error("no response")
+        return_error("no response") # noqa: RET503
 
 
 def last_sites_command(client: Client, page: int, size=int) -> CommandResults:  # type: ignore
@@ -258,7 +256,7 @@ def last_sites_command(client: Client, page: int, size=int) -> CommandResults:  
     params = {"page": page, "size": size}
 
     if int(size) > 500:
-        return_error("Exceed size limit")
+        return_error("Exceed size limit")   # noqa: RET503
 
     else:
         method = "POST"
@@ -273,7 +271,7 @@ def last_sites_command(client: Client, page: int, size=int) -> CommandResults:  
             )
             return result
         else:
-            return_error("no response")
+            return_error("no response") # noqa: RET503
 
 
 def search_vulnerabilities_command(client: Client, query: str, page: int, size=int) -> dict:  # type: ignore
@@ -291,7 +289,7 @@ def search_vulnerabilities_command(client: Client, query: str, page: int, size=i
     query = query
     params = {"page": page, "size": size}
     if int(size) > 500:
-        return_error("Exceed size limit")
+        return_error("Exceed size limit")   # noqa: RET503
     else:
         method = "POST"
         endpoint = "/v4/integration/vulnerabilities"
@@ -301,7 +299,7 @@ def search_vulnerabilities_command(client: Client, query: str, page: int, size=i
         if response:
             return response  # type: ignore
         else:
-            return_error("no response")
+            return_error("no response") # noqa: RET503
 
 
 def stop_scan_command(client: Client, id: str) -> CommandResults:
@@ -316,7 +314,7 @@ def stop_scan_command(client: Client, id: str) -> CommandResults:
     method = "POST"
     endpoint = f"/v4/integration/scan/{id}/stop"
     try:
-        response: Union[Response, Dict] = client.make_request(method=method, url_suffix=endpoint, resp_type="response")
+        response: Response | dict = client.make_request(method=method, url_suffix=endpoint, resp_type="response")
         if isinstance(response, Response) and response.status_code == 202:
             command_results = CommandResults(readable_output="Scan Stop successfully.")
             return command_results

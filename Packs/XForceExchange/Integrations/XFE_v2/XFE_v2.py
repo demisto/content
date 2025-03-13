@@ -154,7 +154,7 @@ def get_cve_results(client: Client, cve_id: str, report: dict, threshold: int) -
         **{string_to_table_header(header): report.get(header) for header in table_headers},
     }
     markdown = tableToMarkdown(
-        f"X-Force CVE Reputation for {cve_id}\n" f"{XFORCE_URL}/vulnerability/search/{cve_id}", table, removeNull=True
+        f"X-Force CVE Reputation for {cve_id}\n{XFORCE_URL}/vulnerability/search/{cve_id}", table, removeNull=True
     )
 
     return markdown, context, report
@@ -226,7 +226,7 @@ def ip_command(client: Client, args: dict[str, str]) -> tuple[str, dict, Any]:
         subnets_list = [subnet.get("subnet") for subnet in subnets]
         table = {"Score": report["score"], "Reason": reason, "Subnets": ", ".join(subnets_list)}
         markdown += tableToMarkdown(
-            f'X-Force IP Reputation for: {report["ip"]}\n' f'{XFORCE_URL}/ip/{report["ip"]}', table, removeNull=True
+            f'X-Force IP Reputation for: {report["ip"]}\n{XFORCE_URL}/ip/{report["ip"]}', table, removeNull=True
         )
         reports.append(report)
 
@@ -272,7 +272,7 @@ def domain_command(client: Client, args: dict[str, str]) -> List[CommandResults]
         table = {"Score": report["score"], "Categories": "\n".join(report["cats"].keys())}
 
         markdown = tableToMarkdown(
-            f'X-Force Domain Reputation for: {report["url"]}\n' f'{XFORCE_URL}/url/{report["url"]}', table, removeNull=True
+            f'X-Force Domain Reputation for: {report["url"]}\n{XFORCE_URL}/url/{report["url"]}', table, removeNull=True
         )
 
         command_results.append(CommandResults(readable_output=markdown, raw_response=report, indicator=indicator_))
@@ -319,7 +319,7 @@ def url_command(client: Client, args: dict[str, str]) -> List[CommandResults]:
         table = {"Score": report["score"], "Categories": "\n".join(report["cats"].keys())}
 
         markdown = tableToMarkdown(
-            f'X-Force URL Reputation for: {report["url"]}\n' f'{XFORCE_URL}/url/{report["url"]}', table, removeNull=True
+            f'X-Force URL Reputation for: {report["url"]}\n{XFORCE_URL}/url/{report["url"]}', table, removeNull=True
         )
 
         command_results.append(CommandResults(readable_output=markdown, raw_response=report, indicator=indicator_))
@@ -482,7 +482,7 @@ def file_command(client: Client, args: dict[str, str]) -> List[CommandResults]:
             "Type": hash_info.get("external", {}).get("malwareType"),
         }
         markdown = tableToMarkdown(
-            f'X-Force {hash_type} Reputation for {args.get("file")}\n' f'{XFORCE_URL}/malware/{args.get("file")}',
+            f'X-Force {hash_type} Reputation for {args.get("file")}\n{XFORCE_URL}/malware/{args.get("file")}',
             table,
             removeNull=True,
         )

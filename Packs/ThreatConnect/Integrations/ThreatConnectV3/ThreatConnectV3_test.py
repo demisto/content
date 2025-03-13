@@ -121,10 +121,10 @@ def test_create_context():  # type: ignore # noqa
                     "ID": 40435508,
                     "LastModified": "2022-07-26T13:51:49Z",
                     "Name": "http://yourwebsite.com/opcache.php",
-                    "Owner": "Technical Blogs and " "Reports",
+                    "Owner": "Technical Blogs and Reports",
                     "Rating": 3,
                     "Type": "URL",
-                    "WebLink": "https://partnerstage.threatconnect.com/auth" "/indicators/details/url.xhtml?orgid=40435508",
+                    "WebLink": "https://partnerstage.threatconnect.com/auth/indicators/details/url.xhtml?orgid=40435508",
                 }
             ],
             "URL(val.Data && val.Data == obj.Data)": [
@@ -162,14 +162,14 @@ def test_list_groups(mocker):
     list_groups(client, {"id": "test"}, return_raw=True)
     assert mock.call_args.args[1] == "/api/v3/groups?tql=%28id%3Dtest%20%29&resultStart=0&resultLimit=100"
     list_groups(client, {"fromDate": "2022.08.08"}, return_raw=True)
-    assert mock.call_args.args[1] == "/api/v3/groups?tql=dateAdded%20%3E%20%222022.08.08%22%20&resultStart=" "0&resultLimit=100"
+    assert mock.call_args.args[1] == "/api/v3/groups?tql=dateAdded%20%3E%20%222022.08.08%22%20&resultStart=0&resultLimit=100"
     list_groups(client, {"security_label": "TLP:AMBER"}, return_raw=True)
     assert (
         mock.call_args.args[1] == "/api/v3/groups?tql=securityLabel%20like%20%22%25TLP%3AAMBER%25%22&fields="
         "securityLabels&resultStart=0&resultLimit=100"
     )
     list_groups(client, {"group_type": "Incident"}, return_raw=True)
-    assert mock.call_args.args[1] == "/api/v3/groups?tql=typeName%20EQ%20%22Incident%22&resultStart=" "0&resultLimit=100"
+    assert mock.call_args.args[1] == "/api/v3/groups?tql=typeName%20EQ%20%22Incident%22&resultStart=0&resultLimit=100"
     list_groups(client, {"filter": "dateAdded > 2022-03-03"}, return_raw=True)
     assert mock.call_args.args[1] == "/api/v3/groups?tql=dateAdded%20%3E%202022-03-03&resultStart=0&resultLimit=100"
     list_groups(client, {"limit": "666"}, return_raw=True)
@@ -445,7 +445,7 @@ ARGS_INCLUDE_ASSETS_ATTRIBUTES = {
 }
 
 EXPECTED_URL_ASSETS_ATTRIBUTES = (
-    f"{VICTIM_API_PREFIX}/test_victim_id?" f"&resultStart=20&resultLimit=20&fields=attributes&fields=assets&tql=Test%20Filter"
+    f"{VICTIM_API_PREFIX}/test_victim_id?&resultStart=20&resultLimit=20&fields=attributes&fields=assets&tql=Test%20Filter"
 )
 
 
