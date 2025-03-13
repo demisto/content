@@ -4284,7 +4284,7 @@ def enrich_error_message_id_group_role(e: DemistoException | Exception,
     exception_condition = (
         isinstance(e, Exception)
         and str(e) is not None
-        and '500' in str(e)
+        and '"err_code": 500' in str(e)
         and 'was not found' in str(e)
     )
     if demisto_error_condition or exception_condition:
@@ -4483,7 +4483,7 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
         exception_condition = (
             isinstance(e, Exception)
             and str(e) is not None
-            and '500' in str(e)
+            and '"err_code": 500' in str(e)
             and 'No identity threat' in str(e)
             and "An error occurred while processing XDR public API" in str(e)
         )
