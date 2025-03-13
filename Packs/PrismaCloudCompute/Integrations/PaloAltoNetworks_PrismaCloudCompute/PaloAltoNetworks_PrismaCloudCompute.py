@@ -508,6 +508,7 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="PUT", url_suffix="trust/data", json_data=data, resp_type="response", ok_codes=(200,))
 
+    @content_profiler
     def get_container_scan_results(self, params: Optional[dict] = None, all_results: bool = False) -> List[dict]:
         """
         Sends a request to get container scan results information.
