@@ -1,0 +1,10 @@
+{
+    "network": "nicolascoolman.eu",
+    "state": [
+      {
+        "technology": "Behavioural Analysis & System Heuristics",
+        "firstDefsetVersion": "20200513.002",
+        "threatName": "sonar.heuristic.159"
+      }
+    ]
+  }
