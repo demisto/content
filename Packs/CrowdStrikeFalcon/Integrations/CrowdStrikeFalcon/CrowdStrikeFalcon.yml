@@ -12,6 +12,8 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  hidden:
+  - marketplacev2
   additionalinfo: "Use the legacy version of the API, which refers to versions prior to the 'Next Generation Raptor release.'"
 - display: Server URL (e.g., https://api.crowdstrike.com)
   name: url
@@ -59,6 +61,8 @@ configuration:
   defaultvalue: '3 days'
   section: Collect
   required: false
+  hidden:
+  - marketplacev2
 - display: Max incidents per fetch
   name: incidents_per_fetch
   type: 0
@@ -66,60 +70,81 @@ configuration:
   advanced: true
   required: false
   defaultvalue: '15'
+  additionalinfo: Input a value between 1-500.
+  hidden:
+  - marketplacev2
 - display: Endpoint Detections fetch query
   name: fetch_query
   type: 0
   section: Collect
   advanced: true
   required: false
-  additionalinfo: "Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql."
+  hidden:
+  - marketplacev2
+  additionalinfo: 'Use the Falcon Query Language. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
 - display: Endpoint Incidents fetch query
   name: incidents_fetch_query
   required: false
   type: 0
   section: Collect
   advanced: true
-  additionalinfo: "Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql."
+  hidden:
+  - marketplacev2
+  additionalinfo: 'Use the Falcon Query Language. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
 - display: IDP Detections fetch query
   name: idp_detections_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  additionalinfo: "Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql."
+  hidden:
+  - marketplacev2
+  additionalinfo: 'Use the Falcon Query Language. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
 - display: Mobile Detections fetch query
   name: mobile_detections_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  additionalinfo: "Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql."
+  hidden:
+  - marketplacev2
+  additionalinfo: 'Use the Falcon Query Language. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
 - display: IOM fetch query
   name: iom_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  additionalinfo: "Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql."
+  hidden:
+  - marketplacev2
+  additionalinfo: 'Use the Falcon Query Language. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
 - display: IOA fetch query
   name: ioa_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  additionalinfo: "In the format: cloud_provider=aws&aws_account_id=1234. The query must have the argument 'cloud_provider' configured. Multiple values for the same parameter is not supported. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql."
+  hidden:
+  - marketplacev2
+  additionalinfo: "In the query parameter format: 'cloud_provider=aws&amp;aws_account_id=1234'. The query must specify a 'cloud_provider'. Multiple values for the same parameter is not supported. For more information, refer to documentation on CSPM Registration Keyword Arguments: https://www.falconpy.io/Service-Collections/CSPM-Registration.html#keyword-arguments-13"
 - display: Detections from On-Demand Scans fetch query
   name: on_demand_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-- display: OFP Detection fetch query
+  hidden:
+  - marketplacev2
+  additionalinfo: 'Use the Falcon Query Language. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+- display: OFP Detections fetch query
   name: ofp_detection_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
+  hidden:
+  - marketplacev2
+  additionalinfo: 'Use the Falcon Query Language. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -143,6 +168,8 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
+  hidden:
+  - marketplacev2
 - display: 'Trust any certificate (not secure)'
   name: insecure
   type: 8
@@ -163,6 +190,8 @@ configuration:
   advanced: true
   required: false
   additionalinfo: When selected, closing the CrowdStrike Falcon incident is mirrored in Cortex XSOAR.
+  hidden:
+  - marketplacev2
 - defaultvalue: 'false'
   display: 'Close Mirrored CrowdStrike Falcon Incident or Detection'
   name: close_in_cs_falcon
@@ -171,6 +200,8 @@ configuration:
   advanced: true
   required: false
   additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in CrowdStrike Falcon, according to the types that were chosen to be fetched and mirrored.
+  hidden:
+  - marketplacev2
 - defaultvalue: 'Endpoint Detection'
   display: 'Fetch types'
   name: fetch_incidents_or_detections
@@ -190,6 +221,8 @@ configuration:
   - Mobile Detection
   - On-Demand Scans Detection
   - OFP Detection
+  hidden:
+  - marketplacev2
 - additionalinfo: CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination.
   defaultvalue: 'New,In progress,True positive,False positive,Reopened,Ignored'
   display: 'Reopen Statuses'
@@ -205,6 +238,8 @@ configuration:
   - False positive
   - Reopened
   - Ignored
+  hidden:
+  - marketplacev2
 - defaultvalue: '1'
   display: 'Incidents Fetch Interval'
   name: incidentFetchInterval
@@ -212,14 +247,18 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  hidden:
+  - marketplacev2
 - additionalinfo: Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created.
-  defaultvalue: 1
+  defaultvalue: 2
   display: 'Advanced: Time in minutes to look back when fetching incidents and detections'
   name: look_back
   type: 0
   section: Collect
   advanced: true
   required: false
+  hidden:
+  - marketplacev2
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
 display: CrowdStrike Falcon
 name: CrowdstrikeFalcon
@@ -232,7 +271,7 @@ script:
       - No
       description: Whether or not to get additional data about the device.
       auto: PREDEFINED
-    - description: The query by which to filter the device.
+    - description: The query by which to filter the device. The query format should be `filter_parameter_name:'filter_value'`.
       name: filter
     - description: The maximum records to return [1-5000].
       name: limit
@@ -252,9 +291,6 @@ script:
       - lift_containment_pending
     - description: The hostname of the device.
       name: hostname
-      auto: PREDEFINED
-      predefined:
-      - ''
     - description: The platform name of the device.
       name: platform_name
       auto: PREDEFINED
@@ -2713,7 +2749,7 @@ script:
       description: A list of detection IDs connected to the incident.
       type: String
   - arguments: []
-    description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
+    description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes. Note that this command is supported in Cortex XSOAR only.
     name: get-mapping-fields
   - arguments:
     - description: The remote incident or detection ID.
@@ -2722,15 +2758,15 @@ script:
     - defaultValue: '0'
       description: The UTC timestamp in seconds of the last update. The incident or detection is only updated if it was modified after the last update time.
       name: lastUpdate
-    description: Gets remote data from a remote incident or detection. This method does not update the current incident or detection, and should be used for debugging purposes only.
+    description: Gets remote data from a remote incident or detection. This method does not update the current incident or detection, and should be used for debugging purposes only. Note that this command is supported in Cortex XSOAR only.
     name: get-remote-data
   - arguments:
     - description: Date string representing the local time in UTC timestamp in seconds. The incident or detection is only returned if it was modified after the last update time.
       name: lastUpdate
-    description: Gets the list of incidents and detections that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
+    description: Gets the list of incidents and detections that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1. Note that this command is supported in Cortex XSOAR only.
     name: get-modified-remote-data
   - arguments: []
-    description: Updates the remote incident or detection with local incident or detection changes. This method is only used for debugging purposes and will not update the current incident or detection.
+    description: Updates the remote incident or detection with local incident or detection changes. This method is only used for debugging purposes and will not update the current incident or detection. Note that this command is supported in Cortex XSOAR only.
     name: update-remote-system
   - arguments:
     - description: Limit the vulnerabilities returned to specific properties. Each value must be enclosed in single quotes and placed immediately after the colon with no space. For example, 'filter=status:'open'+cve.id:['CVE-2013-3900','CVE-2021-1675']'.
@@ -5065,6 +5101,7 @@ script:
       type: String
   dockerimage: demisto/py3-tools:1.0.0.117220
   isfetch: true
+  isfetch:marketplacev2: false
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true

@@ -20,10 +20,27 @@
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "shortText",
+    "type": "singleSelect",
     "unmapped": false,
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "5.5.0"
+    "fromVersion": "5.5.0",
+    "selectValues": [
+        "TruePositive - MultiStagedAttack",
+        "TruePositive - MaliciousUserActivity",
+        "TruePositive - Malware",
+        "TruePositive - Phishing",
+        "TruePositive - CompromisedAccount",
+        "TruePositive - UnwantedSoftware",
+        "TruePositive - Other",
+        "InformationalExpectedActivity - SecurityTesting",
+        "InformationalExpectedActivity - LineOfBusinessApplication",
+        "InformationalExpectedActivity - ConfirmedActivity",
+        "InformationalExpectedActivity - Other",
+        "FalsePositive - NotMalicious",
+        "FalsePositive - NoEnoughDataToValidate",
+        "FalsePositive - Other",
+        "Unknown - NotAvailable"
+    ]
 }

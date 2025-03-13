@@ -2,7 +2,7 @@
     "name": "Azure Feed",
     "description": "Indicators feed from Azure",
     "support": "xsoar",
-    "currentVersion": "1.0.32",
+    "currentVersion": "1.0.33",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

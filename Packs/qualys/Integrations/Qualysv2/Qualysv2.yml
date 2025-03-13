@@ -30,6 +30,19 @@ configuration:
   required: false
   section: Connect
   advanced: true
+- display: Fetch Vulnerabilities Behavior
+  defaultvalue: Fetch by last modified date
+  name: fetch_vulnerabilities_behavior
+  options:
+  - Fetch by last modified date
+  - Fetch by unique QIDs of assets
+  section: Collect
+  advanced: true
+  required: false
+  type: 15
+  hidden:
+  - xsoar
+  - xpanse
 - defaultvalue: 3 days
   section: Collect
   display: Event first fetch time
@@ -62,7 +75,7 @@ configuration:
   hidden:
   - xsoar
   - xpanse
-- additionalinfo: The fetch interval. It is recommended to set it to 24 hours, and the minimum interval is 1 hour.
+- additionalinfo: The fetch interval for assets and vulnerabilities. It is recommended to set it to 24 hours. Interval lower then 1 hour is not supported.
   defaultvalue: 1440
   display: Assets and Vulnerabilities Fetch Interval
   name: assetsFetchInterval

@@ -1,0 +1,126 @@
+[
+    {
+        "value": "http://1.2.3.4:59754/Mozi.m",
+        "type": "URL",
+        "rawJSON": {
+            "id": "37757d70-0d2a-43d7-8243-62cfa13be660",
+            "url": "http://1.2.3.4:59754/Mozi.m",
+            "host": "1.2.3.4",
+            "is_domain": false,
+            "ip_addresses": [
+                "1.2.3.4"
+            ],
+            "tags": [
+                "elf.mozi",
+                "usta-malicious-urls"
+            ],
+            "valid_from": "2024-11-28T08:04:06.000Z",
+            "valid_until": "2025-11-28T08:04:06.000Z",
+            "created": "2024-11-28T09:02:57.187Z"
+        },
+        "fields": {
+            "ip_addresses": [
+                "1.2.3.4"
+            ],
+            "host": "1.2.3.4",
+            "tags": [
+                "elf.mozi",
+                "usta-malicious-urls"
+            ]
+        },
+        "service": "FeedUstaThreatStream"
+    },
+    {
+        "value": "http://1.2.3.4:44543/Mozi.m",
+        "type": "URL",
+        "rawJSON": {
+            "id": "9ea0e6b8-3784-4fc8-b0d2-1963ad226dba",
+            "url": "http://1.2.3.4:44543/Mozi.m",
+            "host": "1.2.3.4",
+            "is_domain": false,
+            "ip_addresses": [
+                "1.2.3.4"
+            ],
+            "tags": [
+                "elf.mozi",
+                "usta-malicious-urls"
+            ],
+            "valid_from": "2024-11-28T08:04:25.000Z",
+            "valid_until": "2025-11-28T08:04:25.000Z",
+            "created": "2024-11-28T09:02:57.185Z"
+        },
+        "fields": {
+            "ip_addresses": [
+                "1.2.3.4"
+            ],
+            "host": "1.2.3.4",
+            "tags": [
+                "elf.mozi",
+                "usta-malicious-urls"
+            ]
+        },
+        "service": "FeedUstaThreatStream"
+    },
+    {
+        "value": "http://1.2.3.4:53684/bin.sh",
+        "type": "URL",
+        "rawJSON": {
+            "id": "c55b9f37-2c85-4615-be00-7531a9b2864e",
+            "url": "http://1.2.3.4:53684/bin.sh",
+            "host": "1.2.3.4",
+            "is_domain": false,
+            "ip_addresses": [
+                "1.2.3.4"
+            ],
+            "tags": [
+                "elf.mozi",
+                "usta-malicious-urls"
+            ],
+            "valid_from": "2024-11-28T08:05:08.000Z",
+            "valid_until": "2025-11-28T08:05:08.000Z",
+            "created": "2024-11-28T09:02:57.183Z"
+        },
+        "fields": {
+            "ip_addresses": [
+                "1.2.3.4"
+            ],
+            "host": "1.2.3.4",
+            "tags": [
+                "elf.mozi",
+                "usta-malicious-urls"
+            ]
+        },
+        "service": "FeedUstaThreatStream"
+    },
+    {
+        "value": "http://1.2.3.4:34087/bin.sh",
+        "type": "URL",
+        "rawJSON": {
+            "id": "0e719513-1323-44ce-9671-61f8f4c339d1",
+            "url": "http://1.2.3.4:34087/bin.sh",
+            "host": "1.2.3.4",
+            "is_domain": false,
+            "ip_addresses": [
+                "1.2.3.4"
+            ],
+            "tags": [
+                "elf.mozi",
+                "usta-malicious-urls"
+            ],
+            "valid_from": "2024-11-28T08:06:07.000Z",
+            "valid_until": "2025-11-28T08:06:07.000Z",
+            "created": "2024-11-28T09:02:57.180Z"
+        },
+        "fields": {
+            "ip_addresses": [
+                "1.2.3.4"
+            ],
+            "host": "1.2.3.4",
+            "tags": [
+                "elf.mozi",
+                "usta-malicious-urls"
+            ]
+        },
+        "service": "FeedUstaThreatStream"
+    }
+]

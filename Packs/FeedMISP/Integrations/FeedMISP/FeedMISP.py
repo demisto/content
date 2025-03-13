@@ -360,7 +360,13 @@ def build_indicators_from_galaxies(indicator_obj: Dict[str, Any], reputation: Op
         tag_name = tag.get('name', None)
         type_ = get_galaxy_indicator_type(tag_name)
         if tag_name and type_:
-            value_ = tag_name[tag_name.index('=') + 2: tag_name.index(" -")]
+            try:
+                value_ = tag_name[tag_name.index('=') + 2: tag_name.index(" -")]
+            except ValueError:
+                demisto.debug(f"A ValueError was raised on {tag_name=}, of type {type_}, trying to parse with no -")
+                value_ = tag_name[tag_name.index('=') + 2: tag_name.rindex('"')]
+                galaxy_indicators.append(build_indicator(value_, type_, tag, reputation))
+                continue
             galaxy_indicators.append(build_indicator(value_, type_, tag, reputation))
 
     return galaxy_indicators

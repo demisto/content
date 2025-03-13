@@ -1,4 +1,5 @@
 import json
+
 import pytest
 from FeedTAXII2 import *
 
@@ -419,3 +420,32 @@ def test_is_valid_url(url, expected_result):
     """
     from FeedTAXII2 import is_valid_taxii_url
     assert is_valid_taxii_url(url) == expected_result
+
+
+def test_feed_main_enrichment_excluded(mocker):
+    """
+        Given: params with tlp_color set to RED and enrichmentExcluded set to False
+        When: Calling feed_main
+        Then: validate enrichment_excluded is set to True
+    """
+    from FeedTAXII2 import main
+
+    params = {
+        'tlp_color': 'RED',
+        'enrichmentExcluded': False,
+        'server_url': 'test.test.com'
+    }
+
+    client_mocker = mocker.patch('FeedTAXII2.Taxii2FeedClient')
+
+    mocker.patch('FeedTAXII2.is_xsiam_or_xsoar_saas', return_value=True)
+    mocker.patch('FeedTAXII2.assert_incremental_feed_params')
+    mocker.patch('FeedTAXII2.fetch_indicators_command', return_value=([], []))
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='fetch-indicators')
+
+    # Call the function under test
+    main()
+
+    # Assertion - verify that enrichment_excluded is set to True
+    assert client_mocker.call_args.kwargs.get('enrichment_excluded') is True

@@ -20,8 +20,13 @@
                 "SEARCH_VALUE": "A mail forwarding rule was configured in Google Workspace to an uncommon domain"
                 }
                 ]
-            }
-        ]    
+        },
+      {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "NEQ",
+            "SEARCH_VALUE": "Correlation"
+      }
+        ]
     }
   }
 }

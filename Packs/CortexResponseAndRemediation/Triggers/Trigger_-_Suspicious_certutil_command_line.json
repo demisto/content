@@ -1,0 +1,24 @@
+{
+  "trigger_id": "d30b757218c4a36e4b94d8033cf55785",
+  "playbook_id": "Suspicious certutil command line",
+  "suggestion_reason": "Recommended for the 'Suspicious certutil command line' alerts",
+  "description": "This trigger is responsible for handling 'Suspicious certutil command line' alerts",
+  "trigger_name": "Suspicious certutil command line",
+  "fromVersion": "8.8.0",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+            "SEARCH_FIELD": "alert_name",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "Suspicious certutil command line"
+        },
+      {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "NEQ",
+            "SEARCH_VALUE": "Correlation"
+      }
+      ]
+    }
+  }
+}

@@ -146,27 +146,6 @@ class TestsActiveDirectory:
         ad_username = client._get_ad_username(user_logon_name)
         assert ad_username == expected_ad_username
 
-    @pytest.mark.parametrize('user_logon_name', [
-        ('test*'),
-        ('test?test'),
-    ])
-    def test_has_wildcards_in_ad_logon(self, user_logon_name):
-        """
-            Given:
-                1. A user logon name contains the "*" symbol.
-                2. A user logon name contains the "?" symbol.
-            When:
-                - Running the 'has_wildcards_in_ad_logon()' function.
-            Then:
-                - Verify that an exception is raised due to the use of wildcards in the logon name.
-        """
-        client = LdapClient({'ldap_server_vendor': 'Active Directory', 'host': 'server_ip'})
-
-        with pytest.raises(Exception) as e:
-            client._has_wildcards_in_ad_logon(user_logon_name)
-        assert 'Wildcards were detected in the user logon name' in e.value.args[0]
-        assert user_logon_name in e.value.args[0]
-
     @pytest.mark.parametrize('connection_type, expected_auto_bind_value', [
         ('Start TLS', 'TLS_BEFORE_BIND'),
         ('SSL', 'NO_TLS'),
@@ -244,28 +223,6 @@ class TestsOpenLDAP:
             client._is_valid_dn(dn, client.USER_IDENTIFIER_ATTRIBUTE)
         assert e.value.args[0] == f'OpenLDAP {user_identifier_attribute} attribute was not found in user DN : {dn}'
 
-    @pytest.mark.parametrize('user_logon_name, user_dn', [
-        ('test*', 'uid=test,cn=Users,dc=openldaptest'),
-        ('tes?t', 'uid=test,cn=Users,dc=openldaptest')
-    ])
-    def test_validate_exact_username_match(self, user_logon_name, user_dn):
-        """
-            Given:
-                1. A user logon name contains the "*" symbol, and the user dn.
-                2. A user logon name contains the "?" symbol, and the user dn
-            When:
-                - Running the 'validate_exact_username_match()' function.
-            Then:
-                - Verify that an exception is raised due to the use of wildcards in the logon name.
-        """
-        client = LdapClient({'ldap_server_vendor': 'OpenLDAP', 'host': 'server_ip'})
-
-        with pytest.raises(Exception) as e:
-            client.validate_exact_username_match(user_logon_name, user_dn)
-        assert 'Mismatch likely due to wildcard use' in e.value.args[0]
-        assert user_logon_name in e.value.args[0]
-        assert user_dn in e.value.args[0]
-
 
 class TestLDAPAuthentication:
     """
@@ -341,6 +298,27 @@ class TestLDAPAuthentication:
             client._get_formatted_custom_attributes()
         assert e.value.args[0] == (f'User defined attributes must be of the form "attrA=valA,attrB=valB,...", but got: '
                                    f'{client.CUSTOM_ATTRIBUTE}')
+
+    @pytest.mark.parametrize('user_logon_name', [
+        ('test*'),
+        ('test?test'),
+    ])
+    def test_has_wildcards_in_user_logon(self, user_logon_name):
+        """
+            Given:
+                1. A user logon name contains the "*" symbol.
+                2. A user logon name contains the "?" symbol.
+            When:
+                - Running the 'has_wildcards_in_user_logon()' function.
+            Then:
+                - Verify that an exception is raised due to the use of wildcards in the logon name.
+        """
+        client = LdapClient({'ldap_server_vendor': 'Active Directory', 'host': 'server_ip'})
+
+        with pytest.raises(Exception) as e:
+            client._has_wildcards_in_user_logon(user_logon_name)
+        assert 'Wildcards were detected in the user logon name' in e.value.args[0]
+        assert user_logon_name in e.value.args[0]
 
 
 class TestEntriesPagedSearch(unittest.TestCase):

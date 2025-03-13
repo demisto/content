@@ -1,5 +1,5 @@
 name: UnixAuditd Parsing Rule
-id: UnixAuditd Parsing Rule
+id: UnixAuditd_ParsingRule
 fromversion: 6.10.0
 tags: []
 rules: ''

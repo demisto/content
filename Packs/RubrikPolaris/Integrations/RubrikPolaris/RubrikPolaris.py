@@ -2820,7 +2820,7 @@ def rubrik_sonar_ondemand_scan_result_command(client: PolarisClient, args: Dict[
                           raw_response=raw_response)
 
 
-def rubrik_radar_anomaly_csv_analysis_command(client: PolarisClient, args: Dict[str, Any]) -> CommandResults:
+def rubrik_radar_anomaly_csv_analysis_command(client: PolarisClient, args: Dict[str, Any]) -> list[Union[CommandResults, Any]]:
     """
     Request for the analysis and retrieve the download link for the Radar CSV analyzed file.
 
@@ -2835,13 +2835,14 @@ def rubrik_radar_anomaly_csv_analysis_command(client: PolarisClient, args: Dict[
     cluster_id = validate_required_arg("cluster_id", args.get('cluster_id'))
     snapshot_id = validate_required_arg("snapshot_id", args.get("snapshot_id"))
     object_id = validate_required_arg("object_id", args.get("object_id"))
+    download_file = argToBoolean(args.get('download_file', False))
 
     response = client.get_csv_result(cluster_id=cluster_id, snappable_id=object_id, snapshot_id=snapshot_id)
 
     data = response.get("data", {})
     download_data = data.get('investigationCsvDownloadLink', {})
     if not download_data:
-        return CommandResults(readable_output=MESSAGES["NO_RESPONSE"])
+        return [CommandResults(readable_output=MESSAGES["NO_RESPONSE"])]
     context = {
         "clusterId": cluster_id,
         "snapshotId": snapshot_id,
@@ -2852,13 +2853,29 @@ def rubrik_radar_anomaly_csv_analysis_command(client: PolarisClient, args: Dict[
     hr = [f"Download the analyzed [CSV]({download_data.get('downloadLink')}) file."]
     readable_output = tableToMarkdown(table_name, hr, ["CSV Download Link"], removeNull=True)
 
-    return CommandResults(
+    result = [CommandResults(
         outputs_prefix=OUTPUT_PREFIX["RADAR_ANOMALY_CSV_ANALYSIS"],
         outputs_key_field=["clusterId", "snapshotId", "objectId"],
         outputs=context,
         raw_response=response,
         readable_output=readable_output
-    )
+    )]
+
+    if download_file:
+        file_content = requests.request("GET", download_data.get('downloadLink')).text
+        extract_file_name = re.search(r'[^\/]+\.csv', download_data.get('downloadLink'))
+        file_name = ''
+        if extract_file_name:
+            file_name = extract_file_name.group()
+
+        file_result = fileResult(
+            filename=file_name,
+            data=file_content
+        )
+
+        result.append(file_result)
+
+    return result
 
 
 def rubrik_sonar_csv_download_command(client: PolarisClient, args: Dict[str, Any]) -> CommandResults:

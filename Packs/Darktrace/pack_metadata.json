@@ -2,7 +2,7 @@
     "name": "Darktrace",
     "description": "Populates Darktrace Model Breaches and AI Analyst Events in Cortex XSOAR, allowing for cross-platform automated investigation and response.",
     "support": "partner",
-    "currentVersion": "3.0.14",
+    "currentVersion": "3.0.15",
     "fromVersion": "5.0.0",
     "author": "Darktrace",
     "githubUser": "",
