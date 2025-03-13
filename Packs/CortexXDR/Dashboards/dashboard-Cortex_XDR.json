@@ -1856,6 +1856,6 @@
         }
     ],
     "fromVersion": "6.0.0",
-    "description": "",
+    "description": "Cortex XDR Dashboard",
     "isPredefined": true
 }
