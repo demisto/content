@@ -48,6 +48,12 @@ function intersect(a, b) {
 }
 
 function finish(playbookId, tag, err, entryGUID) {
+    logInfo(`Finishing polling task. 
+        Playbook ID: ${playbookId || 'N/A'}, 
+        Tag: ${tag}, 
+        Error: ${err ? err.toString() : 'None'}, 
+        Entry GUID: ${entryGUID || 'N/A'}`);
+
     var params = { 'id': tag };
     if (err === undefined) {
         params.input = 'YES';
@@ -174,6 +180,7 @@ function genericPollingScheduled(){
         var pendings = dq(invContext, pendingPath);
 
         if (pendings === null) {
+            logInfo("Polling stopped because no pending IDs were found.");
             return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
         }
 
@@ -181,6 +188,7 @@ function genericPollingScheduled(){
         var pendingsStrArr = listOfStrings(pendings);
         idsToPoll = intersect(idsStrArr, pendingsStrArr);
         if (idsToPoll.length === 0) {
+            logInfo("Polling stopped because there were no IDs left to poll.");
             return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
         }
 
