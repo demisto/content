@@ -86,6 +86,7 @@ def mock_get_a_list_of_threats_request(mocker):
 @pytest.fixture
 def mock_get_details_of_a_threat_request(mocker):
     threat_details = util_load_json('test_data/test_get_details_of_a_threat_page2.json')
+    threat_details['messages'][0]['remediationTimestamp'] = '2023-09-17T15:43:09Z'
     mocker.patch("AbnormalSecurity.Client.get_details_of_a_threat_request").return_value = threat_details
 
 
@@ -524,22 +525,31 @@ def test_fetch_abuse_campaign_incidents(mocker, mock_get_a_list_of_campaigns_sub
 
 
 def test_get_details_of_a_threat_request_two_pages(mocker):
-    client = mock_client(mocker, side_effect=[
-        util_load_json('test_data/test_get_details_of_a_threat.json'),
-        util_load_json('test_data/test_get_details_of_a_threat_page2.json')
-    ])
-    incidents = generate_threat_incidents(client, [{'threatId': 'asdf097sdf907'}])
-    assert len(incidents) == 2
-    # mocker.stop()
+    return_val = util_load_json('test_data/test_get_details_of_a_threat.json')
+    return_val['messages'][0]['remediationTimestamp'] = '2023-09-17T15:43:09Z'
+    page_2 = util_load_json('test_data/test_get_details_of_a_threat_page2.json')
+    page_2['messages'][0]['remediationTimestamp'] = '2023-09-17T16:43:09Z'
+
+    client = mock_client(mocker, side_effect=[return_val, page_2])
+    # Create datetime objects instead of using strings
+    start_datetime = datetime(2023, 9, 17, 14, 43, 9, tzinfo=UTC)
+    end_datetime = datetime(2023, 9, 18, 14, 43, 9, tzinfo=UTC)
+
+    incidents = generate_threat_incidents(client, [{'threatId': 'asdf097sdf907'}], 2, start_datetime, end_datetime)
+    assert len(incidents) == 1
+    assert len(json.loads(incidents[0].get('rawJSON')).get('messages')) == 2
 
 
 def test_get_details_of_a_threat_request_single_page(mocker):
-    client = mock_client(mocker, side_effect=[
-        util_load_json('test_data/test_get_details_of_a_threat_page2.json')
-    ])
-    incidents = generate_threat_incidents(client, [{'threatId': 'asdf097sdf907'}])
+    return_val = util_load_json('test_data/test_get_details_of_a_threat_page2.json')
+    return_val['messages'][0]['remediationTimestamp'] = '2023-09-17T15:43:09Z'
+    client = mock_client(mocker, response=return_val)
+    # Create datetime objects instead of using strings
+    start_datetime = datetime(2023, 9, 17, 14, 43, 9, tzinfo=UTC)
+    end_datetime = datetime(2023, 9, 18, 14, 43, 9, tzinfo=UTC)
+
+    incidents = generate_threat_incidents(client, [{'threatId': 'asdf097sdf907'}], 1, start_datetime, end_datetime)
     assert len(incidents) == 1
-    # mocker.stop()
 
 
 def test_get_details_of_a_threat_request_nanosecond_timestamp(mocker, mock_get_details_of_a_threat_request):
@@ -559,13 +569,14 @@ def test_get_details_of_a_threat_request_nanosecond_timestamp(mocker, mock_get_d
     )
     assert len(incidents) == 1
     assert incidents[0].get('occurred') == "2023-12-03T19:26:36.123456"
-    # mocker.stop(mock_get_details_of_a_threat_request)
 
 
 def test_polling_lag(mocker, mock_get_details_of_a_threat_request):
     """Test that polling lag is correctly applied when fetching incidents."""
     # Mock the client and its get_a_list_of_threats_request method
-    client = mock_client(mocker, response=util_load_json("test_data/test_get_list_of_abnormal_threats.json"))
+    return_val = util_load_json("test_data/test_get_list_of_abnormal_threats.json")
+    client = mock_client(mocker, response=return_val)
+
     # Create a spy on the get_a_list_of_threats_request method to capture its calls
     get_threats_spy = mocker.spy(client, 'get_a_list_of_threats_request')
 
@@ -576,6 +587,21 @@ def test_polling_lag(mocker, mock_get_details_of_a_threat_request):
 
     # Set up a 5-minute polling lag
     polling_lag = timedelta(minutes=5)
+
+    # Calculate expected timestamps
+    original_timestamp = datetime.fromisoformat(last_run["last_fetch"][:-1]).replace(tzinfo=UTC)
+    adjusted_start_time = original_timestamp - polling_lag
+    expected_start_time = adjusted_start_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+
+    # Mock the get_current_datetime function to return a fixed time
+    fixed_current_time = datetime(2023, 9, 18, 14, 43, 9, tzinfo=UTC)
+    mocker.patch('AbnormalSecurity.get_current_datetime', return_value=fixed_current_time)
+
+    # Calculate expected end time based on the fixed current time
+    adjusted_end_time = fixed_current_time - polling_lag
+    expected_end_time = adjusted_end_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+
+    expected_filter = f"remediationTimestamp gte {expected_start_time} and remediationTimestamp lte {expected_end_time}"
 
     # Call fetch_incidents with the polling lag
     _, incidents = fetch_incidents(
@@ -589,16 +615,10 @@ def test_polling_lag(mocker, mock_get_details_of_a_threat_request):
         polling_lag=polling_lag
     )
 
-    # Parse the original timestamp
-    original_timestamp = datetime.fromisoformat("2023-09-17T14:43:09").replace(tzinfo=UTC)
-    # Apply the 5-minute lag
-    adjusted_timestamp = original_timestamp - polling_lag
-    # Format the adjusted timestamp as expected in the filter
-    expected_timestamp = adjusted_timestamp.strftime("%Y-%m-%dT%H:%M:%SZ")
-    # Verify that get_a_list_of_threats_request was called with the correct filter
-    expected_filter = f"receivedTime gte {expected_timestamp}"
     # Check that the method was called with the expected filter
     get_threats_spy.assert_called_once()
     call_args = get_threats_spy.call_args[1]
+
+    # Assert that the filter matches our expected filter
     assert call_args['filter_'] == expected_filter
     assert call_args['page_size'] == 100

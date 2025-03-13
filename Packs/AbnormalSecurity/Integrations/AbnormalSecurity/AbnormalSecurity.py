@@ -34,10 +34,14 @@ def try_str_to_datetime(time: str) -> datetime:
     Try to convert a string to a datetime object.
     """
     try:
-        return datetime.strptime(time, ISO_8601_FORMAT)
+        return datetime.strptime(time, ISO_8601_FORMAT).astimezone(timezone.utc)
     except Exception as _:
         pass
-    return datetime.strptime(time, TIME_FORMAT_WITHMS)
+    return datetime.strptime(time, TIME_FORMAT_WITHMS).astimezone(timezone.utc)
+
+
+def get_current_datetime() -> datetime:
+    return datetime.now(timezone.utc)
 
 
 class FetchIncidentsError(Exception):
@@ -791,7 +795,7 @@ def generate_threat_incidents(client, threats, MAX_PAGE_NUMBER, start_datetime, 
                 if remediation_datetime and remediation_datetime < start_datetime:
                     break
             page_number = threat_details.get('nextPageNumber', None)
-            if page_number > MAX_PAGE_NUMBER:
+            if page_number is not None and page_number > MAX_PAGE_NUMBER:
                 break
 
         threat_details["messages"] = all_filtered_messages
@@ -843,9 +847,9 @@ def fetch_incidents(
         fetch_threats: bool,
         fetch_abuse_campaigns: bool,
         fetch_account_takeover_cases: bool,
-        max_page_number: int,
+        max_page_number: Optional[int] = 8,
         max_incidents_to_fetch: Optional[int] = FETCH_LIMIT,
-        polling_lag: timedelta = timedelta(minutes=0),
+        polling_lag: Optional[timedelta] = timedelta(minutes=0),
 ):
     """
     Fetch incidents from various sources (threats, abuse campaigns, and account takeovers).
@@ -864,20 +868,25 @@ def fetch_incidents(
     try:
         last_fetch = last_run.get("last_fetch", first_fetch_time)
         last_fetch_datetime = datetime.fromisoformat(last_fetch[:-1]).astimezone(timezone.utc)
-        # Apply polling lag to the last fetch time
-        if polling_lag is not None:
-            last_fetch_datetime = last_fetch_datetime - polling_lag
         last_fetch = last_fetch_datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-        start_time = last_fetch_datetime - polling_lag
-        end_time = datetime.now(timezone.utc) - polling_lag
+        start_time = last_fetch_datetime
+        current_datetime = get_current_datetime()
+        end_time = current_datetime
 
-        current_datetime = datetime.utcnow().astimezone(timezone.utc)
+        if polling_lag is not None:
+            start_time = start_time - polling_lag
+            end_time = end_time - polling_lag
+
+        current_datetime = get_current_datetime()
+        start_timestamp = start_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+        end_timestamp = end_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+
         current_iso_format_time = current_datetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
         all_incidents = []
 
         if fetch_threats:
-            threats_filter = f"remediationTimestamp gte {start_time} and remediationTimestamp lte {end_time}"
+            threats_filter = f"remediationTimestamp gte {start_timestamp} and remediationTimestamp lte {end_timestamp}"
             threats_response = client.get_a_list_of_threats_request(filter_=threats_filter, page_size=100)
             all_incidents += generate_threat_incidents(
                 client, threats_response.get('threats', []), max_page_number, start_time, end_time
