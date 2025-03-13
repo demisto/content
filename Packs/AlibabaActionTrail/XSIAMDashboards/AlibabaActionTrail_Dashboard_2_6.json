@@ -138,7 +138,7 @@
                                 "type": "Custom XQL",
                                 "width": 33.333333333333336,
                                 "height": 434,
-                                "phrase": "datamodel dataset = alibaba_action_trail_raw \r\n|filter  xdm.event.type=\"ApiCall\"\r\n|filter xdm.event.outcome in (\"This API is not authorized for caller.\",\"no permission\",\"The user has no permission\",\"caller has no permission\")\r\n|alter username=arrayindex(regextract(xdm.source.user.username,\"\\:(\\w+)\\@\"),0)\r\n|comp count() as TotalCount by username\r\n| view graph type = pie header = \"Unauthorized events by Username\" xaxis = username yaxis = TotalCount ",
+                                "phrase": "datamodel dataset = alibaba_action_trail_raw \r\n|filter  xdm.event.type=\"ApiCall\"\r\n|filter xdm.event.outcome in (\"This API is not authorized for caller.\",\"no permission\",\"The user has no permission\",\"caller has no permission\")\r\n|alter username=arrayindex(regextract(xdm.source.identity.username,\"\\:(\\w+)\\@\"),0)\r\n|comp count() as TotalCount by username\r\n| view graph type = pie header = \"Unauthorized events by Username\" xaxis = username yaxis = TotalCount ",
                                 "time_frame": {
                                     "relativeTime": 2592000000
                                 },
@@ -450,7 +450,7 @@
             "creation_time": 1668676995963,
             "description": "This widget displays count of unauthorized events made a user within the account",
             "data": {
-                "phrase": "datamodel dataset = alibaba_action_trail_raw \r\n |filter  xdm.event.type=\"ApiCall\"\r\n|filter xdm.event.outcome in (\"This API is not authorized for caller.\",\"no permission\",\"The user has no permission\",\"caller has no permission\")\r\n|alter username=arrayindex(regextract(xdm.source.user.username,\"\\:(\\w+)\\@\"),0)\r\n|comp count() as TotalCount by username\r\n| view graph type = pie header = \"Unauthorized events by Username\" xaxis = username yaxis = TotalCount ",
+                "phrase": "datamodel dataset = alibaba_action_trail_raw \r\n |filter  xdm.event.type=\"ApiCall\"\r\n|filter xdm.event.outcome in (\"This API is not authorized for caller.\",\"no permission\",\"The user has no permission\",\"caller has no permission\")\r\n|alter username=arrayindex(regextract(xdm.source.identity.username,\"\\:(\\w+)\\@\"),0)\r\n|comp count() as TotalCount by username\r\n| view graph type = pie header = \"Unauthorized events by Username\" xaxis = username yaxis = TotalCount ",
                 "time_frame": {
                     "relativeTime": 2592000000
                 },
@@ -547,6 +547,5 @@
             }
         }
     ],
-    "fromVersion": "6.10.0",
-    "toVersion": "8.9.0"
+    "fromVersion": "9.0.0"
 }
