@@ -155,7 +155,7 @@ class ModuleManager:
 
 
 def check_conditions_cybereason_isolate_machine(verbose: bool, outputs: list, human_readable_outputs: list, args: dict,
-                                                endpoint_data: dict):
+                                                endpoint_data: dict) -> bool:
     cybereason_is_probe_connected_command = Command(
         brand='Cybereason',
         name='cybereason-is-probe-connected',
@@ -206,7 +206,7 @@ def check_conditions_microsoft_atp_isolate_machine(verbose: bool, outputs: list,
                                          verbose=verbose)
         return False
 
-    if not args.get('agent_id'):
+    if not args.get('agent_id'):   # Appending agent_id as it's required for microsoft-atp-isolate-machine.
         args['agent_id'] = agent_id
     return True
 
@@ -214,12 +214,8 @@ def check_conditions_microsoft_atp_isolate_machine(verbose: bool, outputs: list,
 """ HELPER FUNCTIONS """
 
 
-def check_module_and_args_for_command(module_manager: ModuleManager,
-                                      verbose: bool,
-                                      command: Command,
-                                      outputs: list,
-                                      human_readable_outputs: list,
-                                      args: dict) -> bool:
+def check_module_and_args_for_command(module_manager: ModuleManager, verbose: bool, command: Command, outputs: list,
+                                      human_readable_outputs: list, args: dict) -> bool:
     """
     Validates whether a command can be executed by checking the brand's availability and required arguments.
 
@@ -512,8 +508,8 @@ def main():
         commands = initialize_commands()
         zipped_args = map_zipped_args(agent_ids, agent_ips, agent_hostnames)
 
-        endpoint_data_results = structure_endpoints_data(execute_command(command="get-endpoint-data-modified", args=args))
         # todo to change name back
+        endpoint_data_results = structure_endpoints_data(execute_command(command="get-endpoint-data-modified", args=args))
 
         demisto.debug(f'These are the results from get_endpoint_data_results execute_command {endpoint_data_results}')
 
@@ -549,6 +545,7 @@ def main():
         readable_output = tableToMarkdown(name='IsolateEndpoint Results', t=human_readable_outputs, removeNull=True)
         results = CommandResults(
             outputs_prefix='IsolateEndpoint',
+            outputs_key_field='EndpointName',
             outputs=outputs,
             readable_output=readable_output,
         )
