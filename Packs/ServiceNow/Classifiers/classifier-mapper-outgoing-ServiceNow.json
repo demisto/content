@@ -3,7 +3,7 @@
     "description": "Maps outgoing ServiceNow incident Fields.",
     "feed": false,
     "fromVersion": "6.0.0",
-    "id": "ServiceNow-outgoing-mapper",
+    "id": "ServiceNow-OutgoingMapper-testgroupassignment",
     "mapping": {
         "ServiceNow SIR Incident": {
             "dontMapEventToLabels": false,
@@ -522,11 +522,20 @@
                 "work_start": {
                     "complex": null,
                     "simple": "timetoassignment.startDate"
+                },
+                "assignment_group": {
+                    "complex": null,
+                    "simple": "assignmentgroup"
+                },
+                "assigned_to": {
+                    "complex": null,
+                    "simple": "servicenowassignedto" 
                 }
+
             }
         }
     },
-    "name": "ServiceNow - Outgoing Mapper",
+    "name": "ServiceNow - Outgoing Mapper -test group assignment",
     "type": "mapping-outgoing",
     "version": -1
 }
