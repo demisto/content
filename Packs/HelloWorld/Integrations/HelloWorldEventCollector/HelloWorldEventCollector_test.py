@@ -12,14 +12,14 @@ def test_fetch_detection_events_command():
     Then:
     - Ensure number of events fetched, and next run fields
     """
-    first_fetch_str = '2022-12-21T03:42:05Z'
-    base_url = 'https://server_url/'
+    first_fetch_str = "2022-12-21T03:42:05Z"
+    base_url = "https://server_url/"
     client = Client(
         base_url=base_url,
         verify=True,
         proxy=False,
     )
-    last_run = {'prev_id': 1}
+    last_run = {"prev_id": 1}
     next_run, events = fetch_events(
         client=client,
         last_run=last_run,
@@ -29,8 +29,8 @@ def test_fetch_detection_events_command():
     )
 
     assert len(events) == 1
-    assert next_run.get('prev_id') == 2
-    assert events[0].get('id') == 2
+    assert next_run.get("prev_id") == 2
+    assert events[0].get("id") == 2
 
 
 def test_test_module_command():
@@ -45,8 +45,9 @@ def test_test_module_command():
     - Test module passed
     """
     from HelloWorldEventCollector import test_module
-    first_fetch_str = '2022-12-21T03:42:05Z'
-    base_url = 'https://server_url/'
+
+    first_fetch_str = "2022-12-21T03:42:05Z"
+    base_url = "https://server_url/"
     client = Client(
         base_url=base_url,
         verify=True,
@@ -58,7 +59,7 @@ def test_test_module_command():
         first_fetch_time=first_fetch_str,
     )
 
-    assert res == 'ok'
+    assert res == "ok"
 
 
 def test_get_events_command():
@@ -72,7 +73,7 @@ def test_get_events_command():
     Then:
     - events and human readable as expected
     """
-    base_url = 'https://server_url/'
+    base_url = "https://server_url/"
     client = Client(
         base_url=base_url,
         verify=True,
@@ -84,5 +85,5 @@ def test_get_events_command():
         args={},
     )
 
-    assert events[0].get('id') == 1
-    assert 'Test Event' in hr.readable_output
+    assert events[0].get("id") == 1
+    assert "Test Event" in hr.readable_output

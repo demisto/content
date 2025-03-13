@@ -15,18 +15,10 @@ def test_transform_extracted_indicators_command():
     Then:
         - Verify that the function returns a CommandResults object with proper outputs and readable output.
     """
-    args = {
-        'ExtractedIndicators': '{"url": ["http://example.com", "http://example.org"], "ip": ["1.2.3.4", "5.6.7.8"]}'}
+    args = {"ExtractedIndicators": '{"url": ["http://example.com", "http://example.org"], "ip": ["1.2.3.4", "5.6.7.8"]}'}
 
-    expected_output = {
-        'indicatorList': [
-            'http://example.com',
-            'http://example.org',
-            '1.2.3.4',
-            '5.6.7.8'
-        ]
-    }
-    expected_readable_output = 'List of indicators\n\nhttp://example.com, http://example.org, 1.2.3.4, 5.6.7.8'
+    expected_output = {"indicatorList": ["http://example.com", "http://example.org", "1.2.3.4", "5.6.7.8"]}
+    expected_readable_output = "List of indicators\n\nhttp://example.com, http://example.org, 1.2.3.4, 5.6.7.8"
 
     result = transform_extracted_indicators_command(args)
 
@@ -47,5 +39,5 @@ def test_transform_extracted_indicators_command_with_empty_extracted_indicators(
     Then:
         - Raise ValueError with proper error message.
     """
-    with pytest.raises(ValueError, match='ExtractedIndicators not specified'):
-        transform_extracted_indicators_command({'ExtractedIndicators': ''})
+    with pytest.raises(ValueError, match="ExtractedIndicators not specified"):
+        transform_extracted_indicators_command({"ExtractedIndicators": ""})
