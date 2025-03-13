@@ -4261,7 +4261,8 @@ def parse_role_names(role_data: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def enrich_error_message_id_group_role(e: DemistoException|Exception, type_: str | None, custom_message: str | None) -> str | None:
+def enrich_error_message_id_group_role(e: DemistoException|Exception,
+                                       type_: str | None, custom_message: str | None) -> str | None:
     """
     Attempts to parse additional info from an exception and return it as string. Returns `None` if it can't do that.
 
