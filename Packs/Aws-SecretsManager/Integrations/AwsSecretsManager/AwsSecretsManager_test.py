@@ -43,6 +43,9 @@ class Boto3Client:
     def get_resource_policy(self, **kwargs):
         pass
 
+    def delete_resource_policy(self, **kwargs):
+        pass
+
 
 def test_aws_secrets_manager_secret_list_command(mocker):
     aws_client = create_client()
@@ -163,3 +166,31 @@ def test_aws_secrets_manager_secret_policy_get_command(mocker, args, expected_re
 ])
 def test_should_create_credential(secret, should_create):
     assert AWS_SECRETSMANAGER.should_create_credential(secret) == should_create
+
+
+def test_aws_secrets_manager_secret_policy_delete_command(mocker):
+    """
+    Given:
+        - AWS Secrets Manager `secret_id` argument.
+    When:
+        - Calling `aws_secrets_manager_secret_policy_delete_command`.
+    Assert:
+        - Assert session method is called with the correct secret ID.
+        - Assert human-readable output is as expected.
+    """
+    secret_id = 'secret123'
+
+    mock_response = {
+        'ARN': f'arn:aws:secretsmanager:us-west-2:123456789012:secret:{secret_id}-a1b2c3',
+        'Name': secret_id,
+        'ResponseMetadata': {'HTTPStatusCode': 200}
+    }
+    aws_client = create_client()
+    mocker.patch.object(AWSClient, 'aws_session', return_value=Boto3Client())
+    mock_delete_resource_policy = mocker.patch.object(Boto3Client, 'delete_resource_policy', return_value=mock_response)
+    expected_human_readable = f'Resource-based permission policy attached to the secret {secret_id} was successfully deleted.'
+
+    command_results = AWS_SECRETSMANAGER.aws_secrets_manager_secret_policy_delete_command(aws_client, {'secret_id': secret_id})
+
+    assert mock_delete_resource_policy.call_args.kwargs['SecretId'] == secret_id
+    assert command_results.readable_output == expected_human_readable
