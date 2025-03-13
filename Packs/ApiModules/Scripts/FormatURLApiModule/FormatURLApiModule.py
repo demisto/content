@@ -100,7 +100,7 @@ class URLCheck:
                 continue  # no reserved char found, URL has no path, query or fragment parts.
 
         try:
-            if "@" in self.modified_url[:self.base+host_end_position]:
+            if "@" in self.modified_url[:host_end_position]:
                 # Checks if url has '@' sign in its authority part
 
                 self.user_info_check()
@@ -305,31 +305,31 @@ class URLCheck:
                 host += self.modified_url[index]
                 index += 1
 
-        if not is_ip and not re.search(r'(?i)[^0-9a-fx.:]', host):
-            
-            parsed_ip = host
-            
-            if not ':' in host:
-                try:
-                    parsed_ip = parse_mixed_ip(host)
-                    numerical_ip = True
-
-                except ValueError:
-                    pass
+        if not is_ip and not re.search(r'(?i)[^0-9a-fx.]', host):
 
             try:
-                ip = ipaddress.ip_address(parsed_ip)
-
-                if ip.version == 6 and not self.output.endswith(']'):
-                    self.output = f"{self.output}]"  # Adding a closing square bracket for IPv6
+                parsed_ip = parse_mixed_ip(host)
+                numerical_ip = True
 
             except ValueError:
-                self.check_domain(host)
+                parsed_ip = host
+
+        else:
+            parsed_ip = host
+
+        try:
+            ip = ipaddress.ip_address(parsed_ip)
+
+            if ip.version == 6 and not self.output.endswith(']'):
+                self.output = f"{self.output}]"  # Adding a closing square bracket for IPv6
+
+        except ValueError:
+            self.check_domain(host)
 
         if numerical_ip:
             self.url.hostname = ip.exploded
             self.output = self.output.replace(host, ip.exploded)
-        self.url.hostname = host
+        self.url.hostname = str(parsed_ip)
         self.check_done(index)
 
     def port_check(self):
@@ -801,7 +801,7 @@ def parse_mixed_ip(ip_str: str) -> int:
     Raises:
         ValueError: If the resulting IP address is invalid.
     """
-    
+
     def convert_octal_to_decimal(octet: str) -> int:
         """Convert octal string to decimal."""
         return int(octet, 8)
@@ -809,39 +809,41 @@ def parse_mixed_ip(ip_str: str) -> int:
     def convert_hex_to_decimal(octet: str) -> int:
         """Convert hexadecimal string to decimal."""
         return int(octet, 16)
-    
+
     def convert_decimal(octet: str) -> int:
         """Convert decimal string to integer."""
         return int(octet)
-    
+
     def convert_octet(octet: str) -> int:
         """Convert a single octet to decimal if it is in octal, hex, or decimal format."""
-        if octet.startswith('0x') or octet.startswith('0X'):
+        if octet.startswith(('0x', '0X')):
             # Hexadecimal
             return convert_hex_to_decimal(octet)
+
         elif octet.startswith('0') and len(octet) > 1:
             # Assuming octal if it starts with '0' but more than one digit
             return convert_octal_to_decimal(octet)
+
         else:
             # Decimal
             return convert_decimal(octet)
 
     numerical_ip: int = 0
-    
+
     # Split the IP address into octets
     octets: list[str] = ip_str.split('.')
-    
+
     # Convert each octet to decimal
     decimal_octets: list[int] = [convert_octet(octet) for octet in octets]
 
     for index, octet in enumerate(decimal_octets, start=1):
         if octet <= 255:
-            numerical_ip += octet <<  (32 - (index * 8))
+            numerical_ip += octet << (32 - (index * 8))
         else:
             numerical_ip += octet
-        
+
     if numerical_ip > 4294967295:
         # Maximum value for IPv4 address
-        raise ValueError(f"Invalid IP address format")
-            
+        raise ValueError("Invalid IP address format")
+
     return numerical_ip
