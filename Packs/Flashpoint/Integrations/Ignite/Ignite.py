@@ -40,7 +40,8 @@ OK_CODES = (
     403,
     404,
     521,
-    *(status_code for status_code in requests.status_codes._codes if status_code >= 200 and status_code < 300), # type: ignore[attr-defined]
+    *(status_code for status_code in requests.status_codes._codes if status_code    # type: ignore[attr-defined]
+      >= 200 and status_code < 300),  # type: ignore[attr-defined]
 )  # type: ignore
 BACKOFF_FACTOR = 7.5  # Sleep for [0s, 15s, 30s, 60s] between retries.
 DEFAULT_END_TIME = "now"
@@ -1526,11 +1527,12 @@ def ip_lookup_command(client: Client, ip: str) -> CommandResults:
                 filter_enrichments.pop("bins", None)
                 hr_indicator = {
                     "Author": indicator.get("author", EMPTY_DATA),
-                    "Date (UTC)": arg_to_datetime(indicator.get("date")).strftime(READABLE_DATE_FORMAT),  # type: ignore[union-attr]
+                    # type: ignore[union-attr]
+                    "Date (UTC)": arg_to_datetime(indicator.get("date")).strftime(READABLE_DATE_FORMAT),    # type: ignore
                     "First Observed Date (UTC)": arg_to_datetime(indicator.get("first_observed_at")).strftime(  # type: ignore
                         READABLE_DATE_FORMAT
                     ),
-                    "Last Observed Date (UTC)": arg_to_datetime(indicator.get("last_observed_at")).strftime(READABLE_DATE_FORMAT),
+                    "Last Observed Date (UTC)": arg_to_datetime(indicator.get("last_observed_at")).strftime(READABLE_DATE_FORMAT),  # type: ignore
                     "Title": indicator.get("title", EMPTY_DATA),
                     "Site": indicator.get("site", EMPTY_DATA),
                     "Enrichments": filter_enrichments,
