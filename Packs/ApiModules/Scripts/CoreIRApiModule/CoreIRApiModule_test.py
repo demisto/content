@@ -4631,7 +4631,8 @@ def test_list_risky_users_or_host_command(exception_instance, command, expected_
           the provided exception instance. The function attempts to handle the exception and generate a warning if needed.
 
     Then -
-        - The function should either trigger a warning or not trigger a warning, based on the type of exception and the expected result.
+        - The function should either trigger a warning or not trigger a warning, based on the type of exception and the expected
+        result.
           The function's output should match the expected result:
             - If the error is related to the XDR module or missing resource, the warning message should be returned.
             - If the error is unrelated, no warning should be triggered.
