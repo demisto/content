@@ -72,6 +72,7 @@ configuration:
   type: 8
   required: false
   defaultvalue: 'false'
+  section: Connect
 - additionalinfo: "Full URL address to set in the TAXII2 service response. If not set, the integration will try to auto-detect the URL."
   display: TAXII2 Service URL Address
   name: service_address

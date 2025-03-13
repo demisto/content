@@ -1,11 +1,9 @@
 ## Prisma Access Content Pack
----
 
 This content pack enables XSOAR to integrate with Palo Alto Networks Prisma Access. It includes 2 integrations.
 
 
 ### Prisma Access Egress IP feed
----
 
 Dynamically retrieve and allow IPs Prisma Access uses to egress traffic to the internet and SaaS apps.
 
@@ -13,7 +11,6 @@ This integration can be used as a TIM feed to fetch indicators, or if a playbook
 
 
 ### Prisma Access
----
 
 Integrate with Prisma Access to query the status of the service and take actions.
 
@@ -27,7 +24,6 @@ The integration uses both the Panorama XML API and SSH into the PAN-OS CLI. SSH 
 
 
 ### Prisma SASE
----
 
 Integrate with Prisma SASE to view or make changes to Prisma Access configurations.
 

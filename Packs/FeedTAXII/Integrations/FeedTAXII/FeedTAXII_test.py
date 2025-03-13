@@ -202,3 +202,35 @@ def test_client_enrichment_excluded_with_tlp_red(mocker):
 
     client = TAXIIClient(collection="test", enrichmentExcluded=False, tlp_color='RED')
     assert client.enrichment_excluded is True
+
+
+def test_decoding_domain():
+    """
+        Given: domain indicator type without a protocol
+        When: decoding the indicator
+        Then: validate return of the indicator
+    """
+    from bs4 import BeautifulSoup
+    from FeedTAXII import DomainNameObject
+    xml = '<DomainName type="FQDN"><Value>www.a.com</Value></DomainName>'
+    soup = BeautifulSoup(xml, 'xml')
+    props = soup.find('DomainName')
+    indicator = DomainNameObject.decode(props)[0]
+    assert indicator.get('indicator') == 'www.a.com'
+    assert indicator.get('type') == 'Domain'
+
+
+def test_decoding_url():
+    """
+        Given: domain indicator type with a protocol
+        When: decoding the indicator
+        Then: validate return of the indicator
+    """
+    from bs4 import BeautifulSoup
+    from FeedTAXII import URIObject
+    xml = '<URI type="Domain Name"><Value>https://www.a.com</Value></URI>'
+    soup = BeautifulSoup(xml, 'xml')
+    props = soup.find('URI')
+    indicator = URIObject.decode(props)[0]
+    assert indicator.get('indicator') == 'www.a.com'
+    assert indicator.get('type') == 'Domain'
