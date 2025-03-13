@@ -26,6 +26,18 @@ XSOAR_SEVERITY_BY_AMP_SEVERITY = {
 }
 
 ISO_8601_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+TIME_FORMAT_WITHMS = "%Y-%m-%dT%H:%M:%S.%fZ"
+
+
+def try_str_to_datetime(time: str) -> datetime:
+    """
+    Try to convert a string to a datetime object.
+    """
+    try:
+        return datetime.strptime(time, ISO_8601_FORMAT)
+    except Exception as _:
+        pass
+    return datetime.strptime(time, TIME_FORMAT_WITHMS)
 
 
 class FetchIncidentsError(Exception):
@@ -765,22 +777,35 @@ def get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command(client, args):
     return command_results
 
 
-def generate_threat_incidents(client, threats):
+def generate_threat_incidents(client, threats, MAX_PAGE_NUMBER, start_datetime, end_datetime):
     incidents = []
     for threat in threats:
         page_number = 1
+        all_filtered_messages = []
         while page_number is not None:
             threat_details = client.get_details_of_a_threat_request(threat["threatId"], page_number=page_number)
-            received_time = threat_details["messages"][0].get("receivedTime")
-            incident = {
-                "dbotMirrorId": str(threat["threatId"]),
-                "name": "Threat",
-                "occurred": received_time[:26] if len(received_time) > 26 else received_time,
-                "details": "Threat",
-                "rawJSON": json.dumps(threat_details) if threat_details else {}
-            }
-            incidents.append(incident)
+            for message in threat_details["messages"]:
+                remediation_datetime = try_str_to_datetime(message.get("remediationTimestamp"))
+                if remediation_datetime and start_datetime <= remediation_datetime <= end_datetime:
+                    all_filtered_messages.append(message)
+                if remediation_datetime and remediation_datetime < start_datetime:
+                    break
             page_number = threat_details.get('nextPageNumber', None)
+            if page_number > MAX_PAGE_NUMBER:
+                break
+
+        threat_details["messages"] = all_filtered_messages
+        received_time = all_filtered_messages[0].get("receivedTime")
+        remediation_time = all_filtered_messages[0].get("remediationTimestamp")
+        incident = {
+            "dbotMirrorId": str(threat["threatId"]),
+            "name": "Threat",
+            "occurred": received_time[:26] if len(received_time) > 26 else received_time,
+            "remediatedTime": remediation_time[:26] if len(remediation_time) > 26 else remediation_time,
+            "details": "Threat",
+            "rawJSON": json.dumps(threat_details) if threat_details else {}
+        }
+        incidents.append(incident)
     return incidents
 
 
@@ -818,8 +843,9 @@ def fetch_incidents(
         fetch_threats: bool,
         fetch_abuse_campaigns: bool,
         fetch_account_takeover_cases: bool,
+        max_page_number: int,
         max_incidents_to_fetch: Optional[int] = FETCH_LIMIT,
-        polling_lag: Optional[timedelta] = timedelta(minutes=0),
+        polling_lag: timedelta = timedelta(minutes=0),
 ):
     """
     Fetch incidents from various sources (threats, abuse campaigns, and account takeovers).
@@ -828,8 +854,9 @@ def fetch_incidents(
     - client (Client): Client object to interact with the API.
     - last_run (Dict[str, Any]): Dictionary containing details about the last time incidents were fetched.
     - first_fetch_time (str): ISO formatted string indicating the first time from which to start fetching incidents.
+    - max_page_number (int): Maximum number of pages to fetch for incidents.
     - max_incidents_to_fetch (int, optional): Maximum number of incidents to fetch. Defaults to FETCH_LIMIT.
-    - polling_lag (int, optional): Time in minutes to subtract from polling time window for data consistency. Defaults to 5.
+    - polling_lag (int, optional): Time in minutes to subtract from polling time window for data consistency. Defaults to 0.
 
     Returns:
     - Tuple[Dict[str, str], List[Dict]]: Tuple containing a dictionary with the `last_fetch` time and a list of fetched incidents.
@@ -842,14 +869,19 @@ def fetch_incidents(
             last_fetch_datetime = last_fetch_datetime - polling_lag
         last_fetch = last_fetch_datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
 
+        start_time = last_fetch_datetime - polling_lag
+        end_time = datetime.now(timezone.utc) - polling_lag
+
         current_datetime = datetime.utcnow().astimezone(timezone.utc)
         current_iso_format_time = current_datetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
         all_incidents = []
 
         if fetch_threats:
-            threats_filter = f"receivedTime gte {last_fetch}"
+            threats_filter = f"remediationTimestamp gte {start_time} and remediationTimestamp lte {end_time}"
             threats_response = client.get_a_list_of_threats_request(filter_=threats_filter, page_size=100)
-            all_incidents += generate_threat_incidents(client, threats_response.get('threats', []))
+            all_incidents += generate_threat_incidents(
+                client, threats_response.get('threats', []), max_page_number, start_time, end_time
+            )
 
         if fetch_abuse_campaigns:
             abuse_campaigns_filter = f"lastReportedTime gte {last_fetch}"
@@ -972,6 +1004,7 @@ def main():  # pragma: nocover
             fetch_threats = params.get("fetch_threats", False)
             # Get the polling lag time parameter
             polling_lag_minutes = int(params.get('polling_lag', 5))
+            max_page_number = int(params.get('max_page_number', 8))
             polling_lag_delta = timedelta(minutes=polling_lag_minutes)
             fetch_abuse_campaigns = params.get("fetch_abuse_campaigns", False)
             fetch_account_takeover_cases = params.get("fetch_account_takeover_cases", False)
@@ -988,7 +1021,8 @@ def main():  # pragma: nocover
                 fetch_threats=fetch_threats,
                 fetch_abuse_campaigns=fetch_abuse_campaigns,
                 fetch_account_takeover_cases=fetch_account_takeover_cases,
-                polling_lag=polling_lag_delta
+                max_page_number=max_page_number,
+                polling_lag=polling_lag_delta,
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
