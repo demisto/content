@@ -16,17 +16,14 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url: str, verify: bool, proxy: bool):
-        headers = {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        }
+        headers = {"Content-Type": "application/json", "Accept": "application/json"}
         super().__init__(base_url=base_url, headers=headers, verify=verify, proxy=proxy)
 
     def cve_latest(self, limit) -> list[dict[str, Any]]:
-        return self._http_request(method='GET', url_suffix=f'/last/{limit}')
+        return self._http_request(method="GET", url_suffix=f"/last/{limit}")
 
     def cve(self, cve_id) -> dict[str, Any]:
-        return self._http_request(method='GET', url_suffix=f'cve/{cve_id}')
+        return self._http_request(method="GET", url_suffix=f"cve/{cve_id}")
 
 
 def cve_to_context(cve) -> dict[str, str]:
@@ -43,13 +40,13 @@ def cve_to_context(cve) -> dict[str, str]:
     Returns:
         The cve structure.
     """
-    cvss = cve.get('cvss')
+    cvss = cve.get("cvss")
     return {
-        'ID': cve.get('id', ''),
-        'CVSS': cvss or 'N\\A',
-        'Published': cve.get('Published', '').rstrip('Z'),
-        'Modified': cve.get('Modified', '').rstrip('Z'),
-        'Description': cve.get('summary', '')
+        "ID": cve.get("id", ""),
+        "CVSS": cvss or "N\\A",
+        "Published": cve.get("Published", "").rstrip("Z"),
+        "Modified": cve.get("Modified", "").rstrip("Z"),
+        "Description": cve.get("summary", ""),
     }
 
 
@@ -61,7 +58,7 @@ def test_module(client: Client):
         'ok' if test passed, anything else will fail the test.
     """
     cve_latest_command(client, 1)
-    return 'ok'
+    return "ok"
 
 
 def get_cvss_verion(cvss_vector: str) -> float:
@@ -77,7 +74,7 @@ def get_cvss_verion(cvss_vector: str) -> float:
     """
     if not cvss_vector:
         return 0
-    elif cvss_version_regex := re.match('CVSS:(?P<version>.+?)/', cvss_vector):
+    elif cvss_version_regex := re.match("CVSS:(?P<version>.+?)/", cvss_vector):
         return float(cvss_version_regex.group("version"))
     else:
         return 2.0
@@ -97,24 +94,20 @@ def cve_latest_command(client: Client, limit) -> list[CommandResults]:
     for cve_details in res:
         data = cve_to_context(cve_details)
         indicator = generate_indicator(cve_details)
-        readable_output = tableToMarkdown('Latest CVEs', data)
+        readable_output = tableToMarkdown("Latest CVEs", data)
         command_results.append(
             CommandResults(
-                outputs_prefix='CVE',
-                outputs_key_field='ID',
+                outputs_prefix="CVE",
+                outputs_key_field="ID",
                 outputs=data,
                 readable_output=readable_output,
                 raw_response=res,
-                indicator=indicator
+                indicator=indicator,
             )
         )
 
     if not res:
-        command_results.append(
-            CommandResults(
-                readable_output='No results found'
-            )
-        )
+        command_results.append(CommandResults(readable_output="No results found"))
     return command_results
 
 
@@ -128,7 +121,7 @@ def cve_command(client: Client, args: dict) -> list[CommandResults] | CommandRes
     Returns:
         CVE details containing ID, CVSS, modified date, published date and description.
     """
-    cve_ids = argToList(args.get('cve', ''))
+    cve_ids = argToList(args.get("cve", ""))
     command_results: list[CommandResults] = []
 
     for _id in cve_ids:
@@ -139,15 +132,15 @@ def cve_command(client: Client, args: dict) -> list[CommandResults] | CommandRes
             data = cve_to_context(response)
             indicator = generate_indicator(response)
             cr = CommandResults(
-                outputs_prefix='CVESearch.CVE',
-                outputs_key_field='CVE',
+                outputs_prefix="CVESearch.CVE",
+                outputs_key_field="CVE",
                 outputs=data,
                 raw_response=response,
                 indicator=indicator,
-                relationships=indicator.relationships
+                relationships=indicator.relationships,
             )
         else:
-            cr = CommandResults(readable_output=f'### No results found for cve {_id}')
+            cr = CommandResults(readable_output=f"### No results found for cve {_id}")
         command_results.append(cr)
 
     return command_results
@@ -165,41 +158,37 @@ def parse_cpe(cpes: list[str], cve_id: str) -> tuple[list[str], list[EntityRelat
 
     """
 
-    cpe_parts = {
-        "a": "Application",
-        "o": "Operating-System",
-        "h": "Hardware"
-    }
+    cpe_parts = {"a": "Application", "o": "Operating-System", "h": "Hardware"}
 
     vendors = set()
     products = set()
     parts = set()
 
     for cpe in cpes:
-        cpe_split = re.split('(?<!\\\):', cpe)
+        cpe_split = re.split("(?<!\\\):", cpe)
 
         with contextlib.suppress(IndexError):
-            if (vendor := cpe_split[3].capitalize().replace("\\", "").replace("_", " ")):
+            if vendor := cpe_split[3].capitalize().replace("\\", "").replace("_", " "):
                 vendors.add(vendor)
 
         with contextlib.suppress(IndexError):
-            if (product := cpe_split[4].capitalize().replace("\\", "").replace("_", " ")):
+            if product := cpe_split[4].capitalize().replace("\\", "").replace("_", " "):
                 products.add(product)
 
         with contextlib.suppress(IndexError):
             parts.add(cpe_parts[cpe_split[2]])
 
-    relationships = [EntityRelationship(name="targets",
-                                        entity_a=cve_id,
-                                        entity_a_type="cve",
-                                        entity_b=vendor,
-                                        entity_b_type="identity") for vendor in vendors]
+    relationships = [
+        EntityRelationship(name="targets", entity_a=cve_id, entity_a_type="cve", entity_b=vendor, entity_b_type="identity")
+        for vendor in vendors
+    ]
 
-    relationships.extend([EntityRelationship(name="targets",
-                                             entity_a=cve_id,
-                                             entity_a_type="cve",
-                                             entity_b=product,
-                                             entity_b_type="software") for product in products])
+    relationships.extend(
+        [
+            EntityRelationship(name="targets", entity_a=cve_id, entity_a_type="cve", entity_b=product, entity_b_type="software")
+            for product in products
+        ]
+    )
 
     return list(vendors | products | parts), relationships
 
@@ -215,17 +204,17 @@ def generate_indicator(data: dict) -> Common.CVE:
         A CVE indicator with dbotScore
     """
 
-    cve_id = data.get('id', '')
-    if cpe := data.get("vulnerable_product", ''):
+    cve_id = data.get("id", "")
+    if cpe := data.get("vulnerable_product", ""):
         tags, relationships = parse_cpe(cpe, cve_id)
 
     else:
         relationships = []
         tags = []
 
-    cwe = data.get('cwe', '')
+    cwe = data.get("cwe", "")
 
-    if cwe and cwe != 'NVD-CWE-noinfo':
+    if cwe and cwe != "NVD-CWE-noinfo":
         tags.append(cwe)
 
     cvss_table = []
@@ -235,24 +224,27 @@ def generate_indicator(data: dict) -> Common.CVE:
             cvss_table.append({"metrics": key, "value": value})
 
     vulnerable_products = [Common.CPE(cpe) for cpe in data.get("vulnerable_product", [])]
-    vulnerable_configurations = [Common.CPE(cpe.get("id")) if isinstance(cpe, dict) else Common.CPE(cpe)
-                                 for cpe in data.get("vulnerable_configuration", [])]
+    vulnerable_configurations = [
+        Common.CPE(cpe.get("id")) if isinstance(cpe, dict) else Common.CPE(cpe)
+        for cpe in data.get("vulnerable_configuration", [])
+    ]
     cpes = set(vulnerable_products) | set(vulnerable_configurations)
 
     cve_object = Common.CVE(
         id=cve_id,
-        cvss=data.get('cvss'),
-        cvss_vector=data.get('cvss-vector'),
-        cvss_version=get_cvss_verion(data.get('cvss-vector', '')),
+        cvss=data.get("cvss"),
+        cvss_vector=data.get("cvss-vector"),
+        cvss_version=get_cvss_verion(data.get("cvss-vector", "")),
         cvss_table=cvss_table,
-        published=data.get('Published'),
-        modified=data.get('Modified'),
-        description=data.get('summary'),
+        published=data.get("Published"),
+        modified=data.get("Modified"),
+        description=data.get("summary"),
         vulnerable_products=cpes,
-        publications=[Common.Publications(title=data.get('id'),
-                                          link=reference,
-                                          source="Circl.lu") for reference in data.get("references", [])],
-        tags=tags
+        publications=[
+            Common.Publications(title=data.get("id"), link=reference, source="Circl.lu")
+            for reference in data.get("references", [])
+        ],
+        tags=tags,
     )
 
     if relationships:
@@ -275,31 +267,31 @@ def valid_cve_id_format(cve_id: str) -> bool:
 
 def main():
     params = demisto.params()
-    proxy = params.get('proxy', False)
-    use_ssl = not params.get('insecure', False)
-    base_url = params.get('url', 'https://cve.circl.lu/api/')
+    proxy = params.get("proxy", False)
+    use_ssl = not params.get("insecure", False)
+    base_url = params.get("url", "https://cve.circl.lu/api/")
     client = Client(base_url=base_url, verify=use_ssl, proxy=proxy)
     command = demisto.command()
-    LOG(f'Command being called is {command}')
+    LOG(f"Command being called is {command}")
     try:
-        if demisto.command() == 'test-module':
+        if demisto.command() == "test-module":
             return_results(test_module(client))
 
-        elif demisto.command() == 'cve-latest':
-            return_results(cve_latest_command(client, demisto.args().get('limit', 30)))
+        elif demisto.command() == "cve-latest":
+            return_results(cve_latest_command(client, demisto.args().get("limit", 30)))
 
-        elif demisto.command() == 'cve':
+        elif demisto.command() == "cve":
             return_results(cve_command(client, demisto.args()))
 
         else:
-            raise NotImplementedError(f'{command} is not an existing CVE Search command')
+            raise NotImplementedError(f"{command} is not an existing CVE Search command")
 
     except DemistoException as err:
         if err.res.status_code == 404:
             return_error(f'Failed to execute {demisto.command()} command.\nError: {"Invalid server URL"}')
         else:
-            return_error(f'Failed to execute {demisto.command()} command. Error: {str(err)}')
+            return_error(f"Failed to execute {demisto.command()} command. Error: {str(err)}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

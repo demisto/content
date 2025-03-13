@@ -20,7 +20,7 @@ def GetJsonByDot(value: dict, field: str):
 def ConvertLabels(labels):
     value = {}
     for ll in labels:
-        value[ll['type']] = ll['value']
+        value[ll["type"]] = ll["value"]
     return value
 
 
@@ -32,7 +32,7 @@ def main():
         text = ""
 
         for incid in ids:
-            incident = execute_command("getIncidents", {'id': incid}, extract_contents=True)['data'][0]
+            incident = execute_command("getIncidents", {"id": incid}, extract_contents=True)["data"][0]
             if text != "":
                 text += "\n"
             text += f"{incid} "
@@ -42,8 +42,8 @@ def main():
                 ff = fld.split(".", 1)
 
                 if "CustomFields" in incident:
-                    if ff[0] in incident['CustomFields']:
-                        value = demisto.get(incident['CustomFields'], ff[0], "")
+                    if ff[0] in incident["CustomFields"]:
+                        value = demisto.get(incident["CustomFields"], ff[0], "")
                     else:
                         value = demisto.get(incident, ff[0], "")
                 else:
@@ -57,11 +57,11 @@ def main():
                 if value != "":
                     text += f"{fld}:{value} "
 
-        execute_command("setIncident", {'customFields': {'anythingllmsearchresults': text}})
+        execute_command("setIncident", {"customFields": {"anythingllmsearchresults": text}})
     except Exception as ex:
         demisto.error(traceback.format_exc())
-        return_error(f'AnyLlmSearchXsoarIncident: error is - {ex}')
+        return_error(f"AnyLlmSearchXsoarIncident: error is - {ex}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

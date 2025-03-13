@@ -15,22 +15,12 @@ def create_widget_entry(similarity_percentage) -> dict:
                 "sign": "%",
                 "signAlignment": "right",
                 "colors": {
-                        "isEnabled": True,
-                        "items": {
-                            "#00cd33": {
-                                "value": 0
-                            },
-                            "#f57d00": {
-                                "value": 50
-                            },
-                            "#fe1403": {
-                                "value": 75
-                            }
-                        }
+                    "isEnabled": True,
+                    "items": {"#00cd33": {"value": 0}, "#f57d00": {"value": 50}, "#fe1403": {"value": 75}},
                 },
-                "type": "above"
-            }
-        }
+                "type": "above",
+            },
+        },
     }
 
     return data
@@ -39,11 +29,11 @@ def create_widget_entry(similarity_percentage) -> dict:
 def main():
     try:
         demisto_context = demisto.context()
-        similarity_percentage = demisto.get(demisto_context, 'HTMLSimilarity.SimilarityPercentage')
+        similarity_percentage = demisto.get(demisto_context, "HTMLSimilarity.SimilarityPercentage")
         if not similarity_percentage:
-            root = demisto.get(demisto_context, 'HTMLSimilarity')
+            root = demisto.get(demisto_context, "HTMLSimilarity")
             if isinstance(root, list):
-                similarity_percentage = root[0].get('SimilarityPercentage')
+                similarity_percentage = root[0].get("SimilarityPercentage")
                 return_results(create_widget_entry(similarity_percentage))
             else:
                 return_results("Please wait for calculation.")
@@ -54,5 +44,5 @@ def main():
         return_error(f"Error: {str(e)}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
