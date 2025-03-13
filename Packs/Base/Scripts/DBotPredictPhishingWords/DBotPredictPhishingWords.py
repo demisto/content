@@ -18,7 +18,7 @@ def OrderedSet(iterable):
     return list(dict.fromkeys(iterable))
 
 
-def update_model(model_data, model_type, model_name):
+def update_model_in_server(model_data, model_type, model_name):
     res = demisto.executeCommand(
         'createMLModel',
         {
@@ -123,7 +123,7 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
 
     if model_type in ('Phishing', 'torch'):
         model_data, model_type = demisto_ml.renew_model(model_data, model_type)
-        update_model(model_data, model_type, model_name)
+        update_model_in_server(model_data, model_type, model_name)
     
     model_type = {
         '': FASTTEXT_MODEL_TYPE,
