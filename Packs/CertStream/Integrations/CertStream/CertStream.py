@@ -9,10 +9,10 @@ from CommonServerPython import *  # noqa: F401
 
 VENDOR = "Kali Dog Security"
 PRODUCT = "CertStream"
-SCO_DET_ID_NAMESPACE = UUID('00abedb4-aa42-466c-9c01-fed23315a9b7')
+SCO_DET_ID_NAMESPACE = UUID("00abedb4-aa42-466c-9c01-fed23315a9b7")
 FETCH_SLEEP = 5
-XSOAR_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S+00:00'
-DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+XSOAR_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S+00:00"
+DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 global word_list_name
 global list_update_interval
@@ -51,7 +51,7 @@ def websocket_connections(host: str):
 
 
 def long_running_execution_command(host: str, fetch_interval: int):
-    """ Executes to long running loop and checks if an update to the homographs is needed
+    """Executes to long running loop and checks if an update to the homographs is needed
 
     Args:
         host (str): The URL for the websocket connection
@@ -85,7 +85,7 @@ def long_running_execution_command(host: str, fetch_interval: int):
 
 
 def fetch_certificates(message):
-    """ Fetches the certificates data from the CertStream socket
+    """Fetches the certificates data from the CertStream socket
 
     Args:
         connection (Connection): The connection to the socket, used to iterate over messages
@@ -103,7 +103,7 @@ def fetch_certificates(message):
     else:
         for domain in all_domains:
             # Check for homographs
-            if domain.startswith('*'):
+            if domain.startswith("*"):
                 # Avoid jokers in certificates
                 continue
             is_suspicious_domain, result = check_homographs(domain)
@@ -119,7 +119,7 @@ def build_xsoar_grid(data: dict) -> list:
 
 
 def set_incident_severity(similarity: float) -> int:
-    """ Returns the Cortex XSOAR incident severity (1-4) based on the homograph similarity score
+    """Returns the Cortex XSOAR incident severity (1-4) based on the homograph similarity score
 
     Args:
         similarity (float): Similarity score between 0 and 1.
@@ -150,7 +150,7 @@ def create_xsoar_incident(certificate: dict, domain: str, current_time: datetime
         current_time (datetime): The time the match occurred at
         result (dict): A dictionary containing details about the match like similarity score and matched asset.
     """
-    demisto.info(f'Creating a new suspicious domain incident for {domain}')
+    demisto.info(f"Creating a new suspicious domain incident for {domain}")
 
     incident = {
         "name": f"Suspicious Domain Discovered - {domain}",
@@ -164,12 +164,12 @@ def create_xsoar_incident(certificate: dict, domain: str, current_time: datetime
             "certificacertstreamtesource": certificate["source"]["name"],
             "certstreamcertificateindex": certificate["cert_index"],
             "externallink": certificate["cert_link"],
-            "domain": domain
-        }
+            "domain": domain,
+        },
     }
 
     demisto.createIncidents([incident])
-    demisto.info(f'Done creating new incident for {domain}')
+    demisto.info(f"Done creating new incident for {domain}")
 
 
 def create_xsoar_certificate_indicator(certificate: dict):
@@ -182,26 +182,30 @@ def create_xsoar_certificate_indicator(certificate: dict):
 
     demisto.info(f'Creating an X.509 indicator {certificate_data["fingerprint"]}')
 
-    demisto.createIndicators([{
-        "type": "X509 Certificate",
-        "value": certificate_data["fingerprint"],
-        "sourcetimestamp": datetime.fromtimestamp(certificate["seen"]).strftime(XSOAR_TIME_FORMAT),
-        "fields": {
-            "stixid": create_stix_id(certificate_data["serial_number"]),
-            "serialnumber": certificate_data["serial_number"],
-            "validitynotbefore": datetime.fromtimestamp(certificate_data["not_before"]).strftime(XSOAR_TIME_FORMAT),
-            "validitynotafter": datetime.fromtimestamp(certificate_data["not_after"]).strftime(XSOAR_TIME_FORMAT),
-            "source": certificate["source"]["name"],
-            "domains": [{"domain": domain} for domain in certificate_data["all_domains"]],
-            "signaturealgorithm": certificate_data["signature_algorithm"].replace(" ", "").split(","),
-            "subject": build_xsoar_grid(certificate_data["subject"]),
-            "issuer": build_xsoar_grid(certificate_data["issuer"]),
-            "x.509v3extensions": build_xsoar_grid(certificate_data["issuer"]),
-            "tags": ["CertStream"]
-        },
-        "rawJSON": certificate,
-        "relationships": create_relationship_list(certificate_data["fingerprint"], certificate_data["all_domains"])
-    }])
+    demisto.createIndicators(
+        [
+            {
+                "type": "X509 Certificate",
+                "value": certificate_data["fingerprint"],
+                "sourcetimestamp": datetime.fromtimestamp(certificate["seen"]).strftime(XSOAR_TIME_FORMAT),
+                "fields": {
+                    "stixid": create_stix_id(certificate_data["serial_number"]),
+                    "serialnumber": certificate_data["serial_number"],
+                    "validitynotbefore": datetime.fromtimestamp(certificate_data["not_before"]).strftime(XSOAR_TIME_FORMAT),
+                    "validitynotafter": datetime.fromtimestamp(certificate_data["not_after"]).strftime(XSOAR_TIME_FORMAT),
+                    "source": certificate["source"]["name"],
+                    "domains": [{"domain": domain} for domain in certificate_data["all_domains"]],
+                    "signaturealgorithm": certificate_data["signature_algorithm"].replace(" ", "").split(","),
+                    "subject": build_xsoar_grid(certificate_data["subject"]),
+                    "issuer": build_xsoar_grid(certificate_data["issuer"]),
+                    "x.509v3extensions": build_xsoar_grid(certificate_data["issuer"]),
+                    "tags": ["CertStream"],
+                },
+                "rawJSON": certificate,
+                "relationships": create_relationship_list(certificate_data["fingerprint"], certificate_data["all_domains"]),
+            }
+        ]
+    )
 
 
 def create_stix_id(serial_number: str) -> str:
@@ -216,7 +220,7 @@ def create_stix_id(serial_number: str) -> str:
     demisto.info("Creating STIX ID for certificate")
     jsonize = json.dumps({"serial_number": serial_number}).replace(" ", "")
     uuid = uuid5(SCO_DET_ID_NAMESPACE, jsonize)
-    return f'x509-certificate--{str(uuid)}'
+    return f"x509-certificate--{str(uuid)}"
 
 
 def create_relationship_list(value: str, domains: list[str]) -> list[EntityRelationship]:
@@ -238,7 +242,8 @@ def create_relationship_list(value: str, domains: list[str]) -> list[EntityRelat
             entity_a=entity_a,
             entity_a_type="X.509 Certificate",
             entity_b=domain,
-            entity_b_type="Domain")
+            entity_b_type="Domain",
+        )
         relationships.append(relation_obj.to_indicator())
     return relationships
 
@@ -266,13 +271,9 @@ def check_homographs(domain: str) -> tuple[bool, dict]:
             for homograph in homographs_list:
                 similarity = compute_similarity(homograph, word)
                 if similarity > levenshtein_distance_threshold:
-                    return True, {"similarity": similarity,
-                                  "homograph": homograph,
-                                  "asset": asset}
+                    return True, {"similarity": similarity, "homograph": homograph, "asset": asset}
 
-    return False, {"similarity": similarity,
-                   "homograph": user_homographs,
-                   "asset": user_homographs.items()}
+    return False, {"similarity": similarity, "homograph": user_homographs, "asset": user_homographs.items()}
 
 
 def get_homographs_list(list_name: str) -> dict:
@@ -284,10 +285,10 @@ def get_homographs_list(list_name: str) -> dict:
     Returns:
         list: A list of homographs
     """
-    demisto.info(f'Fetching homographs list {list_name} from XSOAR')
+    demisto.info(f"Fetching homographs list {list_name} from XSOAR")
     try:
         lists = json.loads(demisto.internalHttpRequest("GET", "/lists/").get("body", {}))
-        demisto.info('Fetching homographs list from XSOAR ({word_list_name})')
+        demisto.info("Fetching homographs list from XSOAR ({word_list_name})")
 
     except Exception as e:
         demisto.error(f"{e}")
@@ -361,7 +362,7 @@ def main():  # pragma: no cover
     command = demisto.command()
     host: str = params["url"]
 
-    logging.getLogger('websockets.client').setLevel(logging.ERROR)
+    logging.getLogger("websockets.client").setLevel(logging.ERROR)
 
     try:
         if command == "long-running-execution":
