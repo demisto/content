@@ -1,0 +1,38 @@
+category: Utilities
+commonfields:
+  id: LineMessageAPI
+  version: -1
+configuration:
+- display: channel_access_token
+  name: channel_access_token
+  required: false
+  type: 4
+description: This is the Hello World integration for getting started.
+display: LineMessageAPI
+name: LineMessageAPI
+script:
+  commands:
+  - arguments:
+    - description: 接收者的 User ID 或群組 ID.
+      name: to
+      required: true
+    - description: 傳送的訊息內容.
+      name: message
+      required: true
+    name: line-send-message
+  - arguments:
+    - description: Replytoken.
+      name: replytoken
+      required: true
+    - description: 回覆的訊息內容.
+      name: message
+      required: true
+    name: line-reply-message
+  dockerimage: demisto/python3:3.12.8.1983910
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
