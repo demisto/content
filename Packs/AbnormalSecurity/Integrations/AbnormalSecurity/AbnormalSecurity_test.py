@@ -1,6 +1,7 @@
 import pytest
 import demistomock as demisto
 import json
+from datetime import datetime, timedelta, UTC
 from AbnormalSecurity import (Client, check_the_status_of_an_action_requested_on_a_case_command,
                               check_the_status_of_an_action_requested_on_a_threat_command,
                               get_a_list_of_abnormal_cases_identified_by_abnormal_security_command,
@@ -23,9 +24,9 @@ from AbnormalSecurity import (Client, check_the_status_of_an_action_requested_on
                               get_the_activity_of_a_specific_vendor_command,
                               get_a_list_of_vendor_cases_command,
                               get_the_details_of_a_vendor_case_command,
+                              generate_threat_incidents,
                               get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command, fetch_incidents, ISO_8601_FORMAT)
 from CommonServerPython import DemistoException
-from datetime import datetime
 
 from test_data.fixtures \
     import BASE_URL, apikey
@@ -52,7 +53,7 @@ def util_load_response(path):
         return MockResponse(f.read(), 200)
 
 
-def mock_client(mocker, http_request_result=None, throw_error=False):
+def mock_client(mocker, response=None, side_effect=None, throw_error=False):
 
     mocker.patch.object(demisto, 'getIntegrationContext', return_value={'current_refresh_token': 'refresh_token'})
     client = Client(
@@ -62,8 +63,7 @@ def mock_client(mocker, http_request_result=None, throw_error=False):
         auth=None,
         headers=headers
     )
-    if http_request_result:
-        mocker.patch.object(client, '_http_request', return_value=http_request_result)
+    mocker.patch.object(client, '_http_request', return_value=response, side_effect=side_effect)
 
     if throw_error:
         err_msg = "Error in API call [400] - BAD REQUEST}"
@@ -81,6 +81,13 @@ def mock_client(mocker, http_request_result=None, throw_error=False):
 def mock_get_a_list_of_threats_request(mocker):
     mocker.patch("AbnormalSecurity.Client.get_a_list_of_threats_request").return_value \
         = util_load_json('test_data/test_get_list_of_abnormal_threats.json')
+
+
+@pytest.fixture
+def mock_get_details_of_a_threat_request(mocker):
+    threat_details = util_load_json('test_data/test_get_details_of_a_threat_page2.json')
+    threat_details['messages'][0]['remediationTimestamp'] = '2023-09-17T15:43:09Z'
+    mocker.patch("AbnormalSecurity.Client.get_details_of_a_threat_request").return_value = threat_details
 
 
 @pytest.fixture
@@ -262,7 +269,7 @@ def test_manage_a_threat_identified_by_abnormal_security_command_failure(mocker)
         Then
             - Assert error is thrown as expected
     """
-    client = mock_client(mocker, None, True)
+    client = mock_client(mocker, None, False, True)
     with pytest.raises(DemistoException):
         manage_a_threat_identified_by_abnormal_security_command(client, {})
 
@@ -288,7 +295,7 @@ def test_manage_an_abnormal_case_command_failure(mocker):
         Then
             - Assert error is thrown as expected
     """
-    client = mock_client(mocker, None, True)
+    client = mock_client(mocker, None, False, True)
     with pytest.raises(DemistoException):
         manage_an_abnormal_case_command(client, {})
 
@@ -473,9 +480,9 @@ def test_provides_the_analysis_and_timeline_details_of_a_case_command(mocker):
 
 
 def test_fetch_threat_incidents(mocker, mock_get_a_list_of_threats_request):
-    client = mock_client(mocker, util_load_json('test_data/test_get_details_of_a_threat.json'))
+    client = mock_client(mocker, util_load_json('test_data/test_get_details_of_a_threat_page2.json'))
     first_fetch_time = datetime.now().strftime(ISO_8601_FORMAT)
-    next_run, incidents = fetch_incidents(
+    _, incidents = fetch_incidents(
         client=client,
         last_run={"last_fetch": "2023-09-17T14:43:09Z"},
         first_fetch_time=first_fetch_time,
@@ -490,7 +497,7 @@ def test_fetch_threat_incidents(mocker, mock_get_a_list_of_threats_request):
 def test_fetch_cases_incidents(mocker, mock_get_a_list_of_abnormal_cases_identified_by_abnormal_security_request):
     client = mock_client(mocker, util_load_json('test_data/test_get_details_of_an_abnormal_case.json'))
     first_fetch_time = datetime.now().strftime(ISO_8601_FORMAT)
-    next_run, incidents = fetch_incidents(
+    _, incidents = fetch_incidents(
         client=client,
         last_run={"last_fetch": "2023-09-17T14:43:09Z"},
         first_fetch_time=first_fetch_time,
@@ -505,7 +512,7 @@ def test_fetch_cases_incidents(mocker, mock_get_a_list_of_abnormal_cases_identif
 def test_fetch_abuse_campaign_incidents(mocker, mock_get_a_list_of_campaigns_submitted_to_abuse_mailbox_request):
     client = mock_client(mocker, util_load_json('test_data/test_get_details_of_abuse_campaign.json'))
     first_fetch_time = datetime.now().strftime(ISO_8601_FORMAT)
-    next_run, incidents = fetch_incidents(
+    _, incidents = fetch_incidents(
         client=client,
         last_run={"last_fetch": "2023-09-17T14:43:09Z"},
         first_fetch_time=first_fetch_time,
@@ -515,3 +522,223 @@ def test_fetch_abuse_campaign_incidents(mocker, mock_get_a_list_of_campaigns_sub
         fetch_threats=False
     )
     assert len(incidents) == 1
+
+
+def test_get_details_of_a_threat_request_two_pages(mocker):
+    return_val = util_load_json('test_data/test_get_details_of_a_threat.json')
+    return_val['messages'][0]['remediationTimestamp'] = '2023-09-17T15:43:09Z'
+    page_2 = util_load_json('test_data/test_get_details_of_a_threat_page2.json')
+    page_2['messages'][0]['remediationTimestamp'] = '2023-09-17T16:43:09Z'
+
+    client = mock_client(mocker, side_effect=[return_val, page_2])
+    # Create datetime objects instead of using strings
+    start_datetime = datetime(2023, 9, 17, 14, 43, 9, tzinfo=UTC)
+    end_datetime = datetime(2023, 9, 18, 14, 43, 9, tzinfo=UTC)
+
+    incidents = generate_threat_incidents(client, [{'threatId': 'asdf097sdf907'}], 2, start_datetime, end_datetime)
+    assert len(incidents) == 1
+    assert len(json.loads(incidents[0].get('rawJSON')).get('messages')) == 2
+
+
+def test_get_details_of_a_threat_request_single_page(mocker):
+    return_val = util_load_json('test_data/test_get_details_of_a_threat_page2.json')
+    return_val['messages'][0]['remediationTimestamp'] = '2023-09-17T15:43:09Z'
+    client = mock_client(mocker, response=return_val)
+    # Create datetime objects instead of using strings
+    start_datetime = datetime(2023, 9, 17, 14, 43, 9, tzinfo=UTC)
+    end_datetime = datetime(2023, 9, 18, 14, 43, 9, tzinfo=UTC)
+
+    incidents = generate_threat_incidents(client, [{'threatId': 'asdf097sdf907'}], 1, start_datetime, end_datetime)
+    assert len(incidents) == 1
+
+
+def test_get_details_of_a_threat_request_nanosecond_timestamp(mocker, mock_get_details_of_a_threat_request):
+    client = mock_client(mocker, response=util_load_json("test_data/test_get_list_of_abnormal_threats.json"))
+    last_run = {"last_fetch": "2023-09-17T14:43:09Z"}
+    first_fetch_time = "3 days"
+    max_incidents = 200
+    # Call fetch_incidents with the polling lag
+    _, incidents = fetch_incidents(
+        client=client,
+        last_run=last_run,
+        first_fetch_time=first_fetch_time,
+        max_incidents_to_fetch=max_incidents,
+        fetch_account_takeover_cases=False,
+        fetch_abuse_campaigns=False,
+        fetch_threats=True,
+    )
+    assert len(incidents) == 1
+    assert incidents[0].get('occurred') == "2023-12-03T19:26:36.123456"
+
+
+def test_polling_lag(mocker, mock_get_details_of_a_threat_request):
+    """Test that polling lag is correctly applied when fetching incidents."""
+    # Mock the client and its get_a_list_of_threats_request method
+    return_val = util_load_json("test_data/test_get_list_of_abnormal_threats.json")
+    client = mock_client(mocker, response=return_val)
+
+    # Create a spy on the get_a_list_of_threats_request method to capture its calls
+    get_threats_spy = mocker.spy(client, 'get_a_list_of_threats_request')
+
+    # Define test parameters
+    last_run = {"last_fetch": "2023-09-17T14:43:09Z"}
+    first_fetch_time = "3 days"
+    max_incidents = 200
+
+    # Set up a 5-minute polling lag
+    polling_lag = timedelta(minutes=5)
+
+    # Calculate expected timestamps
+    original_timestamp = datetime.fromisoformat(last_run["last_fetch"][:-1]).replace(tzinfo=UTC)
+    adjusted_start_time = original_timestamp - polling_lag
+    expected_start_time = adjusted_start_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+
+    # Mock the get_current_datetime function to return a fixed time
+    fixed_current_time = datetime(2023, 9, 18, 14, 43, 9, tzinfo=UTC)
+    mocker.patch('AbnormalSecurity.get_current_datetime', return_value=fixed_current_time)
+
+    # Calculate expected end time based on the fixed current time
+    adjusted_end_time = fixed_current_time - polling_lag
+    expected_end_time = adjusted_end_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+
+    expected_filter = f"remediationTimestamp gte {expected_start_time} and remediationTimestamp lte {expected_end_time}"
+
+    # Call fetch_incidents with the polling lag
+    _, incidents = fetch_incidents(
+        client=client,
+        last_run=last_run,
+        first_fetch_time=first_fetch_time,
+        max_incidents_to_fetch=max_incidents,
+        fetch_account_takeover_cases=False,
+        fetch_abuse_campaigns=False,
+        fetch_threats=True,
+        polling_lag=polling_lag
+    )
+
+    # Check that the method was called with the expected filter
+    get_threats_spy.assert_called_once()
+    call_args = get_threats_spy.call_args[1]
+
+    # Assert that the filter matches our expected filter
+    assert call_args['filter_'] == expected_filter
+    assert call_args['page_size'] == 100
+
+
+def test_get_details_of_a_threat_request_time_window_filtering(mocker):
+    """Test that messages outside the time window are filtered out."""
+    # Create a mock response with 3 messages
+    mock_response = {
+        "threatId": "test-threat-id",
+        "messages": [
+            {
+                "threatId": "test-threat-id",
+                "receivedTime": "2023-09-17T15:00:00Z",
+                "remediationTimestamp": "2023-09-17T15:30:00Z"  # Inside window
+            },
+            {
+                "threatId": "test-threat-id",
+                "receivedTime": "2023-09-17T16:00:00Z",
+                "remediationTimestamp": "2023-09-17T16:30:00Z"  # Inside window
+            },
+            {
+                "threatId": "test-threat-id",
+                "receivedTime": "2023-09-17T12:00:00Z",
+                "remediationTimestamp": "2023-09-17T12:30:00Z"  # Outside window (before start_time)
+            }
+        ]
+    }
+
+    client = mock_client(mocker, response=mock_response)
+
+    # Define time window that includes only the first two messages
+    start_datetime = datetime(2023, 9, 17, 14, 0, 0, tzinfo=UTC)
+    end_datetime = datetime(2023, 9, 17, 17, 0, 0, tzinfo=UTC)
+
+    incidents = generate_threat_incidents(client, [{'threatId': 'test-threat-id'}], 1, start_datetime, end_datetime)
+
+    # Verify we get one incident
+    assert len(incidents) == 1
+
+    # Verify the incident contains only the messages within the time window
+    incident_data = json.loads(incidents[0]['rawJSON'])
+    assert len(incident_data['messages']) == 2
+
+    # Verify the filtered messages are the ones we expect
+    remediation_times = [msg['remediationTimestamp'] for msg in incident_data['messages']]
+    assert '2023-09-17T15:30:00Z' in remediation_times
+    assert '2023-09-17T16:30:00Z' in remediation_times
+    assert '2023-09-17T12:30:00Z' not in remediation_times
+
+
+def test_get_details_of_a_threat_request_early_exit(mocker):
+    """Test that processing stops early when encountering messages outside the time window."""
+    # Create mock responses for two pages
+    # Page 1 with 2 messages (both inside time window)
+    page_1 = {
+        "threatId": "test-threat-id",
+        "messages": [
+            {
+                "threatId": "test-threat-id",
+                "receivedTime": "2023-09-17T16:00:00Z",
+                "remediationTimestamp": "2023-09-17T16:30:00Z"  # Inside window (latest)
+            },
+            {
+                "threatId": "test-threat-id",
+                "receivedTime": "2023-09-17T15:00:00Z",
+                "remediationTimestamp": "2023-09-17T15:30:00Z"  # Inside window
+            }
+        ],
+        "nextPageNumber": 2  # Indicate there's a second page
+    }
+
+    # Page 2 with 2 messages (both outside time window)
+    page_2 = {
+        "threatId": "test-threat-id",
+        "messages": [
+            {
+                "threatId": "test-threat-id",
+                "receivedTime": "2023-09-17T13:00:00Z",
+                "remediationTimestamp": "2023-09-17T13:30:00Z"  # Outside window
+            },
+            {
+                "threatId": "test-threat-id",
+                "receivedTime": "2023-09-17T12:00:00Z",
+                "remediationTimestamp": "2023-09-17T12:30:00Z"  # Outside window (earliest)
+            }
+        ],
+        "nextPageNumber": None  # No more pages
+    }
+
+    # Create a spy for the get_details_of_a_threat_request method
+    client = mock_client(mocker, side_effect=[page_1, page_2])
+    get_details_spy = mocker.spy(client, 'get_details_of_a_threat_request')
+
+    # Define time window that includes only the first two messages
+    start_datetime = datetime(2023, 9, 17, 14, 0, 0, tzinfo=UTC)
+    end_datetime = datetime(2023, 9, 17, 17, 0, 0, tzinfo=UTC)
+
+    incidents = generate_threat_incidents(client, [{'threatId': 'test-threat-id'}], 3, start_datetime, end_datetime)
+
+    # Verify we get one incident
+    assert len(incidents) == 1
+
+    # Verify the incident contains only the messages within the time window
+    incident_data = json.loads(incidents[0]['rawJSON'])
+    assert len(incident_data['messages']) == 2
+
+    # Verify the filtered messages are the ones we expect (from page 1 only)
+    remediation_times = [msg['remediationTimestamp'] for msg in incident_data['messages']]
+    assert '2023-09-17T16:30:00Z' in remediation_times
+    assert '2023-09-17T15:30:00Z' in remediation_times
+    assert '2023-09-17T13:30:00Z' not in remediation_times
+    assert '2023-09-17T12:30:00Z' not in remediation_times
+
+    # Verify that get_details_of_a_threat_request was called exactly twice
+    # (once for page 1, once for page 2 where we encounter messages outside the time window and exit early)
+    assert get_details_spy.call_count == 2
+
+    # Verify the calls were made with the correct page numbers
+    first_call_args = get_details_spy.call_args_list[0][1]
+    second_call_args = get_details_spy.call_args_list[1][1]
+    assert first_call_args['page_number'] == 1
+    assert second_call_args['page_number'] == 2

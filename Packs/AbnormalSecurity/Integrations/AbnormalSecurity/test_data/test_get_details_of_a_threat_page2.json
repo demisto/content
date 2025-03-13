@@ -2,7 +2,7 @@
     "threatId": "asdf097sdf907",
     "messages": [
         {
-            "abxMessageId": -123456789,
+            "abxMessageId": -123456790,
             "abxPortalUrl": "https://someurl.com",
             "attachmentCount": 0,
             "attachmentNames": [],
@@ -46,6 +46,5 @@
             ]
         }
     ],
-    "pageNumber": 1,
-    "nextPageNumber": 2
+    "pageNumber": 2
 }
