@@ -1,6 +1,5 @@
 import pytest
-from GoogleCloudCompute import parse_resource_ids, parse_firewall_rule, \
-    parse_metadata_items, parse_labels
+from GoogleCloudCompute import parse_resource_ids, parse_firewall_rule, parse_metadata_items, parse_labels
 
 
 class TestHelperFunctions:
@@ -14,8 +13,8 @@ class TestHelperFunctions:
             - The function should return a list of items with no spaces
         :return:
         """
-        resource_ids = 'test, test 1'
-        expected = ['test', 'test1']
+        resource_ids = "test, test 1"
+        expected = ["test", "test1"]
         actual = parse_resource_ids(resource_ids)
         assert actual == expected
 
@@ -28,15 +27,15 @@ class TestHelperFunctions:
         Then:
             - The function should raise a value error
         """
-        invalid_firewall_rule = 'name=abc,ports=1234'
+        invalid_firewall_rule = "name=abc,ports=1234"
         with pytest.raises(ValueError):
             parse_firewall_rule(invalid_firewall_rule)
 
-        invalid_firewall_rule = 'ipprotocol=abc,name=1234'
+        invalid_firewall_rule = "ipprotocol=abc,name=1234"
         with pytest.raises(ValueError):
             parse_firewall_rule(invalid_firewall_rule)
 
-        invalid_firewall_rule = ''
+        invalid_firewall_rule = ""
         with pytest.raises(ValueError):
             parse_firewall_rule(invalid_firewall_rule)
 
@@ -49,8 +48,8 @@ class TestHelperFunctions:
         Then:
             - The function should return a list with firewall rules
         """
-        expected = [{'IPProtocol': 'abc', 'ports': ['123']}, {'IPProtocol': 'a', 'ports': ['1']}]
-        actual = parse_firewall_rule('ipprotocol=abc,ports=123;ipprotocol=a,ports=1')
+        expected = [{"IPProtocol": "abc", "ports": ["123"]}, {"IPProtocol": "a", "ports": ["1"]}]
+        actual = parse_firewall_rule("ipprotocol=abc,ports=123;ipprotocol=a,ports=1")
         assert actual == expected
 
     def test_parse_metadata_items__invalid(self):
@@ -62,15 +61,15 @@ class TestHelperFunctions:
         Then:
             - The function should raise a value error
         """
-        invalid_metadata_item = 'name=abc,value=1234'
+        invalid_metadata_item = "name=abc,value=1234"
         with pytest.raises(ValueError):
             parse_metadata_items(invalid_metadata_item)
 
-        invalid_metadata_item = 'key=abc,name=1234'
+        invalid_metadata_item = "key=abc,name=1234"
         with pytest.raises(ValueError):
             parse_metadata_items(invalid_metadata_item)
 
-        invalid_metadata_item = ''
+        invalid_metadata_item = ""
         with pytest.raises(ValueError):
             parse_metadata_items(invalid_metadata_item)
 
@@ -83,8 +82,8 @@ class TestHelperFunctions:
         Then:
             - The function should return a list with metadata items
         """
-        expected = [{'key': 'abc', 'value': '123'}, {'key': 'a', 'value': '1'}]
-        actual = parse_metadata_items('key=abc,value=123;key=a,value=1')
+        expected = [{"key": "abc", "value": "123"}, {"key": "a", "value": "1"}]
+        actual = parse_metadata_items("key=abc,value=123;key=a,value=1")
         assert actual == expected
 
     def test_parse_labels__invalid(self):
@@ -96,15 +95,15 @@ class TestHelperFunctions:
         Then:
             - The function should raise a value error
         """
-        invalid_label_str = 'name=abc,value=1234'
+        invalid_label_str = "name=abc,value=1234"
         with pytest.raises(ValueError):
             parse_labels(invalid_label_str)
 
-        invalid_label_str = 'key=abc,name=1234'
+        invalid_label_str = "key=abc,name=1234"
         with pytest.raises(ValueError):
             parse_labels(invalid_label_str)
 
-        invalid_label_str = ''
+        invalid_label_str = ""
         with pytest.raises(ValueError):
             parse_labels(invalid_label_str)
 
@@ -117,6 +116,6 @@ class TestHelperFunctions:
         Then:
             - The function should return a list with lower cased labels
         """
-        expected = {'a': 'test', 'abc': '123'}
-        actual = parse_labels('key=ABC,value=123;key=a,value=TEST')
+        expected = {"a": "test", "abc": "123"}
+        actual = parse_labels("key=ABC,value=123;key=a,value=TEST")
         assert actual == expected
