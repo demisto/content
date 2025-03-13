@@ -4,7 +4,7 @@ from CommonServerPython import *  # noqa: F401
 # ----------------------------------------- Imports ---------------------------
 import copy
 import math
-from typing import Tuple, Callable
+from collections.abc import Callable
 
 from requests import Response
 
@@ -14,7 +14,7 @@ import urllib3
 # ----------------------------------------- Constants ---------------------------
 PAGE_NUMBER_ERROR_MSG = "Invalid input Error: page number should be a positive number"
 PAGE_SIZE_ERROR_MSG = "Out Of Range Error: page size should be a positive number between 1-100"
-PAGINATION_ERROR_MSG = "Invalid input Error: one of page size or page number are missing," " need to send both or not send at all"
+PAGINATION_ERROR_MSG = "Invalid input Error: one of page size or page number are missing, need to send both or not send at all"
 LENGTH_ERROR_MSG = "Out Of Range Error: limit/length should be a positive number between 0-{max_length}"
 MAX_LENGTH = 2000000
 DEFAULT_SEGMENTS = ["no"]
@@ -471,7 +471,7 @@ def length_validness(length: Optional[int], max_length: int) -> int:
 
 
 def remove_all_keys_endswith_histo(response: Dict) -> Dict:
-    for key, value in response.copy().items():
+    for key, _value in response.copy().items():
         if key.endswith("Histo"):
             del response[key]
         elif isinstance(response[key], dict):
@@ -496,7 +496,7 @@ def parse_unique_field_response(text: str) -> List:
 def unique_field_helper(response: Response, start: int, limit: int, pagination_dict: dict) -> CommandResults:
     headers = ["Field", "Count"]
     unique_field_list = parse_unique_field_response(response.text)
-    unique_field_list = unique_field_list[start : start + limit]
+    unique_field_list = unique_field_list[start: start + limit]
     command_results = CommandResults(
         outputs_prefix="Arkime.UniqueField",
         outputs=unique_field_list,
@@ -519,7 +519,7 @@ def create_paging_header(results_num: int, page_number: int, length: int, pagina
     return f"Showing {results_num} results, limit={length}\n"
 
 
-def calculate_offset_and_limit(page_number: int, page_size: int) -> Tuple[int, int, int, int]:
+def calculate_offset_and_limit(page_number: int, page_size: int) -> tuple[int, int, int, int]:
     # start / offset == page_number * page_size, and limit is page size
     page_size = page_size_validness(page_size)
     page_number = page_number_validness(page_number)
@@ -576,7 +576,7 @@ def responses_by_batches(request_method: Callable, length: int, start: int, **kw
     temp_length = MAX_BATCH_LIMIT
     temp_start = start
     final_response: Dict[str, Any] = {}
-    for i in range(num_of_batches):
+    for _i in range(num_of_batches):
         response = request_method(length=temp_length, start=temp_start, **kwargs)
         final_response = union(final_response, response)
         temp_start += temp_length  # update the offset after every batch

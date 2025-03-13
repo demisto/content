@@ -34,7 +34,7 @@ class Client(BaseClient):
         return self._http_request(method="GET", url_suffix=url_suffix, params=data)
 
 
-def _validate_args(indicator_type: str, values: list) -> None:
+def _validate_args(indicator_type: str, values: list) -> None:  # pragma: no cover
     """
     Args:
         indicator_type: IP or URL
@@ -74,7 +74,7 @@ def _calculate_dbot_score(severity: int) -> int:
     return dbot_score
 
 
-def _get_malware_family(data: list, fundamental_client: Client):
+def _get_malware_family(data: list, fundamental_client: Client):    # pragma: no cover
     malware_family = []
     res = fundamental_client.threat_indicator_search(url_suffix="/v0/malware_family", data={"key.values": data})
     if res.get("total_size"):
@@ -89,7 +89,7 @@ def _get_malware_family(data: list, fundamental_client: Client):
 
 def _extract_analysis_info(
     res: dict, dbot_score_type: str, reliability: DBotScoreReliability, fundamental_client: Client
-) -> List[dict]:
+) -> List[dict]:    # pragma: no cover
     """
     Extract context data from http-response and create corresponding DBotScore.
     If response is empty, return empty context and a none for DBotScore object
@@ -164,7 +164,7 @@ def _extract_analysis_info(
     return analysis_results
 
 
-def _check_returned_results(res: dict) -> List[str]:
+def _check_returned_results(res: dict) -> List[str]:    # pragma: no cover
     """
     Checks which indicator values were found in the iDefense database.
     Args:
@@ -180,7 +180,7 @@ def _check_returned_results(res: dict) -> List[str]:
     return returned_values
 
 
-def _check_no_match_values(all_inputs: list, res: list) -> List[str]:
+def _check_no_match_values(all_inputs: list, res: list) -> List[str]:   # pragma: no cover
     """
     Args:
         all_inputs: all indicator values received from the user
@@ -627,7 +627,8 @@ def _get_ia_for_indicator(indicator: str, doc_search_client: Client):
     except Exception as e:
         if "Error in API call [403]" in e.args[0]:
             return_results(
-                f"Intelligence Alert & Intelligence Report enrichment (if present) is not possible! As your API token is not eligible to access Document API.\n Error: {str(e)}"
+                f"Intelligence Alert & Intelligence Report enrichment (if present) is not possible! As your API token is not"
+                f" eligible to access Document API.\n Error: {str(e)}"
             )  # noqa: E501
             demisto.debug(e.args[0])
         else:

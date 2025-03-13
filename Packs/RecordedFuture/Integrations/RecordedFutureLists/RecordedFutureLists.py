@@ -63,8 +63,8 @@ class Client(BaseClient):
             if "404" in str(err):
                 return CommandResults(
                     outputs_prefix="",
-                    outputs=dict(),
-                    raw_response=dict(),
+                    outputs={},
+                    raw_response={},
                     readable_output="No results found.",
                     outputs_key_field="",
                 )
@@ -141,7 +141,7 @@ class Actions:
         if not result_actions:
             return None  # type: ignore
 
-        command_results: List[CommandResults] = list()
+        command_results: List[CommandResults] = []
         for action in result_actions:
             if "CommandResults" in action:
                 command_results.append(CommandResults(**action["CommandResults"]))
@@ -212,11 +212,11 @@ def main() -> None:
                 message = str(err)
                 try:
                     error = json.loads(str(err).split("\n")[1])
-                    if "fail" in error.get("result", dict()).get("status", ""):
-                        message = error.get("result", dict())["message"]
+                    if "fail" in error.get("result", {}).get("status", ""):
+                        message = error.get("result", {})["message"]
                 except Exception:
                     message = (
-                        "Unknown error. Please verify that the API" f" URL and Token are correctly configured. RAW Error: {err}"
+                        f"Unknown error. Please verify that the API URL and Token are correctly configured. RAW Error: {err}"
                     )
                 raise DemistoException(f"Failed due to - {message}")
 

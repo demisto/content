@@ -1041,7 +1041,7 @@ def test_get_xql_quota_is_core_available_true(mock_api_call):
     mock_api_call.return_value = {
         "name": "/api/webapp/public_api/v1/xql/get_quota",
         "status": 200,
-        "data": '{"reply": {"license_quota": 1, "additional_purchased_quota": 0.0, "used_quota": 0.0,' '"eval_quota": 0.0}}',
+        "data": '{"reply": {"license_quota": 1, "additional_purchased_quota": 0.0, "used_quota": 0.0,"eval_quota": 0.0}}',
     }
     response = CLIENT.get_xql_quota({})
     mock_api_call.assert_called_once_with(
@@ -1119,7 +1119,7 @@ def test_get_xql_quota_is_core_available_false(mock_http_request):
     mock_http_request.return_value = {
         "name": "/api/webapp/public_api/v1/xql/get_quota",
         "status": 200,
-        "data": '{"reply": {"license_quota": 1, "additional_purchased_quota": 0.0, "used_quota": 0.0,' ' "eval_quota": 0.0}}',
+        "data": '{"reply": {"license_quota": 1, "additional_purchased_quota": 0.0, "used_quota": 0.0, "eval_quota": 0.0}}',
     }
     with pytest.raises(DemistoException) as e:
         CLIENT.get_xql_quota({})

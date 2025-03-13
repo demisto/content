@@ -155,7 +155,7 @@ def filter_events(events: List[Dict[str, Any]], last_fetched_pid: int, max_fetch
     """Filters events by ascending pbid and max_fetch"""
     for index, event in enumerate(events):
         if event.get("pbid", 0) > last_fetched_pid:
-            return events[index : index + max_fetch]
+            return events[index: index + max_fetch]
     return []
 
 

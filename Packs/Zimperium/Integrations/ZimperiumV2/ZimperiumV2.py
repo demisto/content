@@ -118,7 +118,7 @@ class Client(BaseClient):
         """
 
         return self._http_request(
-            method="GET", url_suffix=f"/devices/public/v1/appVersions/" f"{app_version_id}/json", headers=self._headers
+            method="GET", url_suffix=f"/devices/public/v1/appVersions/{app_version_id}/json", headers=self._headers
         )
 
     def threat_search(

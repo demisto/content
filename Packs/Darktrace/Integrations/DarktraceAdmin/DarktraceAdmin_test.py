@@ -81,7 +81,7 @@ def test_get_device_connection_info(requests_mock):
     # GIVEN an integration is configured and you would like to get device connection info
     mock_api_response = util_load_json("test_data/conn_info.json")
     requests_mock.get(
-        "https://mock.darktrace.com/deviceinfo?did=1&datatype=co" "&showallgraphdata=false&fulldevicedetails=false",
+        "https://mock.darktrace.com/deviceinfo?did=1&datatype=co&showallgraphdata=false&fulldevicedetails=false",
         json=mock_api_response,
     )
 

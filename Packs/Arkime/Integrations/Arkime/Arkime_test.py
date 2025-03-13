@@ -1,6 +1,5 @@
 import json
-import io
-from typing import Callable
+from collections.abc import Callable
 
 import pytest
 from requests.auth import HTTPDigestAuth
@@ -11,7 +10,7 @@ from CommonServerPython import *
 
 
 def util_load_json(path):
-    with io.open(path, mode="r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -363,7 +362,7 @@ def test_field_list_command(mocker, arkime_client):
     http_request.assert_called_with("GET", "api/fields", params=params, headers=HEADERS)
 
     assert res.readable_output == (
-        "### Fields Results:\n" "|Friendly Name|Type|Group|Help|DB Field|\n" "|---|---|---|---|---|\n" "|  |  |  |  |  |\n" ""
+        "### Fields Results:\n|Friendly Name|Type|Group|Help|DB Field|\n|---|---|---|---|---|\n|  |  |  |  |  |\n"
     )
 
 
@@ -498,7 +497,7 @@ def test_session_tag_add_command(mocker, arkime_client):
 
     http_request.assert_called_with("POST", "api/sessions/addtags", json_data=params, headers=HEADERS)
 
-    assert res.readable_output == ("### Session Tag Results:\n" "|Success|Text|\n" "|---|---|\n" "| false | Missing token |\n")
+    assert res.readable_output == ("### Session Tag Results:\n|Success|Text|\n|---|---|\n| false | Missing token |\n")
 
 
 def test_session_tag_remove_command(mocker, arkime_client):
@@ -539,7 +538,7 @@ def test_session_tag_remove_command(mocker, arkime_client):
     http_request.assert_called_with("POST", "api/sessions/removetags", json_data=params, headers=HEADERS)
 
     assert res.readable_output == (
-        "### Session Tag Results:\n" "|Success|Text|\n" "|---|---|\n" "| true | Tags removed successfully |\n"
+        "### Session Tag Results:\n|Success|Text|\n|---|---|\n| true | Tags removed successfully |\n"
     )
 
 
@@ -572,7 +571,7 @@ def test_page_size_validness_for_invalid_input(page_size: int, exception_msg_exp
 
 
 response_without_Histo = (
-    dict(
+    dict(   # noqa: C408
         items=[
             {
                 "name": "localhost",
@@ -598,7 +597,7 @@ response_without_Histo = (
     },
 )
 response_with_Histo = (
-    dict(
+    dict(   # noqa: C408
         items=[
             {
                 "name": "localhost",

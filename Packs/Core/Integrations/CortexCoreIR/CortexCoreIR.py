@@ -40,7 +40,7 @@ class Client(CoreClient):
         except Exception as err:
             if "API request Unauthorized" in str(err):
                 # this error is received from the Core server when the client clock is not in sync to the server
-                raise DemistoException(f"{str(err)} please validate that your both " f"XSOAR and Core server clocks are in sync")
+                raise DemistoException(f"{str(err)} please validate that your both XSOAR and Core server clocks are in sync")
             else:
                 raise
 
@@ -112,7 +112,7 @@ def handle_prevalence_command(client: Client, command: str, args: dict):
         values = argToList(args.get("value_name"))
         if len(keys) != len(values):
             raise DemistoException(
-                "Number of elements in key_name argument should be equal to the number " "of elements in value_name argument."
+                "Number of elements in key_name argument should be equal to the number of elements in value_name argument."
             )
         for key, value in zip(keys, values):
             args_list.append({"key_name": key, "value_name": value})

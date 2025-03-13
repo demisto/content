@@ -95,16 +95,16 @@ def handle_html(html_body):
     last_index = 0
     for i, m in enumerate(re.finditer(r"<img.+?src=\"(data:(image/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"", html_body, re.I)):
         maintype, subtype = m.group(2).split("/", 1)
-        name = "image%d.%s" % (i, subtype)
+        name = f"image{i}.{subtype}"
         att = {
             "maintype": maintype,
             "subtype": subtype,
             "data": base64.b64decode(m.group(3)),
             "name": name,
-            "cid": "%r@%r.%r" % (name, randomword(8), randomword(8)),
+            "cid": f"{name}@{randomword(8)}.{randomword(8)}"
         }
         attachments.append(att)
-        clean_body += html_body[last_index : m.start(1)] + "cid:" + att["cid"]
+        clean_body += html_body[last_index: m.start(1)] + "cid:" + att["cid"]
         last_index = m.end() - 1
     clean_body += html_body[last_index:]
     return clean_body, attachments
@@ -161,17 +161,17 @@ def collect_attachments():
                     data = fp.read()
             attachments.append({"name": filename, "maintype": maintype, "subtype": subtype, "data": data, "cid": cid})
         except Exception as exc:
-            demisto.error("Invalid entry {} with exception: {}".format(aid, exc))
-            return_error_mail_sender("Entry %s is not valid or is not a file entry" % aid)
+            demisto.error(f"Invalid entry {aid} with exception: {exc}")
+            return_error_mail_sender(f"Entry {aid} is not valid or is not a file entry")
 
     # handle transient files
     args = demisto.args()
     f_names = args.get("transientFile", [])
-    f_names = f_names if isinstance(f_names, (list, tuple)) else f_names.split(",")
+    f_names = f_names if isinstance(f_names, list | tuple) else f_names.split(",")
     f_contents = args.get("transientFileContent", [])
-    f_contents = f_contents if isinstance(f_contents, (list, tuple)) else f_contents.split(",")
+    f_contents = f_contents if isinstance(f_contents, list | tuple) else f_contents.split(",")
     f_cids = args.get("transientFileCID", [])
-    f_cids = f_cids if isinstance(f_cids, (list, tuple)) else f_cids.split(",")
+    f_cids = f_cids if isinstance(f_cids, list | tuple) else f_cids.split(",")
 
     for name, data, cid in zip_longest(f_names, f_contents, f_cids):
         if name is None or data is None:
@@ -198,14 +198,14 @@ def parse_template_params():
     Translate the template params if they exist from the context
     """
     params_str = demisto.getArg("templateParams")
-    if params_str:
+    if params_str:  # noqa: RET503
         if isinstance(params_str, dict):
             return parse_params(params_str)
         else:
             try:
                 return parse_params(json.loads(params_str))
             except (ValueError, TypeError) as e:
-                return_error_mail_sender("Unable to parse templateParams: %s" % (str(e)))
+                return_error_mail_sender(f"Unable to parse templateParams: {str(e)}")
 
 
 def header(s):
@@ -313,9 +313,9 @@ def swap_stderr(new_stderr):
         module = smtplib
     else:
         module = sys  # type: ignore
-    old_stderr = getattr(module, "stderr")
+    old_stderr = module.stderr
     if new_stderr:
-        setattr(module, "stderr", new_stderr)
+        module.stderr = new_stderr
     return old_stderr
 
 
@@ -355,7 +355,7 @@ def main():
         # also reset at the bottom finally
         swap_stderr(stderr_org)  # type: ignore[union-attr]
         smtplib.SMTP.debuglevel = 0
-        demisto.error("Failed test: {}\nStack trace: {}".format(e, traceback.format_exc()))
+        demisto.error(f"Failed test: {e}\nStack trace: {traceback.format_exc()}")
         return_error_mail_sender(e)
         return  # so mypy knows that we don't continue after this
     # -- COMMANDS --
@@ -396,8 +396,8 @@ def main():
         else:
             return_error_mail_sender("Command not recognized")
     except SMTPRecipientsRefused as e:
-        error_msg = "".join("{}\n".format(val) for key, val in e.recipients.items())
-        return_error_mail_sender("Encountered error: {}".format(error_msg))
+        error_msg = "".join(f"{val}\n" for key, val in e.recipients.items())
+        return_error_mail_sender(f"Encountered error: {error_msg}")
     except Exception as e:
         return_error_mail_sender(e)
     finally:

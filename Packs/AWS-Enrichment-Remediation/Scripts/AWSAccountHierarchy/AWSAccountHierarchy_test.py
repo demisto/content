@@ -15,7 +15,7 @@ def test_lookup_ou(mocker):
     from AWSAccountHierarchy import lookup
 
     def executeCommand(name, args):
-        if name == "aws-org-organization-unit-get":
+        if name == "aws-org-organization-unit-get": # noqa: RET503
             return [
                 {
                     "Type": 1,
@@ -97,7 +97,7 @@ def test_aws_account_heirarchy_command(mocker):
     from AWSAccountHierarchy import aws_account_heirarchy
 
     def executeCommand(name, args):
-        if name == "aws-org-account-list":
+        if name == "aws-org-account-list":  # noqa: RET503
             return [
                 {
                     "Type": 1,
@@ -165,7 +165,7 @@ def test_aws_account_heirarchy_command_no_account(mocker):
     from AWSAccountHierarchy import aws_account_heirarchy
 
     def executeCommand(name, args):
-        if name == "aws-org-account-list":
+        if name == "aws-org-account-list":  # noqa: RET503
             return [{"Type": 4, "Contents": {"bad command"}}]
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
@@ -189,7 +189,7 @@ def test_aws_account_heirarchy_command_bad_parent(mocker):
     from AWSAccountHierarchy import aws_account_heirarchy
 
     def executeCommand(name, args):
-        if name == "aws-org-account-list":
+        if name == "aws-org-account-list":  # noqa: RET503
             return [
                 {
                     "Type": 1,

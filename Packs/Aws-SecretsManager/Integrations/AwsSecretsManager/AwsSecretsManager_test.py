@@ -53,7 +53,7 @@ def test_aws_secrets_manager_secret_list_command(mocker):
         return_value={
             "SecretList": [
                 {
-                    "ARN": "arn:aws:secretsmanager:eu-central-1:123456789012:secret:" "test_account",
+                    "ARN": "arn:aws:secretsmanager:eu-central-1:123456789012:secret:test_account",
                     "Name": "test_for_moishy",
                     "Description": "new description",
                     "LastChangedDate": None,
@@ -107,7 +107,7 @@ def test_aws_secrets_manager_secret_value_get_command(mocker, args, expected_res
         ({"secret_id": "123", "days_of_recovery": 121}, "The Secret was Deleted"),
         (
             {"secret_id": "123", "days_of_recovery": 121, "delete_immediately": False},
-            "Delete command cannot be executed " "with both args: delete_immediately " "and days_of_recovery",
+            "Delete command cannot be executed with both args: delete_immediately and days_of_recovery",
         ),
     ],
 )

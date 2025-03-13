@@ -70,7 +70,7 @@ class Client(BaseClient):
                 params[key] = value
 
         response = self._http_request("GET", url_suffix="/api/v1/secrets", params=params).get("records")
-        idSecret = list(map(lambda x: x.get("id"), response))
+        idSecret = [id_obj.get("id") for id_obj in response]
         return idSecret
 
     def updateSecretPassword(self, secret_id: str, new_password: str, auto_comment: str) -> str:
@@ -160,7 +160,7 @@ class Client(BaseClient):
         url_suffix = "/api/v1/folders/lookup?filter.searchText=" + search_folder
 
         response_records = self._http_request("GET", url_suffix).get("records")
-        idfolder = list(map(lambda x: x.get("id"), response_records))
+        idfolder = [x.get("id") for x in response_records]
         return idfolder
 
     def folderDelete(self, folder_id: str) -> str:

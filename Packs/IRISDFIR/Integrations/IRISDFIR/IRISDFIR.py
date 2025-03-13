@@ -121,7 +121,7 @@ class DFIRIrisAPI:
             f"{self.api_endpoint}/case/notes/groups/add", headers=self.headers, verify=verify_cert, proxies=proxies, json=body
         )
 
-        if response.status_code == 200:
+        if response.status_code == 200: # noqa: RET503
             cases = response.json()
             if cases:
                 return cases["data"]
@@ -135,7 +135,7 @@ class DFIRIrisAPI:
             f"{self.api_endpoint}/case/notes/add", headers=self.headers, verify=verify_cert, proxies=proxies, json=body
         )
 
-        if response.status_code == 200:
+        if response.status_code == 200: # noqa: RET503
             cases = response.json()
             if cases:
                 return cases["data"]
@@ -147,7 +147,7 @@ class DFIRIrisAPI:
             f"{self.api_endpoint}/case/notes/groups/list?cid={case_id}", headers=self.headers, verify=verify_cert, proxies=proxies
         )
 
-        if response.status_code == 200:
+        if response.status_code == 200: # noqa: RET503
             cases = response.json()
             if cases:
                 return cases["data"]
@@ -161,7 +161,7 @@ class DFIRIrisAPI:
 
         if response.status_code == 200:
             cases = response.json()
-            if cases:
+            if cases:   # noqa: RET503
                 return cases["data"]
         else:
             raise DemistoException(f"Request failed with status code {response.status_code}.")
@@ -196,13 +196,12 @@ def fetch_incidents(dfir_iris, params):
         if case["case_id"] == LastCaseId:
             demisto.info("The case number is the same, do not continue the process")
             break
-        elif case["case_id"] < LastCaseId:
+        if case["case_id"] < LastCaseId:
             demisto.info("The previous case was deleted, do not continue the process")
             break
-        else:
-            incident = {"name": case["case_name"], "rawJSON": json.dumps(case)}
+        incident = {"name": case["case_name"], "rawJSON": json.dumps(case)}
 
-            incidents.append(incident)
+        incidents.append(incident)
 
     return incidents, cases[0]["case_id"]
 

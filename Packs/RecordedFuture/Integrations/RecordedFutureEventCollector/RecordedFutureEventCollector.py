@@ -65,7 +65,7 @@ def test_module(client: Client):
             if "fail" in error.get("result", {}).get("status", ""):
                 message = error.get("result", {})["message"]
         except Exception:
-            message = "Unknown error. Please verify that the API" f" URL and Token are correctly configured. RAW Error: {err}"
+            message = f"Unknown error. Please verify that the API URL and Token are correctly configured. RAW Error: {err}"
         raise DemistoException(f"Failed due to - {message}")
 
 

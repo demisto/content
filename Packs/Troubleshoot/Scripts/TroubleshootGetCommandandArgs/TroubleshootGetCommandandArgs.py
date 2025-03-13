@@ -47,7 +47,7 @@ def get_required_args(arguments_entry: dict) -> list:
 
 
 def are_args_available(arguments_entry: dict, given_args: dict) -> dict:
-    non_existing_args = list()
+    non_existing_args = []
     arguments_list = [entry["name"] for entry in arguments_entry]
     args = list(given_args.keys())
     for arg in args:

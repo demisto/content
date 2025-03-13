@@ -55,12 +55,12 @@ class ResultsSummary:
         if self.results_summary["failure_create"]:
             for playbook_failure_create, alerts_fail in self.results_summary["failure_create"].items():
                 playbook_info = get_playbook_info(playbook_failure_create, self.playbooks_dict)
-                final_message.append(f"Playbook {playbook_info} could not be executed for alerts: " f"{sorted(alerts_fail)}.")
+                final_message.append(f"Playbook {playbook_info} could not be executed for alerts: {sorted(alerts_fail)}.")
 
         if self.results_summary["failure_set"]:
             for playbook_failure_set, alerts_fail_set in self.results_summary["failure_set"].items():
                 playbook_info = get_playbook_info(playbook_failure_set, self.playbooks_dict)
-                final_message.append(f"Playbook {playbook_info} " f"was not found for alerts: {sorted(alerts_fail_set)}.")
+                final_message.append(f"Playbook {playbook_info} was not found for alerts: {sorted(alerts_fail_set)}.")
 
         if reopened_alerts := self.results_summary["reopened"]:
             final_message.append(f"Alerts {sorted(reopened_alerts)} have been reopened.")
@@ -249,15 +249,15 @@ def split_alert_ids_into_bulks(alert_inv_status: dict[str, list]) -> tuple[list,
         tuple[list, list, list]: Bulked lists for closed, open, and all alert IDs.
     """
     alert_closed_bulks = [
-        alert_inv_status["close_ids"][i : i + MAX_BULK_SIZE_ALLOWED]
+        alert_inv_status["close_ids"][i: i + MAX_BULK_SIZE_ALLOWED]
         for i in range(0, len(alert_inv_status["close_ids"]), MAX_BULK_SIZE_ALLOWED)
     ]
     alert_open_bulks = [
-        alert_inv_status["open_ids"][i : i + MAX_BULK_SIZE_ALLOWED]
+        alert_inv_status["open_ids"][i: i + MAX_BULK_SIZE_ALLOWED]
         for i in range(0, len(alert_inv_status["open_ids"]), MAX_BULK_SIZE_ALLOWED)
     ]
     alert_all_ids_bulks = [
-        alert_inv_status["all_ids"][i : i + MAX_BULK_SIZE_ALLOWED]
+        alert_inv_status["all_ids"][i: i + MAX_BULK_SIZE_ALLOWED]
         for i in range(0, len(alert_inv_status["all_ids"]), MAX_BULK_SIZE_ALLOWED)
     ]
     return alert_closed_bulks, alert_open_bulks, alert_all_ids_bulks

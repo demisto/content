@@ -2,7 +2,6 @@
 
 from copy import deepcopy
 import ipaddress
-from typing import Dict, Tuple
 
 import requests
 import urllib3
@@ -319,13 +318,13 @@ def get_url_suffix(query):
 
 def remove_space_from_args(args):
     """Remove space from args."""
-    for key in args.keys():
+    for key in args:
         if isinstance(args[key], str):
             args[key] = args[key].strip()
     return args
 
 
-def validate_params(command: str, params: Dict):
+def validate_params(command: str, params: dict):
     """
     Validate the parameters.
 
@@ -399,7 +398,7 @@ def parse_event_response(client, event, fpid, href):
     return event
 
 
-def validate_fetch_incidents_params(params: dict, last_run: dict) -> Dict:
+def validate_fetch_incidents_params(params: dict, last_run: dict) -> dict:
     """
     Validate the parameter list for fetch incidents.
 
@@ -432,7 +431,8 @@ def validate_fetch_incidents_params(params: dict, last_run: dict) -> Dict:
         fetch_params = prepare_args_for_fetch_compromised_credentials(max_fetch, start_time, is_fresh, last_run)  # type: ignore
 
     elif fetch_type == "Alerts":
-        fetch_params = prepare_args_for_fetch_alerts(max_fetch, first_fetch, alert_origin, alert_status, alert_sources, last_run)  # type: ignore
+        fetch_params = prepare_args_for_fetch_alerts(
+            max_fetch, first_fetch, alert_origin, alert_status, alert_sources, last_run)  # type: ignore
         start_time = fetch_params["created_after"]
 
     remove_nulls_from_dictionary(fetch_params)
@@ -451,7 +451,7 @@ def prepare_args_for_fetch_compromised_credentials(max_fetch: int, start_time: s
 
     :return: Dictionary of fetch arguments
     """
-    fetch_params: Dict[str, Any] = {}
+    fetch_params: dict[str, Any] = {}
 
     if max_fetch > MAX_FETCH_LIMIT and demisto.command() == "fetch-incidents":
         demisto.debug(
@@ -522,7 +522,7 @@ def prepare_args_for_fetch_alerts(
 
     :return: Dictionary of fetch arguments
     """
-    fetch_params: Dict[str, Any] = {}
+    fetch_params: dict[str, Any] = {}
     end_time = arg_to_datetime("now").strftime(DATE_FORMAT)  # type: ignore
     start_time = first_fetch.strftime(DATE_FORMAT)  # type: ignore
 
@@ -581,7 +581,7 @@ def remove_duplicate_records(records: List, fetch_type: str, next_run: dict) -> 
 
 def prepare_incidents_from_alerts_data(
     response: dict, last_run: dict, fetch_params: dict, platform_url: str
-) -> Tuple[dict, list]:
+) -> tuple[dict, list]:
     """
     Prepare incidents from the alerts data.
 
@@ -602,7 +602,7 @@ def prepare_incidents_from_alerts_data(
     for alert in alerts:
         alert_id = alert.get("id")
         if alert_id in last_found_alert_ids:
-            demisto.debug("Found existing alert with alert id:{}".format(alert_id))
+            demisto.debug(f"Found existing alert with alert id:{alert_id}")
             continue
 
         tags = alert.get("tags", {})
@@ -661,7 +661,7 @@ def get_incident_name(hit_source: dict) -> str:
 
 def prepare_incidents_from_compromised_credentials_data(
     response: dict, next_run: dict, start_time: str, is_test: bool
-) -> Tuple[dict, list]:
+) -> tuple[dict, list]:
     """
     Prepare incidents from the compromised credentials data.
 
@@ -833,11 +833,7 @@ def validate_date_parameters_for_compromised_credentials(args: dict, params: dic
             raise ValueError(MESSAGES["FILTER_DATE_ERROR"].format(filter_date, FILTER_DATE_VALUES))
         if not (start_date or end_date):
             raise ValueError(MESSAGES["MISSING_DATE_ERROR"])
-        date_query = " +breach.{}.date-time: [{} TO {}]".format(
-            filter_date,
-            start_date.strftime(DATE_FORMAT),  # type: ignore
-            end_date.strftime(DATE_FORMAT),
-        )  # type: ignore
+        date_query = f" +breach.{filter_date}.date-time: [{start_date.strftime(DATE_FORMAT)} TO {end_date.strftime(DATE_FORMAT)}]" # type: ignore
         params["query"] += date_query
     elif start_date or end_date:
         raise ValueError(MESSAGES["MISSING_FILTER_DATE_ERROR"])
@@ -1031,7 +1027,7 @@ def parse_indicator_response(indicators):
 
         event = indicator.get("Attribute", {}).get("Event", {})
         attack_ids = event.get("attack_ids", [])
-        tags_list = [tag for tag in event["Tags"]]
+        tags_list = list(event["Tags"])
         tags_value = ", ".join(tags_list)
 
         observed_time = time.strftime(READABLE_DATE_FORMAT, time.gmtime(float(event["timestamp"])))
@@ -1215,7 +1211,7 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def fetch_incidents(client: Client, last_run: dict, params: dict, is_test: bool = False) -> Tuple[dict, list]:
+def fetch_incidents(client: Client, last_run: dict, params: dict, is_test: bool = False) -> tuple[dict, list]:
     """
     Fetch incidents from Flashpoint.
 
@@ -1236,7 +1232,7 @@ def fetch_incidents(client: Client, last_run: dict, params: dict, is_test: bool 
 
     response = client.http_request("GET", url_suffix=url_suffix, params=fetch_params["fetch_params"])
 
-    incidents: List[Dict[str, Any]] = []
+    incidents: List[dict[str, Any]] = []
     next_run = last_run
     start_time = fetch_params["start_time"]
 
@@ -1532,7 +1528,8 @@ def ip_lookup_command(client: Client, ip: str) -> CommandResults:
                     "First Observed Date (UTC)": arg_to_datetime(indicator.get("first_observed_at")).strftime(
                         READABLE_DATE_FORMAT
                     ),  # type: ignore
-                    "Last Observed Date (UTC)": arg_to_datetime(indicator.get("last_observed_at")).strftime(READABLE_DATE_FORMAT),  # type: ignore
+                    # type: ignore
+                    "Last Observed Date (UTC)": arg_to_datetime(indicator.get("last_observed_at")).strftime(READABLE_DATE_FORMAT),
                     "Title": indicator.get("title", EMPTY_DATA),
                     "Site": indicator.get("site", EMPTY_DATA),
                     "Enrichments": filter_enrichments,
@@ -1549,7 +1546,7 @@ def ip_lookup_command(client: Client, ip: str) -> CommandResults:
             human_readable = tableToMarkdown(
                 title, hr_data, json_transform_mapping={"Enrichments": JsonTransformer()}, removeNull=True
             )
-            human_readable += "\nIgnite link to community search: [{}]({})\n".format(community_search_link, community_search_link)
+            human_readable += f"\nIgnite link to community search: [{community_search_link}]({community_search_link})\n"
 
             command_results = CommandResults(
                 outputs_prefix=OUTPUT_PREFIX["IP_COMMUNITY_SEARCH"],
@@ -1976,7 +1973,7 @@ def get_reports_command(client, args) -> CommandResults:
                 platform_url = platform_url.replace(DEFAULT_OLD_PLATFORM_PATH, DEFAULT_PLATFORM_PATH)
             summary = string_escape_markdown(report.get("summary", EMPTY_DATA))
             index += 1
-            human_readable += "" + str(index) + ") [{}]({})".format(title, platform_url) + "\n"
+            human_readable += "" + str(index) + f") [{title}]({platform_url})" + "\n"
             if report.get("summary"):
                 human_readable += "   Summary: " + str(summary) + "\n\n\n"
             else:
@@ -1996,7 +1993,7 @@ def get_reports_command(client, args) -> CommandResults:
 
         fp_url = urljoin(client.platform_url, "/cti/intelligence/search?sort_date=All Time&query=" + report_search)
         fp_url = urllib.parse.quote(fp_url, safe=":/?&=")
-        human_readable += "Link to Report-search on Ignite platform: [{}]({})\n".format(fp_url, fp_url)
+        human_readable += f"Link to Report-search on Ignite platform: [{fp_url}]({fp_url})\n"
 
         return CommandResults(
             outputs_prefix=OUTPUT_PREFIX["REPORT"],
@@ -2046,7 +2043,7 @@ def flashpoint_ignite_compromised_credentials_list_command(client: Client, args:
     )
 
 
-def get_report_by_id_command(client: Client, args: Dict) -> CommandResults:
+def get_report_by_id_command(client: Client, args: dict) -> CommandResults:
     """
     Get specific report using its fpid.
 
@@ -2124,7 +2121,7 @@ def get_report_by_id_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(readable_output=human_readable, raw_response=response)
 
 
-def related_report_list_command(client: Client, args: Dict) -> CommandResults:
+def related_report_list_command(client: Client, args: dict) -> CommandResults:
     """
     Get reports related to given report.
 
@@ -2154,7 +2151,7 @@ def related_report_list_command(client: Client, args: Dict) -> CommandResults:
                 platform_url = platform_url.replace(DEFAULT_OLD_PLATFORM_PATH, DEFAULT_PLATFORM_PATH)
             summary = string_escape_markdown(report.get("summary", EMPTY_DATA))
             index += 1
-            human_readable += "" + str(index) + ") [{}]({})".format(title, platform_url) + "\n"
+            human_readable += "" + str(index) + f") [{title}]({platform_url})" + "\n"
             human_readable += "   Summary: " + str(summary) + "\n\n\n"
 
             report_detail = {
@@ -2170,7 +2167,7 @@ def related_report_list_command(client: Client, args: Dict) -> CommandResults:
         report_details = remove_empty_elements(report_details)
 
         fp_url = urljoin(client.platform_url, HR_SUFFIX["REPORT"].format(urllib.parse.quote(str(report_id))))
-        human_readable += "Link to the given Report on Ignite platform: [{}]({})\n".format(fp_url, fp_url)
+        human_readable += f"Link to the given Report on Ignite platform: [{fp_url}]({fp_url})\n"
 
         return CommandResults(
             outputs_prefix=OUTPUT_PREFIX["REPORT"],
@@ -2270,7 +2267,7 @@ def event_get_command(client, args) -> CommandResults:
     url_suffix = URL_SUFFIX["EVENT_GET"].format(urllib.parse.quote(event_id.encode("utf-8")))
     resp = client.http_request("GET", url_suffix=url_suffix)
 
-    ec: Dict[Any, Any] = {}
+    ec: dict[Any, Any] = {}
 
     if len(resp) <= 0:
         hr = MESSAGES["NO_RECORDS_FOUND"].format("event")
@@ -2313,7 +2310,7 @@ def event_get_command(client, args) -> CommandResults:
     )
 
 
-def alert_list_command(client: Client, args: Dict):
+def alert_list_command(client: Client, args: dict):
     """
     List alerts notification from Flashpoint Ignite.
 
@@ -2402,7 +2399,7 @@ def main():
         validate_params(command, params)
         client = Client(url, headers, verify, proxy, create_relationships)
 
-        COMMAND_TO_FUNCTION: Dict = {
+        COMMAND_TO_FUNCTION: dict = {
             "flashpoint-ignite-intelligence-report-search": get_reports_command,
             "flashpoint-ignite-compromised-credentials-list": flashpoint_ignite_compromised_credentials_list_command,
             "flashpoint-ignite-intelligence-report-get": get_report_by_id_command,
@@ -2412,7 +2409,7 @@ def main():
             "flashpoint-ignite-alert-list": alert_list_command,
         }
 
-        REPUTATION_COMMAND_TO_FUNCTION: Dict = {
+        REPUTATION_COMMAND_TO_FUNCTION: dict = {
             "email": email_lookup_command,
             "filename": filename_lookup_command,
             "url": url_lookup_command,

@@ -11,7 +11,7 @@ def _execute_command(command: str, arguments: dict):
 
 
 def get_errors(response: Union[list, dict]) -> List[str]:
-    errors = list()
+    errors = []
     if is_error(response):
         if isinstance(response, dict):
             errors.append(response["Contents"])

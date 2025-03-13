@@ -468,7 +468,7 @@ def check_args_for_update(args: dict, optional_params: list) -> dict:
             params[optional_param] = args.get(optional_param)
             args_valid = True
     if not args_valid:
-        raise DemistoException("At least one of arguments is required for the" " request to be successful\n")
+        raise DemistoException("At least one of arguments is required for the request to be successful\n")
     return params
 
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import MailSenderNew
 import demistomock as demisto
 import pytest
@@ -63,7 +62,8 @@ def test_debug_smtp(mocker):
     assert return_error_mock.call_count == 1
     assert demisto_error.call_count == 1
     # LOG should at least contain: "connect: " with port
-    assert MailSenderNew.LOG.messages and "2025" in MailSenderNew.LOG.messages[0]
+    assert MailSenderNew.LOG.messages
+    assert "2025" in MailSenderNew.LOG.messages[0]
 
 
 def test_hmac(mocker):
@@ -123,5 +123,5 @@ def test_attachments(mocker):
     (_, _, msg, _, _, _) = MailSenderNew.create_msg()
     decode_files_content = ["Y29udGVudA==", "Y29udGVudDE=", "Y29udGVudDI="]
 
-    assert all([file_name in msg for file_name in ["attach.txt", "test1.txt", "test2.txt"]])
-    assert all([decode_file_content in msg for decode_file_content in decode_files_content])
+    assert all(file_name in msg for file_name in ["attach.txt", "test1.txt", "test2.txt"])
+    assert all(decode_file_content in msg for decode_file_content in decode_files_content)

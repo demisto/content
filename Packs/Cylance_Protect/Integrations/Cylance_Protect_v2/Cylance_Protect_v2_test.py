@@ -395,7 +395,7 @@ def test_get_device_by_hostname(mocker):
 
     contents = demisto_results.call_args[0][0]
     assert sorted(EXPECTED_HOSTNAME.items()) == sorted(
-        contents.get("EntryContext").get("CylanceProtect.Device(val.ID && val.ID === " "obj.ID)").items()
+        contents.get("EntryContext").get("CylanceProtect.Device(val.ID && val.ID === obj.ID)").items()
     )  # noqa: ISC001
 
 

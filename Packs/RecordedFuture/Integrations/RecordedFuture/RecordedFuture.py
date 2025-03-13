@@ -339,7 +339,7 @@ class Actions:
         if not result_actions:
             return None  # type: ignore
 
-        command_results: List[CommandResults] = list()
+        command_results: List[CommandResults] = []
         for action in result_actions:
             if "create_indicator" in action:
                 indicator = create_indicator(**action["create_indicator"])
@@ -493,7 +493,7 @@ def main() -> None:  # pragma: no cover
                         message = error.get("result", {})["message"]
                 except Exception:
                     message = (
-                        "Unknown error. Please verify that the API" f" URL and Token are correctly configured. RAW Error: {err}"
+                        f"Unknown error. Please verify that the API URL and Token are correctly configured. RAW Error: {err}"
                     )
                 raise DemistoException(f"Failed due to - {message}")
 

@@ -719,7 +719,7 @@ def test_get_raw_file_command(mocker):
     mocker.patch.object(Client, "_http_request", return_value=response_client)
     mocker.patch.object(CommonServerPython, "fileResult", return_value="/command_examples.txt")
     result = get_raw_file_command(client, args)
-    expected_hr = "### Raw file\n" "|path|reference|content|\n" "|---|---|---|\n" "| unit |  | I am a file. |\n"
+    expected_hr = "### Raw file\n|path|reference|content|\n|---|---|---|\n| unit |  | I am a file. |\n"
     assert result[0].raw_response == response_client
     assert result[0].readable_output == expected_hr
 
@@ -870,7 +870,7 @@ def test_gitlab_artifact_get_command(mocker):
 
 @pytest.mark.parametrize(
     "error_message, expected_result",
-    [("this is an error", False), ("Failed to parse json object" "from response: <!DOCTYPE html>\n<html class=)", True)],
+    [("this is an error", False), ("Failed to parse json objectfrom response: <!DOCTYPE html>\n<html class=)", True)],
 )
 def test_check_for_html_in_error(error_message, expected_result):
     from GitLabv2 import check_for_html_in_error

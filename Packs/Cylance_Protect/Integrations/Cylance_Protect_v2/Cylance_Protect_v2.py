@@ -172,8 +172,8 @@ def test():  # pragma: no cover
 
 
 def get_devices():
-    page = demisto.args()["pageNumber"] if "pageNumber" in demisto.args() else None
-    page_size = demisto.args()["pageSize"] if "pageSize" in demisto.args() else None
+    page = demisto.args().get("pageNumber")
+    page_size = demisto.args().get("pageSize")
     result = get_devices_request(page, page_size)
     devices = result["page_items"]
     hr = []
@@ -387,10 +387,10 @@ def get_hostname_request(hostname):  # pragma: no cover
 def update_device():
     device_id = demisto.args()["id"]
 
-    name = demisto.args()["name"] if "name" in demisto.args() else None
-    policy_id = demisto.args()["policyId"] if "policyId" in demisto.args() else None
-    add_zones = demisto.args()["addZones"] if "addZones" in demisto.args() else None
-    remove_zones = demisto.args()["removeZones"] if "removeZones" in demisto.args() else None
+    name = demisto.args().get("name")
+    policy_id = demisto.args().get("policyId")
+    add_zones = demisto.args().get("addZones")
+    remove_zones = demisto.args().get("removeZones")
 
     update_device_request(device_id, name, policy_id, add_zones, remove_zones)
 
@@ -444,8 +444,8 @@ def update_device_request(device_id, name=None, policy_id=None, add_zones=None, 
 
 def get_device_threats():
     device_id = demisto.args()["id"]
-    page = demisto.args()["pageNumber"] if "pageNumber" in demisto.args() else None
-    page_size = demisto.args()["pageSize"] if "pageSize" in demisto.args() else None
+    page = demisto.args().get("pageNumber")
+    page_size = demisto.args().get("pageSize")
 
     device_threats = get_device_threats_request(device_id, page, page_size)["page_items"]
     dbot_score_array = []
@@ -498,8 +498,8 @@ def get_device_threats_request(device_id, page=None, page_size=None):  # pragma:
 
 
 def get_policies():
-    page = demisto.args()["pageNumber"] if "pageNumber" in demisto.args() else None
-    page_size = demisto.args()["pageSize"] if "pageSize" in demisto.args() else None
+    page = demisto.args().get("pageNumber")
+    page_size = demisto.args().get("pageSize")
 
     policies = get_policies_request(page, page_size)["page_items"]
 
@@ -560,8 +560,8 @@ def create_zone_request(name, policy_id, criticality):  # pragma: no cover
 
 
 def get_zones():
-    page = demisto.args()["pageNumber"] if "pageNumber" in demisto.args() else None
-    page_size = demisto.args()["pageSize"] if "pageSize" in demisto.args() else None
+    page = demisto.args().get("pageNumber")
+    page_size = demisto.args().get("pageSize")
 
     zones = get_zones_request(page, page_size)["page_items"]
 
@@ -771,8 +771,8 @@ def get_threats_request(page=None, page_size=None):  # pragma: no cover
 
 def get_threat_devices():
     threat_hash = demisto.args()["sha256"]
-    page = demisto.args()["pageNumber"] if "pageNumber" in demisto.args() else None
-    page_size = demisto.args()["pageSize"] if "pageSize" in demisto.args() else None
+    page = demisto.args().get("pageNumber")
+    page_size = demisto.args().get("pageSize")
 
     threats = get_threat_devices_request(threat_hash, page, page_size)["page_items"]
 
@@ -845,8 +845,8 @@ def get_threat_devices_request(threat_hash, page=None, page_size=None):  # pragm
 
 
 def get_list():
-    page = demisto.args()["pageNumber"] if "pageNumber" in demisto.args() else None
-    page_size = demisto.args()["pageSize"] if "pageSize" in demisto.args() else None
+    page = demisto.args().get("pageNumber")
+    page_size = demisto.args().get("pageSize")
 
     lst = get_list_request(demisto.args()["listTypeId"], page, page_size)["page_items"]
     dbot_score_array = []
@@ -1150,7 +1150,7 @@ def delete_devices():
     except ValueError:
         return_error("Error: Batch Size specified must represent an int.")
     for i in range(0, len(device_ids_list), batch_size):
-        current_deleted_devices_batch = device_ids_list[i : i + batch_size]
+        current_deleted_devices_batch = device_ids_list[i: i + batch_size]
         delete_devices_request(current_deleted_devices_batch)
 
     context = {"Cylance.Device(val.Id && val.Id == obj.Id)": context_list}

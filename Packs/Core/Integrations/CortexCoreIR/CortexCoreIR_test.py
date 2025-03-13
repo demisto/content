@@ -215,7 +215,7 @@ class TestPollingCommand:
         command_result = script_run_polling_command(args={"endpoint_ids": "1", "script_uid": "1"}, client=client)
 
         assert (
-            command_result.readable_output == "Waiting for the script to " "finish running on the following endpoints: ['1']..."
+            command_result.readable_output == "Waiting for the script to finish running on the following endpoints: ['1']..."
         )
         assert command_result.outputs == {"action_id": 1, "endpoints_count": 1, "status": 1}
 
