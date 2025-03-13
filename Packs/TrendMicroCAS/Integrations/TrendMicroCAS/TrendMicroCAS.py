@@ -18,7 +18,7 @@ MAX_INCIDENTS_TO_FETCH = 500
 
 class Client(BaseClient):
     """
-    Client to use in the integration. Overrides BaseClient
+    Client to use in the integration. Overrides BaseClient test
     makes the connection to the trendMicro server
     """
 

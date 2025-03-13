@@ -24,7 +24,7 @@ API_VERSION = '6.10'
 
 
 class Client:
-    """Client class to interact with the service API
+    """Client class to interact with the service API test
 
     This Client implements API calls, and does not contain any XSOAR logic.
     Should only do requests and return data.
