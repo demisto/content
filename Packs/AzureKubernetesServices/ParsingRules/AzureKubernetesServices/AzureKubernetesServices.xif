@@ -1,0 +1,12 @@
+[INGEST:vendor="msft", product="azure", target_dataset="msft_azure_aks_raw", no_hit = drop]
+// Supported timestamp is for UTC time YYYY-mm-ddTHH:MM:SS.ssssZ format. E.g; 2025-02-04T11:23:29.0324070Z
+filter 
+    to_string(requestreceivedtime) ~= "\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z"
+    or to_string(TimeGenerated) ~= "\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z"
+    or to_string(properties -> log) -> requestReceivedTimestamp ~= "\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z"
+    and category in ("cloud-controller-manager", "cluster-autoscaler", "kube-audit", "kube-audit-admin", "kube-apiserver", "kube-controller-manager", "kube-scheduler", "csi-snapshot-controller", "csi-azuredisk-controller", "csi-azurefile-controller", "SoftwareUpdateProfile", "SoftwareUpdates", "guard")
+| alter
+    tmp_timestamp_extraction = if(requestreceivedtime != null, requestreceivedtime, TimeGenerated != null, TimeGenerated, to_string(properties -> log) -> requestReceivedTimestamp)
+| alter
+    _time = parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", tmp_timestamp_extraction)
+| fields -tmp_*;

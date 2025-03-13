@@ -1,5 +1,5 @@
 [INGEST:vendor="msft", product="azure", target_dataset="msft_azure_raw", no_hit=drop]
-filter category not in("AZFW*", "ApplicationGateway*", "AppServiceHTTPLogs", "AppServiceConsoleLogs", "AppServiceAppLogs", "AppServiceIPSecAuditLogs", "AppServicePlatformLogs", "AppServiceAntivirusScanAuditLogs", "AppServiceFileAuditLogs", "FunctionAppLogs", "AppServiceAuditLogs", "WorkflowRuntime", "AppServiceEnvironmentPlatformLogs")
+filter category not in("AZFW*", "ApplicationGateway*", "AppServiceHTTPLogs", "AppServiceConsoleLogs", "AppServiceAppLogs", "AppServiceIPSecAuditLogs", "AppServicePlatformLogs", "AppServiceAntivirusScanAuditLogs", "AppServiceFileAuditLogs", "FunctionAppLogs", "AppServiceAuditLogs", "WorkflowRuntime", "AppServiceEnvironmentPlatformLogs", "cloud-controller-manager", "cluster-autoscaler", "kube-audit", "kube-audit-admin", "kube-apiserver", "kube-controller-manager", "kube-scheduler", "csi-snapshot-controller", "csi-azuredisk-controller", "csi-azurefile-controller", "SoftwareUpdateProfile", "SoftwareUpdates", "guard")
 | alter tmp_time = if(
     category in ("AuditLogs", "ProvisioningLogs", "ServicePrincipalRiskEvents", "UserRiskEvents"), properties -> activityDateTime,
     category in ("ADFSSignInLogs", "ManagedIdentitySignInLogs", "NonInteractiveUserSignInLogs", "ServicePrincipalSignInLogs", "SignInLogs"), properties -> createdDateTime,
