@@ -713,7 +713,7 @@ script:
   subtype: python3
   type: python
 tests:
-- No test
+- playbook-AzureLogAnalytics-test
 fromversion: 5.0.0
 sectionOrder:
 - Connect
