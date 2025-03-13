@@ -7,7 +7,7 @@ This integration was integrated and tested with version 1 of SymantecICDM.
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Source Reliability | Reliability of the source providing the intelligence data. | True |
-| Server URL (e.g. https://api.sep.securitycloud.symantec.com) |  | True |
+| Server URL (e.g. <https://api.sep.securitycloud.symantec.com>) |  | True |
 | Fetch incidents |  | False |
 | Incident type |  | False |
 | Maximum number of incidents per fetch |  | False |
