@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: fbadefab-5b4a-4360-853c-81893d0cb492
+    taskid: 78784216-c485-4b0e-8a76-59b41dc3a90f
     type: start
     task:
-      id: fbadefab-5b4a-4360-853c-81893d0cb492
+      id: 78784216-c485-4b0e-8a76-59b41dc3a90f
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 0a894a8b-7b17-4ab4-8f79-643b3191165d
+    taskid: 22c9ea27-2fd5-4d40-8863-229dc43f3b48
     type: regular
     task:
-      id: 0a894a8b-7b17-4ab4-8f79-643b3191165d
+      id: 22c9ea27-2fd5-4d40-8863-229dc43f3b48
       version: -1
       name: Create incidents
       scriptName: TestCreateIncidentsForPhishingClassifier
@@ -72,10 +72,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: baf8693e-4995-47f9-805f-3cbfe79f8ebc
+    taskid: 69b3af92-e02e-42df-8457-060166618c7e
     type: regular
     task:
-      id: baf8693e-4995-47f9-805f-3cbfe79f8ebc
+      id: 69b3af92-e02e-42df-8457-060166618c7e
       version: -1
       name: Predict Tag1
       description: Predict text label using a pre-trained machine learning phishing model, and get the most important words used in the classification decision.
@@ -88,7 +88,10 @@ tasks:
       - "15"
     scriptarguments:
       emailSubject:
-        simple: closed church squeamish squeamish moaning closed closed closed church squeamish squeamish moaning closed closed closed church squeamish squeamish moaning closed closed
+        simple: |-
+          closed church squeamish squeamish moaning closed closed closed church squeamish squeamish moaning closed closed closed church squeamish squeamish moaning closed closed
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed viverra nunc sit amet elit rutrum tempor.
+          fall
       labelProbabilityThreshold:
         simple: "0"
       minTextLength:
@@ -115,10 +118,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 5a71b8d6-cf64-494d-8889-46f70cc67c13
+    taskid: 204180fd-5f72-4968-8e8c-c4fa68a2cf50
     type: title
     task:
-      id: 5a71b8d6-cf64-494d-8889-46f70cc67c13
+      id: 204180fd-5f72-4968-8e8c-c4fa68a2cf50
       version: -1
       name: Done
       type: title
@@ -143,10 +146,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 74a08b82-f3e3-40c5-8143-fa5c135e2ce9
+    taskid: 379f5987-21fa-48e7-8009-0f259984eb50
     type: regular
     task:
-      id: 74a08b82-f3e3-40c5-8143-fa5c135e2ce9
+      id: 379f5987-21fa-48e7-8009-0f259984eb50
       version: -1
       name: Clear context
       scriptName: DeleteContext
@@ -177,10 +180,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 88ba54ff-84fd-4c91-8ae8-4f88a4a5cafd
+    taskid: 29c71c43-3214-4f4f-816a-3b71511bb21b
     type: regular
     task:
-      id: 88ba54ff-84fd-4c91-8ae8-4f88a4a5cafd
+      id: 29c71c43-3214-4f4f-816a-3b71511bb21b
       version: -1
       name: clear context
       scriptName: DeleteContext
@@ -211,10 +214,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 67c5f1a7-4b58-4447-8cee-286f22b9139c
+    taskid: 056e0f50-15a3-4976-877f-992283bb1a6f
     type: playbook
     task:
-      id: 67c5f1a7-4b58-4447-8cee-286f22b9139c
+      id: 056e0f50-15a3-4976-877f-992283bb1a6f
       version: -1
       name: DBot Create Phishing Classifier V2
       description: Create a phishing classifier using machine learning technique, based on email content
@@ -273,10 +276,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: d0388493-758a-496d-8e20-0f4994316318
+    taskid: c971bebc-164a-43dd-84f1-751002187ec8
     type: condition
     task:
-      id: d0388493-758a-496d-8e20-0f4994316318
+      id: c971bebc-164a-43dd-84f1-751002187ec8
       version: -1
       name: Model evaluation exist
       type: condition
@@ -311,10 +314,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 87fcc375-89be-4f44-8123-9e995379a389
+    taskid: bfc6345f-19ec-4f66-810b-44109a362a08
     type: condition
     task:
-      id: 87fcc375-89be-4f44-8123-9e995379a389
+      id: bfc6345f-19ec-4f66-810b-44109a362a08
       version: -1
       name: 'Check the prediction label: Tag1'
       type: condition
@@ -335,6 +338,14 @@ tasks:
           right:
             value:
               simple: Tag1
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: DBotPredictPhishingWords.Probability
+            iscontext: true
+          right:
+            value:
+              simple: "0.9930823445320129"
     view: |-
       {
         "position": {
@@ -352,10 +363,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: a4973892-625f-4fcc-8a96-a270795d2751
+    taskid: a995bdfc-5c08-4fc8-8d2a-146274de35d9
     type: condition
     task:
-      id: a4973892-625f-4fcc-8a96-a270795d2751
+      id: a995bdfc-5c08-4fc8-8d2a-146274de35d9
       version: -1
       name: 'Check the prediction label: Tag2'
       type: condition
@@ -376,6 +387,14 @@ tasks:
           right:
             value:
               simple: Tag2
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: DBotPredictPhishingWords.Probability
+            iscontext: true
+          right:
+            value:
+              simple: "0.9941679239273071"
     view: |-
       {
         "position": {
@@ -393,10 +412,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: bc73dcb7-4720-4504-85e0-590b5fe8fe02
+    taskid: 746ca330-8d8e-4d0f-8bdf-fae786b24e0e
     type: regular
     task:
-      id: bc73dcb7-4720-4504-85e0-590b5fe8fe02
+      id: 746ca330-8d8e-4d0f-8bdf-fae786b24e0e
       version: -1
       name: Predict Tag2
       description: Predict text label using a pre-trained machine learning phishing model, and get the most important words used in the classification decision.
@@ -409,7 +428,10 @@ tasks:
       - "16"
     scriptarguments:
       emailSubject:
-        simple: ntidy boy substance faulty waves type boat argument ntidy boy substance faulty waves type boat argument ntidy boy substance faulty waves type boat argument
+        simple: |-
+          ntidy boy substance faulty waves type boat argument ntidy boy substance faulty waves type boat argument ntidy boy substance faulty waves type boat argument
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed viverra nunc sit amet elit rutrum tempor.
+          closed
       labelProbabilityThreshold:
         simple: "0"
       minTextLength:
@@ -436,10 +458,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 3573406e-2b81-4d40-8661-2680791e46f8
+    taskid: c4dda492-d53f-4483-8571-c926877e47df
     type: regular
     task:
-      id: 3573406e-2b81-4d40-8661-2680791e46f8
+      id: c4dda492-d53f-4483-8571-c926877e47df
       version: -1
       name: Predict Tag3
       description: Predict text label using a pre-trained machine learning phishing model, and get the most important words used in the classification decision.
@@ -452,7 +474,10 @@ tasks:
       - "20"
     scriptarguments:
       emailSubject:
-        simple: suspend trucks aboriginal thread succeed gray last fall fall suspend trucks aboriginal thread succeed gray last fall fall suspend trucks aboriginal thread succeed gray last fall fall
+        simple: |-
+          suspend trucks aboriginal thread succeed gray last fall fall suspend trucks aboriginal thread succeed gray last fall fall suspend trucks aboriginal thread succeed gray last fall fall
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed viverra nunc sit amet elit rutrum tempor.
+          boat
       labelProbabilityThreshold:
         simple: "0"
       minTextLength:
@@ -479,10 +504,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: d462dd42-6b56-49bf-8428-ae96e1f1be16
+    taskid: 482bab55-0675-4605-8c29-c28c3804836c
     type: regular
     task:
-      id: d462dd42-6b56-49bf-8428-ae96e1f1be16
+      id: 482bab55-0675-4605-8c29-c28c3804836c
       version: -1
       name: clear context
       scriptName: DeleteContext
@@ -513,10 +538,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 5cf7405e-c4c2-40a0-8e63-1913319a70f3
+    taskid: df8d8ae6-eea4-40d0-8bce-f614ef5f9522
     type: condition
     task:
-      id: 5cf7405e-c4c2-40a0-8e63-1913319a70f3
+      id: df8d8ae6-eea4-40d0-8bce-f614ef5f9522
       version: -1
       name: 'Check the prediction label: Tag3'
       type: condition
@@ -537,6 +562,14 @@ tasks:
           right:
             value:
               simple: Tag3
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: DBotPredictPhishingWords.Probability
+            iscontext: true
+          right:
+            value:
+              simple: "0.9955088496208191"
     view: |-
       {
         "position": {
