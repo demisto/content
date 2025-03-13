@@ -4261,7 +4261,7 @@ def parse_role_names(role_data: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def enrich_error_message_id_group_role(e: DemistoException|Exception,
+def enrich_error_message_id_group_role(e: DemistoException | Exception,
                                        type_: str | None, custom_message: str | None) -> str | None:
     """
     Attempts to parse additional info from an exception and return it as string. Returns `None` if it can't do that.
@@ -4473,13 +4473,13 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
 
     """
 
-    def _warn_if_module_is_disabled(e: DemistoException| Exception) -> None:
+    def _warn_if_module_is_disabled(e: DemistoException | Exception) -> None:
         demisto_error_condition = (isinstance(e, DemistoException)
-            and e is not None
-            and e.res is not None
-            and e.res.status_code == 500
-            and 'No identity threat' in str(e)
-            and "An error occurred while processing XDR public API" in e.message)
+                                   and e is not None
+                                   and e.res is not None
+                                   and e.res.status_code == 500
+                                   and 'No identity threat' in str(e)
+                                   and "An error occurred while processing XDR public API" in e.message)
         exception_condition = (
             isinstance(e, Exception)
             and str(e) is not None

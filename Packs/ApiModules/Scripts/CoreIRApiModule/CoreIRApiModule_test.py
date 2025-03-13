@@ -8,7 +8,6 @@ from pytest_mock import MockerFixture
 import pytest
 from unittest.mock import Mock, patch
 
-import demistomock
 import demistomock as demisto
 from CommonServerPython import Common, tableToMarkdown, pascalToSpace, DemistoException
 from CoreIRApiModule import CoreClient, handle_outgoing_issue_closure, XSOAR_RESOLVED_STATUS_TO_XDR
@@ -4556,45 +4555,48 @@ def test_run_polling_command_values_raise_error(mocker):
                             )
     assert str(e.value) == 'The command core-terminate-causality failed. Received status TIMEOUT'
 
+
 @pytest.mark.parametrize("exception_instance, command, expected_result", [
     (DemistoException("An error occurred while processing XDR public API: No identity threat", res=Mock(status_code=500)),
      "user",
-     "Please confirm the XDR Identity Threat Module is enabled.\nFull error message: An error occurred while processing XDR public API: No identity threat"),
-    
+     ("Please confirm the XDR Identity Threat Module is enabled.\nFull error message: An error occurred while processing XDR "
+      "public API: No identity threat")),
+
     (Exception("500: No identity threat. An error occurred while processing XDR public API"),
      "user",
-     "Please confirm the XDR Identity Threat Module is enabled.\nFull error message: 500: No identity threat. An error occurred while processing XDR public API"),
-    
+     ("Please confirm the XDR Identity Threat Module is enabled.\nFull error message: 500: No identity threat. An error occurred"
+      " while processing XDR public API")),
+
     (DemistoException("500: The id 'test_user' was not found", res=Mock(status_code=500)),
      "user",
      "The user test_user was not found"),
-    
+
     (Exception("500: The id 'test_user' was not found"),
      "user",
      "The user test_user was not found"),
-    
+
     (DemistoException("Some other error", res=Mock(status_code=500)), "user", None),
-    
+
     (Exception("Some other error"), "user", None),
-    
+
     (DemistoException("An error occurred while processing XDR public API: No identity threat", res=Mock(status_code=500)),
      "host",
      ("Please confirm the XDR Identity Threat Module is enabled.\nFull error message: An error occurred while processing XDR "
       "public API: No identity threat")),
-    
+
     (Exception("500: No identity threat. An error occurred while processing XDR public API"),
      "host",
      ("Please confirm the XDR Identity Threat Module is enabled.\nFull error message: 500: No identity threat. An error occurred"
       " while processing XDR public API")),
-    
+
     (DemistoException("Some other error", res=Mock(status_code=500)), "host", None),
-    
+
     (Exception("Some other error"), "host", None),
-    
+
     (DemistoException("500: The id 'test_host' was not found", res=Mock(status_code=500)),
      "host",
      "The host test_host was not found"),
-    
+
     (Exception("500: The id 'test_host' was not found"),
      "host",
      "The host test_host was not found"),
@@ -4602,22 +4604,27 @@ def test_run_polling_command_values_raise_error(mocker):
 def test_list_risky_users_or_host_command(exception_instance, command, expected_result):
     """
     Given -
-        - Test case 1: raises DemistoException with user command, where the error is related to the XDR Identity Threat module being
+        - Test case 1: raises DemistoException with user command, where the error is related to the XDR Identity Threat module
+        being disabled.
+        - Test case 2: raises Exception with user command, where the error is related to the XDR Identity Threat module being
         disabled.
-        - Test case 2: raises Exception with user command, where the error is related to the XDR Identity Threat module being disabled.
         - Test case 3: raises DemistoException with user command, where the error is related to a missing user
         (based on the provided id).
-        - Test case 4: raises Exception with user command, where the error is related to a missing user (based on the provided id).
+        - Test case 4: raises Exception with user command, where the error is related to a missing user
+        (based on the provided id).
         - Test case 5: raises DemistoException with user command, where the error is unrelated and no warning is expected.
         - Test case 6: Exception with user command, where the error is unrelated and no warning is expected.
-        - Test case 7: raises DemistoException with host command, where the error is related to the XDR Identity Threat module being
+        - Test case 7: raises DemistoException with host command, where the error is related to the XDR Identity Threat module
+        being
         disabled.
-        - Test case 8: raises Exception with host command, where the error is related to the XDR Identity Threat module being disabled.
+        - Test case 8: raises Exception with host command, where the error is related to the XDR Identity Threat module being
+        disabled.
         - Test case 9: raises DemistoException with host command, where the error is unrelated and no warning is expected.
         - Test case 10: raises Exception with host command, where the error is unrelated and no warning is expected.
         - Test case 11: raises DemistoException with host command, where the error is related to a missing host
         (based on the provided id).
-        - Test case 12: raises Exception with host command, where the error is related to a missing host (based on the provided id).
+        - Test case 12: raises Exception with host command, where the error is related to a missing host
+        (based on the provided id).
 
     When -
         - The function `list_risky_users_or_host_command` is called with either a "user" or "host" command, and it encounters
@@ -4641,5 +4648,3 @@ def test_list_risky_users_or_host_command(exception_instance, command, expected_
                 mock_return_warning.assert_called_once_with(expected_result, exit=True)
             else:
                 mock_return_warning.assert_not_called()
-
-
