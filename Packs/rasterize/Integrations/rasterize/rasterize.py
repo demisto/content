@@ -1,3 +1,4 @@
+from pathlib import Path
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import logging
@@ -59,8 +60,8 @@ DEFAULT_PAGE_LOAD_TIME = int(demisto.params().get('max_page_load_time', 180))
 TAB_CLOSE_WAIT_TIME = 1
 
 # Used it in several places
-DEFAULT_RETRIES_COUNT = 3
-DEFAULT_RETRY_WAIT_IN_SECONDS = 2
+DEFAULT_RETRIES_COUNT = 4
+DEFAULT_RETRY_WAIT_IN_SECONDS = 3
 PAGES_LIMITATION = 20
 
 # chrome instance data keys
@@ -283,6 +284,19 @@ def count_running_chromes(port):
 
 
 def get_chrome_browser(port: str) -> pychrome.Browser | None:
+    # Verify that the process has started
+    for attempt in range(DEFAULT_RETRIES_COUNT):
+        running_chromes_count = count_running_chromes(port)
+        if running_chromes_count < 1:
+            demisto.debug(f"Attempt {attempt + 1}/{DEFAULT_RETRIES_COUNT}: Process not started yet, sleeping...")
+            time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS + attempt * 2)
+        else:
+            break
+    else:
+        # Even if the process hasn't started, attempt connection in case it starts meanwhile.
+        demisto.debug(f"Process did not start after {DEFAULT_RETRIES_COUNT} attempts. Moving on to try to connect.")
+
+    # connect to the Chrome browser instance
     browser_url = f"http://{LOCAL_CHROME_HOST}:{port}"
     for i in range(DEFAULT_RETRIES_COUNT):
         try:
@@ -439,8 +453,6 @@ def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binar
 
         if process:
             demisto.debug(f'New Chrome session active on {chrome_port=}: {chrome_options=} {chrome_options=}')
-            # Allow Chrome to initialize
-            time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS)  # pylint: disable=E9003
             browser = get_chrome_browser(chrome_port)
             if browser:
                 new_chrome_instance = {
@@ -1015,8 +1027,10 @@ def rasterize_email_command():  # pragma: no cover
             demisto.debug(f'rasterize-email, {html_body=}')
             tf.write(f'<html style="background:white";>{html_body}</html>')
             tf.flush()
-            path = f'file://{os.path.realpath(tf.name)}'
-            demisto.debug(f'rasterize-email, rasterizing {path=}')
+            real_path = os.path.realpath(tf.name)
+            path = f'file://{real_path}'
+            file_stat = Path.stat(Path(real_path))
+            demisto.debug(f'rasterize-email, rasterizing {path=}, {file_stat=}')
             rasterize_output = perform_rasterize(path=path, rasterize_type=rasterize_type, width=width, height=height,
                                                  offline_mode=offline, navigation_timeout=navigation_timeout,
                                                  full_screen=full_screen)

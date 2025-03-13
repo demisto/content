@@ -1,0 +1,36 @@
+{
+    "value": [
+      {
+        "id": "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/vnet1",
+        "name": "vnet1",
+        "etag": "123etag3",
+        "type": "Microsoft.Network/virtualNetworks",
+        "location": "westus",
+        "properties": {
+          "addressSpace": {
+            "addressPrefixes": [
+              "10.0.0.0/8"
+            ]
+          },
+          "dhcpOptions": {
+            "dnsServers": []
+          },
+          "subnets": [
+            {
+              "id": "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/vnet1/subnets/test-1",
+              "name": "test-1",
+              "properties": {
+                "addressPrefix": "10.0.0.0/24",
+                "provisioningState": "Succeeded",
+                "ipConfigurations": [{
+                    "id": "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/networkInterfaces/testDNS649/ipConfigurations/ipconfig1"
+            }]
+              }
+            }
+          ],
+          "virtualNetworkPeerings": [],
+          "provisioningState": "Succeeded"
+        }
+      }
+    ]
+  }
