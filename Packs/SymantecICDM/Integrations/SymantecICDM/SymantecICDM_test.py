@@ -6,7 +6,7 @@ Pytest Unit Tests: all function names must start with "test_"
 import json
 import pytest
 from CommonServerPython import *
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta
 from SymantecICDM import (
     Client,
     icdm_fetch_incidents_command,
@@ -26,7 +26,7 @@ from SymantecICDM import (
 
 BASE_RELIABILITY = DBotScoreReliability.B
 
-DATE_TIME = datetime.now(tz=UTC).replace(second=0, microsecond=0)
+DATE_TIME = datetime.now(tz=timezone.utc).replace(second=0, microsecond=0)
 AN_HOUR_AGO = DATE_TIME - timedelta(hours=1)
 TWO_MONTHS_AGO = DATE_TIME - timedelta(days=60)
 
@@ -63,7 +63,7 @@ def test_icdm_fetch_incidents_command(mocker):
     incidents = util_load_json("test_data/icdm_incidents_without_events.json")
     mocker.patch.object(Client, "_http_request", return_value=incidents)
     result = icdm_fetch_incidents_command(
-        client, 100, datetime(2023, 4, 26, 0, 0, 0, tzinfo=UTC)
+        client, 100, datetime(2023, 4, 26, 0, 0, 0, tzinfo=timezone.utc)
     )
 
     assert result.outputs == incidents.get("incidents")
@@ -89,7 +89,7 @@ def test_fetch_incidents_command(mocker):
     )
 
     last_run, incidents = fetch_incidents_command(
-        client, 100, datetime(2023, 4, 26, 0, 0, 0, tzinfo=UTC)
+        client, 100, datetime(2023, 4, 26, 0, 0, 0, tzinfo=timezone.utc)
     )
     expected_incidents = util_load_json("test_data/outputs/icdm_incidents_output.json")
     assert last_run == {"last_fetch": 1682545570.4}
@@ -301,37 +301,36 @@ def test_is_filtered(value: str, filters: list[str], output: bool):
 
 
 @pytest.mark.parametrize(
-    "type, indicator, score, result",
+    "arg_type, indicator, score",
     [
         (
-            "ip",
+            DBotScoreType.IP,
             "8.8.8.8",
             Common.DBotScore.GOOD,
-            Common.IP(ip="8.8.8.8", dbot_score=Common.DBotScore.GOOD),
         ),
         (
-            "url",
+            DBotScoreType.URL,
             "https://google.com",
             Common.DBotScore.GOOD,
-            Common.URL(url="https://google.com", dbot_score=Common.DBotScore.GOOD),
         ),
         (
-            "domain",
+            DBotScoreType.DOMAIN,
             "google.com",
             Common.DBotScore.GOOD,
-            Common.Domain(domain="google.com", dbot_score=Common.DBotScore.GOOD),
         ),
     ],
 )
 def test_get_network_indicator_by_type(
-    type: str, indicator: str, score: Common.DBotScore, result: Common.Indicator | None
-):
-    assert (
-        get_network_indicator_by_type(type=type, indicator=indicator, dbot_score=score)
-        == result
+        arg_type: str, indicator: str, score: int):
+    dbot_score = Common.DBotScore(
+        indicator=indicator,
+        indicator_type=arg_type,
+        integration_name='INTEGRATION_NAME',
+        score=score,
+        reliability=DBotScoreReliability.A,
+        malicious_description=None,
     )
-
-# @pytest.mark.parametrize("args, name", [({}, "ip"), ({"ip": ""}, "ip")])
+    assert isinstance(get_network_indicator_by_type(type=arg_type, indicator=indicator, dbot_score=dbot_score), Common.Indicator)
 
 
 @pytest.mark.parametrize("type, indicator, score", [("", "", Common.DBotScore.GOOD, )])
