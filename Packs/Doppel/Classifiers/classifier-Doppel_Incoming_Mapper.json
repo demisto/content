@@ -1,6 +1,4 @@
 {
-	"defaultIncidentType": "",
-	"definitionId": "",
 	"description": "",
 	"feed": false,
 	"id": "Doppel Incoming_Mapper",
@@ -25,6 +23,33 @@
 				},
 				"Block Indicators Status": {
 					"simple": "entity_state"
+				},
+				"Doppel Brand": {
+					"simple": "brand"
+				},
+				"Doppel Created At": {
+					"simple": "created_at"
+				},
+				"Doppel Entity": {
+					"simple": "entity"
+				},
+				"Doppel Entity Content": {
+					"simple": "entity_content"
+				},
+				"Doppel Link": {
+					"simple": "doppel_link"
+				},
+				"Doppel Notes": {
+					"simple": "notes"
+				},
+				"Doppel Platform": {
+					"simple": "platform"
+				},
+				"Doppel Product": {
+					"simple": "product"
+				},
+				"Doppel Uploaded By": {
+					"simple": "uploaded_by"
 				},
 				"External Link": {
 					"simple": "doppel_link"
@@ -94,9 +119,6 @@
 				},
 				"source": {
 					"simple": "source"
-				},
-				"sourceBrand": {
-					"simple": "brand"
 				},
 				"uploaded_by": {
 					"simple": "uploaded_by"
@@ -198,6 +220,15 @@
 				},
 				"uploaded_by": {
 					"simple": "uploaded_by"
+				},
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
 				}
 			}
 		},
@@ -341,15 +372,6 @@
 				},
 				"created_at": {
 					"simple": "created_at"
-				},
-				"dbotMirrorDirection": {
-					"simple": "mirror_direction"
-				},
-				"dbotMirrorId": {
-					"simple": "id"
-				},
-				"dbotMirrorInstance": {
-					"simple": "mirror_instance"
 				},
 				"entity": {
 					"simple": "entity"

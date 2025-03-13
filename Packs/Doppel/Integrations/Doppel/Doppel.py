@@ -536,7 +536,6 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> None:
                     'name': f"Doppel Incident {uuid.uuid4()}",
                     'type': DOPPEL_ALERT,
                     'occurred': created_at_datetime.strftime(XSOAR_DATE_FORMAT),
-                    'dbotMirrorId': str(alert.get("id")),
                     'rawJSON': json.dumps(alert),
                 }
                 incidents.append(incident)
@@ -680,6 +679,7 @@ def get_mapping_fields_command(client: Client, args: Dict[str, Any]) -> GetMappi
     # Define the incident mapping scheme
     xdr_incident_type_scheme = SchemeTypeMapping(type_name=DOPPEL_ALERT)
     xdr_incident_type_scheme.add_field(name='queue_state', description='Queue State of the Doppel Alert')
+
 
     # Create the response object
     mapping_response = GetMappingFieldsResponse()

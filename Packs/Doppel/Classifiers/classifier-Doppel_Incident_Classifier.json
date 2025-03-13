@@ -1,7 +1,7 @@
 {
 	"defaultIncidentType": "",
 	"definitionId": "",
-	"description": "Doppel-XSOAR integration classifier to classify the fetched incidents to Doppel_Incident_Test.",
+	"description": "Doppel-XSOAR integration classifier to classify the fetched incidents to Doppel_Incident.",
 	"feed": false,
 	"id": "Doppel_Incident_Classifier",
 	"keyTypeMap": {},

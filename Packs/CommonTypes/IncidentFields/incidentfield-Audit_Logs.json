@@ -18,7 +18,10 @@
     "group": 0,
     "hidden": false,
     "openEnded": false,
-    "associatedToAll": true,
+    "associatedToAll": false,
+	"associatedTypes": [
+        "Doppel"
+    ],
     "unmapped": false,
     "unsearchable": true,
     "caseInsensitive": true,

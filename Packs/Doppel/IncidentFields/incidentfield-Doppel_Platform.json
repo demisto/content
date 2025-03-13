@@ -1,7 +1,9 @@
 {
 	"aliasTo": "",
-	"associatedToAll": true,
-	"associatedTypes": null,
+	"associatedToAll": false,
+	"associatedTypes": [
+        "Doppel"
+    ],
 	"breachScript": "",
 	"caseInsensitive": true,
 	"cliName": "doppelplatform",

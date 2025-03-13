@@ -8,7 +8,6 @@ Doppel is a Modern Digital Risk Protection Solution, that detects the phishing a
 1. Name of the instance
 2. Doppel Tenant URL that you can use for calling the [Doppel APIs](https://doppel.readme.io/reference/create_alert). eg. *https://api.doppel.com/*
 3. API Key for calling Doppel
-4. 
 
 Please reach out to Doppel to get access to above.
 
@@ -16,6 +15,6 @@ Once you have the URL and API Key, use the same for configuring the Doppel-XSOAR
 
 ## Test Configuration
 
-After providing the mandatory details, click **Test*** to test the configuration.
+After providing the mandatory details, click **Test** to test the configuration.
 
 ---
