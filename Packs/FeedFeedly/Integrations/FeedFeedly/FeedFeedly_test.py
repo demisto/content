@@ -30,7 +30,11 @@ def test_build_iterator(requests_mock):
         response = file.read()
     requests_mock.get(URL, text=response)
     expected_ips = {"31.31.194.65", "95.213.205.83", "77.223.124.212"}
-    client = Client(base_url=URL, verify=False, proxy=False,)
+    client = Client(
+        base_url=URL,
+        verify=False,
+        proxy=False,
+    )
     indicators = client.fetch_indicators_from_stream("tag/enterpriseName/category/uuid", 0)
     ip_indicators = {indicator["value"] for indicator in indicators if indicator["type"] == "IP"}
     assert expected_ips == ip_indicators
