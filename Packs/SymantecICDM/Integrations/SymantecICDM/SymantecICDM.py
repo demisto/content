@@ -123,7 +123,7 @@ class Client(BaseClient):
     def get_edr_incidents(
         self, start_time: str, include_events: bool = False, offset: int = 0
     ):
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         json_data = {
             "next": offset,
             "limit": FETCH_PAGE_SIZE,
