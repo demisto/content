@@ -4525,7 +4525,7 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
 
         try:
             outputs = get_func().get('reply', [])[:list_limit]
-        except DemistoException as e:
+        except Exception as e:
             _warn_if_module_is_disabled(e)
             raise
         table_for_markdown = [parse_risky_users_or_hosts(user, *table_headers) for user in outputs]
