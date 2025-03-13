@@ -62,23 +62,33 @@ class Client(BaseClient):
             suffix = f'indicators/{section}/{argument}/{sub_section}'
         else:
             suffix = f'{section}/{sub_section}'
+        demisto.debug(f"The url is {suffix=}")
         # Send a request using our http_request wrapper
-        if sub_section == 'passive_dns':
-            return self._http_request('GET',
-                                      url_suffix=suffix,
-                                      params=params,
-                                      timeout=30)
         try:
+            if sub_section == 'passive_dns':
+                return self._http_request('GET',
+                                        url_suffix=suffix,
+                                        params=params,
+                                        timeout=30)
             result = self._http_request('GET',
                                         url_suffix=suffix,
                                         params=params)
         except DemistoException as e:
+            demisto.debug(f"The DemistoException is {e.message}")
             if hasattr(e.res, 'status_code'):
                 if e.res.status_code == 404:
                     result = 404
                 elif e.res.status_code == 400:
                     demisto.debug(f'{e.res.text} response received from server when trying to get api:{e.res.url}')
+                    if not self.should_error:
+                        return_warning(f'The command could not be execute: {argument} is invalid.', exit=True)
                     raise Exception(f'The command could not be execute: {argument} is invalid.')
+                elif e.res.status_code in (504, 502):
+                    demisto.debug(f"The status code is {e.res.status_code}")
+                    if self.should_error:
+                        raise e
+                    return_warning(f"{e.message}")
+                    result = {}
                 else:
                     raise
             else:
