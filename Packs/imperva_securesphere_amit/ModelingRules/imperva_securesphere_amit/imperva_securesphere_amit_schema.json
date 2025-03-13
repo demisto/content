@@ -1,5 +1,5 @@
 {
-    "imperva_securesphere_amit": {
+    "imperva_securesphere_raw": {
       "act": {
         "type": "string",
         "is_array": false
