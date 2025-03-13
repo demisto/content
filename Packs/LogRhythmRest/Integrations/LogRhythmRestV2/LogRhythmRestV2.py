@@ -1109,7 +1109,20 @@ class Client(BaseClient):
     def alarm_drilldown_request(self, alarm_id):  # pragma: no cover
         headers = self._headers | {'content-type': 'application/json'}
         response = self._http_request('GET', f'lr-drilldown-cache-api/drilldown/{alarm_id}', headers=headers)
+        drilldown_results = response.get('Data', {}).get('DrillDownResults')
+        return drilldown_results, response
+    
+    def alarm_drilldown_valid_empty_request(self, alarm_id):
+        headers = self._headers | {'content-type': 'application/json'}
+        response = self._http_request('GET', f'lr-drilldown-cache-api/drilldown/{alarm_id}', headers=headers,
+                                            empty_valid_codes=[200,201,202,203,204])
+        drilldown_results = response.get('Data', {}).get('DrillDownResults')
+        return drilldown_results, response
 
+    def alarm_drilldown_raw_response_request(self, alarm_id):  # pragma: no cover
+        headers = self._headers | {'content-type': 'application/json'}
+        response = self._http_request('GET', f'lr-drilldown-cache-api/drilldown/{alarm_id}', headers=headers,
+                                      resp_type='response', return_empty_response=True)
         drilldown_results = response.get('Data', {}).get('DrillDownResults')
         return drilldown_results, response
 
@@ -1671,8 +1684,9 @@ def alarm_drilldown_command(client: Client, args: Dict[str, Any]) -> CommandResu
     alarm_id = args.get('alarm_id')
     if not alarm_id:
         raise DemistoException('Invalid alarm_id')
-
     drilldown_results, raw_response = client.alarm_drilldown_request(alarm_id)
+    demisto.debug(f"alarm_drilldown_command {drilldown_results=}, {type(drilldown_results)}")
+    demisto.debug(f"alarm_drilldown_command {raw_response=}, {type(raw_response)}")
     drilldown_results['AlarmID'] = int(alarm_id)
     ec = drilldown_results.copy()
 
@@ -1686,6 +1700,34 @@ def alarm_drilldown_command(client: Client, args: Dict[str, Any]) -> CommandResu
         outputs_key_field='AlarmID',
         outputs=ec,
         raw_response=raw_response,
+    )
+
+    return command_results
+
+
+def alarm_drilldown_valid_empty_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
+    alarm_id = args.get('alarm_id')
+    if not alarm_id:
+        raise DemistoException('Invalid alarm_id')
+    drilldown_results, raw_response = client.alarm_drilldown_valid_empty_request(alarm_id)
+    demisto.debug(f"alarm_drilldown_valid_empty_command {drilldown_results=}, {type(drilldown_results)}")
+    demisto.debug(f"alarm_drilldown_valid_empty_command {raw_response=}, {type(raw_response)}")
+
+    command_results = CommandResults(
+        readable_output="Successfully finished."
+    )
+
+    return command_results
+
+def alarm_drilldown_raw_response_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
+    alarm_id = args.get('alarm_id')
+    if not alarm_id:
+        raise DemistoException('Invalid alarm_id')
+    drilldown_results, raw_response = client.alarm_drilldown_raw_response_request(alarm_id)
+    demisto.debug(f"alarm_drilldown_raw_response_command {type(raw_response)}, {raw_response=}")
+    demisto.debug(f"alarm_drilldown_raw_response_command {type(drilldown_results), {drilldown_results}}")
+    command_results = CommandResults(
+        readable_output="Successfully finished.",
     )
 
     return command_results
@@ -2576,6 +2618,8 @@ def main() -> None:  # pragma: no cover
             'lr-alarm-summary': alarm_summary_command,
             'lr-get-alarm-details': get_alarm_details_command,
             'lr-alarm-drilldown': alarm_drilldown_command,
+            'lr-alarm-drilldown-test1': alarm_drilldown_raw_response_command,
+            'lr-alarm-drilldown-test2': alarm_drilldown_valid_empty_command,
             'lr-cases-list': cases_list_command,
             'lr-case-create': case_create_command,
             'lr-case-update': case_update_command,
