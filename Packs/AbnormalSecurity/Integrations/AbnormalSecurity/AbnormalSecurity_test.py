@@ -668,3 +668,77 @@ def test_get_details_of_a_threat_request_time_window_filtering(mocker):
     assert '2023-09-17T15:30:00Z' in remediation_times
     assert '2023-09-17T16:30:00Z' in remediation_times
     assert '2023-09-17T12:30:00Z' not in remediation_times
+
+
+def test_get_details_of_a_threat_request_early_exit(mocker):
+    """Test that processing stops early when encountering messages outside the time window."""
+    # Create mock responses for two pages
+    # Page 1 with 2 messages (both inside time window)
+    page_1 = {
+        "threatId": "test-threat-id",
+        "messages": [
+            {
+                "threatId": "test-threat-id",
+                "receivedTime": "2023-09-17T16:00:00Z",
+                "remediationTimestamp": "2023-09-17T16:30:00Z"  # Inside window (latest)
+            },
+            {
+                "threatId": "test-threat-id",
+                "receivedTime": "2023-09-17T15:00:00Z",
+                "remediationTimestamp": "2023-09-17T15:30:00Z"  # Inside window
+            }
+        ],
+        "nextPageNumber": 2  # Indicate there's a second page
+    }
+
+    # Page 2 with 2 messages (both outside time window)
+    page_2 = {
+        "threatId": "test-threat-id",
+        "messages": [
+            {
+                "threatId": "test-threat-id",
+                "receivedTime": "2023-09-17T13:00:00Z",
+                "remediationTimestamp": "2023-09-17T13:30:00Z"  # Outside window
+            },
+            {
+                "threatId": "test-threat-id",
+                "receivedTime": "2023-09-17T12:00:00Z",
+                "remediationTimestamp": "2023-09-17T12:30:00Z"  # Outside window (earliest)
+            }
+        ],
+        "nextPageNumber": None  # No more pages
+    }
+
+    # Create a spy for the get_details_of_a_threat_request method
+    client = mock_client(mocker, side_effect=[page_1, page_2])
+    get_details_spy = mocker.spy(client, 'get_details_of_a_threat_request')
+
+    # Define time window that includes only the first two messages
+    start_datetime = datetime(2023, 9, 17, 14, 0, 0, tzinfo=UTC)
+    end_datetime = datetime(2023, 9, 17, 17, 0, 0, tzinfo=UTC)
+
+    incidents = generate_threat_incidents(client, [{'threatId': 'test-threat-id'}], 3, start_datetime, end_datetime)
+
+    # Verify we get one incident
+    assert len(incidents) == 1
+
+    # Verify the incident contains only the messages within the time window
+    incident_data = json.loads(incidents[0]['rawJSON'])
+    assert len(incident_data['messages']) == 2
+
+    # Verify the filtered messages are the ones we expect (from page 1 only)
+    remediation_times = [msg['remediationTimestamp'] for msg in incident_data['messages']]
+    assert '2023-09-17T16:30:00Z' in remediation_times
+    assert '2023-09-17T15:30:00Z' in remediation_times
+    assert '2023-09-17T13:30:00Z' not in remediation_times
+    assert '2023-09-17T12:30:00Z' not in remediation_times
+
+    # Verify that get_details_of_a_threat_request was called exactly twice
+    # (once for page 1, once for page 2 where we encounter messages outside the time window and exit early)
+    assert get_details_spy.call_count == 2
+
+    # Verify the calls were made with the correct page numbers
+    first_call_args = get_details_spy.call_args_list[0][1]
+    second_call_args = get_details_spy.call_args_list[1][1]
+    assert first_call_args['page_number'] == 1
+    assert second_call_args['page_number'] == 2
