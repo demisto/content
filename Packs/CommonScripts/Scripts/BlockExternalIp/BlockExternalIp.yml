@@ -3,7 +3,7 @@ args:
   isArray: true
   name: ip_list
   required: true
-- defaultvalue: 'XSIAM - Block IP'
+- defaultValue: 'XSIAM - Block IP'
   description: The name of the rule which will be created in the relevant products.
   isArray: false
   name: rule_name
@@ -16,21 +16,12 @@ args:
   isArray: false
   name: address_group
   required: false
-  defaultvalue: 'Blocked IPs - XSIAM'
-- description: Whether to creates a custom block policy rule.
-  isArray: false
-  name: custom_block_rule
-  required: false
-  defaultvalue: 'false'
-  auto: PREDEFINED
-  predefined:
-    - 'true'
-    - 'false'
+  defaultValue: 'Blocked IPs - XSIAM'
 - description: Whether to commit the new rule.
   isArray: false
   name: auto_commit
   required: false
-  defaultvalue: 'true'
+  defaultValue: 'true'
   auto: PREDEFINED
   predefined:
     - 'true'
@@ -39,12 +30,12 @@ args:
   isArray: false
   name: tag
   required: false
-  defaultvalue: 'xsiam-blocked-external-ip'
+  defaultValue: 'xsiam-blocked-external-ip'
 - description: |-
     Which integrations brands to run the command for. If not provided, the command will run for all available integrations.
     For multi-select provide a comma-separated list. For example: "Palo Alto Networks - Prisma SASE,Panorama,CheckPointFirewall_v2"
   isArray: true
-  defaultvalue: 'Palo Alto Networks - Prisma SASE,Panorama,CheckPointFirewall_v2,FortiGate,F5Silverline,Cisco ASA,Zscaler'
+  defaultValue: 'Palo Alto Networks - Prisma SASE,Panorama,CheckPointFirewall_v2,FortiGate,F5Silverline,Cisco ASA,Zscaler'
   name: brands
   required: false
   auto: PREDEFINED
@@ -58,16 +49,11 @@ args:
     - 'Zscaler'
 - description: Whether to retrieve human readable entry for every command or only the final result. True means to retrieve human readable entry for every command. False means to human readable only for the final result.
   name: verbose
-  defaultvalue: 'false'
+  defaultValue: 'false'
   auto: PREDEFINED
   predefined:
   - 'true'
   - 'false'
-- description: The arguments to use in the next polling iteration.
-  isArray: false
-  name: args_for_next_run
-  required: false
-  hidden: true
 - description: commit job ID to use in polling commands. (automatically filled by polling).
   name: commit_job_id
   hidden: true
@@ -76,6 +62,9 @@ args:
   hidden: true
 - description: The device group to use in polling commands. (automatically filled by polling).
   name: device_group
+  hidden: true
+- description: The script context to use in polling commands. (automatically filled by polling).
+  name: script_context
   hidden: true
 comment: The scrip blocks a list of IPs in supported integrations.
 commonfields:
