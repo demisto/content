@@ -20,8 +20,12 @@
                 "SEARCH_VALUE": "Successful SSO authentication with suspicious characteristics"
             }
           ]
-        }
-      ]
+        },
+      {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "NEQ",
+            "SEARCH_VALUE": "Correlation"
+      }      ]
     }
   }
 }

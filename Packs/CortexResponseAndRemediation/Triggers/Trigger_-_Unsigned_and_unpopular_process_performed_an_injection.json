@@ -36,7 +36,12 @@
                 "SEARCH_VALUE": "Unsigned and unpopular process performed injection into svchost.exe"
                 }
                 ]
-            }
+            },
+          {
+                "SEARCH_FIELD": "alert_type",
+                "SEARCH_TYPE": "NEQ",
+                "SEARCH_VALUE": "Correlation"
+          }
         ]    
     }
   }

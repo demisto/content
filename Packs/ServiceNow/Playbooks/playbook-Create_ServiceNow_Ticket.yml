@@ -25,7 +25,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "13"
+      - "14"
     separatecontext: false
     view: |-
       {
@@ -58,7 +58,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 810
+          "y": 980
         }
       }
     note: false
@@ -115,7 +115,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 410
+          "y": 580
         }
       }
     note: false
@@ -182,7 +182,7 @@ tasks:
       {
         "position": {
           "x": 830,
-          "y": 630
+          "y": 800
         }
       }
     note: false
@@ -235,7 +235,7 @@ tasks:
       {
         "position": {
           "x": 70,
-          "y": 630
+          "y": 800
         }
       }
     note: false
@@ -297,8 +297,111 @@ tasks:
     view: |-
       {
         "position": {
+          "x": 220,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 79b53716-fe00-4c51-842a-b767f499a498
+    type: condition
+    task:
+      id: 79b53716-fe00-4c51-842a-b767f499a498
+      version: -1
+      name: Is InstanceName empty?
+      description: Check if there is a playbook input named InstanceName to use it as a ServiceNow instance for the task.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: inputs.InstanceName
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
           "x": 450,
-          "y": 230
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 6d1433ef-9414-4cc5-8102-a26119a81bba
+    type: regular
+    task:
+      id: 6d1433ef-9414-4cc5-8102-a26119a81bba
+      version: -1
+      name: Create ServiceNow ticket (without using InstanceName)
+      description: Creates a ServiceNow ticket without using InstanceName, directly to the default ServiceNow instance.
+      script: ServiceNow v2|||servicenow-create-ticket
+      type: regular
+      iscommand: true
+      brand: ServiceNow v2
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      assignment_group:
+        complex:
+          root: inputs.AssignmentGroup
+      caller_id:
+        complex:
+          root: ServiceNow.User
+          accessor: ID
+      category:
+        complex:
+          root: inputs.Category
+      comments:
+        complex:
+          root: inputs.Comment
+      impact:
+        complex:
+          root: inputs.Impact
+      severity:
+        complex:
+          root: 'inputs.Severity '
+      short_description:
+        complex:
+          root: inputs.ShortDescription
+      ticket_type:
+        complex:
+          root: inputs.TicketType
+      urgency:
+        complex:
+          root: inputs.Urgency
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 400
         }
       }
     note: false
@@ -312,13 +415,15 @@ system: true
 view: |-
   {
     "linkLabelsPosition": {
+      "14_13_#default#": 0.52,
+      "14_15_yes": 0.51,
       "9_11_Mirror": 0.52,
       "9_12_State Polling": 0.46,
       "9_8_#default#": 0.61
     },
     "paper": {
       "dimensions": {
-        "height": 815,
+        "height": 985,
         "width": 1140,
         "x": 70,
         "y": 60
