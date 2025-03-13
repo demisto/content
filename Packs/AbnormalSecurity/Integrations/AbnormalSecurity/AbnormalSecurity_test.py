@@ -622,3 +622,49 @@ def test_polling_lag(mocker, mock_get_details_of_a_threat_request):
     # Assert that the filter matches our expected filter
     assert call_args['filter_'] == expected_filter
     assert call_args['page_size'] == 100
+
+
+def test_get_details_of_a_threat_request_time_window_filtering(mocker):
+    """Test that messages outside the time window are filtered out."""
+    # Create a mock response with 3 messages
+    mock_response = {
+        "threatId": "test-threat-id",
+        "messages": [
+            {
+                "threatId": "test-threat-id",
+                "receivedTime": "2023-09-17T15:00:00Z",
+                "remediationTimestamp": "2023-09-17T15:30:00Z"  # Inside window
+            },
+            {
+                "threatId": "test-threat-id",
+                "receivedTime": "2023-09-17T16:00:00Z",
+                "remediationTimestamp": "2023-09-17T16:30:00Z"  # Inside window
+            },
+            {
+                "threatId": "test-threat-id",
+                "receivedTime": "2023-09-17T12:00:00Z",
+                "remediationTimestamp": "2023-09-17T12:30:00Z"  # Outside window (before start_time)
+            }
+        ]
+    }
+
+    client = mock_client(mocker, response=mock_response)
+
+    # Define time window that includes only the first two messages
+    start_datetime = datetime(2023, 9, 17, 14, 0, 0, tzinfo=UTC)
+    end_datetime = datetime(2023, 9, 17, 17, 0, 0, tzinfo=UTC)
+
+    incidents = generate_threat_incidents(client, [{'threatId': 'test-threat-id'}], 1, start_datetime, end_datetime)
+
+    # Verify we get one incident
+    assert len(incidents) == 1
+
+    # Verify the incident contains only the messages within the time window
+    incident_data = json.loads(incidents[0]['rawJSON'])
+    assert len(incident_data['messages']) == 2
+
+    # Verify the filtered messages are the ones we expect
+    remediation_times = [msg['remediationTimestamp'] for msg in incident_data['messages']]
+    assert '2023-09-17T15:30:00Z' in remediation_times
+    assert '2023-09-17T16:30:00Z' in remediation_times
+    assert '2023-09-17T12:30:00Z' not in remediation_times
