@@ -539,7 +539,7 @@ def create_instance(args):
         )
         if "disks" not in config:
             config.update({"disks": [{}]})
-        if "initializeParams" not in config["disks"][0].keys():
+        if "initializeParams" not in config["disks"][0]:
             config["disks"][0].update({"initializeParams": {}})
         if "sourceImageEncryptionKey" not in config["disks"][0]["initializeParams"]:
             config["disks"][0]["initializeParams"].update({"sourceImageEncryptionKey": {}})

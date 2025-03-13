@@ -154,7 +154,7 @@ def matis_create_note_command(client, args):
     if "note" in resp:
         return "Note successfully added"
     else:
-        return_error(str(resp)) # noqa: RET503
+        return_error(str(resp))  # noqa: RET503
 
 
 def main():

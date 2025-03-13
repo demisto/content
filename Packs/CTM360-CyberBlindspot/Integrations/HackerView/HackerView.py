@@ -428,7 +428,7 @@ def fetch_incidents(
 
     max_fetch = arg_to_number(params.get("max_hits")) or MAX_FETCH
     if max_fetch and len(incidents) > max_fetch:
-        log(INFO,  f"Incidents fetched exceed the limit, removing the excess {len(incidents) - max_fetch} incidents.")
+        log(INFO, f"Incidents fetched exceed the limit, removing the excess {len(incidents) - max_fetch} incidents.")
         incidents = incidents[:: max_fetch - 1]
 
     if not incidents and not last_run:
