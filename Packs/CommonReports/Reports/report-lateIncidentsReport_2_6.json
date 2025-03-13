@@ -2,7 +2,7 @@
     "id": "lateIncidentsReport",
     "name": "Late Incidents",
     "description": "All the incidents that passed their SLA due date and the incidents that are at risk to soon pass their SLA.",
-    "fromVersion": "5.0.0",
+    "fromVersion": "9.0.0",
     "tags": [],
     "createdBy": "DBot",
     "type": "pdf",
@@ -569,6 +569,5 @@
                 "classes": "striped stackable small very compact"
             }
         }
-    ],
-    "toVersion": "8.9.0"
+    ]
 }
