@@ -255,7 +255,7 @@ def parse_event_time_to_date_time(event: dict = {}, event_time: str = "") -> dat
     if "." in event_time:
         event_time = event_time.strip("Z")
         seconds, micro_z = event_time.split(".")
-        event_time = seconds + "." + micro_z[:3] + "Z"
+        event_time = seconds + "." + micro_z[:6] + "Z"
     try:
         event_date_time = datetime.strptime(event_time, DATE_FORMAT_WITH_MILLISECOND)
     except Exception as e:
