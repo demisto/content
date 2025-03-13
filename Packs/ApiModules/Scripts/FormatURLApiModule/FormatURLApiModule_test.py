@@ -158,7 +158,8 @@ FORMAT_IPv4 = [
     ('http://142.42.1.1:8080/', 'http://142.42.1.1:8080/'),  # disable-secrets-detection
     ('http://142.42.1.1:8080', 'http://142.42.1.1:8080'),  # disable-secrets-detection
     ('http://223.255.255.254', 'http://223.255.255.254'),  # disable-secrets-detection
-    ('https://86834311/test', 'https://5.44.252.135/test'),  # disable-secrets-detection
+    ('https://3232235777/test', 'https://192.168.1.1/test'),  # disable-secrets-detection
+    ('https://0xC0.0250.257/test', 'https://192.168.1.1/test'),  # disable-secrets-detection
 ]
 
 FORMAT_IPv6 = [
@@ -175,6 +176,7 @@ FORMAT_PATH = [
     ('www.test.com/check', 'www.test.com/check'),  # disable-secrets-detection
     ('https://test.com/Test\\"', 'https://test.com/Test'),  # disable-secrets-detection
     ('https://www.test.com/a\\', 'https://www.test.com/a'),  # disable-secrets-detection
+    ('https://aaa.aaa/test', 'https://aaa.aaa/test'),  # disable-secrets-detection
 ]
 
 FORMAT_QUERY = [
