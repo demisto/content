@@ -153,11 +153,13 @@ function genericPollingScheduled(){
             var currentTime = new Date();
 
             if (currentTime >= endTime) {
+                logInfo('Polling stopped prematurely: End time reached.');
                 return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
             }
         }
         else {
             if (args.timeout <= 0) {
+                logInfo('Polling stopped prematurely: Timeout reached.');
                 return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
             }
         }
@@ -226,6 +228,7 @@ function genericPollingScheduled(){
         return res;
     }
     catch (err) {
+        logError('An error occurred during polling: ' + err.message);
         finish(args.playbookId, args.tag, err, args.scheduledEntryGuid);
         throw err;
     }
