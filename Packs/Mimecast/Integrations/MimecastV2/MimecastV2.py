@@ -2174,7 +2174,6 @@ def fetch_incidents():
                     'dedup_held_messages': next_dedup_held_messages,
                     'time_held_messages': time_held_messages}
     if next_page:
-        new_last_run["nextTrigger"] = "0"
         new_last_run['held_message_next_page'] = next_page
         new_last_run['time_held_messages_for_next_page'] = last_fetch_held_messages.isoformat().split('.')[0] + 'Z'
     demisto.setLastRun(new_last_run)

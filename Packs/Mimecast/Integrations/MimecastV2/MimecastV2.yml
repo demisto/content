@@ -152,6 +152,7 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
+  additionalinfo: Please set the Incidents Fetch Interval to a maximum of 15 minutes if the number of incidents is expected to exceed the specified max fetch limit in each fetch cycle.
 description: Mimecast unified email management offers cloud email services for email security, continuity and archiving emails. Please read detailed instructions in order to understand how to set the integration's parameters.
 display: Mimecast v2-549ea45
 name: MimecastV2-549ea45
