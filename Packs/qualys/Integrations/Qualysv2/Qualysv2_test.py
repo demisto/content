@@ -28,6 +28,7 @@ from Qualysv2 import (
     get_vulnerabilities,
     get_activity_logs_events_command,
     send_assets_and_vulnerabilities_to_xsiam,
+    set_assets_last_run_with_new_limit,
     fetch_events, get_activity_logs_events,
     fetch_assets, fetch_vulnerabilities,
     fetch_assets_and_vulnerabilities_by_date,
@@ -1649,6 +1650,28 @@ def test_get_vulnerabilities_valid_inputs(
     assert http_request_kwargs["params"] == expected_params
 
 
+def test_set_assets_last_run_with_new_limit():
+    """
+    Given:
+        - A last run dictionary with fetch stage, total assets count, and snapshot ID.
+
+    When:
+        - Calling set_assets_last_run_with_new_limit.
+
+    Assert:
+        - Ensure last_run is correctly updated with half 'limit', 'nextTrigger' 0, and 'type' 1.
+    """
+    last_run = {'stage': 'assets', 'total_assets': 10, 'snapshot_id': SNAPSHOT_ID}
+    updated_last_run = set_assets_last_run_with_new_limit(last_run, limit=HOST_LIMIT)
+
+    assert updated_last_run == {
+        **last_run,
+        'nextTrigger': '0',
+        'type': 1,  # assets
+        'limit': HOST_LIMIT // 2,
+    }
+
+
 @freeze_time("2025-01-01 00:00:00 UTC")
 def test_fetch_assets_and_vulnerabilities_by_date_assets_stage(mocker: MockerFixture, client: Client):
     """
@@ -1720,6 +1743,45 @@ def test_fetch_assets_and_vulnerabilities_by_date_vulnerabilities_stage(mocker: 
     assert send_data_to_xsiam_kwargs['product'] == 'vulnerabilities'
 
     assert next_run == DEFAULT_LAST_ASSETS_RUN  # pulling finished, next run stage should be assets
+
+
+def test_fetch_assets_and_vulnerabilities_by_date_set_new_limit(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - Qualys client and last run dictionary with fetch stage, total assets count, and snapshot ID.
+
+    When:
+        - Calling fetch_assets_and_vulnerabilities_by_date with the "assets" stage results in a request read timeout.
+
+    Assert:
+        - Ensure no data is sent to XSIAM and module health is not updated.
+        - Ensure assets next run is correctly set with the half of the original host limit, same snapshot ID, and next trigger 0.
+    """
+    last_total_assets = 10
+    last_run = {'stage': 'assets', 'total_assets': last_total_assets, 'snapshot_id': SNAPSHOT_ID}
+
+    assets, next_page, set_new_limit = [], '', True  # assume request read timeout, so `set_new_limit` flag returned is True
+    mocker.patch('Qualysv2.get_host_list_detections_events', return_value=(assets, next_page, set_new_limit))
+
+    mock_send_data_to_xsiam = mocker.patch('Qualysv2.send_data_to_xsiam')
+    mock_update_module_health = mocker.patch('Qualysv2.demisto.updateModuleHealth')
+    mock_set_assets_last_run = mocker.patch('Qualysv2.demisto.setAssetsLastRun')
+
+    fetch_assets_and_vulnerabilities_by_date(client, last_run)
+    assets_next_run = mock_set_assets_last_run.call_args[0][0]
+
+    assert mock_send_data_to_xsiam.call_count == 0
+    assert mock_update_module_health.call_count == 0
+
+    assert mock_set_assets_last_run.call_count == 1
+    assert assets_next_run == {
+        'stage': 'assets',
+        'total_assets': last_total_assets,
+        'snapshot_id': SNAPSHOT_ID,
+        'limit': HOST_LIMIT // 2,
+        'nextTrigger': '0',
+        'type': 1,  # assets
+    }
 
 
 @freeze_time("2025-01-01 00:00:00 UTC")

@@ -2088,7 +2088,7 @@ Updates the state of one or more alerts.
 ### ip
 
 ***
-Returns reputation lookup for an IP address found in Xpanse.
+(Deprecated as of version 1.2.7) Returns reputation lookup for an IP address found in Cortex Xpanse.
 
 #### Base Command
 
@@ -2263,7 +2263,7 @@ If the indicator was updated in Cortex XSOAR in the last 3 days:
 ### domain
 
 ***
-Returns reputation lookup for an domain found in Cortex Xpanse.
+(Deprecated as of version 1.2.7) Returns reputation lookup for an domain found in Cortex Xpanse.
 
 #### Base Command
 
