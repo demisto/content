@@ -2149,10 +2149,8 @@ def fetch_incidents():
                 demisto.debug(
                     f"Did not appended impersonation_logs with name {incident.get('name')} since {temp_date=}<= {current_fetch=}")
     if FETCH_HELD_MESSAGES:
-        # Added dedup mechanism only to held_messages due to a bug
+        # Re-write fetching held_messages due to a bug but no testing data in our instance
         dedup_held_messages = last_run.get('dedup_held_messages', [])
-        if not isinstance(dedup_held_messages, List):
-            raise DemistoException(f"dedup_held_messages is of type {type(dedup_held_messages)}")
         current_next_page = last_run.get('held_message_next_page', '')
         time_held_messages_for_next_page = last_run.get('time_held_messages_for_next_page')
         time_held_messages_for_next_page_date_time = ''
@@ -2163,20 +2161,22 @@ def fetch_incidents():
         demisto.debug(f"{current_next_page=}")
         demisto.debug(f"{dedup_held_messages=}")
         demisto.debug(f"{time_held_messages_for_next_page=}")
-        held_message_next_page, next_dedup_held_messages, new_last_fetch_held_messages = fetch_held_messages(last_fetch_held_messages_date_time,
-                                                                                                time_held_messages_for_next_page_date_time,
-                                                                                                last_fetch_held_messages,
-                                                                                                current_fetch_held_message,
-                                                                                                dedup_held_messages,
-                                                                                                current_next_page,
-                                                                                                incidents)
+        held_message_next_page, next_dedup_held_messages, new_last_fetch_held_messages = fetch_held_messages(
+            last_fetch_held_messages_date_time,
+            time_held_messages_for_next_page_date_time,
+            last_fetch_held_messages,
+            current_fetch_held_message,
+            dedup_held_messages,
+            current_next_page,
+            incidents
+        )
 
     time = last_fetch.isoformat().split('.')[0] + 'Z'
     new_last_run = {'time': time}
     if next_dedup_held_messages:
         new_last_run = {'time': time,
                         'dedup_held_messages': next_dedup_held_messages
-        }
+                        }
     if new_last_fetch_held_messages:
         time_held_messages = new_last_fetch_held_messages.isoformat().split('.')[0] + 'Z'
         new_last_run['time_held_messages'] = time_held_messages
