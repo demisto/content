@@ -17,7 +17,6 @@ alter
 		get_category = "guard", "Guard"),
 	xdm.source.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AZURE,
 	xdm.target.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AZURE,
-	// xdm.target.cloud.service = XDM_CONST.CLOUD_SERVICE_TYPE_AZURE_KUBERNETES_SERVICE, 
 	xdm.target.resource.id = resourceId,
 	xdm.target.host.hostname = coalesce(properties -> pod, PodName),
 	xdm.event.log_level = if(Level = "INFO", XDM_CONST.LOG_LEVEL_INFORMATIONAL, get_properties_stream = "stderr", XDM_CONST.LOG_LEVEL_ERROR, get_properties_stream = "stdout", XDM_CONST.LOG_LEVEL_INFORMATIONAL),
@@ -88,8 +87,6 @@ alter
 	xdm.source.user.username = get_properties_log_user_username,
 	xdm.source.user.identifier = get_properties_log_user_uid,
 	xdm.source.user.groups = get_properties_log_user_groups,
-	// xdm.source.user.group.number_of_groups = array_length(get_properties_log_user_groups),
-	// xdm.source.user.group.is_empty = if(get_properties_log_user_groups = null),
 	xdm.source.host.ipv4_addresses = arraymap(check_properties_log_sourceIPs_ipv4, if(
         incidr("@element", "10.0.0.0/8")
         or incidr("@element", "172.16.0.0/12")
@@ -224,9 +221,6 @@ config case_sensitive = true
 	get_golang_settings_GOGC = if(get_properties_log_alertDescription ~= "Golang settings", arrayindex(regextract(get_properties_log_alertDescription, "GOGC=\\?\"([^\\\"]+)"), 0)),
 	get_golang_settings_GOMAXPROCS = if(get_properties_log_alertDescription ~= "Golang settings", arrayindex(regextract(get_properties_log_alertDescription, "GOMAXPROCS=\\?\"([^\\\"]+)"), 0)),
 	get_golang_settings_GOTRACEBACK = if(get_properties_log_alertDescription ~= "Golang settings", arrayindex(regextract(get_properties_log_alertDescription, "GOTRACEBACK=\\?\"([^\\\"]+)"), 0)),
-	// get_cert_name = if(get_properties_log_alertSource ~= "tlsconfig|named_certificates|configmap_cafile_content", arrayindex(regextract(get_properties_log_alertDescription, "name=\\?\"([^\\\"]+)"), 0)),
-	// get_cert_certName = if(get_properties_log_alertSource ~= "tlsconfig|named_certificates|configmap_cafile_content", arrayindex(regextract(get_properties_log_alertDescription, "certName=\\?\"([^\\\"]+)"), 0)),
-	// get_cert_certDetail = if(get_properties_log_alertSource ~= "tlsconfig|named_certificates|configmap_cafile_content", arrayindex(regextract(get_properties_log_alertDescription, "certDetail=\\?\"([^\\\"]+)"), 0)),
 	get_cert_issuer = if(get_properties_log_alertSource ~= "tlsconfig|named_certificates|configmap_cafile_content", arrayindex(regextract(get_properties_log_alertDescription, "issuer=\\?\"([^\\\"]+)"), 0)),
 	get_cert_validServingFor = split(if(get_properties_log_alertSource ~= "tlsconfig|named_certificates|configmap_cafile_content", arrayindex(regextract(get_properties_log_alertDescription, "validServingFor=\[([^\]]*)\]"), 0)), ","),
 	get_pod = arrayindex(regextract(get_properties_log_alertDescription, "pod=\\?\"([^\\\"]+)"), 0),
@@ -244,11 +238,7 @@ config case_sensitive = true
 	xdm.source.host.hostname = get_pod,
 	xdm.event.operation_sub_type = operationName,
 	xdm.network.tls.client_certificate.issuer = if(check_cert_client, get_cert_issuer),
-	// xdm.network.tls.client_certificate.subject_details.alternative_names = if(check_cert_client, arraycreate(get_cert_certDetail)),
-	// xdm.network.tls.client_certificate.id = if(check_cert_client, coalesce(get_cert_name, get_cert_certName)),
 	xdm.network.tls.server_certificate.issuer = if(check_cert_server, get_cert_issuer),
-	// xdm.network.tls.server_certificate.subject_details.alternative_names = if(check_cert_server, arraycreate(get_cert_certDetail)),
-	// xdm.network.tls.server_certificate.id = if(check_cert_server, coalesce(get_cert_name, get_cert_certName)),
 	xdm.target.host.ipv4_addresses = check_cert_validServingFor_ipv4,
 	xdm.target.host.ipv6_addresses = check_cert_validServingFor_ipv6,
 	xdm.event.description = get_properties_log_alertDescription,
