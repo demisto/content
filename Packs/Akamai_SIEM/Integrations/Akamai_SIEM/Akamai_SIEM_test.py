@@ -795,11 +795,12 @@ def test_test_fetch_events_long_running_command_flow(mocker, client, caplog):
     caplog.clear()
 
 def test_hayun():
-    from Integrations.Akamai_SIEM.CommonServerPython import support_multithreading, return_error
+    import CommonServerPython
+    from CommonServerPython import support_multithreading, return_error
     import concurrent.futures
     INTEGRATION_NAME = "AKAMAI"
     data_size = 0
-    support_multithreading()
+    # support_multithreading()
     futures = []
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=10)
     for i in range(2):

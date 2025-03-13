@@ -1132,12 +1132,12 @@ def send_events_to_xsiam_akamai(events, vendor, product, data_format=None, url_k
 
 def my_test_func(i):
     import requests
-    demisto.info(f"[test] {i} with one thread.")
+    demisto.info(f"[test] in thread number {i}.")
 
     # A POST request to the API
-    # response = requests.post("https://jsonplaceholder.typicode.com/posts", json={})
-    # demisto.info(f"[test] [test] Response status code: {response.status_code}")
-    demisto.info("[test] [test] Response content:")
+    response = requests.post("https://jsonplaceholder.typicode.com/posts", json={})
+    demisto.info(f"[test] [test] Response status code: {response.status_code}")
+    # demisto.info("[test] [test] Response content:")
     # Print the response
     raise DemistoException("test test test", DemistoException)
     return i
@@ -1197,6 +1197,10 @@ def main():  # pragma: no cover
                     data_size += future.result()
             except Exception as e:
                 demisto.info(f"[test] {e}")
+            # try:
+            #     my_test_func(1)
+            # except Exception as e:
+            #     demisto.info(f"[test] {e}")
             e = "failure."
             err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
             demisto.info("[test] returning an error.")

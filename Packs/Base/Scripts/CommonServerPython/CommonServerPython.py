@@ -1684,6 +1684,7 @@ class IntegrationLogger(object):
         self.buffering = state
 
     def print_log(self, verbose=False):
+        demisto.info(f"[test] preparing to print logs with {verbose=}")
         if self.write_buf:
             self.messages.append("".join(self.write_buf))
         if self.messages:
@@ -8829,6 +8830,7 @@ class DebugLogger(object):
     """
 
     def __init__(self):
+        demisto.info("[test] init DebugLogger")
         self.handler = None  # just in case our http_client code throws an exception. so we don't error in the __del__
         self.int_logger = IntegrationLogger()
         self.int_logger.set_buffering(False)
@@ -8856,6 +8858,7 @@ class DebugLogger(object):
         self.root_logger.addHandler(self.handler)
 
     def __del__(self):
+        demisto.info("[test] remove DebugLogger")
         if self.handler:
             self.root_logger.setLevel(self.prev_log_level)
             self.root_logger.removeHandler(self.handler)
