@@ -1532,7 +1532,8 @@ def ip_lookup_command(client: Client, ip: str) -> CommandResults:
                     "First Observed Date (UTC)": arg_to_datetime(indicator.get("first_observed_at")).strftime(  # type: ignore
                         READABLE_DATE_FORMAT
                     ),
-                    "Last Observed Date (UTC)": arg_to_datetime(indicator.get("last_observed_at")).strftime(READABLE_DATE_FORMAT),  # type: ignore
+                    "Last Observed Date (UTC)": arg_to_datetime(indicator.get("last_observed_at")).strftime(    # type: ignore
+                        READABLE_DATE_FORMAT),
                     "Title": indicator.get("title", EMPTY_DATA),
                     "Site": indicator.get("site", EMPTY_DATA),
                     "Enrichments": filter_enrichments,
