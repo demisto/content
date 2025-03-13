@@ -1,0 +1,3 @@
+[INGEST:vendor="alibaba", product="action-trail", target_dataset="alibaba_action_trail_raw", no_hit=keep]
+filter __time__ ~= "\d+"
+| alter  _time = timestamp_seconds(to_integer(__time__));
