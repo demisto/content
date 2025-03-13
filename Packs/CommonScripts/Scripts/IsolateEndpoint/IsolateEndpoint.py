@@ -51,7 +51,6 @@ def initialize_commands() -> list:
             brand='Cortex Core - IR',
             name='core-isolate-endpoint',
             arg_mapping={'endpoint_id': 'agent_id'},
-            pre_command_check=None
         ),
         # Command(
         # TODO to get credentials
@@ -64,31 +63,28 @@ def initialize_commands() -> list:
             brand='Cortex XDR - IR',
             name='xdr-endpoint-isolate',
             arg_mapping={'endpoint_id': 'agent_id'},
-            pre_command_check=None,
         ),
         Command(
             brand='CrowdstrikeFalcon',
             name='cs-falcon-contain-host',
             arg_mapping={'ids': 'agent_id'},
-            pre_command_check=None,
         ),
         Command(
             brand='FireEyeHX v2',
             name='fireeye-hx-host-containment',
             arg_mapping={'agentId': 'agent_id', 'hostName': 'agent_hostname'},  # command can use agentId or hostName
-            pre_command_check=None,
         ),
         Command(
             brand='VMware Carbon Black EDR v2',
             name='cb-edr-quarantine-device',
             arg_mapping={'sensor_id': 'agent_id'},
-            pre_command_check=None,
         ),
         Command(
             brand='Microsoft Defender Advanced Threat Protection',
             name='microsoft-atp-isolate-machine',
             arg_mapping={'machine_id': 'agent_id'},
-            hard_coded_args={'isolation_type': 'Full', 'comment': 'Isolated endpoint with IsolateEndpoint command.'},
+            hard_coded_args={'isolation_type': 'Full',
+                             'comment': 'Isolated endpoint with IsolateEndpoint command.'},
             pre_command_check=check_conditions_microsoft_atp_isolate_machine
         ),
     ]
@@ -158,16 +154,12 @@ class ModuleManager:
 """ PREPROCESS FUNCTIONS """
 
 
-def check_conditions_cybereason_isolate_machine(verbose: bool,
-                                                outputs: list,
-                                                human_readable_outputs: list,
-                                                args: dict,
+def check_conditions_cybereason_isolate_machine(verbose: bool, outputs: list, human_readable_outputs: list, args: dict,
                                                 endpoint_data: dict):
     cybereason_is_probe_connected_command = Command(
         brand='Cybereason',
         name='cybereason-is-probe-connected',
         arg_mapping={'machine': 'agent_hostname'},
-        pre_command_check=None,
     )
     if are_there_missing_args(cybereason_is_probe_connected_command, args):
         create_message_to_context_and_hr(args=args,
@@ -200,10 +192,7 @@ def check_conditions_cybereason_isolate_machine(verbose: bool,
     return True
 
 
-def check_conditions_microsoft_atp_isolate_machine(verbose: bool,
-                                                   outputs: list,
-                                                   human_readable_outputs: list,
-                                                   args: dict,
+def check_conditions_microsoft_atp_isolate_machine(verbose: bool, outputs: list, human_readable_outputs: list, args: dict,
                                                    endpoint_data: dict) -> bool:
     demisto.debug(f'This is the endpoint data from Microsoft {endpoint_data=}')
     status = endpoint_data.get('Status')
@@ -295,15 +284,15 @@ def is_endpoint_isolatable(endpoint_data: dict, force: bool, server_os_list: lis
     demisto.debug(f'Checking if endpoint is isolatable with {server_status=}, {is_isolated=}, {server=}, {force=}')
 
     if server and (server in SERVERS_RELEASES or server in server_os_list) and not force:
-        message = 'The endpoint is a server, therefore aborting isolation.'
+        message += 'The endpoint is a server, therefore aborting isolation.'
         is_isolation_possible = False
 
-    elif is_isolated == 'Yes':
-        message = 'The endpoint is already isolated.'
+    if is_isolated == 'Yes':
+        message += 'The endpoint is already isolated.'
         is_isolation_possible = False
 
-    elif server_status == 'Offline':
-        message = 'The endpoint is offline.'
+    if server_status == 'Offline':
+        message += 'The endpoint is offline.'
         is_isolation_possible = False
 
     if not is_isolation_possible:
@@ -418,17 +407,19 @@ def check_which_args_missing_in_output(zipped_args: list, valid_args: list, outp
         agent_id = args.get('agent_id', '')
         agent_ip = args.get('agent_ip', '')
         agent_hostname = args.get('agent_hostname', '')
+        are_args_found = False
         for entry in valid_args:
             if (agent_id and entry.get('agent_id') == agent_id) or \
                (agent_hostname and entry.get('agent_hostname') == agent_hostname) or \
-               (agent_ip and entry.get('agent_ip') == agent_ip):
-                return True
-        create_message_to_context_and_hr(args=args,
-                                         result='Fail',
-                                         message='Did not find information on endpoint in any available brand.',
-                                         outputs=outputs,
-                                         human_readable_outputs=human_readable_outputs,
-                                         verbose=verbose)
+               (agent_ip and entry.get('agent_ip') == agent_ip):  # Checks if any of the args exists in valid_args
+                are_args_found = True
+        if not are_args_found:
+            create_message_to_context_and_hr(args=args,
+                                             result='Fail',
+                                             message='Did not find information on endpoint in any available brand.',
+                                             outputs=outputs,
+                                             human_readable_outputs=human_readable_outputs,
+                                             verbose=verbose)
 
 
 def get_args_from_endpoint_data(endpoint_data: dict) -> dict:
@@ -459,12 +450,20 @@ def structure_endpoints_data(get_endpoint_data_results: dict | list | None) -> l
     Returns:
         list: A structured list containing the entry of the context, excluding None values.
     """
-    if get_endpoint_data_results:
-        if not isinstance(get_endpoint_data_results, list):
-            get_endpoint_data_results = [get_endpoint_data_results]
-        # remove None values
-        return [item for item in get_endpoint_data_results if item is not None]
-    return []
+    if not get_endpoint_data_results:
+        return []
+
+    if not isinstance(get_endpoint_data_results, list):
+        get_endpoint_data_results = [get_endpoint_data_results]
+
+    # Remove None values
+    structured_list = [item for item in get_endpoint_data_results if item is not None]
+
+    # Removing None values ensures we keep only the valid data inside a list.
+    if structured_list and isinstance(structured_list[0], list):
+        return structured_list[0]
+
+    return structured_list
 
 
 def handle_raw_response_results(command: Command, raw_response: dict, args, outputs: list, human_readable_outputs: list,
@@ -501,9 +500,6 @@ def handle_raw_response_results(command: Command, raw_response: dict, args, outp
 def main():
     try:
         args = demisto.args()
-        # args = {
-        #     'agent_hostname': 'WIN10X64'}
-        # 'agent_hostname': 'DC1ENV11ADC01,DC1ENV11ADC02,falcon-crowdstrike-sensor-centos7,Arts-MacBook-Pro,example1'}
         agent_ids = argToList(args.get("agent_id", []))
         agent_ips = argToList(args.get("agent_ip", []))
         agent_hostnames = argToList(args.get("agent_hostname", []))
@@ -515,12 +511,11 @@ def main():
         module_manager = ModuleManager(demisto.getModules(), brands_to_run)
         commands = initialize_commands()
         zipped_args = map_zipped_args(agent_ids, agent_ips, agent_hostnames)
-        demisto.debug(f'zipped_args={zipped_args}')
 
-        endpoint_data_results = structure_endpoints_data(execute_command(
-            command="get-endpoint-data-modified", args=args))  # todo to change name back
+        endpoint_data_results = structure_endpoints_data(execute_command(command="get-endpoint-data-modified", args=args))
+        # todo to change name back
 
-        demisto.debug(f'these are the results from get_endpoint_data_results execute_command {endpoint_data_results}')
+        demisto.debug(f'These are the results from get_endpoint_data_results execute_command {endpoint_data_results}')
 
         outputs: list = []
         human_readable_outputs: list = []
@@ -529,27 +524,21 @@ def main():
         for endpoint_data in endpoint_data_results:
             args = get_args_from_endpoint_data(endpoint_data)
             args_from_endpoint_data.append(args)
-            endpoint_isolatable = is_endpoint_isolatable(endpoint_data, force, server_os_list, args, outputs,
-                                                                  human_readable_outputs, verbose)
-            if not endpoint_isolatable:
+            if not is_endpoint_isolatable(endpoint_data, force, server_os_list, args, outputs,
+                                          human_readable_outputs, verbose):
                 continue
-
             for command in commands:
                 if command.brand != args.get('agent_brand'):
                     demisto.debug(f'Skipping command {command.name} with {args=},'
                                   f'as its brand does not match the endpoint brand.')
                     continue
                 demisto.debug(f'executing command {command.name} with {args=}')
-                if command.pre_command_check and not command.pre_command_check(verbose=verbose,
-                                                                               outputs=outputs,
-                                                                               human_readable_outputs=human_readable_outputs,
-                                                                               args=args,
-                                                                               endpoint_data=endpoint_data):
+                if command.pre_command_check and not command.pre_command_check(verbose, outputs, human_readable_outputs, args,
+                                                                               endpoint_data):
                     continue
                 if not check_module_and_args_for_command(module_manager, verbose, command, outputs, human_readable_outputs,
                                                          args):
                     continue
-
                 mapped_args = map_args(command, args)
                 raw_response = demisto.executeCommand(command.name, mapped_args)
                 demisto.debug(f'Got raw response for execute_command {command.name} with {args=}: {raw_response=}')
@@ -563,7 +552,6 @@ def main():
             outputs=outputs,
             readable_output=readable_output,
         )
-        demisto.debug(f'these are the args from get_endpoint_data {args_from_endpoint_data}')
 
     except Exception as e:
         demisto.debug(f"Failed to execute isolate-endpoint. Error: {str(e)}")

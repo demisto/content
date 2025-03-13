@@ -1,6 +1,6 @@
 from IsolateEndpoint import *
 import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 
 @pytest.fixture
@@ -114,19 +114,16 @@ def test_structure_endpoints_data():
 
 
 @patch('IsolateEndpoint.create_message_to_context_and_hr')
-def test_do_args_exist_in_valid(mock_create_message):
+def test_check_which_args_missing_in_output(mock_create_message):
     """
     Given:
-        Different cases where the args dictionary contains agent_id, agent_ip, or agent_hostname.
+        - Different cases where `zipped_args` contain agent details that may or may not be in `valid_args`.
     When:
-        The do_args_exist_in_valid function is called with a list of valid_args.
+        - The `check_which_args_missing_in_output` function is called.
     Then:
-        It returns True if any match is found, otherwise False.
+        - It should call `create_message_to_context_and_hr` when an agent is missing.
+        - It should not call `create_message_to_context_and_hr` when an agent is found.
     """
-    zipped_args = [
-        {'agent_id': '123', 'agent_ip': '192.168.1.1', 'agent_hostname': 'host1'},
-        {'agent_id': '456', 'agent_ip': '192.168.1.2', 'agent_hostname': 'host2'}
-    ]
     valid_args = [
         {'agent_id': '123', 'agent_ip': '192.168.1.1', 'agent_hostname': 'host1'},
         {'agent_id': '789', 'agent_ip': '192.168.1.3', 'agent_hostname': 'host3'}
@@ -134,15 +131,19 @@ def test_do_args_exist_in_valid(mock_create_message):
     outputs = []
     human_readable_outputs = []
     verbose = True
-
+    zipped_args = [
+        {'agent_id': '', 'agent_ip': '192.168.1.5', 'agent_hostname': 'host4'},
+        {'agent_id': '555', 'agent_ip': '192.168.1.6', 'agent_hostname': ''},
+        {'agent_id': '123', 'agent_ip': '', 'agent_hostname': ''},
+        {'agent_id': '', 'agent_ip': '192.168.1.1', 'agent_hostname': ''},
+        {'agent_id': '', 'agent_ip': '', 'agent_hostname': 'host1'},
+        {'agent_id': '', 'agent_ip': '192.168.1.1', 'agent_hostname': 'host1'},
+        {'agent_id': '456', 'agent_ip': '', 'agent_hostname': 'host2'}
+    ]
     check_which_args_missing_in_output(
         zipped_args, valid_args, outputs, human_readable_outputs, verbose
     )
-    zipped_args = [{'agent_id': '999', 'agent_ip': '192.168.1.5', 'agent_hostname': 'host4'}]
-    check_which_args_missing_in_output(
-        zipped_args, valid_args, outputs, human_readable_outputs, verbose)
-
-    mock_create_message.assert_called_once()
+    assert mock_create_message.call_count == 3
 
 
 def test_map_zipped_args():
@@ -306,8 +307,8 @@ def test_handle_raw_response_results():
     verbose = True
 
     with patch('IsolateEndpoint.is_error') as mock_is_error, \
-         patch('IsolateEndpoint.get_error') as mock_get_error, \
-         patch('IsolateEndpoint.create_message_to_context_and_hr') as mock_create_message:
+            patch('IsolateEndpoint.get_error') as mock_get_error, \
+            patch('IsolateEndpoint.create_message_to_context_and_hr') as mock_create_message:
 
         mock_is_error.return_value = True
         mock_get_error.return_value = 'Some error occurred'
