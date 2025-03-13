@@ -273,6 +273,7 @@ def test_generate_workday_account_signons_body() -> None:
         tenant_name="test_tenant",
         username="test_user",
         password="test_pass",
+        api_version='v40.0',
     )
 
     # When: Generate the SOAP request body
@@ -317,6 +318,7 @@ def test_generate_test_payload() -> None:
         tenant_name="test_tenant",
         username="test_user",
         password="test_pass",
+        api_version='v40.0',
     )
 
     # When: Generate the SOAP request payload for testing
@@ -411,6 +413,7 @@ class TestFetchSignOnLogs(unittest.TestCase):
             "mock_tenant",
             "mock_user",
             "mock_pass",
+            api_version='v40.0',
         )
 
     @patch.object(Client, "retrieve_events")
@@ -497,6 +500,7 @@ class TestGetSignOnEventsCommand(unittest.TestCase):
                 "mock_tenant",
                 "mock_user",
                 "mock_pass",
+                api_version='v40.0',
             )
 
             # When: Calling the get_sign_on_events_command
@@ -560,6 +564,7 @@ def test_fetch_sign_on_events_command_single_page() -> None:
             "mock_tenant",
             "mock_user",
             "mock_pass",
+            api_version='v40.0',
         )
         events, new_last_run = fetch_sign_on_events_command(client, 10, mock_last_run)
 
@@ -658,6 +663,7 @@ def test_escaping_user_name(username, escaped_username, password, escaped_passwo
         "mock_tenant",
         username,
         password,
+        api_version='v40.0',
     )
     assert client.username == escaped_username
     assert client.password == escaped_password
