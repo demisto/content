@@ -3647,6 +3647,75 @@ def get_machine_data(machine):
     return machine_data
 
 
+def get_machine_software_data(machine_software):
+    """Get machine raw response and returns the machine's software info in context and human readable format.
+
+    Returns:
+        dict. Machine's software info
+    """
+    machine_software_data = assign_params(
+        ID=machine_software.get('id'),
+        Name=machine_software.get('name'),
+        Vendor=machine_software.get('vendor'),
+        Weakness=machine_software.get('weakness'),
+        PublicExploit=machine_software.get('publicExploit'),
+        ActiveAlerts=machine_software.get('activeAlert'),
+        ExposedMachines=machine_software.get('exposedMachines'),
+        InstalledMachines=machine_software.get('installedMachines'),
+        ImpactScore=machine_software.get('impactScore'),
+        IsNormalized=machine_software.get('isNormalized'),
+        Category=machine_software.get('category'),
+    )
+    return machine_software_data
+
+
+def get_machine_missing_kb_data(missing_kb):
+    """Get machine missing KB raw response and returns the machine's missing KB info in context and human readable format.
+
+    Returns:
+        dict. Machine's missing KB info
+    """
+    missing_kb_data = assign_params(
+        ID=missing_kb.get('id'),
+        Name=missing_kb.get('name'),
+        OSBuild=missing_kb.get('osBuild'),
+        URL=missing_kb.get('url'),
+        MachinesMissedOn=missing_kb.get('machinesMissedOn'),
+        CVEAddressed=missing_kb.get('cveAddressed'),
+        ProductNames=missing_kb.get('productNames'),
+    )
+    return missing_kb_data
+
+
+def get_machine_vulnerability_data(vulnerabiliy):
+    """Get machine vulnerability raw response and returns the machine's vulnerability info in context and human readable format.
+
+    Returns:
+        dict. Machine's vulnerability info
+    """
+    vulnerability_data = assign_params(
+        ID=vulnerabiliy.get('id'),
+        Name=vulnerabiliy.get('name'),
+        CVESupportability=vulnerabiliy.get('cveSupportability'),
+        CVSSV3=vulnerabiliy.get('cvssV3'),
+        CVSSVector=vulnerabiliy.get('cvssVector'),
+        Description=vulnerabiliy.get('description'),
+        EPSS=vulnerabiliy.get('epss'),
+        ExploitInKit=vulnerabiliy.get('exploitInKit'),
+        ExploitTypes=vulnerabiliy.get('exploitTypes'),
+        ExploitURIs=vulnerabiliy.get('exploitURIs'),
+        ExploitVerified=vulnerabiliy.get('exploitVerified'),
+        ExposedMachines=vulnerabiliy.get('exposedMachines'),
+        FirstDetected=vulnerabiliy.get('firstDetected'),
+        PublicExploit=vulnerabiliy.get('publicExploit'),
+        PublishedOn=vulnerabiliy.get('publishedOn'),
+        Severity=vulnerabiliy.get('severity'),
+        Tags=vulnerabiliy.get('tags'),
+        UpdatedOn=vulnerabiliy.get('updatedOn')
+    )
+    return vulnerability_data
+
+
 def get_file_statistics_command(client: MsClient, args: dict) -> CommandResults:
     """Retrieves the statistics on the given file.
 
