@@ -23,7 +23,7 @@ MALICIOUS = 'suspicious'
 class Client(BaseClient):
     """
     Client will implement the service API, and should not contain any Demisto logic.
-    Should only do requests and return data.
+    Should only do requests and return data test.
     """
 
     def __init__(self, base_url, apikey, verify, proxy):
