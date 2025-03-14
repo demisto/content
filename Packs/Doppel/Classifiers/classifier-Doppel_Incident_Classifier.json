@@ -1,0 +1,18 @@
+{
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "Doppel-XSOAR integration classifier to classify the fetched incidents to Doppel_Incident_Test.",
+	"feed": false,
+	"id": "Doppel_Incident_Classifier",
+	"keyTypeMap": {},
+	"name": "Doppel_Incident_Classifier",
+	"propagationLabels": [
+		"all"
+	],
+	"transformer": {
+		"simple": "product"
+	},
+	"type": "classification",
+	"version": -1,
+	"fromVersion": "6.10.0"
+}

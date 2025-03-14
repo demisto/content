@@ -1,0 +1,21 @@
+{
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"id": "Doppel Outgoing_Mapper",
+	"mapping": {
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Queue State": {
+					"simple": "labels.queue_state"
+				}
+			}
+		}
+	},
+	"name": "Doppel Outgoing_Mapper",
+	"type": "mapping-outgoing",
+	"version": -1,
+	"fromVersion": "6.10.0"
+}
