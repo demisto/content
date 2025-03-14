@@ -2493,6 +2493,54 @@ def get_machines_list(machines_response):
     return machines_list
 
 
+def get_machine_softwares_list(machine_softwares_response):
+    """Get a raw response of machines softwares
+
+    Args:
+        Machine_softwares_response (dict): The raw response with the machines software list in it
+
+    Returns:
+        list. Machines list
+    """
+    machine_softwares_list = []
+    for machine_software in machine_softwares_response['value']:
+        machine_software_data = get_machine_software_data(machine_software)
+        machine_softwares_list.append(machine_software_data)
+    return machine_softwares_list
+
+
+def get_machine_missing_kbs_list(missing_kbs_response):
+    """Get a raw response of a machine's missing kbs
+
+    Args:
+        missing_kbs_response (dict): The raw response with the machines missing kbs list in it
+
+    Returns:
+        list. Machines list
+    """
+    missing_kbs_list = []
+    for kb in missing_kbs_response['value']:
+        missing_kb_data = get_machine_missing_kb_data(kb)
+        missing_kbs_list.append(missing_kb_data)
+    return missing_kbs_list
+
+
+def get_machine_vulnerabilities_list(vulnerabilities_response):
+    """Get a raw response of machine vulnerabilities
+
+    Args:
+        missing_kbs_response (dict): The raw response with the machines vulnerability list in it
+
+    Returns:
+        list. Machines list
+    """
+    vulnerabilities_list = []
+    for vuln in vulnerabilities_response['value']:
+        missing_kb_data = get_machine_vulnerability_data(vuln)
+        vulnerabilities_list.append(missing_kb_data)
+    return vulnerabilities_list
+
+
 def get_machine_mac_address(machine):
     """
     return the machine MAC address where “ipAddresses[].ipAddress” = “lastIpAddress”
@@ -2699,19 +2747,19 @@ def get_machine_software_command(client: MsClient, args: dict) -> CommandResults
     Returns:
         CommandResults.
     """
-    headers = ['id', 'name', 'vendor', 'weakness', 'publicExploit', 'activeAlert',
-               'exposedMachines', 'installedMachines', 'impactScore', "isNormalized", "category"]
+    headers = ['ID', 'Name', 'Vendor', 'Weakness', 'PublicExploit', 'ActiveAlert',
+               'ExposedMachines', 'InstalledMachines', 'ImpactScore', "IsNormalized", "Category"]
     machine_id = args.get("machine_id", "")
 
     raw_response = client.get_software_by_machine_id(machine_id)
-    software_outputs = raw_response.get('value')
+    software_outputs = get_machine_softwares_list(raw_response)
 
     human_readable = tableToMarkdown(f'{INTEGRATION_NAME} software on machine: {machine_id}',
                                      software_outputs, headers=headers, removeNull=True)
 
     return CommandResults(
         outputs_prefix='MicrosoftATP.Software',
-        outputs_key_field='id',
+        outputs_key_field='ID',
         outputs=software_outputs,
         readable_output=human_readable,
         raw_response=raw_response)
@@ -2726,19 +2774,19 @@ def get_machine_vulnerabilities_command(client: MsClient, args: dict) -> Command
     Returns:
         CommandResults.
     """
-    headers = ["id", "name", "cveSupportability", "cvssV3", "cvssVector", "description", "epss", "exploitInKit", "exploitTypes",
-               "exploitUris", "exploitVerified", "exposedMachines", "firstDetected", "publicExploit", "publishedOn", "severity", "tags", "updatedOn"]  # noqa: E501
+    headers = ["ID", "Name", "CVESupportability", "CVSSV3", "CVSSVector", "Description", "EPSS", "ExploitInKit", "ExploitTypes",
+               "ExploitURIs", "ExploitVerified", "ExposedMachines", "FirstDetected", "PublicExploit", "PublishedOn", "Severity", "Tags", "UpdatedOn"]  # noqa: E501
 
     machine_id = args.get("machine_id", "")
     raw_response = client.get_vulnerabilities_by_machine_id(machine_id)
-    vulns_outputs = raw_response.get('value')
+    vulns_outputs = get_machine_vulnerabilities_list(raw_response)
 
     human_readable = tableToMarkdown(f'{INTEGRATION_NAME} Vulnerabilities for machine: {machine_id}',
                                      vulns_outputs, headers=headers, removeNull=True)
 
     return CommandResults(
         outputs_prefix='MicrosoftATP.PublicVulnerability',
-        outputs_key_field='id',
+        outputs_key_field='ID',
         outputs=vulns_outputs,
         readable_output=human_readable,
         raw_response=raw_response)
@@ -2755,12 +2803,12 @@ def get_machine_missing_kbs_command(client: MsClient, args: dict) -> CommandResu
         CommandResults.
     """
 
-    headers = ['id', 'name', 'osBuild', 'url', 'machineMissedOn', 'cveAddressed', 'productNames']
+    headers = ['ID', 'Name', 'OSBuild', 'URL', 'MachineMissedOn', 'CVEAddressed', 'ProductNames']
     machine_id = args.get("machine_id", "")
 
     raw_response = client.get_missing_kbs_by_machine_id(machine_id)
 
-    missing_kbs_output = raw_response.get('value')
+    missing_kbs_output = get_machine_missing_kbs_list(raw_response)
 
     human_readable = tableToMarkdown(
         f"Missing Security Updates (KBs) for machine: {machine_id}",
@@ -2770,7 +2818,7 @@ def get_machine_missing_kbs_command(client: MsClient, args: dict) -> CommandResu
     return CommandResults(
         outputs_prefix="MicrosoftATP.PublicProductFix",
         outputs=missing_kbs_output,
-        outputs_key_field='id',
+        outputs_key_field='ID',
         readable_output=human_readable,
         raw_response=raw_response,
     )
