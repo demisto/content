@@ -1,20 +1,45 @@
 {
-    "name": "Anomali_Security_Analysis_Alerts",
-    "description": "Anomali security Analysis alerts",
-    "support": "developer",
+    "name": "Anomali Security Analytics",
+    "description": "The Anomali Security Analytics pack enables users to interact with Anomali ThreatStream’s XDR API to manage security alerts. It supports creating search jobs, monitoring their status, retrieving results, and updating alert statuses or comments, streamlining integration with Palo Alto XSOAR.",
+    "support": "partner",
     "currentVersion": "1.0.0",
-    "author": "Mhai",
-    "url": "",
-    "email": "",
+    "author": "Anomali",
+    "url": "www.anomali.com",
+    "email": "support@anomali.com",
     "categories": [
-        "Data Enrichment & Threat Intelligence"
+        "Data Enrichment & Threat Intelligence",
+        "Analytics & SIEM",
+        "Forensics & Malware Analysis",
+        "Network Security",
+        "Case Management"
+    ],      
+    "tags": [
+        "Alerts",
+        "Incident Response",
+        "Threat Intelligence",
+        "Threat Intelligence Management",
+        "Security Analytics",
+        "Palo Alto Networks Products",
+        "Malware",
+        "Network",
+        "Incident Handling",
+        "Use Case",
+        "MITRE ATT&CK",
+        "Forensics"
+    ],      
+    "created": "2025-03-14T00:00:00Z",
+    "useCases": [
+        "Threat Intelligence Management",
+        "Incident Response",
+        "Hunting",
+        "Case Management",
+        "Network Security",
+        "Malware",
+        "Phishing",
+        "Ransomware"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ],
-    "githubUser": []
+    "keywords": [
+        "Data Enrichment & Threat Intelligence",
+        "Analytics & SIEM"
+    ]
 }

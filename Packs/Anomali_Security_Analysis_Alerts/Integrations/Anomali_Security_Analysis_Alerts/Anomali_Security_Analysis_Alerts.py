@@ -1,3 +1,7 @@
+"""
+Anomali Security Analysis Alerts Integration
+"""
+
 from typing import Dict, List
 from datetime import datetime
 import urllib3
@@ -47,7 +51,8 @@ class Client(BaseClient):
             'source': source,
             'time_range': time_range
         }
-        return self._http_request(method='POST', url_suffix='/api/v1/xdr/search/jobs/',
+        return self._http_request(method='POST',
+                                  url_suffix='/api/v1/xdr/search/jobs/',
                                   json_data=data)
 
     def get_search_job_status(self, job_id: str) -> dict:
@@ -60,7 +65,8 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
-        return self._http_request(method='GET', url_suffix=f'/api/v1/xdr/search/jobs/{job_id}/')
+        return self._http_request(method='GET',
+                                  url_suffix=f'/api/v1/xdr/search/jobs/{job_id}/')
 
     def get_search_job_results(self, job_id: str) -> dict:
         """
@@ -72,13 +78,15 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
-        return self._http_request(method='GET', url_suffix=f'/api/v1/xdr/search/jobs/{job_id}/results/')
+        return self._http_request(method='GET',
+                                  url_suffix=f'/api/v1/xdr/search/jobs/{job_id}/results/')
 
     def update_alert(self, data: dict) -> dict:
         """
         Update alert data (status or comment).
         """
-        return self._http_request(method='PATCH', url_suffix='/api/v1/xdr/event/lookup/iceberg/update/',
+        return self._http_request(method='PATCH',
+                                  url_suffix='/api/v1/xdr/event/lookup/iceberg/update/',
                                   json_data=data)
 
 
@@ -183,7 +191,20 @@ def command_get_search_job_results(client: Client, args: Dict) -> List[CommandRe
     command_results: List[CommandResults] = []
     for job_id in job_ids:
         response = client.get_search_job_results(job_id)
-        human_readable = tableToMarkdown(name="Search Job Results", t=response, removeNull=True)
+
+        if 'fields' in response and 'records' in response:
+            headers = response['fields']
+            records = response['records']
+            table_data = [dict(zip(headers, record)) for record in records]
+            human_readable = tableToMarkdown(name="Search Job Results",
+                                             t=table_data,
+                                             headers=headers,
+                                             removeNull=True)
+        else:
+            human_readable = tableToMarkdown(name="Search Job Results",
+                                             t=response,
+                                             removeNull=True)
+
         command_result = CommandResults(
             outputs_prefix='ThreatstreamAlerts.SearchJobResults',
             outputs_key_field='job_id',
@@ -291,7 +312,6 @@ def main():
     proxy = argToBoolean(params.get("proxy", False))
 
     command = demisto.command()
-    LOG(f'Command being called in {VENDOR_NAME} is: {command}')
 
     try:
         username = params.get("credentials", {}).get("identifier")

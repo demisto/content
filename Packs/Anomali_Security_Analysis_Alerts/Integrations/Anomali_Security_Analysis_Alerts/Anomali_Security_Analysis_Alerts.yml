@@ -6,8 +6,7 @@ name: Anomali_SA_Alerts
 display: Anomali_SA_Alerts
 category: Data Enrichment & Threat Intelligence
 description: Anomali SA Alerts
-detaileddescription: "To access Anomali SA Alerts using the API, you need a username
-  and a password. \n\n\n---\n[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/hello-world)"
+detaileddescription: "To access Anomali SA Alerts using the API, you need a username and a password. "
 configuration:
 - section: Connect
   display: Server URL
@@ -57,6 +56,6 @@ script:
     - name: uuid
     description: update comment of alert
   dockerimage: demisto/py3-tools:1.0.0.117220
-  isfetch: true
+  isfetch: false
   runonce: false
   subtype: python3

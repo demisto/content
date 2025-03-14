@@ -80,20 +80,10 @@ get search job results
 #### Context Output
 
 **Search Job Results**
-| Field                        | Value                                 |
-|------------------------------|---------------------------------------|
-| avc_limit                    | 0.0                                   |
-| avc_used_for_current_job     | 0.0                                   |
-| avc_used_in_total            | 0.0                                   |
-| count                        | 0                                     |
-| has_next                     | false                                 |
-| result_row_count             | 0                                     |
-| result_update_id             | 0                                     |
-| search_end_time              | 0                                     |
-| search_start_time            | 0                                     |
-| status                       | RUNNING                               |
-| ui_info                      | explicitly_add_rawdata: false         |
-| explicitly_remove_rawdata    | false                                 |
+
+| id  | name            | owner              | status | severity | alert_time      | search_job_id                           |
+|-----|-----------------|--------------------|--------|----------|-----------------|-----------------------------------------|
+| 905 | AlertTriageDemo | test@anomali.com | new    | high     | 1741867250299   | 7af7bc62c807446fa4bf7ad12dfbe64b         |
 
 
 ### threatstream-update-alert-status
