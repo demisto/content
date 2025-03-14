@@ -61,7 +61,7 @@ def dict_by_ec(cur_dict: dict):
     """ Create dict (Json) by entry contexts convention
     Capitalize first char, remove nulls
     :param cur_dict: dictionary
-    :return: dictionary by conventions
+    :return: dictionary by conventions test
     """
     if not cur_dict:
         return None

@@ -8,7 +8,7 @@ urllib3.disable_warnings()
 
 class Client(BaseClient):
     """
-    Client to use in the Cisco Umbrella Enforcement integration. Overrides BaseClient
+    Client to use in the Cisco Umbrella Enforcement integration. Overrides BaseClient test
     """
 
     def __init__(self, base_url, verify, proxy, api_key):

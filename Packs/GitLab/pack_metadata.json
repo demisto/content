@@ -2,7 +2,7 @@
     "name": "GitLab",
     "description": "Pack for handling gitlab operations",
     "support": "xsoar",
-    "currentVersion": "2.2.26",
+    "currentVersion": "2.2.27",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
