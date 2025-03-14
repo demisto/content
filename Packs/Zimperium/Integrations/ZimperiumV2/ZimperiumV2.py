@@ -24,7 +24,7 @@ class Client(BaseClient):
         """
         Args:
             client_id: The client id for authentication
-            client_secret: The client secret for authentication
+            client_secret: The client secret for authentication test
 
         Return:
             access_token for requests authentication.

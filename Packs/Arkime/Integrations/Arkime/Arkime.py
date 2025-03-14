@@ -520,7 +520,7 @@ def pagination(page_size: Optional[int], page_number: Optional[int], length: int
 def union(dict1: dict, dict2: dict) -> dict:
     """
     When the limit is bigger than MAX_BATCH_LIMIT, to avoid timeout, we perform some api calls and chain the responses
-    together into one dictionary by this function.
+    together into one dictionary by this function test.
     """
     res = {}
     for key in dict2:
