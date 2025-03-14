@@ -1,0 +1,187 @@
+{
+    "ID": "6d752a20-b28a-45f8-a72f-b809b52335ed",
+    "active_response_profile": {
+      "options": null,
+      "response_policy": "Off"
+    },
+    "client_id": "2022-1234-ABC",
+    "contacts": [
+      {
+        "contact_info": null,
+        "created_time": "2024-06-12 13:02:21",
+        "id": "920af4a2-ee1c-49f7-8b71-3d54ea037f06",
+        "last_updated_time": "2024-06-12 13:02:21",
+        "organization_id": "cb7e26b7-9d62-4cc7-acf1-4264327ac552",
+        "provider_id": null,
+        "type": "Administrative",
+        "user": {
+          "ID": "some-user-id",
+          "avatar_file_url": "https://example.com/some.png",
+          "email": "test-user-1@fieldeffect.com",
+          "first_name": "Test",
+          "last_name": "Admin User",
+          "phone_number": "+16135551234"
+        }
+      },
+      {
+        "contact_info": {
+          "email": "test-user-2@fieldeffect.com",
+          "first_name": "Test",
+          "last_name": "Billing User2",
+          "phone_number": "+16135551235"
+        },
+        "created_time": "2024-06-12 13:02:21",
+        "id": "72d90d4d-1107-42e6-af00-1c46e0b32d49",
+        "last_updated_time": "2024-11-19 16:17:10",
+        "organization_id": "cb7e26b7-9d62-4cc7-acf1-4264327ac552",
+        "provider_id": null,
+        "type": "Billing",
+        "user": null
+      },
+      {
+        "contact_info": null,
+        "created_time": "2024-06-12 13:02:21",
+        "id": "a8dca174-27dd-4d45-9bfb-d4ca0f471aaa",
+        "last_updated_time": "2024-06-12 13:02:21",
+        "organization_id": "cb7e26b7-9d62-4cc7-acf1-4264327ac552",
+        "provider_id": null,
+        "type": "Shipping",
+        "user": {
+          "ID": "some-user-id",
+          "avatar_file_url": "https://example.com/some.png",
+          "email": "test-user-3@fieldeffect.com",
+          "first_name": "First Name",
+          "last_name": "Test 3 Shipping User",
+          "phone_number": "+16135551239"
+        }
+      },
+      {
+        "contact_info": {
+          "email": "test-user-4@fieldeffect.com",
+          "first_name": "Test",
+          "last_name": "User4 Technical",
+          "phone_number": "+16135551334"
+        },
+        "created_time": "2024-06-12 13:02:21",
+        "id": "f5f11c48-82d2-4226-912b-0884a1bfc249",
+        "last_updated_time": "2024-11-19 15:46:09",
+        "organization_id": "cb7e26b7-9d62-4cc7-acf1-4264327ac552",
+        "provider_id": null,
+        "type": "Technical - Primary",
+        "user": null
+      },
+      {
+        "contact_info": null,
+        "created_time": "2024-11-04 19:56:01",
+        "id": "e4eb000e-c025-4459-be0e-513c7afb5a0d",
+        "last_updated_time": "2024-11-19 15:46:16",
+        "organization_id": "cb7e26b7-9d62-4cc7-acf1-4264327ac552",
+        "provider_id": null,
+        "type": "Technical - Secondary",
+        "user": {
+          "ID": "some-user-id",
+          "avatar_file_url": null,
+          "email": "test-user-5@fieldeffect.com",
+          "first_name": "Test",
+          "last_name": "User5 Technical",
+          "phone_number": "+16135555544"
+        }
+      }
+    ],
+    "created_time": "2022-04-14 14:15:53",
+    "crm_account_id": null,
+    "dns_firewall_config": null,
+    "dns_firewall_enabled": false,
+    "email": null,
+    "email_aro_details": true,
+    "endpoint_agent_preferences": {
+      "additional_notification_message_type": "Default",
+      "created_time": "2022-04-14 14:15:53",
+      "custom_additional_notification_message": null,
+      "id": "101a6083-65e7-48df-9664-50fac0581dd8",
+      "last_updated_time": "2022-04-14 14:15:53",
+      "organization_id": "6d752a20-b28a-45f8-a72f-b809b52335ed",
+      "prevent_agent_termination": false,
+      "workstation_notifications": true
+    },
+    "id": "6d752a20-b28a-45f8-a72f-b809b52335ed",
+    "include_aro_supplemental_data": true,
+    "include_aro_supplemental_insights": true,
+    "is_trial": false,
+    "last_updated_time": "2024-10-23 20:41:19",
+    "license_type": "Covalence Complete",
+    "monitoring_profile": {
+      "ID": "2855f655-4bba-4e7f-8fce-9ab91f33b2d1'",
+      "creation_time": "2022-11-22 20:25:53",
+      "domains": [
+        {
+          "ID": "d4b54e52-ddfa-465d-89a0-9c59b6d3b78a",
+          "creation_time": "2024-09-25 15:00:20",
+          "invalid_message": null,
+          "is_email": true,
+          "last_updated_time": "2024-11-18 19:43:15",
+          "validity": "Pending",
+          "value": "example.com"
+        },
+        {
+          "ID": "95cc5bdc-acfc-4964-b751-6cbc7e62536b",
+          "creation_time": "2022-11-22 20:25:53",
+          "invalid_message": null,
+          "is_email": true,
+          "last_updated_time": "2024-11-18 19:43:15",
+          "validity": "Valid",
+          "value": "fieldeffect.com"
+        }
+      ],
+      "ips": [
+        {
+          "ID": "5b6a1de3-b43a-438a-beb4-df55463aec52",
+          "creation_time": "2023-07-17 18:07:41",
+          "invalid_message": "This IP address is not owned by your organization.",
+          "last_updated_time": "2024-11-18 19:43:15",
+          "validity": "Invalid",
+          "value": "8.8.8.8"
+        }
+      ],
+      "last_updated_time": "2024-11-18 19:43:15",
+      "locations": [],
+      "networks": [
+        {
+          "ID": "faed49f6-782c-4416-865b-bd5576a31a04",
+          "creation_time": "2023-07-17 18:07:41",
+          "ips": [
+            {
+              "ID": "5b6a1de3-b43a-438a-beb4-df55463aec52",
+              "creation_time": "2023-07-17 18:07:41",
+              "invalid_message": "This IP address is not owned by your organization.",
+              "last_updated_time": "2024-11-18 19:43:15",
+              "validity": "Invalid",
+              "value": "8.8.8.8"
+            }
+          ],
+          "last_updated_time": "2024-11-18 19:43:15",
+          "value": "website"
+        }
+      ],
+      "organization_id": "6d752a20-b28a-45f8-a72f-b809b52335ed",
+      "safe_networks": []
+    },
+    "name": "Test Organization Name",
+    "onboarding_data": null,
+    "parent_id": "81ab48e0-8dbf-4b26-9707-fee9a380dfff",
+    "profile": {
+      "address": null,
+      "contact_email": null,
+      "contact_phone_number": null,
+      "created_time": "2022-04-14 14:15:53",
+      "default_locale": "en-CA",
+      "id": "d39ff517-223d-4cc4-ba7e-6ae89837ddf8",
+      "industry": "IT & Telecoms",
+      "last_updated_time": "2023-04-21 15:56:55",
+      "website": null
+    },
+    "roaming_dns_firewall_enabled": false,
+    "service_tier": "Complete",
+    "status": "active",
+    "store_endpoint_device_data": true
+  }

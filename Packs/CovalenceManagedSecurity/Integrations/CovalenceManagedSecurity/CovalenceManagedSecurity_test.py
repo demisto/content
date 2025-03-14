@@ -6,6 +6,7 @@ import demistomock as demisto
 import pytest
 
 BROKER_HOST = "https://example.com"
+PORTAL_URL = "https://example.com/v1"
 
 
 def util_load_json(path):
@@ -34,6 +35,12 @@ def init_tests(mocker):
 def broker_client_instance():
     from CovalenceManagedSecurity import BrokerClient
     return BrokerClient(host=BROKER_HOST, api_key="test_api_key")
+
+
+@pytest.fixture()
+def portal_instance():
+    from CovalenceManagedSecurity import Portal
+    return Portal(bearer='gan ceann', portal_url=PORTAL_URL)
 
 
 def test_get_aros(mocker):
@@ -118,6 +125,51 @@ def test_list_org(mocker):
     r = CovalenceManagedSecurity.list_organizations()
 
     assert r == mock_list_org
+
+
+def test_list_escalation_contacts(portal_instance, requests_mock):
+    from CovalenceManagedSecurity import list_escalation_contacts_command
+
+    mock_list_escalation_contacts = util_load_json('test_data/list_escalation_contacts.json')
+    requests_mock.get(f'{PORTAL_URL}/escalation_contact_lists', json=mock_list_escalation_contacts)
+
+    args = {"org_id": "6d752a20-b28a-45f8-a72f-b809b52335ed"}
+
+    results = list_escalation_contacts_command(portal_instance, args)
+
+    assert len(results.outputs) == 4
+    assert results.outputs_prefix == "FESPortal.Org"
+    assert results.outputs_key_field == "ID"
+
+
+def test_list_organization_contacts(portal_instance, requests_mock):
+    from CovalenceManagedSecurity import list_organization_key_contacts_command
+    org_id = "6d752a20-b28a-45f8-a72f-b809b52335ed"
+    list_organization = util_load_json('test_data/list_organization.json')
+    requests_mock.get(f'{PORTAL_URL}/organizations/{org_id}', json=list_organization)
+
+    args = {"org_id": org_id}
+
+    results = list_organization_key_contacts_command(portal_instance, args)
+
+    assert len(results.outputs) == 3
+    assert results.outputs_prefix == "FESPortal.Org"
+    assert results.outputs_key_field == "ID"
+
+
+def test_list_organization_language(portal_instance, requests_mock):
+    from CovalenceManagedSecurity import list_organization_language_command
+    org_id = "6d752a20-b28a-45f8-a72f-b809b52335ed"
+    list_organization = util_load_json('test_data/list_organization.json')
+    requests_mock.get(f'{PORTAL_URL}/organizations/{org_id}', json=list_organization)
+
+    args = {"org_id": org_id}
+
+    results = list_organization_language_command(portal_instance, args)
+
+    assert results.outputs == {'default_language': 'en-CA'}
+    assert results.outputs_prefix == "FESPortal.Org"
+    assert results.outputs_key_field == "ID"
 
 
 def test_ping_broker_command(requests_mock, broker_client_instance):

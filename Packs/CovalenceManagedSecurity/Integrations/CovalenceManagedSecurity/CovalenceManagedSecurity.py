@@ -102,6 +102,50 @@ class Portal():
             self.auth = None
             return False
 
+    def paginated_get(self, uri: str,
+                      page_size: int = 500, limit: Optional[int] = None, query: Optional[Dict[str, Any]] = None, **kwargs,):
+        results = []
+        query = query or {}
+
+        # If a limit is passed into the query dict then use it as long as it's an int and another limit
+        # hasn't already been provided as a param
+        if "limit" in query and isinstance(query["limit"], int) and limit is None:
+            # popping it out to check if it's < 0 in a common check with a param provided limit
+            limit = query.pop("limit")
+
+        # if a negative limit is provided then ignore it
+        if isinstance(limit, int) and limit < 0:
+            limit = None
+
+        # On the initial query if the limit is smaller than the page size, the page size needs to be reduced to only hit the limit
+        if isinstance(limit, int) and limit < page_size:
+            query["limit"] = limit
+        else:
+            query["limit"] = page_size
+
+        r = self.get(uri, query=query, **kwargs).json()
+        results.extend(r["items"])
+
+        while True:
+
+            results_length = len(results)
+
+            # break if the limit or total number of results has been exceeded
+            if (isinstance(limit, int) and results_length >= limit) or results_length >= r["total"]:
+                break
+
+            # If there is a limit and the results_length is >= the limit size it would have broken above.
+            # So we know here that results_length is < limit if a limit has been provided.
+            # If the limit is smaller than the page size then just get up to the limit.
+            if isinstance(limit, int) and (limit - results_length) < page_size:
+                query["limit"] = limit - results_length
+
+            query["page"] = r["page"] + 1
+            r = self.get(uri, query=query, **kwargs).json()
+            results.extend(r["items"])
+
+        return results
+
     def get(self, uri, query=None, headers=None, remove_subdomain=False, **kwargs):
         return self._request(uri, method='GET', query=query, headers=headers, remove_subdomain=remove_subdomain,
                              **kwargs)
@@ -121,7 +165,7 @@ class Portal():
             auth = '{} {}'.format(self.scheme, self.auth['token'])
             all_headers.update({'Authorization': auth})
 
-        url = '{}/{}'.format(self.portal_url, uri if len(kwargs) == 0 else uri.format(**kwargs))
+        url = f'{self.portal_url}/{uri if len(kwargs) == 0 else uri.format(**kwargs)}'
         if remove_subdomain:
             url = url.replace('services.', '')
 
@@ -210,6 +254,39 @@ class Portal():
 
         r = self.post("aro_comments", json=request)
         return r.json()
+
+    def list_escalation_contacts(self, org_id: str | None = None) -> List[Dict[str, Any]]:
+        """
+        Get the escalation contact list for a given organization.
+        :param org_id: Org ID.
+        :return: List of escalation contacts.
+        """
+        query = {}
+        if org_id:
+            query["organization_id"] = org_id
+
+        return self.paginated_get("escalation_contact_lists", query=query)
+
+    def list_organization_contacts(self, org_id: str) -> List[Dict[str, Any]]:
+        """
+        Get the organization contact list for a given organization
+        :param org_id: Org ID.
+        :return: List of organization contacts.
+        """
+        r = self.get('organizations/{org_id}', auth=self.auth, org_id=org_id)
+        org_details = r.json()
+        return org_details.get('contacts', None)
+
+    def list_organization_language(self, org_id: str) -> Dict[str, Any]:
+        """
+        Get the default language for a given organization
+        :param org_id: Org ID.
+        :return: Default Language
+        """
+        r = self.get('organizations/{org_id}', auth=self.auth, org_id=org_id)
+        org_details = r.json()
+        locale = org_details.get('profile', {}).get("default_locale", None)
+        return {"default_language": locale}
 
 
 class BrokerClient:
@@ -468,6 +545,80 @@ def comment_aro_command():
     return p.comment_aro(**args)
 
 
+def list_escalation_contacts_command(portal_instance, args):
+    contacts = []
+    headers = ['priority', 'first_name', 'last_name', 'job_title', 'phone_number', 'secondary_phone', 'email', 'notes']
+    result = portal_instance.list_escalation_contacts(**args)
+    if result and result[0]['organization_id'] == args['org_id']:
+        for contact in result[0]['escalation_contacts']:
+            # Extract the required fields
+            contact_info = {
+                'priority': contact.get('priority'),
+                'first_name': contact.get('first_name'),
+                'last_name': contact.get('last_name'),
+                'job_title': contact.get('job_title'),
+                'phone_number': contact.get('phone_number'),
+                'secondary_phone': contact.get('secondary_phone'),
+                'email': contact.get('email'),
+                'notes': contact.get('notes')
+            }
+            contacts.append(contact_info)
+
+        readable_output = tableToMarkdown('Escalation Contacts', contacts, headers=headers,
+                                          headerTransform=string_to_table_header)
+    else:
+        readable_output = "No escalation contacts found."
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='FESPortal.Org',
+        outputs_key_field='ID',
+        outputs=contacts
+    )
+
+
+def list_organization_key_contacts_command(portal_instance, args):
+    contacts = []
+    headers = ['first_name', 'last_name', 'phone_number', 'email', 'type']
+    result = portal_instance.list_organization_contacts(**args)
+    if result:
+        for contact in result:
+            # Extract the required fields
+            if contact['type'] in ["Administrative", "Technical - Primary", "Technical - Secondary", "Primary", "Technical"]:
+                details_key = contact.get('contact_info') or contact.get('user')  # Data can be in either key.
+                contact_info = {
+                    'first_name': details_key.get('first_name'),
+                    'last_name': details_key.get('last_name'),
+                    'phone_number': details_key.get('phone_number'),
+                    'email': details_key.get('email'),
+                    'type': contact['type']
+
+                }
+                contacts.append(contact_info)
+        readable_output = tableToMarkdown('Key Contacts', contacts, headers=headers, headerTransform=string_to_table_header)
+    else:
+        readable_output = "No key contacts found."
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='FESPortal.Org',
+        outputs_key_field='ID',
+        outputs=contacts
+    )
+
+
+def list_organization_language_command(portal_instance, args):
+    result = portal_instance.list_organization_language(**args)
+    if result:
+        readable_output = tableToMarkdown('Default Organization Language', result, headerTransform=string_to_table_header)
+    else:
+        readable_output = "No default language found."
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='FESPortal.Org',
+        outputs_key_field='ID',
+        outputs=result
+    )
+
+
 ''' Broker Commands '''
 
 
@@ -548,6 +699,8 @@ def main():
         demisto.debug("No condition was met. Initializing BrokerClient")
         broker_instance = BrokerClient(host=broker_url, api_key=API_KEY)
 
+    portal_instance = Portal(bearer=API_KEY)
+
     try:
         if command == 'test-module':
             portal_result = portal_check()
@@ -625,6 +778,12 @@ def main():
                 readable_output=readable_output
             )
             return_results(results)
+        elif command == 'cov-mgsec-list-escalation-contacts':
+            return_results(list_escalation_contacts_command(portal_instance, args))
+        elif command == 'cov-mgsec-list-key-contacts':
+            return_results(list_organization_key_contacts_command(portal_instance, args))
+        elif command == 'cov-mgsec-list-language':
+            return_results(list_organization_language_command(portal_instance, args))
         elif command == 'cov-mgsec-broker-ping':
             return_results(ping_broker_command(broker_instance))
         elif command == 'cov-mgsec-broker-list-org':
