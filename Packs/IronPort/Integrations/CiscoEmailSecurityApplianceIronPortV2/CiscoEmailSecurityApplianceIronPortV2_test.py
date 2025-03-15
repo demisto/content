@@ -24,9 +24,7 @@ def load_mock_response(file_name: str) -> str:
     Returns:
         str: Mock file content.
     """
-    with open(
-        os.path.join("test_data/outputs", file_name), encoding="utf-8"
-    ) as mock_file:
+    with open(os.path.join("test_data/outputs", file_name), encoding="utf-8") as mock_file:
         return json.loads(mock_file.read())
 
 
@@ -326,9 +324,7 @@ def test_list_entry_get_command(
         )
     ],
 )
-def test_list_entry_add_command(
-    command_arguments: dict[str, Any], expected_message: str, requests_mock, mock_client
-):
+def test_list_entry_add_command(command_arguments: dict[str, Any], expected_message: str, requests_mock, mock_client):
     """
     Scenario: List entry add.
     Given:
@@ -365,9 +361,7 @@ def test_list_entry_add_command(
         )
     ],
 )
-def test_list_entry_append_command(
-    command_arguments: dict[str, Any], expected_message: str, requests_mock, mock_client
-):
+def test_list_entry_append_command(command_arguments: dict[str, Any], expected_message: str, requests_mock, mock_client):
     """
     Scenario: List entry append.
     Given:
@@ -404,9 +398,7 @@ def test_list_entry_append_command(
         )
     ],
 )
-def test_list_entry_edit_command(
-    command_arguments: dict[str, Any], expected_message: str, requests_mock, mock_client
-):
+def test_list_entry_edit_command(command_arguments: dict[str, Any], expected_message: str, requests_mock, mock_client):
     """
     Scenario: List entry edit.
     Given:
@@ -442,9 +434,7 @@ def test_list_entry_edit_command(
         )
     ],
 )
-def test_list_entry_delete_command(
-    command_arguments: dict[str, Any], expected_message: str, requests_mock, mock_client
-):
+def test_list_entry_delete_command(command_arguments: dict[str, Any], expected_message: str, requests_mock, mock_client):
     """
     Scenario: List entry delete.
     Given:
@@ -800,9 +790,7 @@ def test_message_report_get_command(
         )
     ],
 )
-def test_format_number_list_argument(
-    number_list_argument: str, expected_result: list[int]
-):
+def test_format_number_list_argument(number_list_argument: str, expected_result: list[int]):
     """
     Scenario: Format number list argument.
     Given:
@@ -828,9 +816,7 @@ def test_format_number_list_argument(
         )
     ],
 )
-def test_format_custom_query_args(
-    custom_query_argument: str, expected_result: dict[str, Any]
-):
+def test_format_custom_query_args(custom_query_argument: str, expected_result: dict[str, Any]):
     """
     Scenario: Format custom query arguments for tracking message advanced filters.
     Given:
@@ -907,23 +893,15 @@ data_test_fetch_incidents = [
 ]
 
 
-@pytest.mark.parametrize(
-    "previous_run, fetch_size, expected_last_run", data_test_fetch_incidents
-)
+@pytest.mark.parametrize("previous_run, fetch_size, expected_last_run", data_test_fetch_incidents)
 @freeze_time("2023-06-29T00:00:00Z")
-def test_fetch_incidents(
-    mock_client, mocker, previous_run, fetch_size, expected_last_run
-):
+def test_fetch_incidents(mock_client, mocker, previous_run, fetch_size, expected_last_run):
     from CiscoEmailSecurityApplianceIronPortV2 import fetch_incidents
 
     mocker.patch.object(
         mock_client,
         "spam_quarantine_message_search_request",
-        return_value={
-            "data": [
-                {"attributes": {"date": "now"}, "mid": i + 1} for i in range(fetch_size)
-            ]
-        },
+        return_value={"data": [{"attributes": {"date": "now"}, "mid": i + 1} for i in range(fetch_size)]},
     )
     incidents = [{"mid": i + 1} for i in range(fetch_size)]
     mocker.patch.object(
@@ -970,10 +948,11 @@ def test_convert_words_to_list():
     from CiscoEmailSecurityApplianceIronPortV2 import (
         convert_words_to_list,
     )
-    assert convert_words_to_list("['test']") == [['test']]
-    assert convert_words_to_list("['test1'],['test2']") == [['test1'], ['test2']]
-    assert convert_words_to_list("['test1',5],['test2',7]") == [['test1', 5], ['test2', 7]]
-    assert convert_words_to_list("['test1',5,'prefix'],['test2',7]") == [['test1', 5, 'prefix'], ['test2', 7]]
+
+    assert convert_words_to_list("['test']") == [["test"]]
+    assert convert_words_to_list("['test1'],['test2']") == [["test1"], ["test2"]]
+    assert convert_words_to_list("['test1',5],['test2',7]") == [["test1", 5], ["test2", 7]]
+    assert convert_words_to_list("['test1',5,'prefix'],['test2',7]") == [["test1", 5, "prefix"], ["test2", 7]]
 
 
 def test_dictionary_list_command(mocker, mock_client):
@@ -988,6 +967,7 @@ def test_dictionary_list_command(mocker, mock_client):
     from CiscoEmailSecurityApplianceIronPortV2 import (
         dictionary_list_command,
     )
+
     mock_response = {
         "data": [
             {
@@ -1003,10 +983,7 @@ def test_dictionary_list_command(mocker, mock_client):
             }
         ]
     }
-    mocker.patch(
-        "CiscoEmailSecurityApplianceIronPortV2.Client.dictionary_list_request",
-        return_value=mock_response
-    )
+    mocker.patch("CiscoEmailSecurityApplianceIronPortV2.Client.dictionary_list_request", return_value=mock_response)
 
     args = {"dictionary_name": "example_dictionary"}
     result = dictionary_list_command(mock_client, args)
@@ -1039,10 +1016,7 @@ def test_dictionary_add_command(mocker, mock_client):
         dictionary_add_command,
     )
 
-    mocker.patch(
-        "CiscoEmailSecurityApplianceIronPortV2.Client.dictionary_add_request",
-        return_value={"status": "success"}
-    )
+    mocker.patch("CiscoEmailSecurityApplianceIronPortV2.Client.dictionary_add_request", return_value={"status": "success"})
 
     args = {"dictionary_name": "TestDict", "words": "[['word1'],['word2']]"}
     result = dictionary_add_command(mock_client, args)
@@ -1063,10 +1037,7 @@ def test_dictionary_edit_command(mocker, mock_client):
         dictionary_edit_command,
     )
 
-    mocker.patch(
-        "CiscoEmailSecurityApplianceIronPortV2.Client.dictionary_edit_request",
-        return_value={"status": "success"}
-    )
+    mocker.patch("CiscoEmailSecurityApplianceIronPortV2.Client.dictionary_edit_request", return_value={"status": "success"})
 
     args = {"dictionary_name": "TestDict", "updated_name": "NewTestDict", "words": "[['word1'],['word2']]"}
     result = dictionary_edit_command(mock_client, args)
@@ -1087,10 +1058,7 @@ def test_dictionary_delete_command(mocker, mock_client):
         dictionary_delete_command,
     )
 
-    mocker.patch(
-        "CiscoEmailSecurityApplianceIronPortV2.Client.dictionary_delete_request",
-        return_value={"status": "success"}
-    )
+    mocker.patch("CiscoEmailSecurityApplianceIronPortV2.Client.dictionary_delete_request", return_value={"status": "success"})
 
     args = {"dictionary_name": "TestDict"}
     result = dictionary_delete_command(mock_client, args)
@@ -1110,10 +1078,7 @@ def test_dictionary_words_add_command(mocker, mock_client):
         dictionary_words_add_command,
     )
 
-    mocker.patch(
-        "CiscoEmailSecurityApplianceIronPortV2.Client.dictionary_words_add_request",
-        return_value={"status": "success"}
-    )
+    mocker.patch("CiscoEmailSecurityApplianceIronPortV2.Client.dictionary_words_add_request", return_value={"status": "success"})
 
     args = {"dictionary_name": "TestDict", "words": "['word1', 'word2']"}
     result = dictionary_words_add_command(mock_client, args)
@@ -1135,8 +1100,7 @@ def test_dictionary_words_delete_command(mocker, mock_client):
     )
 
     mocker.patch(
-        "CiscoEmailSecurityApplianceIronPortV2.Client.dictionary_words_delete_request",
-        return_value={"status": "success"}
+        "CiscoEmailSecurityApplianceIronPortV2.Client.dictionary_words_delete_request", return_value={"status": "success"}
     )
 
     args = {"dictionary_name": "TestDict", "words": "['word1', 'word2']"}
