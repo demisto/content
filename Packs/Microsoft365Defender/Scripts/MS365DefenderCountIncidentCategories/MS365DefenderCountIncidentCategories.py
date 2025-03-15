@@ -10,17 +10,17 @@ def count_dict(value: str) -> List[dict]:
     :return: A list of dictionaries containing the category and the number of occurrences.
     """
 
-    demisto.debug(f'Counting categories in string: {value}')
-    categories = value.split(',')
-    return [{'category': key, 'count': value} for key, value in dict(Counter(categories)).items()]
+    demisto.debug(f"Counting categories in string: {value}")
+    categories = value.split(",")
+    return [{"category": key, "count": value} for key, value in dict(Counter(categories)).items()]
 
 
 def main():  # pragma: no cover
     try:
         return_results(count_dict(**demisto.args()))
     except Exception as e:
-        return_error(f'Failed to execute MS365DefenderCountIncidentCategories.py. Error: {str(e)}')
+        return_error(f"Failed to execute MS365DefenderCountIncidentCategories.py. Error: {str(e)}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
