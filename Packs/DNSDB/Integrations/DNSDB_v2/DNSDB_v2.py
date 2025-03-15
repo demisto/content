@@ -492,9 +492,7 @@ def _handle_saf(i: Iterable[str]):
         try:
             saf_msg = json.loads(line)
         except json.JSONDecodeError as e:
-            raise DemistoException(
-                f"saf protocol error: could not decode json: {line}"
-            ) from e
+            raise DemistoException(f"saf protocol error: could not decode json: {line}") from e
 
         cond = saf_msg.get("cond")
         obj = saf_msg.get("obj")
