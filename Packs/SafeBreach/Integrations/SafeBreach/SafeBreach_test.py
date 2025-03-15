@@ -74,9 +74,7 @@ def deployment_transformer(header):
 
 def test_get_indicators_command(client, mocker):
     # Mocking the response of the API call
-    expected_result = util_load_json(
-        path="./test_data/outputs/safebreach_get_indicator_outputs.json"
-    )
+    expected_result = util_load_json(path="./test_data/outputs/safebreach_get_indicator_outputs.json")
     mocker.patch.object(client, "get_indicators_command", return_value=expected_result)
 
     # Running the command
@@ -89,9 +87,7 @@ def test_get_indicators_command(client, mocker):
 
 def test_get_users_list(client, mocker):
     # Mocking the response of the API call
-    expected_result = util_load_json(
-        path="./test_data/outputs/safebreach_get_services_status_outputs.json"
-    )
+    expected_result = util_load_json(path="./test_data/outputs/safebreach_get_services_status_outputs.json")
     mocker.patch.object(client, "get_services_status", return_value=expected_result)
 
     # Running the command
@@ -113,12 +109,8 @@ def modify_mocker_with_common_data(mocker, test_input_data, test_output_data):
 
 
 def test_get_all_users(client, mocker):
-    input_type = util_load_json(
-        path="./test_data/inputs/safebreach_get_all_users_inputs.json"
-    )
-    expected_result = util_load_json(
-        path="./test_data/outputs/safebreach_get_all_users_outputs.json"
-    )
+    input_type = util_load_json(path="./test_data/inputs/safebreach_get_all_users_inputs.json")
+    expected_result = util_load_json(path="./test_data/outputs/safebreach_get_all_users_outputs.json")
 
     for key in input_type:
         mocker = modify_mocker_with_common_data(
@@ -131,9 +123,7 @@ def test_get_all_users(client, mocker):
         assert result.outputs_prefix == "SafeBreach.User"
 
         assert result.outputs == expected_result["outputs"][key].get("data")
-        assert result.readable_output == tableToMarkdown(
-            name="user data", t=result.outputs, headers=["id", "name", "email"]
-        )
+        assert result.readable_output == tableToMarkdown(name="user data", t=result.outputs, headers=["id", "name", "email"])
         assert len(result.outputs) == 2
         if key == "details_and_deleted":
             assert expected_result["outputs"][key].get("data")[0]["deletedAt"] is None
@@ -148,12 +138,8 @@ def test_get_all_users(client, mocker):
 
 
 def test_get_user_id_by_name_or_email(client, mocker):
-    input_type = util_load_json(
-        path="./test_data/inputs/safebreach_get_named_user_inputs.json"
-    )
-    expected_result = util_load_json(
-        path="./test_data/outputs/safebreach_get_named_user_outputs.json"
-    )
+    input_type = util_load_json(path="./test_data/inputs/safebreach_get_named_user_inputs.json")
+    expected_result = util_load_json(path="./test_data/outputs/safebreach_get_named_user_outputs.json")
     # mocker.patch.object(client, 'get_users_list', return_value=expected_result)
     for key in input_type:
         # Running the command
@@ -180,12 +166,8 @@ def test_get_user_id_by_name_or_email(client, mocker):
 
 
 def test_create_user(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_create_user_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_create_user_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_create_user_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_create_user_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
@@ -227,12 +209,8 @@ def test_create_user(client, mocker):
 
 
 def test_update_user_with_details(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_update_user_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_update_user_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_update_user_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_update_user_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
@@ -275,12 +253,8 @@ def test_update_user_with_details(client, mocker):
 
 
 def test_delete_user_with_details(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_delete_user_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_delete_user_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_delete_user_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_delete_user_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
@@ -291,9 +265,8 @@ def test_delete_user_with_details(client, mocker):
             try:
                 delete_user_with_details(client)
             except DemistoException as error:
-                assert (
-                    f"User with {test_input[key]['args']['user_id']} or {test_input[key]['args']['email']} not found"
-                    == str(error)
+                assert f"User with {test_input[key]['args']['user_id']} or {test_input[key]['args']['email']} not found" == str(
+                    error
                 )
             continue
         else:
@@ -315,12 +288,8 @@ def test_delete_user_with_details(client, mocker):
 
 
 def test_create_deployment(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_create_deployment_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_create_deployment_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_create_deployment_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_create_deployment_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
@@ -350,12 +319,8 @@ def test_create_deployment(client, mocker):
 
 
 def test_update_deployment(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_update_deployment_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_update_deployment_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_update_deployment_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_update_deployment_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
@@ -388,12 +353,8 @@ def test_update_deployment(client, mocker):
 
 
 def test_delete_deployment(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_delete_deployment_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_delete_deployment_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_delete_deployment_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_delete_deployment_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
@@ -422,12 +383,8 @@ def test_delete_deployment(client, mocker):
 
 
 def test_create_api_key(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_create_api_key_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_create_api_key_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_create_api_key_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_create_api_key_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
@@ -457,12 +414,8 @@ def test_create_api_key(client, mocker):
 
 
 def test_delete_api_key(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_delete_api_key_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_delete_api_key_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_delete_api_key_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_delete_api_key_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
@@ -499,12 +452,8 @@ def test_delete_api_key(client, mocker):
 
 
 def test_return_rotated_verification_token(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_rotate_token_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_rotate_token_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_rotate_token_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_rotate_token_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
@@ -524,12 +473,8 @@ def test_return_rotated_verification_token(client, mocker):
 
 
 def test_get_all_tests_summary(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_get_all_tests_summary_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_get_all_tests_summary_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_get_all_tests_summary_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_get_all_tests_summary_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
@@ -547,12 +492,8 @@ def test_get_all_tests_summary(client, mocker):
 
 
 def test_get_all_tests_summary_with_scenario_id(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_get_all_tests_summary_with_plan_id_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_get_all_tests_summary_with_plan_id_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_get_all_tests_summary_with_plan_id_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_get_all_tests_summary_with_plan_id_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
@@ -573,12 +514,8 @@ def test_get_all_tests_summary_with_scenario_id(client, mocker):
 
 
 def test_delete_test_result_of_test(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_delete_test_results_of_test_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_delete_test_results_of_test_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_delete_test_results_of_test_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_delete_test_results_of_test_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
@@ -593,19 +530,13 @@ def test_delete_test_result_of_test(client, mocker):
             assert bool(test_input[key]["args"]["test_id"]) is False
             continue
         assert command_results.outputs_prefix == "SafeBreach.Test"
-        assert command_results.readable_output == tableToMarkdown(
-            name="Deleted Test", t=command_results.outputs, headers=["id"]
-        )
+        assert command_results.readable_output == tableToMarkdown(name="Deleted Test", t=command_results.outputs, headers=["id"])
         assert command_results.outputs == [test_output["outputs"][key].get("data", {})]
 
 
 def test_get_all_integration_error_logs(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_get_integration_logs_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_get_integration_logs_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_get_integration_logs_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_get_integration_logs_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
@@ -620,12 +551,8 @@ def test_get_all_integration_error_logs(client, mocker):
 
 
 def test_delete_integration_error_logs(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_delete_integration_connector_logs_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_delete_integration_connector_logs_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_delete_integration_connector_logs_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_delete_integration_connector_logs_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
@@ -647,12 +574,8 @@ def test_delete_integration_error_logs(client, mocker):
 
 
 def test_get_all_running_tests_summary(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_get_all_running_tests_summary_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_get_all_running_tests_summary_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_get_all_running_tests_summary_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_get_all_running_tests_summary_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
@@ -669,12 +592,8 @@ def test_get_all_running_tests_summary(client, mocker):
 
 
 def test_get_all_running_simulations_summary(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_get_all_running_simulations_summary_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_get_all_running_simulations_summary_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_get_all_running_simulations_summary_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_get_all_running_simulations_summary_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
@@ -694,12 +613,8 @@ def test_get_all_running_simulations_summary(client, mocker):
 
 
 def test_pause_resume_tests_and_simulations(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_pause_resume_tests_and_simulations_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_pause_resume_tests_and_simulations_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_pause_resume_tests_and_simulations_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_pause_resume_tests_and_simulations_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
@@ -717,12 +632,8 @@ def test_pause_resume_tests_and_simulations(client, mocker):
 
 
 def test_get_schedules(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_get_schedules_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_get_schedules_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_get_schedules_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_get_schedules_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
@@ -746,12 +657,8 @@ def test_get_schedules(client, mocker):
 
 
 def test_delete_schedules(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_delete_schedules_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_delete_schedules_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_delete_schedules_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_delete_schedules_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
@@ -770,12 +677,8 @@ def test_delete_schedules(client, mocker):
 
 
 def test_get_prebuilt_scenarios(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_get_prebuilt_scenarios_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_get_prebuilt_scenarios_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_get_prebuilt_scenarios_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_get_prebuilt_scenarios_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
@@ -794,12 +697,8 @@ def test_get_prebuilt_scenarios(client, mocker):
 
 
 def test_get_custom_scenarios(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_get_custom_scenarios_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_get_custom_scenarios_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_get_custom_scenarios_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_get_custom_scenarios_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
@@ -820,12 +719,8 @@ def test_get_custom_scenarios(client, mocker):
 
 
 def test_get_services_status(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_get_services_status_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_get_services_status_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_get_services_status_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_get_services_status_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
@@ -844,12 +739,8 @@ def test_get_services_status(client, mocker):
 
 
 def test_get_verification_token(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_get_verification_token_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_get_verification_token_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_get_verification_token_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_get_verification_token_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
@@ -865,12 +756,8 @@ def test_get_verification_token(client, mocker):
 
 
 def test_rerun_test(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_rerun_test_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_rerun_test_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_rerun_test_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_rerun_test_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
@@ -887,12 +774,8 @@ def test_rerun_test(client, mocker):
 
 
 def test_get_simulator_quota_with_table(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_get_simulator_quota_with_table_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_get_simulator_quota_with_table_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_get_simulator_quota_with_table_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_get_simulator_quota_with_table_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
@@ -904,18 +787,12 @@ def test_get_simulator_quota_with_table(client, mocker):
             command_results = get_simulator_quota_with_table(client)
             assert command_results.outputs_prefix == "SafeBreach.Account"
             assert command_results.outputs.get("account_details") == test_output["outputs"][key].get("data")
-            assert command_results.outputs.get("simulator_quota") == test_output["outputs"][key].get("data").get(
-                "nodesQuota"
-            )
+            assert command_results.outputs.get("simulator_quota") == test_output["outputs"][key].get("data").get("nodesQuota")
 
 
 def test_get_all_simulator_details(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_get_all_simulator_details_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_get_all_simulator_details_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_get_all_simulator_details_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_get_all_simulator_details_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
@@ -926,18 +803,12 @@ def test_get_all_simulator_details(client, mocker):
         command_results = get_all_simulator_details(client)
         assert command_results.outputs_prefix == "SafeBreach.Simulator"
         assert command_results.outputs == test_output["outputs"][key].get("data").get("rows")
-        assert len(test_output["outputs"][key].get("data").get("rows")) == test_output["outputs"][key].get("data").get(
-            "count"
-        )
+        assert len(test_output["outputs"][key].get("data").get("rows")) == test_output["outputs"][key].get("data").get("count")
 
 
 def test_get_simulator_with_name(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_get_simulator_with_name_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_get_simulator_with_name_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_get_simulator_with_name_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_get_simulator_with_name_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
@@ -952,12 +823,8 @@ def test_get_simulator_with_name(client, mocker):
 
 
 def test_delete_simulator_with_given_name(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_delete_simulator_with_given_name_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_delete_simulator_with_given_name_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_delete_simulator_with_given_name_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_delete_simulator_with_given_name_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
@@ -972,12 +839,8 @@ def test_delete_simulator_with_given_name(client, mocker):
 
 
 def test_approve_simulator(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_approve_simulator_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_approve_simulator_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_approve_simulator_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_approve_simulator_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
@@ -992,12 +855,8 @@ def test_approve_simulator(client, mocker):
 
 
 def test_get_simulations(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_get_simulations_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_get_simulations_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_get_simulations_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_get_simulations_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
@@ -1012,12 +871,8 @@ def test_get_simulations(client, mocker):
 
 
 def test_get_simulators_versions_list(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_get_simulators_versions_list_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_get_simulators_versions_list_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_get_simulators_versions_list_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_get_simulators_versions_list_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
@@ -1032,12 +887,8 @@ def test_get_simulators_versions_list(client, mocker):
 
 
 def test_update_simulator_with_id(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_upgrade_simulator_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_upgrade_simulator_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_upgrade_simulator_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_upgrade_simulator_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
@@ -1052,12 +903,8 @@ def test_update_simulator_with_id(client, mocker):
 
 
 def test_get_installation_links(client, mocker):
-    test_input = util_load_json(
-        path="./test_data/inputs/safebreach_get_simulator_download_links_inputs.json"
-    )
-    test_output = util_load_json(
-        path="./test_data/outputs/safebreach_get_simulator_download_links_outputs.json"
-    )
+    test_input = util_load_json(path="./test_data/inputs/safebreach_get_simulator_download_links_inputs.json")
+    test_output = util_load_json(path="./test_data/outputs/safebreach_get_simulator_download_links_outputs.json")
 
     for key in test_input:
         mocker = modify_mocker_with_common_data(
