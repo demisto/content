@@ -16,7 +16,7 @@ EXCEPTION_MESSAGES = {
     "SERVER_ERROR": "The server encountered an internal error for GreyNoise and was unable to complete your request.",
     "CONNECTION_TIMEOUT": "Connection timed out. Check your network connectivity.",
     "PROXY": "Proxy Error - cannot connect to proxy. Either try clearing the 'Use system proxy' check-box or check "
-             "the host, authentication details and connection details for the proxy.",
+    "the host, authentication details and connection details for the proxy.",
     "INVALID_RESPONSE": "Invalid response from GreyNoise. Response: {}",
     "QUERY_STATS_RESPONSE": "GreyNoise request failed. Reason: {}",
 }
@@ -38,9 +38,7 @@ class Client(GreyNoise):
             if current_date < expiration_date and response["offering"] != "community":
                 return "ok"
             else:
-                raise DemistoException(
-                    f"Invalid API Offering ({response['offering']})or Expiration Date ({expiration_date})"
-                )
+                raise DemistoException(f"Invalid API Offering ({response['offering']})or Expiration Date ({expiration_date})")
 
         except exceptions.RateLimitError:
             raise DemistoException(EXCEPTION_MESSAGES["API_RATE_LIMIT"])
@@ -85,7 +83,7 @@ def get_ip_reputation_score(classification: str) -> int:
 
 
 def format_timestamp(date: str) -> str:
-    formatted_timestamp = datetime.strptime(date, "%Y-%m-%d").isoformat() + 'Z'
+    formatted_timestamp = datetime.strptime(date, "%Y-%m-%d").isoformat() + "Z"
 
     return formatted_timestamp
 
@@ -97,21 +95,21 @@ def format_indicator(indicator, tlp_color: str):
     else:
         tags = "INTERNET SCANNER," + tags
     if "metadata" in indicator:
-        country_code = indicator['metadata'].get('country_code', '')
+        country_code = indicator["metadata"].get("country_code", "")
     else:
         country_code = ""
     formatted_indicator = {
-        'Value': indicator["ip"],
-        'Type': FeedIndicatorType.IP,
-        'rawJSON': indicator,
-        'score': get_ip_reputation_score(indicator.get('classification', '')),
-        'fields': {
-            'firstseenbysource': format_timestamp(indicator.get("first_seen", "")),
-            'lastseenbysource': format_timestamp(indicator.get("last_seen", "")),
-            'geocountry': country_code,
-            'tags': tags,
-            'trafficlightprotocol': tlp_color
-        }
+        "Value": indicator["ip"],
+        "Type": FeedIndicatorType.IP,
+        "rawJSON": indicator,
+        "score": get_ip_reputation_score(indicator.get("classification", "")),
+        "fields": {
+            "firstseenbysource": format_timestamp(indicator.get("first_seen", "")),
+            "lastseenbysource": format_timestamp(indicator.get("last_seen", "")),
+            "geocountry": country_code,
+            "tags": tags,
+            "trafficlightprotocol": tlp_color,
+        },
     }
 
     return formatted_indicator
@@ -138,8 +136,8 @@ def fetch_indicators(client: Client, params) -> List[Dict]:
         A list of objects, containing the indicators.
     """
 
-    query = params.get('greynoiseFeedType')
-    tlp_color = params.get('tlp_color')
+    query = params.get("greynoiseFeedType")
+    tlp_color = params.get("tlp_color")
     feed_query = build_feed_query(query)
 
     try:
@@ -149,13 +147,13 @@ def fetch_indicators(client: Client, params) -> List[Dict]:
         while not complete:
             for indicator in response.get("data", []):
                 indicators.append(format_indicator(indicator, tlp_color))
-            complete = response.get('complete', True)
-            scroll = response.get('scroll', "")
+            complete = response.get("complete", True)
+            scroll = response.get("scroll", "")
             response = client.query(query=feed_query, exclude_raw=True, scroll=scroll)
 
     except Exception as err:
         demisto.debug(str(err))
-        raise Exception(f'{err}')
+        raise Exception(f"{err}")
 
     return indicators
 
@@ -184,8 +182,8 @@ def get_indicators_command(client: Client, params) -> CommandResults:
         CommandResults object containing the indicators retrieved.
     """
 
-    query = params.get('greynoiseFeedType')
-    tlp_color = params.get('tlp_color')
+    query = params.get("greynoiseFeedType")
+    tlp_color = params.get("tlp_color")
     feed_query = build_feed_query(query)
 
     try:
@@ -196,23 +194,22 @@ def get_indicators_command(client: Client, params) -> CommandResults:
         for indicator in response.get("data", []):
             hr = format_indicator(indicator, tlp_color)
             hr_indicators.append(hr)
-            output_list.append({'Type': hr.get('Type'),
-                                'Value': hr.get('Value'),
-                                'Tags': hr.get('fields', {}).get('tags')})
+            output_list.append({"Type": hr.get("Type"), "Value": hr.get("Value"), "Tags": hr.get("fields", {}).get("tags")})
 
     except Exception as err:
         demisto.debug(str(err))
-        raise Exception(f'{err}')
+        raise Exception(f"{err}")
 
-    human_readable = tableToMarkdown("Indicators from GreyNoise:", hr_indicators,
-                                     headers=['Value', 'Type', 'rawJSON', 'fields'], removeNull=True)
+    human_readable = tableToMarkdown(
+        "Indicators from GreyNoise:", hr_indicators, headers=["Value", "Type", "rawJSON", "fields"], removeNull=True
+    )
     human_readable += "Note: This display is limited to the first 25 indicators returned by the feed.\n"
 
     return CommandResults(
         outputs=output_list,
         readable_output=human_readable,
-        outputs_prefix='GreyNoiseFeed.Indicators',
-        outputs_key_field='value',
+        outputs_prefix="GreyNoiseFeed.Indicators",
+        outputs_key_field="value",
         raw_response=hr_indicators,
     )
 
@@ -235,7 +232,7 @@ def main():
     params = demisto.params()
 
     command = demisto.command()
-    demisto.info(f'Command being called is {command}')
+    demisto.info(f"Command being called is {command}")
 
     pack_version = "1.0.0"
 
@@ -256,7 +253,7 @@ def main():
 
     api_key = params.get("credentials", {}).get("password") or params.get("apikey")
     if not api_key:
-        return_error('Please provide a valid API token')
+        return_error("Please provide a valid API token")
     proxy = params.get("proxy", False)
 
     demisto.debug(f"Command being called is {command}")
@@ -270,21 +267,21 @@ def main():
             integration_name=f"xsoar-feed-v{pack_version}",
         )
 
-        if command == 'test-module':
+        if command == "test-module":
             return_results(test_module(client))
-        elif command == 'greynoise-get-indicators':
+        elif command == "greynoise-get-indicators":
             return_results(get_indicators_command(client, params))
-        elif command == 'fetch-indicators':
+        elif command == "fetch-indicators":
             indicators = fetch_indicators_command(client, params)
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
         else:
-            raise NotImplementedError(f'Command {command} is not implemented.')
+            raise NotImplementedError(f"Command {command} is not implemented.")
 
     except Exception as err:
-        err_msg = f'Error in {INTEGRATION_NAME} Integration. [{err}]'
+        err_msg = f"Error in {INTEGRATION_NAME} Integration. [{err}]"
         return_error(err_msg)
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ["__main__", "builtin", "builtins"]:
     main()
