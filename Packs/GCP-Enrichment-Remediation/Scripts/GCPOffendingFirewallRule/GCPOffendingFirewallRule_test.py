@@ -17,9 +17,9 @@ def test_is_port_in_range_func():
     from GCPOffendingFirewallRule import is_port_in_range
 
     assert is_port_in_range("20-25", "22")
-    assert is_port_in_range('80-80', '80')
+    assert is_port_in_range("80-80", "80")
     assert not is_port_in_range("20-21", "22")
-    assert not is_port_in_range('80-80', '81')
+    assert not is_port_in_range("80-80", "81")
 
 
 def test_is_there_traffic_match_func():
@@ -143,9 +143,7 @@ def test_is_there_traffic_match_func():
         ),
     ],
 )
-def test_gcp_offending_firewall_rule_command(
-    mocker: MockerFixture, scenario: str, command_return: list, command_result: str
-):
+def test_gcp_offending_firewall_rule_command(mocker: MockerFixture, scenario: str, command_return: list, command_result: str):
     """Tests gcp_offending_firewall_rule function.
 
     Given:
