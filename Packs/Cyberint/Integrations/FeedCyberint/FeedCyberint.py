@@ -38,13 +38,14 @@ class Client(BaseClient):
             "X-Integration-Instance-Name": demisto.integrationInstance(),
             "X-Integration-Instance-Id": "",
             "X-Integration-Customer-Name": params.get("client_name", ""),
-            "X-Integration-Version": "1.1.4"
+            "X-Integration-Version": "1.1.4",
         }
         super().__init__(base_url, verify=verify, proxy=proxy)
 
     @logger
-    def request_daily_feed(self, date_time: str = None, limit: int = 1000, execution_start_time: datetime = datetime.now(),
-                           test: bool = False) -> list[dict[str, Any]]:
+    def request_daily_feed(
+        self, date_time: str = None, limit: int = 1000, execution_start_time: datetime = datetime.now(), test: bool = False
+    ) -> list[dict[str, Any]]:
         """
         Retrieves all entries from the feed with pagination support.
 
@@ -58,23 +59,23 @@ class Client(BaseClient):
             A list of objects, containing the indicators.
         """
         result = []
-        init_offset = offset = demisto.getIntegrationContext().get('offset', 0)
+        init_offset = offset = demisto.getIntegrationContext().get("offset", 0)
         date_time = date_time or str(datetime.now().strftime(DATE_FORMAT))
         has_more = True
 
-        demisto.debug(f'Fetching feed offset {offset}')
+        demisto.debug(f"Fetching feed offset {offset}")
 
         while has_more:
             if offset >= init_offset + MAX_LIMIT_SIZE_PER_EXEC:
-                demisto.setIntegrationContext({'date_time': date_time, 'offset': offset})
+                demisto.setIntegrationContext({"date_time": date_time, "offset": offset})
                 has_more = False
                 continue
 
-            demisto.debug(f'Fetching feed offset {offset}')
+            demisto.debug(f"Fetching feed offset {offset}")
 
             # if the execution exceeded the timeout we will break
             if not test and is_execution_time_exceeded(start_time=execution_start_time):
-                demisto.debug(f'Execution time exceeded: {EXECUTION_TIMEOUT_SECONDS} seconds from: {execution_start_time}')
+                demisto.debug(f"Execution time exceeded: {EXECUTION_TIMEOUT_SECONDS} seconds from: {execution_start_time}")
                 has_more = False
                 continue
 
@@ -85,20 +86,20 @@ class Client(BaseClient):
 
             if not indicators:
                 # No more data or an error occurred
-                demisto.setIntegrationContext({'offset': 0})
+                demisto.setIntegrationContext({"offset": 0})
                 has_more = False
             else:
                 result.extend(indicators)  # Append valid indicators to the result
 
                 end_time = time.time()
-                demisto.debug(f'Duration of offset processing {offset}: {math.ceil(end_time - start_time)} seconds')
+                demisto.debug(f"Duration of offset processing {offset}: {math.ceil(end_time - start_time)} seconds")
                 # Update the offset for the next request
                 offset += limit
                 has_more = True
-                demisto.debug(f'Feed has more incidents for fetching: {has_more}')
+                demisto.debug(f"Feed has more incidents for fetching: {has_more}")
 
             if test:  # if test module, end the loop
-                demisto.debug('Test execution')
+                demisto.debug("Test execution")
                 has_more = False
                 continue
 
@@ -124,16 +125,16 @@ class Client(BaseClient):
             feeds = response.strip().split("\n")
             ioc_feeds = [json.loads(feed) for feed in feeds]
         except JSONDecodeError as e:
-            demisto.error(f'Failed to decode JSON: {e}')
+            demisto.error(f"Failed to decode JSON: {e}")
             return result  # Return empty result on failure
 
         if not ioc_feeds:  # No data found
-            demisto.debug('No more indicators found')
+            demisto.debug("No more indicators found")
             return result
 
         # Process valid feeds
         for indicator in ioc_feeds:
-            ioc_value = indicator.get('ioc_value')
+            ioc_value = indicator.get("ioc_value")
             if auto_detect_indicator_type(ioc_value):
                 result.append(indicator)
 
@@ -142,7 +143,7 @@ class Client(BaseClient):
     @logger
     def retrieve_indicators_from_api(self, date_time, limit, offset):
         url_suffix = f"{date_time}?limit={limit}&offset={offset}"
-        demisto.debug(f'URL to fetch indicators: {url_suffix}')
+        demisto.debug(f"URL to fetch indicators: {url_suffix}")
         response = self._http_request(
             method="GET",
             url_suffix=url_suffix,
@@ -229,7 +230,7 @@ def fetch_indicators(
                         "detected_activity": item.get("detected_activity"),
                         "severity_score": item.get("severity_score"),
                         "confidence": item.get("confidence"),
-                        "description": item.get("description")
+                        "description": item.get("description"),
                     },
                 }
 
@@ -242,7 +243,7 @@ def fetch_indicators(
                 indicators.append(indicator_obj)
 
         if limit > 0 and len(indicators) >= limit:
-            demisto.debug(f'Indicators limit reached (total): {len(indicators)}')
+            demisto.debug(f"Indicators limit reached (total): {len(indicators)}")
             break
 
     return indicators
@@ -403,11 +404,11 @@ def main():
 
         elif command == "fetch-indicators":
             indicators = fetch_indicators_command(client, params)
-            demisto.debug(f'Total {len(indicators)} indicators to be submitted')
+            demisto.debug(f"Total {len(indicators)} indicators to be submitted")
             for iter_ in batch(indicators, batch_size=5000):
-                demisto.debug(f'Submit {len(iter_)} indicators to XSOAR')
+                demisto.debug(f"Submit {len(iter_)} indicators to XSOAR")
                 demisto.createIndicators(iter_)
-            demisto.debug('Fetch indicators operation completed')
+            demisto.debug("Fetch indicators operation completed")
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
@@ -429,7 +430,7 @@ def is_execution_time_exceeded(start_time: datetime) -> bool:
     """
     end_time = datetime.utcnow()
     secs_from_beginning = (end_time - start_time).seconds
-    demisto.debug(f'Execution duration is {secs_from_beginning} secs so far')
+    demisto.debug(f"Execution duration is {secs_from_beginning} secs so far")
 
     return secs_from_beginning > EXECUTION_TIMEOUT_SECONDS
 
@@ -442,20 +443,20 @@ def header_transformer(header: str) -> str:
     Returns:
         header (Str).
     """
-    if header == 'detected_activity':
-        return 'Detected activity'
-    if header == 'ioc_type':
-        return 'IoC type'
-    if header == 'ioc_value':
-        return 'IoC value'
-    if header == 'observation_date':
-        return 'Observation date'
-    if header == 'severity_score':
-        return 'Severity score'
-    if header == 'confidence':
-        return 'Confidence'
-    if header == 'description':
-        return 'Description'
+    if header == "detected_activity":
+        return "Detected activity"
+    if header == "ioc_type":
+        return "IoC type"
+    if header == "ioc_value":
+        return "IoC value"
+    if header == "observation_date":
+        return "Observation date"
+    if header == "severity_score":
+        return "Severity score"
+    if header == "confidence":
+        return "Confidence"
+    if header == "description":
+        return "Description"
     return string_to_table_header(header)
 
 
