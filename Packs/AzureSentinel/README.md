@@ -6,7 +6,7 @@ Use the Azure Sentinel integration to get and manage incidents and get related e
 - Gets a single incident or a list of incidents from Azure Sentinel.
 - Gets a list of watchlists from Azure Sentinel.
 - Creates, updates, or deletes a watchlist in Azure Sentinel.
-- Updates or deletes a single incident in Azure Sentinel.
+- Creates, updates or deletes a single incident in Azure Sentinel.
 - Gets, adds, or deletes the comments of an incident from Azure Sentinel.
 - Gets a list of an incident's related entities from Azure Sentinel.
 - Gets a list of an incident's entities from Azure Sentinel.
