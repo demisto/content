@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 """Script which closes the existing XSOAR incident whose respective Securonix incident is closed."""
 
 import json
@@ -76,7 +77,7 @@ def extract_closing_comments(activity_data: List[Dict[str, Any]], close_states_o
                 closing_comments.append(_comment.get("Comments", ""))
 
     if not closing_comments:
-        closing_comments.append('Closing the XSOAR incident as Securonix incident is closed.')
+        closing_comments.append("Closing the XSOAR incident as Securonix incident is closed.")
 
     return " | ".join(closing_comments)
 
@@ -92,12 +93,14 @@ def close_xsoar_incident(xsoar_incident_id: str, sx_incident_id: str, close_stat
     Returns:
         bool: True if the XSOAR incident is close, False otherwise.
     """
-    demisto.debug(f"Getting update for XSOAR Incident: {xsoar_incident_id} from the respective "
-                  f"Securonix Incident: {sx_incident_id}")
+    demisto.debug(
+        f"Getting update for XSOAR Incident: {xsoar_incident_id} from the respective " f"Securonix Incident: {sx_incident_id}"
+    )
 
     incident_activity_history_args = {"incident_id": sx_incident_id}
-    incident_activity_history_resp = demisto.executeCommand("securonix-incident-activity-history-get",
-                                                            args=incident_activity_history_args)
+    incident_activity_history_resp = demisto.executeCommand(
+        "securonix-incident-activity-history-get", args=incident_activity_history_args
+    )
 
     try:
         incident_activity_history = incident_activity_history_resp[0]["Contents"]
@@ -117,8 +120,7 @@ def close_xsoar_incident(xsoar_incident_id: str, sx_incident_id: str, close_stat
         demisto.executeCommand("closeInvestigation", close_investigation_args)
         return True
 
-    demisto.info(f"The XSOAR Incident: {xsoar_incident_id} is not closed."
-                 f"Respective Securonix Incident: {sx_incident_id}.")
+    demisto.info(f"The XSOAR Incident: {xsoar_incident_id} is not closed." f"Respective Securonix Incident: {sx_incident_id}.")
     return False
 
 
@@ -144,13 +146,7 @@ def main():
         page_num = 0
         number_of_incidents_closed = 0
 
-        get_incidents_args = {
-            "query": xsoar_query,
-            "fromdate": from_time,
-            "todate": to_time,
-            "size": 100,
-            "page": page_num
-        }
+        get_incidents_args = {"query": xsoar_query, "fromdate": from_time, "todate": to_time, "size": 100, "page": page_num}
         remove_nulls_from_dictionary(get_incidents_args)
         demisto.debug(f"getIncidents command arguments: {json.dumps(get_incidents_args)}")
 
@@ -162,7 +158,7 @@ def main():
 
         while True:
             if not xsoar_incidents:
-                demisto.info('Completing the execution as no more incidents found!')
+                demisto.info("Completing the execution as no more incidents found!")
                 break
 
             demisto.info(f"Starting to close {len(xsoar_incidents)} number of incidents.")
@@ -170,8 +166,7 @@ def main():
             for incident in xsoar_incidents:
                 xsoar_incident_id = incident.get("id")
                 sx_incident_id = get_securonix_incident_id(incident=incident)
-                is_closed = close_xsoar_incident(xsoar_incident_id,
-                                                 sx_incident_id, close_states_of_securonix)  # type: ignore
+                is_closed = close_xsoar_incident(xsoar_incident_id, sx_incident_id, close_states_of_securonix)  # type: ignore
 
                 if is_closed:
                     close_xsoar_incident_ids.append(xsoar_incident_id)
@@ -187,8 +182,8 @@ def main():
             CommandResults(
                 readable_output=f"Successfully closed {number_of_incidents_closed} XSOAR incidents!",
                 outputs_prefix="Securonix.CloseHistoricalXSOARIncidents",
-                outputs_key_field='IncidentIDs',
-                outputs=remove_empty_elements({'IncidentIDs': close_xsoar_incident_ids})
+                outputs_key_field="IncidentIDs",
+                outputs=remove_empty_elements({"IncidentIDs": close_xsoar_incident_ids}),
             )
         )
 
