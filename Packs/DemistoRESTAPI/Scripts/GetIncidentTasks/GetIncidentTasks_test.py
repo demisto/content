@@ -68,9 +68,7 @@ def util_load_json(path):
         (SAMPLE_TASKS["1"], None, "testtag", [], True),
     ],
 )
-def test_is_task_match(
-    task: dict, name: str | None, tag: str | None, states: list, output: bool
-) -> None:
+def test_is_task_match(task: dict, name: str | None, tag: str | None, states: list, output: bool) -> None:
     """Tests to verify if filter logic works as designed
     Given:
         - a) Task with tag, a name and a state
@@ -184,8 +182,5 @@ def test_get_task_command(mocker: MockerFixture) -> None:
     assert result.outputs == outputs
     assert result.outputs_key_field == "id"
     assert result.readable_output == (
-        "### Incident #1 Playbook Tasks\n"
-        "|id|name|state|\n"
-        "|---|---|---|\n"
-        "| 1 | First Task | Completed |\n"
+        "### Incident #1 Playbook Tasks\n" "|id|name|state|\n" "|---|---|---|\n" "| 1 | First Task | Completed |\n"
     )
