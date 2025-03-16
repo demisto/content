@@ -75,10 +75,7 @@ class Client(BaseClient):
                                         params=params)
             demisto.debug("Succeeded querying")
         except DemistoException as e:
-            try:
-                demisto.debug(f"The DemistoException is {e.message1}")
-            except Exception as e:
-                demisto.debug("Could not show e.message")
+            demisto.info("DemistoException was raised")
             if hasattr(e.res, 'status_code'):
                 if e.res.status_code == 404:
                     result = 404
@@ -92,7 +89,6 @@ class Client(BaseClient):
                         demisto.debug(f"The status code is {e.res.status_code}")
                     except Exception as e:
                         demisto.debug("Could not show e.res.status_code")
-                        raise
                     if self.should_error:
                         raise e
                     try:
@@ -112,7 +108,7 @@ class Client(BaseClient):
             if section == 'url':
                 result =  404
         except Exception as e:
-            demisto.debug("has an exception which is not of type DemistoException")
+            demisto.info("has an exception which is not of type DemistoException")
             raise e
         return result
 
