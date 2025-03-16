@@ -1746,33 +1746,21 @@ script:
       description: If the field is a custom field, the configuration of the field.
       type: Object
   - arguments:
-    - description: 'The issue object (in JSON format). This argument is for advanced users, as when utilizing this argument, one cannot use other arguments and must input all required arguments into the issue_json. In addition, when issue_json is used, it is not possible to use the project name but only the project key. For example {"fields":{"customfield_10037":"field_value", "summary": "some summary", "project": {"key": "<project_key>"}}}. For more information about this argument, see https://developer.atlassian.com/server/jira/platform/jira-rest-api-example-create-issue-7897248/.'
-      name: issue_json
-    - description: The summary of the issue (Summary value is required, either from the "summary" argument, or from the "issue_json" argument).
+    - description: 'A summary of the issue. Use issue fields as variables to enrich the text. Example: ${issue.Name}'
       name: summary
       prettyname: Summary
-      predefined:
-        - "${issue.ID} ${issue.Name}"
       required: true
-    - description: The project key with which to associate the issue (Project Key or name is required).
+    - description: The Jira project key where the issue will be created.
       name: project_key
       prettyname: Project Key
       required: true
-    - description: 'Selects an issue type by name, for example: "Problem". (Issue type name or id is required).'
+    - description: 'Selects an issue type by name, for example: "Problem" or "Task". (Issue type name or id is required).'
       name: issue_type_name
       prettyname: Issue Type
-      predefined:
-        - 'Task'
       required: true
-    - description: Selects an issue type by its numeric ID (Issue type name or id is required).
-      name: issue_type_id
-    - description: The project name with which to associate the issue (Project Key or name is required).
-      name: project_name
-    - description: A description of the issue.
+    - description: 'A description of the issue. Use issue fields as variables to enrich the text. Example: ${issue.Description}'
       name: description
       prettyname: Description
-      predefined:
-        - ${issue.Description}
       required: true
     - description: A CSV list of labels.
       isArray: true
