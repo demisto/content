@@ -9,12 +9,13 @@ filter channel in ("System", "Application") or provider_name in("Microsoft-Windo
         Command_Path = arrayindex(regextract(message, "Command Path = (.*?)\s{2, }"), 0),
         dc_name = event_data -> DCName,
         detection_type = arrayindex(regextract(message, "Detection Type:\s*(.+?)\s+Detection"), 0), // microsoft defender
+        detection_source = arrayindex(regextract(message, "Detection Source:\s*(.+?)\s+User"), 0), // microsoft defender
         defender_signature_version = arrayindex(regextract(message, "Signature Version:\s*(.+?)\s+Engine"), 0), // microsoft defender 
         defender_security_intelligence_version = coalesce(event_data -> ["Current security intelligence Version"], event_data -> ["AV security intelligence version"]), // microsoft defender 
         defender_engine_version = coalesce(event_data -> ["Current Engine Version"], arrayindex(regextract(message, "Engine Version:\s*([\d\.]+)\s"), 0), arrayindex(regextract(message, "Engine Version:\s*(.+?)$"), 0)), // microsoft defender 
         defender_security_intelligence_type = event_data -> ["Security intelligence Type"],
         error_code = coalesce(event_data -> error, arrayindex(regextract(message,"Error Code:\s*\S+"), 0)),
-        error_message = coalesce(event_data -> ErrorMessage, arrayindex(regextract(message, "Error Description:\s*([^\.]+\.)"), 0)),
+        error_message = coalesce(event_data -> ErrorMessage, arrayindex(regextract(message, "Error Description:\s*([^\.]+\.)"), 0), event_data -> ["Error Description"]),
         failure_code = arrayindex(regextract(message, "Failure Code:\s*(\S+)"), 0),
         event_data_param1 = event_data -> param1,
         event_data_param2 = event_data -> param2,
@@ -93,7 +94,7 @@ filter channel in ("System", "Application") or provider_name in("Microsoft-Windo
         xdm.observer.unique_identifier = provider_guid,
         xdm.observer.version = product_version,
         xdm.session_context_id = to_string(record_id),
-        xdm.source.agent.type = coalesce(defender_security_intelligence_type, detection_type), 
+        xdm.source.agent.type = coalesce(defender_security_intelligence_type, detection_type, detection_source), 
         xdm.source.agent.version = defender_engine_version,
         xdm.source.agent.content_version = coalesce(defender_signature_version, defender_security_intelligence_version),
         xdm.source.application.name = coalesce(if(channel="System", event_data_param1), arrayindex(regextract(message, "HostApplication=([\S]+)"), 0), product_name),
