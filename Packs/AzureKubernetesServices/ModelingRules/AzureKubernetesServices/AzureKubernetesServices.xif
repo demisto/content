@@ -28,7 +28,8 @@ alter
 [RULE: msft_azure_aks_audit_general_fields]
 // The default fields mapping shared between the diffrent Azure AKS Audit log structures.
 alter
-	get_properties_log = properties -> log
+	get_properties_log = properties -> log,
+    get_SourceIps = regextract(SourceIps, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}")
 | alter
 	// Properties Log Extractions
     get_properties_log_kind = coalesce(get_properties_log -> kind, kind),
@@ -41,7 +42,7 @@ alter
     get_properties_log_user_uid = coalesce(get_properties_log -> user.uid, User -> uid),
     get_properties_log_user_groups = coalesce(arraymap(get_properties_log -> user.groups[], replex("@element", "\"", "")), arraymap(User -> groups[], replex("@element", "\"", ""))),
     get_properties_log_user_extra = coalesce(get_properties_log -> user.extra{}, User -> extra{}),
-    get_properties_log_sourceIPs = coalesce(arraymap(get_properties_log -> sourceIPs[], replex("@element", "\"", "")), SourceIps),
+    get_properties_log_sourceIPs = coalesce(arraymap(get_properties_log -> sourceIPs[], replex("@element", "\"", "")), get_SourceIps),
     get_properties_log_userAgent = coalesce(get_properties_log -> userAgent, UserAgent),
     get_properties_log_objectRef_resource = coalesce(get_properties_log -> objectRef.resource, ObjectRef -> resource),
     get_properties_log_objectRef_namespace = coalesce(get_properties_log -> objectRef.namespace, ObjectRef -> namespace),
