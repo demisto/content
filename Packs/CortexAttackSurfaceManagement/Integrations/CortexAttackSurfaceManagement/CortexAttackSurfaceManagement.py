@@ -680,7 +680,7 @@ def get_asset_internet_exposure_command(args: dict[str, Any], client: Client) ->
     Args:
         client (Client): CortexAttackSurfaceManagment client to use.
         args (dict): all command arguments, usually passed from ``demisto.args()``.
-            ``args['asm_id']`` A string representing the asset ID for which you want to get a the details for.
+            ``args['asm_id']`` A string representing the asset ID for which you want to get the details for.
 
     Returns:
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
