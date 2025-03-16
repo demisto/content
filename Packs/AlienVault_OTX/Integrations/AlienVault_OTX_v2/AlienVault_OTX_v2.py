@@ -79,7 +79,6 @@ class Client(BaseClient):
                 demisto.debug(f"The DemistoException is {e.message1}")
             except Exception as e:
                 demisto.debug("Could not show e.message")
-                raise
             if hasattr(e.res, 'status_code'):
                 if e.res.status_code == 404:
                     result = 404
