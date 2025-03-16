@@ -42,9 +42,7 @@ class Client(BaseClient):
         return self._http_request(method="GET", url_suffix=url_suffix, params=params)
 
     def post(self, url_suffix: str, params: Optional[Dict[str, Any]] = None):
-        return self._http_request(
-            method="POST", url_suffix=url_suffix, data=json.dumps(params)
-        )
+        return self._http_request(method="POST", url_suffix=url_suffix, data=json.dumps(params))
 
     def _paginated(
         self,
@@ -148,9 +146,7 @@ class XM:
             current_grade - current risk score grade (A-F)
             current_score - current risk score (0-100)
         """
-        risk_score_response = self.client.get(
-            URLS.Risk_Score, {"timeId": time_id, "resolution": resolution}
-        )
+        risk_score_response = self.client.get(URLS.Risk_Score, {"timeId": time_id, "resolution": resolution})
 
         risk_score_stats = risk_score_response["data"]["stats"]
 
@@ -176,20 +172,14 @@ class XM:
         return self.client.post_paginated(URLS.Entities, query)
 
     def _top_entities(self, url, time_id, amount_of_results) -> List[Dict[str, Any]]:
-        response = self.client.get(
-            url, {"timeId": time_id, "amountOfResults": amount_of_results}
-        )
+        response = self.client.get(url, {"timeId": time_id, "amountOfResults": amount_of_results})
 
         return response["data"]["entities"]
 
-    def top_assets_at_risk(
-        self, time_id: str = DEFAULT_TIME_ID, amount_of_results: int = TOP_ENTITIES
-    ) -> List[Dict[str, Any]]:
+    def top_assets_at_risk(self, time_id: str = DEFAULT_TIME_ID, amount_of_results: int = TOP_ENTITIES) -> List[Dict[str, Any]]:
         return self._top_entities(URLS.Top_Assets_At_Risk, time_id, amount_of_results)
 
-    def top_choke_points(
-        self, time_id: str = DEFAULT_TIME_ID, amount_of_results: int = TOP_ENTITIES
-    ) -> List[Dict[str, Any]]:
+    def top_choke_points(self, time_id: str = DEFAULT_TIME_ID, amount_of_results: int = TOP_ENTITIES) -> List[Dict[str, Any]]:
         return self._top_entities(URLS.Top_Choke_Points, time_id, amount_of_results)
 
     def get_affected_assets(
@@ -220,9 +210,7 @@ class XM:
             max_pages,
         )
 
-    def search_entities(
-        self, field_name_to_value: Dict[str, Any]
-    ) -> List[Dict[str, Any]]:
+    def search_entities(self, field_name_to_value: Dict[str, Any]) -> List[Dict[str, Any]]:
         params: Dict[str, Union[str, Dict[str, Any]]] = dict()
         for field_name, value in field_name_to_value.items():
             if field_name == "name":
@@ -241,16 +229,10 @@ class XM:
         page_size: int,
         max_pages: int,
     ) -> List[Dict[str, Any]]:
-        return self.client.get_paginated(
-            URLS.Techniques, {"timeId": time_id}, page_size, max_pages
-        )
+        return self.client.get_paginated(URLS.Techniques, {"timeId": time_id}, page_size, max_pages)
 
-    def get_technique_remediation(
-        self, technique: str, time_id: str = DEFAULT_TIME_ID
-    ) -> List[Dict[str, Any]]:
-        return self.client.get(
-            f"{URLS.Techniques}/{technique}/remediation", {"timeId": time_id}
-        )
+    def get_technique_remediation(self, technique: str, time_id: str = DEFAULT_TIME_ID) -> List[Dict[str, Any]]:
+        return self.client.get(f"{URLS.Techniques}/{technique}/remediation", {"timeId": time_id})
 
     def get_base_url(self) -> str:
         return self.client.get_base_url()
@@ -259,9 +241,7 @@ class XM:
         base_url = self.get_base_url()
         return base_url.rstrip("/api")
 
-    def get_entity_report_url(
-        self, entity_id: str, time_id: str = DEFAULT_TIME_ID
-    ) -> str:
+    def get_entity_report_url(self, entity_id: str, time_id: str = DEFAULT_TIME_ID) -> str:
         return f"{self._get_base_url_without_api()}/#/report/entity/{entity_id}?timeId={time_id}"
 
     def get_dashboard_url(self) -> str:
@@ -311,20 +291,14 @@ class XM:
 
         return data
 
-    def _create_event_for_risk_score(
-        self, xm_events: List[XmEventType], run_data: Dict[str, str]
-    ):
+    def _create_event_for_risk_score(self, xm_events: List[XmEventType], run_data: Dict[str, str]):
         risk_score = self.risk_score()
         trend = risk_score["trend"]
         if self.ignore_trend or (trend is not None and trend != "" and trend < 0):
             score = risk_score["current_score"]
             name = f"risk_score_{score}"
             if should_create_xm_event(name, run_data):
-                xm_events.append(
-                    self.create_xm_event(
-                        EVENT_NAME.RiskScore, risk_score["current_score"], risk_score
-                    )
-                )
+                xm_events.append(self.create_xm_event(EVENT_NAME.RiskScore, risk_score["current_score"], risk_score))
 
     def _create_events_from_top_dashboard(
         self,
@@ -341,21 +315,13 @@ class XM:
             else:
                 trend = int(trend)
 
-            if (
-                self.ignore_trend
-                or (trend_negative and trend < 0)
-                or (not trend_negative and trend > 0)
-            ):
+            if self.ignore_trend or (trend_negative and trend < 0) or (not trend_negative and trend > 0):
                 displayName = event["displayName"]
                 name = f"{event_name}_{displayName}_{trend}"
                 if should_create_xm_event(name, run_data):
-                    xm_events.append(
-                        self.create_xm_event(event_name, displayName, event)
-                    )
+                    xm_events.append(self.create_xm_event(event_name, displayName, event))
 
-    def _get_technique_best_practices_and_remediation(
-        self, technique: Dict[str, Any]
-    ) -> List[Dict[str, Any]]:
+    def _get_technique_best_practices_and_remediation(self, technique: Dict[str, Any]) -> List[Dict[str, Any]]:
         advices = []
         remediations = self.get_technique_remediation(technique["technique"])
         for remediation in remediations:
@@ -383,29 +349,17 @@ class XM:
                     break
 
             criticalAssets = int(current_tech["criticalAssets"])
-            if (
-                self.ignore_trend
-                or previous_tech is None
-                or criticalAssets > int(previous_tech["criticalAssets"])
-            ):
-                current_tech[
-                    "advices"
-                ] = self._get_technique_best_practices_and_remediation(current_tech)
+            if self.ignore_trend or previous_tech is None or criticalAssets > int(previous_tech["criticalAssets"]):
+                current_tech["advices"] = self._get_technique_best_practices_and_remediation(current_tech)
                 critical_asset_trend = 0
                 if previous_tech is not None:
-                    critical_asset_trend = criticalAssets - int(
-                        previous_tech["criticalAssets"]
-                    )
+                    critical_asset_trend = criticalAssets - int(previous_tech["criticalAssets"])
                 current_tech["criticalAssets_trend"] = critical_asset_trend
 
                 display_name = current_tech["displayName"]
                 name = f"{display_name}_{criticalAssets}"
                 if should_create_xm_event(name, run_data):
-                    xm_events.append(
-                        self.create_xm_event(
-                            EVENT_NAME.TopTechnique, display_name, current_tech
-                        )
-                    )
+                    xm_events.append(self.create_xm_event(EVENT_NAME.TopTechnique, display_name, current_tech))
 
     def get_fetch_incidents_events(self, run_data: Dict[str, Any]):
         cortex_events: List = []
@@ -438,12 +392,8 @@ class XM:
         writeLog("top techniques")
         # top techniques
         current_techniques = self.get_techniques(DEFAULT_TIME_ID, TOP_ENTITIES, 1)
-        previous_techniques = self.get_techniques(
-            PREVIOUS_DEFAULT_TIME_ID, TOP_ENTITIES, 1
-        )
-        self._create_events_from_top_techniques(
-            cortex_events, current_techniques, previous_techniques, run_data
-        )
+        previous_techniques = self.get_techniques(PREVIOUS_DEFAULT_TIME_ID, TOP_ENTITIES, 1)
+        self._create_events_from_top_techniques(cortex_events, current_techniques, previous_techniques, run_data)
 
         return cortex_events
 
@@ -485,9 +435,7 @@ def create_client():
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     headers = {"X-Api-Key": api_key, "Content-Type": "application/json; charset=utf-8"}
-    return Client(
-        base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy
-    )
+    return Client(base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy)
 
 
 def dates_diff_seconds(date1, date2):
@@ -505,9 +453,7 @@ def entity_obj_to_data(xm: XM, entity: Dict[str, Any]) -> Dict[str, Any]:
         is_asset = False
     techniques = []
     for technique in entity["attackedByTechniques"]:
-        techniques.append(
-            {"name": technique["displayName"], "count": technique["count"]}
-        )
+        techniques.append({"name": technique["displayName"], "count": technique["count"]})
     entity_id = entity["entityId"]
     entity_report = xm.get_entity_report_url(entity_id=entity_id)
 
@@ -523,9 +469,7 @@ def entity_obj_to_data(xm: XM, entity: Dict[str, Any]) -> Dict[str, Any]:
         "compromisingTechniques": techniques,
         "type": entity["entityTypeDisplayName"],
         "report": entity_report,
-        "OS": entity["os"]["name"]
-        if entity["entityTypeDisplayName"] == "Sensor"
-        else entity["entityTypeDisplayName"],
+        "OS": entity["os"]["name"] if entity["entityTypeDisplayName"] == "Sensor" else entity["entityTypeDisplayName"],
     }
 
 
@@ -547,9 +491,7 @@ def pretty_print_entity(entity: Dict[str, Any]):
 """ COMMAND FUNCTIONS """
 
 
-def affected_critical_assets_list_command(
-    xm: XM, args: Dict[str, Any]
-) -> CommandResults:
+def affected_critical_assets_list_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
     time_id = args.get("timeId")
     if not time_id:
         time_id = "timeAgo_days_7"
@@ -571,16 +513,12 @@ def affected_critical_assets_list_command(
                     "minimum": asset["minAttackComplexity"],
                 }
             )
-        output.append(
-            {"id": entity_id, "criticalAssetsAtRiskList": affected_assets_list}
-        )
+        output.append({"id": entity_id, "criticalAssetsAtRiskList": affected_assets_list})
         pretty = "\n"
         pretty += "\n| Asset Display Name | Average Complexity | Minimum Complexity"
         pretty += "\n| -- | -- | -- |"
         for i in range(0, min(len(affected_assets_list), 5)):
-            pretty += "\n| {name} | {average} | {minimum}  |".format(
-                **affected_assets_list[i]
-            )
+            pretty += "\n| {name} | {average} | {minimum}  |".format(**affected_assets_list[i])
         readable_output += f"found {len(affected_assets)} affected critical assets from {entity_id}. Top 5:\n{pretty}\n"
     return CommandResults(
         outputs_prefix="XMCyber.Entity",
@@ -609,15 +547,9 @@ def affected_entities_list_command(xm: XM, args: Dict[str, Any]) -> CommandResul
             affected_entities_list.append(
                 {
                     "entityId": entity.get("entityId", ""),
-                    "entityType": entity.get("entityData", {}).get(
-                        "entityTypeDisplayName", ""
-                    ),
+                    "entityType": entity.get("entityData", {}).get("entityTypeDisplayName", ""),
                     "name": entity.get("name", ""),
-                    "technique": entity.get("methodsArray", [{}])[0].get(
-                        "methodName", ""
-                    )
-                    if entity.get("methodsArray")
-                    else "",
+                    "technique": entity.get("methodsArray", [{}])[0].get("methodName", "") if entity.get("methodsArray") else "",
                 }
             )
         output.append({"id": entity_id, "entitiesAtRiskList": affected_entities_list})
@@ -636,16 +568,12 @@ def affected_entities_list_command(xm: XM, args: Dict[str, Any]) -> CommandResul
     )
 
 
-def _fetch_incidents_internal(
-    xm: XM, args: Dict[str, Any], run_data: Dict[str, Any]
-) -> List:
+def _fetch_incidents_internal(xm: XM, args: Dict[str, Any], run_data: Dict[str, Any]) -> List:
     events = []
     should_run = True
 
     if xm.is_fetch_incidents:
-        if len(run_data) > 0 and not is_seconds_diff_passed(
-            run_data["start_time"], FULL_INCIDENTS_SECONDS
-        ):
+        if len(run_data) > 0 and not is_seconds_diff_passed(run_data["start_time"], FULL_INCIDENTS_SECONDS):
             should_run = False
 
     if should_run or DEBUG_MODE:
@@ -694,9 +622,7 @@ def fetch_incidents_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
 
         demisto.incidents(incidents)
 
-    return CommandResults(
-        outputs_prefix="XMCyber", outputs_key_field="entityId", outputs=events
-    )
+    return CommandResults(outputs_prefix="XMCyber", outputs_key_field="entityId", outputs=events)
 
 
 def get_version_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
@@ -714,9 +640,7 @@ def is_xm_version_supported_command(xm: XM, args: Dict[str, Any]) -> CommandResu
     major = int(system_version_splitted[0])
     minor = int(system_version_splitted[1])
     result = {"valid": major >= (MIN_MAJOR_VERSION + 1) or minor >= MIN_MINOR_VERSION}
-    return CommandResults(
-        outputs_prefix="XMCyber.IsVersion", outputs_key_field="entityId", outputs=result
-    )
+    return CommandResults(outputs_prefix="XMCyber.IsVersion", outputs_key_field="entityId", outputs=result)
 
 
 def update_command_results(
@@ -729,11 +653,7 @@ def update_command_results(
     id_ = entity.get("entityId")
     try:
         ip = entity.get("ipv4Str", "")
-        domain = (
-            entity.get("customProperties", {})
-            .get("domainWorkgroup", {})
-            .get("data", "")
-        )
+        domain = entity.get("customProperties", {}).get("domainWorkgroup", {}).get("data", "")
         os = entity.get("os", {}).get("type", "")
         os_version = entity.get("os", {}).get("name", "")
         hostname = entity.get("displayName", "")
@@ -760,9 +680,7 @@ def update_command_results(
     return readable_output
 
 
-def _enrich_from_field(
-    xm: XM, field_name: str, field_values: List[str]
-) -> List[CommandResults]:
+def _enrich_from_field(xm: XM, field_name: str, field_values: List[str]) -> List[CommandResults]:
     # Context standard for IP class
     command_results: List[CommandResults] = []
     xm_data_list: List[Dict[str, Any]] = []
@@ -771,15 +689,11 @@ def _enrich_from_field(
     for value in field_values:
         entities = xm.search_entities(field_name_to_value={field_name: value})
         if len(entities) > 0:
-            readable_output = (
-                f"**Matched the following entities for {field_name} {value}**"
-            )
+            readable_output = f"**Matched the following entities for {field_name} {value}**"
         else:
             readable_output = f"**No entity matches {field_name} {value}"
         for entity in entities:
-            readable_output = update_command_results(
-                xm, command_results, xm_data_list, readable_output, entity
-            )
+            readable_output = update_command_results(xm, command_results, xm_data_list, readable_output, entity)
 
     # add general hr and output to the begining of result
     command_results.insert(
@@ -801,13 +715,9 @@ def _enrich_from_multiple_fields(xm: XM, field_name_to_value: Dict[str, Any]):
     xm_data_list: List[Dict[str, Any]] = []
     entities = xm.search_entities(field_name_to_value=field_name_to_value)
     if len(entities) > 0:
-        readable_output = (
-            f"**Matched the following entities for {field_name_to_value}**"
-        )
+        readable_output = f"**Matched the following entities for {field_name_to_value}**"
         for entity in entities:
-            readable_output = update_command_results(
-                xm, command_results, xm_data_list, readable_output, entity
-            )
+            readable_output = update_command_results(xm, command_results, xm_data_list, readable_output, entity)
     else:
         readable_output = f"**No entity matches {field_name_to_value}**"
 
@@ -839,9 +749,7 @@ def enrich_entity_from_fields(xm: XM, args: Dict[str, Any]) -> List[CommandResul
     if not field_names or not field_values or len(field_names) != len(field_values):
         raise ValueError("Invalid input")
 
-    return _enrich_from_multiple_fields(
-        xm=xm, field_name_to_value=dict(zip(field_names, field_values))
-    )
+    return _enrich_from_multiple_fields(xm=xm, field_name_to_value=dict(zip(field_names, field_values)))
 
 
 def enrich_from_hostname(xm: XM, args: Dict[str, Any]) -> List[CommandResults]:
@@ -886,16 +794,12 @@ def test_module_command_internal(xm: XM, args: Dict[str, Any]) -> CommandResults
 
     except DemistoException as e:
         if "Forbidden" in str(e):
-            raise Exception(
-                "Authorization Error: make sure API Key is correct and has Security Analyst role"
-            )
+            raise Exception("Authorization Error: make sure API Key is correct and has Security Analyst role")
         else:
             raise e
     except Exception as e:
         raise Exception(f"Verification Error: could not load XM Cyber version.\n{e}")
-    return CommandResults(
-        outputs_prefix="ok", outputs_key_field="ok", outputs="ok", readable_output="ok"
-    )
+    return CommandResults(outputs_prefix="ok", outputs_key_field="ok", outputs="ok", readable_output="ok")
 
 
 """ MAIN FUNCTION """
@@ -956,8 +860,7 @@ def main() -> None:
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(
-            f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}\n"
-            f"Traceback:\n{traceback.format_exc()}"
+            f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}\n" f"Traceback:\n{traceback.format_exc()}"
         )
 
 
