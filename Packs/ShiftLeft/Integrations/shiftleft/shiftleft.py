@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 """ShiftLeft CORE Integration for Cortex XSOAR (aka Demisto)
 """
 
@@ -26,8 +27,8 @@ class ShiftLeftClient(BaseClient):
         )
 
     def list_apps(
-            self,
-            org_id: str,
+        self,
+        org_id: str,
     ) -> Dict[str, str]:
         """Returns list of apps"""
         return self._http_request(
@@ -36,12 +37,12 @@ class ShiftLeftClient(BaseClient):
         )
 
     def list_app_findings(
-            self,
-            org_id: str,
-            app_name: str,
-            severity: Union[str, List[str], None],
-            type: Union[str, List[str], None],
-            version: Union[str, None],
+        self,
+        org_id: str,
+        app_name: str,
+        severity: Union[str, List[str], None],
+        type: Union[str, List[str], None],
+        version: Union[str, None],
     ) -> Dict[str, str]:
         """Returns list of findings"""
         return self._http_request(
@@ -113,11 +114,7 @@ def list_app_secrets_command(client: ShiftLeftClient, org_id: str, args: Dict[st
     result = client.list_app_findings(org_id, app_name, None, "secret", version)
     response: Any = result.get("response") if result.get("ok") else {}
     findings = response.get("findings", {})
-    filtered_findings = [
-        f
-        for f in findings
-        if float(f.get("details", {}).get("entropy", 0)) > float(entropy)
-    ]
+    filtered_findings = [f for f in findings if float(f.get("details", {}).get("entropy", 0)) > float(entropy)]
     for f in filtered_findings:
         f["secret"] = ""
         f["fileName"] = ""
@@ -126,9 +123,7 @@ def list_app_secrets_command(client: ShiftLeftClient, org_id: str, args: Dict[st
             f["secret"] = details.get("secret", "")
             f["fileName"] = details.get("fileName", "")
             if details.get("vcsUrl"):
-                f[
-                    "fileName"
-                ] = f'[{details.get("fileName", "Location")}]({details.get("vcsUrl")})'
+                f["fileName"] = f'[{details.get("fileName", "Location")}]({details.get("vcsUrl")})'
     scan = response.get("scan", [])
     if scan:
         scan = [scan]
@@ -187,11 +182,7 @@ def list_app_findings_command(client: ShiftLeftClient, org_id: str, args: Dict[s
     if scan:
         scan = [scan]
     # Exclude SDL
-    filtered_findings = [
-        f
-        for f in findings
-        if f.get("owasp_category") not in ("a3-sensitive-data-exposure")
-    ]
+    filtered_findings = [f for f in findings if f.get("owasp_category") not in ("a3-sensitive-data-exposure")]
     reachable_oss_found = False
     for f in filtered_findings:
         f["sink_method"] = ""
@@ -211,11 +202,7 @@ def list_app_findings_command(client: ShiftLeftClient, org_id: str, args: Dict[s
                 f["reachable_oss"] = len(oss_vuln)
                 cve_tags = []
                 for ov in oss_vuln:
-                    cve_tags += [
-                        t.get("value")
-                        for t in ov.get("tags", [])
-                        if t.get("key") in ("cve")
-                    ]
+                    cve_tags += [t.get("value") for t in ov.get("tags", []) if t.get("key") in ("cve")]
                 f["cves"] = "\n".join(cve_tags)
     if response:
         markdown = "### Scan Info\n"
@@ -294,9 +281,7 @@ def main() -> None:
             "Authorization": f"Bearer {access_token}",
         }
 
-        client = ShiftLeftClient(
-            base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy
-        )
+        client = ShiftLeftClient(base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy)
 
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
@@ -313,12 +298,12 @@ def main() -> None:
             return_results(list_apps_command(client, org_id))
 
         else:
-            raise NotImplementedError(f'{command} is not an existing Shiftleft command')
+            raise NotImplementedError(f"{command} is not an existing Shiftleft command")
 
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
 
 """ ENTRY POINT """
