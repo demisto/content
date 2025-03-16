@@ -2,40 +2,50 @@ category: Endpoint
 commonfields:
   id: Covalence Managed Security
   version: -1
+sectionorder:
+  - Connect
+  - Collect
 configuration:
 - display: Credentials
   name: credentials
   required: true
   type: 9
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - additionalinfo: When fetching incidents for the first time, this parameter specifies in days how far the integration looks for incidents. For instance if set to "2", it will pull all alerts in Covalence for the last 2 days and will create corresponding incidents.
   defaultvalue: '1'
   display: First run time range
   name: first_run_time_range
   type: 0
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   type: 0
   required: false
+  section: Collect
 - additionalinfo: The maximum number of incidents to fetch
   defaultvalue: '50'
   display: Fetch Limit
   name: max_fetch
   type: 0
   required: false
+  section: Collect
 - defaultvalue: https://HOST:8443
   additionalinfo: Broker Server URL (Optional).  Required to use Broker commands.
   display: Broker Server URL
@@ -161,8 +171,71 @@ script:
       type: String
     deprecated: false
     execution: false
-  - description: Transition an ARO.
-    name: cov-mgsec-transition-aro
+  - name: cov-mgsec-list-escalation-contacts
+    description: Get the escalation contact list for a given organization.
+    arguments:
+    - name: org_id
+      required: true
+      description: Organization ID (eg. "00000000-1111-2222-3333-444444444444").
+    outputs:
+    - contextPath: FESPortal.Org.priority
+      description: Priority.
+      type: String
+    - contextPath: FESPortal.Org.first_name
+      description: First Name.
+      type: String
+    - contextPath: FESPortal.Org.last_name
+      description: Last Name.
+      type: String
+    - contextPath: FESPortal.Org.job_title
+      description: Job Title.
+      type: String
+    - contextPath: FESPortal.Org.phone_number
+      description: Phone Number.
+      type: String
+    - contextPath: FESPortal.Org.secondary_phone
+      description: Secondary Phone Number.
+      type: String
+    - contextPath: FESPortal.Org.email
+      description: Email.
+      type: String
+    - contextPath: FESPortal.Org.notes
+      description: Notes.
+      type: String
+  - name: cov-mgsec-list-key-contacts
+    arguments:
+    - name: org_id
+      required: true
+      description: Organization ID (eg. "00000000-1111-2222-3333-444444444444").
+    description: Get the key contact list for a given organization.
+    outputs:
+    - contextPath: FESPortal.Org.first_name
+      description: 'First Name.'
+      type: String
+    - contextPath: FESPortal.Org.last_name
+      description: Last Name.
+      type: String
+    - contextPath: FESPortal.Org.phone_number
+      description: Phone Number.
+      type: String
+    - contextPath: FESPortal.Org.email
+      description: Email.
+      type: String
+    - contextPath: FESPortal.Org.type
+      description: Contact Type.
+      type: String
+  - name: cov-mgsec-list-language
+    arguments:
+    - name: org_id
+      required: true
+      description: Organization ID (eg. "00000000-1111-2222-3333-444444444444").
+    description: Get the default language for a given organization.
+    outputs:
+    - contextPath: FESPortal.Org.default_language
+      description: 'Default Language.'
+      type: String
+  - name: cov-mgsec-transition-aro
+    description: Transition an ARO.
     arguments:
     - name: aro_id
       required: true
@@ -503,7 +576,7 @@ script:
     - contextPath: FESBroker.result
       description: Result.
       type: String
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   runonce: false
   script: ''
