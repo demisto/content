@@ -7,13 +7,13 @@ from typing import Any, cast
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-VENDOR = 'runzero'
-PRODUCT = 'runzero'
+VENDOR = "runzero"
+PRODUCT = "runzero"
 DEFAULT_LIMIT = "1000"
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
@@ -28,9 +28,9 @@ class Client(BaseClient):
     def __init__(self, base_url, verify, proxy, client_secret, client_id):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         data = {
-            'client_secret': client_secret,
-            'client_id': client_id,
-            'grant_type': 'client_credentials',
+            "client_secret": client_secret,
+            "client_id": client_id,
+            "grant_type": "client_credentials",
         }
         self.data = data
 
@@ -38,30 +38,26 @@ class Client(BaseClient):
         """
         Get api token for RunZero account API requests.
         """
-        headers = {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
+        headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
         try:
             api_token_res = self._http_request(
-                method='POST',
-                url_suffix='/account/api/token',
+                method="POST",
+                url_suffix="/account/api/token",
                 headers=headers,
                 data=self.data,
             )
         except Exception as e:
-            if 'Forbidden' in str(e):
-                raise DemistoException('Authorization Error: make sure API Key is correctly set')
+            if "Forbidden" in str(e):
+                raise DemistoException("Authorization Error: make sure API Key is correctly set")
             else:
                 raise e
-        return api_token_res.get('access_token', '')
+        return api_token_res.get("access_token", "")
 
     def http_request(self, method: str, url_suffix: str, params: dict):
         api_token = self.get_api_token()
 
-        headers = {
-            'Authorization': f'Bearer {api_token}'
-        }
+        headers = {"Authorization": f"Bearer {api_token}"}
 
         return self._http_request(
             method=method,
@@ -84,13 +80,13 @@ class Client(BaseClient):
         request_params: dict[str, str] = {"search": search_query}
 
         return self.http_request(
-            method='GET',
-            url_suffix='/account/events.json',
+            method="GET",
+            url_suffix="/account/events.json",
             params=request_params,
         )
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_module(client: Client, first_fetch_time: int) -> str:
@@ -108,23 +104,16 @@ def test_module(client: Client, first_fetch_time: int) -> str:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
 
-    fetch_events(
-        client=client,
-        max_results=1,
-        last_run={},
-        first_fetch_time=first_fetch_time
-    )
+    fetch_events(client=client, max_results=1, last_run={}, first_fetch_time=first_fetch_time)
 
-    return 'ok'
+    return "ok"
 
 
 def sort_events(events: list) -> list:
-    return sorted(events, key=lambda x: x['created_at'])
+    return sorted(events, key=lambda x: x["created_at"])
 
 
-def get_events_command(
-    client: Client, query_string: str, limit: int
-) -> tuple[list[dict[str, Any]], CommandResults]:
+def get_events_command(client: Client, query_string: str, limit: int) -> tuple[list[dict[str, Any]], CommandResults]:
     """
     Gets all the events from the RunZero API for each log type.
     Args:
@@ -135,30 +124,31 @@ def get_events_command(
         CommandResults: A CommandResults object that contains the events in a table format.
     """
     events: list[dict] = []
-    hr = ''
+    hr = ""
     temp_events = client.fetch_system_event_logs(query_string)
     temp_events = sort_events(temp_events)
     limited_events = temp_events[:limit]
     if limited_events:
-        hr += tableToMarkdown(name='Events', t=limited_events)
+        hr += tableToMarkdown(name="Events", t=limited_events)
         for event in limited_events:
             event = add_time_to_event(event)
             events.append(event)
     else:
-        hr = 'No events found.'
+        hr = "No events found."
 
     return events, CommandResults(readable_output=hr)
 
 
 def add_time_to_event(event: dict):
-    event_created_time = int(event.get('created_at', '0'))
+    event_created_time = int(event.get("created_at", "0"))
     event_created_time_ms = event_created_time * 1000
-    event['_time'] = timestamp_to_datestring(event_created_time_ms)
+    event["_time"] = timestamp_to_datestring(event_created_time_ms)
     return event
 
 
-def fetch_events(client: Client, max_results: int, last_run: dict[str, int],
-                 first_fetch_time: int | None) -> tuple[dict[str, int], list[dict]]:
+def fetch_events(
+    client: Client, max_results: int, last_run: dict[str, int], first_fetch_time: int | None
+) -> tuple[dict[str, int], list[dict]]:
     """
     This function retrieves new alerts every interval (default is 1 minute).
     It has to implement the logic of making sure that events are fetched only onces and no events are missed.
@@ -177,7 +167,7 @@ def fetch_events(client: Client, max_results: int, last_run: dict[str, int],
         list: List of events that will be created in XSIAM.
     """
 
-    last_fetch = last_run.get('last_fetch', None)
+    last_fetch = last_run.get("last_fetch", None)
     if last_fetch is None:
         last_fetch = first_fetch_time
     else:
@@ -186,15 +176,13 @@ def fetch_events(client: Client, max_results: int, last_run: dict[str, int],
     latest_created_time = cast(int, last_fetch)
 
     events: list[dict[str, Any]] = []
-    search_query = f'created_at:>{latest_created_time}'
-    temp_events = client.fetch_system_event_logs(
-        search_query=search_query
-    )
+    search_query = f"created_at:>{latest_created_time}"
+    temp_events = client.fetch_system_event_logs(search_query=search_query)
     temp_events = sort_events(events=temp_events)
     limited_events = temp_events[:max_results]
 
     for event in limited_events:
-        event_created_time = int(event.get('created_at', '0'))
+        event_created_time = int(event.get("created_at", "0"))
 
         if last_fetch:
             if event_created_time <= last_fetch:
@@ -206,11 +194,11 @@ def fetch_events(client: Client, max_results: int, last_run: dict[str, int],
             latest_created_time = event_created_time
 
     # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'last_fetch': latest_created_time}
+    next_run = {"last_fetch": latest_created_time}
     return next_run, events
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:
@@ -220,23 +208,19 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    client_id = params.get('client_id', '')
-    client_secret = params.get('client_secret', {}).get('password', '')
-    base_url = urljoin(params.get('url'), '/api/v1.0')
-    verify_certificate = not params.get('insecure', False)
+    client_id = params.get("client_id", "")
+    client_secret = params.get("client_secret", {}).get("password", "")
+    base_url = urljoin(params.get("url"), "/api/v1.0")
+    verify_certificate = not params.get("insecure", False)
     try:
-        first_fetch_time = arg_to_datetime(
-            arg=params.get('first_fetch', '3 days'),
-            arg_name='First fetch time',
-            required=True
-        )
+        first_fetch_time = arg_to_datetime(arg=params.get("first_fetch", "3 days"), arg_name="First fetch time", required=True)
         first_fetch_epoch_time = int(first_fetch_time.timestamp()) if first_fetch_time else None  # type: ignore
 
         if not first_fetch_epoch_time:
-            raise DemistoException('Did not set first_fetch_time.')
+            raise DemistoException("Did not set first_fetch_time.")
 
-        proxy = params.get('proxy', False)
-        demisto.debug(f'Command being called is {command}')
+        proxy = params.get("proxy", False)
+        demisto.debug(f"Command being called is {command}")
 
         client = Client(
             base_url=base_url,
@@ -246,45 +230,38 @@ def main() -> None:
             client_id=client_id,
         )
 
-        if command == 'test-module':
+        if command == "test-module":
             result = test_module(client, first_fetch_epoch_time)
             return_results(result)
 
-        elif command == 'runzero-get-events':
+        elif command == "runzero-get-events":
             events, results = get_events_command(
-                client, query_string=f'created_at:>{first_fetch_epoch_time}',
-                limit=arg_to_number(args.get("limit", DEFAULT_LIMIT))  # type: ignore
+                client,
+                query_string=f"created_at:>{first_fetch_epoch_time}",
+                limit=arg_to_number(args.get("limit", DEFAULT_LIMIT)),  # type: ignore
             )
             return_results(results)
             if argToBoolean(args.get("should_push_events")):
-                send_events_to_xsiam(
-                    events,
-                    vendor=VENDOR,
-                    product=PRODUCT
-                )
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
-        elif command == 'fetch-events':
-            max_results = arg_to_number(arg=params.get('max_fetch'))
+        elif command == "fetch-events":
+            max_results = arg_to_number(arg=params.get("max_fetch"))
 
             next_run, events = fetch_events(
                 client=client,
                 max_results=max_results,  # type: ignore
                 last_run=demisto.getLastRun(),
-                first_fetch_time=first_fetch_epoch_time
+                first_fetch_time=first_fetch_epoch_time,
             )
 
-            send_events_to_xsiam(
-                events,
-                vendor=VENDOR,
-                product=PRODUCT
-            )
+            send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)
 
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
