@@ -1689,7 +1689,6 @@ script:
       prettyname: Short Description
       required: true
     - auto: PREDEFINED
-      defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", "sn_si_incident" or "std_change_template". Default is "incident".
       name: ticket_type
       prettyname: Ticket Type

@@ -770,16 +770,12 @@ script:
   - arguments:
     - description: The channel to which to send messages. Supports only standard channels.
       name: channel
+      prettyname: Channel
+      required: true
     - description: 'The message to send to the channel or team member. Use issue fields as variables to enrich the text. Example: “${alert.details}"'
       name: message
       prettyname: Message
       required: true
-    - description: Display name or email address of the team member to send the message to.
-      name: team_member
-    - description: The team in which the specified channel exists. The team must already exist, and this value will override the default channel configured in the integration parameters.
-      name: team
-    - description: The team member to which to send the message.
-      name: to
     - description: The header of an external form hyperlink.
       defaultValue: "Microsoft Teams Form"
       name: external_form_url_header
