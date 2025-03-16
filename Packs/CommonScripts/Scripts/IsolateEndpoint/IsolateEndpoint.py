@@ -503,8 +503,7 @@ def main():
         agent_ips = argToList(args.get("agent_ip", []))
         agent_hostnames = argToList(args.get("agent_hostname", []))
         force = argToBoolean(args.get("force", False))
-        # verbose = argToBoolean(args.get("verbose", False))
-        verbose = True # todo to delete
+        verbose = argToBoolean(args.get("verbose", False))
         brands_to_run = argToList(args.get('brands', []))
         server_os_list = argToList(args.get('server_os', []))
         module_manager = ModuleManager(demisto.getModules(), brands_to_run)
