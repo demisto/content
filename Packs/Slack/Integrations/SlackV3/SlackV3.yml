@@ -505,27 +505,14 @@ script:
     name: slack-get-conversation-replies
   - arguments:
     - default: true
-      description: "The message content. When mentioning another slack user, make sure to do so in the following format: <@user_name>."
+      description: 'The message to send to the channel or team member (to). Use issue fields as variables to enrich the text. Example: “${issue.Description}”'
       name: message
       prettyname: Message
       required: true
-      predefined:
-        - "${issue.Name} ${issue.Description}"
     - description: The user to whom to send the message. Can be either the username or email address.
       name: to
     - description: The name of the Slack channel to which to send the message.
       name: channel
-    - description: An entry ID to send as a link.
-      name: entry
-    - auto: PREDEFINED
-      defaultValue: 'false'
-      description: Whether to include a URL to the relevant component in Demisto. Can be "true" or "false". Default value is "false".
-      name: ignoreAddURL
-      predefined:
-        - 'true'
-        - 'false'
-    - description: The ID of the thread to which to reply - can be retrieved from a previous send-notification command.
-      name: threadID
     - description: A JSON string of Slack blocks to send in the message.
       name: blocks
     description: Sends a message to a user, group, or channel.
