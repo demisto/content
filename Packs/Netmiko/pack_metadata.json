@@ -2,7 +2,7 @@
     "name": "Netmiko",
     "description": "The Netmiko pack uses the Netmiko/Paramiko libraries to execute commands via SSH on platforms supported by these python modules.",
     "support": "xsoar",
-    "currentVersion": "1.0.17",
+    "currentVersion": "1.0.18",
     "author": "Josh Levine",
     "url": "",
     "email": "",
