@@ -22,6 +22,7 @@ configuration:
   name: first_fetch
   type: 0
   required: false
+  defaultvalue: 3 days
 - display: Incident type
   name: incidentType
   type: 13
