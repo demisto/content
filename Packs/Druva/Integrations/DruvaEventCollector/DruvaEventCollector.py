@@ -181,7 +181,7 @@ def fetch_events(client: Client, last_run: dict[str, str], max_fetch: int) -> tu
         except Exception as e:
             if "Invalid tracker" in str(e):
                 demisto.debug(
-                    "The tracker is invalid," " catching the error and continuing with the same tracker for the next time."
+                    "The tracker is invalid, catching the error and continuing with the same tracker for the next time."
                 )
                 events, new_tracker = [], tracker  # type:ignore[assignment]
             else:

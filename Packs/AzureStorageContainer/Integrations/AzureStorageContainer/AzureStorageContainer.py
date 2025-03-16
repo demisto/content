@@ -164,7 +164,7 @@ class Client:
             shutil.copy(xsoar_system_file_path, blob_name)
         except FileNotFoundError:
             raise Exception(
-                "Failed to prepare file for upload. " "The process of importing and copying the file data from XSOAR failed."
+                "Failed to prepare file for upload. The process of importing and copying the file data from XSOAR failed."
             )
 
         try:
@@ -517,7 +517,7 @@ def list_blobs_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     marker = ""
     readable_message = (
-        f"{container_name} Container Blobs List:\n Current page size: {limit}\n " f"Showing page {page} out others that may exist"
+        f"{container_name} Container Blobs List:\n Current page size: {limit}\n Showing page {page} out others that may exist"
     )
     if page > 1:  # type: ignore
         marker = get_pagination_next_marker_element(
@@ -985,12 +985,12 @@ def generate_sas_token_command(client: Client, args: dict) -> CommandResults:  #
         sas_token = generate_sas_signature(
             account_key,
             canonicalized_resource,
-            signed_permissions,
+            signed_permissions,  # type: ignore
             signed_start,  # type: ignore # noqa
             signed_expiry,
-            signed_resource,
+            signed_resource,  # type: ignore
             api_version,
-            signed_ip,
+            signed_ip,  # type: ignore
         )  # type: ignore
         sas_url = f"{url}?{sas_token}"
         res_data = sas_url

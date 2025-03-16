@@ -13,11 +13,7 @@ class TestClient:
         c = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, apikey)
 
         requests_mock.get(
-            "{server}/dnsdb/v2/rate_limit?swclient={swclient}&version={version}".format(
-                server=DNSDB.DEFAULT_DNSDB_SERVER,
-                swclient=DNSDB.SWCLIENT,
-                version=DNSDB.VERSION,
-            ),
+            f"{DNSDB.DEFAULT_DNSDB_SERVER}/dnsdb/v2/rate_limit?swclient={DNSDB.SWCLIENT}&version={DNSDB.VERSION}",
             json={},
             request_headers={
                 "Accept": "application/x-ndjson",
@@ -1331,11 +1327,7 @@ class TestRateLimitCommand:
     def _run_test(requests_mock, input: dict, expected_readable: str):
         client = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, "")
         requests_mock.get(
-            "{server}/dnsdb/v2/rate_limit?swclient={swclient}&version={version}".format(
-                server=DNSDB.DEFAULT_DNSDB_SERVER,
-                swclient=DNSDB.SWCLIENT,
-                version=DNSDB.VERSION,
-            ),
+            f"{DNSDB.DEFAULT_DNSDB_SERVER}/dnsdb/v2/rate_limit?swclient={DNSDB.SWCLIENT}&version={DNSDB.VERSION}",
             json=input,
         )
 
@@ -1355,7 +1347,7 @@ class TestParseRData:
             "xn--frsightscurity-lib5e.com.  SOA  fsi.io. hostmaster.xn--frsight-exa.xn--scurity-bya.com. "
             "2014081222 7200 3600 604800 3600"
         )
-        assert soa == "fårsightsécurity.com.  SOA  fsi.io. hostmaster.fårsight.sécurity.com. 2014081222 7200 3600 " "604800 3600"
+        assert soa == "fårsightsécurity.com.  SOA  fsi.io. hostmaster.fårsight.sécurity.com. 2014081222 7200 3600 604800 3600"
 
     def test_idna_spf(self):
         assert DNSDB.parse_rdata("include:xn--frsight-exa.com.") == "include:fårsight.com."

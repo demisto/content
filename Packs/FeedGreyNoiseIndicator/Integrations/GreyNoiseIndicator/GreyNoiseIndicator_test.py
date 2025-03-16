@@ -8,7 +8,7 @@ TEST_MODULE_DATA = [
         "false_key",
         {"message": "pong", "expiration": "2020-12-31", "offering": "community"},
         200,
-        "Invalid API Offering (" "community)or Expiration Date " "(2020-12-31 00:00:00)",
+        "Invalid API Offering (community)or Expiration Date (2020-12-31 00:00:00)",
     ),
     ("dummy_key", "forbidden", 401, "Unauthenticated. Check the configured API Key."),
     ("dummy_key", "", 429, "API Rate limit hit. Try after sometime."),

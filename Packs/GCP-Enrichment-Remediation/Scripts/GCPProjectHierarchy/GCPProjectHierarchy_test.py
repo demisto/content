@@ -41,7 +41,7 @@ def test_GCPProjectHierarchy_command(mocker):
     from GCPProjectHierarchy import gcp_project_heirarchy
 
     def executeCommand(name, args):
-        if name == "gcp-iam-projects-get":
+        if name == "gcp-iam-projects-get":  # noqa: RET503
             return [
                 {
                     "Type": 1,
@@ -87,7 +87,7 @@ def test_GCPProjectHierarchy_command_empty_folder(mocker):
     from GCPProjectHierarchy import gcp_project_heirarchy
 
     def executeCommand(name, args):
-        if name == "gcp-iam-projects-get":
+        if name == "gcp-iam-projects-get":  # noqa: RET503
             return [
                 {
                     "Type": 1,
@@ -120,7 +120,7 @@ def test_GCPProjectHierarchy_command_no_folder_name(mocker):
     from GCPProjectHierarchy import gcp_project_heirarchy
 
     def executeCommand(name, args):
-        if name == "gcp-iam-projects-get":
+        if name == "gcp-iam-projects-get":  # noqa: RET503
             return [
                 {
                     "Type": 1,
@@ -159,7 +159,7 @@ def test_GCPProjectHierarchy_command_no_folder_parent(mocker):
     from GCPProjectHierarchy import gcp_project_heirarchy
 
     def executeCommand(name, args):
-        if name == "gcp-iam-projects-get":
+        if name == "gcp-iam-projects-get":  # noqa: RET503
             return [
                 {
                     "Type": 1,
@@ -193,7 +193,7 @@ def test_GCPProjectHierarchy_command_no_folder_displayname(mocker):
     from GCPProjectHierarchy import gcp_project_heirarchy
 
     def executeCommand(name, args):
-        if name == "gcp-iam-projects-get":
+        if name == "gcp-iam-projects-get":  # noqa: RET503
             return [
                 {
                     "Type": 1,

@@ -111,7 +111,7 @@ def get_headers(base_url: str, client_id: str, client_secret: str, grant_type: s
     oauth_response = requests.request("POST", url=f"{base_url}{IDN_OAUTH_EXT}", params=params)
     if oauth_response is not None and 200 <= oauth_response.status_code < 300:
         return {
-            "Authorization": "Bearer %s" % oauth_response.json().get("access_token", None),
+            "Authorization": f"Bearer {oauth_response.json().get('access_token', None)}",
             "Content-Type": "application/json",
         }
     elif oauth_response.json().get("error_description") is not None:

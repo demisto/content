@@ -393,7 +393,7 @@ def get_datetime_range(
         end_time_datetime = now
 
     start_time, end_time = (
-        last_run_time_datetime.strftime(date_format),
+        last_run_time_datetime.strftime(date_format),  # type: ignore[union-attr]
         end_time_datetime.strftime(date_format),  # type: ignore[union-attr]
     )
     demisto.info(f"{start_time=} and {end_time=} for {log_type_time_field_name=}")
@@ -564,9 +564,9 @@ def get_workbench_logs(
                     _entity["relatedEntities"] = ",".join(related_entities)
                 if (provenance := _entity.get("provenance")) and isinstance(provenance, list):
                     _entity["provenance"] = ",".join(provenance)
-                if (entity_value := _entity.get("entityValue")) and isinstance(entity_value, dict):
-                    if (_ips := entity_value.get("ips")) and isinstance(_ips, list):
-                        entity_value["ips"] = ",".join(_ips)
+                if ((entity_value := _entity.get("entityValue")) and isinstance(entity_value, dict) and
+                    (_ips := entity_value.get("ips")) and isinstance(_ips, list)):
+                    entity_value["ips"] = ",".join(_ips)
 
     workbench_cache_time_field_name = LastRunTimeCacheTimeFieldNames.WORKBENCH.value
     workbench_log_type = LogTypes.WORKBENCH.value
@@ -850,7 +850,7 @@ def get_search_detection_logs(
             # pagination is over
             dedup_log_ids = pagination_log_ids
             demisto.info(
-                f"pagination is over, received in the last page " f"the following log ids: {fetched_search_detection_logs_ids}"
+                f"pagination is over, received in the last page the following log ids: {fetched_search_detection_logs_ids}"
             )
         last_run_next_link = ""
 

@@ -635,7 +635,7 @@ def fetch_incidents(
         first_fetch_date_time = dateparser.parse(first_fetch_time)
         if not first_fetch_date_time:
             raise DemistoException(
-                f"Microsoft Defender 365 Fetch incidents - " f"Could not parse the first_fetch_time: {first_fetch_time=}"
+                f"Microsoft Defender 365 Fetch incidents - Could not parse the first_fetch_time: {first_fetch_time=}"
             )
         last_run = first_fetch_date_time.strftime(DATE_FORMAT)
 
@@ -1101,7 +1101,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
 
     except Exception as e:
         demisto.error(
-            f"Microsoft Defender 365 - Error in outgoing mirror for incident {remote_incident_id} \n" f"Error message: {str(e)}"
+            f"Microsoft Defender 365 - Error in outgoing mirror for incident {remote_incident_id} \nError message: {str(e)}"
         )
         return remote_incident_id
 

@@ -47,7 +47,7 @@ def main():
     except ValueError:
         return_error("Invalid parameter was given as limit to the number of Domains to fetch.")
     except Exception as err:
-        return_error(f"Failed to execute Majestic Million. Error: {str(err)} \n " f"tracback: {traceback.format_exc()}")
+        return_error(f"Failed to execute Majestic Million. Error: {str(err)} \n tracback: {traceback.format_exc()}")
 
 
 from CSVFeedApiModule import *  # noqa: E402

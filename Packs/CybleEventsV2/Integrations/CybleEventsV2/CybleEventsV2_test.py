@@ -193,7 +193,7 @@ def test_limit_cyble_vision_fetch_detail(requests_mock, capfd, offset, limit):
 
     with (
         capfd.disabled(),
-        pytest.raises(ValueError, match="The limit argument should contain a positive number," f" up to 1000, limit: {limit}"),
+        pytest.raises(ValueError, match=f"The limit argument should contain a positive number, up to 1000, limit: {limit}"),
     ):
         cyble_events(client, "POST", "some_random_token", url, args, {}, False, collections, incident_severity, True)
 
@@ -211,7 +211,7 @@ def test_limit_validate_input(capfd):
         capfd.disabled(),
         pytest.raises(
             ValueError,
-            match="The limit argument should contain a positive number," f" up to 1000, limit: {args.get('limit', '50')}",
+            match=f"The limit argument should contain a positive number, up to 1000, limit: {args.get('limit', '50')}",
         ),
     ):
         validate_input(args=args)
@@ -230,7 +230,7 @@ def test_limit_validate_ioc_input(capfd):
         capfd.disabled(),
         pytest.raises(
             ValueError,
-            match="The limit argument should contain a positive number," f" up to 100, limit: {args.get('limit', '50')}",
+            match=f"The limit argument should contain a positive number, up to 100, limit: {args.get('limit', '50')}",
         ),
     ):
         validate_input(args=args, is_iocs=True)
@@ -249,7 +249,7 @@ def test_datecheck_validate_input(capfd):
     with (
         capfd.disabled(),
         pytest.raises(
-            ValueError, match=f"Start date {args.get('start_date')} cannot " f"be after end date {args.get('end_date')}"
+            ValueError, match=f"Start date {args.get('start_date')} cannot be after end date {args.get('end_date')}"
         ),
     ):
         validate_input(args=args, is_iocs=True)

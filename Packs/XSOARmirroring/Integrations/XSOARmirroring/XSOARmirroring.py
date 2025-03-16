@@ -130,7 +130,7 @@ class Client(BaseClient):
 
         if not entry.get("note", False):
             demisto.debug(
-                f'the entry has inv_id {incident_id}\nformat {entry.get("format")}\n contents ' f'{entry.get("contents")}'
+                f'the entry has inv_id {incident_id}\nformat {entry.get("format")}\n contents {entry.get("contents")}'
             )
             self._http_request(
                 method="POST",
@@ -138,7 +138,7 @@ class Client(BaseClient):
                 json_data={"contents": entry.get("contents"), "format": entry.get("format"), "investigationId": incident_id},
             )
         else:
-            demisto.debug(f'the entry has inv_id {incident_id}\ndata {entry.get("date")}\n' f'markdown {entry.get("markdown")}')
+            demisto.debug(f'the entry has inv_id {incident_id}\ndata {entry.get("date")}\nmarkdown {entry.get("markdown")}')
             entry_format = entry.get("format") == "markdown"
             self._http_request(
                 method="POST",
@@ -770,7 +770,7 @@ def update_remote_system_command(client: Client, args: dict[str, Any], mirror_ta
 
     else:
         demisto.debug(
-            f"Skipping updating remote incident fields [{parsed_args.remote_incident_id}] as it is " f"not new nor changed."
+            f"Skipping updating remote incident fields [{parsed_args.remote_incident_id}] as it is not new nor changed."
         )
 
     if parsed_args.entries:

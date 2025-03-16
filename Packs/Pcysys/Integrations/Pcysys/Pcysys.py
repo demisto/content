@@ -128,9 +128,7 @@ class Client(BaseClient):
         set_integration_context(context)
 
     def is_access_token_valid(self):
-        if not self.access_token or not self.expiry or self.expiry < int(datetime.utcnow().timestamp()):
-            return False
-        return True
+        return not (self.access_token and self.expiry and self.expiry >= int(datetime.utcnow().timestamp()))
 
     def create_basic_authentication_header(self):
         authentication_headers = HEADERS.copy()

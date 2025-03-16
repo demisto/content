@@ -4,7 +4,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 """ IMPORTS """
 
 import urllib3
-from typing import Dict, Any
+from typing import Any
 from datetime import datetime
 from dateutil.parser import parse as parse_dt
 import traceback
@@ -26,7 +26,7 @@ class Client(BaseClient):
     """Client class to interact with Qintel APIs"""
 
     def __init__(self, base_url, verify=True, proxy=False, **kwargs):
-        super(Client, self).__init__(base_url, verify=verify, proxy=proxy)
+        super().__init__(base_url, verify=verify, proxy=proxy)
 
         self._headers = {
             "User-Agent": USER_AGENT,
@@ -34,10 +34,10 @@ class Client(BaseClient):
             "Cf-Access-Client-Secret": kwargs.get("client_secret"),
         }
 
-    def search(self, endpoint: str, params: dict) -> Dict[str, Any]:
+    def search(self, endpoint: str, params: dict) -> dict[str, Any]:
         return self._http_request(method="GET", url_suffix=endpoint, params=params, backoff_factor=0.5, retries=5)
 
-    def ping(self) -> Dict[str, Any]:
+    def ping(self) -> dict[str, Any]:
         return self._http_request(
             method="GET",
             url_suffix="/users/me",
@@ -48,19 +48,19 @@ def test_module(client) -> str:
     try:
         client.ping()
     except Exception as e:
-        return "Test failed: {}".format(e)
+        return f"Test failed: {e}"
 
     return "ok"
 
 
 def _make_timestamp(ts):
     if not ts:
-        return
+        return None
 
     if isinstance(ts, int):
         return datetime.fromtimestamp(ts)
 
-    if isinstance(ts, str):
+    if isinstance(ts, str): # noqa: RET503
         return parse_dt(ts)
 
 
@@ -150,7 +150,7 @@ def cve_command(client, **args):
             columns = ["actor", "actor_type", "exploit_type", "exploit_notes", "date_observed"]
 
             header = f"Qintel vulnerability results for: {cve}"
-            metadata = f"**Vulnerability in {data['AffectedSystem']} " f"affecting versions: {data['AffectedVersions']}**\n"
+            metadata = f"**Vulnerability in {data['AffectedSystem']} affecting versions: {data['AffectedVersions']}**\n"
             metadata += f"**Last observed: {data['LastObserved']}**"
 
             hr = tableToMarkdown(header, data["Observations"], columns, metadata=metadata)

@@ -116,7 +116,6 @@ def test_assign_host_set_policy_command(mocker, demisto_args, return_mocker, exp
     result = assign_host_set_policy_command(Client, demisto_args)
 
     assert result.readable_output == expected_results
-    pass
 
 
 UPSERT_COMMAND_DATA_CASES_LIST_POLICY = [
@@ -1247,7 +1246,7 @@ def test_delete_indicator_condition_command(mocker, requests_mock, status_code: 
 
     mocker.patch.object(Client, "get_token_request", return_value="")
     request = requests_mock.delete(
-        f"{base_url}/indicators/{category}/{indicator_name}/" f"conditions/{indicator_type}/{condition_id}",
+        f"{base_url}/indicators/{category}/{indicator_name}/conditions/{indicator_type}/{condition_id}",
         status_code=status_code,
         json={"message": response_message},
     )
@@ -1374,7 +1373,7 @@ def test_create_dynamic_host_set_command(mocker):
             {"host_set_name": "host_set_name", "query": "query", "query_key": "query_key"},
             "Cannot use free text query with other query operators, Please use one.",
         ),
-        ({"host_set_name": "host_set_name"}, "Please provide a free text query," " or add all of the query operators toghether."),
+        ({"host_set_name": "host_set_name"}, "Please provide a free text query, or add all of the query operators toghether."),
     ],
 )
 def test_create_dynamic_host_set_command_failed(args, expected_results):
@@ -1465,7 +1464,7 @@ def test_update_dynamic_host_set_command(mocker):
             {"host_set_name": "host_set_name", "query": "query", "query_key": "query_key"},
             "Cannot use free text query with other query operators, Please use one.",
         ),
-        ({"host_set_name": "host_set_name"}, "Please provide a free text query," " or add all of the query operators toghether."),
+        ({"host_set_name": "host_set_name"}, "Please provide a free text query, or add all of the query operators toghether."),
     ],
 )
 def test_update_dynamic_host_set_command_failed(args, expected_results):

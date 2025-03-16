@@ -199,9 +199,9 @@ def format_incidents(alerts, hide_cvv_expiry):
                 alert["data_message"]["data"]["bank"]["card"]["expiry"] = "xx/xx/xxxx"
 
             keyword = ""
-            if alert.get("metadata") and alert["metadata"].get("entity"):
-                if alert["metadata"]["entity"].get("keyword") and alert["metadata"]["entity"]["keyword"]["tag_name"]:
-                    keyword = alert["metadata"]["entity"]["keyword"]["tag_name"]
+            if (alert.get("metadata") and alert["metadata"].get("entity") and
+                alert["metadata"]["entity"].get("keyword") and alert["metadata"]["entity"]["keyword"]["tag_name"]):
+                keyword = alert["metadata"]["entity"]["keyword"]["tag_name"]
 
             alert_details = {
                 "name": "Cyble Vision Alert on {}".format(alert.get("service")),
@@ -210,7 +210,7 @@ def format_incidents(alerts, hide_cvv_expiry):
                 "alert_group_id": "{}".format(alert.get("alert_group_id")),
                 "event_id": "{}".format(alert.get("id")),
                 "data_message": json.dumps(alert.get("data_message")),
-                "keyword": "{}".format(keyword),
+                "keyword": f"{keyword}",
                 "created_at": "{}".format(alert.get("created_at")),
                 "status": "{}".format(alert.get("status")),
                 "mirrorInstance": demisto.integrationInstance(),
@@ -329,7 +329,7 @@ def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, in
             input_params["end_date"] = datetime.utcnow().astimezone().isoformat()
     else:
         initial_interval = demisto.params().get("first_fetch_timestamp", 1)
-        if "event_pull_start_date" not in last_run.keys():
+        if "event_pull_start_date" not in last_run:
             event_pull_start_date = datetime.utcnow() - timedelta(days=int(initial_interval))
             input_params["start_date"] = event_pull_start_date.astimezone().isoformat()
         else:

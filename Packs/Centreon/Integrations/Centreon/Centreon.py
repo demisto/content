@@ -13,7 +13,7 @@ USERNAME = demisto.params()["credentials"]["identifier"]
 PASSWORD = demisto.params()["credentials"]["password"]
 
 BASE_URL = SERVER_NAME + "centreon/api/index.php?"
-USE_SSL = False if demisto.params().get("insecure") else True
+USE_SSL = not demisto.params().get("insecure")
 DEFAULT_HEADERS = {"Content-Type": "application/json"}
 
 """ HELPER FUNCTIONS """
@@ -23,7 +23,7 @@ def httpRequest(method, urlSuffix, data, headers):  # pragma: no cover
     data = {} if data is None else data
 
     url = BASE_URL + urlSuffix
-    LOG("running %s request with url=%s\theaders=%s" % (method, url, headers))
+    LOG(f"running {method} request with url={url}\theaders={headers}")
 
     try:
         res = requests.request(method, url, verify=USE_SSL, params=data, headers=headers)
@@ -38,7 +38,7 @@ def httpRequest(method, urlSuffix, data, headers):  # pragma: no cover
 def httpPost(urlSuffix, data=None, files=None):  # pragma: no cover
     data = {} if data is None else data
     url = BASE_URL + urlSuffix
-    LOG("running request with url=%s\tdata=%s\tfiles=%s" % (url, data, files))
+    LOG(f"running request with url={url}\tdata={data}\tfiles={files}")
     try:
         res = requests.post(url, data=data, verify=USE_SSL)
         res.raise_for_status()
@@ -90,9 +90,9 @@ def get_host_status_command():
         return "No Hosts found"
 
     # changing the keys from underscore notation to UpperCamelCase notation
-    camel_case_response = [dict((to_upper_camel_case(k), v) for k, v in dic.items()) for dic in response]
+    camel_case_response = [{to_upper_camel_case(k): v for k, v in dic.items()} for dic in response]
     # for the human readable - only including keys which has values. Also, transforming values from ints to readable text
-    list_for_md = [dict((k, transform_host_vals(k, v)) for k, v in dic.items() if (v == 0 or v)) for dic in camel_case_response]
+    list_for_md = [{k: transform_host_vals(k, v) for k, v in dic.items() if v == 0 or v} for dic in camel_case_response]
 
     entry = {
         "Type": entryTypes["note"],
@@ -124,9 +124,9 @@ def get_service_status_command():
         return "No Services found"
 
     # changing the keys from underscore notation to UpperCamelCase notation
-    camel_case_response = [dict((to_upper_camel_case(k), v) for k, v in dic.items()) for dic in response]
+    camel_case_response = [{to_upper_camel_case(k): v for k, v in dic.items()} for dic in response]
     # for the human readable - only including keys which has values. Also, transforming values from ints to readable text
-    list_for_md = [dict((k, transform_host_vals(k, v)) for k, v in dic.items() if (v == 0 or v)) for dic in camel_case_response]
+    list_for_md = [{k: transform_host_vals(k, v) for k, v in dic.items() if v == 0 or v} for dic in camel_case_response]
 
     entry = {
         "Type": entryTypes["note"],
@@ -141,7 +141,7 @@ def get_service_status_command():
 
 
 """ EXECUTION CODE """
-LOG("command is %s" % (demisto.command(),))
+LOG(f"command is {demisto.command()}")
 try:
     handle_proxy()
     if demisto.command() == "test-module":

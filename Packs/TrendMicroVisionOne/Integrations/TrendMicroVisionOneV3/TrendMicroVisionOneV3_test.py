@@ -309,7 +309,7 @@ def test_quarantine_email_message(mocker):
         "email_identifiers": json.dumps(
             [
                 {
-                    "message_id": ("<CANUJTKTjto9GAHTr9V=TFqMZhRXqVn=" "MfSqmTdAMyv9PDX3k+vQ0w@mail.gmail.com>"),
+                    "message_id": ("<CANUJTKTjto9GAHTr9V=TFqMZhRXqVn=MfSqmTdAMyv9PDX3k+vQ0w@mail.gmail.com>"),
                     "mailbox": "kjshdfjksahd@trendenablement.com",
                     "description": "quarantine email",
                 }
@@ -341,7 +341,7 @@ def test_delete_email_message(mocker):
         "email_identifiers": json.dumps(
             [
                 {
-                    "unique_id": ("CANUJTKTjto9GAHTr9V=TFqMZhRXqVn=" "MfSqmTdAMyv9PDX3k+vQ0w@mail.gmail.com"),
+                    "unique_id": ("CANUJTKTjto9GAHTr9V=TFqMZhRXqVn=MfSqmTdAMyv9PDX3k+vQ0w@mail.gmail.com"),
                     "description": "delete email",
                 }
             ]

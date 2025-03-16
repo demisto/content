@@ -459,7 +459,7 @@ def module_test_command(client: Client, args):  # pragma: no cover # noqa
         else:
             return_error(
                 "Error from the API: "
-                + response.get("message", "An error has occurred, if it persist, please contact your " "local help desk")
+                + response.get("message", "An error has occurred, if it persist, please contact your local help desk")
             )
     except Exception as e:
         exception_text = str(e).lower()
@@ -579,9 +579,9 @@ def set_tql_query(from_date: str, params: dict, endpoint: str) -> str:
         confidence = f'AND confidence GT {params.get("confidence")} ' if int(params.get("confidence")) != 0 else ""  # type: ignore # noqa
         threat_score = (
             f'AND threatAssessScore GT {params.get("threat_assess_score")} '
-            if int(params.get("threat_assess_score")) != 0
+            if int(params.get("threat_assess_score")) != 0  # type: ignore
             else ""
-        )  # type: ignore
+        )
 
     type_name_query = create_types_query(params, endpoint)
     type_names = f"AND {type_name_query}" if type_name_query else ""

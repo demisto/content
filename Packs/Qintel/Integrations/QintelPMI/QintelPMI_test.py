@@ -1,7 +1,6 @@
 """Qintel PMI Integration for Cortex XSOAR - Unit Tests file"""
 
 import json
-import io
 
 MOCK_URL = "https://this-is-only-a-test.local"
 MOCK_CLIENT_ID = "client-id"
@@ -9,7 +8,7 @@ MOCK_CLIENT_SECRET = "client-secret"
 
 
 def util_load_json(path):
-    with io.open(path, mode="r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -76,7 +75,7 @@ def test_cve_command(mocker):
     assert "Vulnerability in Example System affecting versions: 1.0, 1.1" in hr
     assert "Last observed: 2021-07-13 09:31:09" in hr
     assert "|actor|actor_type|exploit_type|exploit_notes|date_observed|" in hr
-    assert "| Unattributed Threat Actor | other | cve |" "  | 2021-07-13 09:31:09 |" in hr
+    assert "| Unattributed Threat Actor | other | cve |  | 2021-07-13 09:31:09 |" in hr
 
     assert outputs["id"] == "CVE-2021-0123"
     assert outputs["AffectedSystem"] == "Example System"

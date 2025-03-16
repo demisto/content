@@ -183,7 +183,7 @@ def main() -> None:
                 return_results(result)
             except Exception:
                 return_error(
-                    "Gurucul services are currently not available. Please contact the administrator for further " "assistance."
+                    "Gurucul services are currently not available. Please contact the administrator for further assistance."
                 )
 
         elif demisto.command() == "gra-validate-api":

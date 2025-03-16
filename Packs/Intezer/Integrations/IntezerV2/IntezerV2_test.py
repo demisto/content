@@ -1568,7 +1568,7 @@ def test_analyze_url_command_missing_url(requests_mock):
 
     # Assert
     assert (
-        "The Url 123test was not found on Intezer. " "Error Server returned bad request error: Bad url"
+        "The Url 123test was not found on Intezer. Error Server returned bad request error: Bad url"
     ) in command_results.readable_output
 
 

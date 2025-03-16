@@ -306,7 +306,7 @@ def mock_file_status_response(*args, **kwargs):
             "digest": {
                 "md5": "4ac174730d4143a119037d9fda81c7a9",
                 "sha1": "fb5608fa03de204a12fe1e9e5275e4a682107471",
-                "sha256": ("65b0f656e79ab84ca17807158e3ea" "c206bd58be6689ddeb95956a48748d138f9"),
+                "sha256": ("65b0f656e79ab84ca17807158e3eac206bd58be6689ddeb95956a48748d138f9"),
             },
             "analysisSummary": {
                 "analysisCompletionTime": "2021-05-07T03:08:40Z",
@@ -482,7 +482,7 @@ def mock_submit_file_to_sandbox_reponse(*args, **kwargs):
             "digest": {
                 "md5": "4ac174730d4143a119037d9fda81c7a9",
                 "sha1": "fb5608fa03de204a12fe1e9e5275e4a682107471",
-                "sha256": ("65b0f656e79ab84ca17807158e3ea" "c206bd58be6689ddeb95956a48748d138f9"),
+                "sha256": ("65b0f656e79ab84ca17807158e3eac206bd58be6689ddeb95956a48748d138f9"),
             },
         },
     }

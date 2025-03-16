@@ -126,7 +126,7 @@ class Client(BaseClient):
             demisto.debug(f"Failed to get content for {link=} - Skipping\nError:\n{e}")
             return ""
         report_content = (
-            "This is a dumped content of the article. Use the link under Publications field to read " "the full article. \n\n"
+            "This is a dumped content of the article. Use the link under Publications field to read the full article. \n\n"
         )
         soup = BeautifulSoup(response_url.content, "html.parser")
         for tag in soup.find_all():

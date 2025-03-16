@@ -1,7 +1,6 @@
 """Qintel QWatch Integration for Cortex XSOAR - Unit Tests file"""
 
 import json
-import io
 
 MOCK_URL = "https://this-is-only-a-test.local"
 MOCK_CLIENT_ID = "client-id"
@@ -9,7 +8,7 @@ MOCK_CLIENT_SECRET = "client-secret"
 
 
 def util_load_json(path):
-    with io.open(path, mode="r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -163,7 +162,7 @@ def test_search_exposures(mocker):
 
     assert "Qintel QWatch exposures for: test@example.local" in hr
     assert "|Email|Password|Source|Loaded|First Seen|Last Seen|" in hr
-    assert "test@example.local | SuperSecretPassword | " "malware-evilbot_March_22_2020 | 2020-03-25 09:38:40 |" in hr
+    assert "test@example.local | SuperSecretPassword | malware-evilbot_March_22_2020 | 2020-03-25 09:38:40 |" in hr
 
     record = outputs["QWatch"]["Exposures"][0]
 
