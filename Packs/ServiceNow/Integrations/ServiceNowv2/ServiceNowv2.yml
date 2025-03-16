@@ -1684,16 +1684,15 @@ script:
     description: Retrieves attachments from a ticket.
     name: servicenow-get-ticket-attachments
   - arguments:
-    - description: Short description of the ticket.
+    - description: 'Short description of the ticket. Use issue fields as variables to enrich the text. Example: “${issue.Name}”'
       name: short_description
       prettyname: Short Description
       required: true
-      predefined:
-        - "${issue.ID} ${issue.Name}"
     - auto: PREDEFINED
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", "sn_si_incident" or "std_change_template". Default is "incident".
       name: ticket_type
+      prettyname: Ticket Type
       predefined:
         - incident
         - problem
@@ -1703,6 +1702,7 @@ script:
         - sc_req_item
         - sn_si_incident
         - std_change_template
+      required: true
     - auto: PREDEFINED
       description: Ticket urgency. You can either select from the predefined options or enter another value. For example, "Urgent" or "5".
       name: urgency
@@ -1711,7 +1711,7 @@ script:
         - 2 - Medium
         - 3 - Low
     - auto: PREDEFINED
-      description: Ticket severity. You can either select from the predefined options or enter another value. For example, "Urgent" or "5".
+      description: Ticket severity. You can select from the predefined options.
       name: severity
       prettyname: Severity
       required: true
@@ -1736,45 +1736,12 @@ script:
       name: activity_due
     - description: List of users assigned to the ticket.
       name: additional_assignee_list
-    - description: Ticket history approval.
-      name: approval_history
-    - description: The ticket approval set date, in the format "2016-07-02 21:51:11".
-      name: approval_set
     - description: User assigned to the ticket.
       name: assigned_to
-    - description: 'Business duration, in the format: YYYY-MM-DD HH:MM:SS.'
-      name: business_duration
-    - description: Business service.
-      name: business_service
-    - description: Business source.
-      name: business_stc
-    - description: 'Calendar duration, in the format: YYYY-MM-DD HH:MM:SS.'
-      name: calendar_duration
-    - description: Caller ID (UID format).
-      name: caller_id
     - description: Category of the ticket.
       name: category
     - description: UID Format.
       name: caused_by
-    - auto: PREDEFINED
-      description: Ticket's close code. Can be "Solved (Work Around)", "Solved (Permanently)", "Solved Remotely (Work Around)", "Solved Remotely (Permanently)", "Not Solved (Not Reproducible)", "Not Solved (Too Costly)", or "Closed/Resolved by Caller".
-      name: close_code
-      predefined:
-        - Solved (Work Around)
-        - Solved (Permanently)
-        - Solved Remotely (Work Around)
-        - Solved Remotely (Permanently)
-        - Not Solved (Not Reproducible)
-        - Not Solved (Too Costly)
-        - Closed/Resolved by Caller
-    - description: Close notes of the ticket.
-      name: close_notes
-    - description: 'When the ticket was closed, in the format: YYYY-MM-DD HH:MM:SS.'
-      name: closed_at
-    - description: User who closed the ticket.
-      name: closed_by
-    - description: UID Format.
-      name: cmdb_ci
     - description: Format type journal input.
       name: comments
     - description: Format type journal input.
@@ -1783,18 +1750,12 @@ script:
       name: company
     - description: Contact type.
       name: contact_type
-    - description: Correlation display.
-      name: correlation_display
-    - description: Correlation ID.
-      name: correlation_id
     - description: Delivery plan (UID format).
       name: delivery_plan
-    - description: Ticket description.
+    - description: 'Ticket description. Use issue fields as variables to enrich the text. Example: “${issue.Description}”'
       name: description
       prettyname: Description
       required: true
-      predefined:
-        - ${issue.Description}
     - description: 'Ticket due date, in the format: YYYY-MM-DD HH:MM:SS.'
       name: due_date
     - description: 'Expected start date/time, in the format: YYYY-MM-DD HH:MM:SS.'
@@ -1803,12 +1764,6 @@ script:
       name: follow_up
     - description: UID format list (group).
       name: group_list
-    - auto: PREDEFINED
-      description: Whether the ticket is solved in the knowledge base. Can be "true" or "false".
-      name: knowledge
-      predefined:
-        - 'true'
-        - 'false'
     - description: Location of the ticket.
       name: location
     - description: SLA of the ticket.
@@ -1827,36 +1782,12 @@ script:
       name: parent_incident
     - description: UID Format.
       name: problem_id
-    - description: The number of users included in this ticket.
-      name: reassignment_count
-    - description: How many times the ticket has been reopened.
-      name: reopen_count
-    - description: 'The date/time that the ticket was resolved, in the format: YYYY-MM-DD HH:MM:SS.'
-      name: resolved_at
-    - description: ID of the user that resolved the ticket.
-      name: resolved_by
     - description: UID.
       name: rfc
     - description: 'SLA due date/time, in the format: YYYY-MM-DD HH:MM:SS.'
       name: sla_due
     - description: Ticket subcategory.
       name: subcategory
-    - description: Last updated by.
-      name: sys_updated_by
-    - description: 'Last date/time that the system was updated, in the format: YYYY-MM-DD HH:MM:SS.'
-      name: sys_updated_on
-    - description: Input from the end user.
-      name: user_input
-    - description: A list of watched tickets.
-      name: watch_list
-    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
-      name: work_end
-    - description: Format journal list.
-      name: work_notes
-    - description: List work notes UIDs.
-      name: work_notes_list
-    - description: Date/time when work started on the ticket.
-      name: work_start
     - description: The sys_id of the group to assign.
       name: assignment_group
     - description: The number that represents the incident state.
@@ -1888,10 +1819,6 @@ script:
       name: state
     - description: ' Date/time the ticket was opened, in the format: YYYY-MM-DD HH:MM:SS.'
       name: opened_at
-    - description: Caller system ID.
-      name: caller
-    - description: Ticket approval.
-      name: approval
     - description: 'Additional fields in the format: fieldname1=value;fieldname2=value;.'
       name: additional_fields
     - auto: PREDEFINED
