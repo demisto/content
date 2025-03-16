@@ -5,22 +5,24 @@
 -
  
 ### Supported Event Types:
-- Alert
-
- 
-### Supported Timestamp Formats:
-<Enter time format when pack contains time parsing>
- 
- 
+- Support all Security System Events.
 ***
  
 ## Data Collection
 To configure Imperva SecureSphere to send logs to Cortex XSIAM, follow the below steps.
  
 ### Imperva SecureSphere side
-1.
-2.
-3.
+1. Navigate to the Admin Interface:
+    * Go to Admin -> System Definitions -> Action Interfaces.
+2. Create a New Action Interface:
+    * Click to add a new action interface.
+    * Give it a name.
+    * Choose "Gateway Security System Log" from the drop-down menu.
+3. Set Up the Configuration
+    * Protocol - UDP
+    * Primary Host - set to the Broker VM IP
+    * Port - Specify the appropriate port
+    * Message - CEF
  
 For more information (https://docs.imperva.com/).
  
