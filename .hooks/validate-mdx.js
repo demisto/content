@@ -45,19 +45,16 @@ function fixMdx(readmeContent) {
 // Function to parse and process MDX
 async function parseMDX(file) {
     try {
-        console.log(`🔍 Processing: ${file}`);
 
         let contents = await readFile(file, 'utf8');
 
         // Ensure the file is not an HTML document
         if (isHtmlDoc(contents)) {
-            console.warn(`⚠️ Skipping (HTML detected): ${file}`);
             return null; // Skip this file
         }
 
         contents = fixMdx(contents); // Apply MDX fixes
         await mdx(contents);
-        console.log(`✅ Successfully processed: ${file}`);
         return true;
     } catch (error) {
         console.error(`❌ Validation failed in ${file}:`, error.message);
@@ -70,7 +67,7 @@ const files = process.argv.slice(2);
 
 if (files.length === 0) {
     console.error("❌ No files provided for validation.");
-    process.exit(1);
+    process.exit(0);
 }
 
 console.log(`🔎 Found ${files.length} files to validate. Processing...`);
