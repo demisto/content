@@ -81,7 +81,7 @@ def _make_timestamp(ts):
     if isinstance(ts, int):
         return datetime.utcfromtimestamp(ts)
 
-    if isinstance(ts, str): # noqa: RET503
+    if isinstance(ts, str):  # noqa: RET503
         return parse_dt(ts).replace(tzinfo=pyutc)
 
 

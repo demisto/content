@@ -6124,7 +6124,7 @@ def test_pan_os_delete_pbf_rule_command_main_flow(mocker, args, params, expected
             {"name": "address", "element_to_change": "fqdn", "element_value": "1.1.1.1"},
             integration_panorama_params,
             {
-                "xpath": '/config/devices/entry/device-group/entry[@name="Lab-Devices"]/address/entry[@name="address"]/fqdn',
+                "xpath": "/config/devices/entry/device-group/entry[@name='Lab-Devices']/address" '/entry[@name="address"]/fqdn',    # noqa: ISC001
                 "element": "<fqdn>1.1.1.1</fqdn>",
                 "action": "edit",
                 "type": "config",

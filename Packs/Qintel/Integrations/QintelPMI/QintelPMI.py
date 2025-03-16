@@ -60,7 +60,7 @@ def _make_timestamp(ts):
     if isinstance(ts, int):
         return datetime.fromtimestamp(ts)
 
-    if isinstance(ts, str): # noqa: RET503
+    if isinstance(ts, str):  # noqa: RET503
         return parse_dt(ts)
 
 

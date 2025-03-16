@@ -478,7 +478,7 @@ def timeToEpoch(time: str):
     timeParameterList = time.split("-")
     if len(timeParameterList) != 5:
         error_message = "Time arguments is wrong, be sure to enter as in the example."
-        return_error(error_message) # noqa: RET503
+        return_error(error_message)  # noqa: RET503
     else:
         epochTime = datetime(
             int(timeParameterList[0]),
