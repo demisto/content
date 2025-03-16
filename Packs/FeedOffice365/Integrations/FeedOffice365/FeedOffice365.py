@@ -52,7 +52,7 @@ def build_urls_dict(regions_list: list, services_list: list, unique_id) -> list[
             if service == "All":
                 url = f"https://endpoints.office.com/endpoints/{region}?ClientRequestId={unique_id}"
             else:
-                url = f"https://endpoints.office.com/endpoints/{region}?ServiceAreas={service}" f"&ClientRequestId={unique_id}"
+                url = f"https://endpoints.office.com/endpoints/{region}?ServiceAreas={service}&ClientRequestId={unique_id}"
             urls_list.append({"Region": region, "Service": service, "FeedURL": url})
     return urls_list
 
@@ -108,18 +108,18 @@ class Client:
             except requests.exceptions.SSLError as err:
                 demisto.debug(str(err))
                 raise Exception(
-                    f"Connection error in the API call to {INTEGRATION_NAME}.\n" f"Check your not secure parameter.\n\n{err}"
+                    f"Connection error in the API call to {INTEGRATION_NAME}.\nCheck your not secure parameter.\n\n{err}"
                 )
             except requests.ConnectionError as err:
                 demisto.debug(str(err))
                 raise Exception(
-                    f"Connection error in the API call to {INTEGRATION_NAME}.\n" f"Check your Server URL parameter.\n\n{err}"
+                    f"Connection error in the API call to {INTEGRATION_NAME}.\nCheck your Server URL parameter.\n\n{err}"
                 )
             except requests.exceptions.HTTPError as err:
                 demisto.debug(f"Got an error from {feed_url} while fetching indicators {(str(err))} ")
                 if err.response.status_code == 503:
                     raise Exception(
-                        f"The service located at {feed_url} is unavailable while fetching " f"indicators {(str(err))} "
+                        f"The service located at {feed_url} is unavailable while fetching indicators {(str(err))} "
                     )
                 elif err.response.status_code == 400 and region == GERMANY:
                     raise Exception(

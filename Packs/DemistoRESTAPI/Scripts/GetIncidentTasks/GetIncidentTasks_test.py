@@ -182,5 +182,5 @@ def test_get_task_command(mocker: MockerFixture) -> None:
     assert result.outputs == outputs
     assert result.outputs_key_field == "id"
     assert result.readable_output == (
-        "### Incident #1 Playbook Tasks\n" "|id|name|state|\n" "|---|---|---|\n" "| 1 | First Task | Completed |\n"
+        "### Incident #1 Playbook Tasks\n|id|name|state|\n|---|---|---|\n| 1 | First Task | Completed |\n"
     )

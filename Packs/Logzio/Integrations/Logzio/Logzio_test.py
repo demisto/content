@@ -56,7 +56,7 @@ RULE_LOGS_RESPONSE_BODY = {
 
 class TestLogzio:
     def test_logzio_fetch_incidents(self, requests_mock):
-        requests_mock.post("{}{}".format(BASE_URL, Logzio.TRIGGERED_RULES_API_SUFFIX), json=TRIGGERED_RULES_RESPONSE_BODY)
+        requests_mock.post(f"{BASE_URL}{Logzio.TRIGGERED_RULES_API_SUFFIX}", json=TRIGGERED_RULES_RESPONSE_BODY)
         client = Logzio.Client("us", "fake-security-token", "fake-operational-token", False, False)
         search = "Test"
         severities = ["HIGH", "MEDIUM"]
@@ -80,7 +80,7 @@ class TestLogzio:
         assert next_run["last_fetch"] == raw_json["eventDate"] + 0.1
 
         # Second fetch checks
-        requests_mock.post("{}{}".format(BASE_URL, Logzio.TRIGGERED_RULES_API_SUFFIX), json=TRIGGERED_RULES_EMPTY_RESPONSE_BODY)
+        requests_mock.post(f"{BASE_URL}{Logzio.TRIGGERED_RULES_API_SUFFIX}", json=TRIGGERED_RULES_EMPTY_RESPONSE_BODY)
         inc, next_run2 = Logzio.fetch_incidents(client, next_run, search, severities, first_fetch_time)
 
         assert len(inc) == 0
@@ -90,7 +90,7 @@ class TestLogzio:
         client = Logzio.Client("us", "fake-security-token", "fake-operational-token", False, False)
         args = {"query": "name:test", "size": 20, "from_time": "1581261159", "to_time": "1581174759"}
 
-        requests_mock.post("{}{}".format(BASE_URL, Logzio.SEARCH_LOGS_API_SUFFIX), json=SEARCH_LOGS_RESPONSE_EMPTY_BODY)
+        requests_mock.post(f"{BASE_URL}{Logzio.SEARCH_LOGS_API_SUFFIX}", json=SEARCH_LOGS_RESPONSE_EMPTY_BODY)
         Logzio.search_logs_command(client, args)
         request_body = requests_mock.request_history[0].json()
 
@@ -105,7 +105,7 @@ class TestLogzio:
         client = Logzio.Client("us", "fake-security-token", "fake-operational-token", False, False)
         args = {"from_time": "2020-03-29T14:46:17.236Z", "to_time": "2020-03-29T18:46:17.236Z"}
 
-        requests_mock.post("{}{}".format(BASE_URL, Logzio.SEARCH_LOGS_API_SUFFIX), json=SEARCH_LOGS_RESPONSE_EMPTY_BODY)
+        requests_mock.post(f"{BASE_URL}{Logzio.SEARCH_LOGS_API_SUFFIX}", json=SEARCH_LOGS_RESPONSE_EMPTY_BODY)
         Logzio.search_logs_command(client, args)
         request_body = requests_mock.request_history[0].json()
 
@@ -117,7 +117,7 @@ class TestLogzio:
         client = Logzio.Client("us", "fake-security-token", "fake-operational-token", False, False)
         args = {"id": 123, "size": 100, "page_size": 2}
 
-        requests_mock.post("{}{}".format(BASE_URL, Logzio.SEARCH_RULE_LOGS_API_SUFFIX), json=RULE_LOGS_RESPONSE_BODY)
+        requests_mock.post(f"{BASE_URL}{Logzio.SEARCH_RULE_LOGS_API_SUFFIX}", json=RULE_LOGS_RESPONSE_BODY)
 
         Logzio.get_rule_logs_by_id_command(client, args)
 

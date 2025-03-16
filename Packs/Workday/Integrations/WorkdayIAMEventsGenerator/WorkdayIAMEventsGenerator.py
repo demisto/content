@@ -648,7 +648,7 @@ def generate_rehire_report():
     is_terminated = user_report.get("Employment_Status")
     rehired_status = user_report.get("Rehired_Employee")
     if is_terminated == "Active" or rehired_status == "Yes":
-        raise Exception(f"The user {user_email} is not terminated. Either he is still active or was already " f"rehired.")
+        raise Exception(f"The user {user_email} is not terminated. Either he is still active or was already rehired.")
 
     user_report["Rehired_Employee"] = "Yes"
     user_report["Prehire_Flag"] = "True"

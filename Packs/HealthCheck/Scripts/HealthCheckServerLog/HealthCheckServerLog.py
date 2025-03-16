@@ -158,9 +158,8 @@ else:
                         restartcount += 1
                 for item in knownerrors:
                     for err, suggest in item.items():
-                        if err in line:
-                            if suggest not in suggestions:
-                                suggestions.append(suggest)
+                        if err in line and suggest not in suggestions:
+                            suggestions.append(suggest)
                 if (context_since is None) and (since is None):
                     since = re.findall("(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})", line)
                     oldestDate = since[0]

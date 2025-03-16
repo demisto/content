@@ -1,5 +1,5 @@
 import pytest
-from pytest import raises
+from pytest import raises   # noqa: PT018
 
 from CommonServerPython import CommandResults, DemistoException
 from SingleConnect import (

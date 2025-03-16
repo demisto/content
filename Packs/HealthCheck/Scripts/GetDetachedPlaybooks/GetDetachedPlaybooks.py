@@ -10,9 +10,8 @@ if not res["playbooks"]:
 playbooksList = []
 for item in res["playbooks"]:
     playbook = {}
-    if not (item.get("detached") is None):
-        if item["detached"] is True:
-            playbook["name"] = item["name"]
-            playbooksList.append(playbook)
+    if item.get("detached") is not None and item["detached"] is True:
+        playbook["name"] = item["name"]
+        playbooksList.append(playbook)
 
 return_results({"total": len(playbooksList), "data": playbooksList})

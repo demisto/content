@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 import itertools
 import time
 from datetime import datetime, timedelta
-from typing import Dict, List, Tuple, Optional, Callable
+from collections.abc import Callable
 
 from urllib3 import disable_warnings
 
@@ -19,20 +19,20 @@ class EmptyFile(Exception):
 class McAfeeESMClient(BaseClient):
     demisto_format = "%Y-%m-%dT%H:%M:%SZ"
 
-    def __init__(self, params: Dict):
+    def __init__(self, params: dict):
         self.args = demisto.args()
         self.__user_name = params.get("credentials", {}).get("identifier", "")
         self.__password = params.get("credentials", {}).get("password", "")
         self.difference = int(params.get("timezone", 0))
         self.version = params.get("version", "10.2")
-        super(McAfeeESMClient, self).__init__(
+        super().__init__(
             "{}/rs/esm/v2/".format(params.get("url", "").strip("/")),
             proxy=params.get("proxy", False),
             verify=not params.get("insecure", False),
         )
         self._headers = {"Content-Type": "application/json"}
         self.__login()
-        self.__cache: Dict = {"users": [], "org": [], "status": []}
+        self.__cache: dict = {"users": [], "org": [], "status": []}
 
     def __del__(self):
         self.__logout()
@@ -41,7 +41,7 @@ class McAfeeESMClient(BaseClient):
     def _is_status_code_valid(self, *_other):  # noqa
         return True
 
-    def __request(self, mcafee_command: str, data: Union[str, Dict] = None, params: Dict = None):
+    def __request(self, mcafee_command: str, data: Union[str, dict] = None, params: dict = None):
         if data:
             data = json.dumps(data)
         result = self._http_request("POST", mcafee_command, data=data, params=params, resp_type="request", timeout=60)
@@ -64,13 +64,13 @@ class McAfeeESMClient(BaseClient):
         self._headers["X-Xsrf-Token"] = res.headers.get("Xsrf-Token")
         if None in (self._headers["X-Xsrf-Token"], self._headers["Cookie"]):
             raise DemistoException(
-                f"Failed login\nurl: {self._base_url}login\nresponse " f"status: {res.status_code}\nresponse: {res.text}\n"
+                f"Failed login\nurl: {self._base_url}login\nresponse status: {res.status_code}\nresponse: {res.text}\n"
             )
 
     def __logout(self):
         self._http_request("DELETE", "logout", resp_type="response")
 
-    def test_module(self) -> Tuple[str, Dict, str]:
+    def test_module(self) -> tuple[str, dict, str]:
         params = demisto.params()
 
         # check credentials
@@ -84,7 +84,7 @@ class McAfeeESMClient(BaseClient):
 
         return "ok", {}, "ok"
 
-    def __username_and_id(self, user_name: str = None, user_id: str = None) -> Dict:
+    def __username_and_id(self, user_name: str = None, user_id: str = None) -> dict:
         """
 
         :param user_name: the user name for search (the user id)
@@ -112,7 +112,7 @@ class McAfeeESMClient(BaseClient):
         demisto.debug(f"{looking_for} is not a {looking_in}(user).")
         return {}
 
-    def __org_and_id(self, org_name: str = None, org_id: str = None) -> Dict:
+    def __org_and_id(self, org_name: str = None, org_id: str = None) -> dict:
         """
 
         :param org_name: the org name for search (the org id)
@@ -136,7 +136,7 @@ class McAfeeESMClient(BaseClient):
         demisto.debug(f"{looking_for} is not a {looking_in}(org).")
         return {}
 
-    def __status_and_id(self, status_name: str = None, status_id: str = None) -> Dict:
+    def __status_and_id(self, status_name: str = None, status_id: str = None) -> dict:
         """
 
         :param status_name: the status name for search (the status id)
@@ -151,7 +151,7 @@ class McAfeeESMClient(BaseClient):
             looking_in = "id"
         if not self.__cache["status"]:
 
-            def filter_statuses_data(status_dict: Dict):
+            def filter_statuses_data(status_dict: dict):
                 try:
                     status_dict.pop("showInCasePane")
                     status_dict.pop("default")
@@ -166,7 +166,7 @@ class McAfeeESMClient(BaseClient):
         demisto.debug(f"{looking_for} is not a {looking_in}(status).")
         return {}
 
-    def get_user_list(self, raw: bool = False) -> Tuple[str, Dict, Dict]:
+    def get_user_list(self, raw: bool = False) -> tuple[str, dict, dict]:
         """
         :param raw: ignore the human outputs if True
         :return: list of all Users
@@ -175,7 +175,7 @@ class McAfeeESMClient(BaseClient):
         headers = ["ID", "Name", "Email", "Groups", "IsMaster", "IsAdmin", "SMS"]
         raw_response = self.__request(path, data={"authPW": {"value": self.__password}})
         result = raw_response
-        context_entry: List = [Dict] * len(result)
+        context_entry: list = [dict] * len(result)
         human_readable = ""
         if not raw:
             for i in range(len(result)):
@@ -194,15 +194,15 @@ class McAfeeESMClient(BaseClient):
         returned_context_entry = {f"{CONTEXT_INTEGRATION_NAME}User(val.ID && val.ID == obj.ID)": context_entry}
         return human_readable, returned_context_entry, raw_response
 
-    def get_organization_list(self, raw: bool = False) -> Tuple[str, Dict, List[Dict]]:
+    def get_organization_list(self, raw: bool = False) -> tuple[str, dict, list[dict]]:
         """
         :param raw: ignore the human outputs if True
         :return: list of all organizations
         """
         path = "caseGetOrganizationList"
         raw_response = self.__request(path)
-        entry: List = [None] * len(raw_response)
-        context_entry: Dict = {}
+        entry: list = [None] * len(raw_response)
+        context_entry: dict = {}
         human_readable: str = ""
         if not raw:
             for i in range(len(raw_response)):
@@ -212,7 +212,7 @@ class McAfeeESMClient(BaseClient):
 
         return human_readable, context_entry, raw_response
 
-    def get_case_list(self, start_time: str = None, raw: bool = False) -> Tuple[str, Dict, List]:
+    def get_case_list(self, start_time: str = None, raw: bool = False) -> tuple[str, dict, list]:
         """
         :param raw: ignore the human outputs if True
         :return: list of all Users
@@ -224,7 +224,7 @@ class McAfeeESMClient(BaseClient):
         if not raw and not start_time:
             _, start_time, _ = set_query_times(since=since, difference=self.difference)
             start_time = convert_time_format(str(start_time), difference=self.difference)
-        raw_response: List = self.__request(path)
+        raw_response: list = self.__request(path)
         result = raw_response
         for case in result:
             case = dict_times_set(case, self.difference)
@@ -246,12 +246,12 @@ class McAfeeESMClient(BaseClient):
         returned_context_entry = {f"{CONTEXT_INTEGRATION_NAME}Case(val.ID && val.ID == obj.ID)": context_entry}
         return human_readable, returned_context_entry, raw_response
 
-    def get_case_event_list(self) -> Tuple[str, Dict, List[Dict]]:
+    def get_case_event_list(self) -> tuple[str, dict, list[dict]]:
         path = "caseGetCaseEventsDetail"
         ids = argToList(self.args.get("ids"))
         raw_response = self.__request(path, data={"eventIds": {"list": ids}})
         result = raw_response
-        case_event: List = [None] * len(result)
+        case_event: list = [None] * len(result)
         for i in range(len(result)):
             result[i] = dict_times_set(result[i], self.difference)
             case_event[i] = {
@@ -264,7 +264,7 @@ class McAfeeESMClient(BaseClient):
         human_readable = tableToMarkdown(name="case event list", t=result)
         return human_readable, context_entry, raw_response
 
-    def get_case_detail(self, case_id: str = None, raw: bool = False) -> Tuple[str, Dict, Dict]:
+    def get_case_detail(self, case_id: str = None, raw: bool = False) -> tuple[str, dict, dict]:
         path = "caseGetCaseDetail"
         raw_response = self.__request(path, data={"id": case_id if case_id else self.args.get("id")})
         result = raw_response
@@ -292,7 +292,7 @@ class McAfeeESMClient(BaseClient):
         returned_context_entry = {f"{CONTEXT_INTEGRATION_NAME}Case(val.ID && val.ID == obj.ID)": context_entry}
         return human_readable, returned_context_entry, raw_response
 
-    def get_case_statuses(self, raw: bool = False) -> Tuple[str, Dict, Dict]:
+    def get_case_statuses(self, raw: bool = False) -> tuple[str, dict, dict]:
         path = "caseGetCaseStatusList"
         headers = ["id", "name", "default", "showInCasePane"]
         raw_response = self.__request(path)
@@ -301,7 +301,7 @@ class McAfeeESMClient(BaseClient):
             human_readable = tableToMarkdown(name="case statuses", t=raw_response, headers=headers)
         return human_readable, {}, raw_response
 
-    def add_case(self) -> Tuple[str, Dict, Dict]:
+    def add_case(self) -> tuple[str, dict, dict]:
         path = "caseAddCase"
 
         assignee = self.args.get("assignee")
@@ -319,7 +319,7 @@ class McAfeeESMClient(BaseClient):
         human_readable, context_entry, raw_response = self.get_case_detail(result.get("value"))
         return human_readable, context_entry, raw_response
 
-    def edit_case(self) -> Tuple[str, Dict, Dict]:
+    def edit_case(self) -> tuple[str, dict, dict]:
         path = "caseEditCase"
         _, _, result = self.get_case_detail(case_id=self.args.get("id"))
         if "organization" in self.args:
@@ -338,7 +338,7 @@ class McAfeeESMClient(BaseClient):
         self.__request(path, data={"caseDetail": result})
         return self.get_case_detail(case_id=self.args.get("id"))
 
-    def add_case_status(self) -> Tuple[str, Dict, Dict]:
+    def add_case_status(self) -> tuple[str, dict, dict]:
         path = "caseAddCaseStatus"
         status_details = {"name": self.args.get("name"), "default": False}
         if "should_show_in_case_pane" in self.args:
@@ -348,7 +348,7 @@ class McAfeeESMClient(BaseClient):
         status_id = status_details["name"]
         return f"Added case status : {status_id}", {}, raw_response
 
-    def edit_case_status(self) -> Tuple[str, Dict, Dict]:
+    def edit_case_status(self) -> tuple[str, dict, dict]:
         path = "caseEditCaseStatus"
         status_id = self.__status_and_id(status_name=self.args.get("original_name")).get("id")
         status_details = {"status": {"id": status_id, "name": self.args.get("new_name")}}
@@ -359,14 +359,14 @@ class McAfeeESMClient(BaseClient):
         self.__cache["status"] = {}
         return f"Edited case status with ID: {status_id}", {}, raw_response
 
-    def delete_case_status(self) -> Tuple[str, Dict, Dict]:
+    def delete_case_status(self) -> tuple[str, dict, dict]:
         path = "caseDeleteCaseStatus"
         status_id = self.__status_and_id(status_name=self.args.get("name")).get("id")
         self.__request(path, data={"statusId": {"value": status_id}})
         self.__cache["status"] = {}
         return f"Deleted case status with ID: {status_id}", {}, {}
 
-    def fetch_fields(self) -> Tuple[str, Dict, Dict[str, list]]:
+    def fetch_fields(self) -> tuple[str, dict, dict[str, list]]:
         path = "qryGetFilterFields"
         raw_response = self.__request(path)
         result = raw_response
@@ -377,10 +377,10 @@ class McAfeeESMClient(BaseClient):
 
     def fetch_alarms(
         self, since: str = None, start_time: str = None, end_time: str = None, raw: bool = False
-    ) -> Tuple[str, Dict, List]:
+    ) -> tuple[str, dict, list]:
         path = "alarmGetTriggeredAlarms"
         human_readable = ""
-        context_entry: List = []
+        context_entry: list = []
         since = since if since else self.args.get("timeRange")
         start_time = start_time if start_time else self.args.get("customStart")
         end_time = end_time if end_time else self.args.get("customEnd")
@@ -434,7 +434,7 @@ class McAfeeESMClient(BaseClient):
         returned_context_entry = {f"{CONTEXT_INTEGRATION_NAME}Alarm(val.ID && val.ID == obj.ID)": context_entry}
         return human_readable, returned_context_entry, raw_response
 
-    def acknowledge_alarms(self) -> Tuple[str, Dict, Dict]:
+    def acknowledge_alarms(self) -> tuple[str, dict, dict]:
         try:
             self.__handle_alarms("Acknowledge")
         except DemistoException as error:
@@ -443,7 +443,7 @@ class McAfeeESMClient(BaseClient):
                 raise error
         return "Alarms has been Acknowledged.", {}, {}
 
-    def unacknowledge_alarms(self) -> Tuple[str, Dict, Dict]:
+    def unacknowledge_alarms(self) -> tuple[str, dict, dict]:
         try:
             self.__handle_alarms("Unacknowledge")
         except DemistoException as error:
@@ -452,7 +452,7 @@ class McAfeeESMClient(BaseClient):
                 raise error
         return "Alarms has been Unacknowledged.", {}, {}
 
-    def delete_alarm(self) -> Tuple[str, Dict, Dict]:
+    def delete_alarm(self) -> tuple[str, dict, dict]:
         self.__handle_alarms("Delete")
         return "Alarms has been Deleted.", {}, {}
 
@@ -463,7 +463,7 @@ class McAfeeESMClient(BaseClient):
         data = {"triggeredIds": {"alarmIdList": alarm_ids} if not self.version < "11.3" else alarm_ids}
         self.__request(path, data=data)
 
-    def get_alarm_event_details(self) -> Tuple[str, Dict, Dict]:
+    def get_alarm_event_details(self) -> tuple[str, dict, dict]:
         path = "ipsGetAlertData"
         raw_response = self.__request(path, data={"id": self.args.get("eventId")})
         result = raw_response
@@ -472,22 +472,22 @@ class McAfeeESMClient(BaseClient):
         human_readable = tableToMarkdown(name="Alarm events", t=context_entry)
         return human_readable, {f"{CONTEXT_INTEGRATION_NAME}AlarmEvent": context_entry}, raw_response
 
-    def list_alarm_events(self) -> Tuple[str, Dict, Dict]:
+    def list_alarm_events(self) -> tuple[str, dict, dict]:
         path = "notifyGetTriggeredNotificationDetail"
         raw_response = self.__request(path, data={"id": self.args.get("alarmId")})
         result = raw_response
         result = dict_times_set(result, self.difference)
         human_readable: str = ""
-        context_entry: List = []
+        context_entry: list = []
         if "events" in result:
-            context_entry = [Dict] * len(result["events"])
+            context_entry = [dict] * len(result["events"])
             for event in range(len(result["events"])):
                 context_entry[event] = self.__alarm_event_context_and_times_set(result["events"][event])
             human_readable = tableToMarkdown(name="Alarm events", t=context_entry)
 
         return (
             human_readable,
-            {f"{CONTEXT_INTEGRATION_NAME}" f"AlarmEvent(val.ID && val.ID == obj.ID)": context_entry},
+            {f"{CONTEXT_INTEGRATION_NAME}AlarmEvent(val.ID && val.ID == obj.ID)": context_entry},
             raw_response,
         )
 
@@ -535,11 +535,11 @@ class McAfeeESMClient(BaseClient):
         status = self.__request(path, data={"resultID": str(search_id)})
         return status.get("complete")
 
-    def __search_fetch_result(self, search_id: int) -> Tuple[str, Dict, Dict]:
+    def __search_fetch_result(self, search_id: int) -> tuple[str, dict, dict]:
         path = "qryGetResults"
         params = {"startPos": 0, "reverse": False, "numRows": self.args.get("ratePerFetch", 50)}
         result_ready = False
-        raw_response: Dict[str, List] = {"columns": [], "rows": []}
+        raw_response: dict[str, list] = {"columns": [], "rows": []}
 
         while not result_ready:
             try:
@@ -559,7 +559,7 @@ class McAfeeESMClient(BaseClient):
                     result_ready = True
         result = raw_response
         result = table_times_set(result, self.difference)
-        entry: List = [{}] * len(result["rows"])
+        entry: list = [{}] * len(result["rows"])
         headers = [str(field.get("name")).replace(".", "") for field in result["columns"]]
         for i in range(len(result["rows"])):
             entry[i] = {headers[j]: result["rows"][i]["values"][j] for j in range(len(headers))}
@@ -570,7 +570,7 @@ class McAfeeESMClient(BaseClient):
         context_entry = {f"{CONTEXT_INTEGRATION_NAME}results{condition}": entry}
         return search_readable_outputs(result), context_entry, raw_response
 
-    def __alarm_event_context_and_times_set(self, result: Dict) -> Dict:
+    def __alarm_event_context_and_times_set(self, result: dict) -> dict:
         context_entry = {
             "ID": result.get("eventId", result.get("alertId")),
             "SubType": result.get("subtype", result.get("eventSubType")),
@@ -587,7 +587,7 @@ class McAfeeESMClient(BaseClient):
             "NormalizedDescription": result.get("normDesc"),
         }
         if "cases" in result:
-            cases: List = [None] * len(result["cases"])
+            cases: list = [None] * len(result["cases"])
             for i in range(len(result["cases"])):
                 case_status = self.__status_and_id(status_id=result["cases"][i].get("statusId", {}).get("value"))
                 cases[i] = {
@@ -600,7 +600,7 @@ class McAfeeESMClient(BaseClient):
             context_entry["Case"] = cases
         return context_entry
 
-    def fetch_incidents(self, params: Dict):
+    def fetch_incidents(self, params: dict):
         last_run = demisto.getLastRun()
         current_run = {}
         incidents = []
@@ -622,7 +622,7 @@ class McAfeeESMClient(BaseClient):
         demisto.setLastRun(current_run)
         demisto.incidents(incidents)
 
-    def __alarms_to_incidents(self, start_time: str, start_id: int = 0, limit: int = 1) -> Tuple[List, Dict]:
+    def __alarms_to_incidents(self, start_time: str, start_id: int = 0, limit: int = 1) -> tuple[list, dict]:
         current_time = datetime.utcnow().strftime(self.demisto_format)
         current_run = {}
         _, _, all_alarms = self.fetch_alarms(start_time=start_time, end_time=current_time, raw=True)
@@ -639,14 +639,14 @@ class McAfeeESMClient(BaseClient):
         all_alarms = create_incident(all_alarms, alarms=True)
         return all_alarms, current_run
 
-    def __cases_to_incidents(self, start_id: int = 0, limit: int = 1) -> Tuple[List, Dict]:
+    def __cases_to_incidents(self, start_id: int = 0, limit: int = 1) -> tuple[list, dict]:
         _, _, all_cases = self.get_case_list(raw=True)
         all_cases = filtering_incidents(all_cases, start_id=start_id, limit=limit)
         current_run = {"id": all_cases[0].get("id", start_id) if all_cases else start_id}
         all_cases = create_incident(all_cases, alarms=False)
         return all_cases, current_run
 
-    def __get_watchlists(self, args: Dict):
+    def __get_watchlists(self, args: dict):
         command = "sysGetWatchlists"
         params = {
             "hidden": args.get("hidden", True),
@@ -658,7 +658,7 @@ class McAfeeESMClient(BaseClient):
 
     def __get_watchlist_id(self, watchlist_name: str):
         try:
-            return list(filter(lambda x: x.get("name") == watchlist_name, self.__get_watchlists(dict())))[0].get("id")
+            return list(filter(lambda x: x.get("name") == watchlist_name, self.__get_watchlists({})))[0].get("id")
         except IndexError:
             raise DemistoException(f"Can not find the watchlist {watchlist_name}")
 
@@ -731,7 +731,7 @@ class McAfeeESMClient(BaseClient):
         # v10.x uses 'valueCount' while v11.x uses 'recordCount'.
         count_results = result.get("recordCount") or result.get("valueCount")
         if not count_results:
-            raise EmptyFile()
+            raise EmptyFile
         value_file = result.get("valueFile", {})
         file_token = value_file.get("fileToken", value_file.get("id"))
         watchlist_name = result.get("name")
@@ -780,14 +780,13 @@ class McAfeeESMClient(BaseClient):
                 end = file_data[-1]
                 file_data = file_data[:-1]
 
-            for line in filter(lambda x: x, file_data):
-                yield line
+            yield from filter(None, file_data)
 
             if not more_data_exist:
                 break
 
 
-def filtering_incidents(incidents_list: List, start_id: int, limit: int = 1):
+def filtering_incidents(incidents_list: list, start_id: int, limit: int = 1):
     """
 
     :param incidents_list: list of al incidents
@@ -819,7 +818,7 @@ def expected_errors(error: DemistoException) -> bool:
     :param error: the error
     :return: if the error is not real error
     """
-    expected_error: List[str] = [
+    expected_error: list[str] = [
         "qryGetResults failed with error[Error deserializing EsmQueryResults, see logs for more information "  # noqa: W504
         + "(Error deserializing EsmQueryResults, see logs for more information "  # noqa: W504
         + "(Internal communication error, see logs for more details))].",
@@ -883,7 +882,7 @@ def convert_time_format(
 
 def set_query_times(
     since: str = None, start_time: str = None, end_time: str = None, difference: int = 0
-) -> Tuple[Optional[str], Optional[str], Optional[str]]:
+) -> tuple[str | None, str | None, str | None]:
     """
     checks all time args
     :param since: since from args
@@ -909,7 +908,7 @@ def set_query_times(
     return since, start_time, end_time
 
 
-def list_times_set(list_to_set: List, indexes: List, difference: int = 0) -> List:
+def list_times_set(list_to_set: list, indexes: list, difference: int = 0) -> list:
     """
 
     :param list_to_set: the raw list
@@ -923,14 +922,14 @@ def list_times_set(list_to_set: List, indexes: List, difference: int = 0) -> Lis
     return list_to_set
 
 
-def dict_times_set(dict_to_set: Dict, difference: int = 0) -> Dict:
+def dict_times_set(dict_to_set: dict, difference: int = 0) -> dict:
     """
 
     :param dict_to_set: the raw dict
     :param difference: the difference (e.g. time zone)
     :return: the data dict with utc times
     """
-    for field in dict_to_set.keys():
+    for field in dict_to_set:
         if dict_to_set[field]:
             if "time" in field.lower() or "date" in field.lower():
                 dict_to_set[field] = time_format(dict_to_set[field], difference=difference)
@@ -943,7 +942,7 @@ def dict_times_set(dict_to_set: Dict, difference: int = 0) -> Dict:
     return dict_to_set
 
 
-def time_fields(field_list: List[Dict]) -> list:
+def time_fields(field_list: list[dict]) -> list:
     """
 
     :param field_list: the list of fields for a given query
@@ -956,7 +955,7 @@ def time_fields(field_list: List[Dict]) -> list:
     return indexes_list
 
 
-def table_times_set(table_to_set: Dict, difference: int = 0) -> Dict:
+def table_times_set(table_to_set: dict, difference: int = 0) -> dict:
     """
 
     :param table_to_set: the raw event/ alarm
@@ -969,7 +968,7 @@ def table_times_set(table_to_set: Dict, difference: int = 0) -> Dict:
     return table_to_set
 
 
-def search_readable_outputs(table: Dict) -> str:
+def search_readable_outputs(table: dict) -> str:
     """
 
     :param table: the raw data for a search
@@ -981,7 +980,7 @@ def search_readable_outputs(table: Dict) -> str:
             line_1 += str(header.get("name")) + "|"
             line_2 += "--|"
         rows = table["rows"]
-        data: List = [str] * len(rows)
+        data: list = [str] * len(rows)
         for i in range(len(rows)):
             middle = "~".join(rows[i].get("values", []))
             middle = middle.replace("|", "\\|")
@@ -994,7 +993,7 @@ def search_readable_outputs(table: Dict) -> str:
         return ""
 
 
-def create_incident(raw_incidents: List[Dict], alarms: bool) -> List[Dict[str, Dict]]:
+def create_incident(raw_incidents: list[dict], alarms: bool) -> list[dict[str, dict]]:
     incidents = []
     for incident in raw_incidents:
         alarm_id = str(incident.get("id"))
@@ -1022,7 +1021,7 @@ def mcafee_severity_to_demisto(severity: int) -> int:
         return 0
 
 
-def format_watchlist_params(raw_watchlist_params: Dict):
+def format_watchlist_params(raw_watchlist_params: dict):
     return {
         "id": raw_watchlist_params.get("id"),
         "name": raw_watchlist_params.get("name"),
@@ -1033,7 +1032,7 @@ def format_watchlist_params(raw_watchlist_params: Dict):
 def main():
     client = McAfeeESMClient(demisto.params())
     command = demisto.command()
-    commands: Dict[str, Callable] = {
+    commands: dict[str, Callable] = {
         "test-module": client.test_module,
         "esm-fetch-fields": client.fetch_fields,
         "esm-get-organization-list": client.get_organization_list,

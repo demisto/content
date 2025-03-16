@@ -1,7 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import traceback
-from typing import Any, Callable
+from typing import Any
+from collections.abc import Callable
 
 import urllib3
 from CommonServerUserPython import *  # noqa
@@ -142,8 +143,8 @@ def prepare_query(site_id: str, condition: str) -> str:
     :rtype: ``str``
     :return: GraphQL query
     """
-    query = """query getAssetResources($pagination: AssetsPaginationInputValidated) {
-                    site(id: "%s") {
+    query = f"""query getAssetResources($pagination: AssetsPaginationInputValidated) {{
+                    site(id: {{site_id}}) {{
                         assetResources (
                             assetPagination: $pagination,
                             fields: [
@@ -175,22 +176,22 @@ def prepare_query(site_id: str, condition: str) -> str:
                                 "operatingSystem.productType",
                                 "url"
                             ],
-                            filters: {
+                            filters: {{
                                 conjunction: OR,
-                                conditions: [%s]
-                            }
-                        ) {
+                                conditions: [{{condition}}]
+                            }}
+                        ) {{
                             total
-                            pagination {
+                            pagination {{
                                 limit
                                 current
                                 next
                                 page
-                            }
+                            }}
                             items
-                        }
-                    }
-                }""" % (site_id, condition)
+                        }}
+                    }}
+                }}"""
 
     return query
 
@@ -381,7 +382,7 @@ def lansweeper_ip_hunt_command(client: Client, args: Dict[str, str]) -> CommandR
     ip_condition = ""
     for ip in ip_list:
         if is_ip_valid(ip):
-            ip_condition += """{operator: EQUAL,path: "assetBasicInfo.ipAddress",value: "%s"},""" % ip
+            ip_condition += f"""{{operator: EQUAL,path: 'assetBasicInfo.ipAddress',value: '{ip}'}},"""
     if not ip_condition:
         raise ValueError(MESSAGES["INVALID_IP"])
 
@@ -432,7 +433,7 @@ def lansweeper_mac_hunt_command(client: Client, args: Dict[str, str]) -> Command
     mac_condition = ""
     for mac in mac_list:
         if is_mac_address(mac):
-            mac_condition += """{operator: EQUAL,path: "assetBasicInfo.mac",value: "%s"},""" % mac
+            mac_condition += f"""{{operator: EQUAL,path: "assetBasicInfo.mac",value: "{mac}"}},"""
     if not mac_condition:
         raise ValueError(MESSAGES["INVALID_MAC"])
 

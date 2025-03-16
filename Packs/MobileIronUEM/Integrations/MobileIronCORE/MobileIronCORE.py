@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 import urllib3
 
@@ -50,7 +50,7 @@ STANDARD_DEVICE_FIELDS = ",".join(
     ]
 )
 FETCH_INCIDENTS_DEVICE_QUERY = (
-    'common.status = "ACTIVE" AND (common.quarantined = true OR common.compliant = ' 'false OR common.security_state != "Ok")'
+    'common.status = "ACTIVE" AND (common.quarantined = true OR common.compliant = false OR common.security_state != "Ok")'
 )
 
 # Incident Severity Constants
@@ -71,7 +71,7 @@ class MobileIronCoreClient(BaseClient):
 
     def get_device_data_page(
         self, page: int = 0, per_page: int = 50, query: str = None, fields: str = None, admin_space_id: str = None
-    ) -> Dict:
+    ) -> dict:
         """
         Gets a single page of Devices
 
@@ -86,7 +86,7 @@ class MobileIronCoreClient(BaseClient):
 
         return replace_problematic_character_keys(response)
 
-    def get_devices_data(self, admin_space_id: str, query: str = None, fields: str = None, max_fetch: int = None) -> List[Any]:
+    def get_devices_data(self, admin_space_id: str, query: str = None, fields: str = None, max_fetch: int = None) -> list[Any]:
         """
         Gets the Devices Data from MobileIron Core
 
@@ -121,7 +121,7 @@ class MobileIronCoreClient(BaseClient):
 
         return results
 
-    def execute_device_action(self, device_id: str, admin_space_id: str, command_action: str) -> Dict[str, Any]:
+    def execute_device_action(self, device_id: str, admin_space_id: str, command_action: str) -> dict[str, Any]:
         """
         Execute device action.
 
@@ -169,7 +169,7 @@ class MobileIronCoreClient(BaseClient):
 
     def send_message_action(
         self, device_id: str, admin_space_id: str, message: str, message_mode: str = "pns", message_subject: str = ""
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Execute send message action to MobileIron CORE based on the conditions.
 
@@ -234,7 +234,7 @@ def replace_problematic_characters_in_dict(data):
 
 
 def replace_problematic_characters_in_list(data):
-    return list(map(lambda item: replace_problematic_character_keys(item), data))
+    return [replace_problematic_character_keys(item) for item in data]
 
 
 def replace_problematic_character_keys(data):
@@ -256,7 +256,7 @@ def replace_problematic_character_keys(data):
     return data
 
 
-def resolve_device_incident_severity(device_info: Dict[str, Any]) -> Tuple[str, int]:
+def resolve_device_incident_severity(device_info: dict[str, Any]) -> tuple[str, int]:
     """
     Gets the severity based on following conditions
 
@@ -330,7 +330,7 @@ def execute_test_module_command(client: MobileIronCoreClient):
     :rtype: string.
     """
     response = client.ping()
-    if response and response.get("results"):
+    if response and response.get("results"):    # noqa: RET503
         return "ok"
 
 
@@ -352,7 +352,7 @@ def execute_fetch_incidents_command(client):
 
 def fetch_incidents(
     client: MobileIronCoreClient, admin_space_id: str, incident_type: str, max_fetch: int
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """
     This function returns incidents after analyzing the response data
 
@@ -380,7 +380,7 @@ def fetch_incidents(
 
     # Initialize an empty list of incidents to return
     # Each incident is a dict with a string as a key
-    incidents: List[Dict[str, Any]] = []
+    incidents: list[dict[str, Any]] = []
 
     """get the devices data from Core Call API response"""
     devices = client.get_devices_data(

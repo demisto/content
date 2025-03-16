@@ -12,10 +12,9 @@ if not res["scripts"]:
 scriptsList = []
 for item in res["scripts"]:
     script = {}
-    if not (item.get("detached") is None):
-        if item["detached"] is True:
-            script["name"] = item["name"]
-            scriptsList.append(script)
+    if item.get("detached") is not None and item["detached"] is True:
+        script["name"] = item["name"]
+        scriptsList.append(script)
 
 
 return_results({"total": len(scriptsList), "data": scriptsList})

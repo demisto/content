@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Optional, List
 
 import urllib3
 
@@ -182,10 +181,10 @@ class Client(BaseClient):
         policy_md5: str,
         endpoint: str,
         description: str,
-        enabled: Optional[bool],
-        learn: Optional[bool],
-        alarm: Optional[bool],
-        block: Optional[bool],
+        enabled: bool | None,
+        learn: bool | None,
+        alarm: bool | None,
+        block: bool | None,
     ):
         object_id = self.get_id(
             policy_md5, action=f"blocking-settings/{endpoint}", resource_name=description, compare_value="description"
@@ -212,10 +211,10 @@ class Client(BaseClient):
         kind: str,
         enforcement_mode: str,
         protocol_independent: bool,
-        parent: Optional[str],
-        description: Optional[str],
-        allow: Optional[bool],
-        active: Optional[bool],
+        parent: str | None,
+        description: str | None,
+        allow: bool | None,
+        active: bool | None,
     ):
         body = {
             "name": name,
@@ -429,10 +428,10 @@ class Client(BaseClient):
         protocol: str,
         url_type: str,
         is_allowed: bool,
-        description: Optional[str],
-        perform_staging: Optional[bool],
-        clickjacking_protection: Optional[bool],
-        method: Optional[str],
+        description: str | None,
+        perform_staging: bool | None,
+        clickjacking_protection: bool | None,
+        method: str | None,
     ):
         json_body = {
             "name": name,
@@ -889,7 +888,7 @@ def test_module(client: Client):
         if "HTTPSConnectionPool" in str(exception):
             return f"Connection Error: please check your server ip address.\n\nError: {exception}"
 
-        return f"Something went Wrong! Please check the credentials and IP address" f" you provided\n\nError: {exception}"
+        return f"Something went Wrong! Please check the credentials and IP address you provided\n\nError: {exception}"
     return "ok"
 
 
@@ -2690,7 +2689,7 @@ def format_date(date):
     return time.strftime(DATE_FORMAT, time.localtime(date))
 
 
-def build_output(headers: List[str], result: dict):
+def build_output(headers: list[str], result: dict):
     """helper function. Builds the printable results."""
     printable_result = {}
     new_headers = headers
@@ -2723,7 +2722,7 @@ def build_list_output(printable_result: list, result: dict):
 
 def build_command_result(result: dict, table_name: str):
     """Build readable_output and printable_result for list commands."""
-    printable_result: List[dict] = []
+    printable_result: list[dict] = []
     readable_output = "No results"
 
     result = result.get("items")  # type: ignore

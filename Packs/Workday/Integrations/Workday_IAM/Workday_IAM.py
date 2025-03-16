@@ -176,7 +176,7 @@ def is_report_missing_required_user_data(workday_user):
 
 def is_tufe_user(demisto_user):
     if demisto_user is not None and demisto_user.get(TERMINATION_TRIGGER_FIELD) == "TUFE":
-        demisto.debug(f"Dropping event for user with email {demisto_user.get(EMAIL_ADDRESS_FIELD)} " f"as it is a TUFE user.")
+        demisto.debug(f"Dropping event for user with email {demisto_user.get(EMAIL_ADDRESS_FIELD)} as it is a TUFE user.")
         return True
     return False
 
@@ -184,7 +184,7 @@ def is_tufe_user(demisto_user):
 def is_event_processed(demisto_user):
     if demisto_user is not None and demisto_user.get(IS_PROCESSED_FIELD) is True:
         demisto.debug(
-            f"Dropping event for user with email {demisto_user.get(EMAIL_ADDRESS_FIELD)} " f"as it is currently being processed."
+            f"Dropping event for user with email {demisto_user.get(EMAIL_ADDRESS_FIELD)} as it is currently being processed."
         )
         return True
     return False
@@ -204,7 +204,7 @@ def is_termination_event(workday_user, demisto_user, deactivation_date_field, fi
 
     if (employment_status == "terminated" and prehire_flag is False) or (deactivation_date and deactivation_date <= today):
         demisto.debug(
-            f"A termination event was detected for user " f"with email address {workday_user.get(EMAIL_ADDRESS_FIELD)}."
+            f"A termination event was detected for user with email address {workday_user.get(EMAIL_ADDRESS_FIELD)}."
         )
         return True
 
@@ -258,7 +258,7 @@ def is_new_hire_event(demisto_user, workday_user, deactivation_date_field):
     employment_status = workday_user.get(EMPLOYMENT_STATUS_FIELD, "")
 
     if prehire_flag is True and not employment_status:
-        demisto.debug(f"A new hire event was detected for user " f"with email address {workday_user.get(EMAIL_ADDRESS_FIELD)}.")
+        demisto.debug(f"A new hire event was detected for user with email address {workday_user.get(EMAIL_ADDRESS_FIELD)}.")
         return True
 
     if deactivation_date := workday_user.get(deactivation_date_field):
@@ -283,19 +283,18 @@ def is_rehire_event(demisto_user, workday_user, changed_fields):
     is_rehired_employee = workday_user.get(REHIRED_EMPLOYEE_FIELD, "").lower() == "yes"
 
     if prehire_flag is True and is_rehired_employee and changed_fields is not None:
-        demisto.debug(f"A rehire event was detected for user " f"with email address {workday_user.get(EMAIL_ADDRESS_FIELD)}.")
+        demisto.debug(f"A rehire event was detected for user with email address {workday_user.get(EMAIL_ADDRESS_FIELD)}.")
         return True
     return False
 
 
 def is_ad_activation_event(demisto_user, workday_user, days_before_hire_to_enable_ad):
-    if demisto_user and demisto_user.get(AD_ACCOUNT_STATUS_FIELD, "") == "Pending":
-        if has_reached_threshold_date(days_before_hire_to_enable_ad, workday_user):
-            demisto.debug(
-                f"An Active Directory activation event was detected for user "
-                f"with email address {workday_user.get(EMAIL_ADDRESS_FIELD)}."
-            )
-            return True
+    if demisto_user and demisto_user.get(AD_ACCOUNT_STATUS_FIELD, "") == "Pending" and has_reached_threshold_date(days_before_hire_to_enable_ad, workday_user):
+        demisto.debug(
+            f"An Active Directory activation event was detected for user "
+            f"with email address {workday_user.get(EMAIL_ADDRESS_FIELD)}."
+        )
+        return True
     return False
 
 
@@ -324,19 +323,18 @@ def is_ad_deactivation_event(demisto_user, workday_user, days_before_hire_to_ena
     ):
         return False
 
-    if demisto_user.get(AD_ACCOUNT_STATUS_FIELD, "") == "Enabled":
-        if not has_reached_threshold_date(days_before_hire_to_enable_ad, workday_user):
-            demisto.debug(
-                f"An Active Directory deactivation event was detected for user "
-                f"with email address {workday_user.get(EMAIL_ADDRESS_FIELD)}."
-            )
-            return True
+    if demisto_user.get(AD_ACCOUNT_STATUS_FIELD, "") == "Enabled" and not has_reached_threshold_date(days_before_hire_to_enable_ad, workday_user):
+        demisto.debug(
+            f"An Active Directory deactivation event was detected for user "
+            f"with email address {workday_user.get(EMAIL_ADDRESS_FIELD)}."
+        )
+        return True
     return False
 
 
 def is_update_event(workday_user, changed_fields):
     if changed_fields and workday_user.get(EMPLOYMENT_STATUS_FIELD, "").lower() != "terminated":
-        demisto.debug(f"An update event was detected for user " f"with email address {workday_user.get(EMAIL_ADDRESS_FIELD)}.")
+        demisto.debug(f"An update event was detected for user with email address {workday_user.get(EMAIL_ADDRESS_FIELD)}.")
         return True
     return False
 
@@ -369,9 +367,8 @@ def get_demisto_user(email_to_user_profile, employee_id_to_user_profile, workday
     demisto_user = None
     if employee_id := workday_user.get(EMPLOYEE_ID_FIELD):
         demisto_user = employee_id_to_user_profile.get(employee_id)
-    if not demisto_user:
-        if email := workday_user.get(EMAIL_ADDRESS_FIELD):
-            demisto_user = email_to_user_profile.get(email)
+    if not demisto_user and (email := workday_user.get(EMAIL_ADDRESS_FIELD)):
+        demisto_user = email_to_user_profile.get(email)
 
     return demisto_user
 

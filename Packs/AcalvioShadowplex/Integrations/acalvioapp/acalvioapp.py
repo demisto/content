@@ -56,37 +56,37 @@ class Client(BaseClient):
         _uri = ""
         _method = "POST"
 
-        if Action.TEST_CONN == _action:
+        if _action == Action.TEST_CONN:
             _uri = Uri.TEST_CONN
 
-        elif Action.DECEPTION_FILE == _action:
+        elif _action == Action.DECEPTION_FILE:
             _uri = Uri.DECEPTION_FILE
             _data = {"file": kwargs.get("filename"), "host": kwargs.get("endpoint")}
 
-        elif Action.DECEPTION_HOST == _action:
+        elif _action == Action.DECEPTION_HOST:
             _uri = Uri.DECEPTION_HOST
             _data = {"host": kwargs.get("host")}
 
-        elif Action.DECEPTION_USER == _action:
+        elif _action == Action.DECEPTION_USER:
             _uri = Uri.DECEPTION_USER
             _data = {
                 "user": kwargs.get("username"),
                 "domain": kwargs.get("domain"),
             }
 
-        elif Action.MUTE_DECEPTION_HOST == _action:
+        elif _action == Action.MUTE_DECEPTION_HOST:
             _uri = Uri.MUTE_DECEPTION_HOST
             _data = {"host": kwargs.get("host")}
 
-        elif Action.UNMUTE_DECEPTION_HOST == _action:
+        elif _action == Action.UNMUTE_DECEPTION_HOST:
             _uri = Uri.UNMUTE_DECEPTION_HOST
             _data = {"host": kwargs.get("host")}
 
-        elif Action.MUTE_DECEPTION_EP == _action:
+        elif _action == Action.MUTE_DECEPTION_EP:
             _uri = Uri.MUTE_DECEPTION_EP
             _data = {"host": kwargs.get("ep")}
 
-        elif Action.UNMUTE_DECEPTION_EP == _action:
+        elif _action == Action.UNMUTE_DECEPTION_EP:
             _uri = Uri.UNMUTE_DECEPTION_EP
             _data = {"host": kwargs.get("ep")}
 
@@ -99,7 +99,7 @@ class Client(BaseClient):
             ok_codes=OK_HTTP_CODES,
         )
 
-        if Action.TEST_CONN != _action:
+        if _action != Action.TEST_CONN:
             demisto.info(
                 f"Response from Acalvio API Server: "
                 f"HTTP Status Code - {res.status_code}, "
@@ -120,7 +120,7 @@ def get_api_error(res):
     outputs = None
 
     if res is not None:
-        message = "HTTP Status Code - {}, HTTP Reason - {}, Message Body - {}".format(res.status_code, res.reason, res.text)
+        message = f"HTTP Status Code - {res.status_code}, HTTP Reason - {res.reason}, Message Body - {res.text}"
         outputs = {"error": True, "details": res.text}
 
     return_error(message=message, error=error, outputs=outputs)
@@ -249,7 +249,7 @@ def do_mute_deception_host_command(client, args):
 
     if res_json is not None and "rescode" in res_json:
         out_result = {
-            "IsMute": True if 0 == res_json["rescode"] else False,
+            "IsMute": res_json["rescode"] == 0,
             "Host": str(host),
             "DateTime": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
         }
@@ -279,7 +279,7 @@ def do_unmute_deception_host_command(client, args):
 
     if res_json is not None and "rescode" in res_json:
         out_result = {
-            "IsUnmute": True if 0 == res_json["rescode"] else False,
+            "IsUnmute": res_json["rescode"] == 0,
             "Host": str(host),
             "DateTime": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
         }
@@ -309,7 +309,7 @@ def do_mute_deception_ep_command(client, args):
 
     if res_json is not None and "rescode" in res_json:
         out_result = {
-            "IsMute": True if 0 == res_json["rescode"] else False,
+            "IsMute": res_json["rescode"] == 0,
             "Endpoint": str(ep),
             "DateTime": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
         }
@@ -339,7 +339,7 @@ def do_unmute_deception_ep_command(client, args):
 
     if res_json is not None and "rescode" in res_json:
         out_result = {
-            "IsUnmute": True if 0 == res_json["rescode"] else False,
+            "IsUnmute": res_json["rescode"] == 0,
             "Endpoint": str(ep),
             "DateTime": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
         }

@@ -88,7 +88,7 @@ def get_paginated_results(results: list, offset: int, limit: int) -> list:
     Returns:
         Paginated results list.
     """
-    return results[offset : offset + limit]
+    return results[offset: offset + limit]
 
 
 def table_header(sub_context: str, page: int | None, page_size: int | None) -> str:
@@ -102,7 +102,7 @@ def table_header(sub_context: str, page: int | None, page_size: int | None) -> s
         Returns the title for the readable output
     """
     if page and page_size and (page > 0 and page_size > 0):
-        return f"{sub_context} List\nCurrent page size: {page_size}\n" f"Showing page {page} out of others that may exist"
+        return f"{sub_context} List\nCurrent page size: {page_size}\nShowing page {page} out of others that may exist"
 
     return sub_context
 

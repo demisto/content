@@ -22,9 +22,9 @@ def inc_owner_bonusly_user():
             outputs = {"IncOwnerEmail": owner_email, "BonuslyUser": bonusly_user}
             return return_outputs(readable_output, outputs, owner_email)
         except Exception as ex:
-            return_error("Error: {}".format(ex))
+            return_error(f"Error: {ex}")
     else:
-        return_error("Error: Email for owner of incident was not found")
+        return_error("Error: Email for owner of incident was not found")    # noqa: RET503
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

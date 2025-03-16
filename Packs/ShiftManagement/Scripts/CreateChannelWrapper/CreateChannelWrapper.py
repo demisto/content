@@ -13,7 +13,7 @@ def main():
     channels_created = []
 
     modules = demisto.getModules()
-    for module_name, module in modules.items():
+    for _module_name, module in modules.items():
         brand = module.get("brand")
         if module.get("state") == "active" and brand in {"Microsoft Teams", "SlackV2"}:
             integrations_to_create.append(brand)

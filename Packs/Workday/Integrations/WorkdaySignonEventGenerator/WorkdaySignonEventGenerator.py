@@ -150,9 +150,9 @@ def module_of_testing(is_longrunning: bool, longrunning_port: int):
         if xml_response:
             return_results("ok")
         else:
-            raise DemistoException("Could not connect to the long running server. Please make sure everything is " "configured.")
+            raise DemistoException("Could not connect to the long running server. Please make sure everything is configured.")
     else:
-        raise DemistoException("Please make sure the long running port is filled and the long running checkbox is " "marked.")
+        raise DemistoException("Please make sure the long running port is filled and the long running checkbox is marked.")
 
 
 """ MAIN FUNCTION """

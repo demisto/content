@@ -205,7 +205,7 @@ class Client(BaseClient):
         if res.status_code == 404:
             err_msg = BeautifulSoup(res.text).body.text
             raise DemistoException(
-                f"The server has not found anything matching the request URI. Origin response from" f" server: {err_msg}"
+                f"The server has not found anything matching the request URI. Origin response from server: {err_msg}"
             )
         if res.status_code == 500:
             err_msg = BeautifulSoup(res.text).body.text

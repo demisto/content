@@ -34,4 +34,4 @@ def test_main_failure(mock_return_error, capfd, mocker):
     with capfd.disabled():
         ExtractDomainFromIOCDomainMatchRes.main()
 
-    mock_return_error.assert_called_once_with("Error occurred while extracting Domain from IOC Domain Matches " "response:\n")
+    mock_return_error.assert_called_once_with("Error occurred while extracting Domain from IOC Domain Matches response:\n")

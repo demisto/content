@@ -76,4 +76,5 @@ def test_get_users_on_call(mocker):
     mocker.patch.object(demisto, "args", return_value={"include_OOO_users": "false"})
     main()
     results = demisto.results.call_args[0]
-    assert "brucewaine" not in results[0]["Contents"] and "batman" not in results[0]["Contents"]
+    assert "brucewaine" not in results[0]["Contents"]
+    assert "batman" not in results[0]["Contents"]

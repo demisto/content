@@ -232,7 +232,7 @@ def test_module(client: Client):
             return "ok"
     except DemistoException as exception:
         if "Invalid token or token expired" in str(exception):
-            error_message = "Error verifying access token and / or URL, make sure the " "configuration parameters are correct."
+            error_message = "Error verifying access token and / or URL, make sure the configuration parameters are correct."
         else:
             error_message = str(exception)
         return error_message
@@ -837,7 +837,8 @@ def fetch_incidents(
                 current_attachments = dict_safe_get(alert, path, default_return_value=[])
                 attachment_list = current_attachments if isinstance(current_attachments, list) else [current_attachments]
                 # Retrieve alert Incident attachments files - Attachments, CSV, Screenshot, and Analysis report.
-                current_incident_attachments = get_alert_attachments(client, attachment_list, attachment_type, alert_id)  # type: ignore
+                current_incident_attachments = get_alert_attachments(
+                    client, attachment_list, attachment_type, alert_id)  # type: ignore
 
                 incident_attachments.extend(current_incident_attachments)
                 for tmp_attachment in attachment_list:
@@ -977,7 +978,7 @@ def main():
             return_results(cyberint_alerts_get_analysis_report_command(client, **demisto.args()))
     except Exception as e:
         if "Invalid token or token expired" in str(e):
-            error_message = "Error verifying access token and / or URL, make sure the " "configuration parameters are correct."
+            error_message = "Error verifying access token and / or URL, make sure the configuration parameters are correct."
         elif "datetime" in str(e).lower():
             error_message = (
                 "Invalid time specified, "

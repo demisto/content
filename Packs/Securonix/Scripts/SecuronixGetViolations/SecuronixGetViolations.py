@@ -27,7 +27,7 @@ def main():
 
             if len(violations) > 200:
                 human_readable += (
-                    "\n### For all violations navigate to the War Room and search with the filter " '"Playbook task results". '
+                    '\n### For all violations navigate to the War Room and search with the filter "Playbook task results". '
                 )
             return_results(CommandResults(readable_output=human_readable))
 

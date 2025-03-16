@@ -510,7 +510,7 @@ def add_key_to_json(cur, to_add):
 def chunks(lst, n):
     """Yield successive n-sized chunks from lst."""
     for i in range(0, len(lst), n):
-        yield lst[i : i + n]
+        yield lst[i: i + n]
 
 
 def format_enrich_output(result):
@@ -564,7 +564,7 @@ def format_enrich_output(result):
     }
 
     demisto_title = f"DomainTools Iris Enrich for {domain}."
-    iris_title = "Investigate [{0}](https://research.domaintools.com/iris/search/?q={0}) in Iris.".format(domain)
+    iris_title = f"Investigate [{domain}](https://research.domaintools.com/iris/search/?q={domain}) in Iris."
     human_readable = tableToMarkdown(f"{demisto_title} {iris_title}", human_readable_data, headers=PROFILE_HEADERS)
 
     return (human_readable, indicators)

@@ -69,7 +69,7 @@ def generate_pseudo_id(event: dict) -> str:
         unique_id = f"{checksum}_{event['Signon_DateTime']}"
     except KeyError as e:
         raise DemistoException(
-            f"While calculating the pseudo ID for an event, an event without a Signon_DateTime was " f"found.\nError: {e}"
+            f"While calculating the pseudo ID for an event, an event without a Signon_DateTime was found.\nError: {e}"
         )
 
     return unique_id

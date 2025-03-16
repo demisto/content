@@ -6,12 +6,12 @@ from CommonServerPython import *  # noqa: F401
 import json
 import traceback
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 close_xsoar_incident_ids = []
 
 
-def get_securonix_incident_id(incident: Dict[str, Any]) -> Optional[str]:
+def get_securonix_incident_id(incident: dict[str, Any]) -> str | None:
     """Return Securonix incident id.
 
     Args:
@@ -28,7 +28,7 @@ def get_securonix_incident_id(incident: Dict[str, Any]) -> Optional[str]:
     return None
 
 
-def is_incident_closed_on_securonix(activity_data: List[Dict[str, Any]], close_states_of_securonix: List[str]) -> bool:
+def is_incident_closed_on_securonix(activity_data: list[dict[str, Any]], close_states_of_securonix: list[str]) -> bool:
     """Check whether the incident is closed on the Securonix.
 
     Args:
@@ -51,7 +51,7 @@ def is_incident_closed_on_securonix(activity_data: List[Dict[str, Any]], close_s
     return False
 
 
-def extract_closing_comments(activity_data: List[Dict[str, Any]], close_states_of_securonix: List[str]) -> str:
+def extract_closing_comments(activity_data: list[dict[str, Any]], close_states_of_securonix: list[str]) -> str:
     """Extract the contents of the closing comments from activity data provided from Securonix.
 
     Args:
@@ -82,7 +82,7 @@ def extract_closing_comments(activity_data: List[Dict[str, Any]], close_states_o
     return " | ".join(closing_comments)
 
 
-def close_xsoar_incident(xsoar_incident_id: str, sx_incident_id: str, close_states_of_securonix: List[str]) -> bool:
+def close_xsoar_incident(xsoar_incident_id: str, sx_incident_id: str, close_states_of_securonix: list[str]) -> bool:
     """Close the existing XSOAR incident whose respective Securonix incident is closed.
 
     Args:
@@ -94,7 +94,7 @@ def close_xsoar_incident(xsoar_incident_id: str, sx_incident_id: str, close_stat
         bool: True if the XSOAR incident is close, False otherwise.
     """
     demisto.debug(
-        f"Getting update for XSOAR Incident: {xsoar_incident_id} from the respective " f"Securonix Incident: {sx_incident_id}"
+        f"Getting update for XSOAR Incident: {xsoar_incident_id} from the respective Securonix Incident: {sx_incident_id}"
     )
 
     incident_activity_history_args = {"incident_id": sx_incident_id}
@@ -120,7 +120,7 @@ def close_xsoar_incident(xsoar_incident_id: str, sx_incident_id: str, close_stat
         demisto.executeCommand("closeInvestigation", close_investigation_args)
         return True
 
-    demisto.info(f"The XSOAR Incident: {xsoar_incident_id} is not closed." f"Respective Securonix Incident: {sx_incident_id}.")
+    demisto.info(f"The XSOAR Incident: {xsoar_incident_id} is not closed.Respective Securonix Incident: {sx_incident_id}.")
     return False
 
 

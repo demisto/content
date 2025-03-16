@@ -80,7 +80,7 @@ def test_filtering_incidents(test_input, output):
 
 @pytest.mark.parametrize("test_input, output", data_test_expected_errors)
 def test_expected_errors(test_input, output):
-    assert expected_errors(test_input) == output, f"expected_errors({test_input})" f" returns: {not output} instead: {output}."
+    assert expected_errors(test_input) == output, f"expected_errors({test_input}) returns: {not output} instead: {output}."
 
 
 @pytest.mark.parametrize("test_input, output", data_test_time_format)
@@ -98,7 +98,7 @@ def test_time_format(test_input, output):
 def test_convert_time_format(test_input, output):
     temp = convert_time_format(test_input[0], test_input[1], test_input[2])
     assert temp == output, (
-        f"convert_time_format({test_input[0]}, {test_input[1]}, {test_input[2]}) " f"returns: {temp} instead: {output}."
+        f"convert_time_format({test_input[0]}, {test_input[1]}, {test_input[2]}) returns: {temp} instead: {output}."
     )
 
 
@@ -118,7 +118,7 @@ def test_set_query_times(test_input, output):
 def test_list_times_set(test_input, output):
     temp = list_times_set(test_input[0], test_input[1], test_input[2])
     assert temp == output, (
-        f"list_times_set({test_input[0]}, {test_input[1]}, {test_input[2]}) " f"returns: {temp} instead: {output}."
+        f"list_times_set({test_input[0]}, {test_input[1]}, {test_input[2]}) returns: {temp} instead: {output}."
     )
 
 

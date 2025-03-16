@@ -128,7 +128,7 @@ def get_tasks_and_readable(tasks_nested_results: Dict[str, Dict], workplan_url: 
     # Go over all nested task, and fill the md table accordingly, and fill the tasks list
     # I assume the nested task is nested only in two levels
     for k1, v1 in tasks_nested_results.items():
-        if "tasks" in v1.keys():
+        if "tasks" in v1:
             tasks = v1.get("tasks")
             task_results.extend(tasks)  # type: ignore
             tasks = add_url_to_tasks(tasks, workplan_url) if workplan_url else tasks  # type: ignore
