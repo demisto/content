@@ -770,7 +770,7 @@ script:
   - arguments:
     - description: The channel to which to send messages. Supports only standard channels.
       name: channel
-    - description: The message to send to the channel or team member.
+    - description: 'The message to send to the channel or team member. Use issue fields as variables to enrich the text. Example: “${issue.Description}"'
       name: message
       prettyname: Message
       required: true
@@ -780,10 +780,6 @@ script:
       name: team_member
     - description: The team in which the specified channel exists. The team must already exist, and this value will override the default channel configured in the integration parameters.
       name: team
-    - description: ID of the message to send the notification to as a reply when sending to a channel.
-      name: message_id
-    - description: The Microsoft Teams adaptive card to send.
-      name: adaptive_card
     - description: The team member to which to send the message.
       name: to
     - description: The header of an external form hyperlink.
