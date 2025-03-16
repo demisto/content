@@ -1,6 +1,6 @@
 fromversion: 8.4.0  # Will be updated with XSIAM version updates
-id: <Vendor>_<Product>_ModelingRule
-name: <Vendor> <Product> Modeling Rule
+id: imperva_securesphere_amit_ModelingRule
+name: imperva securesphere amit Modeling Rule
 rules: ''
 schema: ''
 tags: ''
