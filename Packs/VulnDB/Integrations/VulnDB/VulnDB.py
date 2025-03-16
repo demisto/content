@@ -473,8 +473,7 @@ def vulndb_get_cpe_command(args: dict, client: Client):
     output = sorted(deduplicated_set)
 
     return_results(CommandResults(
-        outputs_prefix='VulnDB.CPE',
-        outputs_key_field='Value',
+        outputs_prefix='VulnDB.CPE.Value',
         outputs=output,
         readable_output=str(output),
         raw_response=res
