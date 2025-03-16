@@ -2684,10 +2684,8 @@ def splunk_search_command(service: client.Service, args: dict) -> CommandResults
 
 
 def splunk_job_create_command(service: client.Service, args: dict):
-    query = args['query']
     app = args.get('app', '')
-    if not query.startswith('search'):
-        query = f'search {query}'
+    query = build_search_query(args)
     search_kwargs = {
         "exec_mode": "normal",
         "app": app
@@ -3445,12 +3443,15 @@ def main():  # pragma: no cover
         raise NotImplementedError(f'the {command} command is not implemented, use get-modified-remote-data instead.')
     elif command == 'get-modified-remote-data':
         demisto.info('########### MIRROR IN #############')
-        get_modified_remote_data_command(service=service, args=args,
-                                         close_incident=params.get('close_incident'),
-                                         close_end_statuses=params.get('close_end_status_statuses'),
-                                         close_extra_labels=argToList(params.get('close_extra_labels', '')),
-                                         mapper=mapper,
-                                         comment_tag_from_splunk=comment_tag_from_splunk)
+        try:
+            get_modified_remote_data_command(service=service, args=args,
+                                             close_incident=params.get('close_incident'),
+                                             close_end_statuses=params.get('close_end_status_statuses'),
+                                             close_extra_labels=argToList(params.get('close_extra_labels', '')),
+                                             mapper=mapper,
+                                             comment_tag_from_splunk=comment_tag_from_splunk)
+        except Exception as e:
+            return_error(f"An error occurred during the Mirror In - in get_modified_remote_data_command: {e}")
     elif command == 'update-remote-system':
         demisto.info('########### MIRROR OUT #############')
         return_results(update_remote_system_command(args, params, service, auth_token, mapper, comment_tag_to_splunk))
