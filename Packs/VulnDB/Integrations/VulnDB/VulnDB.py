@@ -485,10 +485,11 @@ def vulndb_get_cpe_command(args: dict, client: Client) -> CommandResults:
 
     res = client.http_request(f'/vulnerabilities/{vulndb_id}?show_cpe=true')
     all_cpes = []
-    for product in res.get('vulnerability').get('products'):
-        for version in product.get('versions'):
-            for cpe in version.get('cpe'):
-                all_cpes.append(cpe.get('cpe'))
+    for product in res.get('vulnerability', {}).get('products', []):
+        for version in product.get('versions', []):
+            for cpe in version.get('cpe', []):
+                if cpe.get('cpe'):
+                    all_cpes.append(cpe.get('cpe'))
     # Convert to set to deduplicate, then back to list to be sorted
     deduplicated_set = set(all_cpes)
     output = sorted(deduplicated_set)
