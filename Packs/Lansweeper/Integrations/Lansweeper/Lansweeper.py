@@ -143,8 +143,8 @@ def prepare_query(site_id: str, condition: str) -> str:
     :rtype: ``str``
     :return: GraphQL query
     """
-    query = f"""query getAssetResources($pagination: AssetsPaginationInputValidated) {{
-                    site(id: {{site_id}}) {{
+    query = """query getAssetResources($pagination: AssetsPaginationInputValidated) {
+                    site(id: {site_id}) {
                         assetResources (
                             assetPagination: $pagination,
                             fields: [
@@ -176,22 +176,22 @@ def prepare_query(site_id: str, condition: str) -> str:
                                 "operatingSystem.productType",
                                 "url"
                             ],
-                            filters: {{
+                            filters: {
                                 conjunction: OR,
-                                conditions: [{{condition}}]
-                            }}
-                        ) {{
+                                conditions: [{condition}]
+                            }
+                        ) {
                             total
-                            pagination {{
+                            pagination {
                                 limit
                                 current
                                 next
                                 page
-                            }}
+                            }
                             items
-                        }}
-                    }}
-                }}"""
+                        }
+                    }
+                }"""
 
     return query
 

@@ -5844,4 +5844,3 @@ def test_gcb_get_event_command_invalid_event_id(client, capfd):
 
     error_m = "Status code: 400\nError: Invalid value at 'name' (TYPE_BYTES), Base64 decoding failed for \"invalid_event_id\""
     assert str(e.value) == error_m
-

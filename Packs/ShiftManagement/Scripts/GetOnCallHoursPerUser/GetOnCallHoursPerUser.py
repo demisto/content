@@ -45,7 +45,7 @@ def main():
                 role_users = (
                     role_user.get("name", "")
                     for role_user in
-                filter(lambda u: role.get("name") in reduce(operator.add, u.get("roles", {}).values()), users)
+                    filter(lambda u: role.get("name") in reduce(operator.add, u.get("roles", {}).values()), users)
                 )
 
                 for username in role_users:

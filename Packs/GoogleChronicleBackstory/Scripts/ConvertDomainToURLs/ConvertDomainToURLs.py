@@ -9,7 +9,7 @@ from typing import Any
 def get_entry_context(domains, is_single) -> dict[str, Any]:
     urls_to_return = []
     if is_single:
-        if domains.startswith(("http://", "https://")): # NOSONAR
+        if domains.startswith(("http://", "https://")):  # NOSONAR
             urls_to_return.append(domains)
         else:
             urls_to_return.append(f"http://{domains}")  # NOSONAR
