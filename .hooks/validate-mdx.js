@@ -2,14 +2,11 @@
 
 const { readFile } = require('fs-extra');
 const mdx = require('@mdx-js/mdx');
-const path = require('path');
 
 
-// Constants to define explicit NO_HTML and YES_HTML indicators
 const NO_HTML = "<!-- NOT_HTML_DOC -->";
 const YES_HTML = "<!-- HTML_DOC -->";
 
-// Function to determine if content is HTML
 function isHtmlDoc(content) {
     return content.startsWith(YES_HTML) ||
         (!content.startsWith(NO_HTML) && (
@@ -19,11 +16,12 @@ function isHtmlDoc(content) {
         ));
 }
 
-// Function to apply MDX fixes
+
 function fixMdx(readmeContent) {
+    // copied from: https://github.com/demisto/content-docs/blob/2402bd1ab1a71f5bf1a23e1028df6ce3b2729cbb/content-repo/mdx_utils.py#L11
+    // to use the same logic as we have in the content-docs build
     let txt = readmeContent;
 
-    // Define replacement rules
     const replaceTuples = [
         [/<br>(?!<\/br>)/gi, "<br/>"],
         [/<hr>(?!<\/hr>)/gi, "<hr/>"],
@@ -31,34 +29,29 @@ function fixMdx(readmeContent) {
         [/<\/pre>/gi, "`}</pre>"]
     ];
 
-    // Apply replacements
     replaceTuples.forEach(([oldPattern, newValue]) => {
         txt = txt.replace(oldPattern, newValue);
     });
 
-    // Remove HTML comments
     txt = txt.replace(/<!--.*?-->/gs, "");
 
     return txt;
 }
 
-// Function to parse and process MDX
 async function parseMDX(file) {
     try {
 
         let contents = await readFile(file, 'utf8');
 
-        // Ensure the file is not an HTML document
         if (isHtmlDoc(contents)) {
-            return true; // Skip this file
+            return true;
         }
-
-        contents = fixMdx(contents); // Apply MDX fixes
+        contents = fixMdx(contents);
         await mdx(contents);
         return true;
     } catch (error) {
-        console.error(`❌ Validation failed in ${file}:`, error.message);
-        return false; // Mark as failed
+        console.error(`Validation failed in ${file}:`, error.message);
+        return false;
     }
 }
 
@@ -66,11 +59,11 @@ async function parseMDX(file) {
 const files = process.argv.slice(2);
 
 if (files.length === 0) {
-    console.error("❌ No files provided for validation.");
+    console.log("No files provided for validation.");
     process.exit(0);
 }
 
-console.log(`🔎 Found ${files.length} files to validate. Processing...`);
+console.log(`Found ${files.length} files to validate. Processing...`);
 
 (async () => {
     let hasErrors = false;
@@ -83,9 +76,9 @@ console.log(`🔎 Found ${files.length} files to validate. Processing...`);
     }
 
     if (hasErrors) {
-        console.error("❌ Some files failed validation. Commit aborted.");
+        console.error("Some files failed validation. Commit aborted.");
         process.exit(1);
     }
 
-    console.log("🎉 All provided files have been successfully validated!");
+    console.log("All provided files have been successfully validated!");
 })();
