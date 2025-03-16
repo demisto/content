@@ -50,7 +50,7 @@ async function parseMDX(file) {
 
         // Ensure the file is not an HTML document
         if (isHtmlDoc(contents)) {
-            return null; // Skip this file
+            return true; // Skip this file
         }
 
         contents = fixMdx(contents); // Apply MDX fixes
