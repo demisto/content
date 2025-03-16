@@ -157,7 +157,7 @@ def fetch_incidents(client: Client, params: dict) -> Tuple[dict, list]:
 
     limit = arg_to_number(params.get('max_fetch', 50))
     if not (start_time := last_run.get('start_time')):  # in the first interval.
-        start_time = (arg_to_datetime(params.get('first_fetch', '3 days'))).strftime(DATE_FORMAT)
+        start_time = (arg_to_datetime(params.get('first_fetch', '3 days'))).strftime(DATE_FORMAT)  # type: ignore[union-attr]
 
     result = client.incident_query(limit, start_time)
 
