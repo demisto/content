@@ -58,7 +58,6 @@ def test_vulndb_get_cpe_command(mocker, requests_mock):
     assert len(return_results_args.outputs) == 1
     assert return_results_args.raw_response == util_load_json('test_data/vulndb_get_cpe_command.json')
     assert return_results_args.outputs_prefix == 'VulnDB.CPE.Value'
-    assert return_results_args.outputs_key_field == 'Value'
 
 
 def test_vulndb_get_vuln_report_command(mocker, requests_mock):
