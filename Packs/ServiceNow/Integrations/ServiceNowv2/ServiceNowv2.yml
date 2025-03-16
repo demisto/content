@@ -1684,7 +1684,7 @@ script:
     description: Retrieves attachments from a ticket.
     name: servicenow-get-ticket-attachments
   - arguments:
-    - description: 'Short description of the ticket. Use issue fields as variables to enrich the text. Example: “${alert.name}”'
+    - description: 'Short description of the ticket. Use issue fields as variables to enrich the text. Example: “${issue.name}”'
       name: short_description
       prettyname: Short Description
       required: true
@@ -1751,7 +1751,7 @@ script:
       name: contact_type
     - description: Delivery plan (UID format).
       name: delivery_plan
-    - description: 'Ticket description. Use issue fields as variables to enrich the text. Example: “${alert.details}”'
+    - description: 'Ticket description. Use issue fields as variables to enrich the text. Example: “${issue.details}”'
       name: description
       prettyname: Description
       required: true

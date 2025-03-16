@@ -1746,7 +1746,7 @@ script:
       description: If the field is a custom field, the configuration of the field.
       type: Object
   - arguments:
-    - description: 'A summary of the issue. Use issue fields as variables to enrich the text. Example: ${alert.name}'
+    - description: 'A summary of the issue. Use issue fields as variables to enrich the text. Example: ${issue.name}'
       name: summary
       prettyname: Summary
       required: true
@@ -1758,7 +1758,7 @@ script:
       name: issue_type_name
       prettyname: Issue Type
       required: true
-    - description: 'A description of the issue. Use issue fields as variables to enrich the text. Example: ${alert.details}'
+    - description: 'A description of the issue. Use issue fields as variables to enrich the text. Example: ${issue.details}'
       name: description
       prettyname: Description
       required: true
