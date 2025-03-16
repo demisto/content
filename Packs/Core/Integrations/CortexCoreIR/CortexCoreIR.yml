@@ -1050,7 +1050,6 @@ script:
       isArray: true
       name: endpoint_id_list
       prettyname: Run action on
-      defaultValue: 'Initiator host endpoint ID'
       prettypredefined:
         Initiator host endpoint ID: ${alert.hostname}
         Remote host endpoint ID: ${alert.remotehost}
@@ -1058,13 +1057,11 @@ script:
     - description: String that represents the path of the file you want to quarantine.
       name: file_path
       prettyname: File Path
-      defaultValue: 'File path from issue'
       prettypredefined:
         File path from issue: ${alert.filepath}
       required: true
     - description: String that represents the file’s hash. Must be a valid SHA256 hash.
       name: file_hash
-      defaultValue: 'File SHA256 from issue'
       prettyname: File Hash (SHA256)
       prettypredefined:
         File SHA256 from issue: ${alert.filesha256}
@@ -1175,7 +1172,6 @@ script:
       name: incident_id
     - description: String that represents the file in hash. Must be a valid SHA256 hash.
       name: file_hash
-      defaultValue: 'File SHA256 from issue'
       prettyname: File Hash (SHA256)
       prettypredefined:
         File SHA256 from issue: ${alert.filesha256}
@@ -1741,7 +1737,6 @@ script:
       isArray: true
       name: endpoint_ids
       required: true
-      defaultValue: 'Issue initiator host'
       prettyname: Run action on
       prettypredefined:
         Issue initiator host: ${alert.hostname}
@@ -3670,10 +3665,9 @@ script:
       name: endpoint_ids
       required: true
       prettyname: Run action on
-      defaultValue: 'Initiator host endpoint ID'
       prettypredefined:
-        Initiator host endpoint ID: ${alert.placeholder_1}
-        Remote host endpoint ID: ${alert.placeholder_2}
+        Initiator host
+        Remote host
     - description: Unique identifier of the script. Can be retrieved by running the core-get-scripts command.
       name: script_uid
       required: true
@@ -3889,13 +3883,15 @@ script:
       name: agent_id
       prettyname: Run action on
       prettypredefined:
-        Endpoint id from host: ${alert.agentid}
+        Affected host: ${alert.agentid}
       isArray: false
       required: true
     - description: The causality ID.
       name: causality_id
       isArray: true
       required: true
+      prettypredefined:
+        CGO identifier: ${alert.cid}
     - description: The process name.
       name: process_name
       isArray: false
