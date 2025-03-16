@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 const { readFile } = require('fs-extra');
 const mdx = require('@mdx-js/mdx');
 
@@ -55,7 +53,6 @@ async function parseMDX(file) {
     }
 }
 
-// Extract files from command-line arguments
 const files = process.argv.slice(2);
 
 if (files.length === 0) {
