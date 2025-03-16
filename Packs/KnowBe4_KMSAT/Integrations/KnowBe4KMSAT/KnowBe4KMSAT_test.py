@@ -39,9 +39,7 @@ def test_account_info(requests_mock):
     mock_response_data = util_load_json("test_data/account_response.json")
     from KnowBe4KMSAT import kmsat_account_info_list_command
 
-    requests_mock.get(
-        f"{REPORTING_BASE_URL}/account", json=mock_response_data, status_code=200
-    )
+    requests_mock.get(f"{REPORTING_BASE_URL}/account", json=mock_response_data, status_code=200)
 
     client = Client(
         REPORTING_BASE_URL,
@@ -55,7 +53,7 @@ def test_account_info(requests_mock):
     args: dict = {}
     result = kmsat_account_info_list_command(client, args)
 
-    assert requests_mock.last_request.headers['X-KB4-Integration'] == "Cortex XSOAR KMSAT"
+    assert requests_mock.last_request.headers["X-KB4-Integration"] == "Cortex XSOAR KMSAT"
     assert result.outputs_prefix == "KMSAT.AccountInfo"
     assert result.outputs_key_field == "name"
     assert result.outputs == mock_response_data
@@ -70,9 +68,7 @@ def test_account_risk_score_history(requests_mock):
     Then
             Make sure the data contains account risk history information
     """
-    mock_response_data = util_load_json(
-        "test_data/account_risk_score_history_response.json"
-    )
+    mock_response_data = util_load_json("test_data/account_risk_score_history_response.json")
     from KnowBe4KMSAT import kmsat_account_risk_score_history_list_command
 
     requests_mock.get(
@@ -106,9 +102,7 @@ def test_account_groups_risk_score_history(requests_mock):
     Then
             Make sure the data contains id with expected values
     """
-    mock_response_data = util_load_json(
-        "test_data/groups_risk_score_history_response.json"
-    )
+    mock_response_data = util_load_json("test_data/groups_risk_score_history_response.json")
     from KnowBe4KMSAT import kmsat_groups_risk_score_history_list_command
 
     requests_mock.get(
@@ -142,9 +136,7 @@ def test_groups_members_list(requests_mock):
     Then
             Make sure the data contains id with expected values
     """
-    mock_response_data = util_load_json(
-        "test_data/groups_risk_score_history_response.json"
-    )
+    mock_response_data = util_load_json("test_data/groups_risk_score_history_response.json")
     from KnowBe4KMSAT import kmsat_groups_members_list_command
 
     requests_mock.get(
@@ -178,9 +170,7 @@ def test_users_risk_score_history_list(requests_mock):
     Then
             Make sure the data returned for user
     """
-    mock_response_data = util_load_json(
-        "test_data/user_risk_score_history_response.json"
-    )
+    mock_response_data = util_load_json("test_data/user_risk_score_history_response.json")
     from KnowBe4KMSAT import kmsat_users_risk_score_history_list_command
 
     requests_mock.get(
@@ -214,9 +204,7 @@ def test_phishing_security_tests_list(requests_mock):
     Then
             Make sure the data contains campaign_id with expected values
     """
-    mock_response_data = util_load_json(
-        "test_data/groups_risk_score_history_response.json"
-    )
+    mock_response_data = util_load_json("test_data/groups_risk_score_history_response.json")
     from KnowBe4KMSAT import kmsat_phishing_security_tests_list_command
 
     requests_mock.get(
@@ -250,9 +238,7 @@ def test_phishing_security_tests_recipients_list(requests_mock):
     Then
             Make sure the data contains recipient_id with expected values
     """
-    mock_response_data = util_load_json(
-        "test_data/phishing_security_tests_recipients_response.json"
-    )
+    mock_response_data = util_load_json("test_data/phishing_security_tests_recipients_response.json")
     from KnowBe4KMSAT import kmsat_phishing_security_tests_recipients_list_command
 
     requests_mock.get(
@@ -286,9 +272,7 @@ def test_phishing_security_tests_failed_recipients_list(requests_mock):
     Then
             Make sure the data contains recipient_id with expected values
     """
-    mock_response_data = util_load_json(
-        "test_data/phishing_security_tests_failed_recipients_response.json"
-    )
+    mock_response_data = util_load_json("test_data/phishing_security_tests_failed_recipients_response.json")
     from KnowBe4KMSAT import kmsat_phishing_security_tests_failed_recipients_list_command
 
     requests_mock.get(
@@ -308,14 +292,7 @@ def test_phishing_security_tests_failed_recipients_list(requests_mock):
     )
     args: dict = {"pst_id": 1}
     result = kmsat_phishing_security_tests_failed_recipients_list_command(client, args)
-    valid_response = {
-        "data": mock_response_data,
-        "meta": {
-            "filtered_items_in_page": 1,
-            "items_total": 1,
-            "paging_end": True
-        }
-    }
+    valid_response = {"data": mock_response_data, "meta": {"filtered_items_in_page": 1, "items_total": 1, "paging_end": True}}
 
     assert result.outputs_prefix == "KMSAT.PhishingSecurityPST"
     assert result.outputs_key_field == "recipient_id"
@@ -331,9 +308,7 @@ def test_phishing_campaigns_security_tests_list(requests_mock):
     Then
             Make sure the data is returned for the campaign
     """
-    mock_response_data = util_load_json(
-        "test_data/phishing_security_tests_failed_recipients_response.json"
-    )
+    mock_response_data = util_load_json("test_data/phishing_security_tests_failed_recipients_response.json")
     from KnowBe4KMSAT import kmsat_phishing_campaign_security_tests_list_command
 
     requests_mock.get(
@@ -367,9 +342,7 @@ def test_training_campaigns_list(requests_mock):
     Then
             Make sure the data contains campaign_id with expected values
     """
-    mock_response_data = util_load_json(
-        "test_data/training_campaigns_response.json"
-    )
+    mock_response_data = util_load_json("test_data/training_campaigns_response.json")
     from KnowBe4KMSAT import kmsat_training_campaigns_list_command
 
     requests_mock.get(
@@ -403,9 +376,7 @@ def test_training_enrollments_list(requests_mock):
     Then
             Make sure the data contains enrollment_id with expected values
     """
-    mock_response_data = util_load_json(
-        "test_data/training_enrollments_response.json"
-    )
+    mock_response_data = util_load_json("test_data/training_enrollments_response.json")
     from KnowBe4KMSAT import kmsat_training_enrollments_list_command
 
     requests_mock.get(
@@ -425,14 +396,7 @@ def test_training_enrollments_list(requests_mock):
     )
     args: dict = {}
     result = kmsat_training_enrollments_list_command(client, args)
-    valid_response = {
-        "data": mock_response_data,
-        "meta": {
-            "filtered_items_in_page": 0,
-            "items_total": 4,
-            "paging_end": True
-        }
-    }
+    valid_response = {"data": mock_response_data, "meta": {"filtered_items_in_page": 0, "items_total": 4, "paging_end": True}}
     assert result.outputs_prefix == "KMSAT.TrainingEnrollments"
     assert result.outputs_key_field == "enrollment_id"
     assert result.outputs == valid_response
@@ -446,9 +410,7 @@ def test_status_training_enrollments_list(requests_mock):
     Then
             Make sure the data contains enrollment_id with expected values
     """
-    mock_response_data = util_load_json(
-        "test_data/training_enrollments_response.json"
-    )
+    mock_response_data = util_load_json("test_data/training_enrollments_response.json")
     from KnowBe4KMSAT import kmsat_training_enrollments_list_command
 
     requests_mock.get(
@@ -495,9 +457,7 @@ def test_get_user_event_types(requests_mock):
     mock_response_data = util_load_json("test_data/user_event_types_response.json")
     from KnowBe4KMSAT import kmsat_user_event_types_list_command
 
-    requests_mock.get(
-        f"{USER_EVENT_BASE_URL}/event_types", json=mock_response_data, status_code=200
-    )
+    requests_mock.get(f"{USER_EVENT_BASE_URL}/event_types", json=mock_response_data, status_code=200)
 
     userEventClient = UserEventClient(
         USER_EVENT_BASE_URL,
@@ -529,9 +489,7 @@ def test_get_user_events(requests_mock):
     mock_response_data = util_load_json("test_data/user_events_response.json")
     from KnowBe4KMSAT import kmsat_user_events_list_command
 
-    requests_mock.get(
-        f"{USER_EVENT_BASE_URL}/events", json=mock_response_data, status_code=200
-    )
+    requests_mock.get(f"{USER_EVENT_BASE_URL}/events", json=mock_response_data, status_code=200)
 
     userEventClient = UserEventClient(
         USER_EVENT_BASE_URL,
@@ -546,7 +504,7 @@ def test_get_user_events(requests_mock):
     args: dict = {}
     result = kmsat_user_events_list_command(userEventClient, args)
 
-    assert requests_mock.last_request.headers['X-KB4-Integration'] == "Cortex XSOAR KMSAT"
+    assert requests_mock.last_request.headers["X-KB4-Integration"] == "Cortex XSOAR KMSAT"
     assert result.outputs_prefix == "KMSAT.UserEvents"
     assert result.outputs_key_field == "id"
     assert result.outputs == mock_response_data["data"]
@@ -567,9 +525,7 @@ def test_get_user_event(requests_mock):
     mock_response_data = util_load_json("test_data/user_event_response.json")
     from KnowBe4KMSAT import kmsat_user_event_list_command
 
-    requests_mock.get(
-        f"{USER_EVENT_BASE_URL}/events/{eventId}", json=mock_response_data, status_code=200
-    )
+    requests_mock.get(f"{USER_EVENT_BASE_URL}/events/{eventId}", json=mock_response_data, status_code=200)
 
     userEventClient = UserEventClient(
         USER_EVENT_BASE_URL,
@@ -584,7 +540,7 @@ def test_get_user_event(requests_mock):
     args: dict = {"id": eventId}
     result = kmsat_user_event_list_command(userEventClient, args)
 
-    assert requests_mock.last_request.headers['X-KB4-Integration'] == "Cortex XSOAR KMSAT"
+    assert requests_mock.last_request.headers["X-KB4-Integration"] == "Cortex XSOAR KMSAT"
     assert result.outputs_prefix == "KMSAT.UserEvent"
     assert result.outputs_key_field == "id"
     assert result.outputs == mock_response_data["data"]
@@ -635,9 +591,7 @@ def test_get_user_event_status(requests_mock):
     mock_response_data = util_load_json("test_data/user_event_status_response.json")
     from KnowBe4KMSAT import kmsat_user_event_status_list_command
 
-    requests_mock.get(
-        f"{USER_EVENT_BASE_URL}/statuses/{eventId}", json=mock_response_data, status_code=200
-    )
+    requests_mock.get(f"{USER_EVENT_BASE_URL}/statuses/{eventId}", json=mock_response_data, status_code=200)
 
     userEventClient = UserEventClient(
         USER_EVENT_BASE_URL,
@@ -652,7 +606,7 @@ def test_get_user_event_status(requests_mock):
     args: dict = {"id": eventId}
     result = kmsat_user_event_status_list_command(userEventClient, args)
 
-    assert requests_mock.last_request.headers['X-KB4-Integration'] == "Cortex XSOAR KMSAT"
+    assert requests_mock.last_request.headers["X-KB4-Integration"] == "Cortex XSOAR KMSAT"
     assert result.outputs_prefix == "KMSAT.UserEventStatus"
     assert result.outputs_key_field == "id"
     assert result.outputs == mock_response_data["data"]
@@ -671,9 +625,7 @@ def test_get_user_event_statuses(requests_mock):
     mock_response_data = util_load_json("test_data/user_event_statuses_response.json")
     from KnowBe4KMSAT import kmsat_user_event_statuses_list_command
 
-    requests_mock.get(
-        f"{USER_EVENT_BASE_URL}/statuses", json=mock_response_data, status_code=200
-    )
+    requests_mock.get(f"{USER_EVENT_BASE_URL}/statuses", json=mock_response_data, status_code=200)
 
     userEventClient = UserEventClient(
         USER_EVENT_BASE_URL,
@@ -688,7 +640,7 @@ def test_get_user_event_statuses(requests_mock):
     args: dict = {}
     result = kmsat_user_event_statuses_list_command(userEventClient, args)
 
-    assert requests_mock.last_request.headers['X-KB4-Integration'] == "Cortex XSOAR KMSAT"
+    assert requests_mock.last_request.headers["X-KB4-Integration"] == "Cortex XSOAR KMSAT"
     assert result.outputs_prefix == "KMSAT.UserEventStatuses"
     assert result.outputs_key_field == "id"
     assert result.outputs == mock_response_data["data"]
@@ -704,5 +656,6 @@ def test_get_pagination():
             Make sure the data returns with page and per_page
     """
     from KnowBe4KMSAT import get_pagination
+
     args = {"page": 1, "per_page": 10}
     assert get_pagination(args) == args
