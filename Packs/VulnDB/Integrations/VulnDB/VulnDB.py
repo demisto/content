@@ -431,17 +431,15 @@ def vulndb_get_cve_command(args: dict, client: Client, dbot_score_reliability: D
     return_results(command_results)
 
 
-'''
-Returns a PDF report summary of the vulnerability from VulnDB
-
-Inputs:
-    vuln_id: Unique ID for the vulnerability
-Returns:
-    file_entry: PDF report for the vulnerability
-'''
-
-
 def vulndb_get_vuln_report_command(args: dict, client: Client):
+    '''
+    Returns a PDF report summary of the vulnerability from VulnDB
+
+    Inputs:
+        vuln_id: Unique ID for the vulnerability
+    Returns:
+        file_entry: PDF report for the vulnerability
+    '''
     vulndb_id = args['vuln_id']
     res = client.http_file_request(f'/vulnerabilities/{vulndb_id}.pdf')
 
@@ -452,17 +450,15 @@ def vulndb_get_vuln_report_command(args: dict, client: Client):
     return_results(file_entry)
 
 
-'''
-Returns a list of CPE values for the given VulnDB vulnerability.
-
-Inputs:
-    vuln_id: Unique ID for the vulnerability
-Returns:
-    output: Sorted and deduplicated list of CPE values from VulnDB
-'''
-
-
 def vulndb_get_cpe_command(args: dict, client: Client):
+    '''
+    Returns a list of CPE values for the given VulnDB vulnerability.
+
+    Inputs:
+        vuln_id: Unique ID for the vulnerability
+    Returns:
+        output: Sorted and deduplicated list of CPE values from VulnDB
+    '''
     vulndb_id = args['vuln_id']
 
     res = client.http_request(f'/vulnerabilities/{vulndb_id}?show_cpe=true')
