@@ -770,12 +770,10 @@ script:
   - arguments:
     - description: The channel to which to send messages. Supports only standard channels.
       name: channel
-    - description: 'The message to send to the channel or team member. Use issue fields as variables to enrich the text. Example: “${issue.Description}"'
+    - description: 'The message to send to the channel or team member. Use issue fields as variables to enrich the text. Example: “${alert.details}"'
       name: message
       prettyname: Message
       required: true
-      predefined:
-        - "${issue.Name} ${issue.Description}"
     - description: Display name or email address of the team member to send the message to.
       name: team_member
     - description: The team in which the specified channel exists. The team must already exist, and this value will override the default channel configured in the integration parameters.

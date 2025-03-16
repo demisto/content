@@ -505,7 +505,7 @@ script:
     name: slack-get-conversation-replies
   - arguments:
     - default: true
-      description: 'The message to send to the channel or team member (to). Use issue fields as variables to enrich the text. Example: “${issue.Description}”'
+      description: 'The message to send to the channel or team member (to). Use issue fields as variables to enrich the text. Example: “${alert.details}”'
       name: message
       prettyname: Message
       required: true
