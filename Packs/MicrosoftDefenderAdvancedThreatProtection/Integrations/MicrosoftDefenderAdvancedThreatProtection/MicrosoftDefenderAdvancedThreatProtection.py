@@ -3734,8 +3734,7 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
             'rawJSON': json.dumps(alert),
             'name': f'{INTEGRATION_NAME} Alert {alert["id"]}',
             'occurred': alert['alertCreationTime'],
-            'dbotMirrorId': alert["id"],
-            'haIntegrationEventID': alert["id"]
+            'dbotMirrorId': alert["id"]
         })
 
         # Update last run and add incident if the incident is newer than last fetch
