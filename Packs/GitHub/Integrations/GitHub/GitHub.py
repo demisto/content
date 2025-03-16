@@ -1658,6 +1658,10 @@ def list_files_command():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=res)
 
 
+def remove_slashes(content)->str:
+    return re.sub(r"\$\\(\{[^}]+})", r"$\1", content)
+
+
 def commit_file_command():
     args = demisto.args()
     commit_message = args.get('commit_message')
@@ -1666,16 +1670,16 @@ def commit_file_command():
     entry_id = args.get('entry_id')
     file_text = args.get('file_text')
     file_sha = args.get('file_sha')
-    is_bit_64 = argToBoolean(args.get('is_bit_64', False))
-
+    placeholders_escaped = argToBoolean(args.get('placeholders_escaped', False))
+    return_results(f"######################### Commit files comand got {placeholders_escaped=} and {file_text=}")
     if not entry_id and not file_text:
         raise DemistoException('You must specify either the "file_text" or the "entry_id" of the file.')
     elif entry_id:
         file_path = demisto.getFilePath(entry_id).get('path')
         with open(file_path, 'rb') as f:
             content = f.read()
-    elif  is_bit_64:
-        content = base64.b64decode(file_text)
+    elif  placeholders_escaped:
+        content = bytes(remove_slashes(file_text), encoding='utf8')
     else:
         content = bytes(file_text, encoding='utf8')
 
