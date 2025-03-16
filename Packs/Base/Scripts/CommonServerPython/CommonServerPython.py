@@ -9447,8 +9447,7 @@ if 'requests' in sys.modules:
                     timeout=timeout,
                     **kwargs
                 )
-                if not self._is_status_code_valid(res, ok_codes):
-                    self._handle_error(error_handler, res, with_metrics)
+                self._handle_error(error_handler, res, with_metrics)
 
                 return self._handle_success(res, resp_type, empty_valid_codes, return_empty_response, with_metrics)
 
@@ -11993,6 +11992,7 @@ def xsiam_api_call_with_retries(
         )
         status_code = response.status_code
         demisto.debug('received status code: {status_code}'.format(status_code=status_code))
+        status_code = 429
         if status_code == 429:
             time.sleep(1)
         attempt_num += 1
@@ -12022,19 +12022,20 @@ def split_data_to_chunks(data, target_chunk_size):
     if isinstance(data, str):
         data = data.split('\n')
     for data_part in data:
-        if chunk_size >= target_chunk_size:
-            demisto.debug("reached max chunk size, sending chunk with size: {size}".format(size=chunk_size))
-            yield chunk
-            chunk = []
-            chunk_size = 0
-        data_part_size = sys.getsizeof(data_part)
-        if data_part_size >= MAX_ALLOWED_ENTRY_SIZE:
-            demisto.error(
-                "entry size {} is larger than the maximum allowed entry size {}, skipping this entry".format(data_part_size,
-                                                                                                             MAX_ALLOWED_ENTRY_SIZE))
-            continue
-        chunk.append(data_part)
-        chunk_size += data_part_size
+        yield [data_part]
+        # if chunk_size >= target_chunk_size:
+        #     demisto.debug("reached max chunk size, sending chunk with size: {size}".format(size=chunk_size))
+        #     yield chunk
+        #     chunk = []
+        #     chunk_size = 0
+        # data_part_size = sys.getsizeof(data_part)
+        # if data_part_size >= MAX_ALLOWED_ENTRY_SIZE:
+        #     demisto.error(
+        #         "entry size {} is larger than the maximum allowed entry size {}, skipping this entry".format(data_part_size,
+        #                                                                                                      MAX_ALLOWED_ENTRY_SIZE))
+        #     continue
+        # chunk.append(data_part)
+        # chunk_size += data_part_size
     if chunk_size != 0:
         demisto.debug("sending the remaining chunk with size: {size}".format(size=chunk_size))
         yield chunk
