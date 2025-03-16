@@ -1,0 +1,12 @@
+repos:
+- repo: local
+  hooks:
+    - id: mdx-validation
+      name: Validate README.md with MDX
+      entry: node .hooks/validate-mdx.js
+      language: node
+      files: "^(.*/)?README\\.md$"
+      additional_dependencies: #match package-lock of content docs
+        - "@mdx-js/mdx@1.6.22"
+        - "fs-extra@9.1.0"
+

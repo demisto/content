@@ -373,14 +373,14 @@ repos:
     - git diff HEAD
     skip: true
 
-- repo: local
-  hooks:
-    - id: mdx-validation
-      name: Validate README.md with MDX
-      entry: .hooks/validate-mdx.js
-      language: node
-      types: [file]
-      files: "^README\\.md$"
+#- repo: local
+#  hooks:
+#    - id: mdx-validation
+#      name: Validate README.md with MDX
+#      entry: .hooks/validate-mdx.js
+#      language: node
+#      types: [file]
+#      files: "^README\\.md$"
 
 - repo: https://github.com/igorshubovych/markdownlint-cli
   rev: v0.36.0  # Check for the latest version
