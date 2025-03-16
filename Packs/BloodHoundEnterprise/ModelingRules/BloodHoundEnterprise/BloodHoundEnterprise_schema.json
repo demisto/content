@@ -19,6 +19,14 @@
       "fields": {
         "type": "string",
         "is_array": false
+      },
+      "action": {
+        "type": "string",
+        "is_array": false
+      },
+      "status": {
+        "type": "string",
+        "is_array": false
       }
     }
   }
