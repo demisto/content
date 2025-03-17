@@ -1,0 +1,4 @@
+{
+  "breakingChanges": true,
+  "breakingChangesNotes": "This version introduces a change in common code. If you encounter any issues with integrations or scripts after upgrading to this version, please report them to our support team and downgrade to the previous version as a temporary workaround."
+}
