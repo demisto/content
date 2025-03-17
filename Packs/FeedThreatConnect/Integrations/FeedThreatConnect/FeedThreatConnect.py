@@ -579,7 +579,7 @@ def set_tql_query(from_date: str, params: dict, endpoint: str) -> str:
         confidence = f'AND confidence GT {params.get("confidence")} ' if int(params.get("confidence")) != 0 else ""  # type: ignore # noqa
         threat_score = (
             f'AND threatAssessScore GT {params.get("threat_assess_score")} '
-            if int(params.get("threat_assess_score")) != 0
+            if int(params.get("threat_assess_score")) != 0  # type: ignore
             else ""
         )  # type: ignore
 

@@ -101,11 +101,11 @@ class Client(BaseClient):
 
     def _check_report_available(self, file_info):
         report = False
-        if ("analgin_result" in file_info and
-            "commit" in file_info.get("analgin_result", {}) and
-            "reports" in file_info.get("analgin_result", {}) and
-            len(file_info["analgin_result"].get("reports", [])) and
-            "id" in file_info["analgin_result"]["reports"][0]):
+        if ("analgin_result" in file_info
+            and "commit" in file_info.get("analgin_result", {})
+            and "reports" in file_info.get("analgin_result", {})
+            and len(file_info["analgin_result"].get("reports", []))
+                and "id" in file_info["analgin_result"]["reports"][0]):
             report = True
         return report
 
@@ -223,7 +223,7 @@ def serialize_report_info(report, analysis_type):
                 "Probability": "{:.2f}%".format(info.get("probability", 0.0)),
                 "Families": ", ".join(info.get("families", [])),
                 "Score": info.get("score", 0),
-                "DumpExists": any((len(vals) > 0 for vals in report.get("network", {}).values())),
+                "DumpExists": any(len(vals) > 0 for vals in report.get("network", {}).values()),
             }
         )
     if analysis_type == FILE_TYPE:

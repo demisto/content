@@ -929,7 +929,7 @@ def findings_search_command(client: Client, args: dict[str, Any]) -> CommandResu
     page_size = arg_to_number(args.get("limit"))
 
     response = client.findings_search_request(
-        page_size,
+        page_size,  # type: ignore
         severity,
         region,
         entity_type,  # type: ignore[arg-type]
@@ -1254,8 +1254,8 @@ def compliance_remediation_create_command(client: Client, args: dict[str, Any]) 
     cloudbots = argToList(args.get("cloudbots"))
 
     response = client.compliance_remediation_create_request(
-        ruleset_id,
-        rule_logic_hash,
+        ruleset_id,  # type: ignore
+        rule_logic_hash,  # type: ignore
         comment,  # type: ignore[arg-type]
         cloudbots,
     )
@@ -1294,11 +1294,11 @@ def compliance_remediation_update_command(client: Client, args: dict[str, Any]) 
     rule_logic_hash = args.get("rule_logic_hash")
 
     response = client.compliance_remediation_update_request(
-        remediation_id,
+        remediation_id,  # type: ignore
         ruleset_id,  # type: ignore[arg-type]
-        rule_logic_hash,
-        comment,
-        cloudbots,
+        rule_logic_hash,  # type: ignore
+        comment,  # type: ignore
+        cloudbots,  # type: ignore
     )  # type: ignore[arg-type]
 
     readable_output = tableToMarkdown(
@@ -1520,9 +1520,9 @@ def security_group_service_create_command(client: Client, args: dict[str, Any]) 
     icmpv6type = args.get("icmpv6type")
 
     response = client.security_group_service_create_request(
-        sg_id,
-        name,
-        protocol_type,
+        sg_id,  # type: ignore
+        name,  # type: ignore
+        protocol_type,  # type: ignore
         port,  # type: ignore[arg-type]
         policy_type,
         open_for_all,
@@ -1587,11 +1587,11 @@ def security_group_service_update_command(client: Client, args: dict[str, Any]) 
     icmpv6type = args.get("icmpv6type")
 
     response = client.security_group_service_update_request(
-        sg_id,
-        service_name,
+        sg_id,  # type: ignore
+        service_name,  # type: ignore
         protocol_type,  # type: ignore[arg-type]
-        port,
-        policy_type,
+        port,  # type: ignore
+        policy_type,  # type: ignore
         open_for_all,  # type: ignore[arg-type]
         description,
         data_id,
@@ -2236,7 +2236,7 @@ def main() -> None:
 
     try:
         client: Client = Client(
-            base_url,
+            base_url,  # type: ignore
             key_id,
             key_secret,
             proxy,  # type: ignore[arg-type]

@@ -490,9 +490,9 @@ def template_readable_response(responses: Union[dict, List[dict], str]) -> Union
     for response in responses:
         if "info" in response:
             for response_info in response["info"]:
-                response_entry = {}
+                response_entry = {}  # type: ignore
                 for key in TEMPLATE_OUTPUTS:
-                    response_info.get(key, None)
+                    response_entry[key] = response_info.get(key, None)
 
                 readable_response.append(response_entry)
 

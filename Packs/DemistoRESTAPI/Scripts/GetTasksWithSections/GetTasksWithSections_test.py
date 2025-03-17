@@ -49,4 +49,4 @@ def test_traverse_tasks():
             actual_result = {k2: {task.get("id") for task in v2.get("tasks")} for k2, v2 in v1.items()}
         assert actual_result == expected_results[k1]
     all_tasks, _ = get_tasks_and_readable(nested_task_results)
-    assert {[task.get("id") for task in all_tasks]} == {"1", "2", "5", "7", "8", "10", "13"}
+    assert {task.get("id") for task in all_tasks} == {"1", "2", "5", "7", "8", "10", "13"}

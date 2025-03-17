@@ -92,7 +92,7 @@ def get_host_status_command():
     # changing the keys from underscore notation to UpperCamelCase notation
     camel_case_response = [{to_upper_camel_case(k): v for k, v in dic.items()} for dic in response]
     # for the human readable - only including keys which has values. Also, transforming values from ints to readable text
-    list_for_md = [{ k: transform_host_vals(k, v) for k, v in dic.items() if v == 0 or v} for dic in camel_case_response]
+    list_for_md = [{k: transform_host_vals(k, v) for k, v in dic.items() if v == 0 or v} for dic in camel_case_response]
 
     entry = {
         "Type": entryTypes["note"],
@@ -126,7 +126,7 @@ def get_service_status_command():
     # changing the keys from underscore notation to UpperCamelCase notation
     camel_case_response = [{to_upper_camel_case(k): v for k, v in dic.items()} for dic in response]
     # for the human readable - only including keys which has values. Also, transforming values from ints to readable text
-    list_for_md = [{ k: transform_host_vals(k, v) for k, v in dic.items() if v == 0 or v} for dic in camel_case_response]
+    list_for_md = [{k: transform_host_vals(k, v) for k, v in dic.items() if v == 0 or v} for dic in camel_case_response]
 
     entry = {
         "Type": entryTypes["note"],
