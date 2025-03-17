@@ -48,10 +48,16 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: SilentPush.DensityLookup.density
+    - contextPath: SilentPush.DensityLookup.qtype
+      description: 'The following qtypes are supported: nssrv, mxsrv.'
+      type: String
+    - contextPath: SilentPush.DensityLookup.query
+      description: The query value to lookup, which can be the name of an NS or MX server.
+      type: String
+    - contextPath: SilentPush.DensityLookup.records.density
       description: The density value associated with the query result.
       type: Number
-    - contextPath: SilentPush.DensityLookup.nssrv
+    - contextPath: SilentPush.DensityLookup.records.nssrv
       description: The name server (NS) for the query result.
       type: String
   - deprecated: false
@@ -221,16 +227,25 @@ script:
       default: false
     outputs:
     - contextPath: SilentPush.ASNReputation.asn
-      description: The Autonomous System Number (ASN).
-      type: String
-    - contextPath: SilentPush.ASNReputation.reputation_data.asn_reputation
-      description: Reputation score of the ASN.
+      description: Autonomous System Number (ASN) associated with the reputation history.
       type: Number
-    - contextPath: SilentPush.ASNReputation.reputation_data.asname
-      description: Name of the Autonomous System (AS).
+    - contextPath: SilentPush.ASNReputation.asn_reputation
+      description: Reputation score of the ASN at a given point in time.
+      type: Number
+    - contextPath: SilentPush.ASNReputation.asn_reputation_explain.ips_in_asn
+      description: Total number of IPs within the ASN.
+      type: Number
+    - contextPath: SilentPush.ASNReputation.asn_reputation_explain.ips_num_active
+      description: Number of actively used IPs in the ASN.
+      type: Number
+    - contextPath: SilentPush.ASNReputation.asn_reputation_explain.ips_num_listed
+      description: Number of IPs in the ASN that are listed as malicious.
+      type: Number
+    - contextPath: SilentPush.ASNReputation.asname
+      description: Name of the ASN provider or organization.
       type: String
-    - contextPath: SilentPush.ASNReputation.reputation_data.date
-      description: Date the reputation data was recorded (YYYYMMDD).
+    - contextPath: SilentPush.ASNReputation.date
+      description: Date of the recorded reputation history in YYYYMMDD format.
       type: Number
   - deprecated: false
     description: This command retrieve the takedown reputation information for an Autonomous System Number (ASN).
@@ -255,20 +270,32 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: SilentPush.ASNTakedownReputation.AS_Name
+    - contextPath: SilentPush.ASNTakedownReputation.takedown_reputation.asname
       description: The name of the Autonomous System (AS).
       type: String
-    - contextPath: SilentPush.ASNTakedownReputation.ASN
+    - contextPath: SilentPush.ASNTakedownReputation.takedown_reputation.asn
       description: The Autonomous System Number (ASN).
       type: String
-    - contextPath: SilentPush.ASNTakedownReputation.Allocation_Age
+    - contextPath: SilentPush.ASNTakedownReputation.takedown_reputation.allocation_age
       description: The age of the ASN allocation in days.
       type: Number
-    - contextPath: SilentPush.ASNTakedownReputation.Allocation_Date
+    - contextPath: SilentPush.ASNTakedownReputation.takedown_reputation.allocation_date
       description: The date when the ASN was allocated (YYYYMMDD).
       type: Number
-    - contextPath: SilentPush.ASNTakedownReputation.Takedown_Reputation
+    - contextPath: SilentPush.ASNTakedownReputation.takedown_reputation.asn_takedown_reputation
       description: The takedown reputation score for the ASN.
+      type: Number
+    - contextPath: SilentPush.ASNTakedownReputation.takedown_reputation.asn_takedown_reputation_explain.ips_in_asn
+      description: The total number of IP addresses associated with the ASN.
+      type: Number
+    - contextPath: SilentPush.ASNTakedownReputation.takedown_reputation.asn_takedown_reputation_explain.ips_num_listed
+      description: The number of IP addresses within the ASN that are flagged or listed in security threat databases.
+      type: Number
+    - contextPath: SilentPush.ASNTakedownReputation.takedown_reputation.asn_takedown_reputation_explain.items_num_listed
+      description: The total number of security-related listings associated with the ASN, including IP addresses and domains.
+      type: Number
+    - contextPath: SilentPush.ASNTakedownReputation.takedown_reputation.asn_takedown_reputation_explain.listings_max_age
+      description: The maximum age (in hours) of the listings, indicating how recent the flagged IPs/domains are.
       type: Number
   - deprecated: false
     description: This command retrieves Autonomous System Numbers (ASNs) associated with a domain.
@@ -284,7 +311,7 @@ script:
     - contextPath: SilentPush.DomainASNs.domain
       description: The domain name for which ASNs are retrieved.
       type: String
-    - contextPath: SilentPush.DomainASNs.domain_asns
+    - contextPath: SilentPush.DomainASNs.asns
       description: Dictionary of Autonomous System Numbers (ASNs) associated with the domain.
       type: Unknown
   - deprecated: false
@@ -352,70 +379,79 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: SilentPush.Certificate.cert_index
+    - contextPath: SilentPush.Certificate.domain
+      description: Queried domain.
+      type: String
+    - contextPath: SilentPush.Certificate.metadata
+      description: Metadata of the response
+      type: String
+    - contextPath: SilentPush.Certificate.certificates.cert_index
       description: Index of the certificate.
       type: Number
-    - contextPath: SilentPush.Certificate.chain
+    - contextPath: SilentPush.Certificate.certificates.chain
       description: Certificate chain.
       type: Unknown
-    - contextPath: SilentPush.Certificate.date
+    - contextPath: SilentPush.Certificate.certificates.date
       description: Certificate issue date.
       type: Number
-    - contextPath: SilentPush.Certificate.domain
+    - contextPath: SilentPush.Certificate.certificates.domain
       description: Primary domain of the certificate.
       type: String
-    - contextPath: SilentPush.Certificate.domains
+    - contextPath: SilentPush.Certificate.certificates.domains
       description: List of domains covered by the certificate.
       type: Unknown
-    - contextPath: SilentPush.Certificate.fingerprint
+    - contextPath: SilentPush.Certificate.certificates.fingerprint
       description: SHA-1 fingerprint of the certificate.
       type: String
-    - contextPath: SilentPush.Certificate.fingerprint_md5
+    - contextPath: SilentPush.Certificate.certificates.fingerprint_md5
       description: MD5 fingerprint of the certificate.
       type: String
-    - contextPath: SilentPush.Certificate.fingerprint_sha1
+    - contextPath: SilentPush.Certificate.certificates.fingerprint_sha1
       description: SHA-1 fingerprint of the certificate.
       type: String
-    - contextPath: SilentPush.Certificate.fingerprint_sha256
+    - contextPath: SilentPush.Certificate.certificates.fingerprint_sha256
       description: SHA-256 fingerprint of the certificate.
       type: String
-    - contextPath: SilentPush.Certificate.host
+    - contextPath: SilentPush.Certificate.certificates.host
       description: Host associated with the certificate.
       type: String
-    - contextPath: SilentPush.Certificate.issuer
+    - contextPath: SilentPush.Certificate.certificates.issuer
       description: Issuer of the certificate.
       type: String
-    - contextPath: SilentPush.Certificate.not_after
+    - contextPath: SilentPush.Certificate.certificates.not_after
       description: Expiration date of the certificate.
       type: String
-    - contextPath: SilentPush.Certificate.not_before
+    - contextPath: SilentPush.Certificate.certificates.not_before
       description: Start date of the certificate validity.
       type: String
-    - contextPath: SilentPush.Certificate.serial_dec
+    - contextPath: SilentPush.Certificate.certificates.serial_dec
       description: Decimal representation of the serial number.
       type: String
-    - contextPath: SilentPush.Certificate.serial_hex
+    - contextPath: SilentPush.Certificate.certificates.serial_hex
       description: Hexadecimal representation of the serial number.
       type: String
-    - contextPath: SilentPush.Certificate.serial_number
+    - contextPath: SilentPush.Certificate.certificates.serial_number
       description: Serial number of the certificate.
       type: String
-    - contextPath: SilentPush.Certificate.source_name
+    - contextPath: SilentPush.Certificate.certificates.source_name
       description: Source log name of the certificate.
       type: String
-    - contextPath: SilentPush.Certificate.source_url
+    - contextPath: SilentPush.Certificate.certificates.source_url
       description: URL of the certificate log source.
       type: String
-    - contextPath: SilentPush.Certificate.subject
+    - contextPath: SilentPush.Certificate.certificates.subject
       description: Subject details of the certificate.
       type: String
-    - contextPath: SilentPush.Certificate.wildcard
+    - contextPath: SilentPush.Certificate.certificates.wildcard
       description: Indicates if the certificate is a wildcard certificate.
       type: Number
-    - contextPath: SilentPush.Certificate.job_status.job_id
+    - contextPath: SilentPush.Certificate.job_details.get
+      description: URL to get the data of the job or its status.
+      type: String
+    - contextPath: SilentPush.Certificate.job_details.job_id
       description: ID of the job.
       type: String
-    - contextPath: SilentPush.Certificate.job_status.status
+    - contextPath: SilentPush.Certificate.job_details.status
       description: Status of the job.
       type: String
   - deprecated: false
@@ -447,6 +483,9 @@ script:
       secret: false
       default: false
     outputs:
+    - contextPath: SilentPush.Enrichment.value
+      description: Queried value
+      type: String
     - contextPath: SilentPush.Enrichment.domain_string_frequency_probability.avg_probability
       description: Average probability score of the domain string.
       type: Number
@@ -483,6 +522,9 @@ script:
     - contextPath: SilentPush.Enrichment.domain_urls.results_summary.results
       description: Number of results found for the domain.
       type: Number
+    - contextPath: SilentPush.Enrichment.domain_urls.results_summary.url_shortner_score
+      description: Score of the shortned URL
+      type: Number
     - contextPath: SilentPush.Enrichment.domaininfo.domain
       description: Domain name analyzed.
       type: String
@@ -492,14 +534,56 @@ script:
     - contextPath: SilentPush.Enrichment.domaininfo.zone
       description: TLD zone of the domain.
       type: String
+    - contextPath: SilentPush.Enrichment.domaininfo.registrar
+      description: registrar of the domain.
+      type: String
+    - contextPath: SilentPush.Enrichment.domaininfo.whois_age
+      description: The age of the domain based on WHOIS records.
+      type: String
+    - contextPath: SilentPush.Enrichment.domaininfo.whois_created_date
+      description: The created date on WHOIS records.
+      type: String
+    - contextPath: SilentPush.Enrichment.domaininfo.query
+      description: The domain name that was queried in the system.
+      type: String
+    - contextPath: SilentPush.Enrichment.domaininfo.last_seen
+      description: The first recorded observation of the domain in the database.
+      type: Number
+    - contextPath: SilentPush.Enrichment.domaininfo.first_seen
+      description: The last recorded observation of the domain in the database.
+      type: Number
+    - contextPath: SilentPush.Enrichment.domaininfo.is_new
+      description: Indicates whether the domain is considered "new.".
+      type: Boolean
+    - contextPath: SilentPush.Enrichment.domaininfo.is_new_score
+      description: A scoring metric indicating how "new" the domain is.
+      type: Number
+    - contextPath: SilentPush.Enrichment.domaininfo.age
+      description: Represents the age of the domain in days.
+      type: Number
+    - contextPath: SilentPush.Enrichment.domaininfo.age_score
+      description: A scoring metric indicating the trustworthiness of the domain based on its age.
+      type: Number
     - contextPath: SilentPush.Enrichment.ip_diversity.asn_diversity
       description: Number of different ASNs associated with the domain.
       type: String
     - contextPath: SilentPush.Enrichment.ip_diversity.ip_diversity_all
       description: Total number of unique IPs observed for the domain.
       type: String
+    - contextPath: SilentPush.Enrichment.ip_diversity.host
+      description: The hostname being analyzed.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip_diversity.ip_diversity_groups
+      description: The number of distinct IP groups (e.g., IPs belonging to different ranges or providers).
+      type: String
     - contextPath: SilentPush.Enrichment.ns_reputation.is_expired
       description: Indicates if the domain’s nameserver is expired.
+      type: Boolean
+    - contextPath: SilentPush.Enrichment.ns_reputation.is_parked
+      description: ' The domain is not parked (a parked domain is one without active content).'
+      type: Boolean
+    - contextPath: SilentPush.Enrichment.ns_reputation.is_sinkholed
+      description: The domain is not sinkholed (not forcibly redirected to a security researcher’s trap).
       type: Boolean
     - contextPath: SilentPush.Enrichment.ns_reputation.ns_reputation_max
       description: Maximum reputation score for nameservers.
@@ -507,14 +591,134 @@ script:
     - contextPath: SilentPush.Enrichment.ns_reputation.ns_reputation_score
       description: Reputation score of the domain’s nameservers.
       type: Number
-    - contextPath: SilentPush.Enrichment.scan_data.certificates.*.domain
+    - contextPath: SilentPush.Enrichment.ns_reputation.ns_srv_reputation.domain
+      description: The nameservers of domain.
+      type: String
+    - contextPath: SilentPush.Enrichment.ns_reputation.ns_srv_reputation.ns_server
+      description: Provided nameserver.
+      type: String
+    - contextPath: SilentPush.Enrichment.ns_reputation.ns_srv_reputation.ns_server_domain_density
+      description: Number of domains sharing this NS
+      type: Number
+    - contextPath: SilentPush.Enrichment.ns_reputation.ns_srv_reputation.ns_server_domains_listed
+      description: Number of listed domains using this NS.
+      type: Number
+    - contextPath: SilentPush.Enrichment.ns_reputation.ns_srv_reputation.ns_server_reputation
+      description: Reputation score for this NS
+      type: Number
+    - contextPath: SilentPush.Enrichment.scan_data.certificates.domain
       description: Domain for which the SSL certificate was issued.
       type: String
-    - contextPath: SilentPush.Enrichment.scan_data.certificates.*.issuer_organization
+    - contextPath: SilentPush.Enrichment.scan_data.certificates.domains
+      description: Other Domains for which the SSL certificate was issued.
+      type: Unknown
+    - contextPath: SilentPush.Enrichment.scan_data.certificates.issuer_organization
       description: Issuer organization of the SSL certificate.
       type: String
-    - contextPath: SilentPush.Enrichment.scan_data.headers.*.response
+    - contextPath: SilentPush.Enrichment.scan_data.certificates.fingerprint_sha1
+      description: A unique identifier for the certificate.
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.certificates.hostname
+      description: The hostname associated with the certificate.
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.certificates.ip
+      description: The IP address of the server using this certificate.
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.certificates.is_expired
+      description: Indicates whether the certificate has expired.
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.certificates.issuer_common_name
+      description: he Common Name (CN) of the Certificate Authority (CA) that issued this certificate.
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.certificates.not_after
+      description: Expiry date of the certificate.
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.certificates.not_before
+      description: Start date of the certificate validity.
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.certificates.scan_date
+      description: The date when this certificate data was last scanned.
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.headers.response
       description: HTTP response code for the domain scan.
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.headers.hostname
+      description: The hostname that sent this response.
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.headers.ip
+      description: The IP address responding to the request.
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.headers.scan_date
+      description: The date when the headers were scanned.
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.headers.headers.cache-control
+      description: HTTP cache-control
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.headers.headers.content-length"
+      description: Content lenght of the HTTP response.
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.headers.headers.date
+      description: The date/time of the response.
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.headers.headers.expires
+      description: Indicates an already expired response.
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.headers.headers.server
+      description: The web server handling the request (Cloudflare proxy).
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.html.hostname
+      description: HTTP response code for the domain scan.
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.html.html_body_murmur3
+      description: hash of the page content
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.html.html_body_ssdeep
+      description: SSDEEP hash (used for fuzzy matching similar HTML content).
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.html.html_title
+      description: The page title (suggests a Cloudflare challenge page, likely due to bot protection).
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.html.ip
+      description: The IP address responding to the request.
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.html.scan_date
+      description: The date when the headers were scanned.
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.favicon.favicon2_md5
+      description: MD5 hash of a secondary favicon.
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.favicon.favicon2_mmh3
+      description: Murmur3 hash of a secondary favicon.
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.favicon.favicon2_path
+      description: The file path of the secondary favicon.
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.favicon.favicon_md5
+      description: MD5 hash of the primary favicon.
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.favicon.favicon_mmh3
+      description: Murmur3 hash of the primary favicon.
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.favicon.hostname
+      description: The hostname where this favicon was found.
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.favicon.ip
+      description: The IP address associated with the favicon.
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.favicon.scan_date
+      description: Date when this favicon was last scanned.
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.jarm.hostname
+      description: The hostname where this jarm was found.
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.jarm.ip
+      description: The IP address responding to the request.
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.jarm.jarm_hash
+      description: Unique identifier for the TLS configuration of the server.
+      type: String
+    - contextPath: SilentPush.Enrichment.scan_data.jarm.scan_date
+      description: Date when this jarm was last scanned.
       type: String
     - contextPath: SilentPush.Enrichment.sp_risk_score
       description: Overall risk score for the domain.
@@ -522,120 +726,237 @@ script:
     - contextPath: SilentPush.Enrichment.sp_risk_score_explain.sp_risk_score_decider
       description: Factor that determined the final risk score.
       type: String
-    - contextPath: SilentPush.Enrichment.ip2asn.*.asn
+    - contextPath: SilentPush.Enrichment.ip2asn.asn
       description: Autonomous System Number (ASN) associated with the IP.
       type: Number
-    - contextPath: SilentPush.Enrichment.ip2asn.*.asn_allocation_age
+    - contextPath: SilentPush.Enrichment.ip2asn.asn_allocation_age
       description: Age of ASN allocation in days.
       type: Number
-    - contextPath: SilentPush.Enrichment.ip2asn.*.asn_reputation
+    - contextPath: SilentPush.Enrichment.ip2asn.asn_allocation_date
+      description: Date of ASN allocation.
+      type: Number
+    - contextPath: SilentPush.Enrichment.ip2asn.asn_rank
+      description: Rank of the ASN.
+      type: Number
+    - contextPath: SilentPush.Enrichment.ip2asn.asn_rank_score
+      description: Rank score of the ASN.
+      type: Number
+    - contextPath: SilentPush.Enrichment.ip2asn.asn_reputation
       description: Reputation score of the ASN.
       type: Number
-    - contextPath: SilentPush.Enrichment.ip2asn.*.asn_reputation_explain.ips_in_asn
+    - contextPath: SilentPush.Enrichment.ip2asn.asn_reputation_explain.ips_in_asn
       description: Total number of IPs in the ASN.
       type: Number
-    - contextPath: SilentPush.Enrichment.ip2asn.*.asn_reputation_explain.ips_num_active
+    - contextPath: SilentPush.Enrichment.ip2asn.asn_reputation_explain.ips_num_active
       description: Number of active IPs in the ASN.
       type: Number
-    - contextPath: SilentPush.Enrichment.ip2asn.*.asn_reputation_explain.ips_num_listed
+    - contextPath: SilentPush.Enrichment.ip2asn.asn_reputation_explain.ips_num_listed
       description: Number of listed IPs in the ASN.
       type: Number
-    - contextPath: SilentPush.Enrichment.ip2asn.*.asn_takedown_reputation
+    - contextPath: SilentPush.Enrichment.ip2asn.asn_reputation_score
+      description: Reputation score of the ASN.
+      type: Number
+    - contextPath: SilentPush.Enrichment.ip2asn.asn_takedown_reputation
       description: Takedown reputation score of the ASN.
       type: Number
-    - contextPath: SilentPush.Enrichment.ip2asn.*.asn_takedown_reputation_explain.ips_in_asn
+    - contextPath: SilentPush.Enrichment.ip2asn.asn_takedown_reputation_explain.ips_in_asn
       description: Total number of IPs in the ASN with takedown reputation.
       type: Number
-    - contextPath: SilentPush.Enrichment.ip2asn.*.asn_takedown_reputation_explain.ips_num_listed
+    - contextPath: SilentPush.Enrichment.ip2asn.asn_takedown_reputation_explain.ips_num_listed
       description: Number of listed IPs in the ASN with takedown reputation.
       type: Number
-    - contextPath: SilentPush.Enrichment.ip2asn.*.asn_takedown_reputation_explain.items_num_listed
+    - contextPath: SilentPush.Enrichment.ip2asn.asn_takedown_reputation_explain.items_num_listed
       description: Number of flagged items in the ASN with takedown reputation.
       type: Number
-    - contextPath: SilentPush.Enrichment.ip2asn.*.asn_takedown_reputation_explain.listings_max_age
+    - contextPath: SilentPush.Enrichment.ip2asn.asn_takedown_reputation_explain.listings_max_age
       description: Maximum age of listings for the ASN with takedown reputation.
       type: Number
-    - contextPath: SilentPush.Enrichment.ip2asn.*.asname
+    - contextPath: SilentPush.Enrichment.ip2asn.asn_takedown_reputation_score
+      description: Takedown reputation score of the ASN.
+      type: Number
+    - contextPath: SilentPush.Enrichment.ip2asn.asname
       description: Name of the Autonomous System (AS).
       type: String
-    - contextPath: SilentPush.Enrichment.ip2asn.*.date
+    - contextPath: SilentPush.Enrichment.ip2asn.benign_info.actor
+      description: This field is usually used to indicate a known organization or individual associated with the IP.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip2asn.benign_info.known_benign
+      description: Indicates whether this IP/ASN is explicitly known to be safe (e.g., a reputable cloud provider or public service)
+      type: Boolean
+    - contextPath: SilentPush.Enrichment.ip2asn.benign_info.tags
+      description: Contains descriptive tags if the IP/ASN has a known role (e.g., "Google Bot", "Cloudflare Proxy").
+      type: Unknown
+    - contextPath: SilentPush.Enrichment.ip2asn.date
       description: Date of the scan data (YYYYMMDD format).
       type: Number
-    - contextPath: SilentPush.Enrichment.ip2asn.*.ip
+    - contextPath: SilentPush.Enrichment.ip2asn.density
+      description: The density value associated with the IP.
+      type: Number
+    - contextPath: SilentPush.Enrichment.ip2asn.ip
       description: IP address associated with the ASN.
       type: String
-    - contextPath: SilentPush.Enrichment.ip2asn.*.ip_location.country_name
-      description: Country where the IP is located.
+    - contextPath: SilentPush.Enrichment.ip2asn.ip_has_expired_certificate
+      description: Indicates whether the IP has an expired SSL/TLS certificate.
+      type: Boolean
+    - contextPath: SilentPush.Enrichment.ip2asn.ip_has_open_directory
+      description: Indicates whether the IP hosts an open directory listing.
+      type: Boolean
+    - contextPath: SilentPush.Enrichment.ip2asn.ip_is_dsl_dynamic
+      description: the IP is from a dynamic DSL pool.
+      type: Boolean
+    - contextPath: SilentPush.Enrichment.ip2asn.ip_is_dsl_dynamic_score
+      description: A score indicating how likely this IP is dynamic.
+      type: Number
+    - contextPath: SilentPush.Enrichment.ip2asn.ip_is_ipfs_node
+      description: the InterPlanetary File System (IPFS), a decentralized file storage system.
+      type: Boolean
+    - contextPath: SilentPush.Enrichment.ip2asn.ip_is_tor_exit_node
+      description: Tor exit node (used for anonymous internet browsing).
+      type: Boolean
+    - contextPath: SilentPush.Enrichment.ip2asn.ip_location.continent_code
+      description: abbreviation for the continent where the IP is located.
       type: String
-    - contextPath: SilentPush.Enrichment.ip2asn.*.malscore
+    - contextPath: SilentPush.Enrichment.ip2asn.ip_location.continent_name
+      description: The full name of the continent.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip2asn.ip_location.country_code
+      description: The ISO 3166-1 alpha-2 country code representing the country.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip2asn.ip_location.country_is_in_european_union
+      description: A Boolean value (true/false) indicating if the country is part of the European Union (EU).
+      type: Boolean
+    - contextPath: SilentPush.Enrichment.ip2asn.ip_location.country_name
+      description: The full name of the country where the IP is registered.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip2asn.ip_ptr
+      description: The reverse DNS (PTR) record for the IP.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip2asn.listing_score
+      description: Measures how frequently the IP appears in threat intelligence or blacklist databases.
+      type: Number
+    - contextPath: SilentPush.Enrichment.ip2asn.listing_score_explain
+      description: A breakdown of why the listing score is assigned.
+      type: Unknown
+    - contextPath: SilentPush.Enrichment.ip2asn.malscore
       description: Malicious activity score for the IP.
       type: Number
-    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.certificates.*.hostname
+    - contextPath: SilentPush.Enrichment.ip2asn.scan_data.certificates.hostname
       description: Hostname associated with the SSL certificate.
       type: String
-    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.certificates.*.domain
+    - contextPath: SilentPush.Enrichment.ip2asn.scan_data.certificates.domain
       description: Domain for which the SSL certificate was issued.
       type: String
-    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.certificates.*.fingerprint_sha1
+    - contextPath: SilentPush.Enrichment.ip2asn.scan_data.certificates.fingerprint_sha1
       description: SHA-1 fingerprint of the SSL certificate.
       type: String
-    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.certificates.*.issuer_common_name
+    - contextPath: SilentPush.Enrichment.ip2asn.scan_data.certificates.issuer_common_name
       description: Common name of the certificate issuer.
       type: String
-    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.certificates.*.issuer_organization
+    - contextPath: SilentPush.Enrichment.ip2asn.scan_data.certificates.issuer_organization
       description: Organization that issued the SSL certificate.
       type: String
-    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.certificates.*.not_before
+    - contextPath: SilentPush.Enrichment.ip2asn.scan_data.certificates.not_before
       description: Start date of SSL certificate validity.
       type: String
-    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.certificates.*.not_after
+    - contextPath: SilentPush.Enrichment.ip2asn.scan_data.certificates.not_after
       description: Expiration date of SSL certificate validity.
       type: String
-    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.favicon.*.favicon2_md5
+    - contextPath: SilentPush.Enrichment.ip2asn.scan_data.certificates.domains
+      description: Other domains for which the SSL certificate was issued.
+      type: Unknown
+    - contextPath: SilentPush.Enrichment.ip2asn.scan_data.certificates.is_expired
+      description: Is certificate expired.
+      type: Boolean
+    - contextPath: SilentPush.Enrichment.ip2asn.scan_data.certificates.scan_date
+      description: Scan date of the certificate.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip2asn.scan_data.favicon.favicon2_md5
       description: MD5 hash of the second favicon.
       type: String
-    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.favicon.*.favicon2_mmh3
+    - contextPath: SilentPush.Enrichment.ip2asn.scan_data.favicon.favicon2_mmh3
       description: MurmurHash3 value of the second favicon.
       type: Number
-    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.favicon.*.favicon_md5
+    - contextPath: SilentPush.Enrichment.ip2asn.scan_data.favicon.favicon_md5
       description: MD5 hash of the favicon.
       type: String
-    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.favicon.*.favicon_mmh3
+    - contextPath: SilentPush.Enrichment.ip2asn.scan_data.favicon.favicon_mmh3
       description: MurmurHash3 value of the favicon.
       type: Number
-    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.favicon.*.favicon2_path
+    - contextPath: SilentPush.Enrichment.ip2asn.scan_data.favicon.favicon2_path
       description: Path to the second favicon file.
       type: String
-    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.headers.*.response
+    - contextPath: SilentPush.Enrichment.ip2asn.scan_data.favicon.scan_date
+      description: Scan date of favicon file.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip2asn.scan_data.headers.response
       description: HTTP response code from the scan.
       type: String
-    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.headers.*.headers.server
+    - contextPath: SilentPush.Enrichment.ip2asn.scan_data.headers.scan_date
+      description: The date and time when the scan was performed.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip2asn.scan_data.headers.headers.server
       description: Server header from the HTTP response.
       type: String
-    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.headers.*.headers.content-type
+    - contextPath: SilentPush.Enrichment.ip2asn.scan_data.headers.headers.content-type
       description: Content-Type header from the HTTP response.
       type: String
-    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.html.*.html_title
+    - contextPath: SilentPush.Enrichment.ip2asn.scan_data.headers.headers.content-length
+      description: Content-Length header from the HTTP response.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip2asn.scan_data.headers.headers.cache-control
+      description: Cache-control header from the HTTP response.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip2asn.scan_data.headers.headers.date
+      description: Date header from the HTTP response.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip2asn.scan_data.html.html_title
       description: Title of the scanned HTML page.
       type: String
-    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.html.*.html_body_murmur3
+    - contextPath: SilentPush.Enrichment.ip2asn.scan_data.html.html_body_murmur3
       description: MurmurHash3 of the HTML body content.
       type: String
-    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.html.*.html_body_ssdeep
+    - contextPath: SilentPush.Enrichment.ip2asn.scan_data.html.html_body_ssdeep
       description: SSDEEP fuzzy hash of the HTML body content.
       type: String
-    - contextPath: SilentPush.Enrichment.ip2asn.*.scan_data.jarm.*.jarm_hash
+    - contextPath: SilentPush.Enrichment.ip2asn.scan_data.html.scan_date
+      description: The date and time when the scan was performed.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip2asn.scan_data.jarm.scan_date
+      description: The date and time when the scan was performed.
+      type: String
+    - contextPath: SilentPush.Enrichment.ip2asn.scan_data.jarm.jarm_hash
       description: JARM fingerprint hash for TLS analysis.
       type: String
-    - contextPath: SilentPush.Enrichment.ip2asn.*.sp_risk_score
+    - contextPath: SilentPush.Enrichment.ip2asn.sp_risk_score
       description: Security risk score for the IP.
       type: Number
-    - contextPath: SilentPush.Enrichment.ip2asn.*.sp_risk_score_explain.sp_risk_score_decider
+    - contextPath: SilentPush.Enrichment.ip2asn.sp_risk_score_explain.sp_risk_score_decider
       description: Factor that determined the final risk score.
       type: String
-    - contextPath: SilentPush.Enrichment.ip2asn.*.subnet
+    - contextPath: SilentPush.Enrichment.ip2asn.subnet
       description: Subnet associated with the IP.
       type: String
+    - contextPath: SilentPush.Enrichment.ip2asn.sinkhole_info.known_sinkhole_ip
+      description: Indicates whether the IP is part of a sinkhole (a controlled system that captures malicious traffic).
+      type: Boolean
+    - contextPath: SilentPush.Enrichment.ip2asn.sinkhole_info.tags
+      description: If the IP were a known sinkhole, this field would contain tags describing its purpose.
+      type: Unknown
+    - contextPath: SilentPush.Enrichment.ip2asn.subnet_allocation_age
+      description: Represents the age (in days) since the subnet was allocated.
+      type: Number
+    - contextPath: SilentPush.Enrichment.ip2asn.subnet_allocation_date
+      description: The date when the subnet was assigned to an organization or ISP.
+      type: Number
+    - contextPath: SilentPush.Enrichment.ip2asn.subnet_reputation
+      description: A measure of how frequently IPs from this subnet appear in threat intelligence databases.
+      type: Number
+    - contextPath: SilentPush.Enrichment.ip2asn.subnet_reputation_explain
+      description: A breakdown of why the subnet received its reputation score.
+      type: Unknown
+    - contextPath: SilentPush.Enrichment.ip2asn.subnet_reputation_score
+      description: A numerical risk score (typically 0-100, with higher values indicating higher risk).
+      type: Number
   - deprecated: false
     description: This command fetch indicators of potential future attacks using a feed UUID.
     name: silentpush-get-future-attack-indicators
@@ -660,50 +981,266 @@ script:
       default: false
     outputs:
     - contextPath: SilentPush.FutureAttackIndicators.feed_uuid
-      description: Unique ID for the feed.
+      description: Unique identifier for the feed.
       type: String
+    - contextPath: SilentPush.FutureAttackIndicators.page_no
+      description: Current page number for pagination.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.page_size
+      description: Number of items to be retrieved per page.
+      type: Number
     - contextPath: SilentPush.FutureAttackIndicators.indicators.total_ioc
-      description: Total number of IOC for the indicator.
+      description: Total number of Indicators of Compromise (IOCs) associated with the indicator.
       type: Number
     - contextPath: SilentPush.FutureAttackIndicators.indicators.total
-      description: Total number of occurrences for the indicator.
+      description: Total occurrences of the indicator across all sources.
       type: Number
     - contextPath: SilentPush.FutureAttackIndicators.indicators.total_source_score
-      description: Total score from the source for the indicator.
+      description: Cumulative score assigned to the indicator by all sources.
       type: Number
     - contextPath: SilentPush.FutureAttackIndicators.indicators.name
-      description: Name associated with the indicator (e.g., domain name).
+      description: Name associated with the indicator, such as a domain name.
       type: String
     - contextPath: SilentPush.FutureAttackIndicators.indicators.total_custom
-      description: Total custom indicators for the specific entry.
+      description: Total number of custom indicators for the specific entry.
       type: Number
     - contextPath: SilentPush.FutureAttackIndicators.indicators.source_name
-      description: Name of the source that generated the indicator.
+      description: Name of the source providing the indicator.
       type: String
     - contextPath: SilentPush.FutureAttackIndicators.indicators.first_seen_on
-      description: Timestamp when the indicator was first seen.
+      description: Date and time when the indicator was first observed.
       type: String
     - contextPath: SilentPush.FutureAttackIndicators.indicators.last_seen_on
-      description: Timestamp when the indicator was last seen.
+      description: Date and time when the indicator was last observed.
       type: String
     - contextPath: SilentPush.FutureAttackIndicators.indicators.type
-      description: Type of the indicator (e.g., domain).
+      description: Type of the indicator (e.g., domain, IP address, URL).
       type: String
     - contextPath: SilentPush.FutureAttackIndicators.indicators.uuid
-      description: Unique identifier for the indicator.
+      description: Unique identifier assigned to the indicator.
       type: String
     - contextPath: SilentPush.FutureAttackIndicators.indicators.ioc_template
-      description: Template type for the indicator (e.g., domain).
+      description: Template type describing the indicator (e.g., domain template).
       type: String
     - contextPath: SilentPush.FutureAttackIndicators.indicators.ioc_uuid
-      description: Unique identifier for the IOC associated with the indicator.
+      description: Unique identifier for the IOC related to the indicator.
       type: String
     - contextPath: SilentPush.FutureAttackIndicators.indicators.source_vendor_name
-      description: Name of the vendor source (e.g., Silent Push).
+      description: Name of the vendor providing the indicator source (e.g., Silent Push).
       type: String
     - contextPath: SilentPush.FutureAttackIndicators.indicators.source_uuid
-      description: Unique ID for the source of the indicator.
+      description: Unique identifier for the source of the indicator.
       type: String
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.total_ioc
+      description: Total count of Indicators of Compromise associated with the indicator.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.collected_tags
+      description: Tags associated with the indicator.
+      type: Unknown
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.listing_score
+      description: Score assigned by the source indicating the severity or importance of the indicator.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.sp_risk_score
+      description: Risk score calculated by the source for the indicator, reflecting its potential threat level.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.ip_is_tor_exit_node
+      description: Indicates whether the IP address is a known TOR exit node.
+      type: Boolean
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.ip_is_dsl_dynamic
+      description: Indicates whether the IP address is a DSL dynamic IP.
+      type: Boolean
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.ip_reputation_score
+      description: Reputation score assigned to the IP address based on its history and activities.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.known_sinkhole_ip
+      description: Indicates if the IP address is associated with a known sinkhole.
+      type: String
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.known_benign
+      description: Indicates whether the indicator is known to be benign or harmless.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.asn_rank_score
+      description: Score indicating the reputation rank of the ASN.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.asn_reputation_score
+      description: Reputation score assigned to the ASN based on its activities.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.ip_is_dsl_dynamic_score
+      description: Score indicating the likelihood of the IP being a DSL dynamic IP.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.subnet_reputation_score
+      description: Reputation score assigned to a subnet based on its history and activities.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.asn_takedown_reputation_score
+      description: Reputation score of the ASN considering takedown activities or abuse reports.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.asn
+      description: Autonomous System Number (ASN) associated with the indicator.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.density
+      description: Indicator density score based on traffic or other relevant factors.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.asn_rank
+      description: Rank of the ASN indicating its reputation or trustworthiness.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.malscore
+      description: Maliciousness score assigned to the indicator based on threat analysis.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.asn_reputation
+      description: Reputation score associated with the ASN.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.subnet_reputation
+      description: Reputation score associated with the subnet.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.asn_allocation_age
+      description: Age of the ASN allocation in days.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.subnet_allocation_age
+      description: Age of the subnet allocation in days.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.asn_takedown_reputation
+      description: Reputation score of the ASN considering takedown reports or abuse.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.ipv4
+      description: IPv4 address associated with the indicator.
+      type: String
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.asname
+      description: Autonomous System Name (ASName) associated with the ASN.
+      type: String
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.ip_ptr
+      description: PTR (reverse DNS) record associated with the IP address.
+      type: String
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.subnet
+      description: Subnet associated with the indicator.
+      type: String
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.country_code
+      description: Country code associated with the indicator (e.g., US, CA).
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.continent_code
+      description: Continent code associated with the indicator (e.g., NA, EU).
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.it_exists
+      description: Indicates if the indicator currently exists in the dataset.
+      type: Boolean
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.is_new
+      description: Indicates if the indicator is newly detected.
+      type: Boolean
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.is_alexa_top10k
+      description: Indicates if the domain is part of the Alexa Top 10K list.
+      type: Boolean
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.is_dynamic_domain
+      description: Indicates if the domain is classified as dynamic.
+      type: Boolean
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.is_url_shortener
+      description: Indicates if the URL is associated with a URL shortener service.
+      type: Boolean
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.is_parked
+      description: Indicates if the domain is a parked domain.
+      type: Boolean
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.is_expired
+      description: Indicates if the domain registration has expired.
+      type: Boolean
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.is_sinkholed
+      description: Indicates if the domain is associated with a sinkhole operation.
+      type: Boolean
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.ns_entropy_score
+      description: Entropy score of the nameserver, indicating randomness or irregularity.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.age_score
+      description: Score indicating the age of the domain, with higher scores for older domains.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.is_new_score
+      description: Score indicating the likelihood of the domain being newly registered.
+      type: Boolean
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.ns_avg_ttl_score
+      description: Score representing the average TTL of the nameservers.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.ns_reputation_max
+      description: Maximum reputation score of the nameservers.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.ns_reputation_score
+      description: Overall reputation score of the nameservers.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.avg_probability_score
+      description: Average probability score indicating the likelihood of malicious activity.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.alexa_top10k_score
+      description: Score indicating the rank within the Alexa Top 10K list.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.url_shortener_score
+      description: Score indicating the likelihood of the URL being a URL shortener.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.dynamic_domain_score
+      description: Score indicating the likelihood of the domain being dynamic.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.ns_entropy
+      description: Entropy value of the nameserver, indicating randomness or irregularity.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.age
+      description: Age of the domain in days.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.whois_age
+      description: Age of the domain based on the WHOIS creation date.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.alexa_rank
+      description: Alexa rank of the domain, indicating its popularity.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.asn_diversity
+      description: Diversity score of the ASN, indicating the variety of ASNs associated with the indicator.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.ip_diversity_all
+      description: Count of all unique IP addresses associated with the indicator.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.ip_diversity_groups
+      description: Count of unique IP address groups associated with the indicator.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.avg_probability
+      description: Average probability indicating the likelihood of malicious activity.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.whois_created_date
+      description: Creation date of the domain from WHOIS records.
+      type: String
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.domain
+      description: Domain name associated with the indicator.
+      type: String
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.subdomain
+      description: Subdomain associated with the indicator, if applicable.
+      type: String
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.host
+      description: Host associated with the indicator.
+      type: String
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.nameservers_tags
+      description: Tags related to the nameservers associated with the indicator.
+      type: String
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.source_false_positive_ratio
+      description: Ratio of false positives reported by the source.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.source_true_positive_ratio
+      description: Ratio of true positives reported by the source.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.source_last_updated_score
+      description: Score indicating the last update time of the source.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.source_frequency_score
+      description: Score representing the frequency of updates from the source.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.source_accuracy_score
+      description: Score indicating the accuracy of the source reporting.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.source_geographic_spread_score
+      description: Score indicating the geographic spread of the indicator.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.source_custom_score
+      description: Custom score provided by the source for the indicator.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.source_score
+      description: Overall score assigned by the source to the indicator.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.source_frequency
+      description: Frequency of the indicator appearance in the source data.
+      type: Number
+    - contextPath: SilentPush.FutureAttackIndicators.indicators.source_geographic_spread_explain
+      description: Explanation of the geographic spread of the indicator as provided by the source.
+      type: Unknown
   - deprecated: false
     description: This command retrieve the reputation information for an IPv4.
     name: silentpush-get-ipv4-reputation
@@ -727,14 +1264,20 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: SilentPush.IPv4Reputation.Date
+    - contextPath: SilentPush.IPv4Reputation.date
       description: Date when the reputation information was retrieved.
       type: Number
-    - contextPath: SilentPush.IPv4Reputation.IP
+    - contextPath: SilentPush.IPv4Reputation.ip
       description: IPv4 address for which the reputation is calculated.
       type: String
-    - contextPath: SilentPush.IPv4Reputation.Reputation.Score
+    - contextPath: SilentPush.IPv4Reputation.reputation_score
       description: Reputation score for the given IP address.
+      type: Number
+    - contextPath: SilentPush.IPv4Reputation.ip_reputation_explain.ip_density
+      description: The number of domain names or services associated with this IP. A higher value may indicate shared hosting or potential abuse.
+      type: Number
+    - contextPath: SilentPush.IPv4Reputation.ip_reputation_explain.names_num_listed
+      description: The number of domain names linked to this IP that are flagged or listed in security threat databases.
       type: Number
   - deprecated: false
     description: This command retrieve status of running job or results from completed job.
@@ -803,22 +1346,22 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: SilentPush.SubnetReputation.date
+    - contextPath: SilentPush.SubnetReputation.nameserver
+      description: The nameserver associated with the reputation history entry.
+      type: Number
+    - contextPath: SilentPush.SubnetReputation.reputation_data.date
       description: Date of the reputation history entry (in YYYYMMDD format).
       type: Number
-    - contextPath: SilentPush.SubnetReputation.ns_server
+    - contextPath: SilentPush.SubnetReputation.reputation_data.ns_server
       description: Name of the nameserver associated with the reputation history entry.
       type: String
-    - contextPath: SilentPush.SubnetReputation.ns_server_reputation
+    - contextPath: SilentPush.SubnetReputation.reputation_data.ns_server_reputation
       description: Reputation score of the nameserver on the specified date.
       type: Number
-    - contextPath: SilentPush.SubnetReputation.ns_server_reputation_explain
-      description: Explanation of the reputation score, including domain density and listed domains.
-      type: Unknown
-    - contextPath: SilentPush.SubnetReputation.ns_server_domain_density
+    - contextPath: SilentPush.SubnetReputation.reputation_data.ns_server_reputation_explain.ns_server_domain_density
       description: Number of domains associated with the nameserver.
       type: Number
-    - contextPath: SilentPush.SubnetReputation.ns_server_domains_listed
+    - contextPath: SilentPush.SubnetReputation.reputation_data.ns_server_reputation_explain.ns_server_domains_listed
       description: Number of domains listed in reputation databases.
       type: Number
   - deprecated: false
@@ -844,22 +1387,25 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: SilentPush.SubnetReputation.date
+    - contextPath: SilentPush.SubnetReputation.subnet
+      description: The subnet associated with the reputation history.
+      type: String
+    - contextPath: SilentPush.SubnetReputation.reputation_history.date
       description: The date of the subnet reputation record.
       type: Number
-    - contextPath: SilentPush.SubnetReputation.subnet
+    - contextPath: SilentPush.SubnetReputation.reputation_history.subnet
       description: The subnet associated with the reputation record.
       type: String
-    - contextPath: SilentPush.SubnetReputation.subnet_reputation
+    - contextPath: SilentPush.SubnetReputation.reputation_history.subnet_reputation
       description: The reputation score of the subnet.
       type: Number
-    - contextPath: SilentPush.SubnetReputation.ips_in_subnet
+    - contextPath: SilentPush.SubnetReputation.reputation_history.subnet_reputation_explain.ips_in_subnet
       description: Total number of IPs in the subnet.
       type: Number
-    - contextPath: SilentPush.SubnetReputation.ips_num_active
+    - contextPath: SilentPush.SubnetReputation.reputation_history.subnet_reputation_explain.ips_num_active
       description: Number of active IPs in the subnet.
       type: Number
-    - contextPath: SilentPush.SubnetReputation.ips_num_listed
+    - contextPath: SilentPush.SubnetReputation.reputation_history.subnet_reputation_explain.ips_num_listed
       description: Number of listed IPs in the subnet.
       type: Number
   - deprecated: false
@@ -1162,6 +1708,21 @@ script:
     - contextPath: SilentPush.IPInformation.asn_takedown_reputation_score
       description: Reputation score of ASN takedown.
       type: Number
+    - contextPath: SilentPush.IPInformation.ip_flags.is_proxy
+      description: Indicates if the IP is a proxy (True/False).
+      type: Boolean
+    - contextPath: SilentPush.IPInformation.ip_flags.is_sinkhole
+      description: Indicates if the IP is a sinkhole (True/False).
+      type: Boolean
+    - contextPath: SilentPush.IPInformation.ip_flags.is_vpn
+      description: Indicates if the IP is a VPN (True/False).
+      type: Boolean
+    - contextPath: SilentPush.IPInformation.ip_flags.proxy_tags
+      description: List of proxy-related tags or null if not a proxy.
+      type: Unknown
+    - contextPath: SilentPush.IPInformation.ip_flags.vpn_tags
+      description: List of VPN-related tags or null if not a VPN.
+      type: Unknown
   - deprecated: false
     description: This command scan a URL to retrieve hosting metadata..
     name: silentpush-live-url-scan
@@ -1796,6 +2357,42 @@ script:
     - contextPath: SilentPush.ScanData.body_analysis.language
       description: Languages detected in the body.
       type: Unknown
+    - contextPath: SilentPush.ScanData.body_analysis.ICP_license
+      description: ICP License information.
+      type: String
+    - contextPath: SilentPush.ScanData.body_analysis.SHV
+      description: Server Hash Verification value.
+      type: String
+    - contextPath: SilentPush.ScanData.body_analysis.adsense
+      description: List of AdSense data.
+      type: Unknown
+    - contextPath: SilentPush.ScanData.body_analysis.footer_sha256
+      description: SHA-256 hash of the footer content.
+      type: String
+    - contextPath: SilentPush.ScanData.body_analysis.google-GA4
+      description: List of Google GA4 identifiers.
+      type: Unknown
+    - contextPath: SilentPush.ScanData.body_analysis.google-UA
+      description: List of Google Universal Analytics identifiers.
+      type: Unknown
+    - contextPath: SilentPush.ScanData.body_analysis.google-adstag
+      description: List of Google adstag identifiers.
+      type: Unknown
+    - contextPath: SilentPush.ScanData.body_analysis.header_sha256
+      description: SHA-256 hash of the header content.
+      type: Unknown
+    - contextPath: SilentPush.ScanData.body_analysis.js_sha256
+      description: List of JavaScript files with SHA-256 hash values.
+      type: Unknown
+    - contextPath: SilentPush.ScanData.body_analysis.js_ssdeep
+      description: List of JavaScript files with SSDEEP hash values.
+      type: Unknown
+    - contextPath: SilentPush.ScanData.body_analysis.onion
+      description: List of Onion URLs detected.
+      type: Unknown
+    - contextPath: SilentPush.ScanData.body_analysis.telegram
+      description: List of Telegram-related information.
+      type: Unknown
     - contextPath: SilentPush.ScanData.datahash
       description: Hash of the data.
       type: String
@@ -1831,6 +2428,12 @@ script:
       type: String
     - contextPath: SilentPush.ScanData.header.location
       description: Location from HTTP response header.
+      type: String
+    - contextPath: SilentPush.ScanData.header.connection
+      description: Connection type used, e.g., keep-alive.
+      type: String
+    - contextPath: SilentPush.ScanData.header.server
+      description: Server software used to serve the content, e.g., openresty.
       type: String
     - contextPath: SilentPush.ScanData.hostname
       description: Hostname associated with the scan data.
