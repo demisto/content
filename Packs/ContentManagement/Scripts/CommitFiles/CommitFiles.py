@@ -87,7 +87,7 @@ def escape_placeholders(content: str) -> str:
     Returns:
         str: The string with placeholders escaped.
     """
-    return re.sub(r"(\${[^}]+})", r"$\\\1", content)  # Prepend a backslash to preserve the placeholder
+    return re.sub(r"\$(\{[^}]+})", r"$\\\1", content)  # Prepend a backslash to preserve the placeholder
 
 
 def commit_content_item(branch_name: str, content_file: ContentFile, new_files: List, modified_files: List, dont_replace: bool = False):
@@ -111,7 +111,8 @@ def commit_content_item(branch_name: str, content_file: ContentFile, new_files: 
            commit_args['file_text'] = escape_placeholders(content_file.file_text)
            commit_args['placeholders_escaped'] = "True"
         new_files.append(content_file.file_name)
-
+    return_results(f"Calling execute_command with {commit_args=}")
+    demisto.debug(f"Calling execute_command with {commit_args=}")
     status, commit_res = execute_command('Github-commit-file', commit_args, fail_on_error=False)
     if not status:
         raise DemistoException(commit_res)

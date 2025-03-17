@@ -1659,7 +1659,7 @@ def list_files_command():
 
 
 def remove_slashes(content)->str:
-    return re.sub(r"\$\\(\{[^}]+})", r"$\1", content)
+    return re.sub(r"\$\\({[^}]+})", r"$\1", content)
 
 
 def commit_file_command():
@@ -1670,8 +1670,9 @@ def commit_file_command():
     entry_id = args.get('entry_id')
     file_text = args.get('file_text')
     file_sha = args.get('file_sha')
-    placeholders_escaped = argToBoolean(args.get('placeholders_escaped', False))
-    return_results(f"######################### Commit files comand got {placeholders_escaped=} and {file_text=}")
+    placeholders_escaped = argToBoolean(args.get('placeholders_escaped') or False)
+    if placeholders_escaped:
+        demisto.debug(f"Github-commit-file command got {placeholders_escaped=} and will decode them.")
     if not entry_id and not file_text:
         raise DemistoException('You must specify either the "file_text" or the "entry_id" of the file.')
     elif entry_id:
@@ -2199,6 +2200,7 @@ COMMANDS = {
 
 
 def main():
+    return_results("##################################\n############################## In main")
     global BASE_URL
     global USER
     global TOKEN

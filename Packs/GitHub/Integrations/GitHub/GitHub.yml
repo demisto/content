@@ -2503,11 +2503,11 @@ script:
       required: true
     - description: The blob SHA of the file being replaced. Use the GitHub-list-files command to get the SHA value of the file.  Required if you are updating a file.
       name: file_sha
+    - description: Are plaseholders within the file text escaped with slashes.
+      name: placeholders_escaped
     description: Commits a given file.
     name: Github-commit-file
   - arguments:
-    - description: Are plaseholders within the file text escaped with slashes.
-      name: placeholders_escaped
     - description: The name of the release.
       name: name
     - description: The name of the release tag.
