@@ -200,8 +200,8 @@ def format_incidents(alerts, hide_cvv_expiry):
                 alert["data_message"]["data"]["bank"]["card"]["expiry"] = "xx/xx/xxxx"
 
             keyword = ""
-            if (alert.get("metadata") and alert["metadata"].get("entity") and
-                alert["metadata"]["entity"].get("keyword") and alert["metadata"]["entity"]["keyword"]["tag_name"]):
+            if (alert.get("metadata") and alert["metadata"].get("entity")
+                    and alert["metadata"]["entity"].get("keyword") and alert["metadata"]["entity"]["keyword"]["tag_name"]):
                 keyword = alert["metadata"]["entity"]["keyword"]["tag_name"]
 
             alert_details = {

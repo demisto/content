@@ -346,7 +346,7 @@ def discovery_scan_results_list_command(client: Client, **args) -> CommandResult
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
-            name=f'BMC Discovery Scan Results for "{result_type}" kind' "(see context for more details)", t=user_output
+            name=f'BMC Discovery Scan Results for "{result_type}" kind(see context for more details)', t=user_output
         ),
     )
 
