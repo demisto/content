@@ -34,7 +34,7 @@ def get_entry_context(identifiers: dict[str, Any]) -> dict[str, list[list | None
     return ec
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     try:
         artifact_identifiers = demisto.args().get("artifact_identifiers", [])
 
