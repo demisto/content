@@ -13,22 +13,22 @@ def add_comment(args: Dict[str, Any]) -> CommandResults:
     Returns:
         CommandResults: The command results.
     """
-    incident_id = args.get('id', 'none')
-    comment = args.get('comment')
-    using = args.get('instance_name')
+    incident_id = args.get("id", "none")
+    comment = args.get("comment")
+    using = args.get("instance_name")
 
     command_args = {}
 
-    if incident_id == 'none':
-        incident_id = demisto.incident()['CustomFields'].get('microsoft365defenderid')
+    if incident_id == "none":
+        incident_id = demisto.incident()["CustomFields"].get("microsoft365defenderid")
 
-    command_args['id'] = incident_id
-    command_args['comment'] = comment
-    command_args['using'] = using
+    command_args["id"] = incident_id
+    command_args["comment"] = comment
+    command_args["using"] = using
 
-    demisto.debug(f'Calling microsoft-365-defender-incident-update , {command_args=}')
+    demisto.debug(f"Calling microsoft-365-defender-incident-update , {command_args=}")
     command_res = demisto.executeCommand("microsoft-365-defender-incident-update", command_args)
-    demisto.debug(f'After calling microsoft-365-defender-incident-update, {command_res=}')
+    demisto.debug(f"After calling microsoft-365-defender-incident-update, {command_res=}")
     return command_res
 
 
@@ -38,8 +38,8 @@ def main():
         return_results(res)
 
     except Exception as e:
-        return_error(f'Failed to execute MS365DefenderAddComment. Error: {str(e)}')
+        return_error(f"Failed to execute MS365DefenderAddComment. Error: {e!s}")
 
 
-if __name__ in ["__builtin__", "builtins", '__main__']:
+if __name__ in ["__builtin__", "builtins", "__main__"]:
     main()
