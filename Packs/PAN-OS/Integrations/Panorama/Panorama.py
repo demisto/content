@@ -13898,9 +13898,9 @@ def build_edit_sp_group_xpath_and_element(group_name: str, profile_to_change: st
             if profile_not_to_change != profile_to_change:
                 element += add_argument(
                     extract_objects_info_by_key(sp_group, profile_to_change_map.get(profile_not_to_change)),  # type: ignore
-                    profile_to_change_map.get(profile_not_to_change),
+                    profile_to_change_map.get(profile_not_to_change),  # type: ignore
                     True,
-                )  # type: ignore
+                )
         element += "</entry>"
 
     else:
@@ -14756,11 +14756,11 @@ def fetch_incidents_request(
             query = add_time_filter_to_query_parameter(query, fetch_start_time, log_type_to_time_param(log_type))  # type: ignore
         entries[log_type] = get_query_entries(
             log_type,
-            query,
-            max_fetch,  # type: ignore
+            query,  # type: ignore
+            max_fetch,
             fetch_job_polling_max_num_attempts,
-            offset_fetch,
-        )  # type: ignore
+            offset_fetch,  # type: ignore
+        )
     return entries
 
 
@@ -14933,8 +14933,8 @@ def update_offset_dict(
     for log_type, incident_entries in incident_entries_dict.items():
         if incident_entries:
             last_fetch_time = dateparser.parse(
-                last_fetch_dict.get(log_type, ""),
-                settings={  # type: ignore
+                last_fetch_dict.get(log_type, ""),  # type: ignore
+                settings={
                     "TIMEZONE": "UTC"
                 },
             )

@@ -947,9 +947,9 @@ def list_campaigns_command(
             )
             if time_range
             else [  # type: ignore
-                interval
+                interval  # type: ignore
             ]
-        )  # type: ignore
+        )
 
     outputs = []
     raw_responses = []

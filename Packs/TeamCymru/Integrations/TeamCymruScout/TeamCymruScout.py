@@ -78,7 +78,7 @@ ERROR_MESSAGES = {
     "END_DATE_GREATER_THAN_CURRENT_TIME": "Please provide the end date less than current time.",
     "REACHED_MAXIMUM_DIFF_DAYS": f"Please provide the start date less than {MAXIMUM_DAY} days from the end date.",
     "REACHED_MAXIMUM_START_DAYS": f"Please provide the start date less than {MAXIMUM_START_DAY} days.",
-    "INVALID_DAY": "{} is invalid value for days." f"Value of days should be between {MINIMUM_DAY} and {MAXIMUM_DAY}.", # noqa: ISC001
+    "INVALID_DAY": "{} is invalid value for days." f"Value of days should be between {MINIMUM_DAY} and {MAXIMUM_DAY}.",  # noqa: ISC001
     "NO_INDICATORS_FOUND": "No indicators found for given query and filters.",
     "INVALID_IP_ADDRESSES": "The following IP Addresses were found invalid: {}",
     "INVALID_IP_ADDRESS_SIZE": (

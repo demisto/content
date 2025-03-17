@@ -3988,8 +3988,8 @@ def rubrik_sonar_user_access_list_command(client: PolarisClient, args: Dict[str,
 
     base_url = str(client._baseurl).removesuffix("api")
     context, hr, pages, risk_levels = prepare_context_hr_user_access_list(
-        edges, include_whitelisted_results, user_email, base_url, page_number, limit
-    )  # type: ignore
+        edges, include_whitelisted_results, user_email, base_url, page_number, limit  # type: ignore
+    )
 
     response["xsoar_risk_levels"] = list(risk_levels)
 

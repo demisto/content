@@ -2333,7 +2333,7 @@ def list_third_party_asi_insights_command(client_obj: Client, args: dict[str, An
     outputs = remove_empty_elements_for_context(outputs)
 
     hr_response = get_human_readable_for_my_asi_insights_command(
-        context_data["Insight"],
+        context_data["Insight"],  # type:ignore
         priority,  # type:ignore
         summary["activeInsightCount"],
         summary["totalInsightCount"],

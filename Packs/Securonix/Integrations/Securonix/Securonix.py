@@ -269,12 +269,12 @@ def validate_mirroring_parameters(params: dict[str, Any]) -> None:
         )
 
     if mirror_direction == "Outgoing" and (
-            not active_state_action
-            or not active_state_status
-            or not close_state_action
-            or not close_state_status
-            or not comment_entry_tag
-        ):
+        not active_state_action
+        or not active_state_status
+        or not close_state_action
+        or not close_state_status
+        or not comment_entry_tag
+    ):
         raise ValueError(
             'Following fields are required for Outgoing Mirroring: "Securonix action name to map '
             'with XSOAR\'s active state for Outgoing mirroring", "Securonix status to map with '
@@ -284,14 +284,14 @@ def validate_mirroring_parameters(params: dict[str, Any]) -> None:
         )
 
     if mirror_direction == "Incoming And Outgoing" and (
-            not active_state_action
-            or not active_state_status
-            or not close_state_action
-            or not close_state_status
-            or not close_states_of_securonix
-            or not argToList(close_states_of_securonix)
-            or not comment_entry_tag
-        ):
+        not active_state_action
+        or not active_state_status
+        or not close_state_action
+        or not close_state_status
+        or not close_states_of_securonix
+        or not argToList(close_states_of_securonix)
+        or not comment_entry_tag
+    ):
         raise ValueError(
             'Following fields are required for Incoming And Outgoing Mirroring: "Securonix workflow '
             'state(s) that can be considered as Close state in XSOAR for Incoming mirroring", '
