@@ -12,26 +12,26 @@ from typing import Any, TypeVar
 import pytmv1
 import urllib3
 from pytmv1 import (  # noqa: E402
-    TiAlert,
-    SaeAlert,
-    ObjectType,
-    ResultCode,
-    AlertStatus,
-    ObjectRequest,
-    EmailActivity,
     AccountRequest,
-    EndpointRequest,
-    ExceptionObject,
-    SuspiciousObject,
-    EndpointActivity,
+    AlertStatus,
     CollectFileRequest,
     CollectFileTaskResp,
     CustomScriptRequest,
-    InvestigationResult,
+    EmailActivity,
     EmailMessageIdRequest,
     EmailMessageUIdRequest,
+    EndpointActivity,
+    EndpointRequest,
+    ExceptionObject,
+    InvestigationResult,
+    ObjectRequest,
+    ObjectType,
+    ResultCode,
+    SaeAlert,
+    SuspiciousObject,
     SuspiciousObjectRequest,
     TerminateProcessRequest,
+    TiAlert,
 )
 
 """CONSTANTS"""
@@ -163,9 +163,7 @@ TABLE_GET_FILE_ANALYSIS_STATUS = "File analysis status "
 TABLE_GET_FILE_ANALYSIS_RESULT = "File analysis result "
 TABLE_GET_ALERT_DETAILS = "Alert details "
 TABLE_COLLECT_FILE = "Collect forensic file "
-TABLE_COLLECTED_FORENSIC_FILE_DOWNLOAD_INFORMATION = (
-    "Download information for collected forensic file "
-)
+TABLE_COLLECTED_FORENSIC_FILE_DOWNLOAD_INFORMATION = "Download information for collected forensic file "
 TABLE_SUBMIT_FILE_TO_SANDBOX = "Submit file to sandbox "
 TABLE_SUBMIT_FILE_ENTRY_TO_SANDBOX = "Submit file entry to sandbox "
 TABLE_SUBMIT_URLS_TO_SANDBOX = "Submit urls to sandbox "
@@ -197,42 +195,26 @@ ISOLATE_ENDPOINT_COMMAND = "trendmicro-visionone-isolate-endpoint"
 RESTORE_ENDPOINT_COMMAND = "trendmicro-visionone-restore-endpoint-connection"
 TERMINATE_PROCESS_COMMAND = "trendmicro-visionone-terminate-process"
 ADD_EXCEPTION_LIST_COMMAND = "trendmicro-visionone-add-objects-to-exception-list"
-DELETE_EXCEPTION_LIST_COMMAND = (
-    "trendmicro-visionone-delete-objects-from-exception-list"
-)
+DELETE_EXCEPTION_LIST_COMMAND = "trendmicro-visionone-delete-objects-from-exception-list"
 ADD_SUSPICIOUS_LIST_COMMAND = "trendmicro-visionone-add-objects-to-suspicious-list"
-DELETE_SUSPICIOUS_LIST_COMMAND = (
-    "trendmicro-visionone-delete-objects-from-suspicious-list"
-)
+DELETE_SUSPICIOUS_LIST_COMMAND = "trendmicro-visionone-delete-objects-from-suspicious-list"
 GET_FILE_ANALYSIS_STATUS_COMMAND = "trendmicro-visionone-get-file-analysis-status"
 GET_FILE_ANALYSIS_RESULT_COMMAND = "trendmicro-visionone-get-file-analysis-result"
 COLLECT_FILE_COMMAND = "trendmicro-visionone-collect-forensic-file"
-DOWNLOAD_COLLECTED_FILE_COMMAND = (
-    "trendmicro-visionone-download-information-for-collected-forensic-file"
-)
+DOWNLOAD_COLLECTED_FILE_COMMAND = "trendmicro-visionone-download-information-for-collected-forensic-file"
 DOWNLOAD_ANALYSIS_REPORT_COMMAND = "trendmicro-visionone-download-analysis-report"
-DOWNLOAD_INVESTIGATION_PACKAGE_COMMAND = (
-    "trendmicro-visionone-download-investigation-package"
-)
-DOWNLOAD_SUSPICIOUS_OBJECT_LIST_COMMAND = (
-    "trendmicro-visionone-download-suspicious-object-list"
-)
+DOWNLOAD_INVESTIGATION_PACKAGE_COMMAND = "trendmicro-visionone-download-investigation-package"
+DOWNLOAD_SUSPICIOUS_OBJECT_LIST_COMMAND = "trendmicro-visionone-download-suspicious-object-list"
 FILE_TO_SANDBOX_COMMAND = "trendmicro-visionone-submit-file-to-sandbox"
 FILE_ENTRY_TO_SANDBOX_COMMAND = "trendmicro-visionone-submit-file-entry-to-sandbox"
 URLS_TO_SANDBOX_COMMAND = "trendmicro-visionone-submit-urls-to-sandbox"
-SANDBOX_SUBMISSION_POLLING_COMMAND = (
-    "trendmicro-visionone-run-sandbox-submission-polling"
-)
+SANDBOX_SUBMISSION_POLLING_COMMAND = "trendmicro-visionone-run-sandbox-submission-polling"
 CHECK_TASK_STATUS_COMMAND = "trendmicro-visionone-check-task-status"
 GET_ENDPOINT_INFO_COMMAND = "trendmicro-visionone-get-endpoint-info"
 GET_EMAIL_ACTIVITY_DATA_COMMAND = "trendmicro-visionone-get-email-activity-data"
-GET_EMAIL_ACTIVITY_DATA_COUNT_COMMAND = (
-    "trendmicro-visionone-get-email-activity-data-count"
-)
+GET_EMAIL_ACTIVITY_DATA_COUNT_COMMAND = "trendmicro-visionone-get-email-activity-data-count"
 GET_ENDPOINT_ACTIVITY_DATA_COMMAND = "trendmicro-visionone-get-endpoint-activity-data"
-GET_ENDPOINT_ACTIVITY_DATA_COUNT_COMMAND = (
-    "trendmicro-visionone-get-endpoint-activity-data-count"
-)
+GET_ENDPOINT_ACTIVITY_DATA_COUNT_COMMAND = "trendmicro-visionone-get-endpoint-activity-data-count"
 GET_ALERT_DETAILS_COMMAND = "trendmicro-visionone-get-alert-details"
 UPDATE_STATUS_COMMAND = "trendmicro-visionone-update-status"
 ADD_NOTE_COMMAND = "trendmicro-visionone-add-note"
@@ -242,9 +224,7 @@ UPDATE_CUSTOM_SCRIPT_COMMAND = "trendmicro-visionone-update-custom-script"
 DELETE_CUSTOM_SCRIPT_COMMAND = "trendmicro-visionone-delete-custom-script"
 DOWNLOAD_CUSTOM_SCRIPT_COMMAND = "trendmicro-visionone-download-custom-script"
 GET_CUSTOM_SCRIPT_LIST_COMMAND = "trendmicro-visionone-get-custom-script-list"
-GET_OBSERVED_ATTACK_TECHNIQUES_COMMAND = (
-    "trendmicro-visionone-get-observed-attack-techniques"
-)
+GET_OBSERVED_ATTACK_TECHNIQUES_COMMAND = "trendmicro-visionone-get-observed-attack-techniques"
 FETCH_INCIDENTS = "fetch-incidents"
 TEST_MODULE = "test-module"
 
@@ -324,7 +304,9 @@ def status_check(v1_client: pytmv1.Client, data: dict[str, Any]) -> Any:
 
     # Make rest call
     resp = v1_client.task.get_result(
-        task_id=task_id, poll=poll, poll_time_sec=poll_time_sec  # type: ignore
+        task_id=task_id,
+        poll=poll,
+        poll_time_sec=poll_time_sec,  # type: ignore
     )
     # Check if error response is returned
     if _is_pytmv1_error(resp.result_code):
@@ -371,9 +353,7 @@ def sandbox_submission_polling(v1_client: pytmv1.Client, data: dict[str, Any]) -
         if _is_pytmv1_error(analysis_resp.result_code):
             error: pytmv1.Error = unwrap(analysis_resp.error)
             return_error(message=f"{error.message}", error=str(error))
-        analysis_resp_obj: pytmv1.SandboxAnalysisResultResp = unwrap(
-            analysis_resp.response
-        )
+        analysis_resp_obj: pytmv1.SandboxAnalysisResultResp = unwrap(analysis_resp.response)
         risk = analysis_resp_obj.risk_level
         risk_score = incident_severity_to_dbot_score(risk)
         digest: pytmv1.Digest = unwrap(analysis_resp_obj.digest)
@@ -388,9 +368,7 @@ def sandbox_submission_polling(v1_client: pytmv1.Client, data: dict[str, Any]) -
             score=risk_score,
             reliability=reliability,
         )
-        file_entry = Common.File(
-            sha256=sha256, md5=md5, sha1=sha1, dbot_score=dbot_score
-        )
+        file_entry = Common.File(sha256=sha256, md5=md5, sha1=sha1, dbot_score=dbot_score)
         message = {
             "status_code": 200,
             "status": task_status,
@@ -441,9 +419,7 @@ def exception_list_count(v1_client: pytmv1.Client) -> int:
     #
     # Make rest call
     try:
-        v1_client.object.consume_exception(
-            lambda exception: new_exceptions.append(exception)
-        )
+        v1_client.object.consume_exception(lambda exception: new_exceptions.append(exception))
     except Exception as err:
         raise RuntimeError(f"Error while fetching exception list count.\n {err}")
     # Return length of exception list
@@ -460,9 +436,7 @@ def suspicious_list_count(v1_client: pytmv1.Client) -> int:
 
     # Make rest call
     try:
-        v1_client.object.consume_suspicious(
-            lambda suspicious: new_suspicious.append(suspicious)
-        )
+        v1_client.object.consume_suspicious(lambda suspicious: new_suspicious.append(suspicious))
     except Exception as err:
         raise RuntimeError(f"Error while fetching suspicious list count.\n {err}")
     # Return length of suspicious list
@@ -561,9 +535,7 @@ def _get_ot_enum(obj_type: str) -> ObjectType:
     return ObjectType[obj_type.upper()]
 
 
-def run_polling_command(
-    args: dict[str, Any], cmd: str, v1_client: pytmv1.Client
-) -> str | CommandResults:
+def run_polling_command(args: dict[str, Any], cmd: str, v1_client: pytmv1.Client) -> str | CommandResults:
     """
     Performs polling interval to check status of task.
     :type args: ``args``
@@ -601,9 +573,7 @@ def run_polling_command(
     return command_results
 
 
-def get_task_status(
-    args: dict[str, Any], v1_client: pytmv1.Client
-) -> str | CommandResults:
+def get_task_status(args: dict[str, Any], v1_client: pytmv1.Client) -> str | CommandResults:
     """
     check status of task.
 
@@ -616,9 +586,7 @@ def get_task_status(
     return run_polling_command(args, CHECK_TASK_STATUS_COMMAND, v1_client)
 
 
-def get_sandbox_submission_status(
-    args: dict[str, Any], v1_client: pytmv1.Client
-) -> str | CommandResults:
+def get_sandbox_submission_status(args: dict[str, Any], v1_client: pytmv1.Client) -> str | CommandResults:
     """
     call polling command to check status of sandbox submission.
     :type args: ``args``
@@ -643,9 +611,7 @@ def test_module(v1_client: pytmv1.Client) -> str:
     return "ok"
 
 
-def enable_or_disable_user_account(
-    v1_client: pytmv1.Client, command: str, args: dict[str, Any]
-) -> str | CommandResults:
+def enable_or_disable_user_account(v1_client: pytmv1.Client, command: str, args: dict[str, Any]) -> str | CommandResults:
     """
     Enable allows the user to sign in to new application and browser sessions.
     Disable signs the user out of all active application and browser sessions,
@@ -721,9 +687,7 @@ def enable_or_disable_user_account(
     )
 
 
-def force_sign_out(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def force_sign_out(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Signs the user out of all active application and browser sessions.
     Supported IAM systems: Azure AD
@@ -772,9 +736,7 @@ def force_sign_out(
     )
 
 
-def force_password_reset(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def force_password_reset(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Signs the user out of all active application and browser sessions,
     and forces the user to create a new password during the next sign-in attempt.
@@ -825,9 +787,7 @@ def force_password_reset(
     )
 
 
-def get_endpoint_info(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def get_endpoint_info(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Retrieve information about the endpoint queried and
     sends the result to demisto war room.
@@ -881,9 +841,7 @@ def get_endpoint_info(
     )
 
 
-def get_endpoint_activity_data(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def get_endpoint_activity_data(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Displays search results from the Endpoint Activity Data source
     in a paginated list and sends the result to demisto war room.
@@ -920,9 +878,7 @@ def get_endpoint_activity_data(
     activity_count = int(count_obj.outputs.get("endpoint_activity_count", EMPTY_STRING))  # type: ignore
     if fetch_all == TRUE:
         if activity_count > fetch_max_count and fetch_max_count != 0:
-            return_error(
-                f"Please refine search, this query returns more than {fetch_max_count} results."
-            )
+            return_error(f"Please refine search, this query returns more than {fetch_max_count} results.")
         # Make rest call
         resp = v1_client.endpoint.consume_activity(
             lambda activity: new_endpoint_activity.append(activity),
@@ -964,9 +920,7 @@ def get_endpoint_activity_data(
     )
 
 
-def get_endpoint_activity_data_count(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def get_endpoint_activity_data_count(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Fetches endpoint activity data count.
 
@@ -1013,9 +967,7 @@ def get_endpoint_activity_data_count(
     )
 
 
-def get_email_activity_data(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def get_email_activity_data(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Displays search results from the Email Activity Data source
     in a paginated list and sends the result to demisto war room.
@@ -1053,9 +1005,7 @@ def get_email_activity_data(
     # Check if user would like to fetch all activity
     if fetch_all == TRUE:
         if activity_count > fetch_max_count and fetch_max_count != 0:
-            return_error(
-                f"Please refine search, this query returns more than {fetch_max_count} results."
-            )
+            return_error(f"Please refine search, this query returns more than {fetch_max_count} results.")
         # Make rest call
         resp = v1_client.email.consume_activity(
             lambda activity: new_email_activity.append(activity),
@@ -1096,9 +1046,7 @@ def get_email_activity_data(
     )
 
 
-def get_email_activity_data_count(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def get_email_activity_data_count(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Fetches email activity data count.
 
@@ -1145,9 +1093,7 @@ def get_email_activity_data_count(
     )
 
 
-def add_or_remove_from_block_list(
-    v1_client: pytmv1.Client, command: str, args: dict[str, Any]
-) -> str | CommandResults:
+def add_or_remove_from_block_list(v1_client: pytmv1.Client, command: str, args: dict[str, Any]) -> str | CommandResults:
     """
     Retrieve data from the add or remove from block list and
     sends the result to demist war room.
@@ -1259,9 +1205,7 @@ def fetch_incidents(v1_client: pytmv1.Client):
     return incidents
 
 
-def quarantine_or_delete_email_message(
-    v1_client: pytmv1.Client, command: str, args: dict[str, Any]
-) -> str | CommandResults:
+def quarantine_or_delete_email_message(v1_client: pytmv1.Client, command: str, args: dict[str, Any]) -> str | CommandResults:
     """
     Retrieve data from the quarantine or delete email message and
     sends the result to demist war room.
@@ -1354,9 +1298,7 @@ def quarantine_or_delete_email_message(
     )
 
 
-def restore_email_message(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def restore_email_message(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Restores a quarantined email message and
     sends the result to demist war room.
@@ -1419,9 +1361,7 @@ def restore_email_message(
     )
 
 
-def isolate_or_restore_connection(
-    v1_client: pytmv1.Client, command: str, args: dict[str, Any]
-) -> str | CommandResults:
+def isolate_or_restore_connection(v1_client: pytmv1.Client, command: str, args: dict[str, Any]) -> str | CommandResults:
     """
     Retrieve data from the isolate or restore endpoint connection and
     sends the result to demist war room.
@@ -1511,9 +1451,7 @@ def isolate_or_restore_connection(
     )
 
 
-def terminate_process(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def terminate_process(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Terminate the process running on the end point and
     sends the result to demist war room.
@@ -1575,9 +1513,7 @@ def terminate_process(
     )
 
 
-def add_or_delete_from_exception_list(
-    v1_client: pytmv1.Client, command: str, args: dict[str, Any]
-) -> str | CommandResults:
+def add_or_delete_from_exception_list(v1_client: pytmv1.Client, command: str, args: dict[str, Any]) -> str | CommandResults:
     """
     Add or Delete the exception object to exception list and
     sends the result to demist war room.
@@ -1661,9 +1597,7 @@ def add_or_delete_from_exception_list(
     )
 
 
-def add_to_suspicious_list(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def add_to_suspicious_list(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Add suspicious object to suspicious list and
     sends the result to demist war room.
@@ -1723,9 +1657,7 @@ def add_to_suspicious_list(
     )
 
 
-def delete_from_suspicious_list(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def delete_from_suspicious_list(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Delete the suspicious object from suspicious list and
     sends the result to demist war room.
@@ -1781,9 +1713,7 @@ def delete_from_suspicious_list(
     )
 
 
-def get_file_analysis_status(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def get_file_analysis_status(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Get the status of file based on task id and
     sends the result to demist war room
@@ -1824,9 +1754,7 @@ def get_file_analysis_status(
     )
 
 
-def get_file_analysis_result(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def get_file_analysis_result(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Get the report of file based on report id and sends the result to demist war room
     :type client: ``Client``
@@ -1891,9 +1819,7 @@ def get_file_analysis_result(
         },
     }
     return CommandResults(
-        readable_output=tableToMarkdown(
-            table_name[GET_FILE_ANALYSIS_RESULT_COMMAND], message, removeNull=True
-        ),
+        readable_output=tableToMarkdown(table_name[GET_FILE_ANALYSIS_RESULT_COMMAND], message, removeNull=True),
         outputs_prefix="VisionOne.File_Analysis_Result",
         outputs_key_field="id",
         outputs=message,
@@ -1901,9 +1827,7 @@ def get_file_analysis_result(
     )
 
 
-def collect_file(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def collect_file(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Collect forensic file and sends the result to demist war room
     :type client: ``Client``
@@ -1960,9 +1884,7 @@ def collect_file(
     )
 
 
-def download_information_collected_file(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def download_information_collected_file(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Get the analysis report of file based on action id and sends
     the file to demist war room where it can be downloaded.
@@ -2005,9 +1927,7 @@ def download_information_collected_file(
     )
 
 
-def download_analysis_report(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> Any | CommandResults:
+def download_analysis_report(v1_client: pytmv1.Client, args: dict[str, Any]) -> Any | CommandResults:
     """
     Get the analysis report of file based on action id and sends
     the file to demist war room where it can be downloaded.
@@ -2030,7 +1950,9 @@ def download_analysis_report(
 
     # Make rest call
     resp = v1_client.sandbox.download_analysis_result(
-        submit_id=submit_id, poll=poll, poll_time_sec=poll_time_sec  # type: ignore
+        submit_id=submit_id,
+        poll=poll,
+        poll_time_sec=poll_time_sec,  # type: ignore
     )
     analysis_resp: pytmv1.BytesResp = unwrap(resp.response)
     # Check if an error occurred
@@ -2065,9 +1987,7 @@ def download_analysis_report(
     ]
 
 
-def download_investigation_package(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> Any | CommandResults:
+def download_investigation_package(v1_client: pytmv1.Client, args: dict[str, Any]) -> Any | CommandResults:
     """
     Downloads the Investigation Package of the specified object based on
     submission id and sends the file to demist war room where it can be downloaded.
@@ -2090,7 +2010,9 @@ def download_investigation_package(
 
     # Make rest call
     resp = v1_client.sandbox.download_investigation_package(
-        submit_id=submit_id, poll=poll, poll_time_sec=poll_time_sec  # type: ignore
+        submit_id=submit_id,
+        poll=poll,
+        poll_time_sec=poll_time_sec,  # type: ignore
     )
     investigation_resp: pytmv1.BytesResp = unwrap(resp.response)
     # Check if an error occurred
@@ -2126,9 +2048,7 @@ def download_investigation_package(
     ]
 
 
-def download_suspicious_object_list(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def download_suspicious_object_list(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Downloads the suspicious object list associated to the specified object
     Note: Suspicious Object lists are only available for objects with a high risk level
@@ -2148,7 +2068,9 @@ def download_suspicious_object_list(
 
     # Make rest call
     resp = v1_client.sandbox.list_suspicious(
-        submit_id=submit_id, poll=poll, poll_time_sec=poll_time_sec  # type: ignore
+        submit_id=submit_id,
+        poll=poll,
+        poll_time_sec=poll_time_sec,  # type: ignore
     )
     sus_list_resp: pytmv1.ListSandboxSuspiciousResp = unwrap(resp.response)
     # Check if an error occurred
@@ -2172,9 +2094,7 @@ def download_suspicious_object_list(
     )
 
 
-def submit_file_to_sandbox(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def submit_file_to_sandbox(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     submit file to sandbox and sends the result to demist war room
     :type client: ``Client``
@@ -2229,9 +2149,7 @@ def submit_file_to_sandbox(
     )
 
 
-def submit_file_entry_to_sandbox(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def submit_file_entry_to_sandbox(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     submit file entry to sandbox and sends the result to demist war room
     :type client: ``Client``
@@ -2293,9 +2211,7 @@ def submit_file_entry_to_sandbox(
     )
 
 
-def submit_urls_to_sandbox(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def submit_urls_to_sandbox(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     submit Urls to sandbox and send the result to demist war room
     :type client: ``Client``
@@ -2331,9 +2247,7 @@ def submit_urls_to_sandbox(
     )
 
 
-def get_alert_details(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def get_alert_details(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Fetch information for a specific alert and display in war room.
     :type client: ``Client``
@@ -2413,9 +2327,7 @@ def add_note(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandRes
     )
 
 
-def update_status(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def update_status(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Updates the status of an existing workbench alert
     :type client: ``Client``
@@ -2464,9 +2376,7 @@ def update_status(
     )
 
 
-def run_custom_script(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def run_custom_script(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Runs custom script using endpoint (hostname) or agent_guid
     :type client: ``Client``
@@ -2522,9 +2432,7 @@ def run_custom_script(
     )
 
 
-def get_custom_script_list(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def get_custom_script_list(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Fetches a list of custom scripts in Response Management under Custom Script tab
     :type client: ``Client``
@@ -2582,9 +2490,7 @@ def get_custom_script_list(
     )
 
 
-def add_custom_script(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def add_custom_script(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Adds a custom script to Response Management under Custom Script tab
     :type client: ``Client``
@@ -2632,9 +2538,7 @@ def add_custom_script(
     )
 
 
-def download_custom_script(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def download_custom_script(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Download a custom script from Response Management under Custom Script tab
     :type client: ``Client``
@@ -2651,9 +2555,7 @@ def download_custom_script(
     # Check if an error occurred during rest call
     if _is_pytmv1_error(resp.result_code):
         err: pytmv1.Error = unwrap(resp.error)
-        demisto.results(
-            f"The script was not found. Please check script id: {script_id} and try again."
-        )
+        demisto.results(f"The script was not found. Please check script id: {script_id} and try again.")
         return_error(message=f"{err.message}", error=str(err))
     resp_text: pytmv1.TextResp = unwrap(resp.response)
     text: str = resp_text.text
@@ -2672,9 +2574,7 @@ def download_custom_script(
     )
 
 
-def update_custom_script(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def update_custom_script(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Updates a custom script in Response Management under Custom Script tab
     :type client: ``Client``
@@ -2724,9 +2624,7 @@ def update_custom_script(
     )
 
 
-def delete_custom_script(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def delete_custom_script(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Delete a custom script from Response Management under Custom Script tab
     :type client: ``Client``
@@ -2743,9 +2641,7 @@ def delete_custom_script(
     # Check if an error occurred during rest call
     if _is_pytmv1_error(resp.result_code):
         err: pytmv1.Error = unwrap(resp.error)
-        demisto.results(
-            f"The script was not found. Please check script id: {script_id} and try again."
-        )
+        demisto.results(f"The script was not found. Please check script id: {script_id} and try again.")
         return_error(message=f"{err.message}", error=str(err))
     resp_code: ResultCode = unwrap(resp.result_code)
     val: str = resp_code.value
@@ -2764,9 +2660,7 @@ def delete_custom_script(
     )
 
 
-def get_observed_attack_techniques(
-    v1_client: pytmv1.Client, args: dict[str, Any]
-) -> str | CommandResults:
+def get_observed_attack_techniques(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Displays a list of Observed Attack Techniques events that match the specified criteria
     :type client: ``Client``
@@ -2806,9 +2700,7 @@ def get_observed_attack_techniques(
         raise Exception(f"{err.message}", str(err))
     resp_type: pytmv1.ListOatsResp = unwrap(resp.response)
     if resp_type.total_count > 50:
-        raise Exception(
-            "Please refine search, this query returns more than 50 results."
-        )
+        raise Exception("Please refine search, this query returns more than 50 results.")
 
     # Add results to message to be sent to the War Room
     message: list[dict[str, Any]] = []
@@ -2851,9 +2743,7 @@ def main():  # pragma: no cover
         api_key: str = params.get(API_TOKEN, {}).get("password")
 
         if base_url == "":
-            raise RuntimeError(
-                "The base_url cannot be empty, please provide a valid value."
-            )
+            raise RuntimeError("The base_url cannot be empty, please provide a valid value.")
         v1_client = _get_client(VENDOR_NAME, api_key, base_url)
 
         command = demisto.command()
@@ -2995,9 +2885,7 @@ def main():  # pragma: no cover
             raise NotImplementedError(f"{command} command is not implemented.")
 
     except Exception as error:
-        return return_error(
-            f"Failed to execute {demisto.command()} command. Error: {str(error)}"
-        )
+        return return_error(f"Failed to execute {demisto.command()} command. Error: {error!s}")
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:
