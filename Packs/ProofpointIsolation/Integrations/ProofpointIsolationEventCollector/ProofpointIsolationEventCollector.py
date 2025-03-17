@@ -274,7 +274,7 @@ def main() -> None:  # pragma: no cover
             return_results(result)
         elif command == 'fetch-events':
             events, new_last_run_dict = fetch_events(client, fetch_limit)
-            demisto.debug(f'Successfully run fetch events with Proofpoint Isolation integration.')
+            demisto.debug('Successfully run fetch events with Proofpoint Isolation integration.')
             if events:
                 demisto.debug(f'Sending {len(events)} events.')
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)

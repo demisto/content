@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: ProofpointIsolationEventCollector
+  id: ProofpointIsolationEventCollectorFix
   version: -1
 configuration:
 - defaultvalue: https://proofpointisolation.com
@@ -38,8 +38,8 @@ configuration:
   required: false
   section: Connect
 description: 'Proofpoint Isolation is an integration that supports fetching Browser and Email Isolation logs events.'
-display: Proofpoint Isolation
-name: ProofpointIsolationEventCollector
+display: Proofpoint Isolation Fix
+name: ProofpointIsolationEventCollectorFix
 script:
   commands:
   - name: proofpoint-isolation-get-events
