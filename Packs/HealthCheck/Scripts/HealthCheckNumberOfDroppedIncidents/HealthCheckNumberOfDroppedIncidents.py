@@ -1,8 +1,7 @@
+from datetime import datetime, timedelta
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
-
-from datetime import datetime, timedelta
 
 
 def buildWidget(totalDropped):
