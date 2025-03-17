@@ -2,7 +2,7 @@
     "name": "CIRCL",
     "description": "The Computer Incident Response Center Luxembourg (CIRCL) is a government-driven initiative designed to provide a systematic response facility to computer security threats and incidents.\nThis pack includes:\n# CIRCL Passive DNS which is a database storing historical DNS records from various resources.\n# CIRCL Passive SSL is a database storing historical X.509 certificates seen per IP address. The Passive SSL historical data is indexed per IP address.\n# CIRCL CVE Search, interface to search publicly known information from security vulnerabilities in software and hardware along with their corresponding exposures.",
     "support": "xsoar",
-    "currentVersion": "1.0.24",
+    "currentVersion": "1.0.25",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

@@ -2,7 +2,7 @@
     "name": "OnboardingIntegration",
     "description": "Creates mock email incidents using one of two randomly selected HTML templates. Textual content is randomly generated and defined to include some text (100 random words) and the following data (at least 5 of each data type): IP addresses, URLs, SHA-1 hashes, SHA-256 hashes, MD5 hashes, email addresses, domain names.",
     "support": "xsoar",
-    "currentVersion": "1.1.7",
+    "currentVersion": "1.1.8",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
