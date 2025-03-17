@@ -45,13 +45,13 @@ Gets indicators from the feed.
 
 | **Path**                   | **Type** | **Description** |
 |----------------------------| --- | --- |
-| Cyberint.ioc_value         | String | The indicator value. |
-| Cyberint.ioc_type          | String | The indicator type. |
-| Cyberint.description       | String | The feed description. |
-| Cyberint.detected_activity | String | The feed detected activity. |
-| Cyberint.observation_date  | String | The feed observation date. |
-| Cyberint.severity_score    | String | The feed severity score. |
-| Cyberint.confidence        | String | The feed confidence. |
+| Cyberint.indicator.ioc_value         | String | The indicator value. |
+| Cyberint.indicator.ioc_type          | String | The indicator type. |
+| Cyberint.indicator.description       | String | The feed description. |
+| Cyberint.indicator.detected_activity | String | The feed detected activity. |
+| Cyberint.indicator.observation_date  | String | The feed observation date. |
+| Cyberint.indicator.severity_score    | String | The feed severity score. |
+| Cyberint.indicator.confidence        | String | The feed confidence. |
 
 #### Command example
 ```!cyberint-get-indicators limit=10 execution-timeout=700```
@@ -530,19 +530,19 @@ Gets Domain from the feed.
 
 #### Context Output
 
-| **Path**                                    | **Type**  | **Description** |
-|---------------------------------------------|----------|----------------|
-| Cyberint.ipv4.type                          | String   | The indicator type. |
-| Cyberint.ipv4.value                         | String   | The indicator value. |
-| Cyberint.ipv4.malicious_score               | String   | Malicious score. |
-| Cyberint.ipv4.occurrences_count             | String   | Occurrences count. |
-| Cyberint.ipv4.country                       | String   | Country. |
-| Cyberint.ipv4.city                          | String   | City. |
-| Cyberint.ipv4.asn_number                    | String   | ASN number. |
-| Cyberint.ipv4.asn_organization              | String   | ASN organization. |
-| Cyberint.ipv4.suspicious_urls               | String   | Suspicious URLs. |
-| Cyberint.ipv4.suspicious_domains            | String   | Suspicious domains. |
-| Cyberint.domain.benign                      | String   | Benign. |
+| **Path**                         | **Type**  | **Description** |
+|----------------------------------|----------|----------------|
+| Cyberint.ipv4.type               | String   | The indicator type. |
+| Cyberint.ipv4.value              | String   | The indicator value. |
+| Cyberint.ipv4.malicious_score    | String   | Malicious score. |
+| Cyberint.ipv4.occurrences_count  | String   | Occurrences count. |
+| Cyberint.ipv4.country            | String   | Country. |
+| Cyberint.ipv4.city               | String   | City. |
+| Cyberint.ipv4.asn_number         | String   | ASN number. |
+| Cyberint.ipv4.asn_organization   | String   | ASN organization. |
+| Cyberint.ipv4.suspicious_urls    | String   | Suspicious URLs. |
+| Cyberint.ipv4.suspicious_domains | String   | Suspicious domains. |
+| Cyberint.ipv4.benign               | String   | Benign. |
 
 #### Command example
 ```!cyberint-get-ipv4 value=1.1.1.1```

@@ -367,7 +367,7 @@ def get_indicators_command(
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix="Cyberint",
+        outputs_prefix="Cyberint.indicator",
         outputs_key_field="value",
         raw_response=indicators,
         outputs=indicators,
