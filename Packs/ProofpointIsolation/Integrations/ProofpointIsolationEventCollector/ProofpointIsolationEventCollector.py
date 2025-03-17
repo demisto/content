@@ -45,7 +45,6 @@ class Client(BaseClient):
                        f"&from={start_date}&to={end_date}",
             retries=3
         )
-        demisto.debug(f'Raw results from Proofpoint Isolation api: {results}')
         return results
 
 
@@ -135,8 +134,11 @@ def get_and_reorganize_events(client: Client, start: str, end: str, ids: set) ->
         list: A list of sorted and deduplicated events.
     """
     events: list = client.get_events(start, end).get('data', [])
+    demisto.debug(f'Raw events from Proofpoint Isolation api: {events}')
     events = sort_events_by_date(events)
+    demisto.debug(f'Sorted events by their date: {events}')
     remove_duplicate_events(start, ids, events)
+    demisto.debug(f'Removed duplicated events: {events}')
     return events
 
 
