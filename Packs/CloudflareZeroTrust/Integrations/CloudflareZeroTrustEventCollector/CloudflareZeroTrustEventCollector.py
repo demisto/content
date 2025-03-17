@@ -1,16 +1,17 @@
-import demistomock as demisto
-from CommonServerPython import *
-import urllib3
 from typing import Any
+
+import demistomock as demisto
+import urllib3
+from CommonServerPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-VENDOR = 'Cloudflare'
-PRODUCT = 'ZeroTrust'
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+VENDOR = "Cloudflare"
+PRODUCT = "ZeroTrust"
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 ACCOUNT_AUDIT_PAGE_SIZE = 1000
 USER_AUDIT_PAGE_SIZE = 1000
 ACCESS_AUTHENTICATION_PAGE_SIZE = 1000
@@ -23,7 +24,7 @@ ACCOUNT_AUDIT_TYPE = "Account Audit Logs"
 USER_AUDIT_TYPE = "User Audit Logs"
 ACCESS_AUTHENTICATION_TYPE = "Access Authentication Logs"
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
@@ -62,25 +63,16 @@ class Client(BaseClient):
             ValueError: If the event_type is invalid or unsupported.
         """
         demisto.debug(
-            f"Fetching events with start_date={start_date}, page_size={page_size}, page={page}, event_type={event_type}")
+            f"Fetching events with start_date={start_date}, page_size={page_size}, page={page}, event_type={event_type}"
+        )
 
         endpoint_urls = {
             ACCOUNT_AUDIT_TYPE: f"/client/v4/accounts/{self.account_id}/audit_logs",
             USER_AUDIT_TYPE: "/client/v4/user/audit_logs",
-            ACCESS_AUTHENTICATION_TYPE: f"/client/v4/accounts/{self.account_id}/access/logs/access_requests"
+            ACCESS_AUTHENTICATION_TYPE: f"/client/v4/accounts/{self.account_id}/access/logs/access_requests",
         }
-        params = {
-            'per_page': page_size,
-            'page': page,
-            'since': start_date,
-            'direction': 'asc'
-        }
-        return self._http_request(
-            method="GET",
-            url_suffix=endpoint_urls[event_type],
-            headers=self.headers,
-            params=params
-        )
+        params = {"per_page": page_size, "page": page, "since": start_date, "direction": "asc"}
+        return self._http_request(method="GET", url_suffix=endpoint_urls[event_type], headers=self.headers, params=params)
 
 
 def test_module(client: Client, event_types: list) -> str:
@@ -103,13 +95,13 @@ def test_module(client: Client, event_types: list) -> str:
             max_fetch_account_audit=1,
             max_fetch_user_audit=1,
             max_fetch_authentication=1,
-            event_types_to_fetch=event_types
+            event_types_to_fetch=event_types,
         )
 
     except Exception as e:
         raise e
 
-    return 'ok'
+    return "ok"
 
 
 def fetch_events_for_type(
@@ -248,20 +240,16 @@ def get_events_command(client: Client, args: dict[str, Any]) -> tuple[list[dict[
 
     for event_type in event_types:
         events, _ = fetch_events_for_type(
-            client=client,
-            last_run={},
-            max_fetch=limit,
-            max_page_size=100,
-            event_type=event_type,
-            start_fetch_date=start_date
+            client=client, last_run={}, max_fetch=limit, max_page_size=100, event_type=event_type, start_fetch_date=start_date
         )
         all_fetched_events.extend(events)
 
         if events:
-            command_results.append(CommandResults(
-                readable_output=tableToMarkdown(f"Cloudflare Zero Trust {event_type} Events", events),
-                raw_response=events
-            ))
+            command_results.append(
+                CommandResults(
+                    readable_output=tableToMarkdown(f"Cloudflare Zero Trust {event_type} Events", events), raw_response=events
+                )
+            )
 
     if not all_fetched_events:
         command_results.append(CommandResults(readable_output="No events found."))
@@ -282,8 +270,7 @@ def calculate_fetch_dates(next_run: dict[str, Any], start_date: str = "") -> str
         str: The calculated start date in '%Y-%m-%dT%H:%M:%SZ' format.
     """
     now_utc_time = get_current_time()
-    start_date = start_date or next_run.get('last_fetch') or (
-        (now_utc_time - timedelta(minutes=1)).strftime(DATE_FORMAT))
+    start_date = start_date or next_run.get("last_fetch") or ((now_utc_time - timedelta(minutes=1)).strftime(DATE_FORMAT))
     return start_date
 
 
@@ -299,15 +286,20 @@ def prepare_next_run(events: list[dict[str, Any]]) -> tuple[str, list[str]]:
             - str: The latest timestamp (up to seconds) of the fetched events.
             - list[str]: A list of IDs for the events with the latest timestamp.
     """
-    latest_time = events[-1].get('when') or events[-1].get('created_at') or ""
+    latest_time = events[-1].get("when") or events[-1].get("created_at") or ""
     latest_time_obj = datetime.fromisoformat(latest_time.rstrip("Z"))
     latest_time_truncated = latest_time_obj.replace(microsecond=0).isoformat() + "Z"
 
     latest_ids = [
-        event['id']
+        event["id"]
         for event in events
-        if (datetime.fromisoformat((event.get('when') or event.get('created_at') or "").rstrip("Z"))
-            .replace(microsecond=0).isoformat() + "Z") == latest_time_truncated
+        if (
+            datetime.fromisoformat((event.get("when") or event.get("created_at") or "").rstrip("Z"))
+            .replace(microsecond=0)
+            .isoformat()
+            + "Z"
+        )
+        == latest_time_truncated
     ]
 
     return latest_time_truncated, latest_ids
@@ -338,8 +330,8 @@ def add_time_to_events(events: list[dict[str, Any]] | None):
     """
     if events:
         for event in events:
-            create_time = arg_to_datetime(arg=event.get('when') or event.get('created_at'))
-            event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
+            create_time = arg_to_datetime(arg=event.get("when") or event.get("created_at"))
+            event["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
 
 
 def validate_args(args: dict):
@@ -368,7 +360,7 @@ def validate_args(args: dict):
     return event_types, start_date_str
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:  # pragma: no cover
@@ -379,40 +371,41 @@ def main() -> None:  # pragma: no cover
     command = demisto.command()
     args = demisto.args()
 
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
 
     credentials = params.get("credentials", {})
-    max_fetch_account_audit = arg_to_number(params.get('max_fetch_account_audit_logs')) or DEFAULT_MAX_FETCH_ACCOUNT_AUDIT
-    max_fetch_user_audit = arg_to_number(params.get('max_fetch_user_audit_logs')) or DEFAULT_MAX_FETCH_USER_AUDIT
-    max_fetch_authentication = (arg_to_number(params.get("max_fetch_access_authentication_logs"))
-                                or DEFAULT_MAX_FETCH_ACCESS_AUTHENTICATION)
+    max_fetch_account_audit = arg_to_number(params.get("max_fetch_account_audit_logs")) or DEFAULT_MAX_FETCH_ACCOUNT_AUDIT
+    max_fetch_user_audit = arg_to_number(params.get("max_fetch_user_audit_logs")) or DEFAULT_MAX_FETCH_USER_AUDIT
+    max_fetch_authentication = (
+        arg_to_number(params.get("max_fetch_access_authentication_logs")) or DEFAULT_MAX_FETCH_ACCESS_AUTHENTICATION
+    )
     event_types_to_fetch = argToList(params.get("event_types_to_fetch"))
 
     try:
         headers = {
-            'X-Auth-Email': credentials.get('identifier'),
-            'X-Auth-Key': credentials.get('password'),
+            "X-Auth-Email": credentials.get("identifier"),
+            "X-Auth-Key": credentials.get("password"),
         }
         client = Client(
-            base_url=params.get('url', ""),
-            verify=not params.get('insecure', False),
-            proxy=params.get('proxy', False),
-            account_id=params.get('account_id', ""),
-            headers=headers
+            base_url=params.get("url", ""),
+            verify=not params.get("insecure", False),
+            proxy=params.get("proxy", False),
+            account_id=params.get("account_id", ""),
+            headers=headers,
         )
 
-        if command == 'test-module':
+        if command == "test-module":
             result = test_module(client=client, event_types=event_types_to_fetch)
             return_results(result)
 
-        elif command == 'cloudflare-zero-trust-get-events':
+        elif command == "cloudflare-zero-trust-get-events":
             events, results = get_events_command(client=client, args=args)
             return_results(results)
             if events and argToBoolean(args.get("should_push_events")):
                 add_time_to_events(events)
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
-        elif command == 'fetch-events':
+        elif command == "fetch-events":
             last_run = demisto.getLastRun()
             next_run, events = fetch_events(
                 client=client,
@@ -420,7 +413,7 @@ def main() -> None:  # pragma: no cover
                 max_fetch_account_audit=max_fetch_account_audit,
                 max_fetch_user_audit=max_fetch_user_audit,
                 max_fetch_authentication=max_fetch_authentication,
-                event_types_to_fetch=event_types_to_fetch
+                event_types_to_fetch=event_types_to_fetch,
             )
 
             add_time_to_events(events)
@@ -428,10 +421,10 @@ def main() -> None:  # pragma: no cover
             demisto.setLastRun(next_run)
 
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
