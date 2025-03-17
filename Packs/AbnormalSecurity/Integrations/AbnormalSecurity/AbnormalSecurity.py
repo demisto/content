@@ -800,12 +800,10 @@ def generate_threat_incidents(client, threats, MAX_PAGE_NUMBER, start_datetime, 
 
         threat_details["messages"] = all_filtered_messages
         received_time = all_filtered_messages[0].get("receivedTime")
-        remediation_time = all_filtered_messages[0].get("remediationTimestamp")
         incident = {
             "dbotMirrorId": str(threat["threatId"]),
             "name": "Threat",
             "occurred": received_time[:26] if len(received_time) > 26 else received_time,
-            "remediatedTime": remediation_time[:26] if len(remediation_time) > 26 else remediation_time,
             "details": "Threat",
             "rawJSON": json.dumps(threat_details) if threat_details else {}
         }
