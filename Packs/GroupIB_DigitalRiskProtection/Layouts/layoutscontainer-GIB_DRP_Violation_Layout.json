@@ -475,7 +475,7 @@
                             {
                                 "args": {
                                     "id": {
-                                        "simple": "{incident.gibdrpid}"
+                                        "simple": "${incident.gibdrpid}"
                                     },
                                     "status": {
                                         "simple": "reject"
@@ -497,7 +497,7 @@
                             {
                                 "args": {
                                     "id": {
-                                        "simple": "{incident.gibdrpid}"
+                                        "simple": "${incident.gibdrpid}"
                                     },
                                     "status": {
                                         "simple": "approve"

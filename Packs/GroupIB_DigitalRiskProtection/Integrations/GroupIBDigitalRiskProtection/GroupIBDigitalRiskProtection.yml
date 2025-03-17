@@ -69,6 +69,12 @@ configuration:
   type: 8
   required: false
   additionalinfo: Enables or disables loading of each image in each violation. Can significantly affect the speed of data collection if the parameter is enabled, i.e. set to True
+- display: Getting Typosquatting only
+  name: only_typosquatting
+  defaultvalue: "false"
+  type: 8
+  required: false
+  additionalinfo: Allows for the collection of offenses suitable only for Typo Squatting
 - display: Number of requests per collection
   name: max_fetch
   type: 15

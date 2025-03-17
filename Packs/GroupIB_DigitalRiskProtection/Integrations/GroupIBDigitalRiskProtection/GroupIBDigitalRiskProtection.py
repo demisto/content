@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 
 
 """ IMPORTS """
-
+    
 from urllib3.exceptions import InsecureRequestWarning
 from urllib3 import disable_warnings as urllib3_disable_warnings
 from cyberintegrations import DRPPoller
@@ -135,6 +135,7 @@ class Client(BaseClient):
         }
 
     def generate_seq_update(self, first_fetch_time: str) -> str:
+        demisto.debug(f"generate_seq_update first_fetch_time {first_fetch_time}")
         date_from = dateparser_parse(date_string=first_fetch_time)
         if date_from is None:
             raise DemistoException(
@@ -142,22 +143,24 @@ class Client(BaseClient):
                 f"please use a format such as: 2020-01-01 or January 1 2020 or 3 days. The format given is: {date_from}"
             )
         date_from = date_from.strftime("%Y-%m-%d")
-        demisto.debug(f"date_from {date_from}")
+        demisto.debug(f"generate_seq_update date_from {date_from}")
         sequpdate = self.poller.get_seq_update_dict(
             date=date_from, collection=Endpoints.VIOLATIONS.value
         )
-        demisto.debug(f"sequpdate {sequpdate}")
+        demisto.debug(f"generate_seq_update sequpdate {sequpdate}")
         return sequpdate
 
     def create_generator(
         self,
         first_fetch_time: str,
         last_run: dict,
+        only_typosquatting: bool,
         violation_subtypes: list[str] = None,
         brands: str = None,
         section: str = None,
     ):
         last_fetch = last_run.get("last_fetch", None)
+        demisto.debug(f"create_generator last_fetch {last_fetch}")
         if last_run and last_fetch:
             sequpdate = last_fetch
         else:
@@ -180,6 +183,7 @@ class Client(BaseClient):
                 section=section,
                 brands=brands,
                 sequpdate=sequpdate,
+                # use_typo_squatting=only_typosquatting,
             )
         except ConnectionException as e:
             raise ConnectionException(
@@ -187,11 +191,16 @@ class Client(BaseClient):
                 f"subtypes: {violation_subtypes} section: {section} sequpdate: {sequpdate} {str(e)}"
             ) from e
 
-    def change_violation_status(self, feed_id: str, status: str) -> None:
+    def change_violation_status(self, feed_id: str, status: str) -> None | str:
         """
         Status could be approve or reject
         """
-        self.poller.change_status(feed_id=feed_id, status=status)
+        collection_name = "violation"
+        response = self.poller.search_feed_by_id(collection_name=collection_name, feed_id=feed_id)
+        if response.raw_dict.get('status') == 'detected' and response.raw_dict.get('approveState') == 'under_review':
+            self.poller.change_status(feed_id=feed_id, status=status)
+        else:
+            return "Сan not change the status of the selected feed"
 
     def get_brands(self):
         results = self._http_request(
@@ -542,6 +551,7 @@ class IncidentBuilder:
         first_fetch_time: str,
         max_requests: int,
         download_images: bool,
+        only_typosquatting: bool,
         violation_subtypes: list[str] | list | None,
         violation_section: str | None,
         brands: str | None,
@@ -554,6 +564,7 @@ class IncidentBuilder:
         self.violation_section = violation_section
         self.brands = brands
         self.download_images = download_images
+        self.only_typosquatting = only_typosquatting
 
     def transform_fields_to_grid_table(self, incident: dict):
         if TABLES_MAPPING:
@@ -600,6 +611,7 @@ class IncidentBuilder:
             brands=self.brands,
             first_fetch_time=self.first_fetch_time,
             last_run=self.last_run,
+            only_typosquatting=self.only_typosquatting,
         )
         for portion in portions:
             sequpdate = portion.sequpdate
@@ -742,9 +754,12 @@ class BuilderCommandResponses:
     def change_violation_status(self) -> str:
         id_ = str(self.args.get("id"))
         status = str(self.args.get("status"))
-        self.client.change_violation_status(feed_id=id_, status=status)
-        demisto.debug(f"change_violation_status {id_} {status}")
-        return f"Status has been successfully changed to {status}"
+        result = self.client.change_violation_status(feed_id=id_, status=status)
+        demisto.debug(f"change_violation_status {id_} {status} {result}")
+        if result is None:
+            return "Request to change violation status sent"
+        else:
+            return result
 
     def build(self) -> str | tuple[CommandResults, dict[str, Any]] | CommandResults:
         # Check if the method exists in the class
@@ -777,6 +792,7 @@ class Commands:
         first_fetch: str,
         max_requests: int,
         download_images: bool,
+        only_typosquatting: bool,
         violation_subtypes: list[str] | list | None,
         violation_section: str | None = None,
         brands: str | None = None,
@@ -792,6 +808,7 @@ class Commands:
         self.violation_section = violation_section
         self.brands = brands
         self.download_images = download_images
+        self.only_typosquatting = only_typosquatting
 
     def get_brands(self) -> str | tuple[CommandResults, dict[str, Any]] | CommandResults:
         results = BuilderCommandResponses(
@@ -851,6 +868,7 @@ class Commands:
             violation_section=self.violation_section,
             brands=self.brands,
             download_images=self.download_images,
+            only_typosquatting=self.only_typosquatting,
         ).build()
         return next_run, violations
 
@@ -933,6 +951,7 @@ def main():
         # to filter on multiple brands
         brands = params.get("brands")
         download_images = params.get("download_images", False)
+        only_typosquatting = params.get('only_typosquatting', False)
 
         client = Client(
             base_url=base_url,
@@ -966,6 +985,7 @@ def main():
             violation_section=violation_section,
             brands=brands,
             download_images=download_images,
+            only_typosquatting=only_typosquatting,
         ).get_results()
         if requested_method in Commands.methods_requiring_return_results:
             return_results(results)
