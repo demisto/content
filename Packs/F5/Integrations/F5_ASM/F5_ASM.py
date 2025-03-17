@@ -39,7 +39,7 @@ class Client(BaseClient):
     """
     Client for f5 RESTful API!.
     Args:
-          base_url (str): f5 server url.
+          base_url (str): f5 server url test.
           token (str): f5 user token.
           use_ssl (bool): specifies whether to verify the SSL certificate or not.
           use_proxy (bool): specifies if to use XSOAR proxy settings.
