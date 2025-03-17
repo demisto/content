@@ -17,7 +17,7 @@ The following are the required managed modules for this integration:
  - pss
  - Quarantine
  
-  <img height="400" src="./../../doc_imgs/api_role.png" />
+  <img height="400" src="./../../doc_files/api_role.png" />
 
 The operations are accessed through port 10000.
 
