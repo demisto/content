@@ -1822,7 +1822,7 @@ script:
       name: additional_fields
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Flag that indicates whether to set field values using the display value or the actual value. 'true' treats input values as the display value. 'false' treats input values as actual values. Default is false.
+      description: Flag that indicates whether to set field values using the display value or the actual value. 'true' treats input values as the display value. 'false' treats input values as actual values. 
       name: input_display_value
       predefined:
         - 'false'
