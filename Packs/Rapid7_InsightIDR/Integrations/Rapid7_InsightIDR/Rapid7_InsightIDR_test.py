@@ -390,9 +390,7 @@ def test_insight_idr_list_logs(mock_client: Client, requests_mock) -> None:
     from Rapid7_InsightIDR import insight_idr_list_logs_command
 
     mock_response = util_load_json("test_data/list_logs.json")
-    requests_mock.get(
-        f"https://{REGION}.api.insight.rapid7.com/log_search/management/logs", json=mock_response
-    )
+    requests_mock.get(f"https://{REGION}.api.insight.rapid7.com/log_search/management/logs", json=mock_response)
 
     response = insight_idr_list_logs_command(mock_client)
 
@@ -421,9 +419,7 @@ def test_insight_idr_list_log_sets(mock_client: Client, requests_mock) -> None:
     from Rapid7_InsightIDR import insight_idr_list_log_sets_command
 
     mock_response = util_load_json("test_data/list_log_sets.json")
-    requests_mock.get(
-        f"https://{REGION}.api.insight.rapid7.com/log_search/management/logsets", json=mock_response
-    )
+    requests_mock.get(f"https://{REGION}.api.insight.rapid7.com/log_search/management/logsets", json=mock_response)
 
     response = insight_idr_list_log_sets_command(mock_client)
     assert isinstance(response.raw_response, dict)
@@ -451,9 +447,7 @@ def test_insight_idr_download_logs(mock_client: Client, requests_mock) -> None:
     from Rapid7_InsightIDR import insight_idr_download_logs_command
 
     mock_response = util_load_file("test_data/download_logs.txt")
-    requests_mock.get(
-        f"https://{REGION}.api.insight.rapid7.com/log_search/download/logs/x:y", text=mock_response
-    )
+    requests_mock.get(f"https://{REGION}.api.insight.rapid7.com/log_search/download/logs/x:y", text=mock_response)
 
     response = insight_idr_download_logs_command(mock_client, "x:y")
 
@@ -476,9 +470,7 @@ def test_insight_idr_query_log(mock_client: Client, requests_mock) -> None:
     from Rapid7_InsightIDR import insight_idr_query_log_command
 
     mock_response = util_load_json("test_data/query_log_set.json")
-    requests_mock.get(
-        f"https://{REGION}.api.insight.rapid7.com/log_search/query/logs/x", json=mock_response
-    )
+    requests_mock.get(f"https://{REGION}.api.insight.rapid7.com/log_search/query/logs/x", json=mock_response)
 
     response = insight_idr_query_log_command(mock_client, "x", "", "", "")
     assert isinstance(response.raw_response, list)
@@ -506,9 +498,7 @@ def test_insight_idr_query_log_set(mock_client: Client, requests_mock) -> None:
     from Rapid7_InsightIDR import insight_idr_query_log_set_command
 
     mock_response = util_load_json("test_data/query_log_set.json")
-    requests_mock.get(
-        f"https://{REGION}.api.insight.rapid7.com/log_search/query/logsets/x", json=mock_response
-    )
+    requests_mock.get(f"https://{REGION}.api.insight.rapid7.com/log_search/query/logsets/x", json=mock_response)
 
     response = insight_idr_query_log_set_command(mock_client, "x", "", "", "")
     assert isinstance(response.raw_response, list)
@@ -528,9 +518,7 @@ def test_insight_idr_query_log_set(mock_client: Client, requests_mock) -> None:
         ("logs"),
     ],
 )
-def test_insight_idr_query_log_with_pagination(
-    mock_client: Client, requests_mock, end_point
-) -> None:
+def test_insight_idr_query_log_with_pagination(mock_client: Client, requests_mock, end_point) -> None:
     """
     Given:
         - User has provided logs_per_page argument
@@ -550,15 +538,9 @@ def test_insight_idr_query_log_with_pagination(
     base_url = f"https://{REGION}.api.insight.rapid7.com"
 
     requests_mock.get(f"{base_url}/log_search/query/{end_point}/x", json=mock_response_callback)
-    requests_mock.get(
-        f"{base_url}/query/logs/123?per_page=1&sequence_number=1", json=mock_response_page_1
-    )
-    requests_mock.get(
-        f"{base_url}/query/logs/123?per_page=1&sequence_number=2", json=mock_response_page_2
-    )
-    requests_mock.get(
-        f"{base_url}/query/logs/123?per_page=1&sequence_number=3", json=mock_response_page_3
-    )
+    requests_mock.get(f"{base_url}/query/logs/123?per_page=1&sequence_number=1", json=mock_response_page_1)
+    requests_mock.get(f"{base_url}/query/logs/123?per_page=1&sequence_number=2", json=mock_response_page_2)
+    requests_mock.get(f"{base_url}/query/logs/123?per_page=1&sequence_number=3", json=mock_response_page_3)
 
     response = commands[end_point](mock_client, "x", "", logs_per_page=1)
     assert isinstance(response.raw_response, list)
@@ -601,9 +583,7 @@ def test_insight_idr_query_log_with_callback(mocker, requests_mock, end_point) -
         f"https://{REGION}.api.insight.rapid7.com/log_search/query/{end_point}/x",
         json=mock_response_callback,
     )
-    mocker.patch.object(
-        Client, "query_log_callback", side_effect=[mock_response_callback_1, mock_response]
-    )
+    mocker.patch.object(Client, "query_log_callback", side_effect=[mock_response_callback_1, mock_response])
 
     client = Client(
         base_url=f"https://{REGION}.api.insight.rapid7.com/",
@@ -636,16 +616,12 @@ def test_fetch_incidents(mock_client: Client, requests_mock) -> None:
     from Rapid7_InsightIDR import fetch_incidents
 
     mock_response = util_load_json("test_data/list_investigations.json")
-    requests_mock.get(
-        f"https://{REGION}.api.insight.rapid7.com/idr/v1/investigations", json=mock_response
-    )
+    requests_mock.get(f"https://{REGION}.api.insight.rapid7.com/idr/v1/investigations", json=mock_response)
 
     last_fetch_timestamp = parse_date_range("1 day", to_timestamp=True)[0]
     last_run = {"last_fetch": last_fetch_timestamp}
 
-    response = fetch_incidents(
-        client=mock_client, max_fetch="1", last_run=last_run, first_fetch_time="1 day"
-    )
+    response = fetch_incidents(client=mock_client, max_fetch="1", last_run=last_run, first_fetch_time="1 day")
     outputs = []
     for investigation in response[1]:
         outputs.append(investigation)
@@ -681,9 +657,7 @@ def test_create_investigation(mock_client: Client, requests_mock) -> None:
     from Rapid7_InsightIDR import insight_idr_create_investigation_command
 
     mock_response = util_load_json("test_data/get_investigation_v2.json")
-    requests_mock.post(
-        f"https://{REGION}.api.insight.rapid7.com/idr/v2/investigations", json=mock_response
-    )
+    requests_mock.post(f"https://{REGION}.api.insight.rapid7.com/idr/v2/investigations", json=mock_response)
 
     args = {
         "title": "test",
@@ -716,9 +690,7 @@ def test_update_investigation(mock_client: Client, requests_mock) -> None:
     from Rapid7_InsightIDR import insight_idr_update_investigation_command
 
     mock_response = util_load_json("test_data/get_investigation_v2.json")
-    requests_mock.patch(
-        f"https://{REGION}.api.insight.rapid7.com/idr/v2/investigations/test", json=mock_response
-    )
+    requests_mock.patch(f"https://{REGION}.api.insight.rapid7.com/idr/v2/investigations/test", json=mock_response)
 
     args = {
         "investigation_id": "test",
@@ -819,9 +791,7 @@ def test_insight_idr_get_investigation_product_alerts(mock_client: Client, reque
         ),
     ],
 )
-def test_insight_idr_list_user(
-    requests_mock, mock_client: Client, args: dict[str, Any], endpoint: str, data_path: str
-) -> None:
+def test_insight_idr_list_user(requests_mock, mock_client: Client, args: dict[str, Any], endpoint: str, data_path: str) -> None:
     """
     Scenario: Test list users
     Given:
@@ -861,9 +831,7 @@ def test_insight_idr_search_investigation(mock_client: Client, requests_mock) ->
     from Rapid7_InsightIDR import insight_idr_search_investigation_command
 
     mock_response = util_load_json("test_data/search_investigation.json")
-    requests_mock.post(
-        f"https://{REGION}.api.insight.rapid7.com/idr/v2/investigations/_search", json=mock_response
-    )
+    requests_mock.post(f"https://{REGION}.api.insight.rapid7.com/idr/v2/investigations/_search", json=mock_response)
 
     response = insight_idr_search_investigation_command(
         client=mock_client,
