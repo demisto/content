@@ -3,13 +3,13 @@ commonfields:
   id: Doppel
   version: -1
 configuration:
-- additionalinfo: The Doppel server URL that will be used for calling the APIs
+- additionalinfo: The Doppel server URL that will be used for calling the APIs.
   defaultvalue: https://api.doppel.com/
   display: Doppel Tenant URL
   name: url
   required: true
   type: 0
-- additionalinfo: The API Key to use for connection with Doppel
+- additionalinfo: The API Key to use for connection with Doppel.
   display: ""
   displaypassword: API Key
   hiddenusername: true
@@ -20,7 +20,7 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- additionalinfo: The interval specifies the cadence with which the Doppel alerts be fetched
+- additionalinfo: The interval specifies the cadence with which the Doppel alerts be fetched.
   defaultvalue: "1"
   display: Incidents Fetch Interval
   name: incidentFetchInterval
@@ -30,7 +30,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- additionalinfo: 'Choose the direction to mirror the incident: None (No mirroring), Incoming (from Doppel to XSOAR), Outgoing (from XSOAR to Doppel), Incoming and Outgoing (from/to Cortex and Doppel)'
+- additionalinfo: 'Choose the direction to mirror the incident: None (No mirroring), Incoming (from Doppel to Cortex XSOAR), Outgoing (from Cortex XSOAR to Doppel), Incoming and Outgoing (from/to Cortex XSOAR and Doppel).'
   display: Mirror Direction
   name: mirror_direction
   options:
@@ -40,7 +40,7 @@ configuration:
   - None
   required: false
   type: 15
-- additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+- additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
   defaultvalue: 1 day
   display: First fetch
   name: first_fetch
@@ -68,7 +68,7 @@ configuration:
   required: false
 description: |-
   Doppel is a Modern Digital Risk Protection Solution, that detects the phishing and brand cyber attacks on the emerging channels. Doppel scans millions of channels online which includes, social media, domains, paid ads, dark web, emerging channels, etc. Doppel can identify the malicious content and cyber threats, and enables their customers to take down the digital risks proactively.
-  The XSOAR pack for Doppel mirrors the alerts created by Doppel as XSOAR incidents. The pack also contains the commands to perform different operations on Doppel alerts.
+  The Cortex XSOAR pack for Doppel mirrors the alerts created by Doppel as Cortex XSOAR incidents. The pack also contains the commands to perform different operations on Doppel alerts
 display: Doppel
 name: Doppel
 script:
@@ -78,7 +78,7 @@ script:
       name: id
     - description: The alerted entity to retrieve details for.
       name: entity
-    description: Retrieves the alert details by ID or entity. Must include exactly one of either id or entity.
+    description: Retrieves the alert details by ID or entity. Must include either ID or entity.
     name: doppel-get-alert
     outputs:
     - contextPath: Doppel.Alert.id
@@ -158,11 +158,11 @@ script:
       description: 'The link to view the alert in the Doppel platform.'
       type: String
   - arguments:
-    - description: The id of the alert to update. Only one of 'alert_id' or 'entity' can be specified, not both.
+    - description: The ID of the alert to update. Either 'alert_id' or 'entity' should be specified, not both.
       name: alert_id
     - description: A new comment to be added to the alert.
       name: comment
-    - description: The entity of the alert to update. Only one of 'alert_id' or 'entity' can be specified, not both.
+    - description: The entity of the alert to update. Either 'alert_id' or 'entity' should be specified, not both.
       name: entity
     - auto: PREDEFINED
       description: Status of which queue the alert is in.
@@ -255,10 +255,10 @@ script:
       description: 'Message indicating the status of the submission process.'
       type: String
   - arguments:
-    - description: Currently only supports search by url.
+    - description: Currently only supports search by URL.
       name: search_key
     - auto: PREDEFINED
-      description: New queue status to update alert with (id required).
+      description: New queue status to update alert with (ID required).
       name: queue_state
       predefined:
       - actioned
@@ -280,23 +280,23 @@ script:
       - paid_adds
     - description: Filter alerts created before a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'.
       name: created_before
-    - description: Filter alerts created before a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'.
+    - description: Filter alerts created after a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'.
       name: created_after
     - auto: PREDEFINED
-      description: The field to sort the reports by. Defaults to date_sourced.
+      description: The field to sort the reports by.
       defaultValue: date_sourced
       name: sort_type
       predefined:
       - date_sourced
       - date_last_actioned
     - auto: PREDEFINED
-      description: The order to sort the reports by. Defaults to desc.
+      description: The order to sort the reports by.
       defaultValue: desc
       name: sort_order
       predefined:
       - asc
       - desc
-    - description: Page number for pagination; defaults to 0.
+    - description: Page number for pagination.
       defaultValue: '0'
       name: page
     - description: List of tags to filter alerts.
