@@ -507,6 +507,7 @@ def test_fetch_cases_incidents(mocker, mock_get_a_list_of_abnormal_cases_identif
         fetch_threats=False
     )
     assert len(incidents) == 1
+    assert incidents[0].get('genai_summary') == 'genai_summary'
 
 
 def test_fetch_abuse_campaign_incidents(mocker, mock_get_a_list_of_campaigns_submitted_to_abuse_mailbox_request):

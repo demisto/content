@@ -831,9 +831,14 @@ def generate_account_takeover_cases_incidents(client, cases):
     incidents = []
     for case in cases:
         case_details = client.get_details_of_an_abnormal_case_request(case["caseId"])
-        incident = {"dbotMirrorId": str(case["caseId"]), "name": "Account Takeover Case",
-                    "occurred": case_details["firstObserved"], 'details': case['description'],
-                    "rawJSON": json.dumps(case_details) if case_details else {}}
+        incident = {
+            "dbotMirrorId": str(case["caseId"]),
+            "name": "Account Takeover Case",
+            "occurred": case_details["firstObserved"],
+            "details": case["description"],
+            "genai_summary": case_details["genai_summary"],
+            "rawJSON": json.dumps(case_details) if case_details else {}
+        }
         incidents.append(incident)
     return incidents
 
