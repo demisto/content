@@ -17,7 +17,7 @@ from splunklib.binding import AuthenticationError, HTTPError, namespace
 
 INTEGRATION_LOG = "Splunk- "
 OUTPUT_MODE_JSON = 'json'  # type of response from splunk-sdk query (json/csv/xml)
-INDEXES_REGEX = r"""["'][\s]*index[\s]*["'][\s]*:[\s]*["']([^"']+)["']"""
+INDEXES_REGEX = r"""["'][ ]*index[ ]*["'][\s]*:[\s]*["']([^"']+)["']"""
 # Define utf8 as default encoding
 params = demisto.params()
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -2776,12 +2776,12 @@ def splunk_submit_event_command(service: client.Service, args: dict):
 
 def validate_indexes(indexes, service):
     """Validates that all provided Splunk indexes exist within the Splunk service instance."""
+    demisto.debug("calling service.indexes")
     real_indexes = service.indexes
-    real_indexes_names_set = set()
-    for real_index in real_indexes:
-        real_indexes_names_set.add(real_index.name)
-    indexes_set = set(indexes)
-    return indexes_set.issubset(real_indexes_names_set)
+    demisto.debug("Finished service.indexes")
+    for index in indexes:
+        if index not in real_indexes:
+            demisto.debug(f"Index {index} not found in Splunk instance, the related event will be skipped.")
 
 
 def get_events_from_file(entry_id):
@@ -2840,6 +2840,7 @@ def extract_indexes(events: str | dict):
     """
     events_str = str(events)
     indexes = re.findall(INDEXES_REGEX, events_str)
+    demisto.debug(f"Indexes found: {indexes}")
     return indexes
 
 
@@ -2881,11 +2882,10 @@ def splunk_submit_event_hec(
             time=time_
         )
     indexes = extract_indexes(events)
+    if not indexes:
+        demisto.debug("No indexes were given, sending event/s to the default index.")
 
-    if not validate_indexes(indexes, service):
-        raise DemistoException('Index name does not exist in your splunk instance')
-
-    demisto.debug("All indexes are valid, sending events to Splunk.")
+    validate_indexes(indexes, service)
 
     headers = {
         'Authorization': f'Splunk {hec_token}',
@@ -2907,6 +2907,11 @@ def splunk_submit_event_hec(
         verify=VERIFY_CERTIFICATE,
     )
 
+'{"event": {"CustomFields": null, "account": "", "attachment": null, "autime": 1730312690962428468, "cacheVersn": 0, "canvases": null, "category": "", "closeNotes": "", "closeReason": "", "closed": "0001-01-01T00:00:00Z", "closingUserId": "", "created": "2024-10-30T18:24:50.962428468Z", "custom_status": "Under Investigation", "dbotCurrentDirtyFields": null, "dbotDirtyFields": null, "dbotMirrorDirection": "", "dbotMirrorId": "", "dbotMirrorInstance": "", "dbotMirrorLastSync": "0001-01-01T00:00:00Z", "dbotMirrorTags": null, "details": "", "droppedCount": 0, "feedBased": false, "id": "51fe2ecd-92bd-456d-846d-30390ba8879e", "investigationId": "51fe2ecd-92bd-456d-846d-30390ba8879e", "isDebug": false, "isPlayground": true, "labels": null, "lastJobRunTime": "0001-01-01T00:00:00Z", "lastOpen": "0001-01-01T00:00:00Z", "linkedCount": 0, "linkedIncidents": null, "modified": "2024-10-30T18:24:50.962432958Z", "name": "Playground", "notifyTime": "0001-01-01T00:00:00Z", "occurred": "2024-10-30T18:24:50.96242853Z", "openDuration": 0, "owner": "alina.dejeu@ge.com", "parent": "", "parentXDRIncident": "", "phase": "", "playbookId": "", "primaryTerm": 1, "rawCategory": "", "rawCloseReason": "", "rawJSON": "", "rawName": "Playground", "rawPhase": "", "rawType": "Unclassified", "reason": "", "resolution_status": "Under Investigation", "retained": false, "runStatus": "", "sequenceNumber": 8229, "severity": 1, "severityStr": "Low", "sla": 0, "sourceBrand": "", "sourceInstance": "", "status": 1, "type": "Unclassified", "version": 1},
+    "host": "demisto",
+    "fields": {"Escalated": ""},
+    "index": "last_chance_predix",
+    "sourcetype": "demisto:incident"}'
 
 def splunk_submit_event_hec_command(params: dict, service, args: dict):
     hec_token = params.get('cred_hec_token', {}).get('password') or params.get('hec_token')
