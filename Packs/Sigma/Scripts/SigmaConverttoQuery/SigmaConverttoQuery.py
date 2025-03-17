@@ -59,11 +59,18 @@ def replace_outer_quotes(sigma_query: str) -> str:
     """
     Replaces outer single double quotes to triple double quotes
     """
-    pattern = r'(?<!")"(.*?)"(?!")'
-    replacement = r'"""\1"""'
+    pattern = r'(?<!\\)"(.*?)(?<!\\)"'
 
-    output_string = re.sub(pattern, replacement, sigma_query)
-    return output_string
+    # Define a function to replace each match
+    def replace_with_triples(match):
+        # Group 1 is the content inside the quotes
+        inner_content = match.group(1)
+        return f'"""{inner_content}"""'
+
+    # Apply the regex substitution
+    modified_string = re.sub(pattern, replace_with_triples, sigma_query)
+
+    return modified_string
 
 
 def main() -> None:
@@ -84,7 +91,10 @@ def main() -> None:
 
         rule = SigmaRule.from_yaml(get_sigma_dictionary(indicator))   # Convert Sigma rule to SIEM query
 
-        query = replace_outer_quotes(siem.convert_rule(rule)[0])
+        query = siem.convert_rule(rule)[0]
+
+        if siem_name == 'xql':
+            query = replace_outer_quotes(query)
         demisto.debug('Successfully converted Sigma rule to SIEM query.')
 
     except exceptions.SigmaTransformationError as e:

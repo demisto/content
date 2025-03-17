@@ -54,6 +54,6 @@ def test_replace_outer_quotes():
     Then
     - validate that only the outer double quotes are being tripled
     """
-    query = '"*-f \"C:\\Users\\Public*"'
+    query = 'dataset=xdr_data | filter (event_type = ENUM.PROCESS and event_sub_type = ENUM.PROCESS_START) and (agent_os_type = ENUM.AGENT_OS_WINDOWS and ((action_process_image_path in ("*\\powershell.exe", "*\\pwsh.exe")) and (action_process_image_command_line in ("*-f C:\\Users\\Public*", "*-f \"C:\\Users\\Public*", "*-f %Public%*", "*-fi C:\\Users\\Public*", "*-fi \"C:\\Users\\Public*", "*-fi %Public%*", "*-fil C:\\Users\\Public*", "*-fil \"C:\\Users\\Public*", "*-fil %Public%*", "*-file C:\\Users\\Public*", "*-file \"C:\\Users\\Public*", "*-file %Public%*"))))'  # noqa: E501
     result = replace_outer_quotes(query)
-    assert result == '"""*-f \"C:\\Users\\Public*"""'
+    assert result == 'dataset=xdr_data | filter (event_type = ENUM.PROCESS and event_sub_type = ENUM.PROCESS_START) and (agent_os_type = ENUM.AGENT_OS_WINDOWS and ((action_process_image_path in ("""*\\powershell.exe""", """*\\pwsh.exe""")) and (action_process_image_command_line in ("""*-f C:\\Users\\Public*""", """*-f \"C:\\Users\\Public*""", """*-f %Public%*""", """*-fi C:\\Users\\Public*""", """*-fi \"C:\\Users\\Public*""", """*-fi %Public%*""", """*- fil C:\\Users\\Public*""", """*-fil \"C:\\Users\\Public*""", """*-fil %Public%*""", """*-file C:\\Users\\Public*""", """*-file \"C:\\Users\\Public*""", """*-file %Public%*"""))))'  # noqa: E501
