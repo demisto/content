@@ -797,7 +797,7 @@ script:
     outputs:
     - contextPath: ActiveDirectory.ValidCredentials
       description: List of usernames that successfully logged in.
-  dockerimage: demisto/ldap:2.9.1.117493
+  dockerimage: demisto/ldap:2.9.1.2033379
   ismappable: true
   isremotesyncout: true
   runonce: false
