@@ -204,9 +204,11 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
             if len(output) >= fetch_limit:
                 demisto.debug(f'Reached fetch limit, outputs {len(output)} events in total.')
                 new_last_run = {'start_date': event_date, 'ids': list(ids)}
+                demisto.debug(f'Returning from fetch-events because fetch limit has reached, with {new_last_run=}.')
                 return output, new_last_run
 
     new_last_run = {'start_date': event_date, 'ids': list(ids)}
+    demisto.debug(f'Returning from fetch-events because no more events, with {new_last_run=}.')
     return output, new_last_run
 
 
