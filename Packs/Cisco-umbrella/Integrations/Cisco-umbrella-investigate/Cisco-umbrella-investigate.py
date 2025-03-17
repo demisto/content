@@ -4,13 +4,12 @@ from CommonServerPython import *  # noqa: F401
 
 """ IMPORTS """
 
-from typing import Any
-from collections.abc import Callable
 import http
-from functools import wraps
-import time
 import json
-
+import time
+from collections.abc import Callable
+from functools import wraps
+from typing import Any
 
 INTEGRATION_COMMAND_PREFIX = "umbrella"
 INTEGRATION_PREFIX = "Umbrella"
@@ -477,11 +476,7 @@ class Client(BaseClient):
         Returns:
             dict[str, Any]: API response from Cisco Umbrella Investigate API.
         """
-        url_suffix = (
-            "investigate/v2/whois/nameservers"
-            if is_list
-            else f"investigate/v2/whois/nameservers/{nameserver}"
-        )
+        url_suffix = "investigate/v2/whois/nameservers" if is_list else f"investigate/v2/whois/nameservers/{nameserver}"
         return self._http_request(
             method="GET",
             url_suffix=url_suffix,
@@ -915,13 +910,8 @@ def get_domain_security_score_command(
             "DGA": data.get("dga_score"),
         },
         "tld_geodiversity": data.get("tld_geodiversity", ""),
-        "GeodiversityNormalized": [
-            {"score": geo[1], "country_code": geo[0]} for geo in data.get("geodiversity", [])
-        ],
-        "Geodiversity": [
-            {"score": geo[1], "country_code": geo[0]}
-            for geo in data.get("geodiversity_normalized", [])
-        ],
+        "GeodiversityNormalized": [{"score": geo[1], "country_code": geo[0]} for geo in data.get("geodiversity", [])],
+        "Geodiversity": [{"score": geo[1], "country_code": geo[0]} for geo in data.get("geodiversity_normalized", [])],
     }
     return CommandResults(
         outputs=outputs,
@@ -979,9 +969,7 @@ def get_domain_risk_score_command(
                 integration_name=INDICATOR_VENDOR,
                 indicator=domain,
                 indicator_type=DBotScoreType.DOMAIN,
-                score=calculate_domain_dbot_score(
-                    risk_score=arg_to_number(data.get("risk_score")) or 0
-                ),
+                score=calculate_domain_dbot_score(risk_score=arg_to_number(data.get("risk_score")) or 0),
                 reliability=client.reliability,
             ),
         ),
@@ -1101,11 +1089,7 @@ def list_sub_domain_command(
     res = client.list_subdomain(
         domain=args["domain"],
         offset_name=args.get("offset_name"),
-        limit=(
-            None
-            if argToBoolean(args.get("all_results"))
-            else arg_to_number(args.get("limit") or DEFAULT_LIMIT)
-        ),
+        limit=(None if argToBoolean(args.get("all_results")) else arg_to_number(args.get("limit") or DEFAULT_LIMIT)),
     )
     data = res
     outputs = {
@@ -1327,9 +1311,7 @@ def get_domain_who_is_command(client: Client, args: dict[str, Any]) -> CommandRe
                 integration_name=INDICATOR_VENDOR,
                 indicator=domain,
                 indicator_type=DBotScoreType.DOMAIN,
-                score=calculate_domain_dbot_score(
-                    secure_rank=arg_to_number(int(secure_rank) if secure_rank else None)
-                ),
+                score=calculate_domain_dbot_score(secure_rank=arg_to_number(int(secure_rank) if secure_rank else None)),
                 reliability=client.reliability,
             ),
         ),
@@ -1533,11 +1515,7 @@ def get_top_seen_domain_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    limit = (
-        (arg_to_number(args.get("limit")) or DEFAULT_LIMIT)
-        if argToBoolean(args.get("all_results")) is False
-        else None
-    )
+    limit = (arg_to_number(args.get("limit")) or DEFAULT_LIMIT) if argToBoolean(args.get("all_results")) is False else None
     res = client.get_top_seen_domain(limit)
     data = res
     outputs = [{"domain": domain} for domain in data]
@@ -1572,11 +1550,7 @@ def get_domain_volume_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     domain = args["domain"]
-    limit = (
-        None
-        if argToBoolean(args["all_results"])
-        else arg_to_number(args.get("limit") or DEFAULT_LIMIT)
-    )
+    limit = None if argToBoolean(args["all_results"]) else arg_to_number(args.get("limit") or DEFAULT_LIMIT)
     res = client.get_domain_volume(
         domain=domain,
         start=get_unix_time(args["start"]),
@@ -1645,11 +1619,7 @@ def list_timeline_command(
         name,
     )
 
-    limit = (
-        None
-        if argToBoolean(args["all_results"])
-        else arg_to_number(args.get("limit") or DEFAULT_LIMIT)
-    )
+    limit = None if argToBoolean(args["all_results"]) else arg_to_number(args.get("limit") or DEFAULT_LIMIT)
     outputs = {
         input_type: name,
         "Data": [
@@ -1723,9 +1693,7 @@ def domain_command(
             integration_name=INDICATOR_VENDOR,
             indicator=domain,
             indicator_type=DBotScoreType.DOMAIN,
-            score=calculate_domain_dbot_score(
-                secure_rank=arg_to_number(int(secure_rank) if secure_rank else None)
-            ),
+            score=calculate_domain_dbot_score(secure_rank=arg_to_number(int(secure_rank) if secure_rank else None)),
             reliability=client.reliability,
             malicious_description="Malicious domain found with risk score -1",
         )
@@ -1789,9 +1757,7 @@ def domain_command(
             t={"Name Servers": whois_data.get("nameServers", [])},
             headers=[],
         )
-        readable_emails = tableToMarkdown(
-            name="Emails:", t=whois_data.get("emails", []), headers=["Emails"]
-        )
+        readable_emails = tableToMarkdown(name="Emails:", t=whois_data.get("emails", []), headers=["Emails"])
         readable_domain = tableToMarkdown(
             name="Domain Categorization:",
             t={
@@ -1800,13 +1766,7 @@ def domain_command(
             },
             headers=[],
         )
-        readable = (
-            readable_domain_reputation
-            + readable_whois
-            + readable_name_servers
-            + readable_emails
-            + readable_domain
-        )
+        readable = readable_domain_reputation + readable_whois + readable_name_servers + readable_emails + readable_domain
 
         command_results.append(
             CommandResults(
@@ -1851,9 +1811,7 @@ def test_module(client: Client, api_key: str, api_secret: str) -> str:
 
 
 def get_request_error_message(error_data: dict[str, Any]) -> str:
-    return (
-        error_data.get("errorMessage") or error_data.get("message") or str(json.dumps(error_data))
-    )
+    return error_data.get("errorMessage") or error_data.get("message") or str(json.dumps(error_data))
 
 
 def parse_domain_history(data: list[dict[str, Any]]):
@@ -1919,9 +1877,7 @@ def verify_threshold(suspicious_threshold: int, malicious_threshold: int):
         suspicious_threshold (int): Suspicious threshold.
         malicious_threshold (int): Malicious threshold.
     """
-    if not (
-        MAX_THRESHOLD_VALUE >= suspicious_threshold > malicious_threshold >= MIN_THRESHOLD_VALUE
-    ):
+    if not (MAX_THRESHOLD_VALUE >= suspicious_threshold > malicious_threshold >= MIN_THRESHOLD_VALUE):
         return_error(
             "Invalid threshold values: 'Suspicious' must be less than 'Malicious', "
             f"and both must be between {MIN_THRESHOLD_VALUE} and {MAX_THRESHOLD_VALUE}."
@@ -1936,12 +1892,8 @@ def main() -> None:
 
     global SUSPICIOUS_THRESHOLD
     global MALICIOUS_THRESHOLD
-    SUSPICIOUS_THRESHOLD = (
-        arg_to_number(params.get("suspicious_threshold", 0)) or DEFAULT_SUSPICIOUS_THRESHOLD
-    )
-    MALICIOUS_THRESHOLD = (
-        arg_to_number(params.get("dboscore_threshold", -90)) or -DEFAULT_MALICIOUS_THRESHOLD
-    )
+    SUSPICIOUS_THRESHOLD = arg_to_number(params.get("suspicious_threshold", 0)) or DEFAULT_SUSPICIOUS_THRESHOLD
+    MALICIOUS_THRESHOLD = arg_to_number(params.get("dboscore_threshold", -90)) or -DEFAULT_MALICIOUS_THRESHOLD
 
     base_url = params["baseURL"]
     api_key = dict_safe_get(params, ["apitoken_creds", "identifier"])

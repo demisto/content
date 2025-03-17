@@ -1,10 +1,11 @@
+import importlib
 import json
 import os
 from http import HTTPStatus
 from urllib.parse import urljoin
-import pytest
+
 import CommonServerPython
-import importlib
+import pytest
 
 BASE_URL = "http://example.com"
 module = importlib.import_module("Cisco-umbrella-investigate")
@@ -575,7 +576,7 @@ def test_list_timeline(
             "all_results": "false",
             "limit": "50",
         },
-        "Domain"
+        "Domain",
     )
     assert result.outputs_prefix == "Umbrella.Timeline"
     assert result.outputs_key_field == "Domain"
@@ -778,8 +779,7 @@ def test_get_regex_who_is_command(
     json_response = load_mock_response("regex_whois.json")
     url = urljoin(
         BASE_URL,
-        "investigate/v2/whois/search/Domain/exa%5Ba-z%5Dple.com"
-        + "?start=1711450998000&stop=1711450998000&limit=50&offset=0",
+        "investigate/v2/whois/search/Domain/exa%5Ba-z%5Dple.com" + "?start=1711450998000&stop=1711450998000&limit=50&offset=0",
     )
     requests_mock.get(url=url, json=json_response, status_code=HTTPStatus.OK)
     result = module.get_regex_who_is_command(
@@ -881,7 +881,5 @@ def test_calculate_domain_dbot_score(status, securerank, risk_score, expected_re
      - Ensure that output key field correct.
      - Ensure that outputs fields correct.
     """
-    result = module.calculate_domain_dbot_score(
-        status=status, secure_rank=securerank, risk_score=risk_score
-    )
+    result = module.calculate_domain_dbot_score(status=status, secure_rank=securerank, risk_score=risk_score)
     assert result == expected_result
