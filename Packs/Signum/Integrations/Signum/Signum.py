@@ -61,7 +61,7 @@ class Client(BaseClient):
         # SOAP request URL
         nonce = os.urandom(16)
         created = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
-        digest = base64.b64encode(hashlib.sha1(nonce + bytes(created, "utf-8") + bytes(password, "utf-8")).digest()).decode(
+        digest = base64.b64encode(hashlib.sha256(nonce + bytes(created, "utf-8") + bytes(password, "utf-8")).digest()).decode(
             "ascii"
         )
         userToken = f"UsernameToken-{digest}"
