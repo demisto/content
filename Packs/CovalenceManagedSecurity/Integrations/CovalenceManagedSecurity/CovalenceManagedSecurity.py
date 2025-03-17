@@ -758,7 +758,7 @@ def main():
         except AttributeError:
             http_text = e.response
         return_error_msg = (
-            f"Failed to execute {command} command with HTTP response: {http_text!s}." f"\nStack trace: {traceback.format_exc()}"
+            f"Failed to execute {command} command with HTTP response: {http_text!s}.\nStack trace: {traceback.format_exc()}"
         )
     except Exception as e:
         demisto.error(traceback.format_exc())

@@ -31,7 +31,7 @@ class Client(BaseClient):
 
             if response.get("result")[0].get("status", {}).get("code") != 0:
                 raise DemistoException(
-                    f"Unable to get new session token. Reason - " f"{response.get('result')[0].get('status').get('message')}"
+                    f"Unable to get new session token. Reason - {response.get('result')[0].get('status').get('message')}"
                 )
 
             demisto.setIntegrationContext({"session": response.get("session")})
@@ -167,7 +167,7 @@ def resolve_enum(entity_object, field_name, enum_dict):
 def list_adom_devices_command(client, args):
     devices_data = client.fortimanager_api_call(
         "get",
-        f"/dvmdb/{get_global_or_adom(client, args)}/device" f"{get_specific_entity(args.get('device'))}",
+        f"/dvmdb/{get_global_or_adom(client, args)}/device{get_specific_entity(args.get('device'))}",
         range_info=get_range_for_list_command(args),
     )
 
@@ -209,7 +209,7 @@ def list_adom_devices_command(client, args):
 def list_adom_devices_groups_command(client, args):
     device_groups_data = client.fortimanager_api_call(
         "get",
-        f"/dvmdb/{get_global_or_adom(client, args)}/group" f"{get_specific_entity(args.get('group'))}",
+        f"/dvmdb/{get_global_or_adom(client, args)}/group{get_specific_entity(args.get('group'))}",
         range_info=get_range_for_list_command(args),
     )
 
@@ -233,7 +233,7 @@ def list_adom_devices_groups_command(client, args):
 def list_firewall_addresses_command(client, args):
     firewall_addresses = client.fortimanager_api_call(
         "get",
-        f"/pm/config/{get_global_or_adom(client, args)}" f"/obj/firewall/address" f"{get_specific_entity(args.get('address'))}",
+        f"/pm/config/{get_global_or_adom(client, args)}/obj/firewall/address{get_specific_entity(args.get('address'))}",
         range_info=get_range_for_list_command(args),
     )
 
@@ -280,7 +280,7 @@ def update_address_command(client, args):
 
 def delete_address_command(client, args):
     client.fortimanager_api_call(
-        "delete", f"/pm/config/{get_global_or_adom(client, args)}" f"/obj/firewall/address/{args.get('address')}"
+        "delete", f"/pm/config/{get_global_or_adom(client, args)}/obj/firewall/address/{args.get('address')}"
     )
     return f"Deleted Address {args.get('address')}"
 
@@ -289,7 +289,7 @@ def list_address_groups_command(client, args):
     address_group = get_specific_entity(args.get("address_group"))
     firewall_address_groups = client.fortimanager_api_call(
         "get",
-        f"/pm/config/" f"{get_global_or_adom(client, args)}" f"/obj/firewall/addrgrp{address_group}",
+        f"/pm/config/{get_global_or_adom(client, args)}/obj/firewall/addrgrp{address_group}",
         range_info=get_range_for_list_command(args),
     )
 
@@ -330,7 +330,7 @@ def update_address_group_command(client, args):
 
 def delete_address_group_command(client, args):
     client.fortimanager_api_call(
-        "delete", f"/pm/config/{get_global_or_adom(client, args)}" f"/obj/firewall/addrgrp/{args.get('address_group')}"
+        "delete", f"/pm/config/{get_global_or_adom(client, args)}/obj/firewall/addrgrp/{args.get('address_group')}"
     )
     return f"Deleted Address Group {args.get('address_group')}"
 
@@ -402,7 +402,7 @@ def update_service_group_command(client, args):
 
 def delete_service_group_command(client, args):
     client.fortimanager_api_call(
-        "delete", f"/pm/config/{get_global_or_adom(client, args)}" f"/obj/firewall/service/group/{args.get('service_group')}"
+        "delete", f"/pm/config/{get_global_or_adom(client, args)}/obj/firewall/service/group/{args.get('service_group')}"
     )
     return f"Deleted Service Group {args.get('service_group')}"
 
@@ -450,14 +450,14 @@ def update_custom_service_command(client, args):
 
 def delete_custom_service_command(client, args):
     client.fortimanager_api_call(
-        "delete", f"/pm/config/{get_global_or_adom(client, args)}" f"/obj/firewall/service/custom/{args.get('custom')}"
+        "delete", f"/pm/config/{get_global_or_adom(client, args)}/obj/firewall/service/custom/{args.get('custom')}"
     )
     return f"Deleted Custom Service {args.get('custom')}"
 
 
 def list_policy_packages_command(client, args):
     policy_packages = client.fortimanager_api_call(
-        "get", f"pm/pkg/{get_global_or_adom(client, args)}" f"{get_specific_entity(args.get('policy_package'))}"
+        "get", f"pm/pkg/{get_global_or_adom(client, args)}{get_specific_entity(args.get('policy_package'))}"
     )
 
     # No native range filter in API call, implementing manually
@@ -467,7 +467,7 @@ def list_policy_packages_command(client, args):
         policy_packages = policy_packages[from_val:]
 
     else:
-        policy_packages = policy_packages[from_val : int(to_val)]
+        policy_packages = policy_packages[from_val: int(to_val)]
 
     headers = ["name", "obj_ver", "type", "scope_member"] if not args.get("policy_package") else None
 
@@ -604,7 +604,7 @@ def create_policy_command(client, args):
 
     policies = client.fortimanager_api_call(
         "add",
-        f"/pm/config/" f"{get_global_or_adom(client, args)}" f"/pkg/{args.get('package')}/firewall/policy",
+        f"/pm/config/{get_global_or_adom(client, args)}/pkg/{args.get('package')}/firewall/policy",
         json_data=json_data,
     )
 
@@ -629,7 +629,7 @@ def update_policy_command(client, args):
 
     policies = client.fortimanager_api_call(
         "update",
-        f"/pm/config/" f"{get_global_or_adom(client, args)}" f"/pkg/{args.get('package')}/firewall/policy",
+        f"/pm/config/{get_global_or_adom(client, args)}/pkg/{args.get('package')}/firewall/policy",
         data_in_list=data,
     )
 
@@ -639,7 +639,7 @@ def update_policy_command(client, args):
 def delete_policy_command(client, args):
     client.fortimanager_api_call(
         "delete",
-        f"/pm/config/{get_global_or_adom(client, args)}/pkg/" f"{args.get('package')}/firewall/policy/{args.get('policy')}",
+        f"/pm/config/{get_global_or_adom(client, args)}/pkg/{args.get('package')}/firewall/policy/{args.get('policy')}",
     )
     return f"Deleted Policy {args.get('policy')}"
 
@@ -647,7 +647,7 @@ def delete_policy_command(client, args):
 def move_policy_command(client, args):
     client.fortimanager_api_call(
         "move",
-        f"/pm/config/{get_global_or_adom(client, args)}" f"/pkg/{args.get('package')}/firewall/policy/{args.get('policy')}",
+        f"/pm/config/{get_global_or_adom(client, args)}/pkg/{args.get('package')}/firewall/policy/{args.get('policy')}",
         other_params=setup_request_data(args, ["adom", "package", "policy"]),
     )
 
@@ -660,7 +660,7 @@ def move_policy_command(client, args):
 def list_dynamic_interface_command(client, args):
     dynamic_interfaces = client.fortimanager_api_call(
         "get",
-        f"/pm/config/" f"{get_global_or_adom(client, args)}" f"/obj/dynamic/interface",
+        f"/pm/config/{get_global_or_adom(client, args)}/obj/dynamic/interface",
         range_info=get_range_for_list_command(args),
     )
 
@@ -754,12 +754,12 @@ def main() -> None:
             except DemistoException as e:
                 if "No permission for the resource" in str(e):
                     raise DemistoException(
-                        "Unable to connect to the FortiManager Server - please check the " "entered credentials and ADOM."
+                        "Unable to connect to the FortiManager Server - please check the entered credentials and ADOM."
                     )
 
                 if "Invalid url" in str(e):
                     raise DemistoException(
-                        "Unable to connect to the default ADOM - please check the " "entered credentials and ADOM."
+                        "Unable to connect to the default ADOM - please check the entered credentials and ADOM."
                     )
 
                 else:

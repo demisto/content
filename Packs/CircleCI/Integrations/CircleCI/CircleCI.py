@@ -121,7 +121,7 @@ def test_module_command(client: Client) -> str:
 
     message: str = "ok"
     try:
-        vc_type, organization, project, _ = get_common_arguments(client, dict())
+        vc_type, organization, project, _ = get_common_arguments(client, {})
         client.get_workflows_list(vc_type, organization, project)
     except DemistoException as e:
         if "not found" in str(e).lower():

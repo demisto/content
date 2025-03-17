@@ -138,7 +138,7 @@ class TestSiverfort:
     ):
         args = {"resource_name": resource_name, "domain_name": domain}
         requests_mock.get(
-            f"{base_url}/getEntityRisk?resource_name={resource_name}" f"&domain_name={domain}", json=valid_get_risk_response
+            f"{base_url}/getEntityRisk?resource_name={resource_name}&domain_name={domain}", json=valid_get_risk_response
         )
 
         _, outputs, _ = get_resource_entity_risk_command(client, args)

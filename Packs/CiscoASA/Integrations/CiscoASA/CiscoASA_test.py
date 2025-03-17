@@ -114,7 +114,7 @@ def test_get_all_rules(requests_mock):
     command_results = list_rules_command(client, args)
 
     # Assert outputs is empty when there's no rule
-    assert [] == command_results.outputs
+    assert command_results.outputs == []
 
 
 def test_rule_by_id(requests_mock):

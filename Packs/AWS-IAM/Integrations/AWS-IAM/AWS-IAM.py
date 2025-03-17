@@ -374,7 +374,7 @@ def list_mfa_devices(args, client):
             }
         )
     if is_manual and page_size and len(data) > page_size:
-        data = data[-1 * page_size :]
+        data = data[-1 * page_size:]
     human_readable = tableToMarkdown("AWS IAM Users MFA Devices", data)
     return CommandResults(
         readable_output=human_readable,
@@ -762,7 +762,7 @@ def list_user_policies(args, client):
     marker = response.get("Marker", None)
 
     if is_manual and page_size and len(data) > page_size:
-        data = data[-1 * page_size :]
+        data = data[-1 * page_size:]
 
     policy_data = [
         {
@@ -800,7 +800,7 @@ def list_attached_user_policies(args, client):
     marker = response.get("Marker", None)
 
     if is_manual and page_size is not None and len(data) > page_size:
-        data = data[-1 * page_size :]
+        data = data[-1 * page_size:]
 
     policy_data = [
         {"UserName": user_name, "PolicyArn": policy.get("PolicyArn"), "PolicyName": policy.get("PolicyName")} for policy in data
@@ -838,7 +838,7 @@ def list_attached_group_policies(args, client):
     marker = response.get("Marker")
 
     if is_manual and page_size and len(data) > page_size:
-        data = data[-1 * args.get("page_size") :]
+        data = data[-1 * args.get("page_size"):]
 
     policy_data = [
         {"GroupName": group_name, "PolicyArn": policy.get("PolicyArn"), "PolicyName": policy.get("PolicyName")} for policy in data
@@ -915,7 +915,7 @@ def put_role_policy_command(args, client):
         return CommandResults(raw_response=response, readable_output=human_readable)
     except Exception as e:
         raise DemistoException(
-            f"Couldn't add policy {policy_name} to role {role_name}" f"\nencountered the following exception: {e!s}"
+            f"Couldn't add policy {policy_name} to role {role_name}\nencountered the following exception: {e!s}"
         )
 
 
@@ -940,7 +940,7 @@ def put_user_policy_command(args, client):
         return CommandResults(raw_response=response, readable_output=human_readable)
     except Exception as e:
         raise DemistoException(
-            f"Couldn't add policy {policy_name} to user {user_name}" f"\nencountered the following exception: {e!s}"
+            f"Couldn't add policy {policy_name} to user {user_name}\nencountered the following exception: {e!s}"
         )
 
 
@@ -965,7 +965,7 @@ def put_group_policy_command(args, client):
         return CommandResults(raw_response=response, readable_output=human_readable)
     except Exception as e:
         raise DemistoException(
-            f"Couldn't add policy {policy_name} to group {group_name}" f"\nencountered the following exception: {e!s}"
+            f"Couldn't add policy {policy_name} to group {group_name}\nencountered the following exception: {e!s}"
         )
 
 
@@ -989,7 +989,7 @@ def tag_role_command(args, client):
         return CommandResults(raw_response=response, readable_output=human_readable)
     except Exception as e:
         raise DemistoException(
-            f"Couldn't add the following tags {tags} to role {role_name}" f"\nencountered the following exception: {e!s}"
+            f"Couldn't add the following tags {tags} to role {role_name}\nencountered the following exception: {e!s}"
         )
 
 
@@ -1009,7 +1009,7 @@ def list_attached_role_policies_command(args: dict, client) -> list[CommandResul
     try:
         raw_response = client.list_attached_role_policies(**aws_args)
     except Exception as e:
-        raise DemistoException(f"Couldn't list role policies with {args}\n" f"encountered the following exception: {e!s}") from e
+        raise DemistoException(f"Couldn't list role policies with {args}\nencountered the following exception: {e!s}") from e
 
     policies = [policy | {"RoleName": role_name} for policy in raw_response["AttachedPolicies"]]
 
@@ -1060,7 +1060,7 @@ def tag_user_command(args, client):
         return CommandResults(raw_response=response, readable_output=human_readable)
     except Exception as e:
         raise DemistoException(
-            f"Couldn't add the following tags {tags} to role {user_name}" f"\nencountered the following exception: {e!s}"
+            f"Couldn't add the following tags {tags} to role {user_name}\nencountered the following exception: {e!s}"
         )
 
 
@@ -1172,7 +1172,7 @@ def get_access_key_last_used_command(args, client):
         )
     except Exception as e:
         raise DemistoException(
-            f"Couldn't get information about access key {access_key_id}" f"\nencountered the following exception: {e!s}"
+            f"Couldn't get information about access key {access_key_id}\nencountered the following exception: {e!s}"
         )
 
 

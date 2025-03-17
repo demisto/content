@@ -630,7 +630,7 @@ test_clear_issue_note_response = {
 }
 
 test_clear_issue_note_fail_response = (
-    "Error details: Only the user who created the note, can delete it.\n" "Check server.log file for additional information"
+    "Error details: Only the user who created the note, can delete it.\nCheck server.log file for additional information"
 )
 
 

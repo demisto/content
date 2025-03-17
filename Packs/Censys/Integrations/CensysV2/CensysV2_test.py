@@ -126,7 +126,7 @@ def test_censys_view_cert(requests_mock, client):
     args = {"index": "certificates", "query": "9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f661234"}
     mock_response = util_load_json("test_data/view_cert_response.json")
     requests_mock.get(
-        "https://search.censys.io/api/v2/certificates/9d3b51a6b80daf76e07473" "0f19dc01e643ca0c3127d8f48be64cf3302f661234",
+        "https://search.censys.io/api/v2/certificates/9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f661234",
         json=mock_response,
     )
     response = censys_view_command(client, args)

@@ -33,7 +33,7 @@ class Client(BaseClient):
         response = self._http_request(
             method="GET",
             url_suffix="getBootStatus",
-            headers={"Authorization": "Bearer %s" % get_jwt_token(self.app_user_id, self.app_user_secret)},
+            headers={"Authorization": f"Bearer {get_jwt_token(self.app_user_id, self.app_user_secret)}"},
         )
         return response
 
@@ -51,7 +51,7 @@ class Client(BaseClient):
             method="GET",
             url_suffix="getUPN",
             params=params,
-            headers={"Authorization": "Bearer %s" % get_jwt_token(self.app_user_id, self.app_user_secret)},
+            headers={"Authorization": f"Bearer {get_jwt_token(self.app_user_id, self.app_user_secret)}"},
         )
         return response["user_principal_name"]
 
@@ -63,7 +63,7 @@ class Client(BaseClient):
             method="GET",
             url_suffix="getEntityRisk",
             params={"user_principal_name": upn},
-            headers={"Authorization": "Bearer %s" % get_jwt_token(self.app_user_id, self.app_user_secret)},
+            headers={"Authorization": f"Bearer {get_jwt_token(self.app_user_id, self.app_user_secret)}"},
         )
         return response
 
@@ -75,7 +75,7 @@ class Client(BaseClient):
             method="GET",
             url_suffix="getEntityRisk",
             params={"resource_name": resource_name, "domain_name": domain_name},
-            headers={"Authorization": "Bearer %s" % get_jwt_token(self.app_user_id, self.app_user_secret)},
+            headers={"Authorization": f"Bearer {get_jwt_token(self.app_user_id, self.app_user_secret)}"},
         )
         return response
 
@@ -86,7 +86,7 @@ class Client(BaseClient):
         response = self._http_request(
             method="POST",
             url_suffix="updateEntityRisk",
-            headers={"Authorization": "Bearer %s" % get_jwt_token(self.app_user_id, self.app_user_secret)},
+            headers={"Authorization": f"Bearer {get_jwt_token(self.app_user_id, self.app_user_secret)}"},
             json_data={"user_principal_name": upn, "risks": risks},
         )
         return response
@@ -99,7 +99,7 @@ class Client(BaseClient):
             method="POST",
             url_suffix="updateEntityRisk",
             json_data={"resource_name": resource_name, "domain_name": domain_name, "risks": risks},
-            headers={"Authorization": "Bearer %s" % get_jwt_token(self.app_user_id, self.app_user_secret)},
+            headers={"Authorization": f"Bearer {get_jwt_token(self.app_user_id, self.app_user_secret)}"},
         )
         return response
 
