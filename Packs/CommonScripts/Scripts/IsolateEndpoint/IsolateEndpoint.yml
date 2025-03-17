@@ -11,7 +11,7 @@ args:
 - description: Should the isolate be force.
   name: force
 - description: |-
-    Specify the integration brands to run the command for. If not provided, the command will run for all available integrations. For multi-select, provide a comma-separated list. For example: 'Active Directory Query v2, CrowdstrikeFalcon, ExtraHop v2'.
+    Specify the integration brands to run the command for. If not provided, the command will run for all available integrations. For multi-select, provide a comma-separated list. For example: 'Cortex Core - IR, CrowdstrikeFalcon, FireEyeHX v2'.
   name: brands
   auto: PREDEFINED
   predefined:
