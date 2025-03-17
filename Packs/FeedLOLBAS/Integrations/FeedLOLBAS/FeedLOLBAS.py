@@ -109,6 +109,7 @@ def map_indicator_fields(raw_indicator: dict[str, Any]) -> dict[str, Any]:
         "Detections": mapped_detections,
         "Paths": mapped_paths,
         "description": raw_indicator.get("Description"),
+        "url": raw_indicator.get("url")
     }
 
 
@@ -217,6 +218,7 @@ def get_indicators(client, limit):
                 "Commands": record.get("fields", {}).get("Commands"),
                 "Detections": record.get("fields", {}).get("Detections"),
                 "Paths": record.get("fields", {}).get("Paths"),
+                "URL": record.get("fields", {}).get("url")
             }
             | hr
         )
