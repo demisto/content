@@ -4,7 +4,7 @@ filter
 | alter
     xdm.target.user.identifier = ImpersonateTargetUuid,
     xdm.target.user.username = coalesce(NormalizedUser,UserName,ImpersonateTargetName),
-    xdm.session_context_id = Session,
+    xdm.session_context_id = eido,
     xdm.event.outcome = MfaResult,
     xdm.event.outcome_reason = MfaReason,
     xdm.target.application.name = coalesce(ProfileName, ApplicationName, AppName),
