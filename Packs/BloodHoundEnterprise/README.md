@@ -49,8 +49,8 @@ This command allows you to monitor and analyze recent events directly from the C
 
 | **Argument Name**    | **Description**                                                                                                    | **Required** |
 |----------------------|--------------------------------------------------------------------------------------------------------------------|--------------|
-| start                | The start date for filtering events. Use ISO 8601 format (e.g., 2024-07-10T08:08:46Z). Default is one minute back  | No           |
-| end                  | The end date for filtering events. Use ISO 8601 format (e.g., 2024-07-11T08:09:47Z). Default is current time       | No           |
+| start                | The start date for filtering events. Use ISO 8601 format (e.g., 2024-07-10T08:08:46Z). Default is one minute back.  | No           |
+| end                  | The end date for filtering events. Use ISO 8601 format (e.g., 2024-07-11T08:09:47Z). Default is current time.       | No           |
 | should_push_events   | Set to `true` to create events in Cortex XSIAM; `false` will only display them.                                    | No           |
 | limit                | The maximum number of events to return. Default is 10.                                                             | No           |
 
