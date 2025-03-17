@@ -112,7 +112,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- display: Use system proxy settings
+- display: Use system proxy settings test
   name: proxy
   type: 8
   section: Connect
