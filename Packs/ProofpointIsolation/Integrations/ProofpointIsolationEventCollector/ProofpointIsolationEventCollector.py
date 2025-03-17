@@ -225,7 +225,7 @@ def get_events(client: Client, args: dict) -> tuple[list, CommandResults]:
     end_date = args.get('end_date')
     limit: int = arg_to_number(args.get('limit')) or DEFAULT_FETCH_LIMIT
 
-    output, _ = fetch_events(client, limit, 60, {"start_date": start_date, "end_date": end_date})
+    output, _ = fetch_events(client, limit, {"start_date": start_date, "end_date": end_date})
 
     filtered_events = []
     for event in output:
