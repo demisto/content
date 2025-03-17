@@ -2,7 +2,7 @@
     "name": "IBM AIX",
     "description": "IBM Advanced Interactive eXecution (AIX) is a series of UNIX operating systems that's usually used for corporate servers, NAS and workstations.",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
