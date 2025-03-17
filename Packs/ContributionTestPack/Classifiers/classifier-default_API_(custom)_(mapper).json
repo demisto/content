@@ -1,0 +1,48 @@
+{
+	"brands": [
+		""
+	],
+	"defaultIncidentType": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "default_API_custom-mapper",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {
+		"doo": "Malware"
+	},
+	"locked": false,
+	"logicalVersion": 0,
+	"mapping": {
+		"Malware": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"name": {
+					"complex": null,
+					"simple": "name"
+				},
+				"severity": {
+					"complex": null,
+					"simple": "level"
+				}
+			}
+		}
+	},
+	"name": "default_API (custom) (mapper)",
+	"nameRaw": "default_API (custom) (mapper)",
+	"packID": "c51ed6ea-3b89-4a07-8bd7-8eaf0749e1e6",
+	"sortValues": null,
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": null,
+		"simple": "type"
+	},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}
