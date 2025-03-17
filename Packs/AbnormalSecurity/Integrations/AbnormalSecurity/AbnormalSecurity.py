@@ -49,6 +49,10 @@ class FetchIncidentsError(Exception):
 
 
 class Client(BaseClient):
+    CASES = "cases"
+    ABUSE_CAMPAIGNS = "abusecampaigns"
+    THREATS = "threats"
+
     def __init__(self, server_url, verify, proxy, headers, auth):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth, timeout=2400)
 
@@ -109,9 +113,78 @@ class Client(BaseClient):
 
         response = self._http_request('get', 'threats', params=params, headers=headers)
 
-        response = self._remove_keys_from_response(response, ["pageNumber", "nextPageNumber"])
-
         return response
+
+    def get_page_number_and_max_iterations(self, max_incidents_to_fetch):
+        page_size = min(max_incidents_to_fetch, 100)
+        max_iterations = (max_incidents_to_fetch // page_size) + 1
+        return page_size, max_iterations
+
+    def get_paginated_cases_list(self, filter_='', max_incidents_to_fetch=FETCH_LIMIT):
+        cases_response: dict[str, list[dict]] = {"cases": []}
+        if max_incidents_to_fetch < 1:
+            return cases_response
+
+        page_number, current_iteration = 1, 1
+        page_size, max_iterations = self.get_page_number_and_max_iterations(max_incidents_to_fetch)
+
+        while page_number is not None:
+            response = self.get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(
+                filter_=filter_, page_size=page_size, page_number=page_number
+            )
+            cases_response["cases"].extend(response.get('cases', []))
+            if len(response.get('cases', [])) < page_size:
+                # There are no more cases to fetch
+                return cases_response
+            page_number = response.get('nextPageNumber', None)
+            current_iteration += 1
+            if current_iteration > max_iterations:
+                break
+        return cases_response
+
+    def get_paginated_threats_list(self, filter_='', max_incidents_to_fetch=FETCH_LIMIT):
+        threats_response: dict[str, list[dict]] = {"threats": []}
+        if max_incidents_to_fetch < 1:
+            return threats_response
+
+        page_number, current_iteration = 1, 1
+        page_size, max_iterations = self.get_page_number_and_max_iterations(max_incidents_to_fetch)
+
+        while page_number is not None:
+            response = self.get_a_list_of_threats_request(
+                filter_=filter_, page_size=page_size, page_number=page_number
+            )
+            threats_response["threats"].extend(response.get('threats', []))
+            if len(response.get('threats', [])) < page_size:
+                # There are no more threats to fetch
+                return threats_response
+            page_number = response.get('nextPageNumber', None)
+            current_iteration += 1
+            if current_iteration > max_iterations:
+                break
+        return threats_response
+
+    def get_paginated_abusecampaigns_list(self, filter_='', max_incidents_to_fetch=FETCH_LIMIT):
+        campaigns_response: dict[str, list[dict]] = {"campaigns": []}
+        if max_incidents_to_fetch < 1:
+            return campaigns_response
+
+        page_number, current_iteration = 1, 1
+        page_size, max_iterations = self.get_page_number_and_max_iterations(max_incidents_to_fetch)
+
+        while page_number is not None:
+            response = self.get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(
+                filter_=filter_, page_size=page_size, page_number=page_number
+            )
+            campaigns_response["campaigns"].extend(response.get('campaigns', []))
+            if len(response.get('campaigns', [])) < page_size:
+                # There are no more campaigns to fetch
+                return campaigns_response
+            page_number = response.get('nextPageNumber', None)
+            current_iteration += 1
+            if current_iteration > max_iterations:
+                break
+        return campaigns_response
 
     def get_details_of_a_threat_request(self, threat_id, subtenant=None, page_size=None, page_number=None):
         """
@@ -781,7 +854,7 @@ def get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command(client, args):
     return command_results
 
 
-def generate_threat_incidents(client, threats, MAX_PAGE_NUMBER, start_datetime, end_datetime):
+def generate_threat_incidents(client, threats, max_page_number, start_datetime, end_datetime):
     incidents = []
     for threat in threats:
         page_number = 1
@@ -795,7 +868,7 @@ def generate_threat_incidents(client, threats, MAX_PAGE_NUMBER, start_datetime, 
                 if remediation_datetime and remediation_datetime < start_datetime:
                     break
             page_number = threat_details.get('nextPageNumber', None)
-            if page_number is not None and page_number > MAX_PAGE_NUMBER:
+            if page_number is not None and page_number > max_page_number:
                 break
 
         threat_details["messages"] = all_filtered_messages
@@ -850,9 +923,9 @@ def fetch_incidents(
         fetch_threats: bool,
         fetch_abuse_campaigns: bool,
         fetch_account_takeover_cases: bool,
-        max_page_number: Optional[int] = 8,
-        max_incidents_to_fetch: Optional[int] = FETCH_LIMIT,
-        polling_lag: Optional[timedelta] = timedelta(minutes=0),
+        max_page_number: int = 8,
+        max_incidents_to_fetch: int = FETCH_LIMIT,
+        polling_lag: timedelta = timedelta(minutes=0),
 ):
     """
     Fetch incidents from various sources (threats, abuse campaigns, and account takeovers).
@@ -887,24 +960,27 @@ def fetch_incidents(
 
         current_iso_format_time = current_datetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
         all_incidents = []
-
+        current_pending_incidents_to_fetch = max_incidents_to_fetch
         if fetch_threats:
             threats_filter = f"remediationTimestamp gte {start_timestamp} and remediationTimestamp lte {end_timestamp}"
-            threats_response = client.get_a_list_of_threats_request(filter_=threats_filter, page_size=100)
+            threats_response = client.get_paginated_threats_list(
+                filter_=threats_filter, max_incidents_to_fetch=current_pending_incidents_to_fetch)
             all_incidents += generate_threat_incidents(
                 client, threats_response.get('threats', []), max_page_number, start_time, end_time
             )
+        current_pending_incidents_to_fetch -= len(all_incidents)
 
         if fetch_abuse_campaigns:
             abuse_campaigns_filter = f"lastReportedTime gte {last_fetch}"
-            abuse_campaigns_response = client.get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(
-                filter_=abuse_campaigns_filter, page_size=100)
+            abuse_campaigns_response = client.get_paginated_abusecampaigns_list(
+                filter_=abuse_campaigns_filter, max_incidents_to_fetch=current_pending_incidents_to_fetch)
             all_incidents += generate_abuse_campaign_incidents(client, abuse_campaigns_response.get('campaigns', []))
+        current_pending_incidents_to_fetch -= len(all_incidents)
 
         if fetch_account_takeover_cases:
             account_takeover_cases_filter = f"lastModifiedTime gte {last_fetch}"
-            account_takeover_cases_response = client.get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(
-                filter_=account_takeover_cases_filter, page_size=100)
+            account_takeover_cases_response = client.get_paginated_cases_list(
+                filter_=account_takeover_cases_filter, max_incidents_to_fetch=current_pending_incidents_to_fetch)
             all_incidents += generate_account_takeover_cases_incidents(
                 client, account_takeover_cases_response.get('cases', []))
 
@@ -1029,7 +1105,7 @@ def main():  # pragma: nocover
                 client=client,
                 last_run=demisto.getLastRun(),
                 first_fetch_time=first_fetch_time,
-                max_incidents_to_fetch=max_incidents_to_fetch,
+                max_incidents_to_fetch=max_incidents_to_fetch or FETCH_LIMIT,
                 fetch_threats=fetch_threats,
                 fetch_abuse_campaigns=fetch_abuse_campaigns,
                 fetch_account_takeover_cases=fetch_account_takeover_cases,
