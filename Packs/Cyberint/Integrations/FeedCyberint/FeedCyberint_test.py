@@ -1,10 +1,9 @@
 from datetime import datetime, timedelta
 from unittest import mock
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import FeedCyberint
 import pytest
-
 from CommonServerPython import DemistoException
 
 date_time = str(datetime.now().strftime(FeedCyberint.DATE_FORMAT))
@@ -54,7 +53,7 @@ def mock_client() -> FeedCyberint.Client:
     )
 
 
-@mock.patch('FeedCyberint.is_execution_time_exceeded')
+@mock.patch("FeedCyberint.is_execution_time_exceeded")
 def test_build_iterator(
     is_execution_time_exceeded_mock,
     requests_mock,
@@ -82,15 +81,17 @@ def test_build_iterator(
     requests_mock.get(REQUEST_URL1, text=response1)
     requests_mock.get(REQUEST_URL2, text=response2)
 
-    with patch.object(mock_client, 'request_daily_feed', return_value=response1), \
-            patch('CommonServerPython.auto_detect_indicator_type') as mock_auto_detect:
+    with (
+        patch.object(mock_client, "request_daily_feed", return_value=response1),
+        patch("CommonServerPython.auto_detect_indicator_type") as mock_auto_detect,
+    ):
         mock_auto_detect.side_effect = lambda x: "IP" if x == "1.1.1.1" else None
         indicators = mock_client.request_daily_feed()
 
         assert indicators is not None
 
 
-@mock.patch('FeedCyberint.is_execution_time_exceeded')
+@mock.patch("FeedCyberint.is_execution_time_exceeded")
 def test_get_indicators_command(
     is_execution_time_exceeded_mock,
     mock_client,
@@ -120,20 +121,18 @@ def test_get_indicators_command(
 
     args = {"date": date_time, "limit": 20, "offset": 0}
 
-    with patch.object(FeedCyberint, 'get_indicators_command', return_value=response1), \
-            patch('CommonServerPython.auto_detect_indicator_type') as mock_auto_detect:
+    with (
+        patch.object(FeedCyberint, "get_indicators_command", return_value=response1),
+        patch("CommonServerPython.auto_detect_indicator_type") as mock_auto_detect,
+    ):
         mock_auto_detect.side_effect = lambda x: "IP" if x == "1.1.1.1" else None
         result = FeedCyberint.get_indicators_command(mock_client, args)
 
         assert result == response1
 
 
-@mock.patch('FeedCyberint.is_execution_time_exceeded')
-def test_fetch_indicators_command_ok(
-    is_execution_time_exceeded_mock,
-    mock_client: FeedCyberint,
-    requests_mock
-):
+@mock.patch("FeedCyberint.is_execution_time_exceeded")
+def test_fetch_indicators_command_ok(is_execution_time_exceeded_mock, mock_client: FeedCyberint, requests_mock):
     """
     Scenario:
     - Test retrieving indicators by filters from feed.
@@ -156,8 +155,10 @@ def test_fetch_indicators_command_ok(
     requests_mock.get(REQUEST_URL3, text=response1)
     requests_mock.get(REQUEST_URL4, text=response2)
 
-    with patch.object(FeedCyberint, 'fetch_indicators_command', return_value=response1), \
-            patch('CommonServerPython.auto_detect_indicator_type') as mock_auto_detect:
+    with (
+        patch.object(FeedCyberint, "fetch_indicators_command", return_value=response1),
+        patch("CommonServerPython.auto_detect_indicator_type") as mock_auto_detect,
+    ):
         mock_auto_detect.side_effect = lambda x: "IP" if x == "1.1.1.1" else None
         result = FeedCyberint.fetch_indicators_command(mock_client)
 
@@ -169,20 +170,20 @@ def test_header_transformer():
     Test the header_transformer function to ensure it correctly transforms headers.
     """
     # Test predefined headers
-    assert FeedCyberint.header_transformer('detected_activity') == 'Detected activity'
-    assert FeedCyberint.header_transformer('ioc_type') == 'IoC type'
-    assert FeedCyberint.header_transformer('ioc_value') == 'IoC value'
-    assert FeedCyberint.header_transformer('observation_date') == 'Observation date'
-    assert FeedCyberint.header_transformer('severity_score') == 'Severity score'
-    assert FeedCyberint.header_transformer('confidence') == 'Confidence'
-    assert FeedCyberint.header_transformer('description') == 'Description'
+    assert FeedCyberint.header_transformer("detected_activity") == "Detected activity"
+    assert FeedCyberint.header_transformer("ioc_type") == "IoC type"
+    assert FeedCyberint.header_transformer("ioc_value") == "IoC value"
+    assert FeedCyberint.header_transformer("observation_date") == "Observation date"
+    assert FeedCyberint.header_transformer("severity_score") == "Severity score"
+    assert FeedCyberint.header_transformer("confidence") == "Confidence"
+    assert FeedCyberint.header_transformer("description") == "Description"
 
     # Test fallback case with a mock
-    with patch('FeedCyberint.string_to_table_header') as mock_string_to_table_header:
-        mock_string_to_table_header.return_value = 'Fallback Header'
-        result = FeedCyberint.header_transformer('custom_header')
-        mock_string_to_table_header.assert_called_once_with('custom_header')
-        assert result == 'Fallback Header'
+    with patch("FeedCyberint.string_to_table_header") as mock_string_to_table_header:
+        mock_string_to_table_header.return_value = "Fallback Header"
+        result = FeedCyberint.header_transformer("custom_header")
+        mock_string_to_table_header.assert_called_once_with("custom_header")
+        assert result == "Fallback Header"
 
 
 def test_is_execution_time_exceeded_within_limit():
@@ -290,10 +291,11 @@ def test_retrieve_indicators_from_api_success(mock_client, requests_mock):
 
     # Mock the HTTP request
     url_suffix = f"{date_time}?limit={limit}&offset={offset}"
-    requests_mock.get(f"{BASE_URL}/{url_suffix}",
-                      text=mock_response,
-                      status_code=200,
-                      )
+    requests_mock.get(
+        f"{BASE_URL}/{url_suffix}",
+        text=mock_response,
+        status_code=200,
+    )
 
     response = FeedCyberint.Client.retrieve_indicators_from_api(mock_client, date_time, limit, offset)
 
@@ -309,10 +311,11 @@ def test_retrieve_indicators_from_api_failure(mock_client, requests_mock):
 
     # Mock the HTTP request to return a 500 error
     url_suffix = f"{date_time}?limit={limit}&offset={offset}"
-    requests_mock.get(f"{BASE_URL}/{url_suffix}",
-                      status_code=500,
-                      text="Internal Server Error",
-                      )
+    requests_mock.get(
+        f"{BASE_URL}/{url_suffix}",
+        status_code=500,
+        text="Internal Server Error",
+    )
 
     with pytest.raises(DemistoException):
         FeedCyberint.Client.retrieve_indicators_from_api(mock_client, date_time, limit, offset)
@@ -327,9 +330,10 @@ def test_retrieve_indicators_from_api_timeout(mock_client, requests_mock):
 
     # Mock the HTTP request to simulate a timeout
     url_suffix = f"{date_time}?limit={limit}&offset={offset}"
-    requests_mock.get(f"{BASE_URL}/{url_suffix}",
-                      exc=TimeoutError("Request timed out"),
-                      )
+    requests_mock.get(
+        f"{BASE_URL}/{url_suffix}",
+        exc=TimeoutError("Request timed out"),
+    )
 
     with pytest.raises(TimeoutError):
         FeedCyberint.Client.retrieve_indicators_from_api(mock_client, date_time, limit, offset)
@@ -345,10 +349,11 @@ def test_retrieve_indicators_from_api_invalid_response(mock_client, requests_moc
 
     # Mock the HTTP request
     url_suffix = f"{date_time}?limit={limit}&offset={offset}"
-    requests_mock.get(f"{BASE_URL}/{url_suffix}",
-                      text=mock_response,
-                      status_code=200,
-                      )
+    requests_mock.get(
+        f"{BASE_URL}/{url_suffix}",
+        text=mock_response,
+        status_code=200,
+    )
 
     response = FeedCyberint.Client.retrieve_indicators_from_api(mock_client, date_time, limit, offset)
 
@@ -409,7 +414,7 @@ def test_fetch_indicators_command(mock_is_x_minutes_ago_yesterday, mock_get_yest
         "confidence_from": "50",
         "feed_name": "feed1,feed2",
         "indicator_type": "IP,Domain",
-        "feedFetchInterval": "1440"
+        "feedFetchInterval": "1440",
     }
 
     # Mock return values for the helper functions
@@ -417,7 +422,7 @@ def test_fetch_indicators_command(mock_is_x_minutes_ago_yesterday, mock_get_yest
     mock_get_yesterday_time.return_value = "2024-12-31T00:00:00Z"
     mock_fetch_indicators.side_effect = [
         [{"indicator": "192.168.1.1", "type": "IP"}],
-        [{"indicator": "example.com", "type": "Domain"}]
+        [{"indicator": "example.com", "type": "Domain"}],
     ]
 
     # Call the function
@@ -520,9 +525,7 @@ def test_main_fetch_indicators(mock_demisto, mock_client):
     mock_batch = MagicMock()
     mock_batch.side_effect = lambda indicators, batch_size: [indicators[:batch_size]]
 
-    with patch("FeedCyberint.fetch_indicators_command", mock_fetch_indicators_command), patch(
-        "FeedCyberint.batch", mock_batch
-    ):
+    with patch("FeedCyberint.fetch_indicators_command", mock_fetch_indicators_command), patch("FeedCyberint.batch", mock_batch):
         FeedCyberint.main()
 
     # Assertions
@@ -621,16 +624,13 @@ def test_get_indicators_command_with_invalid_limit(mock_client):
     """Test get_indicators_command when the limit argument is invalid."""
 
     # Mock args input with invalid limit
-    args = {
-        "date": "2025-01-01",
-        "limit": None,
-        "offset": 0
-    }
+    args = {"date": "2025-01-01", "limit": None, "offset": 0}
 
     # Call the function, limit should be parsed as 0
 
-    with pytest.raises(TypeError, match=r"int\(\) argument must be a string, a bytes-like object or a real number, "
-                                        r"not 'NoneType'"):
+    with pytest.raises(
+        TypeError, match=r"int\(\) argument must be a string, a bytes-like object or a real number, " r"not 'NoneType'"
+    ):
         FeedCyberint.get_indicators_command(mock_client, args)
 
 
@@ -643,10 +643,11 @@ def test_process_feed_response_wrong_data(mock_client, requests_mock, capfd):
 
         # Mock the HTTP request
         url_suffix = f"{date_time}?limit={limit}&offset={offset}"
-        requests_mock.get(f"{BASE_URL}/{url_suffix}",
-                          text=mock_response,
-                          status_code=200,
-                          )
+        requests_mock.get(
+            f"{BASE_URL}/{url_suffix}",
+            text=mock_response,
+            status_code=200,
+        )
 
         # Call the method with test data
         mock_auto_detect = MagicMock(return_value=True)
@@ -668,20 +669,18 @@ def test_get_indicators_command_ok(mock_client, requests_mock):
 
     # Mock the HTTP request
     url_suffix = f"{date_time}?limit={limit}&offset={offset}"
-    requests_mock.get(f"{BASE_URL}/{url_suffix}",
-                      text=mock_response,
-                      status_code=200,
-                      )
+    requests_mock.get(
+        f"{BASE_URL}/{url_suffix}",
+        text=mock_response,
+        status_code=200,
+    )
 
-    with patch.object(FeedCyberint, 'get_indicators_command', return_value=expected_output), \
-            patch('CommonServerPython.tableToMarkdown'):
-
+    with (
+        patch.object(FeedCyberint, "get_indicators_command", return_value=expected_output),
+        patch("CommonServerPython.tableToMarkdown"),
+    ):
         # Define the arguments for the command
-        args = {
-            "date": "2025-01-02",
-            "limit": 2,
-            "offset": 0
-        }
+        args = {"date": "2025-01-02", "limit": 2, "offset": 0}
 
         # Call the function
         result = FeedCyberint.get_indicators_command(mock_client, args)
@@ -698,10 +697,11 @@ def test_test_module_success(requests_mock):
 
     # Mock the HTTP request
     url_suffix = f"{date_time}?limit={limit}&offset={offset}"
-    requests_mock.get(f"{BASE_URL}/{url_suffix}",
-                      text=mock_response,
-                      status_code=200,
-                      )
+    requests_mock.get(
+        f"{BASE_URL}/{url_suffix}",
+        text=mock_response,
+        status_code=200,
+    )
 
     result = FeedCyberint.test_module(client)  # Call the function
 
@@ -715,18 +715,60 @@ def test_test_module_success(requests_mock):
 def test_fetch_indicators_limit():
     mock_client = MagicMock(FeedCyberint.Client)
     mock_client.request_daily_feed.return_value = [
-        {"ioc_value": "value1", "ioc_type": "type1", "detected_activity": "feed1", "confidence": 60,
-            "severity_score": 5, "description": "desc1", "observation_date": "2024-01-01"},
-        {"ioc_value": "value2", "ioc_type": "type2", "detected_activity": "feed2", "confidence": 80,
-            "severity_score": 4, "description": "desc2", "observation_date": "2024-01-01"},
-        {"ioc_value": "value3", "ioc_type": "type1", "detected_activity": "feed1", "confidence": 70,
-            "severity_score": 6, "description": "desc3", "observation_date": "2024-01-01"},
-        {"ioc_value": "value4", "ioc_type": "type2", "detected_activity": "feed2", "confidence": 85,
-            "severity_score": 7, "description": "desc4", "observation_date": "2024-01-01"},
-        {"ioc_value": "value5", "ioc_type": "type1", "detected_activity": "feed1", "confidence": 90,
-            "severity_score": 8, "description": "desc5", "observation_date": "2024-01-01"},
-        {"ioc_value": "value6", "ioc_type": "type2", "detected_activity": "feed2", "confidence": 65,
-            "severity_score": 5, "description": "desc6", "observation_date": "2024-01-01"}
+        {
+            "ioc_value": "value1",
+            "ioc_type": "type1",
+            "detected_activity": "feed1",
+            "confidence": 60,
+            "severity_score": 5,
+            "description": "desc1",
+            "observation_date": "2024-01-01",
+        },
+        {
+            "ioc_value": "value2",
+            "ioc_type": "type2",
+            "detected_activity": "feed2",
+            "confidence": 80,
+            "severity_score": 4,
+            "description": "desc2",
+            "observation_date": "2024-01-01",
+        },
+        {
+            "ioc_value": "value3",
+            "ioc_type": "type1",
+            "detected_activity": "feed1",
+            "confidence": 70,
+            "severity_score": 6,
+            "description": "desc3",
+            "observation_date": "2024-01-01",
+        },
+        {
+            "ioc_value": "value4",
+            "ioc_type": "type2",
+            "detected_activity": "feed2",
+            "confidence": 85,
+            "severity_score": 7,
+            "description": "desc4",
+            "observation_date": "2024-01-01",
+        },
+        {
+            "ioc_value": "value5",
+            "ioc_type": "type1",
+            "detected_activity": "feed1",
+            "confidence": 90,
+            "severity_score": 8,
+            "description": "desc5",
+            "observation_date": "2024-01-01",
+        },
+        {
+            "ioc_value": "value6",
+            "ioc_type": "type2",
+            "detected_activity": "feed2",
+            "confidence": 65,
+            "severity_score": 5,
+            "description": "desc6",
+            "observation_date": "2024-01-01",
+        },
     ]
 
     LIMIT = 5  # Set limit to test the breaking condition
@@ -747,7 +789,7 @@ def test_fetch_indicators_limit():
             confidence_from=CONFIDENCE_FROM,
             severity_from=SEVERITY_FROM,
             limit=LIMIT,
-            execution_start_time=datetime.now()
+            execution_start_time=datetime.now(),
         )
 
     # Check that the number of returned indicators is equal to the limit
