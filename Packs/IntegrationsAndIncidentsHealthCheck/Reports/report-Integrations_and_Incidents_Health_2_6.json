@@ -1146,9 +1146,8 @@
             }
         ]
     },
-    "fromVersion": "6.0.0",
+    "fromVersion": "9.0.0",
     "description": "All failed enabled integrations and failed open incident.",
     "tags": [],
-    "createdBy": "",
-    "toVersion": "8.9.0"
+    "createdBy": ""
 }

@@ -1,11 +1,11 @@
 {
-    "id": "last7DaysClosedIncidentsReport",
-    "name": "Last 7 days closed incidents",
-    "description": "All closed incidents in the last 7 days. Counts of types, severity, SLAs and analysts work, and a list of all closed incidents.",
-    "fromVersion": "5.0.0",
+    "id": "last30DaysClosedIncidentsReport",
+    "name": "Last 30 days closed incidents",
+    "description": "All closed incidents in the last 30 days. Counts of types, severity, SLAs and analysts work, and a list of all closed incidents.",
+    "fromVersion": "9.0.0",
     "tags": [],
     "createdBy": "DBot",
-    "modified": "2018-01-24T10:26:16.063341264Z",
+    "modified": "2018-01-24T10:28:18.810557421Z",
     "startDate": "0001-01-01T00:00:00Z",
     "times": 0,
     "recurrent": false,
@@ -31,14 +31,14 @@
                     "query": "status:Closed",
                     "period": {
                         "byFrom": "days",
-                        "fromValue": 7,
+                        "fromValue": 30,
                         "by": "day"
                     },
-                    "fromDate": "2018-01-16T22:00:00Z",
+                    "fromDate": "2017-12-24T22:00:00Z",
                     "toDate": null
                 }
             },
-            "data": "# **Last 7 days closed incidents**\n\n{date}\n\n---",
+            "data": "# **Last 30 days closed incidents**\n\n{date}\n\n---",
             "type": "placeholder",
             "title": "last24HoursClosedIncidentsReport Headline"
         },
@@ -79,10 +79,10 @@
                     "query": "status:Closed",
                     "period": {
                         "byFrom": "days",
-                        "fromValue": 7,
+                        "fromValue": 30,
                         "by": "day"
                     },
-                    "fromDate": "2018-01-16T22:00:00Z",
+                    "fromDate": "2017-12-24T22:00:00Z",
                     "toDate": null
                 }
             },
@@ -126,10 +126,10 @@
                     "query": "status:Closed",
                     "period": {
                         "byFrom": "days",
-                        "fromValue": 7,
+                        "fromValue": 30,
                         "by": "day"
                     },
-                    "fromDate": "2018-01-16T22:00:00Z",
+                    "fromDate": "2017-12-24T22:00:00Z",
                     "toDate": null
                 }
             },
@@ -173,10 +173,10 @@
                     "query": "status:Closed",
                     "period": {
                         "byFrom": "days",
-                        "fromValue": 7,
+                        "fromValue": 30,
                         "by": "day"
                     },
-                    "fromDate": "2018-01-16T22:00:00Z",
+                    "fromDate": "2017-12-24T22:00:00Z",
                     "toDate": null
                 }
             },
@@ -192,7 +192,7 @@
                 },
                 "dimensions": {
                     "width": 340,
-                    "height": 168
+                    "height": 180
                 },
                 "legendStyle": {
                     "verticalAlign": "top",
@@ -221,10 +221,10 @@
                     "query": "status:Closed",
                     "period": {
                         "byFrom": "days",
-                        "fromValue": 7,
+                        "fromValue": 30,
                         "by": "day"
                     },
-                    "fromDate": "2018-01-16T22:00:00Z",
+                    "fromDate": "2017-12-24T22:00:00Z",
                     "toDate": null
                 }
             },
@@ -266,15 +266,15 @@
                     "query": "status:Closed",
                     "period": {
                         "byFrom": "days",
-                        "fromValue": 7,
+                        "fromValue": 30,
                         "by": "day"
                     },
-                    "fromDate": "2018-01-16T22:00:00Z",
+                    "fromDate": "2017-12-24T22:00:00Z",
                     "toDate": null
                 }
             },
             "type": "table",
-            "title": "Closed incidents in the last 7 days"
+            "title": "Closed incidents in the last 30 days"
         },
         {
             "layout": {
@@ -290,14 +290,14 @@
                     "query": "status:Closed",
                     "period": {
                         "byFrom": "days",
-                        "fromValue": 7,
+                        "fromValue": 30,
                         "by": "day"
                     },
-                    "fromDate": "2018-01-16T22:00:00Z",
+                    "fromDate": "2017-12-24T22:00:00Z",
                     "toDate": null
                 }
             },
-            "data": "# Last 7 days closed incidents: {0}",
+            "data": "# Last 30 days closed incidents: {0}",
             "type": "placeholder",
             "title": "last24HoursClosedIncidentsReport Headline"
         }
@@ -422,17 +422,17 @@
         "id": "",
         "version": 0,
         "modified": "0001-01-01T00:00:00Z",
-        "fromDate": "2018-01-16T22:00:00Z",
+        "fromDate": "2017-12-24T22:00:00Z",
         "toDate": "0001-01-01T00:00:00Z",
         "period": {
             "byTo": "",
             "byFrom": "days",
             "toValue": null,
-            "fromValue": 7,
+            "fromValue": 30,
             "field": ""
         },
         "fromDateLicense": "0001-01-01T00:00:00Z",
-        "name": "Last 7 days closed incidents",
+        "name": "Last 30 days closed incidents",
         "layout": [
             {
                 "id": "022fd960-0064-11e8-831f-e7429aff1c69",
@@ -464,7 +464,7 @@
                         "fromDateLicense": "0001-01-01T00:00:00Z"
                     },
                     "params": {
-                        "text": "# **Last 7 days closed incidents**\n\n{date}\n\n---"
+                        "text": "# **Last 30 days closed incidents**\n\n{date}\n\n---"
                     },
                     "size": 0
                 }
@@ -729,13 +729,12 @@
                         "fromDateLicense": "0001-01-01T00:00:00Z"
                     },
                     "params": {
-                        "text": "# Last 7 days closed incidents: {0}"
+                        "text": "# Last 30 days closed incidents: {0}"
                     },
                     "size": 0
                 }
             }
         ],
         "isPredefined": false
-    },
-    "toVersion": "8.9.0"
+    }
 }
