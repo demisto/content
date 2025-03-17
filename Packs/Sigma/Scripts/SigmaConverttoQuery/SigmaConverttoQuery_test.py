@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 import SigmaConverttoQuery
-from SigmaConverttoQuery import get_sigma_dictionary, main
+from SigmaConverttoQuery import get_sigma_dictionary, main, replace_outer_quotes
 
 import demistomock as demisto
 
@@ -41,3 +41,19 @@ def test_main(mock_get_sigma_dictionary, mock_return_results, mock_args):
     main()
     args, kwargs = mock_return_results.call_args
     assert args[0].readable_output == 'displaymessage="Max sign in attempts exceeded"'
+
+
+def test_replace_outer_quotes():
+    """
+    Given
+    - Query with outer double quotes
+
+    When
+    - Running the function replace_outer_quotes()
+
+    Then
+    - validate that only the outer double quotes are being tripled
+    """
+    query = '"*-f \"C:\\Users\\Public*"'
+    result = replace_outer_quotes(query)
+    assert result == '"""*-f \"C:\\Users\\Public*"""'

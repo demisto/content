@@ -54,6 +54,16 @@ def get_sigma_dictionary(indicator_name: str) -> str:
 
     return sigma
 
+def replace_outer_quotes(sigma_query):
+    """
+    Replaces outer single double quotes to triple double quotes
+    """
+    pattern = r'(?<!")"(.*?)"(?!")'
+    replacement = r'"""\1"""'
+
+    output_string = re.sub(pattern, replacement, sigma_query)
+    return output_string
+
 
 def main() -> None:
     """
@@ -73,7 +83,7 @@ def main() -> None:
 
         rule = SigmaRule.from_yaml(get_sigma_dictionary(indicator))   # Convert Sigma rule to SIEM query
 
-        query = siem.convert_rule(rule)[0]
+        query = replace_outer_quotes(siem.convert_rule(rule)[0])
         demisto.debug('Successfully converted Sigma rule to SIEM query.')
 
     except exceptions.SigmaTransformationError as e:
