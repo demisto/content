@@ -67,9 +67,9 @@ args:
   - 'false'
 comment: Find a campaign of emails based on their textual similarity.
 commonfields:
-  id: FindEmailCampaign
+  id: FindEmailCampaign - With Logs
   version: -1
-name: FindEmailCampaign
+name: FindEmailCampaign - With Logs
 outputs:
 - contextPath: EmailCampaign.isCampaignFound
   description: Whether a campaign was found.

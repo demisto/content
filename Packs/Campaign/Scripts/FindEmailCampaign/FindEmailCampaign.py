@@ -84,6 +84,7 @@ INCIDENTS_CONTEXT_TD = 'incidents(obj.id == val.id)'
 
 
 def return_outputs_custom(readable_output, outputs=None, tag=None):
+    demisto.debug(f'In return_outputs_custom, {outputs.get("isCampaignFound")=}')
     return_entry = {
         "Type": entryTypes["note"],
         "HumanReadable": readable_output,
@@ -93,6 +94,7 @@ def return_outputs_custom(readable_output, outputs=None, tag=None):
     }
     if tag is not None:
         return_entry["Tags"] = [f'campaign_{tag}']
+    demisto.debug(f'In return_outputs_custom, returning {return_entry=}')
     demisto.results(return_entry)
 
 
@@ -130,6 +132,7 @@ def extract_domain_from_recipients(row):
 
 def create_context_for_campaign_details(campaign_found=False, incidents_df=None,
                                         additional_context_fields: list = None):
+    demisto.debug(f'In create_context_for_campaign_details, {campaign_found=}')
     if not campaign_found:
         return {
             'isCampaignFound': campaign_found,
@@ -192,8 +195,10 @@ def create_empty_context():
 def is_number_of_incidents_too_low(res, incidents):
     if not res["EntryContext"]['isDuplicateIncidentFound'] or \
             len(incidents) < MIN_CAMPAIGN_SIZE:
+        demisto.debug('In is_number_of_incidents_too_low, returning True')
         return_outputs_custom('No possible campaign was detected', create_empty_context())
         return True
+    demisto.debug('In is_number_of_incidents_too_low, returning False')
     return False
 
 
@@ -562,9 +567,11 @@ def split_non_content_entries(response: list) -> tuple[dict, list]:
     non_content_entries = []
     for res_entry in response:
         if res_entry.get('Contents'):
+            demisto.debug('Added a content entry')
             content_entry = res_entry
         else:
             non_content_entries.append(res_entry)
+            demisto.debug('Added a non-content entry')
 
     return content_entry, non_content_entries
 
@@ -588,14 +595,18 @@ def main():
     if is_error(res):
         return_error(get_error(res))
 
+    demisto.debug(f'After running FindDuplicateEmailIncidents with {input_args=},\n{res=}')
     content_entry, non_content_entries = split_non_content_entries(res)
     incidents = json.loads(content_entry['Contents'])
     if incidents:
+        demisto.debug(f'In the case where we have {incidents=}')
         skip_analysis = is_number_of_incidents_too_low(content_entry, incidents) or \
             is_number_of_unique_recipients_is_too_low(incidents)
+        demisto.debug(f'{skip_analysis=}')
         if not skip_analysis:
             analyze_incidents_campaign(incidents, fields_to_display)
     if non_content_entries:
+        demisto.debug(f'In the case where {non_content_entries=}')
         return_results(non_content_entries)
 
 
