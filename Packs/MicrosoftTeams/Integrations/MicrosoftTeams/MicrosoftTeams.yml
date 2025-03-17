@@ -772,7 +772,7 @@ script:
       name: channel
       prettyname: Channel
       required: true
-    - description: 'The message to send to the channel or team member. Use issue fields as variables to enrich the text. Example: “${issue.details}"'
+    - description: 'The message to send to the channel. Use issue fields as variables to enrich the text. Example: “${issue.details}".'
       name: message
       prettyname: Message
       required: true
