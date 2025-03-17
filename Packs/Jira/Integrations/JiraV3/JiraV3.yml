@@ -1778,7 +1778,7 @@ script:
       name: assignee_id
     - description: The account ID of the reporter. Relevant for Jira Cloud only. Use the jira-get-id-by-attribute command to get the user's account ID.
       name: reporter_id
-    - description: The name of the of the reporter. Relevant for Jira Server only. Please use reporter_id for Jira Cloud. Use the jira-get-id-by-attribute command to get the user's name.
+    - description: The name of the of the reporter. Relevant for Jira Server only. Use reporter_id for Jira Cloud. Use the jira-get-id-by-attribute command to get the user's name.
       name: reporter
     - description: The parent issue key (if you're creating a sub-task).
       name: parent_issue_key
