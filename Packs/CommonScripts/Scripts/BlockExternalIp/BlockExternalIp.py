@@ -9,15 +9,15 @@ from CommonServerUserPython import *
 
 """ STANDALONE FUNCTION """
 
-# TODO think about adding the command name to the human readable.
+
 def create_final_human_readable(failure_message: str, used_integration: str, ip_list: list, rule_name: str = '') -> str:
     """
     Creates the human readable of the command.
     Args:
         failure_message (str): a failure message if relevant.
         used_integration (str): The integration that was used.
-        rule_name (str): The name of the created rule
         ip_list (list): The list of ip/s to block
+        rule_name (str): The name of the created rule
     Returns:
         A string representing the human readable of the entire command.
     """
@@ -91,6 +91,7 @@ def create_final_context(failure_message: str, used_integration: str, ip_list_ar
             })
     return context
 
+# TODO think about adding the command name to the human readable.
 def prepare_context_and_hr_multiple_executions(responses: list[list[dict]], verbose, rule_name: str, ip_list_arr: list[str]) -> list[CommandResults]:
     results = []
     failed_messages = []
@@ -101,10 +102,10 @@ def prepare_context_and_hr_multiple_executions(responses: list[list[dict]], verb
             command_hr = entry.get('HumanReadable')
             message = entry.get('Contents')
             demisto.debug(f"In prepare_context_and_hr_multiple_executions {command_hr=} {message=}")
-            if command_hr:
+            if command_hr and command_hr != str(None):
                 demisto.debug(f"BEI: The command has {verbose=}, adding {command_hr=}")
                 results.append(CommandResults(readable_output=command_hr))
-            if (message and 'Failed' in message) or is_error(entry):
+            elif (message and 'Failed' in message) or is_error(entry):
                 demisto.debug(f"A failure was found {message=}")
                 failed_messages.append(message)
             elif message and isinstance(message, str):
@@ -312,10 +313,6 @@ def pan_os_push_to_device(args: dict) -> PollResult:
     polling_args = res_push_to_device[0].get('Metadata', {}).get('pollingArgs', {})
     job_id = polling_args.get('push_job_id')
     device_group = polling_args.get('device-group')
-    # context_commit = get_relevant_context(res_push_to_device[0].get('EntryContext', {}), "Panorama.Push")
-    # job_id = context_commit.get('JobID')
-    # status = context_commit.get('Status')
-    # device_group = context_commit.get('DeviceGroup')
     demisto.debug(f"The polling args are {job_id=} {device_group=}")
     if job_id:
         context_output = {
