@@ -1717,23 +1717,30 @@ class Client(BaseClient):
             params=kwargs
         )
 
-    def search_scan_data(self, params: dict) -> Dict[str, Any]:
+    def search_scan_data(self, query: str, params: dict) -> Dict[str, Any]:
         """
         Search the Silent Push scan data repositories.
 
         Args:
             query (str): Query in SPQL syntax to scan data (mandatory)
-
+            params (dict): Optional paramters to filter scan data
         Returns:
             Dict[str, Any]: Search results from scan data repositories
 
         Raises:
             DemistoException: If query is not provided or API call fails
         """
-        query = params.get('query')
         if not query:
             raise DemistoException("Query parameter is required for search scan data.")
 
+        query_params = {
+            'limit': params.get('limit'),
+            'fields': params.get('fields'),
+            'sort': params.get('sort'),
+            'skip': params.get('skip'),
+            'with_metadata': params.get('with_metadata')
+        }
+        params = filter_none_values(query_params)
         url_suffix = SEARCH_SCAN
 
         payload = {
@@ -1743,7 +1750,8 @@ class Client(BaseClient):
         return self._http_request(
             method="POST",
             url_suffix=url_suffix,
-            data=payload
+            data=payload,
+            params=params
         )
         
     def live_url_scan(self, url: str, platform: Optional[str] = None, os: Optional[str] = None,
@@ -3064,8 +3072,8 @@ def search_scan_data_command(client: Client, args: dict) -> CommandResults:
     if not query:
         raise ValueError('Query parameter is required')
 
-    # TODO Check if other inputs needs to be used or remove it from input array.
-    raw_response = client.search_scan_data(args=args)
+    params = args
+    raw_response = client.search_scan_data(query, params)
     
     scan_data = raw_response.get('response', {}).get('scandata_raw', [])
 
