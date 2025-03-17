@@ -159,7 +159,7 @@ def test_module(client: Client) -> str:
         current_time = get_current_time()
         start_date = (current_time - timedelta(minutes=1)).strftime(DATE_FORMAT)
         end_date = current_time.strftime(DATE_FORMAT)
-        fetch_events(client, 1, 60, {'start_date': start_date, 'end_date': end_date})
+        fetch_events(client, 1, {'start_date': start_date, 'end_date': end_date})
         message = 'ok'
     except DemistoException as e:
         raise e
