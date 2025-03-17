@@ -262,7 +262,7 @@ def validate_mirroring_parameters(params: dict[str, Any]) -> None:
     if mirror_direction == "None":
         return
 
-    if mirror_direction == "Incoming" and not close_states_of_securonix or not argToList(close_states_of_securonix):
+    if mirror_direction == "Incoming" and (not close_states_of_securonix or not argToList(close_states_of_securonix)):
         raise ValueError(
             'Following field is required for Incoming Mirroring: "Securonix workflow state(s) that '
             'can be considered as Close state in XSOAR for Incoming mirroring".'
