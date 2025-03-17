@@ -5741,7 +5741,7 @@
         {
             "integrations": [
                 "LOLBAS Feed",
-                "Demisto REST API"
+                "Core REST API"
             ],
             "playbookID": "FeedLOLBas_test"
         },
