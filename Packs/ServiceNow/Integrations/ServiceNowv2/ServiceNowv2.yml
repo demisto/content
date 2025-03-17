@@ -1828,7 +1828,7 @@ script:
         - 'false'
         - 'true'
     - defaultValue: ;
-      description: The delimiter character to use as a separator for a list of fields in an argument for this command. Default is ';'.
+      description: The delimiter character to use as a separator for a list of fields in an argument for this command. 
       name: fields_delimiter
     - auto: PREDEFINED
       description: Business criticality of the ticket.
