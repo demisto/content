@@ -2542,3 +2542,41 @@ Create a short-lived access token for a service account. The generated token wil
 | --- | --- | --- |
 | service_account_email | The email address of the privilege-bearing service account for which the short-lived token is created. | Required | 
 | lifetime | Lifetime of the Access Token in seconds. Default is 3600. | Required | 
+
+
+### gcp-iam-project-iam-policy-binding-remove
+
+***
+Removes a policy binding to the IAM policy of a project, given a project ID and the binding. One binding consists of a member and a role. This is a potentially harmful command since it modifies access permissions to Google Cloud resources.
+
+#### Required Permissions
+
+This command requires one of the following Authorization scopes:
+* `https://www.googleapis.com/auth/cloud-platform`
+* `https://www.googleapis.com/auth/cloud-platform.read-only`
+* `https://www.googleapis.com/auth/cloudplatformprojects`
+* `https://www.googleapis.com/auth/cloudplatformprojects.readonly`
+
+#### Base Command
+
+`gcp-iam-project-iam-policy-binding-remove`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_name | The name of the project associated with the IAM policy binding. For example: projects/my-project-123. | Required | 
+| members | A comma-separated list of members to remove from the binding. Possible format for member: user:{emailid}, serviceAccount:{emailid}, group:{emailid}, deleted:user:{emailid}?uid={uniqueid}, deleted:serviceAccount:{emailid}?uid={uniqueid}, deleted:group:{emailid}?uid={uniqueid}, Domain:{domain}. For example: user:test@example.com. | Required | 
+| role | The IAM role to remove the members from. For example: roles/actions.Viewer. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!gcp-iam-project-iam-policy-binding-remove project_name="projects/project-name-3" role="roles/anthosidentityservice.serviceAgent" members="user:jondoe@example.com"```
+
+#### Human Readable Output
+
+> Role roles/anthosidentityservice.serviceAgent was updated successfully. Binding to members user:jondoe@example.com was removed.

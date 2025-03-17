@@ -3839,6 +3839,44 @@ def gcp_iam_tagbindings_list_command(client: Client, args: Dict[str, Any]) -> Un
     return command_results
 
 
+def gcp_iam_policy_binding_remove_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Implements the `!gcp-iam-project-iam-policy-binding-remove` command.
+    Updates the IAM access control policy for the specified project by removing the binding of members to a specific role.
+
+    Args:
+        client (Client): GCP API Client.
+        args (dict): The command arguments.
+
+    Raises:
+        ValueError: If the `project_name`, `role`, or `members` arguments were not specified.
+
+    Returns:
+        CommandResults: Command results with human-readable output and raw API response.
+    """
+    if not (project_name := args.get('project_name')):
+        raise ValueError("The 'project_name' argument should be specified.")
+
+    if not (role := args.get('role')):
+        raise ValueError("The 'role' argument should be specified.")
+
+    if not (members_to_remove := argToList(args.get('members'))):
+        raise ValueError("The 'members' argument should be specified.")
+
+    demisto.debug(f'Getting IAM policy for project: {project_name}.')
+    original_policy = client.gcp_iam_project_iam_policy_get_request(project_name)
+
+    add_new_policy_command_name = 'gcp-iam-project-iam-policy-create'  # used for errors and logging
+    updated_bindings = remove_members_from_policy(role, original_policy.get('bindings', []), members=members_to_remove,
+                                                  command_name=add_new_policy_command_name)
+
+    demisto.debug(f'Setting updated IAM policy for project: {project_name}.')
+    raw_response = client.gcp_iam_project_iam_policy_set_request(project_name, updated_bindings)
+    demisto.debug(f'Role: {role} was updated with {len(members_to_remove)} members removed.')
+
+    human_readable = f'Role {role} was updated successfully. Binding to members {",".join(members_to_remove)} was removed.'
+    return CommandResults(readable_output=human_readable, raw_response=raw_response)
+
+
 def test_module(service_account_key: str, proxy: bool, verify_certificate: bool) -> None:
     try:
         client: Client = Client(client_secret=service_account_key, proxy=proxy, verify_certificate=verify_certificate)
@@ -3933,7 +3971,8 @@ def main() -> None:
             'gcp-iam-grantable-role-list': gcp_iam_grantable_role_list_command,
             'gcp-iam-role-get': gcp_iam_predefined_role_get_command,
             'gcp-iam-role-list': gcp_iam_predefined_role_list_command,
-            'gcp-iam-tagbindings-list': gcp_iam_tagbindings_list_command
+            'gcp-iam-tagbindings-list': gcp_iam_tagbindings_list_command,
+            'gcp-iam-project-iam-policy-binding-remove': gcp_iam_policy_binding_remove_command,
         }
 
         if command in commands:
