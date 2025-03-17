@@ -5,15 +5,13 @@ alter
 	get_category = coalesce(category, Category)
 | alter
 	xdm.event.original_event_type = if(
-		get_category = "cloud-controller-manager", "Kubernetes Cloud Controller Manager	",
-		get_category = "cluster-autoscaler", "Kubernetes Cluster Autoscaler	",
+		get_category = "cloud-controller-manager", "Kubernetes Cloud Controller Manager",
+		get_category = "cluster-autoscaler", "Kubernetes Cluster Autoscaler",
 		get_category = "kube-audit", "Kubernetes Audit",
 		get_category = "kube-audit-admin", "Kubernetes Audit Admin Logs",
-		get_category = "kube-apiserver", "Kubernetes API Server	",
+		get_category = "kube-apiserver", "Kubernetes API Server",
 		get_category = "kube-controller-manager", "Kubernetes Controller Manager",
 		get_category = "kube-scheduler", "Kubernetes Scheduler",
-		get_category = "SoftwareUpdateProfile", "Software Update Profile",
-		get_category = "SoftwareUpdates", "Software Updates",
 		get_category = "guard", "Guard"),
 	xdm.source.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AZURE,
 	xdm.target.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AZURE,
