@@ -6,6 +6,7 @@ from typing import Any
 import csv
 import io
 import requests
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as ThreadTimeoutError
 
 from urllib3 import disable_warnings
 
@@ -33,6 +34,7 @@ ASSETS_FETCH_FROM = '90 days'
 HOST_LIMIT = 1000
 ASSET_SIZE_LIMIT = 10 ** 6   # 1MB
 TEST_FROM_DATE = 'one day'
+HOST_LIST_DETECTIONS_THREAD_TIME_OUT = 150
 FETCH_ASSETS_COMMAND_TIME_OUT = 180
 QIDS_BATCH_SIZE = 500
 
@@ -1684,7 +1686,7 @@ class Client(BaseClient):
         since_datetime: str,
         next_page: str | None = None,
         limit: int = HOST_LIMIT,
-    ) -> tuple[Union[str, bytes], bool]:
+    ) -> tuple[str, bool]:
         """
         Make a http request to Qualys API to get assets
         Args:
@@ -1698,15 +1700,21 @@ class Client(BaseClient):
         """
         set_new_limit = False
         self._headers.update({"Content-Type": 'application/json'})
+
         params: dict[str, Any] = {
             "truncation_limit": limit,
             "vm_scan_date_after": since_datetime,
             "show_qds": 1,  # Show host detection score `QDS` and score contributing factors `QDS_FACTORS`
             "show_qds_factors": 1,
         }
-        timeout = (60, 150)  # (Connection Timeout, Read Timeout)
         if next_page:
             params["id_min"] = next_page
+
+        timeout = (
+            60,  # Connection Timeout - max seconds to wait for connection to server to be established
+            150,  # Read Timeout - max seconds to wait between bytes from server - does *not* specify request max execution time
+        )
+
         try:
             response = self._http_request(
                 method='GET',
@@ -1721,6 +1729,10 @@ class Client(BaseClient):
             set_new_limit = True
             response = ''
 
+        demisto.debug(
+            f'Got host list detections response length of {len(response)} characters '
+            f'and {len(response.encode(errors="replace"))} bytes.'
+        )
         return response, set_new_limit
 
     def get_vulnerabilities(self, since_datetime: str | None = None, detection_qids: str | None = None) -> requests.Response:
@@ -2248,7 +2260,7 @@ def parse_text_value_pairs_list(multiple_key_list: List[dict[str, Any]]) -> dict
     return parsed_dict
 
 
-def parse_raw_response(response: Union[bytes, requests.Response]) -> dict:
+def parse_raw_response(response: Union[bytes, requests.Response, str]) -> dict:
     """
     Parses raw response from Qualys.
     Tries to load as JSON. If fails to do so, tries to load as XML.
@@ -2756,7 +2768,7 @@ def get_next_page_activity_logs(footer):
     return max_id
 
 
-def handle_host_list_detection_result(raw_response: requests.Response) -> tuple[list, Optional[str]]:
+def handle_host_list_detection_result(raw_response: str) -> tuple[list, Optional[str]]:
     """
     Handles Host list detection response - parses xml to json and gets the list
     Args:
@@ -2925,16 +2937,21 @@ def send_assets_and_vulnerabilities_to_xsiam(
     total_assets_to_report = 1 if has_next_page else cumulative_assets_count
     total_vulns_to_report = 1 if has_next_page else cumulative_vulns_count
 
-    demisto.debug(f'Sending {len(assets)} assets to XSIAM. '
-                  f'Total assets collected so far: {cumulative_assets_count}')
+    demisto.debug(
+        f'Sending {len(assets)} assets to XSIAM with snapshot ID: {snapshot_id}. '
+        f'Total assets collected so far: {cumulative_assets_count}. '
+        f'Reported items count: {total_assets_to_report}.'
+    )
 
     send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets',
                        snapshot_id=snapshot_id, items_count=str(total_assets_to_report),
                        should_update_health_module=False)
 
-    demisto.debug(f'Sending {len(vulnerabilities)} vulnerabilities to XSIAM. '
-                  f'Total vulnerabilities collected so far: {cumulative_vulns_count}')
-
+    demisto.debug(
+        f'Sending {len(vulnerabilities)} vulnerabilities to XSIAM with snapshot ID: {snapshot_id}. '
+        f'Total assets collected so far: {cumulative_vulns_count}. '
+        f'Reported items count: {total_vulns_to_report}.'
+    )
     send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product='vulnerabilities', data_type='assets',
                        snapshot_id=snapshot_id, items_count=str(total_vulns_to_report),
                        should_update_health_module=False)
@@ -2977,6 +2994,50 @@ def get_activity_logs_events(client, since_datetime, max_fetch, next_page=None) 
     return activity_logs_events, next_run_dict
 
 
+def get_client_host_list_detection_with_timeout(
+    client: Client,
+    since_datetime: str,
+    next_page: str | None,
+    limit: int,
+    thread_timeout: int = HOST_LIST_DETECTIONS_THREAD_TIME_OUT,
+) -> tuple[str, bool]:
+    """Starts a timed thread that runs `Client.get_host_list_detection` .
+
+    Args:
+        client (Client): Qualys client.
+        since_datetime (str): Filter hosts by vulnerability scan end date. Specify in the `YYYY-MM-DD[THH:MM:SSZ]` format.
+        next_page (str | None): For pagination; show hosts starting from a minimum host ID value.
+        limit (int): Maximum number of host records returned; should be <= 1000000. Specify 0 for no truncation limit.
+        thread_timeout (int): Maximum number of seconds to wait for the `Client.get_host_list_detection` to finish execution.
+
+    Returns:
+        tuple[str, bool]: A tuple of raw API response body string and set_new_limit boolean (to make next API call smaller).
+    """
+    result = ('', True)  # empty response and set_new_limit = True
+
+    demisto.debug('Starting thread pool executor to get host list dectections.')
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        future = executor.submit(client.get_host_list_detection, since_datetime, next_page, limit)
+        start_time = time.time()
+
+        try:
+            # Specify request max execution time for the whole request
+            demisto.debug(f'Running host list dectections thread with timeout: {thread_timeout}.')
+            result = future.result(timeout=thread_timeout)
+            current_time = time.time()
+            demisto.debug(f'Finished host list dectections thread. Elapsed time: {current_time - start_time}.')
+
+        except ThreadTimeoutError:
+            current_time = time.time()
+            demisto.debug(
+                f'Exceeded host list dectections thread timeout: {thread_timeout}. '
+                f'Elapsed time: {current_time - start_time}.'
+            )
+
+    raw_response, set_new_limit = result
+    return raw_response, set_new_limit
+
+
 def get_host_list_detections_events(client, since_datetime, next_page='', limit=HOST_LIMIT, is_test=False) -> tuple:
     """ Get host list detections from qualys
     Args:
@@ -2990,9 +3051,10 @@ def get_host_list_detections_events(client, since_datetime, next_page='', limit=
     """
     demisto.debug('Pulling host list detections')
     assets: list = []
-    host_list_detections, set_new_limit = client.get_host_list_detection(since_datetime=since_datetime,
-                                                                         next_page=next_page,
-                                                                         limit=limit)
+
+    demisto.debug(f'Starting to get client host list dections with thread timeout: {HOST_LIST_DETECTIONS_THREAD_TIME_OUT}.')
+    host_list_detections, set_new_limit = get_client_host_list_detection_with_timeout(client, since_datetime, next_page, limit)
+
     if not set_new_limit:
         host_list_assets, next_url = handle_host_list_detection_result(host_list_detections)
 
@@ -3333,9 +3395,11 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
             new_last_run = set_assets_last_run_with_new_limit(last_run, last_run.get('limit', HOST_LIMIT))
         else:
             cumulative_assets_count: int = new_last_run["total_assets"]
-            demisto.debug(f'Sending {len(assets)} assets to XSIAM. '
-                          f'Total assets collected so far: {cumulative_assets_count}')
-
+            demisto.debug(
+                f'Sending {len(assets)} assets to XSIAM with snapshot ID: {snapshot_id}. '
+                f'Total assets collected so far: {cumulative_assets_count}. '
+                f'Reported items count: {total_assets_to_report}.'
+            )
             send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets',
                                snapshot_id=snapshot_id, items_count=str(total_assets_to_report),
                                should_update_health_module=False)
