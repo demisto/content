@@ -1,11 +1,12 @@
+import re
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import re
 
 
 def build_ews_query(demisto_args):
     # Regex for removing forward/replay prefixes
-    p = re.compile('([\[\(] *)?(RE|FWD?) *([-:;)\]][ :;\])-]*|$)|\]+ *$', re.IGNORECASE)
+    p = re.compile("([\[\(] *)?(RE|FWD?) *([-:;)\]][ :;\])-]*|$)|\]+ *$", re.IGNORECASE)
 
     args = {}
 
@@ -34,10 +35,10 @@ def build_ews_query(demisto_args):
         args["Subject"] = match_string
 
     if escapeColons:
-        query = " AND ".join(r'{0}\\:"{1}"'.format(key, value) for (key, value) in args.items())
+        query = " AND ".join(rf'{key}\\:"{value}"' for (key, value) in args.items())
 
     else:
-        query = " AND ".join('{0}:"{1}"'.format(key, value) for (key, value) in args.items())
+        query = " AND ".join(f'{key}:"{value}"' for (key, value) in args.items())
 
     search_last_week = True if demisto_args.get("searchThisWeek").lower() == "true" else False
     if search_last_week:
@@ -45,10 +46,10 @@ def build_ews_query(demisto_args):
 
     return CommandResults(
         content_format=formats["json"],
-        raw_response={"EWS": {"Query": query or ' '}},
+        raw_response={"EWS": {"Query": query or " "}},
         entry_type=entryTypes["note"],
-        readable_output=query or ' ',
-        outputs={"EWS": {"Query": query or ' '}}
+        readable_output=query or " ",
+        outputs={"EWS": {"Query": query or " "}},
     )
 
 
@@ -57,9 +58,9 @@ def main():  # pragma: no cover
     try:
         return_results(build_ews_query(args))
     except Exception as e:
-        err_msg = f'Encountered an error while running the script: [{e}]'
+        err_msg = f"Encountered an error while running the script: [{e}]"
         return_error(err_msg, error=e)
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
