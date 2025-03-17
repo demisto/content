@@ -50,19 +50,18 @@ def initialize_commands() -> list:
     """
     commands = [
         Command(
-            # need to be tested on XSIAM
+            # Can be used only on XSIAM
             brand='Cortex Core - IR',
             name='core-isolate-endpoint',
             arg_mapping={'endpoint_id': 'agent_id'},
         ),
         # Command(
-        # TODO to get credentials
         #     brand='Cybereason',
         #     name='cybereason-isolate-machine',
         #     arg_mapping={'machine': 'agent_hostname'},
         #     pre_command_check=check_conditions_cybereason_isolate_machine
         # ),
-        Command(  # Can be tested on XSOAR only
+        Command(  # Can be used only on XSOAR
             brand='Cortex XDR - IR',
             name='xdr-endpoint-isolate',
             arg_mapping={'endpoint_id': 'agent_id'},
