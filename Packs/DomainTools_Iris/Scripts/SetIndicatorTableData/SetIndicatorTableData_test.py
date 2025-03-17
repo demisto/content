@@ -1,5 +1,5 @@
-from SetIndicatorTableData import main, find_age, find_indicator_reputation, ReputationEnum
 from CommonServerPython import *
+from SetIndicatorTableData import ReputationEnum, find_age, find_indicator_reputation, main
 
 
 def test_find_age():
@@ -9,20 +9,17 @@ def test_find_age():
 
 
 def test_find_indicator_reputation_bad():
-    result = find_indicator_reputation(
-        domain_age=2, proximity_score=69, threat_profile_score=71)
+    result = find_indicator_reputation(domain_age=2, proximity_score=69, threat_profile_score=71)
     assert result == ReputationEnum.BAD
 
 
 def test_find_indicator_reputation_suspicious():
-    result = find_indicator_reputation(
-        domain_age=2, proximity_score=69, threat_profile_score=68)
+    result = find_indicator_reputation(domain_age=2, proximity_score=69, threat_profile_score=68)
     assert result == ReputationEnum.SUSPICIOUS
 
 
 def test_find_indicator_reputation_good():
-    result = find_indicator_reputation(
-        domain_age=8, proximity_score=69, threat_profile_score=68)
+    result = find_indicator_reputation(domain_age=8, proximity_score=69, threat_profile_score=68)
     assert result == ReputationEnum.GOOD
 
 
@@ -204,9 +201,7 @@ def test_set_indicator_table(mocker):
         "ServerType": "",
     }
 
-    mocker.patch.object(
-        demisto, "args", return_value={"domaintools_data": domaintools_data}
-    )
+    mocker.patch.object(demisto, "args", return_value={"domaintools_data": domaintools_data})
     mocker.patch.object(demisto, "results")
 
     main()
