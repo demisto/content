@@ -4,6 +4,8 @@ from CommonServerPython import *
 import urllib3
 from typing import Any
 
+import sseclient
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -12,7 +14,8 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 VENDOR = 'lookout_mobile'
 PRODUCT = 'endpoint_security'
-
+BASE_URL = 'https://api.lookout.com/'
+FETCH_SLEEP = 5
 ''' CLIENT CLASS '''
 
 
@@ -23,74 +26,48 @@ class Client(BaseClient):
     Should only do requests and return data.
     It inherits from BaseClient defined in CommonServer Python.
     Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this HelloWorld implementation, no special attributes defined
     """
+    def __init__(self, base_url: str, verify: bool, proxy: bool, event_type_query: str, app_key: str):
+        self.event_type_query = event_type_query
+        self.app_key = app_key
 
-    def search_events(self, prev_id: int, alert_status: None | str, limit: int, from_date: str | None = None, default_Protocol: str = 'UDP') -> List[Dict]:  # noqa: E501
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+
+    def refresh_token_request(self):
+        """request a new access token"""
+        data = {'grant_type': 'client_credentials'}
+        headers = {'Authorization': f'Bearer {self.app_key}'}
+        response = self._http_request(method="POST", data=data, url_suffix='oauth2/token', headers=headers)
+        return response
+
+    def stream_events(self):
+        pass
+
+
+    def get_token(self):
+        """Returns the token, or refreshes it if the time of it was exceeded
         """
-        Searches for HelloWorld alerts using the '/get_alerts' API endpoint.
-        All the parameters are passed directly to the API as HTTP POST parameters in the request
+        integration_context = demisto.getIntegrationContext()
+        if integration_context.get('token_expiration', 0) <= time.time():
+            self.refresh_token()
 
-        Args:
-            prev_id: previous id that was fetched.
-            alert_status:
-            limit: limit.
-            from_date: get events from from_date.
-
-        Returns:
-            List[Dict]: the next event
+        return integration_context.get('access_token')
+            
+    def refresh_token(self):
+        """Refreshes the token and updated the integration context
         """
-        # use limit & from date arguments to query the API
-        return [{
-            'id': prev_id + 1,
-            'created_time': datetime.now().isoformat(),
-            'description': f'This is test description {prev_id + 1}',
-            'alert_status': alert_status,
-            'protocol': default_Protocol,
-            't_port': prev_id + 1,
-            'custom_details': {
-                'triggered_by_name': f'Name for id: {prev_id + 1}',
-                'triggered_by_uuid': str(uuid.uuid4()),
-                'type': 'customType',
-                'requested_limit': limit,
-                'requested_From_date': from_date
-            }
-        }]
+        demisto.debug("MES: refreshing the token")
+        response = self.refresh_token_request()
+        
+        access_token = response.get('access_token')
+        token_expiration = response.get('expires_at')
+
+        demisto.setIntegrationContext({'access_token': access_token, 'token_expiration': token_expiration})
+        demisto.debug("MES: Updated integration context with new token")
 
 
-def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -> str:
-    """
-    Tests API connectivity and authentication
-    When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
-    successful.
-    Raises exceptions if something goes wrong.
-
-    Args:
-        client (Client): HelloWorld client to use.
-        params (Dict): Integration parameters.
-        first_fetch_time(str): The first fetch time as configured in the integration params.
-
-    Returns:
-        str: 'ok' if test passed, anything else will raise an exception and will fail the test.
-    """
-
-    try:
-        alert_status = params.get('alert_status', None)
-
-        fetch_events(
-            client=client,
-            last_run={},
-            first_fetch_time=first_fetch_time,
-            alert_status=alert_status,
-            max_events_per_fetch=1,
-        )
-
-    except Exception as e:
-        if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-
+def test_module(client):  # pragma: no cover
+    client.refresh_token()
     return 'ok'
 
 
@@ -156,74 +133,48 @@ def add_time_to_events(events: List[Dict] | None):
             create_time = arg_to_datetime(arg=event.get('created_time'))
             event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
 
-
-def main() -> None:  # pragma: no cover
+def long_running_execution_command(client: Client):
     """
-    main function, parses params and runs command functions
-    """
+    Performs the long running execution loop.
+    Opens a connection to Proofpoints for every event type and fetches events in a loop.
+    Heartbeat threads are opened for every connection to send keepalives if the connection is idle for too long.
 
-    params = demisto.params()
-    args = demisto.args()
+    Args:
+        host (str): host URL for the websocket connection.
+    """
+    while True:
+        perform_long_running_loop(client)
+        # sleep for a bit to not throttle the CPU
+        time.sleep(FETCH_SLEEP)
+
+
+def main():  # pragma: no cover
     command = demisto.command()
-    api_key = params.get('apikey', {}).get('password')
-    base_url = urljoin(params.get('url'), '/api/v1')
-    verify_certificate = not params.get('insecure', False)
+    params = demisto.params()
+    app_key = params.get("api_key", {}).get("password", "")
+    proxy = params.get("proxy", False)
+    verify = not params.get("insecure", False)
+    event_types = params.get('event_types', [])
+    
+    if 'All' in event_types:
+        event_type_query = ''
+    else:
+        event_type_query = 'types=' + ','.join(event_type.upper() for event_type in event_types)
+    client = Client(base_url=BASE_URL, verify=verify, proxy=proxy, event_type_query=event_type_query, app_key=app_key)
 
-    # How much time before the first fetch to retrieve events
-    first_fetch_time = datetime.now().isoformat()
-    proxy = params.get('proxy', False)
-    alert_status = params.get('alert_status', None)
-    max_events_per_fetch = params.get('max_events_per_fetch', 1000)
-
-    demisto.debug(f'Command being called is {command}')
     try:
-        headers = {
-            'Authorization': f'Bearer {api_key}'
-        }
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
+        if command == "long-running-execution":
+            return_results(long_running_execution_command(client))
+        elif command == "test-module":
+            return_results(test_module(client))
+        else:
+            raise NotImplementedError(f"Command {command} is not implemented.")
+    except Exception:
+        return_error(f'Failed to execute {command} command.\nError:\n{traceback.format_exc()}')
 
-        if command == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client, params, first_fetch_time)
-            return_results(result)
 
-        elif command == 'hello-world-get-events':
-            should_push_events = argToBoolean(args.pop('should_push_events'))
-            events, results = get_events(client, alert_status, demisto.args())
-            return_results(results)
-            if should_push_events:
-                add_time_to_events(events)
-                send_events_to_xsiam(
-                    events,
-                    vendor=VENDOR,
-                    product=PRODUCT
-                )
-
-        elif command == 'fetch-events':
-            last_run = demisto.getLastRun()
-            next_run, events = fetch_events(
-                client=client,
-                last_run=last_run,
-                first_fetch_time=first_fetch_time,
-                alert_status=alert_status,
-                max_events_per_fetch=max_events_per_fetch,
-            )
-
-            add_time_to_events(events)
-            send_events_to_xsiam(
-                events,
-                vendor=VENDOR,
-                product=PRODUCT
-            )
-            demisto.setLastRun(next_run)
-
-    # Log exceptions and return errors
-    except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+if __name__ in ("__main__", "__builtin__", "builtins"):
+    main()
 
 
 ''' ENTRY POINT '''

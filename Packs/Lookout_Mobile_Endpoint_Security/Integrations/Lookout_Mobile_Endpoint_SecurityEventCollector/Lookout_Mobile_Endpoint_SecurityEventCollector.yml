@@ -12,21 +12,12 @@ configuration:
   required: false
   type: 0
   section: Connect
-- defaultvalue: ACTIVE
-  section: Collect
-  display: Fetch alerts with status (ACTIVE, CLOSED)
-  name: alert_status
-  options:
-  - ACTIVE
-  - CLOSED
+- display: Application Key
+  name: app_key
+  hiddenusername: true
   required: false
-  type: 15
-- defaultvalue: 10000
-  section: Collect
-  display: Max number of events per fetch
-  name: max_events_per_fetch
-  required: false
-  type: 0
+  type: 9
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -37,8 +28,25 @@ configuration:
   required: false
   type: 8
   section: Connect
-description: This is the Hello World event collector integration for Cortex XSIAM.
-display: Lookout_Mobile_Endpoint_SecurityEventCollector
+- defaultvalue: 'true'
+  display: Long Running Instance
+  hidden: true
+  name: longRunning
+  type: 8
+  section: Connect
+- defaultvalue: All
+  display: Event types to fetch
+  name: event_types
+  options:
+  - Threat
+  - Device
+  - Audit
+  - All
+  required: true
+  type: 15
+  section: Collect - Advanced
+description: Lookout Mobile Endpoint Security (MES) provides visibility and protection against mobile threats with AI-driven mobile security dataset.
+display: Lookout Mobile Endpoint Security Event Collector
 name: Lookout_Mobile_Endpoint_SecurityEventCollector
 script:
   commands:
@@ -46,36 +54,21 @@ script:
     - auto: PREDEFINED
       defaultValue: 'false'
       description: If true, the command will create events, otherwise it will only display them.
-      isArray: false
       name: should_push_events
       predefined:
       - 'true'
       - 'false'
       required: true
-    - auto: PREDEFINED
-      default: false
-      description: Filter by alert status.
-      isArray: false
-      name: status
-      predefined:
-      - ACTIVE
-      - CLOSED
-      required: false
-      secret: false
     - default: false
       description: Maximum number of results to return.
-      isArray: false
       name: limit
       required: true
-      secret: false
     - default: false
       description: Date from which to get events.
       name: from_date
       required: false
-    deprecated: false
-    description: Gets events from Hello World.
-    execution: false
-    name: hello-world-get-events
+    description: Gets events from Lookout Mobile Endpoint Security.
+    name: lookout_mobile_endpoint_security-get-events
   dockerimage: demisto/python3:3.11.10.115186
   isfetchevents: true
   runonce: false
