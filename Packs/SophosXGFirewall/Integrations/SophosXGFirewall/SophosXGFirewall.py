@@ -166,8 +166,8 @@ def sophos_firewall_rule_add_command(client: Client, params: dict) -> CommandRes
         RULE["endpoint_tag"],  # type: ignore
         params,
         rule_builder,
-        RULE["table_headers"],
-    )  # type: ignore
+        RULE["table_headers"],  # type: ignore
+    )
 
 
 def sophos_firewall_rule_update_command(client: Client, params: dict) -> CommandResults:
@@ -182,12 +182,12 @@ def sophos_firewall_rule_update_command(client: Client, params: dict) -> Command
     """
     return generic_save_and_get(
         client,
-        RULE["endpoint_tag"],
+        RULE["endpoint_tag"],  # type: ignore
         params,
         rule_builder,  # type: ignore
-        RULE["table_headers"],
+        RULE["table_headers"],  # type: ignore
         True,
-    )  # type: ignore
+    )
 
 
 def sophos_firewall_rule_delete_command(client: Client, name: str) -> CommandResults:
@@ -242,11 +242,11 @@ def sophos_firewall_rule_group_add_command(client: Client, params: dict) -> Comm
     """
     return generic_save_and_get(
         client,
-        RULE_GROUP["endpoint_tag"],
+        RULE_GROUP["endpoint_tag"],  # type: ignore
         params,
         rule_group_builder,  # type: ignore
-        RULE_GROUP["table_headers"],
-    )  # type: ignore
+        RULE_GROUP["table_headers"],  # type: ignore
+    )
 
 
 def sophos_firewall_rule_group_update_command(client: Client, params: dict) -> CommandResults:
@@ -261,12 +261,12 @@ def sophos_firewall_rule_group_update_command(client: Client, params: dict) -> C
     """
     return generic_save_and_get(
         client,
-        RULE_GROUP["endpoint_tag"],
+        RULE_GROUP["endpoint_tag"],  # type: ignore
         params,
         rule_group_builder,  # type: ignore
-        RULE_GROUP["table_headers"],
+        RULE_GROUP["table_headers"],  # type: ignore
         True,
-    )  # type: ignore
+    )
 
 
 def sophos_firewall_rule_group_delete_command(client: Client, name: str) -> CommandResults:
@@ -321,11 +321,11 @@ def sophos_firewall_url_group_add_command(client: Client, params: dict) -> Comma
     """
     return generic_save_and_get(
         client,
-        URL_GROUP["endpoint_tag"],
+        URL_GROUP["endpoint_tag"],  # type: ignore
         params,
         url_group_builder,  # type: ignore
-        URL_GROUP["table_headers"],
-    )  # type: ignore
+        URL_GROUP["table_headers"],  # type: ignore
+    )
 
 
 def sophos_firewall_url_group_update_command(client: Client, params: dict) -> CommandResults:
@@ -340,10 +340,10 @@ def sophos_firewall_url_group_update_command(client: Client, params: dict) -> Co
     """
     return generic_save_and_get(
         client,
-        URL_GROUP["endpoint_tag"],
+        URL_GROUP["endpoint_tag"],  # type: ignore
         params,
         url_group_builder,  # type: ignore
-        URL_GROUP["table_headers"],
+        URL_GROUP["table_headers"],  # type: ignore
         True,
     )  # type: ignore
 
@@ -400,10 +400,10 @@ def sophos_firewall_ip_host_add_command(client: Client, params: dict) -> Command
     """
     return generic_save_and_get(
         client,
-        IP_HOST["endpoint_tag"],
+        IP_HOST["endpoint_tag"],  # type: ignore
         params,
         ip_host_builder,  # type: ignore
-        IP_HOST["table_headers"],
+        IP_HOST["table_headers"],  # type: ignore
     )  # type: ignore
 
 
@@ -419,12 +419,12 @@ def sophos_firewall_ip_host_update_command(client: Client, params: dict) -> Comm
     """
     return generic_save_and_get(
         client,
-        IP_HOST["endpoint_tag"],
+        IP_HOST["endpoint_tag"],  # type: ignore
         params,
         ip_host_builder,  # type: ignore
-        IP_HOST["table_headers"],
+        IP_HOST["table_headers"],  # type: ignore
         True,
-    )  # type: ignore
+    )
 
 
 def sophos_firewall_ip_host_delete_command(client: Client, name: str) -> CommandResults:
@@ -479,11 +479,11 @@ def sophos_firewall_ip_host_group_add_command(client: Client, params: dict) -> C
     """
     return generic_save_and_get(
         client,
-        IP_HOST_GROUP["endpoint_tag"],
+        IP_HOST_GROUP["endpoint_tag"],  # type: ignore
         params,
         ip_host_group_builder,  # type: ignore
-        IP_HOST_GROUP["table_headers"],
-    )  # type: ignore
+        IP_HOST_GROUP["table_headers"],  # type: ignore
+    )
 
 
 def sophos_firewall_ip_host_group_update_command(client: Client, params: dict) -> CommandResults:
@@ -498,12 +498,12 @@ def sophos_firewall_ip_host_group_update_command(client: Client, params: dict) -
     """
     return generic_save_and_get(
         client,
-        IP_HOST_GROUP["endpoint_tag"],
+        IP_HOST_GROUP["endpoint_tag"],  # type: ignore
         params,
         ip_host_group_builder,  # type: ignore
-        IP_HOST_GROUP["table_headers"],
+        IP_HOST_GROUP["table_headers"],  # type: ignore
         True,
-    )  # type: ignore
+    )
 
 
 def sophos_firewall_ip_host_group_delete_command(client: Client, name: str) -> CommandResults:
@@ -558,11 +558,11 @@ def sophos_firewall_services_add_command(client: Client, params: dict) -> Comman
     """
     return generic_save_and_get(
         client,
-        SERVICE["endpoint_tag"],
+        SERVICE["endpoint_tag"],  # type: ignore
         params,
         service_builder,  # type: ignore
-        SERVICE["table_headers"],
-    )  # type: ignore
+        SERVICE["table_headers"],  # type: ignore
+    )
 
 
 def sophos_firewall_services_update_command(client: Client, params: dict) -> CommandResults:
@@ -577,10 +577,10 @@ def sophos_firewall_services_update_command(client: Client, params: dict) -> Com
     """
     return generic_save_and_get(
         client,
-        SERVICE["endpoint_tag"],
+        SERVICE["endpoint_tag"],  # type: ignore
         params,
         service_builder,  # type: ignore
-        SERVICE["table_headers"],
+        SERVICE["table_headers"],  # type: ignore
         True,
     )  # type: ignore
 
@@ -637,11 +637,11 @@ def sophos_firewall_app_policy_add_command(client: Client, params: dict) -> Comm
     """
     return generic_save_and_get(
         client,
-        APP_POLICY["endpoint_tag"],
+        APP_POLICY["endpoint_tag"],  # type: ignore
         params,
         app_policy_builder,  # type: ignore
-        APP_POLICY["table_headers"],
-    )  # type: ignore
+        APP_POLICY["table_headers"],  # type: ignore
+    )
 
 
 def sophos_firewall_app_policy_update_command(client: Client, params: dict) -> CommandResults:
@@ -656,10 +656,10 @@ def sophos_firewall_app_policy_update_command(client: Client, params: dict) -> C
     """
     return generic_save_and_get(
         client,
-        APP_POLICY["endpoint_tag"],
+        APP_POLICY["endpoint_tag"],  # type: ignore
         params,
         app_policy_builder,  # type: ignore
-        APP_POLICY["table_headers"],
+        APP_POLICY["table_headers"],  # type: ignore
         True,
     )  # type: ignore
 
@@ -716,10 +716,10 @@ def sophos_firewall_app_category_update_command(client: Client, params: dict) ->
     """
     return generic_save_and_get(
         client,
-        APP_CATEGORY["endpoint_tag"],
+        APP_CATEGORY["endpoint_tag"],  # type: ignore
         params,
         app_category_builder,  # type: ignore
-        APP_CATEGORY["table_headers"],
+        APP_CATEGORY["table_headers"],  # type: ignore
     )  # type: ignore
 
 
@@ -762,10 +762,10 @@ def sophos_firewall_web_filter_add_command(client: Client, params: dict) -> Comm
     """
     return generic_save_and_get(
         client,
-        WEB_FILTER["endpoint_tag"],
+        WEB_FILTER["endpoint_tag"],  # type: ignore
         params,
         web_filter_builder,  # type: ignore
-        WEB_FILTER["table_headers"],
+        WEB_FILTER["table_headers"],  # type: ignore
     )  # type: ignore
 
 
@@ -781,10 +781,10 @@ def sophos_firewall_web_filter_update_command(client: Client, params: dict) -> C
     """
     return generic_save_and_get(
         client,
-        WEB_FILTER["endpoint_tag"],
+        WEB_FILTER["endpoint_tag"],  # type: ignore
         params,
         web_filter_builder,  # type: ignore
-        WEB_FILTER["table_headers"],
+        WEB_FILTER["table_headers"],  # type: ignore
         True,
     )  # type: ignore
 
@@ -841,10 +841,10 @@ def sophos_firewall_user_add_command(client: Client, params: dict) -> CommandRes
     """
     return generic_save_and_get(
         client,
-        USER["endpoint_tag"],
+        USER["endpoint_tag"],  # type: ignore
         params,
         user_builder,  # type: ignore
-        USER["table_headers"],
+        USER["table_headers"],  # type: ignore
     )  # type: ignore
 
 
@@ -860,10 +860,10 @@ def sophos_firewall_user_update_command(client: Client, params: dict) -> Command
     """
     return generic_save_and_get(
         client,
-        USER["endpoint_tag"],
+        USER["endpoint_tag"],  # type: ignore
         params,
         user_builder,  # type: ignore
-        USER["table_headers"],
+        USER["table_headers"],  # type: ignore
         True,
     )  # type: ignore
 

@@ -16,7 +16,7 @@ def get_entry_context(domains, is_single) -> dict[str, Any]:
             urls_to_return.append(f"https://{domains}")
     else:
         for domain in domains:
-            if domain.startswith(("http://","https://")):  # NOSONAR
+            if domain.startswith(("http://", "https://")):  # NOSONAR
                 urls_to_return.append(domain)
             else:
                 urls_to_return.append(f"http://{domain}")  # NOSONAR

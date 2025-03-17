@@ -672,8 +672,8 @@ def get_users_readable_output(users_response, user_id=None, name=None, email=Non
     elif email:
         readable_output = []  # type: ignore
         for user in users_response:
-            readable_output.append(
-                {  # type: ignore
+            readable_output.append(  # type: ignore
+                {
                     "ID": user.get("id"),
                     "Name": user.get("name"),
                     "Email": user.get("email"),
@@ -683,8 +683,8 @@ def get_users_readable_output(users_response, user_id=None, name=None, email=Non
     else:
         readable_output = []  # type: ignore
         for user in users_response:
-            readable_output.append(
-                {  # type: ignore
+            readable_output.append(  # type: ignore
+                {
                     "ID": user.get("id"),
                     "Name": user.get("name"),
                 }

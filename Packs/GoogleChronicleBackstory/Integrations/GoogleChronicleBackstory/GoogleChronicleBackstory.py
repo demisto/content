@@ -2195,7 +2195,7 @@ def deduplicate_events_and_create_incidents(contexts: list, event_identifiers: l
             )
             continue
         if event_identifiers and event_hash in event_identifiers:
-            demisto.info( f"[CHRONICLE] Skipping insertion of current event since it already exists. Event: {event}")
+            demisto.info(f"[CHRONICLE] Skipping insertion of current event since it already exists. Event: {event}")
             continue
         if user_alert:
             event["IncidentType"] = "UserAlert"

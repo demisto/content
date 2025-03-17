@@ -429,7 +429,7 @@ def get_asset_identifier_details(asset_identifier):
         return asset_identifier.get("hostname", "")
     if asset_identifier.get("ip", []):
         return "\n".join(asset_identifier.get("ip", []))
-    if asset_identifier.get("mac", []): # noqa: RET503
+    if asset_identifier.get("mac", []):  # noqa: RET503
         return "\n".join(asset_identifier.get("mac", []))
 
 
