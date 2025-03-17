@@ -3001,7 +3001,8 @@ def get_client_host_list_detection_with_timeout(
     limit: int,
     thread_timeout: int = HOST_LIST_DETECTIONS_THREAD_TIME_OUT,
 ) -> tuple[str, bool]:
-    """Starts a timed thread that runs `Client.get_host_list_detection` .
+    """Starts a timed thread that runs `Client.get_host_list_detection`.
+    If the thread execution time is exceeded, it returns an empty API response and `set_new_limit` = True.
 
     Args:
         client (Client): Qualys client.
@@ -3013,8 +3014,6 @@ def get_client_host_list_detection_with_timeout(
     Returns:
         tuple[str, bool]: A tuple of raw API response body string and set_new_limit boolean (to make next API call smaller).
     """
-    result = ('', True)  # empty response and set_new_limit = True
-
     demisto.debug('Starting thread pool executor to get host list dectections.')
     with ThreadPoolExecutor(max_workers=1) as executor:
         future = executor.submit(client.get_host_list_detection, since_datetime, next_page, limit)
@@ -3023,7 +3022,7 @@ def get_client_host_list_detection_with_timeout(
         try:
             # Specify request max execution time for the whole request
             demisto.debug(f'Running host list dectections thread with timeout: {thread_timeout}.')
-            result = future.result(timeout=thread_timeout)
+            raw_response, set_new_limit = future.result(timeout=thread_timeout)
             current_time = time.time()
             demisto.debug(f'Finished host list dectections thread. Elapsed time: {current_time - start_time}.')
 
@@ -3031,10 +3030,10 @@ def get_client_host_list_detection_with_timeout(
             current_time = time.time()
             demisto.debug(
                 f'Exceeded host list dectections thread timeout: {thread_timeout}. '
-                f'Elapsed time: {current_time - start_time}.'
+                f'Elapsed time: {current_time - start_time}. Setting new limit.'
             )
+            raw_response, set_new_limit = '', True  # empty response and set_new_limit = True due to timeout
 
-    raw_response, set_new_limit = result
     return raw_response, set_new_limit
 
 
