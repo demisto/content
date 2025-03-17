@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 if is_demisto_version_ge("8.0.0"):
     return_error("Not Available for XSOAR v8")
 validTil = []
