@@ -48,7 +48,7 @@ class Client(BaseClient):
     """Client class to interact with Qintel APIs"""
 
     def __init__(self, base_url, verify=True, proxy=False, **kwargs):
-        super(Client, self).__init__(base_url, verify=verify, proxy=proxy)
+        super().__init__(base_url, verify=verify, proxy=proxy)
 
         self._headers = {
             "User-Agent": USER_AGENT,
@@ -77,12 +77,12 @@ def test_module(client) -> str:
 
 def _make_timestamp(ts):
     if not ts:
-        return
+        return None
 
     if isinstance(ts, int):
         return datetime.utcfromtimestamp(ts)
 
-    if isinstance(ts, str):
+    if isinstance(ts, str): # noqa: RET503
         return parse_dt(ts).replace(tzinfo=pyutc)
 
 

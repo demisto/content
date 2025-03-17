@@ -19,8 +19,8 @@ def build_ews_query(demisto_args):
     if demisto_args.get("body"):
         args["Body"] = demisto_args.get("body")
 
-    stripSubject = True if demisto_args.get("stripSubject").lower() == "true" else False
-    escapeColons = True if demisto_args.get("escapeColons").lower() == "true" else False
+    stripSubject = demisto_args.get("stripSubject").lower() == "true"
+    escapeColons = demisto_args.get("escapeColons").lower() == "true"
     if stripSubject and args.get("Subject"):
         # Recursively remove the regex matches only from the beginning of the string
         match_string = args["Subject"]
@@ -40,7 +40,7 @@ def build_ews_query(demisto_args):
     else:
         query = " AND ".join(f'{key}:"{value}"' for (key, value) in args.items())
 
-    search_last_week = True if demisto_args.get("searchThisWeek").lower() == "true" else False
+    search_last_week = demisto_args.get("searchThisWeek").lower() == "true"
     if search_last_week:
         query = query + ' AND Received:"this week"'
 

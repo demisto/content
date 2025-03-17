@@ -456,7 +456,7 @@ def test_checkpointhec_search_emails_fail(mocker):
     result = checkpointhec_search_emails(client, {"date_last": "1 day", "date_from": "2023-11-01 00:00:00", "date_to": None}, {})
     call_api.assert_not_called()
     assert result.readable_output == (
-        "Argument date_last='1 day' cannot be used with date_from='2023-11-01 00:00:00' or " "date_to=None"
+        "Argument date_last='1 day' cannot be used with date_from='2023-11-01 00:00:00' or date_to=None"
     )
 
     result = checkpointhec_search_emails(client, {"date_last": "uno week"}, {})
@@ -472,7 +472,7 @@ def test_checkpointhec_search_emails_fail(mocker):
     )
     call_api.assert_not_called()
     assert result.readable_output == (
-        "Argument subject_contains='Any subject, ...' and subject_match='This subject' cannot be " "both set"
+        "Argument subject_contains='Any subject, ...' and subject_match='This subject' cannot be both set"
     )
 
     result = checkpointhec_search_emails(client, {"date_last": "1 day", "sender_contains": "a@b.c", "sender_match": "d@e.f"}, {})

@@ -503,7 +503,7 @@ INVESTIGATION_ACTION_DATA = {
 }
 
 INVESTIGATION_SAS_URI_API_RES = {
-    "value": "https://userrequests-us.securitycenter.windows.com:443/safedownload/" "WDATP_Investigation_Package.zip?token=test1"
+    "value": "https://userrequests-us.securitycenter.windows.com:443/safedownload/WDATP_Investigation_Package.zip?token=test1"
 }
 STOP_AND_QUARANTINE_FILE_RAW_RESPONSE: dict = {
     "cancellationComment": None,
@@ -968,7 +968,7 @@ def test_get_machine_details_command(mocker):
         (
             {"ip": "1.2.3.4", "id": ["1", "2"], "host": "example"},
             "id",
-            ("(ip eq '1.2.3.4' and host eq 'example' and id eq '1') or " "(ip eq '1.2.3.4' and host eq 'example' and id eq '2')"),
+            ("(ip eq '1.2.3.4' and host eq 'example' and id eq '1') or (ip eq '1.2.3.4' and host eq 'example' and id eq '2')"),
         ),
     ],
 )
@@ -1483,7 +1483,7 @@ QUERY_BUILDING_CASES = [
         "2022-02-17T14:39:01.391001Z",
         None,
         {
-            "$filter": "alertCreationTime+gt+2022-02-17T14:39:01.391001Z and " "(status+eq+'Resolved') and (severity+eq+'High')",
+            "$filter": "alertCreationTime+gt+2022-02-17T14:39:01.391001Z and (status+eq+'Resolved') and (severity+eq+'High')",
             "$orderby": "alertCreationTime asc",
             "$expand": "evidence",
             "$top": "5",
@@ -3024,7 +3024,7 @@ def test_create_filter(args_and_name_list, expected_result):
 
 
 @pytest.mark.parametrize(
-    "id_and_severity, name_equal, name_contains, description, published_on, cvss," "updated_on, expected_result",
+    "id_and_severity, name_equal, name_contains, description, published_on, cvss,updated_on, expected_result",
     [
         ("", "", "", "", "2020-12-16T00:00:00Z", "", "", "publishedOn ge 2020-12-16T00:00:00Z"),
         ("", "", "", "", "", "", "2020-12-16T00:00:00Z", "updatedOn ge 2020-12-16T00:00:00Z"),
@@ -3040,7 +3040,7 @@ def test_create_filter(args_and_name_list, expected_result):
             "2020-12-16T00:00:00Z",
             "",
             "2020-12-16T00:00:00Z",
-            "(contains(name, 'some_name')) and (updatedOn ge 2020-12-16T00:00:00Z) and " "(publishedOn ge 2020-12-16T00:00:00Z)",
+            "(contains(name, 'some_name')) and (updatedOn ge 2020-12-16T00:00:00Z) and (publishedOn ge 2020-12-16T00:00:00Z)",
         ),
     ],
 )

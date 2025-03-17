@@ -163,7 +163,7 @@ def test_search_exposures(mocker):
 
     assert "Qintel QWatch exposures for: test@example.local" in hr
     assert "|Email|Password|Source|Loaded|First Seen|Last Seen|" in hr
-    assert "test@example.local | SuperSecretPassword | " "malware-evilbot_March_22_2020 | 2020-03-25 09:38:40 |" in hr
+    assert "test@example.local | SuperSecretPassword | malware-evilbot_March_22_2020 | 2020-03-25 09:38:40 |" in hr
 
     record = outputs["QWatch"]["Exposures"][0]
 

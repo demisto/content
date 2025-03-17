@@ -459,7 +459,7 @@ def module_test_command(client: Client, args):  # pragma: no cover # noqa
         else:
             return_error(
                 "Error from the API: "
-                + response.get("message", "An error has occurred, if it persist, please contact your " "local help desk")
+                + response.get("message", "An error has occurred, if it persist, please contact your local help desk")
             )
     except Exception as e:
         exception_text = str(e).lower()

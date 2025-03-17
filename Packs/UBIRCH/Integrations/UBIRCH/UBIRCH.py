@@ -67,7 +67,7 @@ INCIDENT_SEVERITY_MAP = {
             TYPE_FIELD: AUTHENTICITY_TYPE,
         },
         "1300": {
-            MEANING_FIELD: "Invalid verification: signature verification failed. No public key or integrity is " "compromised.",
+            MEANING_FIELD: "Invalid verification: signature verification failed. No public key or integrity is compromised.",
             SEVERITY_FIELD: HIGH_SEVERITY,
             TYPE_FIELD: AUTHENTICITY_TYPE,
         },
@@ -243,7 +243,7 @@ def long_running_execution(client: Client) -> None:
             raise paho.mqtt.MQTTException(mqtt.connack_string(rc))
         else:
             demisto.info(
-                f"connection was succeeded for a long-running container. host: {client.mqtt_host}, port: " f"{client.mqtt_port}"
+                f"connection was succeeded for a long-running container. host: {client.mqtt_host}, port: {client.mqtt_port}"
             )
 
     def on_message(_client: mqtt.Client, _userdata: dict, message: mqtt.MQTTMessage) -> None:

@@ -65,7 +65,7 @@ def test_fetch_events(requests_mock, last_run, mock_item, expected_last_run, exp
 
     requests_mock.get(f"{BASE_URL}/events", json=mock_item)
     events, new_last_run = fetch_events(Client(base_url=BASE_URL), last_run=last_run)
-    expected_last_run == new_last_run
+    assert expected_last_run == new_last_run
     assert events == expected_fetched_events
     assert len(events) == len(expected_fetched_events)
 

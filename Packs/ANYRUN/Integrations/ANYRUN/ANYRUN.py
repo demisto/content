@@ -152,7 +152,7 @@ def make_singular(word):
         elif len(word) <= 2:
             # Then it's probably not a plural, e.g. 'OS'
             return word
-        elif word_as_lower.endswith("sis") or word_as_lower.endswith("us"):
+        elif word_as_lower.endswith(("sis", "us")):
             # Then it's probably singular like 'analysis' and 'cactus' and 'focus'
             return word
         else:
@@ -185,7 +185,7 @@ def travel_object(obj, key_functions=[], val_functions=[]):
             new_key = key
             for key_func in key_functions:
                 new_key = key_func(new_key)
-            if isinstance(val, dict) or isinstance(val, list):
+            if isinstance(val, dict | list):
                 new_val = travel_object(val, key_functions=key_functions, val_functions=val_functions)
             else:
                 new_val = val
@@ -886,7 +886,7 @@ def main():
         LOG(f"Command being called is {cmd_name}")
         handle_proxy()
 
-        if cmd_name in COMMANDS.keys():
+        if cmd_name in COMMANDS:
             COMMANDS[cmd_name]()
 
     except Exception as e:

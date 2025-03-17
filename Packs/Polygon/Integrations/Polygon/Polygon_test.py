@@ -56,7 +56,7 @@ class MockedClient(Client):
             return MOCKED_ANALYSIS_INFO_DATA
         elif url_suffix == HASH_REPUTATION.format("sha1", MOCKED_FILE_ARGS["file"][0]):
             return MOCKED_FILE_REPUTATION_DATA
-        return dict()
+        return {}
 
     def upload_file(self, file_name, file_path, password=""):
         return 100
@@ -67,7 +67,7 @@ def test_file_command(mocker):
 
     mocked_client = MockedClient(**MOCKED_CLIENT_KWARGS)
     results = file_command(mocked_client, MOCKED_FILE_ARGS)
-    assert MOCKED_FILE_REPUTATION_RESULTS == [r.to_context() for r in results]
+    assert [r.to_context() for r in results] == MOCKED_FILE_REPUTATION_RESULTS
 
 
 def test_upload_file_command(mocker):
@@ -116,7 +116,7 @@ def test_get_packages_indicators(mocker):
     indicators_list = []
     for command_result in results:
         indicators_list.append(command_result.to_context())
-    assert MOCKED_PACKAGES_INDICATORS == [r["EntryContext"] for r in indicators_list]
+    assert [r["EntryContext"] for r in indicators_list] == MOCKED_PACKAGES_INDICATORS
 
 
 def test_get_network_indicators(mocker):
@@ -126,7 +126,7 @@ def test_get_network_indicators(mocker):
     indicators_list = []
     for command_result in results:
         indicators_list.append(command_result.to_context())
-    assert MOCKED_NETWORK_INDICATORS == [r["EntryContext"] for r in indicators_list]
+    assert [r["EntryContext"] for r in indicators_list] == MOCKED_NETWORK_INDICATORS
 
 
 def test_get_monitor_indicators(mocker):
@@ -136,4 +136,4 @@ def test_get_monitor_indicators(mocker):
     indicators_list = []
     for command_result in results:
         indicators_list.append(command_result.to_context())
-    assert MOCKED_MONITOR_INDICATORS == [r["EntryContext"] for r in indicators_list]
+    assert [r["EntryContext"] for r in indicators_list] == MOCKED_MONITOR_INDICATORS

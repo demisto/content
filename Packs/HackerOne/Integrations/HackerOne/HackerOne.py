@@ -39,7 +39,7 @@ MESSAGES = {
     "PAGE_NUMBER": "{} is an invalid value for page number. Page number must be between 1 and int32.",
     "NO_RECORDS_FOUND": "No {} were found for the given argument(s).",
     "PROGRAM_HANDLE": "Program Handle is invalid. It should not be empty.",
-    "INVALID_MAX_FETCH": "{} is an invalid value for Maximum number of incidents per fetch. " "It must be between 1 and 100.",
+    "INVALID_MAX_FETCH": "{} is an invalid value for Maximum number of incidents per fetch. It must be between 1 and 100.",
     "INVALID_FIRST_FETCH": "{} is an invalid value for 'First fetch time interval'. "
     "It should be a valid date or relative timestamp. "
     "For example: '2 days', '2 months' or of the format 'yyyy-mm-dd', 'yyyy-mm-ddTHH:MM:SSZ'",

@@ -730,7 +730,7 @@ def describe_sobject_field_command(client: Client, args: dict[str, Any]):
                 return field
 
         raise Exception(
-            f"The field: {field_to_search} cannot be found in the sobject." f" Perhaps wrong field name or object name."
+            f"The field: {field_to_search} cannot be found in the sobject. Perhaps wrong field name or object name."
         )
     return None
 
@@ -863,7 +863,7 @@ def get_modified_remote_data_command(client, args, params):
     last_upadte_parsed = parse(remote_args.last_update, settings={"TIMEZONE": "UTC"})
     if last_upadte_parsed:
         last_update = last_upadte_parsed.isoformat().split(".")[0] + "Z"
-        demisto.debug(f"SalesforcePy : * START * Performing get-modified-remote-data command. Last update is:" f" {last_update}")
+        demisto.debug(f"SalesforcePy : * START * Performing get-modified-remote-data command. Last update is: {last_update}")
 
     cases = client.queryObjects(["Id"], "Case", f"{params.get('mirroring_condition')}".replace("AND ", "")).get("records")
 
@@ -871,7 +871,7 @@ def get_modified_remote_data_command(client, args, params):
         modified_records_ids.append(item["Id"])
 
     demisto.debug(
-        f"SalesforcePy : * END * Performing get-modified-remote-data command." f" Results: {','.join(modified_records_ids)}"
+        f"SalesforcePy : * END * Performing get-modified-remote-data command. Results: {','.join(modified_records_ids)}"
     )
 
     return GetModifiedRemoteDataResponse(modified_records_ids)
@@ -1008,7 +1008,7 @@ def fetchIncident(client, params):
 
         properties += ["Id", "CommentBody", "CreatedDate"]
         condition = (
-            f"CreatedDate> {lastRun.get('last_case_time')} {params.get('condition','')}" f" ORDER BY CreatedDate DESC LIMIT 10"
+            f"CreatedDate> {lastRun.get('last_case_time')} {params.get('condition','')} ORDER BY CreatedDate DESC LIMIT 10"
         )
         replies = client.queryObjects(list(set(properties)), "FeedComment", condition).get("records")
 

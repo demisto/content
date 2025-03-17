@@ -27,7 +27,7 @@ class Client(BaseClient):
     """Client class to interact with Qintel APIs"""
 
     def __init__(self, base_url, verify=True, proxy=False, **kwargs):
-        super(Client, self).__init__(base_url, verify=verify, proxy=proxy)
+        super().__init__(base_url, verify=verify, proxy=proxy)
 
         self._headers = {
             "User-Agent": USER_AGENT,
@@ -56,12 +56,12 @@ def test_module(client) -> str:
 
 def _make_timestamp(ts):
     if not ts:
-        return
+        return None
 
     if isinstance(ts, int):
         return datetime.fromtimestamp(ts)
 
-    if isinstance(ts, str):
+    if isinstance(ts, str): # noqa: RET503
         return parse_dt(ts)
 
 
@@ -151,7 +151,7 @@ def cve_command(client, **args):
             columns = ["actor", "actor_type", "exploit_type", "exploit_notes", "date_observed"]
 
             header = f"Qintel vulnerability results for: {cve}"
-            metadata = f"**Vulnerability in {data['AffectedSystem']} " f"affecting versions: {data['AffectedVersions']}**\n"
+            metadata = f"**Vulnerability in {data['AffectedSystem']} affecting versions: {data['AffectedVersions']}**\n"
             metadata += f"**Last observed: {data['LastObserved']}**"
 
             hr = tableToMarkdown(header, data["Observations"], columns, metadata=metadata)

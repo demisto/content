@@ -1,6 +1,4 @@
 import tempfile
-from typing import Dict
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from dxlclient.broker import Broker
@@ -32,7 +30,7 @@ class EventSender:
     cert_file = tempfile.NamedTemporaryFile().name
     private_key = tempfile.NamedTemporaryFile().name
 
-    def __init__(self, params: Dict):
+    def __init__(self, params: dict):
         with open(self.broker_ca_bundle, "w") as text_file:
             text_file.write(params["broker_ca_bundle"])
         with open(self.cert_file, "w") as text_file:
@@ -119,7 +117,7 @@ def validate_certificates_format():
         return_error("The private key content seems to be incorrect as it doesn't end with -----END PRIVATE KEY-----")
     if "-----BEGIN CERTIFICATE-----" not in demisto.params()["cert_file"]:
         return_error(
-            "The client certificates content seem to be " "incorrect as they don't start with '-----BEGIN CERTIFICATE-----'"
+            "The client certificates content seem to be incorrect as they don't start with '-----BEGIN CERTIFICATE-----'"
         )
     if "-----END CERTIFICATE-----" not in demisto.params()["cert_file"]:
         return_error("The client certificates content seem to be incorrect as it doesn't end with -----END CERTIFICATE-----")

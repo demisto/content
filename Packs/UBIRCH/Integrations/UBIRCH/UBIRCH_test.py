@@ -29,7 +29,7 @@ def test_get_error_definition() -> None:
     }
     incident_decoder_1300 = {"errorCode": "1300", "microservice": "niomon-decoder"}
     error_definition_decoder_1300 = {
-        "meaning": "Invalid verification: signature verification failed. No public key or integrity is " "compromised.",
+        "meaning": "Invalid verification: signature verification failed. No public key or integrity is compromised.",
         "severity": HIGH_SEVERITY,
         "type": AUTHENTICITY_TYPE,
     }
@@ -41,7 +41,7 @@ def test_get_error_definition() -> None:
     }
     incident_filter_0000 = {"errorCode": "0000", "microservice": "filter-service"}
     error_definition_filter_0000 = {
-        "meaning": "Integrity violation: duplicate hash detected. Possible injection, reply attack, " "or hash collision. ",
+        "meaning": "Integrity violation: duplicate hash detected. Possible injection, reply attack, or hash collision. ",
         "severity": HIGH_SEVERITY,
         "type": SEQUENCE_TYPE,
     }
@@ -73,7 +73,7 @@ def test_create_incidents() -> None:
 
 INCIDENT_RESPONSE = [
     {
-        "name": "Invalid verification: signature verification failed. No public key or integrity is " "compromised.",
+        "name": "Invalid verification: signature verification failed. No public key or integrity is compromised.",
         "type": "UBIRCH Authenticity",
         "labels": [
             {"type": "requestId", "value": "ec15d266-5822-4fa5-ba82-64f1653d46a4"},

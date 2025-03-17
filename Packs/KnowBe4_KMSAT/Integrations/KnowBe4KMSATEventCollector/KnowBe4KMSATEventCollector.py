@@ -127,9 +127,8 @@ def fetch_events(
         if not response.get("meta", {}).get("next_page") or is_last_run_reached:
             events.extend(eliminate_duplicated_events(fetched_events, last_run))
             break
-        else:
-            events.extend(fetched_events)
-            query_params["page"] = response.get("meta", {}).get("next_page", 1)
+        events.extend(fetched_events)
+        query_params["page"] = response.get("meta", {}).get("next_page", 1)
     new_last_run_obj: dict = {
         "latest_event_time": events[0].get("occurred_date") if events else datetime.now(tz=timezone.utc).strftime(DATE_FORMAT)
     }

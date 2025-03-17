@@ -424,7 +424,7 @@ get_first_fetch_time_params = [
 
 @freeze_time("2023-01-01T23:23:59")
 @pytest.mark.parametrize(
-    "first_fetch_from_params," ", expected_fetch_Incident, expected_fetch_investigation", get_first_fetch_time_params
+    "first_fetch_from_params,, expected_fetch_Incident, expected_fetch_investigation", get_first_fetch_time_params
 )
 def test_get_first_fetch_time(first_fetch_from_params, expected_fetch_Incident, expected_fetch_investigation):
     """
@@ -647,7 +647,7 @@ test_main_params: list = [
 
 @freeze_time("2023-01-01T23:23:59")
 @pytest.mark.parametrize(
-    "max_fetch, last_run, first_fetch_time, first_fetch_time_investigate," "expected_last_run, expected_events", test_main_params
+    "max_fetch, last_run, first_fetch_time, first_fetch_time_investigate,expected_last_run, expected_events", test_main_params
 )
 def test_fetch_events_command(
     mocker, max_fetch, last_run, first_fetch_time, first_fetch_time_investigate, expected_last_run, expected_events

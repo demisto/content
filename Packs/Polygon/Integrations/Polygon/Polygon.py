@@ -101,18 +101,18 @@ class Client(BaseClient):
 
     def _check_report_available(self, file_info):
         report = False
-        if "analgin_result" in file_info:
-            if "commit" in file_info.get("analgin_result", {}):
-                if "reports" in file_info.get("analgin_result", {}):
-                    if len(file_info["analgin_result"].get("reports", [])):
-                        if "id" in file_info["analgin_result"]["reports"][0]:
-                            report = True
+        if ("analgin_result" in file_info and
+            "commit" in file_info.get("analgin_result", {}) and
+            "reports" in file_info.get("analgin_result", {}) and
+            len(file_info["analgin_result"].get("reports", [])) and
+            "id" in file_info["analgin_result"]["reports"][0]):
+            report = True
         return report
 
     def _get_fids(self, resp):
         fids = resp.get("data", {}).get("ids", [])
         if not fids:
-            err_msg = "There is no analysis ID in THF response." "Try to upload file/url one more time."
+            err_msg = "There is no analysis ID in THF response.Try to upload file/url one more time."
             raise DemistoException(err_msg)
         return fids[0]
 
@@ -122,7 +122,7 @@ class Client(BaseClient):
                 method="post",
                 url_suffix=ANALGIN_UPLOAD,
                 files={"files": (file_name, f)},
-                data=dict(language=self._language, password=password),
+                data={"language": self._language, "password": password},
             )
         return self._get_fids(resp)
 
@@ -131,7 +131,7 @@ class Client(BaseClient):
             method="post",
             url_suffix=ANALGIN_UPLOAD,
             files={"files": ("url.txt", StringIO(url))},
-            data=dict(language=self._language),
+            data={"language": self._language},
         )
         return self._get_fids(resp)
 
@@ -147,7 +147,7 @@ class Client(BaseClient):
 
     def get_analysis_info(self, tds_analysis_id):
         file = self.get_attach(tds_analysis_id)
-        resp = dict(file=file)
+        resp = {"file": file}
         if self._check_report_available(file):
             try:
                 report = self._http_request(
@@ -223,7 +223,7 @@ def serialize_report_info(report, analysis_type):
                 "Probability": "{:.2f}%".format(info.get("probability", 0.0)),
                 "Families": ", ".join(info.get("families", [])),
                 "Score": info.get("score", 0),
-                "DumpExists": any(map(lambda vals: len(vals) > 0, report.get("network", {}).values())),
+                "DumpExists": any((len(vals) > 0 for vals in report.get("network", {}).values())),
             }
         )
     if analysis_type == FILE_TYPE:

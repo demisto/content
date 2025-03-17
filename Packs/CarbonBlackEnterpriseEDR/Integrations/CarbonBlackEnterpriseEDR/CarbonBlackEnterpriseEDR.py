@@ -1134,7 +1134,7 @@ def ignore_report_command(client: Client, args: dict) -> str:
 
     client.ignore_report_request(report_id)
 
-    return f'The report with report_id "{report_id}" and all contained IOCs will not match future events ' f"for any watchlist."
+    return f'The report with report_id "{report_id}" and all contained IOCs will not match future events for any watchlist.'
 
 
 def reactivate_report_command(client: Client, args: dict) -> str:

@@ -77,7 +77,7 @@ def get_tasks_and_readable(tasks_nested_results: Dict[str, Dict], workplan_url: 
         if v1 is None:
             md_lst.append("**No tasks found**")
             continue
-        if "tasks" in v1.keys():
+        if "tasks" in v1:
             tasks = v1.get("tasks")
             all_tasks.extend(tasks)  # type: ignore
             tasks = add_url_to_tasks(tasks, workplan_url) if workplan_url else tasks  # type: ignore
@@ -94,9 +94,7 @@ def get_tasks_and_readable(tasks_nested_results: Dict[str, Dict], workplan_url: 
 
 def get_sorted_sections(tasks_nested_results):
     tasks_nested_results = {key: value for key, value in tasks_nested_results.items() if key in SECTIONS_TO_KEEP}
-    tasks_nested_results = {
-        key: value for key, value in sorted(tasks_nested_results.items(), key=lambda x: SECTIONS_TO_KEEP.index(x[0]))
-    }
+    tasks_nested_results = dict(sorted(tasks_nested_results.items(), key=lambda x: SECTIONS_TO_KEEP.index(x[0])))
     return tasks_nested_results
 
 

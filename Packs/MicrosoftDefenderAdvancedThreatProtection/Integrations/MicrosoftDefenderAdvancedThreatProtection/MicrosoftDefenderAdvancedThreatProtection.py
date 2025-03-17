@@ -162,7 +162,7 @@ class HuntingQueryBuilder:
     FILE_ARGS_ERR = 'Please provide at least one file arguments: "file_name", "sha1", "sha256" or "md5".'
     DEVICES_ARGS_ERR = 'Please provide at least one devices arguments: "device_id" or "device_name".'
     ANY_ARGS_ERR = (
-        'Please provide at least one of the query args: "device_name", "file_name", "sha1, "sha256", "md5"' ' or "device_id".'
+        'Please provide at least one of the query args: "device_name", "file_name", "sha1, "sha256", "md5" or "device_id".'
     )
 
     @staticmethod
@@ -296,7 +296,7 @@ class HuntingQueryBuilder:
                 DeviceName=self._device_name,
                 DeviceId=self._device_id,
             )
-            remote_ip_count_query = "" if not self._remote_ip_count else " where RemoteIPCount > " f"{self._remote_ip_count} |"
+            remote_ip_count_query = "" if not self._remote_ip_count else f" where RemoteIPCount > {self._remote_ip_count} |"
 
             query = HuntingQueryBuilder.build_generic_query(
                 query_prefix=self.SMB_CONNECTIONS_QUERY_PREFIX,
@@ -2423,7 +2423,7 @@ def add_error_message(failed_devices, all_requested_devices):
     if failed_devices:
         if len(all_requested_devices) == len(failed_devices):
             raise DemistoException(f"{INTEGRATION_NAME} The command was failed with the errors: {failed_devices}")
-        human_readable = "Note: you don't see the following IDs in the results as the request was failed " "for them. \n"
+        human_readable = "Note: you don't see the following IDs in the results as the request was failed for them. \n"
         for device_id in failed_devices:
             human_readable += f"ID {device_id} failed with the error: {failed_devices[device_id]} \n"
     return human_readable
@@ -2432,7 +2432,7 @@ def add_error_message(failed_devices, all_requested_devices):
 def not_found_message(not_found_devices):
     human_readable = ""
     if not_found_devices:
-        human_readable = f"\n You don't see the following IDs in the results as they were not found: " f"{not_found_devices}."
+        human_readable = f"\n You don't see the following IDs in the results as they were not found: {not_found_devices}."
     return human_readable
 
 
@@ -3258,7 +3258,7 @@ def restrict_app_execution_command(client: MsClient, args: dict):
 
     action_data = get_machine_action_data(machine_action_response)
     human_readable = tableToMarkdown(
-        f"Initiating Restrict execution of all applications on the machine {machine_id} " f"except a predefined set:",
+        f"Initiating Restrict execution of all applications on the machine {machine_id} except a predefined set:",
         action_data,
         headers=headers,
         removeNull=True,
@@ -3845,7 +3845,7 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
         alerts = client.list_alerts_by_params(params=params, overwrite_rate_limit_retry=True)["value"]
     except DemistoException as err:
         big_query_err_msg = (
-            "Verify that the server URL parameter is correct and that you have access to the server" " from your host."
+            "Verify that the server URL parameter is correct and that you have access to the server from your host."
         )
         if str(err).startswith(big_query_err_msg):
             demisto.debug(f"Query crashed API, probably due to a big response. Params sent to query: {params}")
@@ -4098,7 +4098,7 @@ def create_indicator_command(client: MsClient, args: dict, specific_args: dict) 
     """
     action = args.get("action", "")
     description = args.get("description", "")
-    assert 1 <= len(description) <= 100, "The description argument must contain at" " least 1 character and not more than 100"
+    assert 1 <= len(description) <= 100, "The description argument must contain at least 1 character and not more than 100"
     expiration_time = get_future_time(args.get("expiration_time", ""))
     threat_type = args.get("threat_type", "")
     tlp_level = args.get("tlp_level", "")
@@ -4478,7 +4478,7 @@ def lateral_movement_evidence_command(client, args):  # pragma: no cover
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get("Results")
     if isinstance(results, list) and page > 1:
-        results = results[(page - 1) * limit : limit * page]
+        results = results[(page - 1) * limit: limit * page]
     readable_output = tableToMarkdown(f"Lateral Movement Evidence Hunt ({query_purpose}) Results", results, removeNull=True)
     if show_query:
         readable_output = f"### The Query:\n{query}\n{readable_output}"
@@ -4564,7 +4564,7 @@ def file_origin_command(client, args):  # pragma: no cover
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get("Results")
     if isinstance(results, list) and page > 1:
-        results = results[(page - 1) * limit : limit * page]
+        results = results[(page - 1) * limit: limit * page]
     readable_output = tableToMarkdown("File Origin Hunt Results", results, removeNull=True)
     if show_query:
         readable_output = f"### The Query:\n{query}\n{readable_output}"
@@ -4608,7 +4608,7 @@ def process_details_command(client, args):  # pragma: no cover
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get("Results")
     if isinstance(results, list) and page > 1:
-        results = results[(page - 1) * limit : limit * page]
+        results = results[(page - 1) * limit: limit * page]
     readable_output = tableToMarkdown(f"Process Details Hunt ({query_purpose}) Results", results, removeNull=True)
     if show_query:
         readable_output = f"### The Query:\n{query}\n{readable_output}"
@@ -4651,7 +4651,7 @@ def network_connections_command(client, args):  # pragma: no cover
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get("Results")
     if isinstance(results, list) and page > 1:
-        results = results[(page - 1) * limit : limit * page]
+        results = results[(page - 1) * limit: limit * page]
     readable_output = tableToMarkdown(f"Network Connections Hunt ({query_purpose}) Results", results, removeNull=True)
     if show_query:
         readable_output = f"### The Query:\n{query}\n{readable_output}"
@@ -4683,7 +4683,7 @@ def privilege_escalation_command(client, args):  # pragma: no cover
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get("Results")
     if isinstance(results, list) and page > 1:
-        results = results[(page - 1) * limit : limit * page]
+        results = results[(page - 1) * limit: limit * page]
     readable_output = tableToMarkdown("Privilege Escalation Hunt Results", results, removeNull=True)
     if show_query:
         readable_output = f"### The Query:\n{query}\n{readable_output}"
@@ -4713,7 +4713,7 @@ def tampering_command(client, args):  # pragma: no cover
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get("Results")
     if isinstance(results, list) and page > 1:
-        results = results[(page - 1) * limit : limit * page]
+        results = results[(page - 1) * limit: limit * page]
     readable_output = tableToMarkdown("Tampering Hunt Results", results, removeNull=True)
     if show_query:
         readable_output = f"### The Query:\n{query}\n{readable_output}"
@@ -4758,7 +4758,7 @@ def cover_up_command(client, args):  # pragma: no cover
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get("Results")
     if isinstance(results, list) and page > 1:
-        results = results[(page - 1) * limit : limit * page]
+        results = results[(page - 1) * limit: limit * page]
     readable_output = tableToMarkdown(f"Cover Up Hunt ({query_purpose}) Results", results, removeNull=True)
     if show_query:
         readable_output = f"### The Query:\n{query}\n{readable_output}"
@@ -4793,7 +4793,8 @@ def get_indicator_dbot_object(indicator):
     indicator_type = INDICATOR_TYPE_TO_DBOT_TYPE.get(indicator.get("indicatorType"))
     if indicator_type:
         indicator_value = indicator.get("indicatorValue")
-        dbot = Common.DBotScore(indicator=indicator_value, indicator_type=indicator_type, score=Common.DBotScore.NONE)  # type:ignore
+        dbot = Common.DBotScore(indicator=indicator_value, indicator_type=indicator_type,
+                                score=Common.DBotScore.NONE)  # type:ignore
         return get_dbot_indicator(indicator_type, dbot, indicator_value)
     else:
         return None

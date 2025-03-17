@@ -41,7 +41,7 @@ def test_add_hash_allow_list(client: Client, requests_mock):
     )
     response = response_raw[0].outputs
     ret_results: list[dict[str, Any]] = response_raw[1].outputs
-    response["results"] = list()
+    response["results"] = []
     response["results"].append(ret_results)
     assert response == test_json_data["response"]
 
@@ -56,7 +56,7 @@ def test_add_hash_deny_list(client: Client, requests_mock):
     )
     response = response_raw[0].outputs
     ret_results: list[dict[str, Any]] = response_raw[1].outputs
-    response["results"] = list()
+    response["results"] = []
     response["results"].append(ret_results)
     assert response == test_json_data["response"]
 
@@ -81,7 +81,7 @@ def test_add_ticket(client: Client, requests_mock):
     )
     response = response_raw[0].outputs
     ret_results: list[dict[str, Any]] = response_raw[1].outputs
-    response["results"] = list()
+    response["results"] = []
     response["results"].append(ret_results)
     assert response == test_json_data["response"]
 
@@ -129,7 +129,7 @@ def test_compliance_scan_with_summary(client: Client, requests_mock):
     response_raw = CimTrak.compliance_scan_with_summary_command(client, {"objectId": 1, "retryCount": 20, "retrySeconds": 10})
     response = response_raw[0].outputs
     ret_results: list[dict[str, Any]] = response_raw[1].outputs
-    response["results"] = list()
+    response["results"] = []
     response["results"].append(ret_results)
     assert response == test_json_data["response"]
 
@@ -144,7 +144,7 @@ def test_delete_hash_allow_list(client: Client, requests_mock):
     )
     response = response_raw[0].outputs
     ret_results: list[dict[str, Any]] = response_raw[1].outputs
-    response["results"] = list()
+    response["results"] = []
     response["results"].append(ret_results)
     assert response == test_json_data["response"]
 
@@ -159,7 +159,7 @@ def test_delete_hash_deny_list(client: Client, requests_mock):
     )
     response = response_raw[0].outputs
     ret_results: list[dict[str, Any]] = response_raw[1].outputs
-    response["results"] = list()
+    response["results"] = []
     response["results"].append(ret_results)
     assert response == test_json_data["response"]
 
@@ -227,7 +227,7 @@ def test_file_analysis_by_hash(client: Client, requests_mock):
     )
     response = response_raw[0].outputs
     ret_results: list[dict[str, Any]] = response_raw[1].outputs
-    response["results"] = list()
+    response["results"] = []
     response["results"].append(ret_results)
     assert response == test_json_data["response"]
 
@@ -240,7 +240,7 @@ def test_file_analysis_by_object_detail_id(client: Client, requests_mock):
     response_raw = CimTrak.file_analysis_by_object_detail_id_command(client, {"ObjectDetailId": 42})
     response = response_raw[0].outputs
     ret_results: list[dict[str, Any]] = response_raw[1].outputs
-    response["results"] = list()
+    response["results"] = []
     response["results"].append(ret_results)
     assert response == test_json_data["response"]
 
@@ -264,7 +264,7 @@ def test_get_agent_info(client: Client, requests_mock):
     response_raw = CimTrak.get_agent_info_command(client, {"ObjectId": "2"})
     response = response_raw[0].outputs
     ret_results: list[dict[str, Any]] = response_raw[1].outputs
-    response["results"] = list()
+    response["results"] = []
     response["results"].append(ret_results)
     assert response == test_json_data["response"]
 
@@ -277,7 +277,7 @@ def test_get_agent_object_by_alternate_id(client: Client, requests_mock):
     response_raw = CimTrak.get_agent_object_by_alternate_id_command(client, {"alternateSystemId": "test"})
     response = response_raw[0].outputs
     ret_results: list[dict[str, Any]] = response_raw[1].outputs
-    response["results"] = list()
+    response["results"] = []
     response["results"].append(ret_results)
     assert response == test_json_data["response"]
 
@@ -290,7 +290,7 @@ def test_get_agent_object_by_ip(client: Client, requests_mock):
     response_raw = CimTrak.get_agent_object_by_ip_command(client, {"ip": "127.0.0.1"})
     response = response_raw[0].outputs
     ret_results: list[dict[str, Any]] = response_raw[1].outputs
-    response["results"] = list()
+    response["results"] = []
     response["results"].append(ret_results)
     assert response == test_json_data["response"]
 
@@ -303,7 +303,7 @@ def test_get_agent_object_by_name(client: Client, requests_mock):
     response_raw = CimTrak.get_agent_object_by_name_command(client, {"agentName": "local"})
     response = response_raw[0].outputs
     ret_results: list[dict[str, Any]] = response_raw[1].outputs
-    response["results"] = list()
+    response["results"] = []
     response["results"].append(ret_results)
     assert response == test_json_data["response"]
 
@@ -316,7 +316,7 @@ def test_get_agent_object_id_by_alternate_system_id(client: Client, requests_moc
     response_raw = CimTrak.get_agent_object_id_by_alternate_system_id_command(client, {"alternateSystemId": "test"})
     response = response_raw[0].outputs
     ret_results: list[dict[str, Any]] = response_raw[1].outputs
-    response["results"] = list()
+    response["results"] = []
     response["results"].append(ret_results)
     assert response == test_json_data["response"]
 
@@ -331,7 +331,7 @@ def test_get_compliance_archive_details(client: Client, requests_mock):
     )
     response = response_raw[0].outputs
     ret_results: list[dict[str, Any]] = response_raw[1].outputs
-    response["results"] = list()
+    response["results"] = []
     response["results"].append(ret_results)
     assert response == test_json_data["response"]
 
@@ -346,7 +346,7 @@ def test_get_compliance_archive_summary(client: Client, requests_mock):
     )
     response = response_raw[0].outputs
     ret_results: list[dict[str, Any]] = response_raw[1].outputs
-    response["results"] = list()
+    response["results"] = []
     response["results"].append(ret_results)
     assert response == test_json_data["response"]
 
@@ -359,7 +359,7 @@ def test_get_current_compliance_items(client: Client, requests_mock):
     response_raw = CimTrak.get_current_compliance_items_command(client, {"ObjectId": "2", "ComplianceScanId": "-1"})
     response = response_raw[0].outputs
     ret_results: list[dict[str, Any]] = response_raw[1].outputs
-    response["results"] = list()
+    response["results"] = []
     response["results"].append(ret_results)
     assert response == test_json_data["response"]
 
@@ -372,7 +372,7 @@ def test_get_events(client: Client, requests_mock):
     response_raw = CimTrak.get_events_command(client, {"Start": 1, "End": 1})
     response = response_raw[0].outputs
     ret_results: list[dict[str, Any]] = response_raw[1].outputs
-    response["results"] = list()
+    response["results"] = []
     response["results"].append(ret_results)
     assert response == test_json_data["response"]
 
@@ -385,7 +385,7 @@ def test_get_object(client: Client, requests_mock):
     response_raw = CimTrak.get_object_command(client, {"objectId": 2})
     response = response_raw[0].outputs
     ret_results: list[dict[str, Any]] = response_raw[1].outputs
-    response["results"] = list()
+    response["results"] = []
     response["results"].append(ret_results)
     assert response == test_json_data["response"]
 
@@ -398,7 +398,7 @@ def test_get_object_group(client: Client, requests_mock):
     response_raw = CimTrak.get_object_group_command(client, {"objectId": 2})
     response = response_raw[0].outputs
     ret_results: list[dict[str, Any]] = response_raw[1].outputs
-    response["results"] = list()
+    response["results"] = []
     response["results"].append(ret_results)
     assert response == test_json_data["response"]
 
@@ -413,7 +413,7 @@ def test_get_objects(client: Client, requests_mock):
     )
     response = response_raw[0].outputs
     ret_results: list[dict[str, Any]] = response_raw[1].outputs
-    response["results"] = list()
+    response["results"] = []
     response["results"].append(ret_results)
     assert response == test_json_data["response"]
 
@@ -426,7 +426,7 @@ def test_get_sub_generations(client: Client, requests_mock):
     response_raw = CimTrak.get_sub_generations_command(client, {"objectId": 2})
     response = response_raw[0].outputs
     ret_results: list[dict[str, Any]] = response_raw[1].outputs
-    response["results"] = list()
+    response["results"] = []
     response["results"].append(ret_results)
     assert response == test_json_data["response"]
 
@@ -439,7 +439,7 @@ def test_get_ticket_tasks(client: Client, requests_mock):
     response_raw = CimTrak.get_ticket_tasks_command(client, {})
     response = response_raw[0].outputs
     ret_results: list[dict[str, Any]] = response_raw[1].outputs
-    response["results"] = list()
+    response["results"] = []
     response["results"].append(ret_results)
     assert response == test_json_data["response"]
 
@@ -452,7 +452,7 @@ def test_get_tickets(client: Client, requests_mock):
     response_raw = CimTrak.get_tickets_command(client, {})
     response = response_raw[0].outputs
     ret_results: list[dict[str, Any]] = response_raw[1].outputs
-    response["results"] = list()
+    response["results"] = []
     response["results"].append(ret_results)
     assert response == test_json_data["response"]
 
@@ -487,7 +487,7 @@ def test_run_report_by_name(client: Client, requests_mock):
     response_raw = CimTrak.run_report_by_name_command(client, {"Name": "Active Directory Users", "objectId": "0"})
     response = response_raw[0].outputs
     ret_results: list[dict[str, Any]] = response_raw[1].outputs
-    response["results"] = list()
+    response["results"] = []
     response["results"].append(ret_results)
     assert response == test_json_data["response"]
 
@@ -535,7 +535,7 @@ def test_update_ticket(client: Client, requests_mock):
     )
     response = response_raw[0].outputs
     ret_results: list[dict[str, Any]] = response_raw[1].outputs
-    response["results"] = list()
+    response["results"] = []
     response["results"].append(ret_results)
     assert response == test_json_data["response"]
 
@@ -548,6 +548,6 @@ def test_view_file(client: Client, requests_mock):
     response_raw = CimTrak.view_file_command(client, {"objectDetailId": 2})
     response = response_raw[0].outputs
     ret_results: list[dict[str, Any]] = response_raw[1].outputs
-    response["results"] = list()
+    response["results"] = []
     response["results"].append(ret_results)
     assert response == test_json_data["response"]

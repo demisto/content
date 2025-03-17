@@ -15,8 +15,7 @@ from CommonServerUserPython import *
 def nested_dict_pairs_iterator(dict_obj):
     for key, value in dict_obj.items():
         if isinstance(value, dict):
-            for pair in nested_dict_pairs_iterator(dict(value)):
-                yield pair
+            yield from nested_dict_pairs_iterator(dict(value))
 
         else:
             yield {key: value}

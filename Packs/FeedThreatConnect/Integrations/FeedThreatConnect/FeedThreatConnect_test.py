@@ -57,7 +57,8 @@ def test_create_or_query():
                 "confidence": 0,
                 "threat_assess_score": 0,
             },
-            'typeName IN ("EmailAddress","File","Host","URL","ASN","CIDR","Hashtag","Mutex","Registry Key","User Agent","Address")',
+            'typeName IN ("EmailAddress","File","Host","URL","ASN","CIDR","Hashtag","Mutex","Registry Key",'
+            '"User Agent","Address")',
             "indicators",
         ),  # noqa: E501
         (

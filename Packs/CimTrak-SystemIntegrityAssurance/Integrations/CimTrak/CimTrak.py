@@ -1312,16 +1312,15 @@ class CimTrak:
                 self.debug_print("Polling log entries")
             request_response = self.get_events(filter=filter)
             results = request_response["results"]
-            for scan in results:
+            for _scan in results:
                 resultcount = resultcount + 1
             if resultcount == 0:
                 if self.debug >= 4:
                     self.debug_print("Sleeping to wait for compliance results: Try " + str(tries) + " of " + str(retry_count))
                 time.sleep(retry_seconds)
 
-        if resultcount == 0:
-            if self.debug >= 4:
-                self.debug_print("Timeout waiting for compliance scan to complete")
+        if resultcount == 0 and self.debug >= 4:
+            self.debug_print("Timeout waiting for compliance scan to complete")
         # Get results
         filter = [{"name": "scanid", "operator": ">", "value": last_scanid}]
         request_response = self.get_compliance_archive_summary(object_id, filter=filter)
@@ -1576,10 +1575,7 @@ def fetch_incidents(
 # CimTrak Palo Alto Custom Functions Begin
 ################################################################
 def ResolveBool(value):
-    if value.lower() == "false" or value == "0":
-        return False
-    else:
-        return True
+    return not (value.lower() == "false" or value == "0")
 
 
 def ResolveString(value):

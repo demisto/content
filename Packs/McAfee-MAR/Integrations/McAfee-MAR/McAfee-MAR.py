@@ -276,7 +276,7 @@ def search_multiple(collectors, filter_collector, filter_by, filter_operator, fi
         else:
             if not filter_by or not filter_operator or not filter_value:
                 raise Exception(
-                    "you must specify filter-by," " filter-operator & filter-value when you provide filter_collector argument"
+                    "you must specify filter-by, filter-operator & filter-value when you provide filter_collector argument"
                 )
             else:
                 result_context = mar_client.search(
@@ -351,7 +351,7 @@ def validate_certificates_format():
         return_error("The private key content seems to be incorrect as it doesn't end with -----END PRIVATE KEY-----")
     if "-----BEGIN CERTIFICATE-----" not in demisto.params()["cert_file"]:
         return_error(
-            "The client certificates content seem to be " "incorrect as they don't start with '-----BEGIN CERTIFICATE-----'"
+            "The client certificates content seem to be incorrect as they don't start with '-----BEGIN CERTIFICATE-----'"
         )
     if "-----END CERTIFICATE-----" not in demisto.params()["cert_file"]:
         return_error("The client certificates content seem to be incorrect as it doesn't end with -----END CERTIFICATE-----")

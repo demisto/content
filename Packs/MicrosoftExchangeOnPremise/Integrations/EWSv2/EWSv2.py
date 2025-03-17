@@ -640,7 +640,7 @@ def parse_item_as_dict(item, email_address=None, camel_case=False, compact_field
     if getattr(item, "folder", None):
         raw_dict["folder"] = parse_folder_as_json(item.folder)
         folder_path = (
-            item.folder.absolute[len(TOIS_PATH) :] if item.folder.absolute.startswith(TOIS_PATH) else item.folder.absolute
+            item.folder.absolute[len(TOIS_PATH):] if item.folder.absolute.startswith(TOIS_PATH) else item.folder.absolute
         )
         raw_dict["folder_path"] = folder_path
 
@@ -922,9 +922,9 @@ def parse_incident_from_item(item, is_fetch, mark_as_read):  # pragma: no cover
             except ValueError as e:
                 if item.subject and len(item.subject) > 255:
                     demisto.debug(
-                        "Length of message subject is greater than 255, item.save could not handle it, " "cutting the subject."
+                        "Length of message subject is greater than 255, item.save could not handle it, cutting the subject."
                     )
-                    sub_subject = "Length of subject greater than 255 characters. " f"Partial subject: {item.subject[:180]}"
+                    sub_subject = f"Length of subject greater than 255 characters. Partial subject: {item.subject[:180]}"
                     item.subject = sub_subject
                     item.save()
                 else:
@@ -1110,7 +1110,8 @@ def get_entry_for_item_attachment(item_id, attachment, target_email):  # pragma:
     dict_result.update(parse_item_as_dict(item, target_email, camel_case=True, compact_fields=True))
     title = (
         f'EWS get attachment got item for "{target_email}", '
-        f'"{get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, is_inline=attachment.is_inline, attachment_subject=attachment.item.subject)}"'
+        f'"{get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id,
+                                is_inline=attachment.is_inline, attachment_subject=attachment.item.subject)}"'
     )  # noqa: E501
 
     return get_entry_for_object(title, CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT + CONTEXT_UPDATE_ITEM_ATTACHMENT, dict_result)
@@ -1754,7 +1755,7 @@ def sub_main():  # pragma: no cover
             and urlparse(client.ews_server.lower()).hostname == "outlook.office365.com"
         ):
             log_message = (
-                "Office365 is undergoing load balancing operations. " "As a result, the service is temporarily unavailable."
+                "Office365 is undergoing load balancing operations. As a result, the service is temporarily unavailable."
             )
             if demisto.command() == "fetch-incidents":
                 demisto.info(log_message)
@@ -1778,13 +1779,13 @@ def sub_main():  # pragma: no cover
 
             if is_test_module and isinstance(e, MalformedResponseError):
                 error_message_simple = (
-                    "Got invalid response from the server.\n" "Verify that the Hostname or IP address is is correct."
+                    "Got invalid response from the server.\nVerify that the Hostname or IP address is is correct."
                 )
 
         # Legacy error handling
         if "Status code: 401" in debug_log:
             error_message_simple = (
-                "Got unauthorized from the server. " "Check credentials are correct and authentication method are supported. "
+                "Got unauthorized from the server. Check credentials are correct and authentication method are supported. "
             )
 
             error_message_simple += (
