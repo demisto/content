@@ -1,18 +1,15 @@
-import io
 import json
 import os
 import time
-
 from unittest.mock import patch
 
 import pytest
-
-from CommonServerPython import (DemistoException, set_integration_context, get_integration_context)
+from CommonServerPython import DemistoException, get_integration_context, set_integration_context
 from Lansweeper import MESSAGES
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -21,30 +18,21 @@ AUTHENTICATION_ENDPOINT = "https://api.lansweeper.com/api/integrations/oauth/tok
 REDIRECT_URL = "https://mock.com"
 
 MOCK_INTEGRATION_CONTEXT = {
-    'access_token': "Bearer dummy",
-    'valid_until': time.time() + 86400,
-    'authorized_sites': [
-        {
-            "id": "401d153d-2a59-45eb-879a-c291390448ca",
-            "name": "api-demo-data"
-        },
-        {
-            "id": "56d4ed4f-b2ad-4587-91b5-07bd453c5c76",
-            "name": "api-demo-data-v2"
-        }
-    ]
+    "access_token": "Bearer dummy",
+    "valid_until": time.time() + 86400,
+    "authorized_sites": [
+        {"id": "401d153d-2a59-45eb-879a-c291390448ca", "name": "api-demo-data"},
+        {"id": "56d4ed4f-b2ad-4587-91b5-07bd453c5c76", "name": "api-demo-data-v2"},
+    ],
 }
 
-AUTHENTICATION_RESP_HEADER = {
-    "access_token": "dummy",
-    "token_type": "Bearer",
-    "expires_in": 86400
-}
+AUTHENTICATION_RESP_HEADER = {"access_token": "dummy", "token_type": "Bearer", "expires_in": 86400}
 
 
 @pytest.fixture()
 def client():
     from Lansweeper import Client
+
     return Client("", False, False, headers={"Authorization": "Token identity_code"})
 
 
@@ -59,15 +47,19 @@ def test_test_module_when_valid_response_is_returned(mocker):
         - Ensure test module should return success
     """
     from Lansweeper import test_module
+
     mocked_client = mocker.Mock()
     mocked_client.http_request.return_value = {}
-    assert test_module(mocked_client) == 'ok'
+    assert test_module(mocked_client) == "ok"
 
 
-@pytest.mark.parametrize("status_code, error_msg", [
-    (400, "Authentication error. Please provide valid 'Application Identity Code'."),
-    (500, "The server encountered an internal error for Lansweeper and was unable to complete your request.")
-])
+@pytest.mark.parametrize(
+    "status_code, error_msg",
+    [
+        (400, "Authentication error. Please provide valid 'Application Identity Code'."),
+        (500, "The server encountered an internal error for Lansweeper and was unable to complete your request."),
+    ],
+)
 def test_exception_handler(status_code, error_msg, mocker):
     """
     To test exception handler in various http error code.
@@ -79,6 +71,7 @@ def test_exception_handler(status_code, error_msg, mocker):
         - raise DemistoException
     """
     from Lansweeper import Client
+
     mocked_response = mocker.Mock()
     mocked_response.status_code = status_code
     mocked_response.json.return_value = {}
@@ -100,11 +93,9 @@ def test_lansweeper_site_list_command_when_valid_response_is_returned(mocker):
     """
     from Lansweeper import lansweeper_site_list_command
 
-    response = util_load_json(
-        os.path.join("test_data", "site_list_command_response.json"))
-    context = util_load_json(
-        os.path.join("test_data", "site_list_command_context.json"))
-    with open(os.path.join("test_data", "site_list_command_hr.md"), 'r') as f:
+    response = util_load_json(os.path.join("test_data", "site_list_command_response.json"))
+    context = util_load_json(os.path.join("test_data", "site_list_command_context.json"))
+    with open(os.path.join("test_data", "site_list_command_hr.md")) as f:
         readable_output = f.read()
 
     mocked_client = mocker.Mock()
@@ -112,7 +103,7 @@ def test_lansweeper_site_list_command_when_valid_response_is_returned(mocker):
 
     command_response = lansweeper_site_list_command(mocked_client)
 
-    assert command_response.outputs_prefix == 'Lansweeper.Site'
+    assert command_response.outputs_prefix == "Lansweeper.Site"
     assert command_response.outputs_key_field == "id"
     assert command_response.outputs == context
     assert command_response.readable_output == readable_output
@@ -129,16 +120,16 @@ def test_main_unknown_commmand(mocker, monkeypatch, capfd):
         -  Raises exception
     """
     from Lansweeper import main
-    monkeypatch.setattr('demistomock.params', lambda: {
-        "url": REDIRECT_URL,
-        "credentials": {
-            "identifier": "client_id",
-            "password": "password"
 
+    monkeypatch.setattr(
+        "demistomock.params",
+        lambda: {
+            "url": REDIRECT_URL,
+            "credentials": {"identifier": "client_id", "password": "password"},
+            "authorization_code": "123456",
         },
-        "authorization_code": "123456"
-    })
-    monkeypatch.setattr('demistomock.command', lambda: "unknown_command")
+    )
+    monkeypatch.setattr("demistomock.command", lambda: "unknown_command")
 
     mocked_client = mocker.Mock()
     mocked_client.http_request.return_value = {}
@@ -148,7 +139,7 @@ def test_main_unknown_commmand(mocker, monkeypatch, capfd):
         main()
 
 
-@patch('demistomock.getIntegrationContext')
+@patch("demistomock.getIntegrationContext")
 def test_lansweeper_ip_hunt_command_when_valid_response_is_returned(mocker_get_context, mocker):
     """
     Test case scenario for successful execution of ls-ip-hunt command.
@@ -160,21 +151,16 @@ def test_lansweeper_ip_hunt_command_when_valid_response_is_returned(mocker_get_c
         -  Returns the response data
     """
     from Lansweeper import lansweeper_ip_hunt_command
+
     mocker_get_context.return_value = MOCK_INTEGRATION_CONTEXT
-    response = util_load_json(
-        os.path.join("test_data", "ip_hunt_command_response.json"))
-    context = util_load_json(
-        os.path.join("test_data", "ip_hunt_command_context.json"))
-    with open(os.path.join("test_data", "ip_hunt_command_hr.md"), 'r') as f:
+    response = util_load_json(os.path.join("test_data", "ip_hunt_command_response.json"))
+    context = util_load_json(os.path.join("test_data", "ip_hunt_command_context.json"))
+    with open(os.path.join("test_data", "ip_hunt_command_hr.md")) as f:
         readable_output = f.read()
 
     mocked_client = mocker.Mock()
     mocked_client.asset_list.return_value = response
-    args = {
-        'site_id': "56d4ed4f-b2ad-4587-91b5-07bd453c5c76",
-        'ip': "127.0.0.1"
-
-    }
+    args = {"site_id": "56d4ed4f-b2ad-4587-91b5-07bd453c5c76", "ip": "127.0.0.1"}
     command_response = lansweeper_ip_hunt_command(mocked_client, args)
 
     assert command_response.outputs_prefix == "Lansweeper.IP"
@@ -183,7 +169,7 @@ def test_lansweeper_ip_hunt_command_when_valid_response_is_returned(mocker_get_c
     assert command_response.readable_output == readable_output
 
 
-@patch('demistomock.getIntegrationContext')
+@patch("demistomock.getIntegrationContext")
 def test_lansweeper_ip_hunt_command_when_empty_response_is_returned(mocker_get_context, mocker):
     """
     Test case scenario for successful execution of ls-ip-hunt command with an empty response.
@@ -195,43 +181,38 @@ def test_lansweeper_ip_hunt_command_when_empty_response_is_returned(mocker_get_c
         - Returns no records for the given input arguments
     """
     from Lansweeper import lansweeper_ip_hunt_command
+
     mocker_get_context.return_value = MOCK_INTEGRATION_CONTEXT
     response = {
         "data": {
             "site": {
                 "assetResources": {
                     "total": 0,
-                    "pagination": {
-                        "limit": 2,
-                        "current": None,
-                        "next": None,
-                        "page": "NEXT"
-                    },
-                    "items": []
+                    "pagination": {"limit": 2, "current": None, "next": None, "page": "NEXT"},
+                    "items": [],
                 }
             }
         }
     }
-    args = {
-        'site_id': "56d4ed4f-b2ad-4587-91b5-07bd453c5c76",
-        'ip': "127.0.0.1"
-
-    }
+    args = {"site_id": "56d4ed4f-b2ad-4587-91b5-07bd453c5c76", "ip": "127.0.0.1"}
     mocked_client = mocker.Mock()
     mocked_client.asset_list.return_value = response
 
     command_results = lansweeper_ip_hunt_command(mocked_client, args=args)
 
-    assert command_results.readable_output == '### Asset(s)\n**No entries.**\n'
+    assert command_results.readable_output == "### Asset(s)\n**No entries.**\n"
 
 
-@pytest.mark.parametrize("args,expected_error", [
-    ({"site_id": "abc", "ip": ""}, MESSAGES["REQUIRED_ARGUMENT"].format("ip")),
-    ({"site_id": "abc", "ip": "abc,1.1"}, MESSAGES["INVALID_IP"]),
-    ({"ip": "127.0.0.1", "limit": 501}, MESSAGES["INVALID_LIMIT"].format("501")),
-    ({"ip": "127.0.0.1", "limit": 0}, MESSAGES["INVALID_LIMIT"].format("0")),
-])
-@patch('demistomock.getIntegrationContext')
+@pytest.mark.parametrize(
+    "args,expected_error",
+    [
+        ({"site_id": "abc", "ip": ""}, MESSAGES["REQUIRED_ARGUMENT"].format("ip")),
+        ({"site_id": "abc", "ip": "abc,1.1"}, MESSAGES["INVALID_IP"]),
+        ({"ip": "127.0.0.1", "limit": 501}, MESSAGES["INVALID_LIMIT"].format("501")),
+        ({"ip": "127.0.0.1", "limit": 0}, MESSAGES["INVALID_LIMIT"].format("0")),
+    ],
+)
+@patch("demistomock.getIntegrationContext")
 def test_lansweeper_ip_hunt_command_when_invalid_args_provided(mocker_get_context, client, args, expected_error):
     """
     Test case scenario when invalid arguments for ip hunt command are provided.
@@ -243,6 +224,7 @@ def test_lansweeper_ip_hunt_command_when_invalid_args_provided(mocker_get_contex
         - Returns the response message of invalid input arguments
     """
     from Lansweeper import lansweeper_ip_hunt_command
+
     mocker_get_context.return_value = MOCK_INTEGRATION_CONTEXT
     with pytest.raises(ValueError) as err:
         lansweeper_ip_hunt_command(client, args)
@@ -250,7 +232,7 @@ def test_lansweeper_ip_hunt_command_when_invalid_args_provided(mocker_get_contex
     assert str(err.value) == expected_error
 
 
-@patch('demistomock.getIntegrationContext')
+@patch("demistomock.getIntegrationContext")
 def test_lansweeper_mac_hunt_command_when_valid_response_is_returned(mocker_get_context, mocker):
     """
     Test case scenario for successful execution of ls-mac-hunt command.
@@ -262,21 +244,16 @@ def test_lansweeper_mac_hunt_command_when_valid_response_is_returned(mocker_get_
         -  Returns the response data
     """
     from Lansweeper import lansweeper_mac_hunt_command
+
     mocker_get_context.return_value = MOCK_INTEGRATION_CONTEXT
-    response = util_load_json(
-        os.path.join("test_data", "ip_hunt_command_response.json"))
-    context = util_load_json(
-        os.path.join("test_data", "mac_hunt_command_context.json"))
-    with open(os.path.join("test_data", "ip_hunt_command_hr.md"), 'r') as f:
+    response = util_load_json(os.path.join("test_data", "ip_hunt_command_response.json"))
+    context = util_load_json(os.path.join("test_data", "mac_hunt_command_context.json"))
+    with open(os.path.join("test_data", "ip_hunt_command_hr.md")) as f:
         readable_output = f.read()
 
     mocked_client = mocker.Mock()
     mocked_client.asset_list.return_value = response
-    args = {
-        'site_id': "56d4ed4f-b2ad-4587-91b5-07bd453c5c76",
-        'mac_address': "00:0D:3A:2B:7E:B7"
-
-    }
+    args = {"site_id": "56d4ed4f-b2ad-4587-91b5-07bd453c5c76", "mac_address": "00:0D:3A:2B:7E:B7"}
     command_response = lansweeper_mac_hunt_command(mocked_client, args)
 
     assert command_response.outputs_prefix == "Lansweeper.Mac"
@@ -285,7 +262,7 @@ def test_lansweeper_mac_hunt_command_when_valid_response_is_returned(mocker_get_
     assert command_response.readable_output == readable_output
 
 
-@patch('demistomock.getIntegrationContext')
+@patch("demistomock.getIntegrationContext")
 def test_lansweeper_mac_hunt_command_when_empty_response_is_returned(mocker_get_context, mocker):
     """
     Test case scenario for successful execution of ls-mac-hunt command with an empty response.
@@ -297,43 +274,38 @@ def test_lansweeper_mac_hunt_command_when_empty_response_is_returned(mocker_get_
         - Returns no records for the given input arguments
     """
     from Lansweeper import lansweeper_mac_hunt_command
+
     mocker_get_context.return_value = MOCK_INTEGRATION_CONTEXT
     response = {
         "data": {
             "site": {
                 "assetResources": {
                     "total": 0,
-                    "pagination": {
-                        "limit": 2,
-                        "current": None,
-                        "next": None,
-                        "page": "NEXT"
-                    },
-                    "items": []
+                    "pagination": {"limit": 2, "current": None, "next": None, "page": "NEXT"},
+                    "items": [],
                 }
             }
         }
     }
-    args = {
-        'site_id': "56d4ed4f-b2ad-4587-91b5-07bd453c5c76",
-        'mac_address': "00:0D:3A:2B:7E:B7"
-
-    }
+    args = {"site_id": "56d4ed4f-b2ad-4587-91b5-07bd453c5c76", "mac_address": "00:0D:3A:2B:7E:B7"}
     mocked_client = mocker.Mock()
     mocked_client.asset_list.return_value = response
 
     command_results = lansweeper_mac_hunt_command(mocked_client, args=args)
 
-    assert command_results.readable_output == '### Asset(s)\n**No entries.**\n'
+    assert command_results.readable_output == "### Asset(s)\n**No entries.**\n"
 
 
-@pytest.mark.parametrize("args,expected_error", [
-    ({"site_id": "abc", 'mac_address': ""}, MESSAGES["REQUIRED_ARGUMENT"].format("mac_address")),
-    ({"site_id": "abc", "mac_address": "abc,1.1"}, MESSAGES["INVALID_MAC"]),
-    ({"mac_address": "02:0C:29:FE:A6:64", "limit": 501}, MESSAGES["INVALID_LIMIT"].format("501")),
-    ({"mac_address": "02:0C:29:FE:A6:64", "limit": 0}, MESSAGES["INVALID_LIMIT"].format("0")),
-])
-@patch('demistomock.getIntegrationContext')
+@pytest.mark.parametrize(
+    "args,expected_error",
+    [
+        ({"site_id": "abc", "mac_address": ""}, MESSAGES["REQUIRED_ARGUMENT"].format("mac_address")),
+        ({"site_id": "abc", "mac_address": "abc,1.1"}, MESSAGES["INVALID_MAC"]),
+        ({"mac_address": "02:0C:29:FE:A6:64", "limit": 501}, MESSAGES["INVALID_LIMIT"].format("501")),
+        ({"mac_address": "02:0C:29:FE:A6:64", "limit": 0}, MESSAGES["INVALID_LIMIT"].format("0")),
+    ],
+)
+@patch("demistomock.getIntegrationContext")
 def test_lansweeper_mac_hunt_command_when_invalid_args_provided(mocker_get_context, client, args, expected_error):
     """
     Test case scenario when invalid arguments for mac hunt command are provided.
@@ -345,6 +317,7 @@ def test_lansweeper_mac_hunt_command_when_invalid_args_provided(mocker_get_conte
         - Returns the response message of invalid input arguments
     """
     from Lansweeper import lansweeper_mac_hunt_command
+
     mocker_get_context.return_value = MOCK_INTEGRATION_CONTEXT
     with pytest.raises(ValueError) as err:
         lansweeper_mac_hunt_command(client, args)
