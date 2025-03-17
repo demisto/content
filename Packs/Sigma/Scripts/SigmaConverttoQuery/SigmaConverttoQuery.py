@@ -54,7 +54,8 @@ def get_sigma_dictionary(indicator_name: str) -> str:
 
     return sigma
 
-def replace_outer_quotes(sigma_query):
+
+def replace_outer_quotes(sigma_query: str) -> str:
     """
     Replaces outer single double quotes to triple double quotes
     """
