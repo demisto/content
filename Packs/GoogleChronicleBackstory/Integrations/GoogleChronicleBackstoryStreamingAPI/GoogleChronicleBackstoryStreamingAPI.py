@@ -126,7 +126,7 @@ def remove_space_from_args(args):
     :param args: Dictionary of arguments.
     :return: New dictionary with whitespace-stripped string values.
     """
-    for key in args.keys():
+    for key in args:
         if isinstance(args[key], str):
             args[key] = args[key].strip()
     return args
@@ -167,11 +167,11 @@ def validate_response(client: Client, url, method="GET", body=None):
         )
     if raw_response.status_code == 400 or raw_response.status_code == 404:
         raise ValueError(
-            f"Status code: {raw_response.status_code}\n" f"Error: {parse_error_message(raw_response.text, client.region)}"
+            f"Status code: {raw_response.status_code}\nError: {parse_error_message(raw_response.text, client.region)}"
         )
     if raw_response.status_code != 200:
         raise ValueError(
-            f"Status code: {raw_response.status_code}\n" f"Error: {parse_error_message(raw_response.text, client.region)}"
+            f"Status code: {raw_response.status_code}\nError: {parse_error_message(raw_response.text, client.region)}"
         )
     if not raw_response.text:
         raise ValueError(
@@ -429,7 +429,7 @@ def get_asset_identifier_details(asset_identifier):
         return asset_identifier.get("hostname", "")
     if asset_identifier.get("ip", []):
         return "\n".join(asset_identifier.get("ip", []))
-    if asset_identifier.get("mac", []):
+    if asset_identifier.get("mac", []): # noqa: RET503
         return "\n".join(asset_identifier.get("mac", []))
 
 
@@ -449,7 +449,7 @@ def get_events_context_for_detections(result_events: List[Dict[str, Any]]) -> Li
         events = get_event_list_for_detections_context(collection_element)
         for event in events:
             event_dict = {}
-            if "metadata" in event.keys():
+            if "metadata" in event:
                 event_dict.update(event.pop("metadata"))
             principal_asset_identifier = get_asset_identifier_details(event.get("principal", {}))
             target_asset_identifier = get_asset_identifier_details(event.get("target", {}))
@@ -481,7 +481,7 @@ def get_events_context_for_curatedrule_detections(result_events: List[Dict[str, 
         events = get_event_list_for_detections_context(collection_element)
         for event in events:
             event_dict = {}
-            if "metadata" in event.keys():
+            if "metadata" in event:
                 event_dict.update(event.pop("metadata"))
             principal_asset_identifier = get_asset_identifier_details(event.get("principal", {}))
             target_asset_identifier = get_asset_identifier_details(event.get("target", {}))
@@ -942,7 +942,7 @@ def stream_detection_alerts(
                         else (length_of_incidents - total_ingested_incidents)
                     )
                     demisto.debug(f"{CHRONICLE_STREAM_DETECTIONS} No. of detections being ingested: {current_batch}.")
-                    demisto.createIncidents(incidents[total_ingested_incidents : total_ingested_incidents + current_batch])
+                    demisto.createIncidents(incidents[total_ingested_incidents: total_ingested_incidents + current_batch])
                     total_ingested_incidents = total_ingested_incidents + current_batch
                     if current_batch == IDEAL_BATCH_SIZE:
                         generic_sleep_function(IDEAL_SLEEP_TIME_BETWEEN_BATCHES, ingestion=True)

@@ -11,9 +11,7 @@ def has_key(dictionary: dict[str, Any], key: str) -> bool:
     :param key: Key value that need to check
     :return: Boolean value based on given key is present in the dictionary
     """
-    if key in dictionary.keys():
-        return True
-    return False
+    return key in dictionary
 
 
 def get_entry_context(identifiers: dict[str, Any]) -> dict[str, list[list | None]]:

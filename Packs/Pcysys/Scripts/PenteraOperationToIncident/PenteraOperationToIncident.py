@@ -42,7 +42,7 @@ def pentera_operation_to_incident(full_action_report: list, custom_fields_output
             cf_dict = {custom_fields_output: params_list}
             incident["penteraoperationdetails_cf"] = json.dumps(cf_dict)
 
-    list_of_aggregated_incidents = [value for value in incidents_dict.values()]
+    list_of_aggregated_incidents = list(incidents_dict.values())
     context = {context_key: list_of_aggregated_incidents}
     return ("### Map Pentera Operation to Incident", context, list_of_aggregated_incidents)
 

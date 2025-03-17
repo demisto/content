@@ -66,9 +66,9 @@ def test_get_source_hr_success(mocker):
     source_details = ChronicleDomainIntelligenceSourcesWidgetScript.get_source_hr(
         INCIDENT_DETAILS[0].get("details", {}).get("Sources", [])[0]
     )
-    assert {
+    assert source_details == {
         "Category/Description": "Observed served execute",
         "Confidence": 0,
         "Normalized Confidence": "Low",
         "Severity": "Low",
-    } == source_details
+    }

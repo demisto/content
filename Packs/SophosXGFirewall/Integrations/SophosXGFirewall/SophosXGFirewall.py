@@ -907,7 +907,7 @@ def test_module(client):
         if status_code and int(status_code) >= 500:
             status_message = retrieve_dict_item_recursively(json_result, "#text")
             if status_message and "enable the API Configuration" in status_message:  # type: ignore
-                message = "Please enable API configuration from the webconsole " "(in Backup & firmware)"
+                message = "Please enable API configuration from the webconsole (in Backup & firmware)"
             else:
                 message = status_message
         return message
@@ -934,10 +934,9 @@ def generic_delete(client: Client, name: str, endpoint_tag: str) -> CommandResul
 
     delete_status = retrieve_dict_item_recursively(response, "#text")
 
-    old_context = demisto.dt(demisto.context(), f"SophosFirewall.{endpoint_tag}" f"(val.Name == '{name}')")
-    if old_context:
-        if isinstance(old_context, list):
-            old_context = old_context[0]
+    old_context = demisto.dt(demisto.context(), f"SophosFirewall.{endpoint_tag}(val.Name == '{name}')")
+    if old_context and isinstance(old_context, list):
+        old_context = old_context[0]
 
     outputs = {"Name": name, "IsDeleted": False}
 
@@ -947,7 +946,7 @@ def generic_delete(client: Client, name: str, endpoint_tag: str) -> CommandResul
         if old_context and old_context.get("IsDeleted"):
             is_deleted = old_context["IsDeleted"]
         else:
-            is_deleted = True if "successfully" in delete_status else False  # type: ignore
+            is_deleted = "successfully" in delete_status  # type: ignore
         outputs["IsDeleted"] = is_deleted
 
     readable_output = tableToMarkdown(f"Deleting {endpoint_tag} Objects Results", outputs, ["Name", "IsDeleted"])
@@ -1822,9 +1821,8 @@ def check_error_on_response(response: dict) -> None:
     response_code = retrieve_dict_item_recursively(response, "@code")
     response_status = retrieve_dict_item_recursively(response, "Status")
 
-    if response_message and "successful" not in response_message:  # type: ignore
-        if response_code and int(response_code) > 299:
-            raise Exception(f"{response_message} (error code: {response_code})")
+    if response_message and "successful" not in response_message and response_code and int(response_code) > 299:  # type: ignore
+        raise Exception(f"{response_message} (error code: {response_code})")
     if response_status and "No. of records Zero." in response_status:  # type: ignore
         raise Exception(response_status)
 

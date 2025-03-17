@@ -186,9 +186,8 @@ def fetch_events(
     for event in limited_events:
         event_created_time = int(event.get("created_at", "0"))
 
-        if last_fetch:
-            if event_created_time <= last_fetch:
-                continue
+        if last_fetch and event_created_time <= last_fetch:
+            continue
 
         events.append(add_time_to_event(event))
         # Update last run and add event if the event is newer than last fetch

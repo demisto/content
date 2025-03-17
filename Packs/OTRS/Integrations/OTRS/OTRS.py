@@ -70,7 +70,7 @@ def calculate_age(seconds: int):
     """
     m, s = divmod(seconds, 60)
     h, m = divmod(m, 60)
-    return "%d h %02d m" % (h, m)
+    return f"{h} h {m} m" % (h, m)
 
 
 def demisto_entry_to_otrs_attachment(entry_list: list[Any]):

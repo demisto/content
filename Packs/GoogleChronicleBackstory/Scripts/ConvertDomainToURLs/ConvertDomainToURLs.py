@@ -9,14 +9,14 @@ from CommonServerPython import *
 def get_entry_context(domains, is_single) -> dict[str, Any]:
     urls_to_return = []
     if is_single:
-        if domains.startswith("http://") or domains.startswith("https://"):  # NOSONAR
+        if domains.startswith(("http://", "https://")):  # NOSONAR
             urls_to_return.append(domains)
         else:
             urls_to_return.append(f"http://{domains}")  # NOSONAR
             urls_to_return.append(f"https://{domains}")
     else:
         for domain in domains:
-            if domain.startswith("http://") or domain.startswith("https://"):  # NOSONAR
+            if domain.startswith(("http://","https://")):  # NOSONAR
                 urls_to_return.append(domain)
             else:
                 urls_to_return.append(f"http://{domain}")  # NOSONAR

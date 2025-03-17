@@ -81,7 +81,7 @@ def test_get_user_command_404_response(mocker):
     )
     error_404 = Response()
     error_404._content = (
-        b'{"error": {"code": "Request_ResourceNotFound", "message": "Resource ' b'"NotExistingUser does not exist."}}'
+        b'{"error": {"code": "Request_ResourceNotFound", "message": "Resource "NotExistingUser does not exist."}}'
     )
     error_404.status_code = 404
     mocker.patch.object(BaseClient, "_http_request", return_value=error_404)

@@ -38,8 +38,8 @@ def test_get_html_representation_when_no_ip_is_attached():
 
     html_representation = ChronicleIsolatedIPWidgetScript.get_html_representation("", "No")
     assert (
-        "<div style='color:grey; text-align:center;'><h1>No IP Address associated with the ChronicleAsset</h1></div>"
-        == html_representation
+        html_representation
+        == "<div style='color:grey; text-align:center;'><h1>No IP Address associated with the ChronicleAsset</h1></div>"
     )
 
 
@@ -50,8 +50,8 @@ def test_get_html_representation_when_ip_is_not_isolated():
 
     html_representation = ChronicleIsolatedIPWidgetScript.get_html_representation("0.0.0.0", "No")
     assert (
-        "<div style='color:green; text-align:center;'><h1>0.0.0.0<br/>IP Address Not Isolated</h1>"
-        "</div>" == html_representation
+        html_representation == "<div style='color:green; text-align:center;'><h1>0.0.0.0<br/>IP Address Not Isolated</h1>"
+        "</div>"
     )
 
 
@@ -61,4 +61,4 @@ def test_get_html_representation_when_ip_is_potentially_isolated():
     """
 
     html_representation = ChronicleIsolatedIPWidgetScript.get_html_representation("0.0.0.0", "Yes")
-    assert "<div style='color:red; text-align:center;'><h1>0.0.0.0<br/>IP Address Isolated</h1>" "</div>" == html_representation
+    assert html_representation == "<div style='color:red; text-align:center;'><h1>0.0.0.0<br/>IP Address Isolated</h1></div>"

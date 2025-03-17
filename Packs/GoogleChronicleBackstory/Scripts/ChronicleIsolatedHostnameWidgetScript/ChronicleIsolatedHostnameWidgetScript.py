@@ -6,7 +6,7 @@ from CommonServerPython import *
 
 def get_html_representation(entity: str, is_isolated: str) -> str:
     if not entity:
-        html = "<div style='color:grey; text-align:center;'><h1>No Hostname associated with the " "ChronicleAsset</h1></div>"
+        html = "<div style='color:grey; text-align:center;'><h1>No Hostname associated with the ChronicleAsset</h1></div>"
     else:
         html = f"<div style='color:green; text-align:center;'><h1>{entity}<br/>Hostname Not Isolated</h1></div>"
         if is_isolated == "Yes":

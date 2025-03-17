@@ -348,7 +348,7 @@ def test_get_mobile_device_general_subset_command(mocker):
     mocker.patch.object(client, "get_mobile_devices_subset_request", return_value=mock_response)
 
     device_response = get_mobile_device_subset_command(client, args, "General")
-    expected_response = util_load_json("test_data/get_mobile_device_subset/" "get_mobile_device_by_udid_subset_context.json")
+    expected_response = util_load_json("test_data/get_mobile_device_subset/get_mobile_device_by_udid_subset_context.json")
     assert device_response.outputs == expected_response
 
 
@@ -617,7 +617,7 @@ def test_get_computer_configuration_profiles_by_id(mocker):
     client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
     args = {"id": 1}
     mock_response = util_load_json(
-        "test_data/get_computer_configuration_profiles/" "get_computer_configuration_profiles_by_id_raw_response.json"
+        "test_data/get_computer_configuration_profiles/get_computer_configuration_profiles_by_id_raw_response.json"
     )
     mocker.patch.object(client, "get_osxconfigurationprofiles_by_id", return_value=mock_response)
 
@@ -640,7 +640,7 @@ def test_get_mobile_configuration_profiles_by_id(mocker):
     client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
     args = {"id": 1}
     mock_response = util_load_json(
-        "test_data/get_mobile_configuration_profiles/" "get_mobile_configuration_profiles_by_id_raw_response.json"
+        "test_data/get_mobile_configuration_profiles/get_mobile_configuration_profiles_by_id_raw_response.json"
     )
     mocker.patch.object(client, "get_mobiledeviceconfigurationprofiles_by_id", return_value=mock_response)
 

@@ -57,9 +57,9 @@ class TestFetchActivity:
             id += 1
             return output, id
 
-        for i in range(limit - number_of_different_time):
+        for _i in range(limit - number_of_different_time):
             output, id_to_start_from = create_single(single_response.copy(), request_time, id_to_start_from, output)
-        for i in range(limit - number_of_different_time, limit):
+        for _i in range(limit - number_of_different_time, limit):
             new_time = datetime.strftime(request_time_date_time + timedelta(seconds=10), DATE_FORMAT)
             output, id_to_start_from = create_single(single_response.copy(), new_time, id_to_start_from, output)
         return output

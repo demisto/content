@@ -295,7 +295,7 @@ def main() -> None:
         proxy = params.get("proxy", False)
 
         first_fetch = params.get("first_fetch")
-        first_fetch_time = DEFAULT_FIRST_FETCH if not first_fetch else first_fetch
+        first_fetch_time = first_fetch if first_fetch else DEFAULT_FIRST_FETCH
 
         api_key = params.get("apikey")
         query = params.get("query", "")

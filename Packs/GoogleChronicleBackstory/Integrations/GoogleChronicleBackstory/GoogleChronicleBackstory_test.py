@@ -41,11 +41,11 @@ ARGS = {"artifact_value": "0.0.0.0", "ip": "0.0.0.0", "domain": "test.com"}
 IP_CONTEXT_PATH = "IP(val.Address && val.Address == obj.Address)"
 
 invalid_start_time_error_message = (
-    "Invalid start time. Some supported formats are ISO date format and relative time. " "e.g. 2019-10-17T00:00:00Z, 3 days"
+    "Invalid start time. Some supported formats are ISO date format and relative time. e.g. 2019-10-17T00:00:00Z, 3 days"
 )
 
 invalid_end_time_error_message = (
-    "Invalid end time. Some supported formats are ISO date format and relative time. " "e.g. 2019-10-17T00:00:00Z, 3 days"
+    "Invalid end time. Some supported formats are ISO date format and relative time. e.g. 2019-10-17T00:00:00Z, 3 days"
 )
 DUMMY_DICT = '{"key":"value"}'
 DUMMY_FETCH = "10 day"
@@ -300,7 +300,7 @@ def test_function_failure_status_code_400(client, mocker):
     from GoogleChronicleBackstory import test_function
 
     dummy_response = (
-        '{"error": { "code": 400, "message": ' '"Request contains an invalid argument.", "status": "INVALID_ARGUMENT" } }'
+        '{"error": { "code": 400, "message": "Request contains an invalid argument.", "status": "INVALID_ARGUMENT" } }'
     )
 
     class MockResponse:
@@ -2242,7 +2242,7 @@ def test_list_detections_command(client):
         ({"rule_id": "ru_e6abfcb5-1b85-41b0-b64c-695b3250436f", "page_size": "dummy"}, COMMON_RESP["INVALID_PAGE_SIZE"]),
         (
             {"rule_id": "ru_e6abfcb5-1b85-41b0-b64c-695b3250436f", "page_size": "100000"},
-            "Page size should be in the range " "from 1 to 1000.",
+            "Page size should be in the range from 1 to 1000.",
         ),
         (
             {"rule_id": "ru_e6abfcb5-1b85-41b0-b64c-695b3250436f", "detection_start_time": "645.08"},
@@ -2267,7 +2267,7 @@ def test_list_detections_command(client):
         ({"detection_for_all_versions": True}, 'If "detection_for_all_versions" is true, rule id is required.'),
         (
             {"list_basis": "CREATED_TIME"},
-            'To sort detections by "list_basis", either "start_time" or "end_time" ' "argument is required.",
+            'To sort detections by "list_basis", either "start_time" or "end_time" argument is required.',
         ),
     ],
 )
@@ -2333,7 +2333,7 @@ def test_list_curatedrule_detections_command(client):
     "args, error_msg",
     [
         ({"id": "ur_ttp_GCP__GlobalSSHKeys_Added", "page_size": "dummy"}, COMMON_RESP["INVALID_PAGE_SIZE"]),
-        ({"id": "ur_ttp_GCP__GlobalSSHKeys_Added", "page_size": "100000"}, "Page size should be in the range " "from 1 to 1000."),
+        ({"id": "ur_ttp_GCP__GlobalSSHKeys_Added", "page_size": "100000"}, "Page size should be in the range from 1 to 1000."),
         ({"id": "ur_ttp_GCP__GlobalSSHKeys_Added", "start_time": "645.08"}, 'Invalid date: "start_time"="645.08"'),
         ({"id": "ur_ttp_GCP__GlobalSSHKeys_Added", "start_time": "-325.21"}, 'Invalid date: "start_time"="-325.21"'),
         ({"id": "ur_ttp_GCP__GlobalSSHKeys_Added", "end_time": "645.08"}, 'Invalid date: "end_time"="645.08"'),
@@ -3088,11 +3088,11 @@ def test_gcb_fetch_incident_success_with_detections_with_incident_identifiers(mo
             "detection_identifiers": [
                 {
                     "id": "de_e6abfcb5-1b85-41b0-b64c-695b32504361",
-                    "ruleVersion": "ru_e6abfcb5-1b85-41b0-b64c-695b32" "50436f@v_1602631093_146879000",
+                    "ruleVersion": "ru_e6abfcb5-1b85-41b0-b64c-695b3250436f@v_1602631093_146879000",
                 },
                 {
                     "id": "de_e6abfcb5-1b85-41b0-b64c-695b32504362",
-                    "ruleVersion": "ru_e6abfcb5-1b85-41b0-b64c-695b32" "50436f@v_1602631093_146879000",
+                    "ruleVersion": "ru_e6abfcb5-1b85-41b0-b64c-695b3250436f@v_1602631093_146879000",
                 },
             ],
         },
@@ -3302,7 +3302,7 @@ def test_fetch_incident_curatedrule_detection_case_3(client, mocker):
         "first_fetch": DEFAULT_FIRST_FETCH,
         "max_fetch": 3,
         "backstory_alert_type": CURATEDRULE_DETECTION_ALERT_TYPE,
-        "fetch_detection_by_ids": "de_50fd0957-0959-0000-d556-c6f8000016b1, " "de_662d8ff5-8eea-deb8-274e-f3410c7b935a",
+        "fetch_detection_by_ids": "de_50fd0957-0959-0000-d556-c6f8000016b1, de_662d8ff5-8eea-deb8-274e-f3410c7b935a",
     }
 
     with open("test_data/fetch_curatedrule_detection_size_3.json") as f:
@@ -5648,9 +5648,8 @@ def test_gcb_verify_value_in_reference_list_command_invalid_args(client, capfd, 
     """Test gcb_verify_value_in_reference_list_command when invalid arguments are provided."""
     from GoogleChronicleBackstory import gcb_verify_value_in_reference_list_command
 
-    with pytest.raises(ValueError) as e:
-        with capfd.disabled():
-            gcb_verify_value_in_reference_list_command(client, args)
+    with pytest.raises(ValueError) as e, capfd.disabled():
+        gcb_verify_value_in_reference_list_command(client, args)
     assert str(e.value) == error_msg
 
 
@@ -5665,9 +5664,8 @@ def test_gcb_verify_value_in_reference_list_command_system_exit(capfd, client):
             Exception("Error: Status code: 404\n Error: generic::not_found: list with name list2 not found"),
             Exception("Error: Status code: 404\n Error: generic::not_found: list with name list3 not found"),
         ]
-        with capfd.disabled():
-            with pytest.raises(SystemExit) as err:
-                gcb_verify_value_in_reference_list_command(client, args)
+        with capfd.disabled(), pytest.raises(SystemExit) as err:
+            gcb_verify_value_in_reference_list_command(client, args)
 
         assert err.value.code == 0
 
@@ -5732,9 +5730,8 @@ def test_gcb_verify_rule_command_with_invalid_arguments(client, args, error_msg,
     """Test gcb_verify_rule command when invalid argument provided."""
     from GoogleChronicleBackstory import gcb_verify_rule_command
 
-    with pytest.raises(ValueError) as err:
-        with capfd.disabled():
-            gcb_verify_rule_command(client, args)
+    with pytest.raises(ValueError) as err, capfd.disabled():
+        gcb_verify_rule_command(client, args)
 
     assert str(err.value) == error_msg
 
@@ -5818,9 +5815,8 @@ def test_gcb_get_event_command_invalid_args(client, capfd):
     """Test gcb_get_event_command when invalid arguments are provided."""
     from GoogleChronicleBackstory import gcb_get_event_command
 
-    with pytest.raises(ValueError) as e:
-        with capfd.disabled():
-            gcb_get_event_command(client, {"event_id": ""})
+    with pytest.raises(ValueError) as e, capfd.disabled():
+        gcb_get_event_command(client, {"event_id": ""})
     assert str(e.value) == MESSAGES["REQUIRED_ARGUMENT"].format("event_id")
 
 
@@ -5840,9 +5836,8 @@ def test_gcb_get_event_command_invalid_event_id(client, capfd):
 
     client.http_client.request.return_value = MockResponse
 
-    with pytest.raises(ValueError) as e:
-        with capfd.disabled():
-            gcb_get_event_command(client, {"event_id": "invalid_event_id"})
+    with pytest.raises(ValueError) as e, capfd.disabled():
+        gcb_get_event_command(client, {"event_id": "invalid_event_id"})
 
     error_m = "Status code: 400\nError: Invalid value at 'name' (TYPE_BYTES), Base64 decoding failed for \"invalid_event_id\""
     assert str(e.value) == error_m

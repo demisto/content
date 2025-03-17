@@ -1524,7 +1524,7 @@ def validate_and_parse_detection_start_end_time(args: dict[str, Any]) -> tuple[O
 
     list_basis = args.get("list_basis", "")
     if list_basis and not detection_start_time and not detection_end_time:
-        raise ValueError('To sort detections by "list_basis", either "start_time" or "end_time" argument is ' "required.")
+        raise ValueError('To sort detections by "list_basis", either "start_time" or "end_time" argument is required.')
 
     if detection_start_time:
         detection_start_time = detection_start_time.strftime(DATE_FORMAT)  # type: ignore
@@ -2195,7 +2195,7 @@ def deduplicate_events_and_create_incidents(contexts: list, event_identifiers: l
             )
             continue
         if event_identifiers and event_hash in event_identifiers:
-            demisto.info("[CHRONICLE] Skipping insertion of current event since it already exists." f" Event: {event}")
+            demisto.info( f"[CHRONICLE] Skipping insertion of current event since it already exists. Event: {event}")
             continue
         if user_alert:
             event["IncidentType"] = "UserAlert"
@@ -2241,7 +2241,7 @@ def deduplicate_detections(detection_context: list[dict[str, Any]], detection_id
         new_detection_identifiers.append(current_detection_identifier)
         if detection_identifiers and current_detection_identifier in detection_identifiers:
             demisto.info(
-                "[CHRONICLE] Skipping insertion of current detection since it already exists." f" Detection: {detection}"
+                f"[CHRONICLE] Skipping insertion of current detection since it already exists. Detection: {detection}"
             )
             continue
         unique_detections.append(detection)
@@ -2267,7 +2267,7 @@ def deduplicate_curatedrule_detections(detection_context: list[dict[str, Any]], 
         new_detection_identifiers.append(current_detection_identifier)
         if detection_identifiers and current_detection_identifier in detection_identifiers:
             demisto.info(
-                "[CHRONICLE] Skipping insertion of current detection since it already exists." f" Detection: {detection}"
+                f"[CHRONICLE] Skipping insertion of current detection since it already exists. Detection: {detection}"
             )
             continue
         unique_detections.append(detection)
@@ -4810,7 +4810,7 @@ def gcb_list_events_command(client_obj, args: dict[str, str]):
         )
         if not dateparser.parse(last_event_timestamp, settings={"STRICT_PARSING": True}):
             demisto.error(f"Event timestamp of the last event: {last_event_timestamp} is invalid.")
-            hr += " An error occurred while fetching the start time that could have been used to" " fetch next set of events."
+            hr += " An error occurred while fetching the start time that could have been used to fetch next set of events."
         else:
             hr += f" To fetch the next set of events, execute the command with the start time as {last_event_timestamp}."
 
@@ -4864,7 +4864,7 @@ def gcb_udm_search_command(client_obj, args: dict[str, str]):
         )
         if not dateparser.parse(last_event_timestamp, settings={"STRICT_PARSING": True}):
             demisto.error(f"Event timestamp of the last event: {last_event_timestamp} is invalid.")
-            hr += " An error occurred while fetching the end time that could have been used to" " fetch next set of events."
+            hr += " An error occurred while fetching the end time that could have been used to fetch next set of events."
         else:
             hr += f" To fetch the next set of events, execute the command with the end time as {last_event_timestamp}."
 
@@ -5905,7 +5905,7 @@ def convert_numbers_to_strings_for_object(d: Any) -> Any:
         :param x: A nested data structure containing the values to be converted.
         :return: A nested data structure with all integer and float values converted to strings.
         """
-        if isinstance(x, (int, float)):
+        if isinstance(x, int | float):
             return str(x)
         if isinstance(x, list):
             return [convert(v) for v in x]
@@ -5913,7 +5913,7 @@ def convert_numbers_to_strings_for_object(d: Any) -> Any:
             return {k: convert(v) for k, v in x.items()}
         return x
 
-    if not isinstance(d, (dict, list)):
+    if not isinstance(d, dict | list):
         return convert(d)
     if isinstance(d, list):
         return [convert(v) for v in d]

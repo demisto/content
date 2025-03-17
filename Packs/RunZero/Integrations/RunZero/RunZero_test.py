@@ -223,7 +223,7 @@ def test_comment_add(requests_mock):
 
     actual_commandResult = comment_add_command(client=client, args={"asset_id": ASSET_ID, "comment": "My comment2"})
 
-    assert "My comment2" == actual_commandResult.raw_response[0]["comments"]
+    assert actual_commandResult.raw_response[0]["comments"] == "My comment2"
     assert f"Comment added to {ASSET_ID} successfully." == actual_commandResult.readable_output
 
 

@@ -30,7 +30,7 @@ def test_get_entry_context_for_hostname():
 
     expected_ec = get_entry_context(dummy_identifiers)
 
-    assert {"AssetIdentifiers": ["dummy-host-name"]} == expected_ec
+    assert expected_ec == {"AssetIdentifiers": ["dummy-host-name"]}
 
 
 def test_get_entry_context_for_ip_address():
@@ -46,7 +46,7 @@ def test_get_entry_context_for_ip_address():
 
     expected_ec = get_entry_context(dummy_identifiers)
 
-    assert {"AssetIdentifiers": ["dummy-ip-addres"]} == expected_ec
+    assert expected_ec == {"AssetIdentifiers": ["dummy-ip-addres"]}
 
 
 def test_get_entry_context_for_mac_address():
@@ -61,4 +61,4 @@ def test_get_entry_context_for_mac_address():
 
     expected_ec = get_entry_context(dummy_identifiers)
 
-    assert {"AssetIdentifiers": ["dummy-mac-id"]} == expected_ec
+    assert expected_ec == {"AssetIdentifiers": ["dummy-mac-id"]}
