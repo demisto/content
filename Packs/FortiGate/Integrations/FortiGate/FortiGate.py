@@ -1062,8 +1062,9 @@ class Client(BaseClient):
             method="PUT",
             url_suffix=urljoin(self.ADDRESS_IPV4_GROUP_ENDPOINT, name),
             params={"vdom": vdom},
-            json_data=remove_empty_elements(
-                {
+            json_data=assign_params(
+                values_to_ignore=[None],
+                **{
                     "name": name,
                     "type": type_,
                     "comment": comment,
@@ -2556,7 +2557,7 @@ def reverse_dict(d: dict) -> dict:
     return {v: k for k, v in d.items()}
 
 
-def build_dicts_from_list(items: list | None, key: str = "name") -> list[dict[str, Any]]:
+def build_dicts_from_list(items: list | None, key: str = "name") -> list[dict[str, Any]] | None:
     """Builds a list of dictionaries from a list of objects.
 
     Args:
@@ -2567,6 +2568,8 @@ def build_dicts_from_list(items: list | None, key: str = "name") -> list[dict[st
     Returns:
         list[dict[str, Any]]: The list of dictionaries.
     """
+    if items is None:
+        return None
     return [{key: item} for item in items or []]
 
 
@@ -3785,25 +3788,28 @@ def update_firewall_address_ipv4_group_command(client: Client, args: dict[str, A
     input_excluded_members = argToList(args.get("excluded_addresses"))
     allow_routing = args.get("allow_routing")
     action = args.get("action")
+    members = None
+    excluded_members = None
 
     if bool(input_members or input_excluded_members) != bool(action):
         raise DemistoException("`address` or `excluded_addresses` must be set with `action`.")
 
     response = client.list_firewall_address_ipv4_groups(name, vdom)
     result = extract_first_result(response)
-    members = extract_key_from_items("name", result.get("member"))
-    excluded_members = extract_key_from_items("name", result.get("exclude-member"))
-
-    members = handle_group_items_by_action(
-        input_items=input_members,
-        action=action,
-        items=members,
-    )
-    excluded_members = handle_group_items_by_action(
-        input_items=input_excluded_members,
-        action=action,
-        items=excluded_members,
-    )
+    if input_members:
+        members = extract_key_from_items("name", result.get("member"))
+        members = handle_group_items_by_action(
+            input_items=input_members,
+            action=action,
+            items=members,
+        )
+    if input_excluded_members:
+        excluded_members = extract_key_from_items("name", result.get("exclude-member"))
+        excluded_members = handle_group_items_by_action(
+            input_items=input_excluded_members,
+            action=action,
+            items=excluded_members,
+        )
 
     client.update_firewall_address_ipv4_group(
         vdom=vdom,
