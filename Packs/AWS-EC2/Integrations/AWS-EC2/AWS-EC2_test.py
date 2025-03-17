@@ -268,7 +268,8 @@ def test_run_on_all_accounts_no_new_func(mocker, role_name, roleArn):
         (
             {
                 "IpamResourceDiscoveries": {
-                    "IpamResourceDiscoveryArn": "arn:aws:ec2::222222222222:ipam-resource-discovery/ipam-res-disco-11111111111111111",
+                    "IpamResourceDiscoveryArn": "arn:aws:ec2::222222222222:ipam-resource-discovery/ipam-res-disco"
+                                                "-11111111111111111",
                     "IpamResourceDiscoveryId": "ipam-res-disco-11111111111111111",
                     "IpamResourceDiscoveryRegion": "us-east-1",
                     "IsDefault": True,
@@ -379,12 +380,17 @@ def test_describe_ipam_resource_discovery_associations_command(mocker, return_bo
                 }
             },
             "### Ipam Discovered Public Addresses\n"
-            "|Address|AddressAllocationId|AddressOwnerId|AddressRegion|AddressType|AssociationStatus|InstanceId|IpamResourceDiscover"
-            "yId|NetworkBorderGroup|NetworkInterfaceDescription|NetworkInterfaceId|PublicIpv4PoolId|SampleTime|SecurityGroups|Subnet"
+            "|Address|AddressAllocationId|AddressOwnerId|AddressRegion|AddressType|AssociationStatus|"
+            "InstanceId|IpamResourceDiscover"
+            "yId|NetworkBorderGroup|NetworkInterfaceDescription|NetworkInterfaceId|PublicIpv4PoolId|"
+            "SampleTime|SecurityGroups|Subnet"
             "Id|Tags|VpcId|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n"
-            "| 1.1.1.1 | eipalloc-11111111111111111 | 222222222222 | us-east-1 | amazon-owned-eip | associated | i-11111111111111111"
-            " | ipam-res-disco-11111111111111111 | us-east-1 |  | eni-11111111111111111 | amazon | 2023-11-26T02:00:45 | {'GroupId':"
-            " 'sg-11111111111111111', 'GroupName': 'example_sg'} | subnet-11111111111111111 | EipTags:  | vpc-11111111111111111 |\n",
+            "| 1.1.1.1 | eipalloc-11111111111111111 | 222222222222 | us-east-1 | amazon-owned-eip |"
+            " associated | i-11111111111111111"
+            " | ipam-res-disco-11111111111111111 | us-east-1 |  | eni-11111111111111111 | amazon |"
+            " 2023-11-26T02:00:45 | {'GroupId':"
+            " 'sg-11111111111111111', 'GroupName': 'example_sg'} | subnet-11111111111111111 | EipTags:  |"
+            " vpc-11111111111111111 |\n",
         ),
     ],
 )

@@ -737,7 +737,7 @@ def format_custom_query_args(custom_query: str = None) -> Dict[str, Any]:
         else:
             return {}
     except ValueError:
-        raise ValueError('Please validate the format of argument "custom_query". ' 'For example: "key1=value1;key2=value2".')
+        raise ValueError('Please validate the format of argument "custom_query". For example: "key1=value1;key2=value2".')
 
 
 def format_datetime(time_expression: str) -> str:
@@ -1482,7 +1482,7 @@ def message_details_get_command(client: Client, args: Dict[str, Any]) -> Command
     mid = response.get("mid")
     if not mid or "N/A" in mid:
         raise DemistoException(
-            f'Message ID {", ".join(map(str, message_ids))} was not found.\n' f"Please check message IDs or Serial Number."
+            f'Message ID {", ".join(map(str, message_ids))} was not found.\nPlease check message IDs or Serial Number.'
         )
 
     response["timestamp"] = format_timestamp(response.get("timestamp"))
@@ -1555,7 +1555,7 @@ def message_amp_details_get_command(client: Client, args: Dict[str, Any]) -> Com
     mid = response.get("mid")
     if not mid or "N/A" in mid:
         raise DemistoException(
-            f'Message ID {", ".join(map(str, message_ids))} was not found.\n' f"Please check message IDs or Serial Number."
+            f'Message ID {", ".join(map(str, message_ids))} was not found.\nPlease check message IDs or Serial Number.'
         )
 
     response["timestamp"] = format_timestamp(response.get("timestamp"))
@@ -1627,7 +1627,7 @@ def message_dlp_details_get_command(client: Client, args: Dict[str, Any]) -> Com
     mid = response.get("mid")
     if not mid or "N/A" in mid:
         raise DemistoException(
-            f'Message ID {", ".join(map(str, message_ids))} was not found.\n' f"Please check message IDs or Serial Number."
+            f'Message ID {", ".join(map(str, message_ids))} was not found.\nPlease check message IDs or Serial Number.'
         )
 
     response["timestamp"] = format_timestamp(response.get("timestamp"))
@@ -1694,7 +1694,7 @@ def message_url_details_get_command(client: Client, args: Dict[str, Any]) -> Com
     mid = response.get("mid")
     if not mid or "N/A" in mid:
         raise DemistoException(
-            f'Message ID {", ".join(map(str, message_ids))} was not found.\n' f"Please check message IDs or Serial Number."
+            f'Message ID {", ".join(map(str, message_ids))} was not found.\nPlease check message IDs or Serial Number.'
         )
 
     response["timestamp"] = format_timestamp(response.get("timestamp"))

@@ -887,7 +887,7 @@ def test_module(client: Client):
         if "HTTPSConnectionPool" in str(exception):
             return f"Connection Error: please check your server ip address.\n\nError: {exception}"
 
-        return f"Something went Wrong! Please check the credentials and IP address" f" you provided\n\nError: {exception}"
+        return f"Something went Wrong! Please check the credentials and IP address you provided\n\nError: {exception}"
     return "ok"
 
 

@@ -56,9 +56,9 @@ class Client(BaseClient):
                 raise DemistoException("Specified ip address doesn't look valid")
         query = "SEARCH %s WHERE %s show *, __all_ip_addrs, __all_mac_addrs, __all_dns_names, #id"
         if ip:
-            where = "__all_ip_addrs LIKE '%s'" % ip
+            where = f"__all_ip_addrs LIKE '{ip}'"
         else:
-            where = "__all_dns_names LIKE '%s'" % hostname
+            where = f"__all_dns_names LIKE '{hostname}'"
         query = query % (kind, where)
         data = {"query": query}
         return self._http_request(method=method, url_suffix=url_suffix, resp_type="json", json_data=data, ok_codes=(200,))
@@ -74,7 +74,7 @@ class Client(BaseClient):
         results_id = args.get("results_id", "")
         if offset and not results_id:
             raise DemistoException('"offset" cannot be specified without "results_id"')
-        params = dict()
+        params = {}
         if offset:
             params["offset"] = offset
             params["results_id"] = results_id
@@ -119,7 +119,7 @@ class Client(BaseClient):
         results_id = args.get("results_id", "")
         if offset and not results_id:
             raise DemistoException('"offset" cannot be specified without "results_id"')
-        params = dict()
+        params = {}
         params["format"] = "object"
         if offset:
             params["offset"] = offset
@@ -150,9 +150,9 @@ def discovery_search_custom_command(client: Client, **args) -> CommandResults:
     if not response:
         raise DemistoException("Search command failed")
 
-    user_output = list()
+    user_output = []
     for kind in response:
-        row = dict()
+        row = {}
         row["count"] = kind["count"]
         row["offset"] = kind["offset"]
         for key in ("kind", "next_offset", "results_id"):
@@ -162,7 +162,7 @@ def discovery_search_custom_command(client: Client, **args) -> CommandResults:
 
     search_name = args.get("name", "")
 
-    context_output = dict()
+    context_output = {}
     context_output["data"] = response
     if search_name:
         context_output["name"] = search_name
@@ -172,7 +172,7 @@ def discovery_search_custom_command(client: Client, **args) -> CommandResults:
         outputs=context_output,
         raw_response=response,
         readable_output=tableToMarkdown(
-            name="BMC Discovery Custom Search Results " "(see context for more details)", t=user_output
+            name="BMC Discovery Custom Search Results (see context for more details)", t=user_output
         ),
     )
 
@@ -184,7 +184,7 @@ def discovery_search_command(client: Client, **args) -> CommandResults:
         raise DemistoException("Search command failed")
 
     output: Dict = {}
-    output["data"] = list()
+    output["data"] = []
     search_name = args.get("name", "")
     if search_name:
         output["name"] = search_name
@@ -213,9 +213,9 @@ def discovery_search_command(client: Client, **args) -> CommandResults:
         "os_class": "OS Class",
     }
 
-    user_output = list()
+    user_output = []
     for item in output["data"]:  # type: ignore[not iterable]
-        row = dict()
+        row = {}
         for p in user_map_dict:
             if p in item:
                 row[user_map_dict[p]] = item[p]
@@ -269,9 +269,9 @@ def discovery_scan_status_list_command(client: Client, **args) -> CommandResults
         "uuid": "UUID",
     }
 
-    user_output = list()
+    user_output = []
     for item in response:
-        row = dict()
+        row = {}
         for p in user_map_dict:
             if p in item:
                 row[user_map_dict[p]] = item[p]
@@ -311,7 +311,7 @@ def discovery_scan_summary_command(client: Client, **args) -> CommandResults:
     if not response:
         raise DemistoException("Failed to get scan summary")
 
-    output = dict()
+    output = {}
     for key in response:
         if "count" in response[key]:
             output[key] = response[key]["count"]
@@ -331,9 +331,9 @@ def discovery_scan_results_list_command(client: Client, **args) -> CommandResult
 
     result_type = args.get("result_type", "Success")
 
-    user_output = list()
+    user_output = []
     for kind in response:
-        row = dict()
+        row = {}
         row["count"] = kind["count"]
         row["offset"] = kind["offset"]
         for key in ("kind", "next_offset", "results_id"):
@@ -346,7 +346,7 @@ def discovery_scan_results_list_command(client: Client, **args) -> CommandResult
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
-            name='BMC Discovery Scan Results for "%s" kind' "(see context for more details)" % result_type, t=user_output
+            name=f'BMC Discovery Scan Results for "{result_type}" kind' "(see context for more details)", t=user_output
         ),
     )
 

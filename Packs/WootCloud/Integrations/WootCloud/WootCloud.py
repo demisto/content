@@ -195,7 +195,7 @@ def fetch_incidents(client, alert_type):
 
 
 def main():
-    LOG("Command being called is %s" % (demisto.command()))
+    LOG(f"Command being called is {demisto.command()}")
 
     try:
         client = Client(SERVER + API_VERSION, verify=USE_SSL, headers=HEADERS, auth=(CLIENT_ID, SECRET_KEY))

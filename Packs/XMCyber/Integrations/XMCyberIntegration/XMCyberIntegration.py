@@ -212,7 +212,7 @@ class XM:
         )
 
     def search_entities(self, field_name_to_value: dict[str, Any]) -> list[dict[str, Any]]:
-        params: dict[str, str | dict[str, Any]] = dict()
+        params: dict[str, str | dict[str, Any]] = {}
         for field_name, value in field_name_to_value.items():
             if field_name == "name":
                 params["search"] = f'{{"$regex":"/{value}/i"}}'
@@ -573,9 +573,8 @@ def _fetch_incidents_internal(xm: XM, args: dict[str, Any], run_data: dict[str, 
     events = []
     should_run = True
 
-    if xm.is_fetch_incidents:
-        if len(run_data) > 0 and not is_seconds_diff_passed(run_data["start_time"], FULL_INCIDENTS_SECONDS):
-            should_run = False
+    if xm.is_fetch_incidents and len(run_data) > 0 and not is_seconds_diff_passed(run_data["start_time"], FULL_INCIDENTS_SECONDS):
+        should_run = False
 
     if should_run or DEBUG_MODE:
         events = xm.get_fetch_incidents_events(run_data)
@@ -592,7 +591,7 @@ def fetch_incidents_command(xm: XM, args: dict[str, Any]) -> CommandResults:
     run_data = demisto.getLastRun()
     keys_to_delete = []
     # Clean the dict key with old values
-    for key in run_data.keys():
+    for key in run_data:
         if key == "start_time" or key == "lastRun":
             continue
         if is_seconds_diff_passed(run_data[key], ONE_WEEK_IN_SECONDS):
@@ -860,7 +859,7 @@ def main() -> None:
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}\n" f"Traceback:\n{traceback.format_exc()}")
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}\nTraceback:\n{traceback.format_exc()}")
 
 
 """ ENTRY POINT """

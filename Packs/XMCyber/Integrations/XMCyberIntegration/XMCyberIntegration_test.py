@@ -152,7 +152,7 @@ def test_enrich_from_entity_id(requests_mock):
     API response. Checks the output of the command function with the expected output.
     """
 
-    mock_url = f'{TEST_URL}{URLS.Entities}?filter={{"entityId": "3110337924893579985"}}' f"&pageSize={PAGE_SIZE}&page=1"
+    mock_url = f'{TEST_URL}{URLS.Entities}?filter={{"entityId": "3110337924893579985"}}&pageSize={PAGE_SIZE}&page=1'
     xm = mock_request_and_get_xm_mock("test_data/entity_id.json", requests_mock, mock_url)
 
     response = enrich_from_entity_id(xm, {"entityId": "3110337924893579985"})

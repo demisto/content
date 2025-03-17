@@ -9,7 +9,7 @@ from CommonServerUserPython import *
 
 def get_dict_value(data, key):
     """Returns dict value for a given key (case insensitive)"""
-    for key_name in data.keys():
+    for key_name in data:
         if key_name.lower() == key.lower():
             return data[key_name]
 
@@ -33,9 +33,8 @@ def get_ec2_sg_public_rules(
     for rule in ip_permissions:
         # Check protocol
         protocol = get_dict_value(rule, "IpProtocol")
-        if protocol != "-1":
-            if checked_protocol.lower() != protocol.lower():
-                continue
+        if protocol != "-1" and checked_protocol.lower() != protocol.lower():
+            continue
 
         bad_rule = {"groupId": group_id, "ipProtocol": protocol}
 

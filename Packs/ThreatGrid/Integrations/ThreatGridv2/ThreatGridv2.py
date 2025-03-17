@@ -972,7 +972,7 @@ def schedule_command(args: dict[str, Any], client: Client) -> PollResult:
             return PollResult(
                 response=CommandResults(
                     readable_output=(
-                        "The file has not been analyzed. Reason:" " The file type is not supported or the file is low risk "
+                        "The file has not been analyzed. Reason: The file type is not supported or the file is low risk "
                     )
                 ),
                 continue_to_poll=False,
@@ -1640,7 +1640,7 @@ def main() -> None:
 
     except Exception as exc:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"Failed to execute {command} command." f"\nError:\n{exc!s}")
+        return_error(f"Failed to execute {command} command.\nError:\n{exc!s}")
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:

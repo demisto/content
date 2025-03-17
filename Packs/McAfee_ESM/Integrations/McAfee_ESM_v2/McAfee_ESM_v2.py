@@ -25,7 +25,7 @@ class McAfeeESMClient(BaseClient):
         self.__password = params.get("credentials", {}).get("password", "")
         self.difference = int(params.get("timezone", 0))
         self.version = params.get("version", "10.2")
-        super(McAfeeESMClient, self).__init__(
+        super().__init__(
             "{}/rs/esm/v2/".format(params.get("url", "").strip("/")),
             proxy=params.get("proxy", False),
             verify=not params.get("insecure", False),
@@ -64,7 +64,7 @@ class McAfeeESMClient(BaseClient):
         self._headers["X-Xsrf-Token"] = res.headers.get("Xsrf-Token")
         if None in (self._headers["X-Xsrf-Token"], self._headers["Cookie"]):
             raise DemistoException(
-                f"Failed login\nurl: {self._base_url}login\nresponse " f"status: {res.status_code}\nresponse: {res.text}\n"
+                f"Failed login\nurl: {self._base_url}login\nresponse status: {res.status_code}\nresponse: {res.text}\n"
             )
 
     def __logout(self):
@@ -487,7 +487,7 @@ class McAfeeESMClient(BaseClient):
 
         return (
             human_readable,
-            {f"{CONTEXT_INTEGRATION_NAME}" f"AlarmEvent(val.ID && val.ID == obj.ID)": context_entry},
+            {f"{CONTEXT_INTEGRATION_NAME}AlarmEvent(val.ID && val.ID == obj.ID)": context_entry},
             raw_response,
         )
 
@@ -658,7 +658,7 @@ class McAfeeESMClient(BaseClient):
 
     def __get_watchlist_id(self, watchlist_name: str):
         try:
-            return list(filter(lambda x: x.get("name") == watchlist_name, self.__get_watchlists(dict())))[0].get("id")
+            return list(filter(lambda x: x.get("name") == watchlist_name, self.__get_watchlists({})))[0].get("id")
         except IndexError:
             raise DemistoException(f"Can not find the watchlist {watchlist_name}")
 
@@ -780,8 +780,7 @@ class McAfeeESMClient(BaseClient):
                 end = file_data[-1]
                 file_data = file_data[:-1]
 
-            for line in filter(lambda x: x, file_data):
-                yield line
+            yield from (line for line in file_data if line)
 
             if not more_data_exist:
                 break
@@ -930,7 +929,7 @@ def dict_times_set(dict_to_set: dict, difference: int = 0) -> dict:
     :param difference: the difference (e.g. time zone)
     :return: the data dict with utc times
     """
-    for field in dict_to_set.keys():
+    for field in dict_to_set:
         if dict_to_set[field]:
             if "time" in field.lower() or "date" in field.lower():
                 dict_to_set[field] = time_format(dict_to_set[field], difference=difference)

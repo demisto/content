@@ -685,7 +685,7 @@ def submit_event_command(
 ):
     """Create new event."""
     if serviceKey is None:
-        raise Exception("You must enter a ServiceKey at the integration " "parameters or in the command to process this action.")
+        raise Exception("You must enter a ServiceKey at the integration parameters or in the command to process this action.")
 
     res = create_new_incident(
         source, summary, severity, action, description, group, event_class, component, incident_key, serviceKey
@@ -751,7 +751,7 @@ def get_users_notification_command(UserID) -> dict:
 
 def resolve_event(incident_key=None, serviceKey=SERVICE_KEY) -> dict:
     if serviceKey is None:
-        raise Exception("You must enter a ServiceKey at the integration " "parameters or in the command to process this action.")
+        raise Exception("You must enter a ServiceKey at the integration parameters or in the command to process this action.")
 
     action_response = resolve_or_ack_incident("resolve", incident_key, serviceKey)
     time.sleep(3)  # wait until the incident will update
@@ -766,7 +766,7 @@ def resolve_event(incident_key=None, serviceKey=SERVICE_KEY) -> dict:
 
 def acknowledge_event(incident_key=None, serviceKey=SERVICE_KEY) -> dict:
     if serviceKey is None:
-        raise Exception("You must enter a ServiceKey at the integration " "parameters or in the command to process this action.")
+        raise Exception("You must enter a ServiceKey at the integration parameters or in the command to process this action.")
 
     action_response = resolve_or_ack_incident("acknowledge", incident_key, serviceKey)
     time.sleep(3)  # wait until the incident will update

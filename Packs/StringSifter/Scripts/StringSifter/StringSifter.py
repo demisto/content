@@ -17,7 +17,7 @@ def create_rank_strings_args(args: dict) -> list:
         (list): A list of args for the rand_string commamd
     """
     limit = args.get("limit", "")
-    args_rank_strings = list()
+    args_rank_strings = []
     args_rank_strings.append("rank_strings")
     args_rank_strings.append("--scores")
     if limit:
@@ -86,7 +86,7 @@ def stringsifter(args: dict):
         )
 
     readable = tableToMarkdown(
-        f"Top {min(20, len(words_rating_list))!s} " f"Stringsifter word ranking based on their relevance for malware analysis.",
+        f"Top {min(20, len(words_rating_list))!s} Stringsifter word ranking based on their relevance for malware analysis.",
         words_rating_list[:20],
     )
     outputs = {"FileName": file_name, "Results": words_rating_list}

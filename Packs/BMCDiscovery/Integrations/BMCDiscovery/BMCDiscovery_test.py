@@ -16,7 +16,7 @@ from BMCDiscovery import (
     discovery_search_custom_command,
 )
 from CommonServerPython import *
-from pytest import raises
+from pytest import raises   # noqa: PT013
 
 p = os.path.abspath(".")
 sys.path.insert(1, p)
