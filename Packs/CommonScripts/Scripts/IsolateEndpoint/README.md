@@ -1,4 +1,4 @@
-This script isolate endpoints using multiple integrations and returns a success or failure message.
+This script isolates endpoints using multiple integrations and returns a success or failure message.
 
 ## Script Data
 
