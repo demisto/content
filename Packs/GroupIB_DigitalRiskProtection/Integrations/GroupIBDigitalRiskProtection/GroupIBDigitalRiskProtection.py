@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 
 
 """ IMPORTS """
-    
+
 from urllib3.exceptions import InsecureRequestWarning
 from urllib3 import disable_warnings as urllib3_disable_warnings
 from cyberintegrations import DRPPoller
@@ -60,6 +60,7 @@ COMMON_VIOLATION_MAPPING = {
     "violation_type": "violation.violationSubtype",  # GIB DRP Type
     "tags": "violation.tags.name",  # GIB DRP Tags
     "link": "link",  # GIB DRP Link
+    "downloaded_by_typoSquatting": "*downloaded_by_typoSquatting",  # GIB DRO Downloaded by TypoSquatting
     # End Information From Group-IB DRP
     # Start Group-IB Dates
     "detected": "violation.detected",  # GIB DRP Detected
@@ -198,9 +199,9 @@ class Client(BaseClient):
         collection_name = "violation"
         response = self.poller.search_feed_by_id(collection_name=collection_name, feed_id=feed_id)
         if response.raw_dict.get('status') == 'detected' and response.raw_dict.get('approveState') == 'under_review':
-            self.poller.change_status(feed_id=feed_id, status=status)
+            return self.poller.change_status(feed_id=feed_id, status=status)
         else:
-            return "Сan not change the status of the selected feed"
+            return "Can not change the status of the selected feed"
 
     def get_brands(self):
         results = self._http_request(
@@ -542,6 +543,12 @@ class CommonHelpers:
         match = re.match(r"^\s*([^;]+)", content_type)
         return match.group(1).strip() if match else "image/jpeg"
 
+    @staticmethod
+    def set_tag_downloaded_by_typoSquatting(violation: dict[str, Any], only_typosquatting: bool) -> dict[str, Any]:
+        if violation.get("downloaded_by_typoSquatting", None) and only_typosquatting:
+            violation["downloaded_by_typoSquatting"] = True
+        return violation
+
 
 class IncidentBuilder:
     def __init__(
@@ -623,6 +630,8 @@ class IncidentBuilder:
                 feed = CommonHelpers.data_pre_cleaning(violation=feed)
                 feed = CommonHelpers.violation_source_mapping(feed=feed)
                 feed = CommonHelpers.format_dates_in_dict(data=feed)
+                feed = CommonHelpers.set_tag_downloaded_by_typoSquatting(
+                    violation=feed, only_typosquatting=self.only_typosquatting)
                 incident = self.transform_fields_to_grid_table(incident=feed)
 
                 if self.download_images:

@@ -31,7 +31,7 @@
             }
         ]
     },
-    "description": "Layout for GIB Compromised Account Group",
+    "description": "Layout for GIB DRP Violation",
     "detailsV2": {
         "tabs": [
             {
@@ -456,10 +456,19 @@
                             },
                             {
                                 "endCol": 4,
+                                "fieldId": "gibdrpdownloadedbytyposquatting",
+                                "height": 22,
+                                "id": "00898c20-031b-11f0-a40c-9b7e2fa0a0dc",
+                                "index": 12,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
                                 "fieldId": "gibdrpscorestable",
                                 "height": 106,
                                 "id": "45bbf980-ed23-11ef-bdfd-773f20036f06",
-                                "index": 12,
+                                "index": 14,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -468,7 +477,7 @@
                                 "fieldId": "gibdrphtmlimages",
                                 "height": 44,
                                 "id": "616c9900-ed23-11ef-bdfd-773f20036f06",
-                                "index": 13,
+                                "index": 15,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
