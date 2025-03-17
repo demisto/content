@@ -1,24 +1,22 @@
 import json
 import urllib
 
-import pytest
-
 import demistomock as demisto
-
+import pytest
 from TrustwaveFusion import (
     Client,
-    get_ticket_command,
     add_ticket_comment_command,
-    close_ticket_command,
-    get_finding_command,
-    get_asset_command,
-    get_updated_tickets_command,
-    search_tickets_command,
-    search_findings_command,
-    search_assets_command,
-    arg_to_timestamp,
     arg_to_datestring,
+    arg_to_timestamp,
+    close_ticket_command,
     fetch_incidents,
+    get_asset_command,
+    get_finding_command,
+    get_ticket_command,
+    get_updated_tickets_command,
+    search_assets_command,
+    search_findings_command,
+    search_tickets_command,
 )
 
 
@@ -42,8 +40,7 @@ def test_test_module(requests_mock):
     response = test_module(client)
     assert response == "ok"
 
-    requests_mock.get("http://api.example.com/v2/describe",
-                      status_code=401)
+    requests_mock.get("http://api.example.com/v2/describe", status_code=401)
 
     response = test_module(client)
     assert response == "Authorization Error: make sure API Key is correctly set"
@@ -52,9 +49,7 @@ def test_test_module(requests_mock):
 def test_get_ticket_command(requests_mock):
     json_response = util_load_json("test_data/trustwave_get_ticket.json")
     test_id = "INA1976568"
-    requests_mock.get(
-        f"http://api.example.com/v2/tickets/{test_id}", json=json_response
-    )
+    requests_mock.get(f"http://api.example.com/v2/tickets/{test_id}", json=json_response)
 
     client = Client("http://api.example.com")
 
@@ -66,9 +61,7 @@ def test_get_ticket_command(requests_mock):
 
 def test_get_ticket_command_not_found(requests_mock):
     test_id = "missing_id"
-    requests_mock.get(
-        f"http://api.example.com/v2/tickets/{test_id}", json={}, status_code=404
-    )
+    requests_mock.get(f"http://api.example.com/v2/tickets/{test_id}", json={}, status_code=404)
 
     client = Client("http://api.example.com")
 
@@ -79,9 +72,7 @@ def test_get_ticket_command_not_found(requests_mock):
 
 
 def test_add_ticket_comment_command(requests_mock):
-    requests_mock.post(
-        "http://api.example.com/v1/tickets/IN1234/comments", text="", status_code=201
-    )
+    requests_mock.post("http://api.example.com/v1/tickets/IN1234/comments", text="", status_code=201)
 
     client = Client("http://api.example.com")
 
@@ -91,9 +82,7 @@ def test_add_ticket_comment_command(requests_mock):
 
 
 def test_close_ticket_command(requests_mock):
-    requests_mock.post(
-        "http://api.example.com/v1/tickets/IN1234/close", text="", status_code=202
-    )
+    requests_mock.post("http://api.example.com/v1/tickets/IN1234/close", text="", status_code=202)
 
     client = Client("http://api.example.com")
 
@@ -227,8 +216,7 @@ def test_fetch_incidents(requests_mock, mocker):
         json=json_response,
     )
     mocker.patch.object(demisto, "incidents")
-    mocker.patch.object(demisto, "params",
-                        return_value={"ticket_types": ["INCIDENT"]})
+    mocker.patch.object(demisto, "params", return_value={"ticket_types": ["INCIDENT"]})
 
     client = Client("http://api.example.com")
     fetch_incidents(client, 10, 1643634000)
@@ -243,10 +231,8 @@ def test_fetch_incidents_last_fetch(requests_mock, mocker):
         "http://api.example.com/v2/tickets?pageSize=10&createdSince=2022-01-22T03%3A03%3A20Z&sortField=createdOn&sortDescending=false",  # noqa: E501
         json=json_response,
     )
-    mocker.patch.object(demisto, 'incidents')
-    mocker.patch.object(demisto, 'getLastRun',
-                        return_value={"last_fetch": 1642820600}
-                        )
+    mocker.patch.object(demisto, "incidents")
+    mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": 1642820600})
 
     client = Client("http://api.example.com")
     fetch_incidents(client, 10, 1642734000)
