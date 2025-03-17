@@ -1,30 +1,24 @@
 import demistomock as demisto
 from CommonServerPython import *
-
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography import x509
-from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
 
 
 def main():
     try:
         # Generate a key
-        key = rsa.generate_private_key(
-            public_exponent=65537,
-            key_size=2048,
-            backend=default_backend()
-        )
+        key = rsa.generate_private_key(public_exponent=65537, key_size=2048, backend=default_backend())
 
-        toWarRoom = demisto.getArg('OutputToWarRoom')
-        cn = demisto.getArg('cn')
-        email = demisto.getArg('email')
-        organization = demisto.getArg('org')
-        organizational_unit = demisto.getArg('orgUnit')
-        country = demisto.getArg('country')
-        state = demisto.getArg('state')
-        locality = demisto.getArg('locality')
+        toWarRoom = demisto.getArg("OutputToWarRoom")
+        cn = demisto.getArg("cn")
+        email = demisto.getArg("email")
+        organization = demisto.getArg("org")
+        organizational_unit = demisto.getArg("orgUnit")
+        country = demisto.getArg("country")
+        state = demisto.getArg("state")
+        locality = demisto.getArg("locality")
 
         cert_attributes = [x509.NameAttribute(x509.OID_COMMON_NAME, cn)]
 
@@ -58,13 +52,10 @@ def main():
 
         pem_req = csr.public_bytes(serialization.Encoding.PEM)
 
-        pem_text = pem_req.decode('utf8')
+        pem_text = pem_req.decode("utf8")
 
         results = [
-            fileResult(
-                filename="request.csr",
-                data=pem_text
-            ),
+            fileResult(filename="request.csr", data=pem_text),
         ]
 
         if toWarRoom == "True":
@@ -73,10 +64,10 @@ def main():
         return_results(results)
 
     except Exception as ex:
-        return_error(f'An Error occured: {ex}', error=ex)
+        return_error(f"An Error occured: {ex}", error=ex)
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
