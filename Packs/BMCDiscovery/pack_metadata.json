@@ -2,7 +2,7 @@
     "name": "BMC Discovery",
     "description": "BMC Discovery integration allows searching for endpoints information, triggering Discovery runs and running custom user queries.",
     "support": "partner",
-    "currentVersion": "1.0.8",
+    "currentVersion": "1.0.9",
     "author": "ScienceSoft USA Corporation",
     "url": "https://www.scnsoft.com/",
     "email": "qlean@scnsoft.com",
