@@ -2,10 +2,9 @@ import json
 from datetime import datetime, timedelta
 from unittest.mock import Mock, patch
 
-import pytest
 import Cyberint
-
-from CommonServerPython import EntryType, DemistoException, GetRemoteDataResponse, GetModifiedRemoteDataResponse
+import pytest
+from CommonServerPython import DemistoException, EntryType, GetModifiedRemoteDataResponse, GetRemoteDataResponse
 
 BASE_URL = "https://test.cyberint.io/alert"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -122,8 +121,9 @@ def test_cyberint_alerts_status_update_other_reason_without_description(client):
      - Ensure an exception is raised with an appropriate message.
     """
 
-    with pytest.raises(DemistoException,
-                       match="You must supply a closure_reason_description when specify closure_reason to 'other'."):
+    with pytest.raises(
+        DemistoException, match="You must supply a closure_reason_description when specify closure_reason to 'other'."
+    ):
         Cyberint.cyberint_alerts_status_update(client, {"alert_ref_ids": "alert1", "status": "closed", "closure_reason": "other"})
 
 
@@ -192,9 +192,7 @@ def test_fetch_incidents_no_last_fetch(requests_mock, client):
     mock_response = json.loads(load_mock_response("list_alerts.json"))
     requests_mock.post(f"{BASE_URL}/api/v1/alerts", json=mock_response)
 
-    last_fetch, incidents = fetch_incidents(
-        client, {}, "3 days", [], [], [], [], 50, False, "Incoming And Outgoing", False
-    )
+    last_fetch, incidents = fetch_incidents(client, {}, "3 days", [], [], [], [], 50, False, "Incoming And Outgoing", False)
     wanted_time = datetime.timestamp(datetime.strptime("2020-12-30T00:00:57Z", DATE_FORMAT))
     assert last_fetch.get("last_fetch") == wanted_time * 1000
     assert len(incidents) == 3
@@ -380,8 +378,10 @@ def test_test_module_invalid_token(requests_mock, client):
     error_response = {"error": "Invalid token or token expired"}
     requests_mock.post(f"{BASE_URL}/api/v1/alerts", status_code=401, json=error_response)
 
-    assert Cyberint.test_module(
-        client) == 'Error verifying access token and / or URL, make sure the configuration parameters are correct.'
+    assert (
+        Cyberint.test_module(client)
+        == "Error verifying access token and / or URL, make sure the configuration parameters are correct."
+    )
 
 
 def test_test_module_error(requests_mock, client):
@@ -491,18 +491,10 @@ def test_get_attachment_name(client):
 
 
 def test_get_remote_data_command_with_open_incident(requests_mock, client):
-
     from Cyberint import get_remote_data_command
 
-    args = {
-        "id": 123,
-        "lastUpdate": "2024-06-10T12:00:00Z",
-        "remote_incident_id": 123,
-        "last_update": "2024-06-10T12:00:00Z"
-    }
-    params = {
-        "close_incident": False
-    }
+    args = {"id": 123, "lastUpdate": "2024-06-10T12:00:00Z", "remote_incident_id": 123, "last_update": "2024-06-10T12:00:00Z"}
+    params = {"close_incident": False}
     mock_response = load_mock_response("alert_open.json")
     requests_mock.get(f"{BASE_URL}/api/v1/alerts/{args['id']}", json=mock_response)
 
@@ -512,18 +504,10 @@ def test_get_remote_data_command_with_open_incident(requests_mock, client):
 
 
 def test_get_remote_data_command_with_closed_incident(requests_mock, client):
-
     from Cyberint import get_remote_data_command
 
-    args = {
-        "id": 124,
-        "lastUpdate": "2024-06-10T12:00:00Z",
-        "remote_incident_id": 124,
-        "last_update": "2024-06-10T12:00:00Z"
-    }
-    params = {
-        "close_incident": True
-    }
+    args = {"id": 124, "lastUpdate": "2024-06-10T12:00:00Z", "remote_incident_id": 124, "last_update": "2024-06-10T12:00:00Z"}
+    params = {"close_incident": True}
     mock_response = load_mock_response("alert_closed.json")
     requests_mock.get(f"{BASE_URL}/api/v1/alerts/{args['id']}", json=mock_response)
 
@@ -533,25 +517,13 @@ def test_get_remote_data_command_with_closed_incident(requests_mock, client):
 
 
 def test_get_remote_data_command_with_missing_update_date(requests_mock, client):
-
     from Cyberint import get_remote_data_command
 
-    args = {
-        "id": 125,
-        "lastUpdate": "2024-06-10T12:00:00Z",
-        "remote_incident_id": 125,
-        "last_update": "2024-06-10T12:00:00Z"
-
-    }
+    args = {"id": 125, "lastUpdate": "2024-06-10T12:00:00Z", "remote_incident_id": 125, "last_update": "2024-06-10T12:00:00Z"}
     params = {"close_incident": True}
 
     mock_response = {
-        "alert": {
-            "id": "125",
-            "status": "closed",
-            "closure_reason": "Resolved",
-            "closure_reason_description": "Issue mitigated"
-        }
+        "alert": {"id": "125", "status": "closed", "closure_reason": "Resolved", "closure_reason_description": "Issue mitigated"}
     }
     requests_mock.get(f"{BASE_URL}/api/v1/alerts/{args['id']}", json=mock_response)
 
@@ -563,16 +535,9 @@ def test_get_remote_data_command_with_missing_update_date(requests_mock, client)
 
 
 def test_get_remote_data_command_with_none_response(requests_mock, client, capfd):
-
     from Cyberint import get_remote_data_command
 
-    args = {
-        "id": 125,
-        "lastUpdate": "2024-06-10T12:00:00Z",
-        "remote_incident_id": 125,
-        "last_update": "2024-06-10T12:00:00Z"
-
-    }
+    args = {"id": 125, "lastUpdate": "2024-06-10T12:00:00Z", "remote_incident_id": 125, "last_update": "2024-06-10T12:00:00Z"}
     params = {"close_incident": True}
 
     mock_response = "null"
@@ -586,15 +551,9 @@ def test_get_remote_data_command_with_none_response(requests_mock, client, capfd
 
 
 def test_get_remote_data_command_invalid_response(requests_mock, client):
-
     from Cyberint import get_remote_data_command
 
-    args = {
-        "id": 126,
-        "lastUpdate": "2024-06-10T12:00:00Z",
-        "remote_incident_id": 126,
-        "last_update": "2024-06-10T12:00:00Z"
-    }
+    args = {"id": 126, "lastUpdate": "2024-06-10T12:00:00Z", "remote_incident_id": 126, "last_update": "2024-06-10T12:00:00Z"}
     params = {"close_incident": True}
 
     requests_mock.get(f"{BASE_URL}/api/v1/alerts/{args['id']}", text='{"invalid": "response"}')
@@ -747,8 +706,9 @@ def test_edge_case_handling(requests_mock, client):
 )
 @patch("Cyberint.convert_date_time_args")
 @patch("Cyberint.Client.list_alerts")
-def test_get_modified_remote_data(mock_list_alerts, mock_convert_date_time_args, last_update,
-                                  api_response, expected_tickets, client):
+def test_get_modified_remote_data(
+    mock_list_alerts, mock_convert_date_time_args, last_update, api_response, expected_tickets, client
+):
     """
     Test the get_modified_remote_data function to ensure it correctly retrieves and processes modified incidents.
     """
