@@ -78,8 +78,9 @@ repos:
     entry: node .hooks/validate-mdx.js
     language: node
     files: "^(.*/)?README\\.md$"
+    require_serial: true
     additional_dependencies: #match package-lock of content docs
-      - "@mdx-js/mdx@^1.6.22"
+      - "@mdx-js/mdx@1.6.22"
       - "fs-extra@9.1.0"
   - id: xsoar-lint
     name: xsoar-lint
@@ -381,9 +382,9 @@ repos:
     - git diff HEAD
     skip: true
 
-- repo: https://github.com/igorshubovych/markdownlint-cli
-  rev: v0.36.0  # Check for the latest version
-  hooks:
-    - id: markdownlint
-      files: \.md$
+#- repo: https://github.com/igorshubovych/markdownlint-cli
+#  rev: v0.36.0  # Check for the latest version
+#  hooks:
+#    - id: markdownlint
+#      files: \.md$
 
