@@ -185,13 +185,13 @@ def main():
         else values_map['AC'][modified_attack_complexity]
 
     privileges_required = values_map['PR'][args.get('PR')]
-    if type(privileges_required) == dict:
+    if type(privileges_required) is dict:
         privileges_required = privileges_required.get("C") if scope_changed or modified_scope_changed\
             else privileges_required["U"]
     modified_privileges_required = args.get('MPR', "X")
     if modified_privileges_required == "X":
         modified_privileges_required = privileges_required
-    elif type(modified_privileges_required) == dict:
+    elif type(modified_privileges_required) is dict:
         modified_privileges_required = modified_privileges_required["C"] if scope_changed or\
             modified_scope_changed else modified_privileges_required["U"]
     else:

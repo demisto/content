@@ -6,7 +6,7 @@ from CommonServerPython import *  # noqa: F401
 import json
 import urllib3
 import traceback
-from typing import Any, Dict, Tuple, List, Optional, Union, cast
+from typing import Any, cast
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -61,7 +61,7 @@ class Client(BaseClient):
     def __init__(self,
                  base_url: str,
                  verify: bool,
-                 headers: Dict[str, str],
+                 headers: dict[str, str],
                  proxy: bool,
                  api_key: str,
                  monitor_id: str):
@@ -69,9 +69,9 @@ class Client(BaseClient):
         self.api_key = api_key
         self.monitor_id = monitor_id
 
-    def search_alerts(self, start_time: Optional[int], max_results: int, incident_types: List[str]):
+    def search_alerts(self, start_time: int | None, max_results: int, incident_types: list[str]):
         # Base filter
-        params: Dict[str, Dict] = {
+        params: dict[str, dict] = {
             "filters": {
                 "and": {
                     "start_date": start_time
@@ -106,7 +106,7 @@ class Client(BaseClient):
         except Exception as e:
             return_error(str(e))
 
-    def incident_get_items(self, incident_id: str) -> Union[Dict[str, Any], None]:
+    def incident_get_items(self, incident_id: str) -> dict[str, Any] | None:
         try:
             return self._http_request(
                 method='GET',
@@ -119,7 +119,7 @@ class Client(BaseClient):
             return_error(str(e))
             return None
 
-    def email_enrich_data(self, email: str) -> Union[Dict[str, Any], None]:
+    def email_enrich_data(self, email: str) -> dict[str, Any] | None:
         # filter
         params = {
             "index": "leaked_credentials",
@@ -143,7 +143,7 @@ class Client(BaseClient):
             return_error(str(e))
             return None
 
-    def action_on_item(self, item_id: str, action: str) -> Union[Dict[str, Any], None]:
+    def action_on_item(self, item_id: str, action: str) -> dict[str, Any] | None:
         params = {'monitor_id': self.monitor_id, 'value': True, 'force': False}
         headers = {'Content-Type': 'application/json'}
         try:
@@ -157,7 +157,7 @@ class Client(BaseClient):
             return_error(str(e))
             return None
 
-    def get_item(self, item_id: str) -> Union[Dict[str, Any], None]:
+    def get_item(self, item_id: str) -> dict[str, Any] | None:
         try:
             return self._http_request(
                 method='GET',
@@ -167,7 +167,7 @@ class Client(BaseClient):
             return_error(str(e))
             return None
 
-    def message_on_incident(self, message: Dict[str, Any], room: Dict[str, str]) -> Union[Dict[str, Any], None]:
+    def message_on_incident(self, message: dict[str, Any], room: dict[str, str]) -> dict[str, Any] | None:
         params = {'monitorId': self.monitor_id, 'message': message, 'room': room}
         headers = {'Content-Type': 'application/json'}
         try:
@@ -181,7 +181,7 @@ class Client(BaseClient):
             return_error(str(e))
             return None
 
-    def get_mention_list(self) -> Union[Dict[str, Any], None]:
+    def get_mention_list(self) -> dict[str, Any] | None:
         try:
             return self._http_request(
                 method='GET',
@@ -265,7 +265,7 @@ def parse_incident_markdown_table(data: dict, incident_id: str):
     return table, details
 
 
-def parse_leaked_credentials_markdown_table(items: List[Dict[str, Any]], sub_type: int):
+def parse_leaked_credentials_markdown_table(items: list[dict[str, Any]], sub_type: int):
     table = []
     # Parse each item base on subtype
     for item in items:
@@ -297,7 +297,7 @@ def parse_leaked_credentials_markdown_table(items: List[Dict[str, Any]], sub_typ
     return table
 
 
-def parse_botnets_markdown_table(items: List[Dict[str, Any]], sub_type: int):
+def parse_botnets_markdown_table(items: list[dict[str, Any]], sub_type: int):
     table = []
     # Parse each item base on subtype
     for item in items:
@@ -354,7 +354,7 @@ def parse_botnets_markdown_table(items: List[Dict[str, Any]], sub_type: int):
     return table
 
 
-def parse_network_vulnerabilities_markdown_table(items: List[Dict[str, Any]], sub_type: int):
+def parse_network_vulnerabilities_markdown_table(items: list[dict[str, Any]], sub_type: int):
     table = []
     # Parse each item base on subtype
     for item in items:
@@ -394,7 +394,7 @@ def parse_network_vulnerabilities_markdown_table(items: List[Dict[str, Any]], su
     return table
 
 
-def parse_credit_cards_markdown_table(items: List[Dict[str, Any]], sub_type: int):
+def parse_credit_cards_markdown_table(items: list[dict[str, Any]], sub_type: int):
     table = []
     # Parse each item base on subtype
     # Include both 13 and 24
@@ -415,7 +415,7 @@ def parse_credit_cards_markdown_table(items: List[Dict[str, Any]], sub_type: int
     return table
 
 
-def parse_hacking_discussions_markdown_table(items: List[Dict[str, Any]], aggr: Dict[str, Any]):
+def parse_hacking_discussions_markdown_table(items: list[dict[str, Any]], aggr: dict[str, Any]):
     table = []
     aggr_media = aggr.get('media', [])
     aggr_tags = aggr.get('tags', [])
@@ -479,7 +479,7 @@ def parse_hacking_discussions_markdown_table(items: List[Dict[str, Any]], aggr: 
     return table
 
 
-def extract_available_data_from_item(item: dict) -> Tuple[str, str, str]:
+def extract_available_data_from_item(item: dict) -> tuple[str, str, str]:
     additional_data = ''
     available_data = item.get('available_data', '')
     if not available_data:
@@ -497,7 +497,7 @@ def extract_available_data_from_item(item: dict) -> Tuple[str, str, str]:
     return additional_data, username, password
 
 
-def get_first_time_fetch(first_fetch: str) -> Union[int, None]:
+def get_first_time_fetch(first_fetch: str) -> int | None:
     first_fetch_time = arg_to_datetime(
         arg=first_fetch if first_fetch else DEFAULT_FIRST_TIME_TO_FETCH,
         arg_name='First fetch time',
@@ -531,7 +531,7 @@ def get_name(incident_type: str) -> str:
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client, first_fetch_time: Optional[int]) -> str:
+def test_module(client: Client, first_fetch_time: int | None) -> str:
     try:
         client.search_alerts(start_time=first_fetch_time, max_results=1, incident_types=DEFAULT_INCIDENT_TYPES)
     except DemistoException as e:
@@ -545,9 +545,9 @@ def test_module(client: Client, first_fetch_time: Optional[int]) -> str:
 def fetch_incidents(
         client: Client,
         max_results: int,
-        last_run: Dict[str, int],
-        first_fetch_time: Optional[int],
-        incident_types: List[str]) -> Tuple[Dict[str, int], List[dict]]:
+        last_run: dict[str, int],
+        first_fetch_time: int | None,
+        incident_types: list[str]) -> tuple[dict[str, int], list[dict]]:
     # Get the last fetch time, if exists
     last_fetch = last_run.get('last_fetch', None)
     if not last_fetch:  # if missing, use what provided via first_fetch_time
@@ -560,7 +560,7 @@ def fetch_incidents(
 
     # Initialize an empty list of incidents to return
     # Each incident is a dict with a string as a key
-    incidents: List[Dict[str, Any]] = []
+    incidents: list[dict[str, Any]] = []
 
     # Fetch alerts from RaDark.
     alerts = client.search_alerts(
@@ -606,7 +606,7 @@ def fetch_incidents(
     return next_run, incidents
 
 
-def incident_get_items_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def incident_get_items_command(client: Client, args: dict[str, Any]) -> CommandResults:
     try:
         incident_id = str(args.get('incident_id', ''))
         incident_data = client.incident_get_items(incident_id=incident_id)
@@ -625,7 +625,7 @@ def incident_get_items_command(client: Client, args: Dict[str, Any]) -> CommandR
         raise Exception(f'RaDark Error: Failed to execute command.\nError:\n {str(e)} {incident_data}')
 
 
-def email_enrich_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def email_enrich_command(client: Client, args: dict[str, Any]) -> CommandResults:
     try:
         email = str(args.get('email', ''))
         email_data = client.email_enrich_data(email=email)
@@ -644,7 +644,7 @@ def email_enrich_command(client: Client, args: Dict[str, Any]) -> CommandResults
         raise Exception(f'RaDark Error: Failed to execute command.\nError:\n {str(e)} {email}')
 
 
-def item_handle_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def item_handle_command(client: Client, args: dict[str, Any]) -> CommandResults:
     try:
         item_id = str(args.get('item_id', ''))
         action_res = client.action_on_item(item_id=item_id, action="handled")
@@ -658,7 +658,7 @@ def item_handle_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         raise Exception(f'RaDark Error: Failed to execute command on {item_id}.\nError:\n {str(e)}')
 
 
-def item_purchase_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def item_purchase_command(client: Client, args: dict[str, Any]) -> CommandResults:
     try:
         item_id = str(args.get('item_id', ''))
         bot_id = ''

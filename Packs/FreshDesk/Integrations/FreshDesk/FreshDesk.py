@@ -754,7 +754,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         params=params,
         data=data,
         headers=headers,
-        auth=AUTH,
+        auth=AUTH,  # type: ignore[arg-type]
         files=files
     )
     # Handle error responses gracefully

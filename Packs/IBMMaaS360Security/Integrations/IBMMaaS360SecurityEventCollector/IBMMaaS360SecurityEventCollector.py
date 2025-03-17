@@ -442,8 +442,8 @@ def main() -> None:  # pragma: no cover
 
     first_fetch_time = int(time.time() * 1000)
     proxy = params.get('proxy', False)
-    max_login_reports_per_fetch = params.get('max_login_reports_per_fetch', DEFAULT_MAX_FETCH)
-    max_admin_change_audits_per_fetch = params.get('max_admin_change_audits_per_fetch ', DEFAULT_MAX_FETCH)
+    max_login_reports_per_fetch = arg_to_number(params.get('max_login_reports_per_fetch', DEFAULT_MAX_FETCH))
+    max_admin_change_audits_per_fetch = arg_to_number(params.get('max_admin_change_audits_per_fetch', DEFAULT_MAX_FETCH))
 
     max_events_per_fetch = {
         AuditEventType.ChangesAudit: max_admin_change_audits_per_fetch,

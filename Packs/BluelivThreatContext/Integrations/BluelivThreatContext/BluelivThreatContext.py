@@ -29,82 +29,83 @@ class Client(BaseClient):
         return res
 
     def get_threat_actor_info(self, threat_actor_id):
-        url = "threat-actor/{}".format(threat_actor_id)
+        url = f"threat-actor/{threat_actor_id}"
         result = self._query_gateway(url)
         return result
 
     def get_campaign_info(self, campaign_id: str):
-        url = "campaign/{}".format(campaign_id)
+        url = f"campaign/{campaign_id}"
         result = self._query_gateway(url)
         return result
 
     def get_malware_hash_info(self, file_hash, hash_type="md5"):
-        url = "malware/?dork={}%3A%22{}%22".format(hash_type, file_hash)
+        url = f"malware/?dork={hash_type}%3A%22{file_hash}%22"
         result = self._query_gateway(url)
         return result
 
     def get_malware_info(self, malware_id):
-        url = "malware/{}".format(malware_id)
+        url = f"malware/{malware_id}"
         result = self._query_gateway(url)
         return result
 
     def get_ip_info(self, ip_id):
-        url = "ip/{}".format(ip_id)
+        url = f"ip/{ip_id}"
         result = self._query_gateway(url)
         return result
 
     def get_fqdn_info(self, fqdn_id):
-        url = "fqdn/{}".format(fqdn_id)
+        url = f"fqdn/{fqdn_id}"
         result = self._query_gateway(url)
         return result
 
     def get_crime_server_info(self, cs_id):
-        url = "crime-server/{}".format(cs_id)
+        url = f"crime-server/{cs_id}"
         result = self._query_gateway(url)
         return result
 
     def get_attack_pattern_info(self, attack_pattern_id):
-        url = "attack-pattern/{}".format(attack_pattern_id)
+        url = f"attack-pattern/{attack_pattern_id}"
         result = self._query_gateway(url)
         return result
 
     def get_tool_info(self, tool_id):
-        url = "tool/{}".format(tool_id)
+        url = f"tool/{tool_id}"
         result = self._query_gateway(url)
         return result
 
     def get_signature_info(self, signature_id):
-        url = "signature/{}".format(signature_id)
+        url = f"signature/{signature_id}"
         result = self._query_gateway(url)
         return result
 
     def get_cve_info(self, cve_id):
-        url = "cve/{}".format(cve_id)
+        url = f"cve/{cve_id}"
         result = self._query_gateway(url)
         return result
 
     def search_by_name(self, key, value):
+        url = ""
         if value:
             value = value.replace(' ', '+')
         else:
             value = ""
 
         if key in SEARCHABLE_BY_NAME:
-            url = "{}/?fuzzy_filter%5Bname%5D={}".format(key, value)
+            url = f"{key}/?fuzzy_filter%5Bname%5D={value}"
         if key in SEARCHABLE_BY_HASH:
-            url = "indicator/?fuzzy_filter%5Bvalue%5D={}".format(value)
+            url = f"indicator/?fuzzy_filter%5Bvalue%5D={value}"
         if key == 'crime-server':
-            url = "crime-server/?fuzzy_filter%5Bcrime_server_url%5D={}".format(value)
+            url = f"crime-server/?fuzzy_filter%5Bcrime_server_url%5D={value}"
         if key == 'fqdn':
-            url = "fqdn/?fuzzy_filter%5Bdomain%5D={}".format(value)
+            url = f"fqdn/?fuzzy_filter%5Bdomain%5D={value}"
         if key == 'ip':
-            url = "ip/?fuzzy_filter%5Baddress%5D={}".format(value)
+            url = f"ip/?fuzzy_filter%5Baddress%5D={value}"
 
         result = self._query_gateway(url)
         return result.get("data", [])[0].get("id", "0")
 
     def get_relationships(self, object_name, value, of):
-        url = "{}/{}/relationships/{}/".format(object_name, value, of)
+        url = f"{object_name}/{value}/relationships/{of}/"
         result = self._query_gateway(url)
         ids = ""
         if result != "error":
@@ -371,7 +372,11 @@ def blueliv_malware(client: Client, args):
         elif len(hashValue) == 32:
             hash_type = 'md5'
         else:
+            hash_type = ""
             notFound()
+    else:
+        hash_type = ""
+        demisto.debug(f"No hashValue -> {hash_type=}")
 
     if not malwareId:
         result = client.get_malware_hash_info(hashValue, hash_type)

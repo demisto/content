@@ -2,7 +2,7 @@
     "name": "Google Cloud Compute",
     "description": "Google Compute Engine delivers virtual machines running in Google's innovative data centers and worldwide fiber network. Compute Engine's tooling and workflow support enable scaling from single instances to global, load-balanced cloud computing.",
     "support": "xsoar",
-    "currentVersion": "1.1.14",
+    "currentVersion": "1.1.16",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

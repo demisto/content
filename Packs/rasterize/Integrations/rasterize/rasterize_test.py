@@ -218,7 +218,7 @@ TEST_DATA = [
 def test_convert_pdf_to_jpeg(file_path, max_pages, expected_length, pw):
     res = convert_pdf_to_jpeg(file_path, max_pages, pw)
 
-    assert type(res) == list
+    assert type(res) is list
     assert len(res) == expected_length
 
 
@@ -607,7 +607,7 @@ def test_get_chrome_browser_error(mocker: MockerFixture):
 
     def raise_connection_error(url):
         raise requests.exceptions.ConnectionError('connection error')
-
+    mocker.patch.object(rasterize, 'count_running_chromes', return_value=1)
     mocker.patch('pychrome.Browser', side_effect=raise_connection_error)
     mocker.patch('time.sleep')
     debug = mocker.patch.object(demisto, 'debug')
@@ -616,7 +616,7 @@ def test_get_chrome_browser_error(mocker: MockerFixture):
 
     assert res is None
     debug.assert_called_with(
-        "Failed to connect to Chrome on port port on iteration 3. ConnectionError,"
+        "Failed to connect to Chrome on port port on iteration 4. ConnectionError,"
         " exp_str='connection error', exp=ConnectionError('connection error')")
 
 
@@ -780,7 +780,7 @@ def test_rasterize_mailto(capfd, mocker):
 
     assert mocker_output.call_args.args[0].readable_output == 'URLs that start with "mailto:" cannot be rasterized.' \
                                                               '\nURL: [\'mailto:some.person@gmail.com\']'
-    assert excinfo.type == SystemExit
+    assert excinfo.type is SystemExit
     assert excinfo.value.code == 0
 
 

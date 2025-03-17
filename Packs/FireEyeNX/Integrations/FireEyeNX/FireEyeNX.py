@@ -576,7 +576,7 @@ def validate_fetch_type(fetch_type):
     :param fetch_type: A list contain types which user want to fetch.
     :return:
     """
-    if type(fetch_type) == list:
+    if type(fetch_type) is list:
         if len(fetch_type) == 0:
             raise ValueError(MESSAGES['INVALID_FETCH_TYPE'])
 
@@ -1236,7 +1236,6 @@ def get_artifacts_by_alert_command(
 
     # Preparing header
     headers = {
-        'Content-Type': CONTENT_TYPE_ZIP,
         'X-FeApi-Token': client.get_api_token(),
     }
 

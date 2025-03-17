@@ -52,7 +52,7 @@ def get_user(query):
 
 def get_user_id(user_name):
     user_name = user_name.split(' ')
-    query = 'first_name={}^last_name={}'.format(user_name[0], user_name[1])
+    query = f'first_name={user_name[0]}^last_name={user_name[1]}'
 
     user = get_user(query)
 
@@ -112,6 +112,9 @@ def main():
         query = 'number=' + incident_number
     elif user_id:
         query = 'assigned_to=' + user_id
+    else:
+        query = ""
+        demisto.debug(f"No incident_id,incident_number or user_id. {query=}")
 
     command_args['query'] = query
 
@@ -133,8 +136,8 @@ def main():
                 records = record_data['result']
                 # Map fields according to fields_to_map that were defined earlier
                 mapped_records = [
-                    dict((fields_to_map[key], value) for (key, value) in
-                         list([k_v for k_v in list(r.items()) if k_v[0] in list(fields_to_map.keys())]))
+                    {fields_to_map[key]: value for (key, value) in
+                     [k_v for k_v in list(r.items()) if k_v[0] in list(fields_to_map.keys())]}
                     for r in records
                 ]
 

@@ -4,7 +4,7 @@ import json
 from datetime import datetime, date
 from AWSApiModule import *  # noqa: E402
 from collections import defaultdict
-from typing import TYPE_CHECKING, Tuple
+from typing import TYPE_CHECKING
 
 # The following import are used only for type hints and autocomplete.
 # It is not used at runtime, and not exist in the docker image.
@@ -48,7 +48,7 @@ def create_detector(client: "GuardDutyClient", args: dict) -> CommandResults:
 
     if args.get('findingFrequency'):
         kwargs['FindingPublishingFrequency'] = FINDING_FREQUENCY[args['findingFrequency']]
-    get_dataSources = dict()
+    get_dataSources = {}
     if args.get('enableKubernetesLogs'):
         get_dataSources.update(
             {'Kubernetes': {'AuditLogs': {'Enable': argToBoolean(args['enableKubernetesLogs'])}}})
@@ -73,7 +73,7 @@ def create_detector(client: "GuardDutyClient", args: dict) -> CommandResults:
 
 def delete_detector(client: "GuardDutyClient", args: dict):
     response = client.delete_detector(DetectorId=args.get('detectorId', ''))
-    if response == dict() or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
+    if response == {} or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
         return f"The Detector {args.get('detectorId')} has been deleted"
     else:
         raise Exception(f"The Detector {args.get('detectorId')} failed to delete.")
@@ -118,7 +118,7 @@ def update_detector(client: "GuardDutyClient", args: dict) -> str:
 
     if args.get('findingFrequency'):
         kwargs['FindingPublishingFrequency'] = FINDING_FREQUENCY[args['findingFrequency']]
-    get_dataSources = dict()
+    get_dataSources = {}
     if args.get('enableKubernetesLogs'):
         get_dataSources.update(
             {'Kubernetes': {'AuditLogs': {'Enable': argToBoolean(args['enableKubernetesLogs'])}}})
@@ -131,7 +131,7 @@ def update_detector(client: "GuardDutyClient", args: dict) -> str:
         kwargs['DataSources'] = get_dataSources
 
     response = client.update_detector(**kwargs)
-    if response == dict() or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
+    if response == {} or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
         return f"The Detector {args.get('detectorId')} has been updated successfully"
     else:
         raise Exception(f"Detector {args.get('detectorId')} failed to update. Response was: {response}")
@@ -167,7 +167,7 @@ def list_detectors(client: "GuardDutyClient", args: dict) -> CommandResults:
 def create_ip_set(client: "GuardDutyClient", args: dict):
     kwargs: dict[str, Any] = {'DetectorId': args.get('detectorId')}
     if args.get('activate') is not None:
-        kwargs.update({'Activate': True if args.get('activate') == 'True' else False})
+        kwargs.update({'Activate': args.get('activate') == 'True'})
     if args.get('format') is not None:
         kwargs.update({'Format': args.get('format')})
     if args.get('location') is not None:
@@ -193,7 +193,7 @@ def delete_ip_set(client: "GuardDutyClient", args: dict):
         DetectorId=args.get('detectorId', ''),
         IpSetId=args.get('ipSetId', '')
     )
-    if response == dict() or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
+    if response == {} or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
         return f"The IPSet {args.get('ipSetId')} has been deleted from Detector {args.get('detectorId')}"
 
     else:
@@ -206,7 +206,7 @@ def update_ip_set(client: "GuardDutyClient", args: dict):
         'IpSetId': args.get('ipSetId')
     }
     if args.get('activate'):
-        kwargs.update({'Activate': True if args.get('activate') == 'True' else False})
+        kwargs.update({'Activate': args.get('activate') == 'True'})
     if args.get('location'):
         kwargs.update({'Location': args.get('location')})
     if args.get('name'):
@@ -214,7 +214,7 @@ def update_ip_set(client: "GuardDutyClient", args: dict):
 
     response = client.update_ip_set(**kwargs)
 
-    if response == dict() or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
+    if response == {} or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
         return f"The IPSet {args.get('ipSetId')} has been Updated"
 
     else:
@@ -269,7 +269,7 @@ def list_ip_sets(client: "GuardDutyClient", args: dict) -> CommandResults:
 def create_threat_intel_set(client: "GuardDutyClient", args: dict):
     kwargs: dict[str, Any] = {'DetectorId': args.get('detectorId')}
     if args.get('activate') is not None:
-        kwargs.update({'Activate': True if args.get('activate') == 'True' else False})
+        kwargs.update({'Activate': args.get('activate') == 'True'})
     if args.get('format') is not None:
         kwargs.update({'Format': args.get('format')})
     if args.get('location') is not None:
@@ -296,7 +296,7 @@ def delete_threat_intel_set(client: "GuardDutyClient", args: dict):
         DetectorId=args.get('detectorId', ''),
         ThreatIntelSetId=args.get('threatIntelSetId', '')
     )
-    if response == dict() or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
+    if response == {} or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
         return f"The ThreatIntel Set {args.get('threatIntelSetId')} has been deleted from Detector {args.get('detectorId')}"
     else:
         raise Exception(f"Failed to delete ThreatIntel set {args.get('threatIntelSetId')} . Response was: {response}")
@@ -357,14 +357,14 @@ def update_threat_intel_set(client: "GuardDutyClient", args: dict):
         'ThreatIntelSetId': args.get('threatIntelSetId')
     }
     if args.get('activate'):
-        kwargs.update({'Activate': True if args.get('activate') == 'True' else False})
+        kwargs.update({'Activate': args.get('activate') == 'True'})
     if args.get('location'):
         kwargs.update({'Location': args.get('location')})
     if args.get('name'):
         kwargs.update({'Name': args.get('name')})
     response = client.update_threat_intel_set(**kwargs)
 
-    if response == dict() or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
+    if response == {} or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
         return f"The ThreatIntel set {args.get('threatIntelSetId')} has been updated"
     else:
         raise Exception(f"Failed updating ThreatIntel set {args.get('threatIntelSetId')}. "
@@ -425,7 +425,7 @@ def list_findings(client: "GuardDutyClient", args: dict) -> CommandResults:
                           outputs_key_field='')
 
 
-def get_pagination_args(args: dict) -> Tuple[int, int, Optional[int]]:
+def get_pagination_args(args: dict) -> tuple[int, int, Optional[int]]:
     """
     Gets and validates pagination arguments.
     :param args: The command arguments (page, page_size or limit)
@@ -457,7 +457,7 @@ def parse_finding(finding: "FindingTypeDef") -> Dict[str, Any]:
     which is generated when abnormal or suspicious activity is detected.
     :return: parsed_finding
     """
-    parsed_finding: dict = dict()
+    parsed_finding: dict = {}
     parsed_finding['AccountId'] = finding.get('AccountId')
     parsed_finding['CreatedAt'] = finding.get('CreatedAt')
     parsed_finding['Description'] = finding.get('Description')
@@ -511,7 +511,7 @@ def get_findings(client: "GuardDutyClient", args: dict) -> dict:
 
 
 def parse_incident_from_finding(finding: "FindingTypeDef") -> Dict[str, Any]:
-    incident: dict = dict()
+    incident: dict = {}
     incident['name'] = finding.get('Title')
     incident['details'] = finding.get('Description')
     incident['occurred'] = finding.get('CreatedAt')
@@ -530,7 +530,7 @@ def time_to_unix_epoch(date_time: datetime) -> int:
 
 
 def fetch_incidents(client: "GuardDutyClient", aws_gd_severity: List[str], last_run: dict, fetch_limit: int,
-                    first_fetch_time: str, is_archive: bool) -> Tuple[Dict[str, Any], List[dict]]:
+                    first_fetch_time: str, is_archive: bool) -> tuple[Dict[str, Any], List[dict]]:
     """
     This function will execute each interval (default is 1 minute).
 
@@ -570,7 +570,7 @@ def fetch_incidents(client: "GuardDutyClient", aws_gd_severity: List[str], last_
     created_time_to_ids[latest_created_time] = last_incidents_ids
 
     # Represents the criteria to be used in the filter for querying findings.
-    criterion_conditions: Dict[str, "ConditionTypeDef"] = {}
+    criterion_conditions: Dict[str, ConditionTypeDef] = {}
     criterion_conditions['severity'] = {'Gte': gd_severity_mapping(aws_gd_severity)}
     if is_archive:
         demisto.debug('Fetching Amazon GuardDuty with Archive')
@@ -646,7 +646,7 @@ def create_sample_findings(client: "GuardDutyClient", args: dict):
 
     response = client.create_sample_findings(**kwargs)
 
-    if response == dict() or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
+    if response == {} or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
         return "Sample Findings were generated"
     else:
         raise Exception(f"Failed to generate findings. Response was: {response}")
@@ -659,7 +659,7 @@ def archive_findings(client: "GuardDutyClient", args: dict):
 
     response = client.archive_findings(**kwargs)
 
-    if response == dict() or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
+    if response == {} or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
         return "Findings were archived"
     else:
         raise Exception(f"Failed to archive findings. Response was: {response}")
@@ -672,7 +672,7 @@ def unarchive_findings(client: "GuardDutyClient", args: dict):
 
     response = client.unarchive_findings(**kwargs)
 
-    if response == dict() or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
+    if response == {} or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
         return "Findings were unarchived"
     else:
         raise Exception(f"Failed to archive findings. Response was: {response}")
@@ -688,7 +688,7 @@ def update_findings_feedback(client: "GuardDutyClient", args: dict):
         kwargs.update({'Feedback': argToList(args.get('feedback'))})
 
     response = client.update_findings_feedback(**kwargs)
-    if response == dict() or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
+    if response == {} or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
         return "Findings Feedback sent!"
     else:
         raise Exception(f"Failed to send findings feedback. Response was: {response}")
@@ -777,10 +777,10 @@ def main():  # pragma: no cover
                                timeout, retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url)
         args = demisto.args()
 
-        client: "GuardDutyClient" = aws_client.aws_session(service=SERVICE, region=args.get('region'),
-                                                           role_arn=args.get('roleArn'),
-                                                           role_session_name=args.get('roleSessionName'),
-                                                           role_session_duration=args.get('roleSessionDuration'))
+        client: GuardDutyClient = aws_client.aws_session(service=SERVICE, region=args.get('region'),
+                                                         role_arn=args.get('roleArn'),
+                                                         role_session_name=args.get('roleSessionName'),
+                                                         role_session_duration=args.get('roleSessionDuration'))
 
         # The command demisto.command() holds the command sent from the user.
         if demisto.command() == 'test-module':

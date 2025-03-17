@@ -134,7 +134,7 @@ class Table:
                     vals = temp_row.get(key)
                     if vals is None:
                         temp_row[key] = cols[0]
-                    elif type(vals) == list:
+                    elif type(vals) is list:
                         temp_row[key] = vals + [cols[0]]
                     else:
                         temp_row[key] = [vals, cols[0]]
@@ -152,7 +152,7 @@ class Table:
                 vals = temp_row.get(key)
                 if vals is None:
                     temp_row[key] = cols[1]
-                elif type(vals) == list:
+                elif type(vals) is list:
                     temp_row[key] = vals + [cols[1]]
                 else:
                     temp_row[key] = [vals, cols[1]]
@@ -166,7 +166,7 @@ class Table:
         if temp_row:
             rows.append(temp_row)
 
-        if len(rows) == 1 and type(rows[0]) == dict:
+        if len(rows) == 1 and type(rows[0]) is dict:
             return rows[0]
         return rows
 

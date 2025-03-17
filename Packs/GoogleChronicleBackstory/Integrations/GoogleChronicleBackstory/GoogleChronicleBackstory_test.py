@@ -5427,7 +5427,7 @@ def test_gcb_verify_value_in_reference_list_command_success(client):
         ]
         with mock.patch('GoogleChronicleBackstory.return_warning') as mock_return:
             hr, ec, data = gcb_verify_value_in_reference_list_command(client, args)
-            assert 'The following Reference lists were not found: list3' == mock_return.call_args[0][0]
+            assert mock_return.call_args[0][0] == 'The following Reference lists were not found: list3'
         assert data == response
         assert ec == expected_ec
         assert hr == expected_hr

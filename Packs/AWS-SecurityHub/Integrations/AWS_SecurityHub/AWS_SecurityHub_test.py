@@ -320,7 +320,7 @@ def test_list_members_command(mocker):
     _, _, response = list_members_command(client, {})
     time_val_iso_format = time_val.isoformat()
     assert response == {'Members': [{'UpdatedAt': time_val_iso_format, 'InvitedAt': time_val_iso_format}]}
-    assert type(response['Members'][0]['UpdatedAt']) == str
+    assert type(response['Members'][0]['UpdatedAt']) is str
 
 
 severity_list = [('LOW', 1),

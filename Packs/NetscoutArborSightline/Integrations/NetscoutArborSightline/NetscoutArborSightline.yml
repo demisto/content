@@ -285,7 +285,7 @@ script:
       description: The ID of the alert.
       type: String
     - contextPath: NASightline.Alert.importance
-      description: 'Importance of the alert. One of the following 2: high, 1: medium, 0: low'
+      description: 'Importance of the alert. One of the following 2: high, 1: medium, 0: low.'
       type: Number
     - contextPath: NASightline.Alert.ongoing
       description: Whether the alert is currently active.
@@ -300,7 +300,7 @@ script:
       description: Type of the returned object.
       type: String
     - contextPath: NASightline.Alert.classification
-      description: 'Classification of the alert. One of the following: False Positive, Flash Crowd, Network Failure, Possible Attack, Trivial, Verified Attack '
+      description: 'Classification of the alert. One of the following: False Positive, Flash Crowd, Network Failure, Possible Attack, Trivial, Verified Attack.'
       type: String
     - contextPath: NASightline.Alert.stop_time
       description: Date and time at which the alert activity was no longer detected.
@@ -542,7 +542,7 @@ script:
       description: 'The router license type: core, edge, or unset. For more information, see “Configuring Routers” in the Sightline and TMS User Guide.'
       type: String
     - contextPath: NASightline.Router.name
-      description: Router name
+      description: Router name.
       type: String
     - contextPath: NASightline.Router.snmp_authprotocol
       description: 'SNMP v3 authentication protocol. One of the following: md5, sha, sha-224, sha-256, sha-384, sha-512.'
@@ -777,7 +777,7 @@ script:
       type: String
     description: Get a list of available TMS groups.
     name: na-sightline-tms-group-list
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.11.10.116949
   isfetch: true
   runonce: false
   script: '-'

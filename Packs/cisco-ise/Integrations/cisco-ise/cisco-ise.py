@@ -151,8 +151,7 @@ def get_endpoint_id(mac_address=None):
     Returns endpoint id by specific mac address
     """
 
-    if mac_address is not None:
-        api_endpoint = f'/ers/config/endpoint?filter=mac.EQ.{mac_address}'
+    api_endpoint = f'/ers/config/endpoint?filter=mac.EQ.{mac_address}' if mac_address is not None else ""
     return http_request('GET', api_endpoint, '')
 
 
@@ -479,7 +478,7 @@ def update_endpoint_group_command():
             # Create result
             msg = "Endpoint " + endpoint_id + " updated successfully"
         else:
-            "Update failed for endpoint " + endpoint_id + ", got the following response: " + update_result.get(
+            msg = "Update failed for endpoint " + endpoint_id + ", got the following response: " + update_result.get(
                 'ERSResponse', {}).get('messages', [])
 
     except Exception as e:
@@ -558,8 +557,7 @@ def get_policy():
     if not policy_name:
         return_error('Please enter either policy name or policy id')
 
-    if policy_name:
-        policy_data = get_policy_by_name(policy_name).get('ErsAncPolicy', {})
+    policy_data = get_policy_by_name(policy_name).get('ErsAncPolicy', {}) if policy_name else None
 
     if policy_data:
         data.append({
@@ -709,6 +707,7 @@ def get_blacklist_endpoints_request():
     blacklist = get_blacklist_group_id().get('SearchResult', {})
 
     resources = blacklist.get('resources', [])
+    blacklist_id = {}
     if resources:
         blacklist_id = resources[0]
     else:

@@ -28,6 +28,7 @@ configuration:
   display: Fetch events query
   name: fetchQuery
   type: 0
+  section: Collect
   required: false
 - defaultvalue: '50'
   display: Fetch Limit (Max.- 200, Recommended less than 50)
@@ -69,7 +70,7 @@ configuration:
   advanced: true
   required: false
   additionalinfo: Whether to replace special characters to underscore when parsing the raw data of the Notables, or not.
-- display: Timezone of the Splunk server, in minutes. For example, if GMT is gmt +3, set timezone to +180. For UTC, set the timezone to 0. This is relevant only for fetching and mirroring notable events. It must be specified when mirroring is enabled.
+- display: Timezone of the Splunk server, in minutes. For example, if GMT is gmt +3, set timezone to +180. For UTC, set the timezone to 0. When the Splunk server and the integration instance are on the same timezone, set the timezone to 0. This is relevant only for fetching and mirroring notable events. It must be specified when mirroring is enabled.
   name: timezone
   type: 0
   section: Collect
@@ -295,12 +296,14 @@ configuration:
   name: comment_tag_from_splunk
   defaultvalue: FROM SPLUNK
   type: 0
+  section: Collect
   required: false
   additionalinfo: Add this tag to an entry to mirror it as a comment from Splunk.
 - display: Comment tag to Splunk
   name: comment_tag_to_splunk
   defaultvalue: FROM XSOAR
   type: 0
+  section: Collect
   required: false
   additionalinfo: Add this tag to an entry to mirror it as a comment to Splunk.
 description: Runs queries on Splunk servers.
@@ -677,7 +680,7 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: Splunk user mapping.
       type: String
-  dockerimage: demisto/splunksdk-py3:1.0.0.115556
+  dockerimage: demisto/splunksdk-py3:1.0.0.2074112
   isfetch: true
   ismappable: true
   isremotesyncin: true

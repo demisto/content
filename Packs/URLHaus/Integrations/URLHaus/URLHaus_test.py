@@ -1,6 +1,5 @@
 import json
 import pytest
-import io
 from CommonServerPython import Common
 from typing import *
 
@@ -14,7 +13,7 @@ params = {
 
 
 def util_load_json(path: str) -> Any:
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -521,3 +520,27 @@ def test_file_create_relationships(create_relationships: bool, max_num_relations
     assert len(results) == len(excepted_output)
     for i in range(len(results)):
         assert results[i].to_context() == excepted_output[i]
+
+
+def test_unsupported_file_return_error(mocker):
+    from URLHaus import run_file_command
+    params = {
+        'should_error': True
+    }
+    hash = '11111111'
+    mock_return_error = mocker.patch('URLHaus.return_error', side_effect=Exception())
+    with pytest.raises(Exception):
+        run_file_command(hash, params)
+    mock_return_error.assert_called_once_with('Only accepting MD5 (32 bytes) or SHA256 (64 bytes) hash types')
+
+
+def test_unsupported_file_return_warning(mocker):
+    from URLHaus import run_file_command
+    params = {
+        'should_error': False
+    }
+    hash = '11111111'
+    mock_return_warning = mocker.patch('URLHaus.return_warning', side_effect=Exception())
+    with pytest.raises(Exception):
+        run_file_command(hash, params)
+    mock_return_warning.assert_called_once_with('Only accepting MD5 (32 bytes) or SHA256 (64 bytes) hash types', exit=True)

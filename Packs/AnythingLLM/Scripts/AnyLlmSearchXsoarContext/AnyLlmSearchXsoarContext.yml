@@ -1,0 +1,28 @@
+args:
+- description: CSV list of incident IDs to search for text.
+  name: ids
+  required: true
+- description: 'CSV list of context key names to search using JSON dot notation. Example:  "File.0.Name".'
+  name: keys
+  required: true
+comment: Search incident context keys for text results.  Results are placed in the search results buffer for where they can be added to the LLM's conversation context.
+commonfields:
+  id: AnyLlmSearchXsoarContext
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.11.10.116949
+enabled: true
+engineinfo: {}
+name: AnyLlmSearchXsoarContext
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

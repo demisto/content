@@ -52,7 +52,7 @@ script:
       description: The file name to download from the FTP server.
     description: Download file from FTP server.
     name: ftp-get
-  dockerimage: demisto/python3:3.10.14.96411
+  dockerimage: demisto/python3:3.12.8.1983910
   runonce: false
   script: ''
   subtype: python3

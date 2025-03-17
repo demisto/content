@@ -10,7 +10,7 @@ This pack includes XSIAM content.
     - *WID Connectivity*    
     - *WSUS Services*
 
-   ![Server Screenshot](https://raw.githubusercontent.com/demisto/content/cf0db92559e011d96f94ef21912f316f4b250b36/Packs/MicrosoftWSUS/doc_imgs/WSUS.png)
+   ![Server Screenshot](doc_files/WSUS.png)
 ## Collect Events from Vendor
 In order to use the collector, you need to use the following option to collect events from the vendor:
 - [XDRC (XDR Collector)](#xdrc-xdr-collector)

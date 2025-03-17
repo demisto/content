@@ -1,9 +1,9 @@
 import json
-import io
 import pytest
 
+
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -34,22 +34,22 @@ def test_list_command(mocker):
 @pytest.mark.parametrize(
     "args, res",
     [
-        ({'id': '1111', 'all_fields': 'TRUE'},{'id': 11111111, 'isActive': True, 'tech_BD_Assigned_for_XSOAR__cf': 'Edi',
-                                               'mailingCity': 'Palo Alto', 'mailingCountry': 'United States',
-                                               'mailingPostalCode': '11111', 'mailingState': 'California',
-                                               'mailingStreet': '236 test Ave', 'name': 'test_account',
-                                               'recordLink': 'https://prod.impartner.live/load/ACT/11111111',
-                                               'website': 'https://www.test-account.ai/', 'mainProductToIntegrate': 'test',
-                                               'mutualCustomer': 'test', 'tpA_Product_s__cf': 'test',
-                                               'integration_Status__cf': 'Integration Approved',
-                                               'target_customers__cf': ['Large Enterprise', 'SMB', 'SME'],
-                                               'company_Main_Market_Segment__cf': ['Automation Orchestration & SOC tools',
-                                                                                   'Data Security Governance & Classification'],
-                                               'panW_Integration_Product__cf': ['test'],
-                                               'account_Integration_Status__cf': ['Integrations in Process'],
-                                               'accountTimeline': '2022-06-30T00:00:00'}),
-        ({'id': '1111', 'all_fields': 'FALSE'},{'tech_BD_Assigned_for_XSOAR__cf': 'Edi', 'id': 11111111,
-                                                'link': 'https://prod.impartner.live/load/ACT/11111111', 'name': 'test_account'})
+        ({'id': '1111', 'all_fields': 'TRUE'}, {'id': 11111111, 'isActive': True, 'tech_BD_Assigned_for_XSOAR__cf': 'Edi',
+                                                'mailingCity': 'Palo Alto', 'mailingCountry': 'United States',
+                                                'mailingPostalCode': '11111', 'mailingState': 'California',
+                                                'mailingStreet': '236 test Ave', 'name': 'test_account',
+                                                'recordLink': 'https://prod.impartner.live/load/ACT/11111111',
+                                                'website': 'https://www.test-account.ai/', 'mainProductToIntegrate': 'test',
+                                                'mutualCustomer': 'test', 'tpA_Product_s__cf': 'test',
+                                                'integration_Status__cf': 'Integration Approved',
+                                                'target_customers__cf': ['Large Enterprise', 'SMB', 'SME'],
+                                                'company_Main_Market_Segment__cf': ['Automation Orchestration & SOC tools',
+                                                                                    'Data Security Governance & Classification'],
+                                                'panW_Integration_Product__cf': ['test'],
+                                                'account_Integration_Status__cf': ['Integrations in Process'],
+                                                'accountTimeline': '2022-06-30T00:00:00'}),
+        ({'id': '1111', 'all_fields': 'FALSE'}, {'tech_BD_Assigned_for_XSOAR__cf': 'Edi', 'id': 11111111,
+                                                 'link': 'https://prod.impartner.live/load/ACT/11111111', 'name': 'test_account'})
     ]
 )
 def test_id_command(mocker, args, res):

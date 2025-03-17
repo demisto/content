@@ -102,7 +102,7 @@ configuration:
   name: incidentFetchInterval
   type: 19
   required: false
-description: CRM Services
+description: CRM Services.
 display: Salesforce v2
 name: SalesforceV2
 script:
@@ -256,7 +256,7 @@ script:
   - arguments:
     - description: The object path. For example, "Case/5000Y000001EjzRQAS" for Object "Case" with ID "5000Y000001EjzRQAS".
       name: path
-    - description: Object ID (in case no path is given). For example, 5000Y000001EjzRQAS
+    - description: Object ID (in case no path is given). For example, 5000Y000001EjzRQAS.
       name: oid
     description: Returns an object by its path.
     name: salesforce-get-object
@@ -856,7 +856,7 @@ script:
       name: oid
     - description: The case number.
       name: caseNumber
-    description: Close a case
+    description: Close a case.
     important:
     - contextPath: SalesForceV2.Case.Status
       description: Case Status. Will be 'Closed'.
@@ -1053,7 +1053,7 @@ script:
     - name: incident_changed
       description: Boolean that is telling us if the local incident indeed changed or not.
     - name: remote_incident_id
-      description: the remote incident id
+      description: the remote incident id.
     description: Available from Cortex XSOAR version 6.1.0. This command pushes local changes to the remote system.
     name: update-remote-system
   - arguments: []
@@ -1083,7 +1083,7 @@ script:
       name: caseNumber
     description: Retrieve a case file by file ID.
     name: salesforce-get-case-file-by-id
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.11.10.116949
   isfetch: true
   ismappable: true
   isremotesyncin: true

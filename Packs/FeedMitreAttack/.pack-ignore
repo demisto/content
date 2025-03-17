@@ -15,3 +15,6 @@ ignore=IM111
 
 [file:reputation-mitreAttck.json]
 ignore=GR107
+
+[file:MitreIDLayoutDynamicSection.yml]
+ignore=BA124

@@ -4,7 +4,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.11.10.116439
+dockerimage: demisto/python3:3.11.10.116949
 enabled: true
 name: UnitTestPBATaskAvg
 comment: ''

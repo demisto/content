@@ -1,0 +1,24 @@
+{
+  "trigger_id": "5a18cefb3601f01ef4201962af6ae475",
+  "playbook_id": "Office process creates a scheduled task via file access",
+  "suggestion_reason": "Recommended for the 'Office process creates a scheduled task via file access' alert",
+  "description": "This trigger is responsible for handling 'Office process creates a scheduled task via file access' alerts",
+  "trigger_name": "Office process creates a scheduled task via file access",
+  "fromVersion": "8.8.0",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+            "SEARCH_FIELD": "alert_name",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "Office process creates a scheduled task via file access"
+        },
+      {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "NEQ",
+            "SEARCH_VALUE": "Correlation"
+      }
+      ]
+    }
+  }
+}

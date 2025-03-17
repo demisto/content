@@ -102,7 +102,7 @@ script:
       description: Host IPv4 address.
       type: String
     - contextPath: CheckPoint.Host.ipv6-address
-      description: IP address
+      description: IP address.
       type: String
     - contextPath: CheckPoint.Host.read-only
       description: Indicates if the object is read-only.
@@ -1139,7 +1139,7 @@ script:
       description: Object types.
       type: String
   - arguments:
-    - description: Object name. Must be unique in the domain
+    - description: Object name. Must be unique in the domain.
       name: name
       required: true
     - description: Each application is assigned to one primary category based on its most defining aspect.
@@ -1657,11 +1657,11 @@ script:
       description: Type of objects to be created.
       name: object_type
       required: true
-    - description: ip addresses to be added
+    - description: ip addresses to be added.
       isArray: true
       name: ipaddress
       required: true
-    - description: names of the ip objects to be added
+    - description: names of the ip objects to be added.
       isArray: true
       name: name
       required: true
@@ -1708,7 +1708,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Shows an existing threat protection using object name or uid
+    description: Shows an existing threat protection using object name or uid.
     name: checkpoint-show-threat-protection
     outputs:
     - contextPath: CheckPoint.ShowThreatProtection
@@ -1722,7 +1722,7 @@ script:
       description: ''
     - name: order
       description: ''
-    description: Shows existing threat protections using a filter
+    description: Shows existing threat protections using a filter.
     name: checkpoint-show-threat-protections
     outputs:
     - contextPath: CheckPoint.ShowThreatProtections
@@ -1818,13 +1818,13 @@ script:
       - active
       - inactive
       - staging
-    description: Add a new threat profile
+    description: Add a new threat profile.
     name: checkpoint-add-threat-profile
     outputs:
     - contextPath: CheckPoint.AddedThreatProfiles
       description: ''
   - arguments:
-    - description: Valid response is "snort"
+    - description: Valid response is "snort".
       name: packageFormat
       required: true
     description: Deletes threat protections.
@@ -1832,7 +1832,7 @@ script:
     outputs:
     - contextPath: CheckPoint.DeletedThreatProtections
       description: ''
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.11.10.116949
   runonce: false
   script: ''
   subtype: python3

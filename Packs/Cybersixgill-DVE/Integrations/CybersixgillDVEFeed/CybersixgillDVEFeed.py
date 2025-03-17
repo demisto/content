@@ -122,7 +122,7 @@ def stix_to_indicator(stix_obj, tags: list = [], tlp_color: str | None = None):
             ext_id = ext_obj[0].get("external_id")
         event_obj = stix_obj.get("x_sixgill_info", {}).get("event", {})
         nvd_obj = stix_obj.get("x_sixgill_info", {}).get("nvd", {})
-        score_obj = stix_obj.get("x_sixgill_info", {}).get("score", {})
+        score_obj = stix_obj.get("x_sixgill_info", {}).get("rating", {})
         fields = create_fields(stix_obj, event_obj, nvd_obj, score_obj, ext_id)
         fields = get_description(fields)
         indicator["value"] = ext_id

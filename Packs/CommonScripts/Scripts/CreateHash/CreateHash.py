@@ -28,7 +28,7 @@ def create_hash(text, hashtype):
         h = hashlib.md5()  # nosec
         h.update(text.encode('utf-8'))
     else:
-        h = blake2b()
+        h = blake2b()  # type: ignore[assignment]
         h.update(text.encode('utf-8'))
 
     context = {

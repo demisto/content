@@ -2,7 +2,7 @@
     "name": "Cybereason",
     "description": "Endpoint detection and response to manage and query malops, connections and processes.",
     "support": "partner",
-    "currentVersion": "2.1.19",
+    "currentVersion": "2.1.21",
     "author": "Cybereason",
     "url": "https://nest.cybereason.com/",
     "email": "support@cybereason.com",

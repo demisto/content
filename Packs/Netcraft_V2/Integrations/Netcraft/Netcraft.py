@@ -961,7 +961,7 @@ def file_screenshot_get_command(args: dict, client: Client) -> dict | CommandRes
 
 
 def email_report_submit_command(args: dict, client: Client) -> CommandResults:
-
+    message = ''
     if from_message := args.get('message'):
         message = from_message
     if from_entry_id := args.get('entry_id'):

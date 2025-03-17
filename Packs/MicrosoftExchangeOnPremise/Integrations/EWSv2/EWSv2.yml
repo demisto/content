@@ -998,6 +998,13 @@ script:
       name: raw_message
     - description: The email address from which to send mail.
       name: from
+    - description: Whether to handle inline images in the HTML body. When set to 'True', inline images will be extracted from the HTML body and will be attached to the email as an inline attachment object.
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      defaultValue: 'True'
+      name: handle_inline_image
     description: Sends an email using EWS.
     name: send-mail
   - arguments:
@@ -1039,7 +1046,7 @@ script:
       name: from
     description: Replies to an email using EWS.
     name: reply-mail
-  dockerimage: demisto/py-ews:5.5.0.117527
+  dockerimage: demisto/py-ews:5.5.0.118073
   isfetch: true
   runonce: false
   script: '-'

@@ -14,7 +14,7 @@ import typing
 import urllib3
 
 from collections.abc import Callable, Mapping, MutableMapping
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, UTC
 from typing import Any, Generic, Literal, TypeAlias, TypeVar
 
 import dateutil.parser
@@ -164,7 +164,7 @@ def _construct_output(results: list, keys: list):
 
 
 def utcnow() -> datetime:
-    return datetime.now(tz=timezone.utc)
+    return datetime.now(tz=UTC)
 
 
 class Client(BaseClient):
@@ -530,6 +530,8 @@ class Client(BaseClient):
             url_suffix = "/api/data/threat_intelligence/SigmaSource/"
         elif source_type == "ioc":
             url_suffix = "/api/data/threat_intelligence/IOCSource/"
+        else:
+            url_suffix = ""
 
         return self._http_request(method="GET", url_suffix=url_suffix, params=data)
 
@@ -694,7 +696,7 @@ def _get_fetching_cursor(fetch_history: FetchHistory) -> datetime:
     return datetime.fromtimestamp(
         # minus 1sec to overlap with previous fetch and ensure to miss nothing
         fetch_history.last_fetch - 1,
-        tz=timezone.utc,
+        tz=UTC,
     )
 
 
@@ -756,7 +758,7 @@ def _incident_should_be_fetched(
             f"'{incident_id}' has been created before the given timestamp: "
             f"expected only {incident_type}s created after {fetching_cursor}, "
             f"get one created at "
-            f"{datetime.fromtimestamp(incident_timestamp, tz=timezone.utc)}"
+            f"{datetime.fromtimestamp(incident_timestamp, tz=UTC)}"
         )
         return False
 
@@ -1451,7 +1453,7 @@ def job_info(client, args):
 
 
 def find_previous_job(client, action, agent_id):
-    starttime = (datetime.now(timezone.utc) - timedelta(minutes=5)).strftime(
+    starttime = (datetime.now(UTC) - timedelta(minutes=5)).strftime(
         "%Y-%m-%d %H:%M"
     )
     args = {
@@ -2913,6 +2915,9 @@ class Telemetry:
                 hash_type = "sha1"
             elif len(binary_hash) == 32:
                 hash_type = "md5"
+            else:
+                hash_type = "unknown"
+                demisto.debug(f"{hash_type=}")
 
             self.params[f"hashes.{hash_type}"] = binary_hash
 

@@ -59,8 +59,7 @@ def create_blocks(message: str, entitlement: str, reply: str) -> list:
 def send_slack_message(entitlement, task, user_id, message):
     lifetime = '1 day'
     expiry_date = dateparser.parse('in ' + lifetime, settings={'TIMEZONE': 'UTC'})
-    if expiry_date:
-        expiry = datetime.strftime(expiry_date, DATE_FORMAT)
+    expiry = datetime.strftime(expiry_date, DATE_FORMAT) if expiry_date else None
 
     entitlement_string = f'{entitlement}@{demisto.investigation().get("id")}'
     if task:

@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 incident = demisto.incidents()
 cafbresult = incident[0].get("CustomFields", {}).get("cafbresultraw", {})
-if type(cafbresult) != dict:
+if type(cafbresult) is not dict:
     cafbresult = json.loads(cafbresult)
 total = len(cafbresult)
 non_compliant_count = (

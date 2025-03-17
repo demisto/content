@@ -1,0 +1,17 @@
+{
+    "Type": 1,
+    "ContentsFormat": "json",
+    "Contents": {
+        "id": "1730232813350"
+    },
+    "HumanReadable": "Message was sent successfully.",
+    "EntryContext": {
+        "MicrosoftTeams.Message": {
+            "ID": "1730232813350"
+        }
+    },
+    "IndicatorTimeline": [],
+    "IgnoreAutoExtract": false,
+    "Note": false,
+    "Relationships": []
+}

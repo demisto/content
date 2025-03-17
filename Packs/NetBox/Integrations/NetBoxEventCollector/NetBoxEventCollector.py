@@ -53,7 +53,7 @@ class Client(BaseClient):
         }
 
         while next_page and len(results) < limit:
-            full_url = next_page if type(next_page) == str else ""
+            full_url = next_page if type(next_page) is str else ""
             response = self.http_request(
                 url_suffix=url_suffix, full_url=full_url, params=params
             )

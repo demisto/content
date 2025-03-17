@@ -1,6 +1,6 @@
 [
   {
-    "id": "1",
+    "deviceUid": "1",
     "geoData": {
       "location": {
         "point": {
@@ -25,7 +25,7 @@
     }
   },
   {
-    "id": "2",
+    "deviceUid": "2",
     "geoData": {
       "location": {
         "point": {

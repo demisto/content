@@ -34,8 +34,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* PAN-OS - Block IP
 * Containment Plan - Clear User Sessions
+* PAN-OS - Block IP
 
 ### Integrations
 
@@ -45,17 +45,17 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
-* SetAndHandleEmpty
 * AnalyzeTimestampIntervals
+* SetAndHandleEmpty
 
 ### Commands
 
-* okta-get-user-factors
-* okta-expire-password
 * closeInvestigation
+* core-get-cloud-original-alerts
 * core-list-risky-users
 * ip
-* core-get-cloud-original-alerts
+* okta-expire-password
+* okta-get-user-factors
 
 ## Playbook Inputs
 

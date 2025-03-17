@@ -302,7 +302,7 @@ def test_alarm_to_incidents(mocker):
     ]
 
     def mock_fetch_alarams(since: str = None, start_time: str = None, end_time: str = None, raw: bool = False):
-        if type(start_time) == str:
+        if type(start_time) is str:
             start_time = datetime.strptime(start_time, McAfeeESMClient.demisto_format)
         all_alarms = [alarm for alarm in alarms if
                       datetime.strptime(alarm.get('triggeredDate'), McAfeeESMClient.demisto_format)

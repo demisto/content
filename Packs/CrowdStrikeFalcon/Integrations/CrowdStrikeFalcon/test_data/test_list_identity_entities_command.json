@@ -11,9 +11,9 @@
         "mock_responses": [{"entities":{"nodes":[{"isHuman":false,"isProgrammatic":false,"primaryDisplayName":"DC1ENV11ADC02",
         "riskFactors":[{"severity":"MEDIUM","type":"LDAPS_CHANNEL_BINDING"},{"severity":"NORMAL","type":"LDAP_SIGNING_DISABLED"},
         {"severity":"NORMAL","type":"SPOOLER_SERVICE_RUNNING"}],"riskScore":0.65,"riskScoreSeverity":"MEDIUM",
-        "secondaryDisplayName":"dc1env11adc02.env11.ferrum-techs.local"}],
+        "secondaryDisplayName":"dc1env11adc02.env11.john-doe.local"}],
         "pageInfo":{"endCursor":"eyJfaWQiOiIwYjI2MmYzMS04YmU2LTRiMTYtOGRiMS1mZjA1NTRlNGJmMTIifQ==","hasNextPage":true}}}],
-        "expected_hr": "### Identity entities\n|Primary Display Name|Secondary Display Name|Is Human|Is Programmatic|Risk Score|Risk Score Severity|Risk Factors|\n|---|---|---|---|---|---|---|\n| DC1ENV11ADC02 | dc1env11adc02.env11.ferrum-techs.local | false | false | 0.65 | MEDIUM | {'severity': 'MEDIUM', 'type': 'LDAPS_CHANNEL_BINDING'},<br>{'severity': 'NORMAL', 'type': 'LDAP_SIGNING_DISABLED'},<br>{'severity': 'NORMAL', 'type': 'SPOOLER_SERVICE_RUNNING'} |\n",
+        "expected_hr": "### Identity entities\n|Primary Display Name|Secondary Display Name|Is Human|Is Programmatic|Risk Score|Risk Score Severity|Risk Factors|\n|---|---|---|---|---|---|---|\n| DC1ENV11ADC02 | dc1env11adc02.env11.john-doe.local | false | false | 0.65 | MEDIUM | {'severity': 'MEDIUM', 'type': 'LDAPS_CHANNEL_BINDING'},<br>{'severity': 'NORMAL', 'type': 'LDAP_SIGNING_DISABLED'},<br>{'severity': 'NORMAL', 'type': 'SPOOLER_SERVICE_RUNNING'} |\n",
         "expected_ec": [
             {
               "Ishuman": false,
@@ -35,7 +35,7 @@
               ],
               "Riskscore": 0.65,
               "Riskscoreseverity": "MEDIUM",
-              "Secondarydisplayname": "dc1env11adc02.env11.ferrum-techs.local"
+              "Secondarydisplayname": "dc1env11adc02.env11.john-doe.local"
             }
         ],
         "expected_res_len": 1

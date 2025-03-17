@@ -24,7 +24,7 @@ function whereFieldEquals() {
         if (typeof dictItem === 'object' && dictItem[field] === equalTo) {
             if (getField) {
                 const value = dictItem[getField];
-                if (value) {
+                if (value !== undefined) {
                     foundMatches.push(value);
                 }
             } else {

@@ -28,7 +28,7 @@ class MockResponse:
 def mocked_requests_post(*args, **kwargs):
     file_name = kwargs.get('headers', {}).get('filename', '')
     try:
-        if type(file_name) == str:
+        if type(file_name) is str:
             file_name.encode('latin-1')
         else:
             file_name.decode('latin-1')

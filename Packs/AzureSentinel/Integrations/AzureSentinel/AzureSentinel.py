@@ -1063,6 +1063,38 @@ def update_incident_command(client: AzureSentinelClient, args: Dict[str, Any]):
     )
 
 
+def create_incident_command(client: AzureSentinelClient, args: Dict[str, Any]):
+    inc_id = uuid.uuid4()
+    inc_data = {
+        'properties': {
+            "severity": args.get('severity'),
+            "status": args.get('status'),
+            "title": args.get('title'),
+            "description": args.get('description'),
+            "labels": argToList(args.get('labels', '')),
+        }
+    }
+    remove_nulls_from_dictionary(inc_data['properties'])
+
+    url_suffix = f'incidents/{inc_id}'
+    result = client.http_request('PUT', url_suffix, data=inc_data)
+    incident = incident_data_to_xsoar_format(result)
+    readable_output = tableToMarkdown(
+        f'Created incident {inc_id} details',
+        incident,
+        headers=INCIDENT_HEADERS,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureSentinel.Incident',
+        outputs=incident,
+        outputs_key_field='ID',
+        raw_response=result,
+    )
+
+
 def delete_incident_command(client, args):
     inc_id = args.get('incident_id')
     url_suffix = f'incidents/{inc_id}'
@@ -1782,7 +1814,7 @@ def list_alert_rule_command(client: AzureSentinelClient, args: Dict[str, Any]) -
 
     url_suffix = 'alertRules' + (f'/{rule_id}' if rule_id else '')
 
-    raw_results = []
+    raw_results: list = []
     next_link = True
     while next_link:
         full_url = next_link if isinstance(next_link, str) else None
@@ -1824,7 +1856,7 @@ def list_alert_rule_template_command(client: AzureSentinelClient, args: Dict[str
 
     url_suffix = 'alertRuleTemplates' + (f'/{template_id}' if template_id else '')
 
-    raw_results = []
+    raw_results: list = []
     next_link = True
     while next_link:
         full_url = next_link if isinstance(next_link, str) else None
@@ -2052,6 +2084,7 @@ def main():
             'azure-sentinel-get-incident-by-id': get_incident_by_id_command,
             'azure-sentinel-list-incidents': list_incidents_command,
             'azure-sentinel-update-incident': update_incident_command,
+            'azure-sentinel-create-incident': create_incident_command,
             'azure-sentinel-delete-incident': delete_incident_command,
             'azure-sentinel-list-incident-comments': list_incident_comments_command,
             'azure-sentinel-incident-add-comment': incident_add_comment_command,

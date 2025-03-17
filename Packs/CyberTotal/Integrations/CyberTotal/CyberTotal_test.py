@@ -54,8 +54,8 @@ def test_ip(requests_mock):
     # This command also returns Common.IP data
     assert isinstance(response.indicator, Common.IP)
     assert response.indicator.ip == ip_to_check
-    assert type(response.indicator.detection_engines) == int
-    assert type(response.indicator.positive_engines) == int
+    assert type(response.indicator.detection_engines) is int
+    assert type(response.indicator.positive_engines) is int
 
 
 def test_url(requests_mock):
@@ -99,8 +99,8 @@ def test_url(requests_mock):
     # This command also returns Common.URL data
     assert isinstance(response.indicator, Common.URL)
     assert response.indicator.url == url_to_check
-    assert type(response.indicator.detection_engines) == int
-    assert type(response.indicator.positive_detections) == int
+    assert type(response.indicator.detection_engines) is int
+    assert type(response.indicator.positive_detections) is int
 
 
 def test_domain(requests_mock):
@@ -144,8 +144,8 @@ def test_domain(requests_mock):
     # This command also returns Common.Domain data
     assert isinstance(response.indicator, Common.Domain)
     assert response.indicator.domain == domain_to_check
-    assert type(response.indicator.detection_engines) == int
-    assert type(response.indicator.positive_detections) == int
+    assert type(response.indicator.detection_engines) is int
+    assert type(response.indicator.positive_detections) is int
 
 
 def test_file(requests_mock):

@@ -3,7 +3,7 @@ import json
 
 
 def equals_object(obj1, obj2) -> bool:
-    if type(obj1) != type(obj2):
+    if type(obj1) is not type(obj2):
         return False
     elif isinstance(obj1, dict):
         for k1, v1 in obj1.items():

@@ -255,7 +255,7 @@ def convert_country_names_to_alpha_3_codes(locations: List[str]):
     converted_locations = []
     for location in filter(None, locations):
         try:
-            converted_locations.append(pycountry.countries.search_fuzzy(location)[0].alpha_3)
+            converted_locations.append(pycountry.countries.search_fuzzy(location)[0].alpha_3)  # type: ignore[attr-defined]
         except LookupError:
             raise ValueError(ERRORS['INVALID_COUNTRY_ERROR'].format(location))
 
@@ -277,7 +277,7 @@ def convert_alpha_3_codes_to_country_names(locations: List[str]):
     converted_locations = []
     for location in filter(None, locations):
         try:
-            converted_locations.append(pycountry.countries.search_fuzzy(location)[0].name)
+            converted_locations.append(pycountry.countries.search_fuzzy(location)[0].name)  # type: ignore[attr-defined]
         except LookupError:
             raise ValueError(ERRORS['INVALID_COUNTRY_ERROR'].format(location))
 

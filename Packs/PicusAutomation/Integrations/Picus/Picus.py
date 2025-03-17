@@ -295,6 +295,8 @@ def getThreatResults():
             vector_name = attacker_peer + " - " + victim_peer
             vectors_results = picus_threat_json_result["vectors"]
 
+            threat_result = ""
+            last_time = ""
             for i in range(len(vectors_results)):
                 if vectors_results[i]["name"] == vector_name:
                     variants_results = vectors_results[i]["variants"]

@@ -82,7 +82,7 @@ def test_socks_proxy_fail(mocker: MockerFixture, capfd: pytest.CaptureFixture):
     with capfd.disabled():
         with pytest.raises(SystemExit) as err:
             Whois.main()
-        assert err.type == SystemExit
+        assert err.type is SystemExit
         assert demisto.results.call_count == 1  # type: ignore
         # call_args is tuple (args list, kwargs). we only need the first one
         results = demisto.results.call_args[0]  # type: ignore
@@ -301,7 +301,7 @@ def test_parse_raw_whois_empty_nameserver():
                                                     (['0000-00-02T00:00:00Z'], Whois.InvalidDateHandler(year=0, month=0, day=2))
                                                     ])
 def test_parse_dates_invalid_time(input, expected_result):
-    assert type(Whois.parse_dates(input)[0]) == type(expected_result)
+    assert type(Whois.parse_dates(input)[0]) is type(expected_result)
 
 
 @pytest.mark.parametrize('input, expected_result', [(['2024-05-09T00:00:00Z'], datetime.datetime(2024, 5, 9, 0, 0, 0)),
@@ -930,6 +930,42 @@ def test_whois_and_domain_command(mocker: MockerFixture):
     res = whois_and_domain_command("domain", DBotScoreReliability.B)
     assert len(res) == 2
     assert isinstance(res[0].raw_response, dict)
+
+
+def test_whois_and_domain_command_with_exception(mocker: MockerFixture):
+    """
+    Given:
+    - an unknown domain
+    - The "with_error" param is set to True
+
+    When:
+    - executing whois_and_domain_command function
+
+    Then:
+    - Ensure an informative message in the readable output (regarding the unknown domain)
+    - Ensure entry_type is 4 which means EntryType.ERROR (since we mocked "with_error" param as True)
+    - Ensure no exception or error was thrown
+    """
+
+    from Whois import whois_and_domain_command
+    import whois
+    from whois.parser import PywhoisError
+
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "args", return_value={"domain": "raw.githubusercontent.com"})
+    mocker.patch.object(demisto, 'params', return_value={"with_error": True})
+    mocker.patch.object(ExecutionMetrics, "is_supported", return_value=True)
+    mocker.patch.object(
+        whois,
+        "whois",
+        side_effect=PywhoisError
+    )
+    res = whois_and_domain_command("domain", DBotScoreReliability.B)
+
+    assert len(res) == 2
+    assert res[0].readable_output == \
+        "Exception of type PywhoisError was caught while performing whois lookup with the domain 'raw.githubusercontent.com': "
+    assert res[0].entry_type == 4
 
 
 @pytest.mark.parametrize(

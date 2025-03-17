@@ -19,7 +19,7 @@ https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/Hel
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict, Any
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -43,7 +43,7 @@ class Client(BaseClient):
     """
 
     # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> Dict[str, str]:
+    def baseintegration_dummy(self, dummy: str) -> dict[str, str]:
         """Returns a simple python dict with the information provided
         in the input (dummy).
 
@@ -94,7 +94,7 @@ def test_module(client: Client) -> str:
 
 
 # TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def baseintegration_dummy_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     dummy = args.get('dummy', None)
     if not dummy:
@@ -141,7 +141,7 @@ def main() -> None:
 
         # TODO: Make sure you add the proper headers for authentication
         # (i.e. "Authorization": {api key})
-        headers: Dict = {}
+        headers: dict = {}
 
         client = Client(
             base_url=base_url,

@@ -9,7 +9,6 @@ import httplib2
 import urllib.parse
 from googleapiclient.discovery import build, Resource
 from oauth2client import service_account
-from typing import Optional
 
 SERVICE_ACCOUNT_FILE = 'token.json'
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
@@ -291,7 +290,7 @@ def parse_sheets_for_get_response(sheets: list, include_grid_data: bool) -> list
 
 
 def default_ranges_if_not_specified(spreadsheet: str, ranges: str, include_grid_data: bool, service: Resource) -> \
-        Optional[str]:
+        str | None:
     """
         Args:
             ranges: (str) A Google A1 notation ranges
@@ -914,7 +913,7 @@ def main() -> None:  # pragma: no cover
         elif command == 'google-sheets-value-append':
             return_results(value_append_sheets(service, demisto.args()))
         else:
-            raise NotImplementedError('Command "{}" is not implemented.'.format(demisto.command()))
+            raise NotImplementedError(f'Command "{demisto.command()}" is not implemented.')
 
     # Log exceptions and return errors
     except Exception as e:

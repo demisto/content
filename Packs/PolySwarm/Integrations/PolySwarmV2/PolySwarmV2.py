@@ -279,6 +279,10 @@ class PolyswarmConnector():
             elif artifact_type == 'domain':
                 object_name = 'Domain'
                 dbot_score_type = DBotScoreType.DOMAIN
+            else:
+                dbot_score_type = ''
+                object_name = ''
+                demisto.debug(f" {artifact_type=} -> {dbot_score_type=} {object_name=}")
 
             dbot_score = Common.DBotScore(indicator=artifact,
                                           indicator_type=dbot_score_type,

@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import json
-from typing import Any, Dict, List, Union
+from typing import Any
 
 import urllib3
 
@@ -24,7 +24,7 @@ class Client(BaseClient):
 
     def get_search_results(
         self, search_term: str, max_results: int = 25
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Gets the IP reputation using the '/ip' API endpoint
 
         :type search_term: ``str``
@@ -46,11 +46,11 @@ class Client(BaseClient):
 
     def get_connected_results(
         self,
-        search_identity: Union[str, Dict],
-        connect_type: Optional[List] = None,
-        connect_category: Optional[List] = None,
+        search_identity: str | dict,
+        connect_type: Optional[list] = None,
+        connect_category: Optional[list] = None,
         max_results: int = 25,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         # Can't use json= since it's already in use by xsoar
         return self._http_request(
             method="POST",
@@ -71,7 +71,7 @@ class Client(BaseClient):
 
     def get_prop_search_results(
         self, prop: str, value: str, max_results: int = 25
-    ) -> Dict:
+    ) -> dict:
         return self._http_request(
             method="GET",
             url_suffix="/components/propsearch",
@@ -133,7 +133,7 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def search_appnovi_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def search_appnovi_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     search_term = args.get("search_term", None)
     if not search_term:
@@ -154,7 +154,7 @@ def search_appnovi_command(client: Client, args: Dict[str, Any]) -> CommandResul
         "### Search Results\n" + " | ".join(table_layout.keys()) + " | sources" + "\n"
     )
     readable_output += (
-        "|".join(["-----" for th in table_layout.keys()]) + "|----" + "\n"
+        "|".join(["-----" for th in table_layout]) + "|----" + "\n"
     )
 
     for result in results["components"]:
@@ -173,7 +173,7 @@ def search_appnovi_command(client: Client, args: Dict[str, Any]) -> CommandResul
     )
 
 
-def search_appnovi_prop_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def search_appnovi_prop_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     search_prop = args.get("property", None)
     search_value = args.get("value", None)
@@ -198,7 +198,7 @@ def search_appnovi_prop_command(client: Client, args: Dict[str, Any]) -> Command
         "### Search Results\n" + " | ".join(table_layout.keys()) + " | sources" + "\n"
     )
     readable_output += (
-        "|".join(["-----" for th in table_layout.keys()]) + "|----" + "\n"
+        "|".join(["-----" for th in table_layout]) + "|----" + "\n"
     )
 
     for result in results["components"]:
@@ -218,7 +218,7 @@ def search_appnovi_prop_command(client: Client, args: Dict[str, Any]) -> Command
 
 
 def search_appnovi_connected_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """Search for components connected to other components.
     Can be limited in the types of things returned"""
@@ -246,7 +246,7 @@ def search_appnovi_connected_command(
     }
 
     readable_output = "### Search Results\n" + " | ".join(table_layout.keys()) + "\n"
-    readable_output += "|".join(["-----" for th in table_layout.keys()]) + "\n"
+    readable_output += "|".join(["-----" for th in table_layout]) + "\n"
 
     for result in results:
         readable_output += (
@@ -263,7 +263,7 @@ def search_appnovi_connected_command(
 
 
 def search_appnovi_cve_servers_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> CommandResults:
     """Find Servers with CVE
     This is a convenience command using the connected search"""
@@ -285,7 +285,7 @@ def search_appnovi_cve_servers_command(
     }
 
     readable_output = "### Search Results\n" + " | ".join(table_layout.keys()) + "\n"
-    readable_output += "|".join(["-----" for th in table_layout.keys()]) + "\n"
+    readable_output += "|".join(["-----" for th in table_layout]) + "\n"
 
     for result in results:
         readable_output += (
@@ -301,7 +301,7 @@ def search_appnovi_cve_servers_command(
     )
 
 
-def find_server_by_ip_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def find_server_by_ip_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Use the connected function to return servers owning a given IP
     Good example of how you an chain requests to walk the graph via command or playbook
     """
@@ -311,7 +311,7 @@ def find_server_by_ip_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
     # Keep track of things
     servers = {}
-    interfaces: List[str] = []
+    interfaces: list[str] = []
 
     # Let's get any servers or interfaces connected to the IP
     first_walk = client.get_connected_results(
@@ -350,7 +350,7 @@ def find_server_by_ip_command(client: Client, args: Dict[str, Any]) -> CommandRe
         readable_output = (
             "### Search Results\n" + " | ".join(table_layout.keys()) + "\n"
         )
-        readable_output += "|".join(["-----" for th in table_layout.keys()]) + "\n"
+        readable_output += "|".join(["-----" for th in table_layout]) + "\n"
 
         for result in servers.values():
             readable_output += (

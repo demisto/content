@@ -33,7 +33,7 @@ def overall_classification_command(args: Dict[str, Any]) -> CommandResults:
 
     a1000_results = a1000_full_report.get('results')
     a1000_result = a1000_results[0] if a1000_results else {}
-    a1000_classification = a1000_result.get('classification')
+    a1000_classification = a1000_result.get('classification', "")
     if not a1000_classification:
         return_error("There is no threat_status field in the A1000 report")
 

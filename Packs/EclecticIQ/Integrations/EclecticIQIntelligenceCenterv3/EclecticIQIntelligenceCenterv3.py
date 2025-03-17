@@ -1061,6 +1061,9 @@ class EclecticIQ_api:
         elif target_id:
             params["filter[data.target]"] = target_id
             direction = "target"
+        else:
+            direction = ""
+            demisto.debug(f"No source_id or target_id. {direction=}")
 
         r = self.send_api_request(
             "get", path=API_PATHS[self.eiq_api_version]["relationships"], params=params
@@ -1725,6 +1728,9 @@ def parse_reputation_results(
                 ),
             )
             prefix = "EclecticIQ.Email"
+        else:
+            prefix = ""
+            demisto.debug(f"{demisto_observable_type=} -> {prefix=}")
 
         raw_result = response_eiq
 

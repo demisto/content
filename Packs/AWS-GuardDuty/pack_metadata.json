@@ -2,7 +2,7 @@
     "name": "AWS - GuardDuty",
     "description": "Amazon Web Services Guard Duty Service (gd)",
     "support": "xsoar",
-    "currentVersion": "1.3.55",
+    "currentVersion": "1.3.57",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

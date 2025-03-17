@@ -5740,6 +5740,7 @@ Retrieve classification report for a sample
 | --- | --- | --- |
 | hash | The hash of a desired sample. | Required | 
 | localOnly | Return only local classification data for the sample, without falling back to querying TitaniumCloud. Default is False. | Optional | 
+| avScanners | Return AV scanner data from TitaniumCloud. | Optional | 
 
 #### Context Output
 

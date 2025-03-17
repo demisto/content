@@ -16,21 +16,24 @@ LOWEST_TRUST_LEVEL_KEY = 'lowest_trust_level_key'
 LOWEST_SCORE_KEY = 'lowest_score_key'
 MAX_QUERY_LIMIT = 500
 
-DXLConfigFiles = NamedTuple('DXLConfigFiles', [('broker_ca_bundle_file', str),
-                                               ('client_cert_file', str),
-                                               ('private_key_file', str),
-                                               ('broker_urls', list[str]),
-                                               ])
 
-InstanceCertificates = NamedTuple('InstanceCertificates', [('broker_ca_bundle', str),
-                                                           ('client_cert', str),
-                                                           ('private_key', str),
-                                                           ('broker_urls', list[str]),
-                                                           ])
+class DXLConfigFiles(NamedTuple):
+    broker_ca_bundle_file: str
+    client_cert_file: str
+    private_key_file: str
+    broker_urls: list[str]
 
-ProviderInfo = NamedTuple('ProviderInfo', [('name', str),
-                                           ('abbreviation', str)
-                                           ])
+
+class InstanceCertificates(NamedTuple):
+    broker_ca_bundle: str
+    client_cert: str
+    private_key: str
+    broker_urls: list[str]
+
+
+class ProviderInfo(NamedTuple):
+    name: str
+    abbreviation: str
 
 
 PROVIDER_INFO = {
@@ -97,7 +100,6 @@ class GeneralFileReputationParser(abc.ABC):
         from the API (which are in numeric form) to humand readable data in order for the user to understand the
         returned results.
         """
-        pass
 
     def parse_reputation_key(self, reputation_key: str, val: Union[str, int]):
         """

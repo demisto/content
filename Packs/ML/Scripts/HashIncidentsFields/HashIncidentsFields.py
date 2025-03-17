@@ -53,7 +53,7 @@ def hash_incident_labels(incident_labels, fields_to_hash):
 
 def hash_multiple(value, fields_to_hash, to_hash=False):
     if isinstance(value, list):
-        return list(map(lambda x: hash_multiple(x, fields_to_hash, to_hash), value))
+        return [hash_multiple(x, fields_to_hash, to_hash) for x in value]
     if isinstance(value, dict):
         for k, v in value.items():
             _hash = to_hash or is_key_match_fields_to_hash(k, fields_to_hash)
@@ -61,7 +61,7 @@ def hash_multiple(value, fields_to_hash, to_hash=False):
         return value
     else:
         try:
-            if isinstance(value, (int, float, bool)):
+            if isinstance(value, int | float | bool):
                 to_hash = False
             if not isinstance(value, str):
                 value = str(value)
@@ -74,6 +74,7 @@ def hash_multiple(value, fields_to_hash, to_hash=False):
 
 
 def output_file(data, description, output_format):
+    data_encoded = b''
     file_name = str(uuid.uuid4())
     if output_format == 'pickle':
         pickled_incidents = []

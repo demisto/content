@@ -158,7 +158,7 @@ def create_context(indicators, include_dbot_score=False, fields_to_return: list 
         # if there is more than one indicator results - take the one with the highest score
         if include_dbot_score:
             # see explanation in issue #42224
-            keys = (value,) if indicator_type != 'file' else filter(None, (md5, sha1, sha256))
+            keys = (value,) if indicator_type != 'file' else filter(None, (md5, sha1, sha256))  # type: ignore[var-annotated]
 
             old_val = indicators_dbot_score.get(value)
             if old_val and old_val['Score'] < dbot_score:
@@ -728,7 +728,7 @@ def list_groups(client: Client, args: dict, group_id: str = '', from_date: str =
         from_date = f' AND dateAdded > "{from_date}" '
         tql_prefix = '?tql='
     if group_type:
-        if type(group_type) == list:
+        if type(group_type) is list:
             group_type = f' AND ({create_or_query(", ".join(group_type), "typeName")})'
         else:
             group_type = f' AND typeName EQ "{group_type}"'

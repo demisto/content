@@ -3,7 +3,8 @@ from CommonServerPython import *  # noqa: F401
 from requests import Response
 
 import urllib3
-from typing import Dict, Any, Callable
+from typing import Any
+from collections.abc import Callable
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -21,24 +22,24 @@ SUBMISSION_PARAMETERS = ('environmentID', 'environmentId', 'no_share_third_party
 
 class Client(BaseClient):
 
-    def get_environments(self) -> List[Dict]:
+    def get_environments(self) -> List[dict]:
         return self._http_request(method='GET', url_suffix='/system/environments')
 
-    def get_screenshots(self, key: str) -> List[Dict[str, Any]]:
+    def get_screenshots(self, key: str) -> List[dict[str, Any]]:
         return self._http_request(method='GET', url_suffix=f'/report/{key}/screenshots')
 
-    def search(self, query_args: Dict[str, Any]):
+    def search(self, query_args: dict[str, Any]):
         self._headers['Content-Type'] = 'application/x-www-form-urlencoded'
         return self._http_request(method='POST', url_suffix='/search/terms', data=query_args)
 
-    def scan(self, files: List[str]) -> List[Dict[str, Any]]:
+    def scan(self, files: List[str]) -> List[dict[str, Any]]:
         self._headers['Content-Type'] = 'application/x-www-form-urlencoded'
         return self._http_request(method='POST', url_suffix='/search/hashes', data={'hashes[]': files})
 
-    def analysis_overview(self, sha256hash: str) -> Dict[str, Any]:
+    def analysis_overview(self, sha256hash: str) -> dict[str, Any]:
         return self._http_request(method='GET', url_suffix=f'/overview/{sha256hash}')
 
-    def analysis_overview_summary(self, sha256hash: str) -> Dict[str, Any]:
+    def analysis_overview_summary(self, sha256hash: str) -> dict[str, Any]:
         return self._http_request(method='GET', url_suffix=f'/overview/{sha256hash}/summary')
 
     def analysis_overview_refresh(self, sha256hash: str):
@@ -48,14 +49,14 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=f'/report/{key}/report/{filetype}', resp_type='response',
                                   ok_codes=(200, 404))
 
-    def get_state(self, key: str) -> Dict[str, Any]:
+    def get_state(self, key: str) -> dict[str, Any]:
         return self._http_request(method='GET', url_suffix=f'/report/{key}/state')
 
-    def submit_url(self, url: str, params: Dict[str, Any]) -> Dict[str, Any]:
+    def submit_url(self, url: str, params: dict[str, Any]) -> dict[str, Any]:
         return self._http_request(method='POST', data={'url': url, **params},
                                   url_suffix='/submit/url')
 
-    def submit_file(self, file_contents: Dict, params: Dict[str, Any]) -> Dict:
+    def submit_file(self, file_contents: dict, params: dict[str, Any]) -> dict:
         return self._http_request(method='POST', data=params, url_suffix='/submit/file',
                                   files={'file': (file_contents['name'], open(file_contents['path'], 'rb'))})
 
@@ -64,7 +65,7 @@ class Client(BaseClient):
 
 
 # for BW compatibility with v1 we need to return same object keys
-def map_dict_keys(obj: Dict, map_rules: Dict[str, str], only_given_fields: bool = False) -> Dict[Any, Any]:
+def map_dict_keys(obj: dict, map_rules: dict[str, str], only_given_fields: bool = False) -> dict[Any, Any]:
     """
     This function will switch the keys of a dictionary according to the provided map_rules.
     Example: map_dict_keys( {'a' : 'b', 'c' : 'd' }, {'a' : 'y', 'c' : 'z' }) -> {'y' : 'b' , 'z' : 'd'}
@@ -74,7 +75,7 @@ def map_dict_keys(obj: Dict, map_rules: Dict[str, str], only_given_fields: bool 
         only_given_fields: whether fields besides for those in map_rules should be used
     Returns : a Dict according to the map_rules
     """
-    return {map_rules.get(key, key): obj[key] for key in obj.keys() if not only_given_fields or key in map_rules}
+    return {map_rules.get(key, key): obj[key] for key in obj if not only_given_fields or key in map_rules}
 
 
 def translate_verdict(param: str) -> int:
@@ -87,7 +88,7 @@ def translate_verdict(param: str) -> int:
     }[param]
 
 
-def split_query_to_term_args(query: str) -> Dict[str, Any]:
+def split_query_to_term_args(query: str) -> dict[str, Any]:
     def get_value(term: str) -> str:
         return term[term.index(':') + 1:].strip()
 
@@ -105,20 +106,20 @@ def validated_term(key: str, val: Any) -> Any:
     return val
 
 
-def validated_search_terms(query_args: Dict[str, Any]) -> Dict[str, Any]:
+def validated_search_terms(query_args: dict[str, Any]) -> dict[str, Any]:
     if len(query_args) == 0:
         raise ValueError('Must have at least one search term')
     return {key: validated_term(key, query_args[key]) for key in query_args}
 
 
-def get_search_term_args(args: Dict[str, Any]) -> Dict[str, Any]:
+def get_search_term_args(args: dict[str, Any]) -> dict[str, Any]:
     if args.get('query'):
         return split_query_to_term_args(args['query'])
     else:
         return {term: args[term] for term in SEARCH_TERM_QUERY_ARGS if args.get(term, None)}
 
 
-def get_api_id(args: Dict[str, Any]) -> str:
+def get_api_id(args: dict[str, Any]) -> str:
     # must fist check environmentId (deprecated) to override default args of environmentID
     if args.get('file') and (args.get('environmentId') or args.get('environmentID')):
         return f"{args['file']}:{args.get('environmentId') or args.get('environmentID')}"
@@ -168,7 +169,7 @@ def has_error_state(client: Client, key: str) -> bool:
 
 
 class BWCFile(Common.File):
-    def __init__(self, bwc_fields: Dict, key_change_map: Dict, only_given_fields, *args, **kwargs):
+    def __init__(self, bwc_fields: dict, key_change_map: dict, only_given_fields, *args, **kwargs):
         super(BWCFile, self).__init__(*args, **kwargs)
         self.bwc_fields = bwc_fields
         self.key_change_map = key_change_map
@@ -222,7 +223,7 @@ def get_dbot_score(filehash, threat_score: int) -> Common.DBotScore:
                                 demisto.params().get('integrationReliability')))
 
 
-def get_submission_arguments(args: Dict[str, Any]) -> Dict[str, Any]:
+def get_submission_arguments(args: dict[str, Any]) -> dict[str, Any]:
     return {camel_case_to_underscore(arg): args[arg] for arg in SUBMISSION_PARAMETERS if args.get(arg)}
 
 
@@ -244,21 +245,21 @@ def submission_response(client, response, polling) -> List[CommandResults]:
     )
 
 
-def crowdstrike_submit_url_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def crowdstrike_submit_url_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     submission_args = get_submission_arguments(args)
     url = args['url']
     response = client.submit_url(url, submission_args)
     return submission_response(client, response, args.get('polling'))
 
 
-def crowdstrike_submit_sample_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def crowdstrike_submit_sample_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     file_contents = demisto.getFilePath(args['entryId'])
     submission_args = get_submission_arguments(args)
     response = client.submit_file(file_contents, submission_args)
     return submission_response(client, response, args.get('polling'))
 
 
-def crowdstrike_analysis_overview_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def crowdstrike_analysis_overview_command(client: Client, args: dict[str, Any]) -> CommandResults:
     result = client.analysis_overview(args['file'])
     file = Common.File(Common.DBotScore.NONE, sha256=result.get('sha256'), size=result.get('size'),
                        file_type=result.get('type'), name=result.get('last_file_name'))
@@ -278,8 +279,8 @@ def crowdstrike_analysis_overview_command(client: Client, args: Dict[str, Any]) 
     )
 
 
-def crowdstrike_search_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    query_args: Dict = get_search_term_args(args)
+def crowdstrike_search_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
+    query_args: dict = get_search_term_args(args)
     query_args = validated_search_terms(query_args)
     response = client.search(query_args)
 
@@ -318,7 +319,7 @@ def crowdstrike_search_command(client: Client, args: Dict[str, Any]) -> List[Com
 
 
 @polling_function('cs-falcon-sandbox-scan')
-def crowdstrike_scan_command(args: Dict[str, Any], client: Client):
+def crowdstrike_scan_command(args: dict[str, Any], client: Client):
     hashes = args['file'].split(',')
     scan_response = client.scan(hashes)
 
@@ -356,7 +357,7 @@ def crowdstrike_scan_command(args: Dict[str, Any], client: Client):
     return PollResult(continue_to_poll=True, response=command_result)
 
 
-def crowdstrike_analysis_overview_summary_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def crowdstrike_analysis_overview_summary_command(client: Client, args: dict[str, Any]) -> CommandResults:
     result = client.analysis_overview_summary(args['file'])
     return CommandResults(
         outputs_prefix='CrowdStrike.AnalysisOverview',
@@ -375,13 +376,13 @@ def crowdstrike_analysis_overview_summary_command(client: Client, args: Dict[str
     )
 
 
-def crowdstrike_analysis_overview_refresh_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def crowdstrike_analysis_overview_refresh_command(client: Client, args: dict[str, Any]) -> CommandResults:
     client.analysis_overview_refresh(args['file'])
     return CommandResults(readable_output='The request to refresh the analysis overview was sent successfully.')
 
 
 @polling_function('cs-falcon-sandbox-result')
-def crowdstrike_result_command(args: Dict[str, Any], client: Client):
+def crowdstrike_result_command(args: dict[str, Any], client: Client):
     key = get_api_id(args)
     report_response = client.get_report(key, args['file-type'])
     demisto.debug(f'get report response code: {report_response.status_code}')
@@ -408,7 +409,7 @@ def underscore_to_space(x: str) -> str:
     return pascalToSpace(underscoreToCamelCase(x))
 
 
-def crowdstrike_report_state_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def crowdstrike_report_state_command(client: Client, args: dict[str, Any]) -> CommandResults:
     key = get_api_id(args)
     state = client.get_state(key)
     return CommandResults(outputs_prefix='CrowdStrike.State', raw_response=state, outputs=state,
@@ -437,8 +438,8 @@ def crowdstrike_get_environments_command(client: Client, _) -> CommandResults:
     )
 
 
-def crowdstrike_get_screenshots_command(client: Client, args: Dict[str, Any]):
-    def to_image_result(image: Dict):
+def crowdstrike_get_screenshots_command(client: Client, args: dict[str, Any]):
+    def to_image_result(image: dict):
         return fileResult(image['name'], base64.b64decode(image['image']), entryTypes['entryInfoFile'])
 
     key = get_api_id(args)
@@ -446,7 +447,7 @@ def crowdstrike_get_screenshots_command(client: Client, args: Dict[str, Any]):
     return ret if len(ret) > 0 else CommandResults(readable_output='No screenshots returned')
 
 
-def crowdstrike_sample_download_command(client: Client, args: Dict[str, Any]):
+def crowdstrike_sample_download_command(client: Client, args: dict[str, Any]):
     hash_value = args['file']
     response = client.download_sample(hash_value)
     file_name = response.headers.get('Vx-Filename', hash_value + '.gz')
@@ -459,8 +460,8 @@ def main() -> None:
     :return:
     :rtype:
     """
-    params: Dict[str, Any] = demisto.params()
-    args: Dict[str, Any] = demisto.args()
+    params: dict[str, Any] = demisto.params()
+    args: dict[str, Any] = demisto.args()
 
     verify_certificate = not params.get('insecure', False)
     server_url = params.get('serverUrl', '') + '/api/v2'
@@ -470,7 +471,7 @@ def main() -> None:
     demisto_command = demisto.command()
     demisto.debug(f'Command being called is {demisto_command}')
     try:
-        headers: Dict = {
+        headers: dict = {
             'api-key': demisto.params().get('credentials', {}).get('password'),
             'User-Agent': 'Falcon Sandbox'
         }

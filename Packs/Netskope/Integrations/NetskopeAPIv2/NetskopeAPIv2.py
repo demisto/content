@@ -957,7 +957,8 @@ def fetch_incidents(client: Client, params: dict[str, Any]):
     alert_query = params.get("alerts_query")
     alert_max_fetch = arg_to_number(params["max_fetch"]) or MAX_LIMIT
 
-    max_fetch_per_event_type = MAX_FETCH_PER_EVENT_TYPE // len(event_types or []) or 1
+    num_event_types = len(event_types) if event_types else 1
+    max_fetch_per_event_type = MAX_FETCH_PER_EVENT_TYPE // num_event_types
     if (event_types and (event_max_fetch := arg_to_number(
             params["max_events_fetch"])) is not None):
         max_fetch_per_event_type = event_max_fetch // (len(event_types))

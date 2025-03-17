@@ -15,7 +15,7 @@ CLIENT = integration.Client(
 
 def load_mock_response(file_name: str) -> dict:
     data_path = os.path.normpath(os.path.join(os.path.dirname(__file__), "test_data", file_name))
-    with open(data_path, mode='r', encoding='utf-8') as mock_file:
+    with open(data_path, encoding='utf-8') as mock_file:
         return json.loads(mock_file.read())
 
 

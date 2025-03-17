@@ -17,4 +17,4 @@ As part of this pack, you will also get out-of-the-box Cortex XDR incident type 
 
 _For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/packs/palo-alto-networks-cortex-xdr---investigation-and-response)_
 
-![Cortex XDR Lite - Incident Handling](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexXDR/doc_files/Cortex_XDR_Lite_-_Incident_Handling.png)
+![Cortex XDR Lite - Incident Handling](doc_files/Cortex_XDR_Lite_-_Incident_Handling.png)

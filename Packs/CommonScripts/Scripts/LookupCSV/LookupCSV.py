@@ -12,9 +12,8 @@ def search_dicts(k, v, data):
     """
     match = []
     for row in data:
-        if k in row:
-            if v == row[k]:
-                match.append(row)
+        if k in row and v == row[k]:
+            match.append(row)
 
     if len(match) == 1:
         # If we only get one result: return just it as a dictr
@@ -45,17 +44,17 @@ def search_lists(k, v, data):
 def main():
     d_args = demisto.args()
 
-    entry_id = d_args['entryID'] if 'entryID' in d_args else None
-    header_row = d_args['header_row'] if 'header_row' in d_args else None
-    search_column = d_args['column'] if 'column' in d_args else None
+    entry_id = d_args.get('entryID')
+    header_row = d_args.get('header_row')
+    search_column = d_args.get('column')
 
-    search_value: str = d_args['value'] if 'value' in d_args else None
+    search_value = d_args.get('value')
 
-    add_row = d_args['add_header_row'] if 'add_header_row' in d_args else None
+    add_row = d_args.get('add_header_row')
 
     res = demisto.getFilePath(entry_id)
     if not res:
-        return_error("Entry {} not found".format(entry_id))
+        return_error(f"Entry {entry_id} not found")
 
     file_path = res['path']
     file_name = res['name']
@@ -65,7 +64,7 @@ def main():
                 file_name))
 
     csv_data: list = []
-    with open(file_path, mode='r') as csv_file:
+    with open(file_path) as csv_file:
         if header_row:
             csv_reader = csv.DictReader(csv_file)
             for line in csv_reader:
@@ -97,14 +96,14 @@ def main():
                 search_column = int(search_column) - 1
             except ValueError:
                 return_error(
-                    "CSV column spec must be integer if header_row not supplied (got {})".format(search_column))
+                    f"CSV column spec must be integer if header_row not supplied (got {search_column})")
             csv_data = search_lists(search_column, search_value, csv_data)
 
     output = {
         'LookupCSV': {
-            'FoundResult': True if csv_data and search_column else False,
+            'FoundResult': bool(csv_data and search_column),
             'Result': csv_data if csv_data else None,
-            'SearchValue': '' if not search_value else search_value
+            'SearchValue': search_value if search_value else ''
         }
     }
 

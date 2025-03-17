@@ -23,7 +23,7 @@ def extract_html_table(html, indexes):
                     table.append(tds[0].text)
                 # If there are 2 columns and no headers, treat as key-value (might override values if same key in first column)
                 elif len(tds) == 2 and len(headers) == 0:
-                    if type(table) == list:
+                    if type(table) is list:
                         table = {}  # type: ignore
                     table[tds[0].text] = tds[1].text
                 else:

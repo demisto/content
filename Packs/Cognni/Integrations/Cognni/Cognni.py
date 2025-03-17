@@ -5,7 +5,8 @@ from datetime import datetime
 import urllib3
 import dateparser
 import traceback
-from typing import Any, Dict, List, Optional, Tuple, cast, Iterable
+from typing import Any, cast
+from collections.abc import Iterable
 
 urllib3.disable_warnings()
 
@@ -28,13 +29,13 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     """
 
-    def fetch_key(self, api_key: str) -> Dict[str, Any]:
+    def fetch_key(self, api_key: str) -> dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix=f"/api/v1/login/key/{api_key}"
         )
 
-    def graphql(self, query: str, variables: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def graphql(self, query: str, variables: dict[str, Any] | None = None) -> dict[str, Any]:
         if not variables:
             variables = {}
 
@@ -50,14 +51,14 @@ class Client(BaseClient):
         )
         return res['data']
 
-    def ping(self) -> Dict[str, Any]:
+    def ping(self) -> dict[str, Any]:
         query = "{ping}"
 
         return self.graphql(
             query=query
         )
 
-    def fetch_events(self, min_severity: int, start_time: str, events_limit: int, offset: int) -> List[Dict[str, Any]]:
+    def fetch_events(self, min_severity: int, start_time: str, events_limit: int, offset: int) -> list[dict[str, Any]]:
         query = """
             query($severityValue:String!, $pagination:Pagination) {
               events(
@@ -119,7 +120,7 @@ class Client(BaseClient):
         )
         return res['events']
 
-    def get_event(self, event_id: str) -> Dict[str, Any]:
+    def get_event(self, event_id: str) -> dict[str, Any]:
         query = """
             query ($event_id: ID!) {
                 event(id: $event_id){
@@ -141,7 +142,7 @@ class Client(BaseClient):
         )
         return res['event']
 
-    def fetch_insights(self, min_severity: int) -> List[Dict[str, Any]]:
+    def fetch_insights(self, min_severity: int) -> list[dict[str, Any]]:
         query = """
              query ($min_severity: Int) {
                  insights(minSeverity: $min_severity){
@@ -163,7 +164,7 @@ class Client(BaseClient):
         )
         return res['insights']
 
-    def get_insight(self, insight_id: str) -> Dict[str, Any]:
+    def get_insight(self, insight_id: str) -> dict[str, Any]:
         query = """
             query ($insight_id: ID!) {
               insight(id: $insight_id) {
@@ -227,7 +228,7 @@ def convert_to_demisto_severity_int(severity: int) -> int:
     return severity
 
 
-def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
+def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> int | None:
     """Converts an XSOAR argument to a Python int
 
     This function is used to quickly validate an argument provided to XSOAR
@@ -265,7 +266,7 @@ def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]
     raise ValueError(f'Invalid number: "{arg_name}"')
 
 
-def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
+def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int | None:
     """Converts an XSOAR argument to a timestamp (seconds from epoch)
 
     This function is used to quickly validate an argument provided to XSOAR
@@ -309,7 +310,7 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
     raise ValueError(f'Invalid date: "{arg_name}"')
 
 
-def flatten_event_file_items(event: Dict[str, Any]):
+def flatten_event_file_items(event: dict[str, Any]):
     if not event or not event['items']:
         return []
 
@@ -326,7 +327,7 @@ def flatten_event_file_items(event: Dict[str, Any]):
     }, event['items']))
 
 
-def convert_file_event_to_incident(file_event: Dict[str, Any]):
+def convert_file_event_to_incident(file_event: dict[str, Any]):
     return {
         'name': file_event.get('name'),
         'details': file_event['description'],
@@ -336,18 +337,18 @@ def convert_file_event_to_incident(file_event: Dict[str, Any]):
     }
 
 
-def convert_events_to_incidents(events: Iterable[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def convert_events_to_incidents(events: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
     if not events:
         return []
 
-    file_events: List[Dict[str, Any]] = sum(map(flatten_event_file_items, events), [])
+    file_events: list[dict[str, Any]] = sum(map(flatten_event_file_items, events), [])
 
     incidents = list(map(convert_file_event_to_incident, file_events))
 
     return incidents
 
 
-def find_latest_event(events: Iterable[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+def find_latest_event(events: Iterable[dict[str, Any]]) -> dict[str, Any] | None:
     last_date = 0
     latest_event = None
 
@@ -394,11 +395,11 @@ def test_module(client: Client, api_key: str, first_fetch: int) -> str:
         return answer
 
 
-def fetch_incidents(client: Client, last_run: Dict[str, int],
-                    first_fetch_time: Optional[int],
+def fetch_incidents(client: Client, last_run: dict[str, int],
+                    first_fetch_time: int | None,
                     events_limit: int,
                     min_severity: int
-                    ) -> Tuple[Dict[str, int], List[dict]]:
+                    ) -> tuple[dict[str, int], list[dict]]:
     """This function retrieves new alerts every interval (default is 1 minute).
 
     This function has to implement the logic of making sure that incidents are
@@ -479,7 +480,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
     return next_run, incidents
 
 
-def get_event_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_event_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """cognni-get-event command: Returns a Cognni event
 
     :type client: ``Client``
@@ -512,7 +513,7 @@ def get_event_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def fetch_insights_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def fetch_insights_command(client: Client, args: dict[str, Any]) -> CommandResults:
     min_severity = int(args.get('min_severity', 2))
 
     insights = client.fetch_insights(min_severity=min_severity)
@@ -527,7 +528,7 @@ def fetch_insights_command(client: Client, args: Dict[str, Any]) -> CommandResul
     )
 
 
-def get_insight_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_insight_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """cognni-get-insight command: Returns a Cognni event
 
     :type client: ``Client``

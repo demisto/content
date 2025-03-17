@@ -41,7 +41,7 @@ configuration:
   section: Connect
   required: false
 - display: Client Secret
-  displaypassword: Client Secret 
+  displaypassword: Client Secret
   hiddenusername: true
   name: credentials
   type: 9
@@ -515,7 +515,7 @@ script:
     - contextPath: AzureWAF.ResourceGroup.tags
       description: Resource group tags.
       type: String
-  dockerimage: demisto/crypto:1.0.0.114611
+  dockerimage: demisto/crypto:1.0.0.117163
   runonce: false
   script: '-'
   subtype: python3

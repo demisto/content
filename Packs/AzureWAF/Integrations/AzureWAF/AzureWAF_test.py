@@ -1,7 +1,6 @@
 import pytest
 import AzureWAF as waf
 import demistomock as demisto
-from CommonServerPython import CommandResults
 
 API_VERSION = '2020-05-01'
 
@@ -431,9 +430,15 @@ def test_subscriptions_list_command(mocker):
         ]
     })
     commandResult = waf.subscriptions_list_command(client)
-    commandResult.readable_output == '''### Subscriptions: \n|displayName|state|subscriptionId|tenantId|\n|---|---|---|---|
-| Pay-As-You-Go | Enabled | 0f907ea4-bc8b-4c11-9d7e-805c2fd144fb | ebac1a16-81bf-449b-8d43-5732c3c1d999 |\n
-| Access to Azure Active Directory | Enabled | 057b1785-fd7b-4ca3-ad1b-709e4b1668be | ebac1a16-81bf-449b-8d43-5732c3c1d999 |\n'''
+
+    assert commandResult.readable_output == (
+        '### Subscriptions: \n'
+        '|displayName|state|subscriptionId|tenantId|\n'
+        '|---|---|---|---|\n'
+        '| Pay-As-You-Go | Enabled | 0f907ea4-bc8b-4c11-9d7e-805c2fd144fb | ebac1a16-81bf-449b-8d43-5732c3c1d999 |\n'
+        '| Access to Azure Active Directory | Enabled | 057b1785-fd7b-4ca3-ad1b-709e4b1668be |'
+        ' ebac1a16-81bf-449b-8d43-5732c3c1d999 |\n'
+    )
     assert m.call_args[1].get('method') == expected_results.get("method")
     assert m.call_args[1].get('full_url') == expected_results.get("full_url")
     assert m.call_args[1].get('params') == expected_results.get("params")
@@ -493,11 +498,16 @@ def test_resource_group_list_command(mocker):
             }
         ]
     })
-    expected_commandResult = CommandResults(readable_output="### Resource Groups: \n|Subscription ID pol1|\n|---|\n| [{'name': \
-'cloud-shell-storage-eastus', 'location': 'eastus', 'properties.provisioningState': 'Succeeded'}],<br>[{'name': 'demisto', \
-'location': 'centralus', 'properties.provisioningState': 'Succeeded'}],<br>[{'name': 'compute-integration', 'location': 'eastus',\
- 'properties.provisioningState': 'Succeeded'}] |\n")
+
     commandResult = waf.resource_group_list_command(client, **demisto_args)
+
     assert m.call_args[1].get('method') == expected_results.get("method")
     assert m.call_args[1].get('full_url') == expected_results.get("full_url")
-    commandResult.readable_output == expected_commandResult.readable_output
+    assert commandResult.readable_output == (
+        "### Resource Groups: \n"
+        "|Subscription ID pol1|\n"
+        "|---|\n"
+        "| [{'name': 'cloud-shell-storage-eastus', 'location': 'eastus', 'tags': {}, 'provisioningState': 'Succeeded'}],"
+        "<br>[{'name': 'demisto', 'location': 'centralus', 'tags': {}, 'provisioningState': 'Succeeded'}],"
+        "<br>[{'name': 'compute-integration', 'location': 'eastus', 'tags': {}, 'provisioningState': 'Succeeded'}] |\n"
+    )

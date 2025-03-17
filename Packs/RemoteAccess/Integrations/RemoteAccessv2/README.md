@@ -13,7 +13,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 | Default Hostname or IP Address | If not provided, "host" or "system" should be provided in the command's arguments. | False |
 | User | For example, "root". | False |
 | Password | The password of the remote machine. | False |
-| sshKey | The private RSA key to authenticate to the remote machine, should be configured within the credentials object. | False
+| sshKey | The private RSA key used to authenticate with the remote machine should be configured in the *Credentials* tab under *Settings > Integrations > Credentials*. See [here](https://xsoar.pan.dev/docs/reference/articles/managing-credentials) for more information. | False
 | Additional Password | Requires an additional password as an argument to run any command of this module. | False |
 | Ciphers | A comma-separated list of ciphers to use. If none of the specified ciphers are agreed to by the server, an error message specifying the supported ciphers is returned. | False |
 | Key Algorithms | A comma-separated list of key algorithms to use. If none of the specified key algorithms are agreed to by the server, an error message specifying the supported key algorithms is returned. | False |

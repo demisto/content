@@ -30,7 +30,7 @@ def mapvalues(value, input_values, mapped_values):
 
     # If the input is a dictionary then attempt to convert each
     # "key: value" as a string into the value in the mapper
-    if type(value) == dict:
+    if type(value) is dict:
         new_dict = dict()
         for k, v in value.items():
             key_value = f"{k}:{v}"
@@ -43,7 +43,7 @@ def mapvalues(value, input_values, mapped_values):
                 new_dict[k] = v
         value = json.dumps(new_dict)
 
-    elif type(value) == list:
+    elif type(value) is list:
         for val in value:
             val = mapper[val] if val in mapper else val
 

@@ -5490,7 +5490,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Lists the events for the specified UDM Search query.
+    description: "Lists the events for the specified UDM Search query.\nNote: The underlying API has the rate limit of 120 queries per hour."
     execution: false
     name: gcb-udm-search
     outputs:
@@ -7916,7 +7916,7 @@ script:
     - contextPath: GoogleChronicleBackstory.Events.securityResult.urlBackToProduct
       description: URL to direct you to the source product console for this security event.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.117483
+  dockerimage: demisto/googleapi-python3:1.0.0.1839740
   isfetch: true
   runonce: false
   script: '-'

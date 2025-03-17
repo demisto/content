@@ -532,7 +532,7 @@ def _run_query(f, args):
     for name, p in sig.parameters.items():
         if name in args:
             if p.annotation != p.empty:
-                if p.annotation == bool:
+                if p.annotation is bool:
                     if FALSE_REGEX.match(args[name]):
                         kwargs[name] = False
                     else:

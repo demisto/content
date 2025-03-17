@@ -4,7 +4,7 @@ import hashlib
 import hmac
 import json
 import traceback
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from typing import Any, cast
 from collections.abc import Mapping
 
@@ -115,7 +115,7 @@ class Client(BaseClient):
     def _create_headers(self, query_uri: str, query_data: dict = None, is_json: bool = False) -> dict[str, str]:
         """Create headers required for successful authentication"""
         public_token, _ = self._auth
-        date = (datetime.now(timezone.utc)).isoformat(timespec="auto")
+        date = (datetime.now(UTC)).isoformat(timespec="auto")
         signature = _create_signature(self._auth, query_uri, date, query_data, is_json=is_json)
         return {"DTAPI-Token": public_token, "DTAPI-Date": date, "DTAPI-Signature": signature}
 

@@ -89,12 +89,12 @@ def api_call(uri, method='post', headers={}, body={}, params={}, accept_404=Fals
             'Authorization': 'Bearer ' + access_token
         }
 
-    url = '{}/{}'.format(SERVER_URL, uri)
+    url = f'{SERVER_URL}/{uri}'
     res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, verify=USE_SSL)
     if res.status_code < 200 or res.status_code >= 300:
         if res.status_code == 409 and str(res.content).find('already an entry for this threat') != -1:
             raise Warning(res.content)
-        if not res.status_code == 404 and not accept_404:
+        if res.status_code != 404 and not accept_404:
             return_error(
                 'Got status code ' + str(res.status_code) + ' with body ' + str(res.content) + ' with headers ' + str(
                     res.headers))
@@ -313,7 +313,7 @@ def get_device():
 def get_device_request(device_id):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_DEVICE_READ)
 
-    uri = '{}/{}'.format(URI_DEVICES, device_id)
+    uri = f'{URI_DEVICES}/{device_id}'
     res = api_call(uri=uri, method='get', access_token=access_token)
     return res
 
@@ -387,7 +387,7 @@ def get_hostname_request(hostname):  # pragma: no cover
 
     access_token = get_authentication_token(scope=SCOPE_DEVICE_READ)
 
-    uri = '{}/{}'.format(URI_HOSTNAME, hostname)
+    uri = f'{URI_HOSTNAME}/{hostname}'
     res = api_call(uri=uri, method='get', access_token=access_token)
     if not res:
         return None
@@ -447,7 +447,7 @@ def update_device_request(device_id, name=None, policy_id=None, add_zones=None, 
     if not body:
         raise Exception('No changes detected')
 
-    uri = '{}/{}'.format(URI_DEVICES, device_id)
+    uri = f'{URI_DEVICES}/{device_id}'
     res = api_call(uri=uri, method='put', access_token=access_token, body=body)
     return res
 
@@ -471,7 +471,7 @@ def get_device_threats():
     if device_threats:
         dbot_score_dict = {Common.DBotScore.get_context_path(): []}  # type: Dict[str, List[Dict[str, str]]]
         for dbot_score_entry in dbot_score_array:
-            for key, value in list(dbot_score_entry.items()):
+            for _key, value in list(dbot_score_entry.items()):
                 dbot_score_dict[Common.DBotScore.get_context_path()].append(value)
 
         threats_context = createContext(data=device_threats, keyTransform=underscoreToCamelCase)
@@ -500,7 +500,7 @@ def get_device_threats_request(device_id, page=None, page_size=None):  # pragma:
         params['page'] = page
     if page_size:
         params['page_size'] = page_size
-    uri = '{}/{}/threats'.format(URI_DEVICES, device_id)
+    uri = f'{URI_DEVICES}/{device_id}/threats'
     res = api_call(uri=uri, method='get', access_token=access_token, params=params)
     return res
 
@@ -629,7 +629,7 @@ def get_zone():
 def get_zone_request(zone_id):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_ZONE_READ)
 
-    uri = '{}/{}'.format(URI_ZONES, zone_id)
+    uri = f'{URI_ZONES}/{zone_id}'
     res = api_call(uri=uri, method='get', access_token=access_token)
     return res
 
@@ -678,7 +678,7 @@ def update_zone_request(zone_id, name, policy_id, criticality):  # pragma: no co
     if not body:
         raise Exception('No changes detected')
 
-    uri = '{}/{}'.format(URI_ZONES, zone_id)
+    uri = f'{URI_ZONES}/{zone_id}'
     res = api_call(uri=uri, method='put', access_token=access_token, body=body)
     return res
 
@@ -715,7 +715,7 @@ def get_threat():
 def get_threat_request(sha256):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_THREAT_READ)
 
-    uri = '{}/{}'.format(URI_THREATS, sha256)
+    uri = f'{URI_THREATS}/{sha256}'
     res = api_call(uri=uri, method='get', access_token=access_token, body={}, params={}, accept_404=False)
     return res
 
@@ -746,7 +746,7 @@ def get_threats():
 
     dbot_score_dict = {Common.DBotScore.get_context_path(): []}  # type: Dict[str, List[Dict[str, str]]]
     for dbot_score_entry in dbot_score_array:
-        for key, value in list(dbot_score_entry.items()):
+        for _key, value in list(dbot_score_entry.items()):
             dbot_score_dict[Common.DBotScore.get_context_path()].append(value)
 
     context_threat = createContext(data=threats, keyTransform=underscoreToCamelCase, removeNull=True)
@@ -855,7 +855,7 @@ def get_threat_devices_request(threat_hash, page=None, page_size=None):  # pragm
     if page_size:
         params['page_size'] = page_size
 
-    uri = '{}/{}/devices'.format(URI_THREATS, threat_hash)
+    uri = f'{URI_THREATS}/{threat_hash}/devices'
     res = api_call(uri=uri, method='get', access_token=access_token, params=params)
     return res
 
@@ -877,7 +877,7 @@ def get_list():
     if lst:
         dbot_score_dict = {Common.DBotScore.get_context_path(): []}  # type: Dict[str, List[Dict[str, str]]]
         for dbot_score_entry in dbot_score_array:
-            for key, value in list(dbot_score_entry.items()):
+            for _key, value in list(dbot_score_entry.items()):
                 dbot_score_dict[Common.DBotScore.get_context_path()].append(value)
 
         context_list = createContext(data=lst, keyTransform=underscoreToCamelCase, removeNull=True)
@@ -950,8 +950,10 @@ def get_list_entry_by_hash(sha256=None, list_type_id=None):
                                                  removeNull=True),
                 'EntryContext': ec
             })
+            return None
         else:
             demisto.results("Hash not found")
+            return None
     else:
         return found_hash
 
@@ -980,7 +982,7 @@ def update_device_threats_request(device_id, threat_id, event):  # pragma: no co
         'event': event
     }
 
-    uri = '{}/{}/threats'.format(URI_DEVICES, device_id)
+    uri = f'{URI_DEVICES}/{device_id}/threats'
     res = api_call(uri=uri, method='post', access_token=access_token, body=body)
 
     return res
@@ -1342,7 +1344,7 @@ def get_policy_details():
 def get_policy_details_request(policy_id):   # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_POLICY_READ)
 
-    uri = '{}/{}'.format(URI_POLICIES, policy_id)
+    uri = f'{URI_POLICIES}/{policy_id}'
     res = api_call(uri=uri, method='get', access_token=access_token)
     return res
 
@@ -1385,6 +1387,7 @@ def create_instaquery():
     if artifact in match_value_type:
         value_type = re.findall(r'(?<=\.).*', match_value_type)[0]  # Remove the artifact prefix
     else:
+        value_type = []
         demisto.error('The value type is not suitable with the selected artifact')
 
     # Create request

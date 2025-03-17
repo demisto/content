@@ -12,7 +12,7 @@ def main():
         else:
             matches = entry["Contents"]["results"]
             if matches:
-                formattedMatches = [{k: json.dumps(m[k]) if type(m[k]) == dict else m[k] for k in m} for m in matches]
+                formattedMatches = [{k: json.dumps(m[k]) if type(m[k]) is dict else m[k] for k in m} for m in matches]
                 res.append(
                     {"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": formattedMatches})
             else:

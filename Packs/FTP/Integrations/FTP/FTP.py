@@ -6,6 +6,7 @@ from ftplib import FTP
 
 """ MAIN """
 
+
 def main():
     HOST = demisto.params().get('host')
     PORT = demisto.params().get('port') if demisto.params().get('port') else '21'
@@ -15,7 +16,7 @@ def main():
     if demisto.command() == "test-module":
         try:
             with FTP() as ftp:  # noqa: S321
-                ftp.connect(host=HOST,port=int(PORT))
+                ftp.connect(host=HOST, port=int(PORT))
                 ftp.login(user=USER, passwd=PASSWD)
                 ftp.voidcmd('NOOP')
 
@@ -71,10 +72,10 @@ def main():
                 with open(f'/tmp/{file_name}', 'wb') as file:
                     ftp.retrbinary(f'RETR {file_path}/{file_name}', file.write)
 
-                with open(f"/tmp/{file_name}", "r") as f:
+                with open(f"/tmp/{file_name}") as f:
                     data = f.read()
                     return_results(
-                        fileResult(filename = file_name, data = data)
+                        fileResult(filename=file_name, data=data)
                     )
 
         except Exception as excp:

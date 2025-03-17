@@ -1,0 +1,141 @@
+category: Utilities
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: NetQuestOMX
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  required: true
+  section: Connect
+  type: 0
+  additionalinfo: The IP of the 5G device using NetQuest OMX, formatted as https://X.X.X.X
+- display: Username
+  name: credentials
+  type: 9
+  required: true
+  section: Connect
+- display: Slot number
+  name: slot
+  type: 0
+  required: true
+  section: Collect
+  additionalinfo: Target NetQuest device slot number.
+  defaultvalue: '1'
+- display: Port number
+  name: port
+  type: 0
+  required: true
+  section: Collect
+  additionalinfo: Target NetQuest device port number.
+- display: Fetch Events
+  name: isFetchEvents
+  type: 8
+  required: false
+  section: Collect
+  hidden:
+    - xsoar
+  additionalinfo: Whether to collect events.
+- display: Statistic types to fetch
+  name: statistic_types_to_fetch
+  options:
+  - Metering Stats
+  - Export Stats
+  - Export Peaks FPS
+  - Optimization Stats
+  type: 16
+  defaultvalue: Metering Stats,Export Stats,Export Peaks FPS,Optimization Stats
+  section: Collect
+  required: true
+- name: proxy
+  display: Use system proxy settings
+  type: 8
+  required: false
+  section: Connect
+- name: insecure
+  display: Trust any certificate (not secure)
+  type: 8
+  required: false
+  section: Connect
+description: NetQuest’s products are high-capacity service nodes that help security teams access and analyze network traffic. Powerful packet and flow processing features assist security tools in detecting and mitigating security threats as cost effectively as possible.
+display: NetQuest OMX
+name: NetQuestOMX
+script:
+  commands:
+  - arguments:
+    - description: The entry ID of the file to upload.
+      name: entry_id
+      required: true
+    description: Uploads a .txt file with the address list to the appliance. The appliance temporarily stores the file until it is saved to the Library and replaces any previously loaded list file.
+    name: netquest-address-list-upload
+  - description: Optimizes the updated address list. If the traffic elements are IP addresses, the integration will optimize the list by compressing IP addresses into CIDR groups.
+    name: netquest-address-list-optimize
+    outputs:
+    - contextPath: NetQuest.AddressList.OverlappingAddresses
+      description: A list of overlapping addresses in the address list.
+      type: list
+    - contextPath: NetQuest.AddressList.OverlapsPresent
+      description: A boolean field that indicates whether overlapping IP address ranges are present in the address list.
+      type: boolean
+    - contextPath: NetQuest.AddressList.MergedAddresses
+      description: A list that contains consolidated IP address ranges, combining overlapping or contiguous addresses into a unified set.
+      type: list
+    - contextPath: NetQuest.AddressList.MergesPresent
+      description: A boolean field that indicates whether any address ranges in the list have been merged to eliminate overlaps or contiguous entries.
+      type: boolean
+    - contextPath: NetQuest.AddressList.CountsBefore
+      description:  A dictionary that stores the number of occurrences of each IP address or address range before any processing or modifications were applied.
+      type: Dictionary
+    - contextPath: NetQuest.AddressList.CountsAfter
+      description: A dictionary that stores the number of occurrences of each IP address or address range after processing or modifications have been applied.
+      type: Dictionary
+  - arguments:
+    - description: The name for the new address list.
+      name: name
+      required: true
+    description: Creates a new address list.  This list will replace and override the old list entity.
+    name: netquest-address-list-create
+  - arguments:
+    - description: The new name for an existing address list.
+      name: new_name
+      required: true
+    - description: The name of the address list that you want to modify.
+      name: existing_name
+      required: true
+    description: Renames an address list. This is only meant to change the name of the list. If you try to give the value of the new_name argument to an existing address list, the command will fail.
+    name: netquest-address-list-rename
+  - arguments:
+    - description: 'The name of the address list to delete.'
+      name: name
+      required: true
+    description: Deletes the address list of the name provided.
+    name: netquest-address-list-delete
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: When true, the integration creates Cortex XSIAM events. Otherwise, they will only be displayed.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - name: statistic_types_to_fetch
+      description: Comma-separated list of statistic types to return.
+      isArray: true
+      defaultValue: "Metering Stats,Export Stats,Export Peaks FPS,Optimization Stats"
+      required: true
+    description: Gets events from NetQuest OMX. Each event is a report for the specified statistic type. Available only for Cortex XSIAM.
+    execution: false
+    name: get-events
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.11.10.116949
+  isfetchevents: true
+  isfetchevents:xsoar: false
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

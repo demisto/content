@@ -1034,7 +1034,7 @@ script:
       required: true
     description: Delete an IOC from a Threat Intelligence source.
     name: harfanglab-delete-ioc-from-source
-  dockerimage: demisto/python3:3.10.14.92207
+  dockerimage: demisto/python3:3.11.10.116949
   isfetch: true
   ismappable: true
   isremotesyncin: true

@@ -261,6 +261,7 @@ def transform_string(input_str: str) -> str:
     if ':' not in input_str:
         return input_str
     key, value = input_str.split(':', 1)
+    value = value.strip()
     if value.lower() in ['true', 'false']:
         return f'{key}:{value.lower()}'
     else:
@@ -638,6 +639,9 @@ def generic_search_command(client: Client, args: dict, item_type: str) -> Comman
             response = client.case_search_request(kwargs)
         elif item_type == "alert":
             response = client.alert_search_request(kwargs)
+        else:
+            response = {}
+            demisto.debug(f"{item_type=} -> {response=}")
         data_response = response.get("rows", [])
         table_name = f"{item_type.capitalize()}s"
 
