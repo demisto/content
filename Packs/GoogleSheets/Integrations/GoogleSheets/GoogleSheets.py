@@ -201,7 +201,7 @@ def make_markdown_matrix(sheets: list) -> str:
         markdown += f'### ***Name: {sheet.get("title", {})}     Sheet Id: {sheet.get("sheetId", {})}***'
 
         # find the max number of columns in the table
-        max_row_len = max(list(map(lambda elem: len(elem.get("values")), sheet.get("rowData"))))
+        max_row_len = max(list(map(lambda elem: len(elem.get("values")), sheet.get("rowData"))))    # noqa: C417
         if max_row_len == 0:
             markdown += "\n**Empty Sheet**\n"
         else:
@@ -325,7 +325,7 @@ def create_spreadsheet(service: Resource, args: dict) -> CommandResults:
     Action : creates a new spreadsheet
     """
     rgb_format = argToList(args.get("cell_format_backgroundColor"))
-    rgb_format = [1, 1, 1, 1] if not rgb_format else rgb_format
+    rgb_format = rgb_format if rgb_format else [1, 1, 1, 1]
     spreadsheet = {
         "properties": {
             "title": args.get("title"),
@@ -439,7 +439,7 @@ def create_sheet(service: Resource, args: dict) -> CommandResults:
     """
     spreadsheet_id = args.get("spreadsheet_id")
     rgb_format = argToList(args.get("tab_color"))
-    rgb_format = [1, 1, 1, 1] if not rgb_format else rgb_format
+    rgb_format = rgb_format if rgb_format else [1, 1, 1, 1]
     request_to_update = {
         "requests": [
             {

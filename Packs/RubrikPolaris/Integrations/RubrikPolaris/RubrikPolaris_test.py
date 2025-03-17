@@ -41,7 +41,7 @@ SDK_ERROR_MESSAGES = {
     "'VOLUME_GROUP_OBJECT_TYPE', 'MSSQL_OBJECT_TYPE', "
     "'AZURE_SQL_DATABASE_OBJECT_TYPE', 'AZURE_SQL_MANAGED_INSTANCE_OBJECT_TYPE'].",
     "INVALID_SORT_ORDER": "'{}' is an invalid value for 'sort_order'. Value must be in ['ASC', 'DESC'].",
-    "INVALID_OBJECT_SNAPSHOT_SORT_ORDER": "'{}' is an invalid value for 'sort_order'. " "Value must be in ['ASC', 'DESC'].",
+    "INVALID_OBJECT_SNAPSHOT_SORT_ORDER": "'{}' is an invalid value for 'sort_order'. Value must be in ['ASC', 'DESC'].",
     "INVALID_REQUESTED_HASH_TYPE": "'{}' is an invalid value for 'requested_hash_types'. "
     "Value must be in ['HASH_TYPE_M_D5', 'HASH_TYPE_SH_A1', 'HASH_TYPE_SH_A256'].",
 }
@@ -660,7 +660,7 @@ def test_sonar_on_demand_scan_status_when_success_response(client, requests_mock
     from RubrikPolaris import rubrik_sonar_ondemand_scan_status_command
 
     raw_response = util_load_json(
-        os.path.join(os.path.dirname(__file__), f"test_data/sonar_ondemand_scan_status_success" f"_{file_suffix}_response.json")
+        os.path.join(os.path.dirname(__file__), f"test_data/sonar_ondemand_scan_status_success_{file_suffix}_response.json")
     )
 
     with open(
@@ -1384,7 +1384,7 @@ def test_gps_snapshot_file_download_success(client, requests_mock, empty_respons
     from RubrikPolaris import rubrik_gps_snapshot_files_download_command
 
     gps_snapshot_file_download_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/gps_snapshot_file_download_response" ".json")
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/gps_snapshot_file_download_response.json")
     )
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/gps_snapshot_file_download_hr.md")) as f:
         gps_snapshot_file_download_hr = f.read()
@@ -1590,7 +1590,7 @@ def test_cdm_cluster_connection_state_command_success(client, requests_mock, emp
     from RubrikPolaris import cdm_cluster_connection_state_command
 
     cdm_cluster_connection_state_response = util_load_json(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/cdm_cluster_connection_state_" "response.json")
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/cdm_cluster_connection_state_response.json")
     )
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/cdm_cluster_connection_state_hr.md")) as f:
         cdm_cluster_connection_state_hr = f.read()

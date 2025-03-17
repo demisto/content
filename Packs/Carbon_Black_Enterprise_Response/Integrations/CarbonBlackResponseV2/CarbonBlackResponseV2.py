@@ -430,7 +430,8 @@ def sensors_list_command(
     limit: int = None,
 ) -> CommandResults:
     try:
-        total_num_of_sensors, res = client.get_sensors(id, hostname, ip, group_id, inactive_filter_days, limit)  # type: ignore[arg-type]
+        total_num_of_sensors, res = client.get_sensors(
+            id, hostname, ip, group_id, inactive_filter_days, limit)  # type: ignore[arg-type]
 
         human_readable_data = []
         for sensor_data in res:
@@ -476,7 +477,7 @@ def sensors_list_command(
         )
     except DemistoException as e:
         if "404" in e.message:
-            raise Exception(f"{INTEGRATION_NAME} - The sensor {id} could not be found. " f"Please try using a different sensor.")
+            raise Exception(f"{INTEGRATION_NAME} - The sensor {id} could not be found. Please try using a different sensor.")
         else:
             raise Exception(f"{INTEGRATION_NAME} - Error connecting to API. Error: {e.message}")
 
@@ -610,7 +611,8 @@ def alert_search_command(
     limit: str = None,
     start: str = "0",
 ) -> CommandResults:
-    res = client.get_alerts(status, username, feedname, hostname, report, sort, query, facet, limit, start)  # type: ignore[arg-type]
+    res = client.get_alerts(status, username, feedname, hostname, report, sort,
+                            query, facet, limit, start)  # type: ignore[arg-type]
     if not res:
         raise Exception(f"{INTEGRATION_NAME} - Request cannot be processed.")
 
@@ -742,7 +744,7 @@ def binary_search_command(
 
     md = f"{INTEGRATION_NAME} - Binary Search Results"
     md += tableToMarkdown(
-        f"\nShowing {start} - {len(res.get('results', []))} out of {res.get('total_results', '0')} " f"results.",
+        f"\nShowing {start} - {len(res.get('results', []))} out of {res.get('total_results', '0')} results.",
         human_readable_data,
         headers=["md5", "Group", "OS Type", "Host Count", "Last Seen", "Is Executable Image", "Timestamp"],
     )
@@ -791,7 +793,7 @@ def process_get_command(client: Client, process_id: str, segment_id: str, get_re
     except DemistoException as e:
         if "404" in e.message:
             raise Exception(
-                f"{INTEGRATION_NAME} - Could not find result for " f"process id {process_id} with segment id {segment_id}."
+                f"{INTEGRATION_NAME} - Could not find result for process id {process_id} with segment id {segment_id}."
             )
         else:
             raise Exception(f"{INTEGRATION_NAME} - Error connecting to API. Error: {e.message}")
@@ -1003,7 +1005,8 @@ def fetch_incidents(
             demisto.debug(f"{INTEGRATION_NAME} - Fetching incident from Server with status: {current_status}")
             query_params["status"] = f'"{current_status}"'
             # we create a new query containing params since we do not allow both query and params.
-            res = client.get_alerts(query=_create_query_string(query_params), limit=max_results, sort=time_sort)  # type: ignore[arg-type]
+            res = client.get_alerts(query=_create_query_string(query_params),
+                                    limit=max_results, sort=time_sort)  # type: ignore[arg-type]
             alerts += res.get("results", [])
             demisto.debug(f"{INTEGRATION_NAME} - fetched {len(alerts)} so far.")
     else:
@@ -1020,7 +1023,7 @@ def fetch_incidents(
 
         # to prevent duplicates, adding incidents with creation_time > last fetched incident
         if last_fetch and (incident_created_time_ms <= last_fetch.timestamp()):
-            demisto.debug(f"{INTEGRATION_NAME} - alert {alert!s} was created at {incident_created_time_ms}." f" Skipping.")
+            demisto.debug(f"{INTEGRATION_NAME} - alert {alert!s} was created at {incident_created_time_ms}. Skipping.")
             continue
 
         alert_id = alert.get("unique_id", "")

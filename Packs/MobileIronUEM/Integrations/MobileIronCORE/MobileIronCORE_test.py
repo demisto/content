@@ -1,5 +1,5 @@
 from CommonServerPython import *
-from pytest import fixture, raises
+from pytest import fixture, raises  # noqa: PT013
 
 MOCK_URL = "https://core.mobileiron.com"
 MOCK_PARAMS = {"admin_space_id": "1"}

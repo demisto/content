@@ -64,20 +64,20 @@ def test_module(client, apiKey, api_username, plugin_id, action, time_frame=1440
 def format_JSON_for_fetch_incidents(ls_anomaly):
     anomaly_info = {}
     anomaly = ls_anomaly
-    anomaly_info["time_seen"] = anomaly["time_seen"] if "time_seen" in anomaly else "no ls_anomaly time_seen"
-    anomaly_info["category"] = anomaly["category"] if "category" in anomaly else "no ls_anomaly category"
-    anomaly_info["anomaly_type"] = anomaly["anomaly_type"] if "anomaly_type" in anomaly else "no ls_anomaly anomaly_type"
-    anomaly_info["sip"] = anomaly["sip"] if "sip" in anomaly else "no ls_anomaly sip"
-    anomaly_info["anomaly_id"] = anomaly["anomaly_id"] if "anomaly_id" in anomaly else "no ls_anomaly anomaly_id"
-    anomaly_info["inserted_time"] = anomaly["inserted_time"] if "inserted_time" in anomaly else "no ls_anomaly inserted_time"
-    anomaly_info["smac"] = anomaly["smac"] if "smac" in anomaly else "no ls_anomaly smac"
-    anomaly_info["bandwidth"] = anomaly["bandwidth"] if "bandwidth" in anomaly else "no ls_anomaly bandwidth"
-    anomaly_info["score"] = anomaly["score"] if "score" in anomaly else "no ls_anomaly score"
-    anomaly_info["dport"] = anomaly["dport"] if "dport" in anomaly else "no ls_anomaly dport"
-    anomaly_info["dmac"] = anomaly["dmac"] if "dmac" in anomaly else "no ls_anomaly dmac"
-    anomaly_info["sport"] = anomaly["sport"] if "sport" in anomaly else "no ls_anomaly sport"
-    anomaly_info["dip"] = anomaly["dip"] if "dip" in anomaly else "no ls_anomaly dip"
-    anomaly_info["desc"] = anomaly["desc"] if "desc" in anomaly else "no ls_anomaly desc"
+    anomaly_info["time_seen"] = anomaly.get("time_seen", "no ls_anomaly time_seen")
+    anomaly_info["category"] = anomaly.get("category", "no ls_anomaly category")
+    anomaly_info["anomaly_type"] = anomaly.get("anomaly_type", "no ls_anomaly anomaly_type")
+    anomaly_info["sip"] = anomaly.get("sip", "no ls_anomaly sip")
+    anomaly_info["anomaly_id"] = anomaly.get("anomaly_id", "no ls_anomaly anomaly_id")
+    anomaly_info["inserted_time"] = anomaly.get("inserted_time", "no ls_anomaly inserted_time")
+    anomaly_info["smac"] = anomaly.get("smac", "no ls_anomaly smac")
+    anomaly_info["bandwidth"] = anomaly.get("bandwidth", "no ls_anomaly bandwidth")
+    anomaly_info["score"] = anomaly.get("score", "no ls_anomaly score")
+    anomaly_info["dport"] = anomaly.get("dport", "no ls_anomaly dport")
+    anomaly_info["dmac"] = anomaly.get("dmac", "no ls_anomaly dmac")
+    anomaly_info["sport"] = anomaly.get("sport", "no ls_anomaly sport")
+    anomaly_info["dip"] = anomaly.get("dip", "no ls_anomaly dip")
+    anomaly_info["desc"] = anomaly.get("desc", "no ls_anomaly desc")
     return anomaly_info
 
 
@@ -97,7 +97,7 @@ def fetch_incidents(client, max_alerts, last_run, first_fetch_time, apiKey, api_
         apiKey=apiKey, api_username=api_username, plugin_id=plugin_id, action=action, time_frame=time_frame
     )
     for dic in alerts.get("data"):
-        for key in dic.keys():
+        for key in dic:
             if key == "time_seen":
                 incident_occurred_time = dic["time_seen"]
                 incident_created_time = dateparser.parse(str(int(dic["action_time"]) * 1000), settings={"TIMEZONE": "UTC"})

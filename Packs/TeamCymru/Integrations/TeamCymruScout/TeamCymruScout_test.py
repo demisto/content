@@ -85,7 +85,7 @@ def test_test_module_using_main_function(mock_return, requests_mock, mocker, par
     mocker.patch.object(demisto, "command", return_value="test-module")
 
     main()
-    assert "ok" == mock_return.call_args.args[0]
+    assert mock_return.call_args.args[0] == "ok"
 
 
 @pytest.mark.parametrize(
@@ -153,7 +153,7 @@ def test_scout_api_usage_command_using_main_function(mock_return, requests_mock,
     assert output == mock_return.call_args.args[0].outputs
     assert response == mock_return.call_args.args[0].raw_response
     assert hr == mock_return.call_args.args[0].readable_output
-    assert "command_name" == mock_return.call_args.args[0].outputs_key_field
+    assert mock_return.call_args.args[0].outputs_key_field == "command_name"
     assert OUTPUT_PREFIX["QUERY_USAGE"] == mock_return.call_args.args[0].outputs_prefix
 
 
@@ -276,7 +276,7 @@ def test_scout_indicator_search_command_success(mocker, mock_client, requests_mo
 
     assert response["ips"][0] == results[0].raw_response
     assert hr == results[0].readable_output
-    assert "ip" == results[0].outputs_key_field
+    assert results[0].outputs_key_field == "ip"
     assert OUTPUT_PREFIX["IP"] == results[0].outputs_prefix
     assert output["entry_context"] == results[0].to_context().get("EntryContext")
 
@@ -286,7 +286,7 @@ def test_scout_indicator_search_command_success(mocker, mock_client, requests_mo
     usage_output["command_name"] = "scout-indicator-search"
     assert usage_output == results[1].outputs
     assert usage_hr == results[1].readable_output
-    assert "command_name" == results[1].outputs_key_field
+    assert results[1].outputs_key_field == "command_name"
     assert OUTPUT_PREFIX["QUERY_USAGE"] == results[1].outputs_prefix
 
 
@@ -321,7 +321,7 @@ def test_scout_indicator_search_command_no_result(mock_client, requests_mock):
     usage_output["command_name"] = "scout-indicator-search"
     assert usage_output == results[1].outputs
     assert usage_hr == results[1].readable_output
-    assert "command_name" == results[1].outputs_key_field
+    assert results[1].outputs_key_field == "command_name"
     assert OUTPUT_PREFIX["QUERY_USAGE"] == results[1].outputs_prefix
 
 

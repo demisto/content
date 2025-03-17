@@ -33,7 +33,7 @@ def validate_args(resources_vpc_config: dict, logging_arg: dict, authentication_
     arg_num = sum(bool(arg) for arg in arr)  # counts the number of non-empty args.
     if arg_num != 1:
         raise ValueError(
-            "Please provide exactly one of the following arguments: resources_vpc_config, logging or " "authentication_mode."
+            "Please provide exactly one of the following arguments: resources_vpc_config, logging or authentication_mode."
         )
 
 

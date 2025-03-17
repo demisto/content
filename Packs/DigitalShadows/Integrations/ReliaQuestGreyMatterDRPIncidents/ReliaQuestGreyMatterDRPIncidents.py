@@ -102,7 +102,7 @@ def chunks(lst, n):
         # not subscriptable so push into a list
         to_chunk = list(lst)
     for i in range(0, len(to_chunk), n):
-        yield to_chunk[i : i + n]
+        yield to_chunk[i: i + n]
 
 
 def removing_unwanted_data(data_item):
@@ -767,7 +767,8 @@ class SearchLightTriagePoller:
         Returns the largest event-num from the triage item events that were processed.
         """
         demisto.info(
-            f"Polling triage items. Event num start: {event_num_start}, Event created after: {event_created_after}, Limit: {limit} risk_level: {risk_level} "
+            f"Polling triage items. Event num start: {event_num_start},"
+            f" Event created after: {event_created_after}, Limit: {limit} risk_level: {risk_level} "
             f"alert_risk_types: {alert_risk_types}"
         )
         risk_types_filter = []
@@ -784,7 +785,8 @@ class SearchLightTriagePoller:
         )
         if not events:
             demisto.info(
-                f"No events were fetched. Event num start: {event_num_start}, Event created after: {event_created_after}, Limit: {limit}, "
+                f"No events were fetched. Event num start: {event_num_start},"
+                f" Event created after: {event_created_after}, Limit: {limit}, "
                 f"risk_level: {risk_level}, alert_risk_types: {alert_risk_types}"
             )
             return RQPollResult(event_num_start, [])
@@ -810,7 +812,8 @@ class SearchLightTriagePoller:
             # if a triage item is deleted it is not returned to the list - outside chance that all could be deleted
             # so validate before proceeding
             demisto.info(
-                f"No triage items were fetched. Event num start: {event_num_start}, Event created after: {event_created_after}, Limit: {limit},  "
+                f"No triage items were fetched. Event num start: {event_num_start},"
+                f" Event created after: {event_created_after}, Limit: {limit},  "
                 f"risk_level: {risk_level}, alert_risk_types: {alert_risk_types}"
             )
             return RQPollResult(max_event_num, [])

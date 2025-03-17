@@ -78,11 +78,11 @@ ERROR_MESSAGES = {
     "END_DATE_GREATER_THAN_CURRENT_TIME": "Please provide the end date less than current time.",
     "REACHED_MAXIMUM_DIFF_DAYS": f"Please provide the start date less than {MAXIMUM_DAY} days from the end date.",
     "REACHED_MAXIMUM_START_DAYS": f"Please provide the start date less than {MAXIMUM_START_DAY} days.",
-    "INVALID_DAY": "{} is invalid value for days." f"Value of days should be between {MINIMUM_DAY} and {MAXIMUM_DAY}.",
+    "INVALID_DAY": "{} is invalid value for days." f"Value of days should be between {MINIMUM_DAY} and {MAXIMUM_DAY}.", # noqa: ISC001
     "NO_INDICATORS_FOUND": "No indicators found for given query and filters.",
     "INVALID_IP_ADDRESSES": "The following IP Addresses were found invalid: {}",
     "INVALID_IP_ADDRESS_SIZE": (
-        "{} valid IP Addresses provided. " "Please provide the list of IP Addresses less than or equal to {}."
+        "{} valid IP Addresses provided. Please provide the list of IP Addresses less than or equal to {}."
     ),
 }
 
@@ -230,7 +230,7 @@ class Client(BaseClient):
 
 def trim_spaces_from_args(args: dict):
     """Remove space from args."""
-    for key in args.keys():
+    for key in args:
         if isinstance(args[key], str):
             args[key] = args[key].strip()
     return args
@@ -308,7 +308,7 @@ def remove_empty_elements_for_hr(d):
     def empty(x):
         return x is None or x == {} or x == [] or x == ""
 
-    if not isinstance(d, (dict, list)):
+    if not isinstance(d, dict | list):
         return d
     elif isinstance(d, list):
         return [v for v in (remove_empty_elements_for_hr(v) for v in d) if not empty(v)]
@@ -704,16 +704,15 @@ def prepare_hr_and_context_for_indicator_search(response: dict) -> tuple[str, di
             "Last Seen": scout_ip_data.get("summary", {}).get("last_seen"),
         }
     ]
-    pdns_hr = list(pdn for pdn in scout_ip_data.get("summary", {}).get("pdns", []))
-    open_ports_hr = list(open_port for open_port in scout_ip_data.get("summary", {}).get("open_ports", []))
-    top_peers_hr = list(
-        {"Source IP": ip_address, **top_peer} for top_peer in scout_ip_data.get("summary", {}).get("top_peers", [])
-    )
-    service_counts_hr = list(
+    pdns_hr = list(scout_ip_data.get("summary", {}).get("pdns", []))
+    open_ports_hr = list(scout_ip_data.get("summary", {}).get("open_ports", []))
+    top_peers_hr = [{"Source IP": ip_address, **top_peer} for top_peer in scout_ip_data.get("summary", {}).get("top_peers", [])]
+
+    service_counts_hr = [
         {"Source IP": ip_address, **service_count} for service_count in scout_ip_data.get("summary", {}).get("service_counts", [])
-    )
-    fingerprints_hr = list(fingerprint for fingerprint in scout_ip_data.get("summary", {}).get("fingerprints", []))
-    certs_hr = list(cert for cert in scout_ip_data.get("summary", {}).get("certs", []))
+    ]
+    fingerprints_hr = list(scout_ip_data.get("summary", {}).get("fingerprints", []))
+    certs_hr = list(scout_ip_data.get("summary", {}).get("certs", []))
 
     hr_list = [scout_ip_hr, pdns_hr, open_ports_hr, top_peers_hr, service_counts_hr, fingerprints_hr, certs_hr]
     new_hr_list = []

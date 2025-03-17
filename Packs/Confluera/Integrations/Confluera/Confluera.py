@@ -131,7 +131,7 @@ def fetch_detections_command(client: Client, args: dict[str, Any]) -> list[Comma
     command_results: list[CommandResults] = []
 
     total_detections = 0
-    for idx, ioc in enumerate(result):
+    for _idx, _ioc in enumerate(result):
         total_detections += 1
 
     # output 1
@@ -191,7 +191,7 @@ def fetch_progressions_command(client: Client, args: dict[str, Any]) -> list[Com
     command_results: list[CommandResults] = []
 
     total_progressions = 0
-    for idx, ioc in enumerate(result):
+    for _idx, _ioc in enumerate(result):
         total_progressions += 1
 
     # output 1

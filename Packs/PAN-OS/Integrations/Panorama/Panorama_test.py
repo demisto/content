@@ -486,7 +486,7 @@ def test_edit_url_filter_non_valid_args_9_x(mocker):
     add_remove_element = "remove"
 
     err_msg = (
-        "Only the allow_categories, block_categories, description properties can be changed in PAN-OS 9.x or" " later versions."
+        "Only the allow_categories, block_categories, description properties can be changed in PAN-OS 9.x or later versions."
     )
     with pytest.raises(DemistoException, match=err_msg):
         panorama_edit_url_filter(url_filter_name, element_to_change, element_value, add_remove_element)
@@ -950,7 +950,7 @@ def test_list_configured_user_id_agents_command(mocker):
     mocker.patch("Panorama.get_pan_os_major_version", return_value=9)
     args = {}
     str_match = (
-        "In order to show the the User ID Agents in your Panorama, " "supply either the template or the template_stack arguments."
+        "In order to show the the User ID Agents in your Panorama, supply either the template or the template_stack arguments."
     )
     with pytest.raises(DemistoException, match=str_match):
         list_configured_user_id_agents_command(args)
@@ -1275,7 +1275,7 @@ def test_get_security_profiles_command_main_flow(mocker):
     assert request_mock.call_args.kwargs["params"] == {
         "action": "get",
         "type": "config",
-        "xpath": "/config/devices/entry[@name='localhost.localdomain']" "/device-group/entry[@name='new-device-group']/profiles",
+        "xpath": "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='new-device-group']/profiles",
         "key": "thisisabogusAPIKEY!",
     }
 
@@ -1799,7 +1799,7 @@ def test_panorama_edit_custom_url_category_command_main_flow(mocker, action, exi
         "type": "config",
         "xpath": "/config/devices/entry/device-group/entry[@name='new device group']/profiles/custom-url-category"
         "/entry[@name='test']",
-        "element": f"<entry name='test'><list><member>{category}<" f"/member></list><type>Category Match</type></entry>",
+        "element": f"<entry name='test'><list><member>{category}</member></list><type>Category Match</type></entry>",
         "key": "thisisabogusAPIKEY!",
     }
 
@@ -1845,7 +1845,7 @@ def test_panorama_edit_custom_url_category_command_main_flow_with_sites(mocker):
 
     expected_body_request = {
         "action": "edit",
-        "element": "<entry " f"name='test'><list><member>{expected_site}</member></list><type>URL " "List</type></entry>",
+        "element": f"<entry name='test'><list><member>{expected_site}</member></list><type>URL List</type></entry>",
         "key": "thisisabogusAPIKEY!",
         "type": "config",
         "xpath": "/config/devices/entry/device-group/entry[@name='new device "
@@ -1970,7 +1970,7 @@ def test_panorama_edit_service_group_command_main_flow(mocker):
     assert request_mock.call_args.kwargs["body"] == {
         "action": "edit",
         "type": "config",
-        "xpath": "/config/devices/entry/device-group/entry[@name='new device group']/" "service-group/entry[@name='test']/tag",
+        "xpath": "/config/devices/entry/device-group/entry[@name='new device group']/service-group/entry[@name='test']/tag",
         "element": "<tag><member>tag1</member></tag>",
         "key": "thisisabogusAPIKEY!",
     }
@@ -2112,7 +2112,7 @@ class TestPanoramaCommitCommand:
             pytest.param(
                 {"device-group": "some_device", "force_commit": "true", "polling": "false"},
                 {
-                    "cmd": '<commit><device-group><entry name="some_device"/>' "</device-group><force></force></commit>",
+                    "cmd": '<commit><device-group><entry name="some_device"/></device-group><force></force></commit>',
                     "key": "thisisabogusAPIKEY!",
                     "type": "commit",
                 },
@@ -2169,7 +2169,7 @@ class TestPanoramaCommitCommand:
             pytest.param(
                 {"device-group": "some_device", "polling": "false"},
                 {
-                    "cmd": '<commit><device-group><entry name="some_device"/></device-group>' "</commit>",
+                    "cmd": '<commit><device-group><entry name="some_device"/></device-group></commit>',
                     "key": "thisisabogusAPIKEY!",
                     "type": "commit",
                 },
@@ -2564,7 +2564,7 @@ def test_panorama_push_to_template_command(mocker, args, expected_request_params
             {"template-stack": "some_template_stack"},
             {
                 "action": "all",
-                "cmd": "<commit-all><template-stack><name>some_template_stack" "</name></template-stack></commit-all>",
+                "cmd": "<commit-all><template-stack><name>some_template_stack</name></template-stack></commit-all>",
                 "key": "thisisabogusAPIKEY!",
                 "type": "commit",
             },
@@ -3668,7 +3668,7 @@ class TestFirewallCommand:
                 "</botnet-domains>",
             },
             MockedResponse(
-                text='<response status="success" code="20"><msg>' "command succeeded</msg></response>", status_code=200, reason=""
+                text='<response status="success" code="20"><msg>command succeeded</msg></response>', status_code=200, reason=""
             ),
             "**success**",
         ),
@@ -3719,7 +3719,8 @@ def test_panorama_apply_dns_command2(mocker):
     request_params = request_mock.call_args.kwargs["params"]  # The body part of the request
     assert (
         request_params.get("xpath")
-        == "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='fakeDeviceGroup']/profiles/spyware/entry[@name='fake_profile_name']"
+        == "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='fakeDeviceGroup']/"
+           "profiles/spyware/entry[@name='fake_profile_name']"
     )  # noqa
 
 
@@ -4232,7 +4233,7 @@ class TestPanOSListNatRulesCommand:
                     "action": "show",
                     "key": "thisisabogusAPIKEY!",
                     "type": "config",
-                    "xpath": "/config/devices/entry[@name='localhost.localdomain']" "/vsys/entry[@name='vsys1']/rulebase/nat",
+                    "xpath": "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']/rulebase/nat",
                 },
             ),
             pytest.param(
@@ -4522,7 +4523,7 @@ class TestPanOSEditNatRule:
                 integration_panorama_params,
                 {
                     "action": "edit",
-                    "element": "<translated-address><member>1.1.1.1</member>" "<member>2.2.2.2</member></translated-address>",
+                    "element": "<translated-address><member>1.1.1.1</member><member>2.2.2.2</member></translated-address>",
                     "key": "thisisabogusAPIKEY!",
                     "type": "config",
                     "xpath": "/config/devices/entry[@name='localhost.localdomain']/device-group/entry["
@@ -4835,7 +4836,7 @@ class TestPanOSListVirtualRouters:
                     "type": "config",
                     "action": "show",
                     "key": "thisisabogusAPIKEY!",
-                    "xpath": "/config/devices/entry[@name='localhost.localdomain']/network/virtual-router" "/entry[@name='test']",
+                    "xpath": "/config/devices/entry[@name='localhost.localdomain']/network/virtual-router/entry[@name='test']",
                 },
                 "test_data/list-virtual-routers-response.json",
             ),
@@ -4859,7 +4860,7 @@ class TestPanOSListVirtualRouters:
                     "type": "config",
                     "action": "get",
                     "key": "thisisabogusAPIKEY!",
-                    "xpath": "/config/devices/entry[@name='localhost.localdomain']/network/virtual-router" "/entry[@name='test']",
+                    "xpath": "/config/devices/entry[@name='localhost.localdomain']/network/virtual-router/entry[@name='test']",
                 },
                 "test_data/list-virtual-routers-response-un-commited-router.json",
             ),
@@ -5219,7 +5220,7 @@ class TestPanOSEditRedistributionProfile:
                     "/config/devices/entry[@name='localhost.localdomain']/network/virtual-router"
                     "/entry[@name='virtual-router']/protocol/redist-profile/entry"
                     "[@name='redistribution-profile']/filter/nexthop",
-                    "element": "<nexthop><member>1.1.1.1</member><member>3.3.3.3</member" "><member>2.2.2.2</member></nexthop>",
+                    "element": "<nexthop><member>1.1.1.1</member><member>3.3.3.3</member><member>2.2.2.2</member></nexthop>",
                     "action": "edit",
                     "type": "config",
                     "key": "thisisabogusAPIKEY!",
@@ -5238,7 +5239,7 @@ class TestPanOSEditRedistributionProfile:
                     "xpath": "/config/devices/entry[@name='localhost.localdomain']/network/virtual-router/entry"
                     "[@name='virtual-router']/protocol/redist-profile/entry[@name='redistribution-profile']"
                     "/filter/nexthop",
-                    "element": "<nexthop><member>1.1.1.1</member><member>2.2.2.2</" "member><member>3.3.3.3</member></nexthop>",
+                    "element": "<nexthop><member>1.1.1.1</member><member>2.2.2.2</member><member>3.3.3.3</member></nexthop>",
                     "action": "edit",
                     "type": "config",
                     "key": "thisisabogusAPIKEY!",
@@ -5436,7 +5437,7 @@ class TestPanOSListPBFRulesCommand:
                     "type": "config",
                     "action": "get",
                     "key": "thisisabogusAPIKEY!",
-                    "xpath": "/config/devices/entry[@name='localhost.localdomain']/vsys/entry" "[@name='vsys1']/rulebase/pbf",
+                    "xpath": "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']/rulebase/pbf",
                 },
             ),
         ],
@@ -5812,7 +5813,7 @@ class TestPanOSEditPBFRule:
                 integration_firewall_params,
                 {
                     "action": "edit",
-                    "element": '<nexthop-address-list><entry name="1.1.1.1"/><entry ' 'name="2.2.2.2"/></nexthop-address-list>',
+                    "element": '<nexthop-address-list><entry name="1.1.1.1"/><entry name="2.2.2.2"/></nexthop-address-list>',
                     "key": "thisisabogusAPIKEY!",
                     "type": "config",
                     "xpath": "/config/devices/entry[@name='localhost.localdomain']/vsys/"
@@ -6122,7 +6123,7 @@ def test_pan_os_delete_pbf_rule_command_main_flow(mocker, args, params, expected
             {"name": "address", "element_to_change": "fqdn", "element_value": "1.1.1.1"},
             integration_panorama_params,
             {
-                "xpath": "/config/devices/entry/device-group/entry[@name='Lab-Devices']/address" '/entry[@name="address"]/fqdn',
+                "xpath": "/config/devices/entry/device-group/entry[@name='Lab-Devices']/address" '/entry[@name="address"]/fqdn',    # noqa: ISC001
                 "element": "<fqdn>1.1.1.1</fqdn>",
                 "action": "edit",
                 "type": "config",
@@ -6318,7 +6319,7 @@ class TestPanOSEditApplicationGroupCommand:
                 {"name": "test", "applications": "application-2", "action": "add"},
                 integration_firewall_params,
                 {
-                    "xpath": "/config/devices/entry/vsys/entry[@name='vsys1']/application-group/" "entry[@name='test']/members",
+                    "xpath": "/config/devices/entry/vsys/entry[@name='vsys1']/application-group/entry[@name='test']/members",
                     "element": "<members><member>application-2</member><member>application-1</member></members>",
                     "action": "edit",
                     "type": "config",
@@ -6402,7 +6403,7 @@ class TestPanOSEditApplicationGroupCommand:
                 {"name": "test", "applications": "application-2", "action": "remove"},
                 integration_firewall_params,
                 {
-                    "xpath": "/config/devices/entry/vsys/entry[@name='vsys1']/application-group/entry" "[@name='test']/members",
+                    "xpath": "/config/devices/entry/vsys/entry[@name='vsys1']/application-group/entry[@name='test']/members",
                     "element": "<members><member>application-1</member></members>",
                     "action": "edit",
                     "type": "config",
@@ -6472,7 +6473,7 @@ class TestPanOSEditApplicationGroupCommand:
             {"name": "test", "applications": "application-2", "action": "remove"},
             integration_panorama_params,
             {
-                "xpath": "/config/devices/entry/device-group/entry[@name='Lab-Devices']/" "application-group/entry[@name='test']",
+                "xpath": "/config/devices/entry/device-group/entry[@name='Lab-Devices']/application-group/entry[@name='test']",
                 "action": "delete",
                 "type": "config",
                 "key": "thisisabogusAPIKEY!",
@@ -7333,7 +7334,7 @@ def test_pan_os_edit_tag_command(mocker, is_shared):
     Panorama.URL = "https://1.1.1.1:443/"
     Panorama.API_KEY = "thisisabogusAPIKEY!"
     expected_first_text_response_if_shared = (
-        '<response status="error" code="12"><msg>' "<line>Edit breaks config validity</line></msg></response>"
+        '<response status="error" code="12"><msg><line>Edit breaks config validity</line></msg></response>'
     )
     expected_text_response = '<response status="success" code="20"><msg>command succeeded</msg></response>'
     expected_list_text_response = """<response status="success" code="19"><result total-count="1" count="1">
@@ -7861,7 +7862,7 @@ def test_pan_os_check_profile_type_by_given_profile_name(mocker):
         Panorama.check_profile_type_by_given_profile_name("profile_5", "device_group")
 
     with pytest.raises(
-        DemistoException, match="Profile name was not found in Vulnerability Protection Profiles " "or in Anti Spyware Profiles."
+        DemistoException, match="Profile name was not found in Vulnerability Protection Profiles or in Anti Spyware Profiles."
     ):
         Panorama.check_profile_type_by_given_profile_name("profile_6", "device_group")
 
@@ -7923,7 +7924,7 @@ def test_pan_os_add_profile_exception(mocker):
     )
     assert command_results.raw_response == {"response": {"@status": "success", "@code": "20", "msg": "command succeeded"}}
     assert command_results.readable_output == (
-        'Successfully created exception "threatname" with threat ID 1000 in the "test_spg" ' 'profile of type "vulnerability".'
+        'Successfully created exception "threatname" with threat ID 1000 in the "test_spg" profile of type "vulnerability".'
     )
 
 
@@ -7955,7 +7956,7 @@ def test_pan_os_edit_profile_exception(mocker):
     )
     assert command_results.raw_response == {"response": {"@status": "success", "@code": "20", "msg": "command succeeded"}}
     assert command_results.readable_output == (
-        'Successfully edited exception "threatname" with threat ID 1000 in the "test_spg" ' 'profile of type "vulnerability".'
+        'Successfully edited exception "threatname" with threat ID 1000 in the "test_spg" profile of type "vulnerability".'
     )
 
 
@@ -7984,7 +7985,7 @@ def test_pan_os_delete_profile_exception(mocker):
     )
     assert command_results.raw_response == {"response": {"@status": "success", "@code": "20", "msg": "command succeeded"}}
     assert command_results.readable_output == (
-        'Successfully deleted exception "threatname" with threat ID 1000 in the "test_spg" ' 'profile of type "vulnerability".'
+        'Successfully deleted exception "threatname" with threat ID 1000 in the "test_spg" profile of type "vulnerability".'
     )
 
 

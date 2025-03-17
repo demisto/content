@@ -499,7 +499,7 @@ class ExtraHopClient(BaseClient):
             data["active_until"] = int(active_until)
         if limit:
             data["limit"] = int(limit)
-        if any([val is not None for val in fields.values()]):
+        if any(val is not None for val in fields.values()):
             data["filter"] = {"operator": match_type, "rules": []}
             rules_list = data["filter"]["rules"]
 
@@ -766,7 +766,7 @@ def remove_empty_elements_from_response(data: Union[Dict, List, None, str]) -> U
     def empty(x):
         return x is None or x == {} or x == [] or x == ""
 
-    if not isinstance(data, (dict, list)):
+    if not isinstance(data, dict | list):
         return data
     elif isinstance(data, list):
         return [v for v in (remove_empty_elements_from_response(v) for v in data) if not empty(v)]
@@ -1020,12 +1020,12 @@ def validate_detections_list_arguments(body: Dict) -> None:
         DemistoException if invalid input given for an argument.
     """
     body = trim_spaces_from_args(body)
-    for key in body.keys():
+    for key in body:
         if key not in VALID_DETECTION_KEYS:
             raise InvalidValueError("key", key, VALID_DETECTION_KEYS)
 
     if body.get("filter"):
-        for key in body["filter"].keys():
+        for key in body["filter"]:
             if key not in VALID_FILTER_KEYS:
                 raise InvalidValueError("key", key, VALID_FILTER_KEYS)
 
@@ -2030,7 +2030,7 @@ def packets_search_command(client: ExtraHopClient, args: Dict[str, Any]) -> Unio
     filename_header = response.headers.get("content-disposition")
     f_attr = "filename="
     if filename_header and f_attr in filename_header:
-        quoted_filename = filename_header[filename_header.index(f_attr) + len(f_attr) :]
+        quoted_filename = filename_header[filename_header.index(f_attr) + len(f_attr):]
         filename = quoted_filename.replace('"', "")
     else:
         raise DemistoException("Error filename could not be found in response header.")
@@ -2323,7 +2323,7 @@ def detections_list_command(client: ExtraHopClient, args: Dict[str, Any], on_clo
                     field, direction = sort.split(" ")
                 except ValueError:
                     raise DemistoException(
-                        'Incorrect input provided for argument "sort". Please follow the format ' "mentioned in description."
+                        'Incorrect input provided for argument "sort". Please follow the format mentioned in description.'
                     )
 
                 if direction not in SORT_DIRECTION:
@@ -2445,7 +2445,7 @@ def get_modified_remote_data_command(client, args: Dict[str, Any], params: Dict)
         f'{len(updated_incident_ids)}.'
     )
     demisto.info(
-        f'Extrahop List of modified incident ids between {body["mod_time"]} to {body["until"]} is ' f'{updated_incident_ids}.'
+        f'Extrahop List of modified incident ids between {body["mod_time"]} to {body["until"]} is {updated_incident_ids}.'
     )
 
     return GetModifiedRemoteDataResponse(updated_incident_ids)

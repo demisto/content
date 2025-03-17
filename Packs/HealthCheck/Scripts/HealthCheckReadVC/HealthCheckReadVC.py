@@ -19,13 +19,11 @@ try:
             if ("Remote status: Enabled" in line) or ("Remote: true" in line):
                 devprod = True
 
-            if "Mode:" in line:
-                if devprod:
-                    demisto.executeCommand("setIncident", {"xsoardevprodmode": result[1]})
+            if "Mode:" in line and devprod:
+                demisto.executeCommand("setIncident", {"xsoardevprodmode": result[1]})
 
-            if "Content mode:" in line:
-                if devprod:
-                    demisto.executeCommand("setIncident", {"xsoardevprodmode": result[2]})
+            if "Content mode:" in line and devprod:
+                demisto.executeCommand("setIncident", {"xsoardevprodmode": result[2]})
 
 
 except ValueError:  # includes simplejson.decoder.JSONDecodeError

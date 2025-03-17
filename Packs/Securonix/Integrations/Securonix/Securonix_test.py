@@ -583,12 +583,7 @@ def test_commands(command, args, response, expected_result, mocker):
     elif command == list_violation_data:
         assert expected_result == result[0].outputs  # list_violation_data returns CommandResult object
     elif (
-        command == add_whitelist_entry
-        or command == create_lookup_table
-        or command == get_incident_workflow
-        or command == get_incident_status
-        or command == get_incident_available_actions
-        or command == add_comment_to_incident
+        command in (add_whitelist_entry, create_lookup_table, get_incident_workflow, get_incident_status, get_incident_available_actions, add_comment_to_incident)
     ):
         assert expected_result == result[0]
     else:
@@ -650,7 +645,7 @@ def test_get_remote_data(mocker):
 
 def add_comment_to_incident_request(*args):
     """Side effect function to replicate add_comment_request function."""
-    assert "[Mirrored From XSOAR] XSOAR Incident ID: 345\nAdded By: Admin\nComment: This is a comment" == args[1]
+    assert args[1] == "[Mirrored From XSOAR] XSOAR Incident ID: 345\nAdded By: Admin\nComment: This is a comment"
     return "Comment was added to the incident successfully."
 
 
@@ -781,7 +776,7 @@ def test_add_entry_to_lookup_table_invalid_arguments(mock_client, name, json_dat
 
 def test_add_entry_to_lookup_table_when_invalid_json_data_provided(mock_client):
     """Test case to verify that Exception should be raised when invalid JSON data is provided."""
-    expected_error_message = "Could not able to parse the provided JSON data. " "Error: Expecting value: line 1 column 9 (char 8)"
+    expected_error_message = "Could not able to parse the provided JSON data. Error: Expecting value: line 1 column 9 (char 8)"
 
     with pytest.raises(Exception) as error:
         add_entry_to_lookup_table(mock_client, {"name": "test_table", "json_data": '{"key1":}'})
@@ -797,7 +792,7 @@ def test_add_entry_to_look_table_when_invalid_json_data_provided_via_file_entry_
     with open(file_obj["path"], "w") as f:
         f.write('{"key1":}')
 
-    expected_error_message = "Could not able to parse the provided JSON data. " "Error: Expecting value: line 1 column 9 (char 8)"
+    expected_error_message = "Could not able to parse the provided JSON data. Error: Expecting value: line 1 column 9 (char 8)"
     mocker.patch.object(demisto, "getFilePath", return_value=file_obj)
 
     with pytest.raises(Exception) as error:
@@ -921,7 +916,7 @@ def test_validate_mirroring_parameters_for_incoming_mirroring_direction(close_st
 
 
 @pytest.mark.parametrize(
-    "active_state_action,active_state_status,close_state_action,close_state_status," "comment_entry_tag",
+    "active_state_action,active_state_status,close_state_action,close_state_status,comment_entry_tag",
     [
         ("", "In Progress", "Close Investigation", "Completed", "Comment"),
         ("  ", "In Progress", "Close Investigation", "Completed", "Comment"),

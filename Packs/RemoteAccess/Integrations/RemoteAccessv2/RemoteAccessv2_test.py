@@ -122,7 +122,7 @@ def test_create_paramiko_ssh_client_invalid(mocker, cipher_arg, key_arg, server_
     server_ciphers = {"diffie-hellman-group14-sha512"}
     expected_err_msg: str = ""
     if server_ciphers:
-        expected_err_msg = f"Given ciphers are not available in server.\n" f"Ciphers available in server are: {server_ciphers}"
+        expected_err_msg = f"Given ciphers are not available in server.\nCiphers available in server are: {server_ciphers}"
         mocker.patch("RemoteAccessv2.get_available_ciphers", return_value=server_ciphers)
     if server_key_algorithms:
         expected_err_msg = (

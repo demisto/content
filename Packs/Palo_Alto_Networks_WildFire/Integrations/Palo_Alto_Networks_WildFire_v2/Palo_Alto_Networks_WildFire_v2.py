@@ -25,7 +25,7 @@ CREATE_RELATIONSHIPS = argToBoolean(PARAMS.get("create_relationships", "true"))
 DEFAULT_HEADERS = {"Content-Type": "application/x-www-form-urlencoded"}
 MULTIPART_HEADERS = {"Content-Type": "multipart/form-data; boundary=upload_boundry"}
 WILDFIRE_REPORT_DT_FILE = (
-    "WildFire.Report(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5 ||" " val.URL && val.URL == obj.URL)"
+    "WildFire.Report(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5 || val.URL && val.URL == obj.URL)"
 )
 
 # update the default headers with the correct agent version based on the selection in the instance config
@@ -122,7 +122,7 @@ def http_request(
     resp_type: str = "xml",
     return_raw: bool = False,
 ):
-    LOG("running request with url=%s" % url)
+    LOG(f"running request with url={url}")
     result = requests.request(method, url, headers=headers, data=body, verify=USE_SSL, params=params, files=files)
     if str(result.reason) == "Not Found":
         raise NotFoundError("Not Found.")
@@ -151,7 +151,7 @@ def http_request(
                 sys.exit(0)
             else:
                 raise Exception(
-                    f"Request Failed with status: {result.status_code}" f" Reason is: {ERROR_DICT[str(result.status_code)]}"
+                    f"Request Failed with status: {result.status_code} Reason is: {ERROR_DICT[str(result.status_code)]}"
                 )
         else:
             raise Exception(f"Request Failed with status: {result.status_code} Reason is: {result.reason}")

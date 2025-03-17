@@ -1036,7 +1036,7 @@ def test_validate_ticket_track_arguments_successful_execution():
         [
             "id1, id2",
             "id3",
-            "Successfully added new devices(id1, id2) in the watchlist \n" "Successfully removed devices(id3) from the watchlist",
+            "Successfully added new devices(id1, id2) in the watchlist \nSuccessfully removed devices(id3) from the watchlist",
         ],
     ],
 )
@@ -1826,7 +1826,7 @@ def test_activity_map_get_command_failure_404(requests_mock):
         ),
         (
             {"ip_or_id": "0.0.0.0", "time_interval": "1 hour"},
-            f"1 hour is an invalid value for time_interval. " f"Possible values are: {ExtraHop_v2.VALID_TIME_INTERVALS}",
+            f"1 hour is an invalid value for time_interval. Possible values are: {ExtraHop_v2.VALID_TIME_INTERVALS}",
         ),
         (
             {"ip_or_id": "0.0.0.0", "from_time": "30m"},
@@ -1838,11 +1838,11 @@ def test_activity_map_get_command_failure_404(requests_mock):
         ),
         (
             {"ip_or_id": "0.0.0.0", "peer_role": "temp"},
-            f"temp is an invalid value for peer_role. " f"Possible values are: {ExtraHop_v2.VALID_PEER_ROLES}",
+            f"temp is an invalid value for peer_role. Possible values are: {ExtraHop_v2.VALID_PEER_ROLES}",
         ),
         (
             {"ip_or_id": "0.0.0.0", "protocol": "ICAMP"},
-            f"ICAMP is an invalid value for protocol. " f"Possible values are: {ExtraHop_v2.VALID_PROTOCOLS}",
+            f"ICAMP is an invalid value for protocol. Possible values are: {ExtraHop_v2.VALID_PROTOCOLS}",
         ),
     ],
 )
@@ -1867,11 +1867,11 @@ def test_activity_map_get_command_invalid_arguments(args, message, requests_mock
     [
         (
             {"ip_or_id": "3564", "from_time": "30"},
-            "When using a fixed time range both from_time and until_time " "timestamps need to be provided.",
+            "When using a fixed time range both from_time and until_time timestamps need to be provided.",
         ),
         (
             {"ip_or_id": "3564", "until_time": "30"},
-            "When using a fixed time range both from_time and until_time " "timestamps need to be provided.",
+            "When using a fixed time range both from_time and until_time timestamps need to be provided.",
         ),
     ],
 )
@@ -2146,7 +2146,7 @@ def test_validate_ip_for_get_peer_command_failure(requests_mock) -> None:
     mock_client = init_mock_client(on_cloud=False, requests_mock=requests_mock)
     with pytest.raises(ExtraHop_v2.DemistoException) as error:
         _ = ExtraHop_v2.peers_get_command(mock_client, args, False)
-    assert "Error parsing IP Address 1:1:1" == str(error.value)
+    assert str(error.value) == "Error parsing IP Address 1:1:1"
 
 
 def test_empty_response_of_device_failure_for_peers_get_command(requests_mock) -> None:
@@ -2169,7 +2169,7 @@ def test_empty_response_of_device_failure_for_peers_get_command(requests_mock) -
     }
     with pytest.raises(ExtraHop_v2.DemistoException) as error:
         _ = ExtraHop_v2.peers_get_command(mock_client, args, False)
-    assert "Error in API call [404] - None\n[]" == str(error.value)
+    assert str(error.value) == "Error in API call [404] - None\n[]"
 
 
 def test_for_prepare_device_get_output_success(requests_mock) -> None:
@@ -2184,8 +2184,8 @@ def test_for_prepare_device_get_output_success(requests_mock) -> None:
     """
     result = setup_peers_get_command_by_id(False, True, requests_mock)
 
-    assert "No Devices found" == result.readable_output
-    assert [] == result.raw_response
+    assert result.readable_output == "No Devices found"
+    assert result.raw_response == []
 
 
 def test_module_on_prem_success(requests_mock) -> None:

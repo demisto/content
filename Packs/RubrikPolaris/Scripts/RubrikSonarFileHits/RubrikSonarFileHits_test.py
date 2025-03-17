@@ -20,7 +20,7 @@ class TestMain(unittest.TestCase):
                 "ContentsFormat": formats["html"],
                 "Type": entryTypes["note"],
                 "Contents": (
-                    "<div style=display:block;text-align:center;><h1 style=color:#00CD33;" "font-size:275%;>None</h1></div>"
+                    "<div style=display:block;text-align:center;><h1 style=color:#00CD33;font-size:275%;>None</h1></div>"
                 ),
             }
         )
@@ -40,7 +40,7 @@ class TestMain(unittest.TestCase):
                 "ContentsFormat": formats["html"],
                 "Type": entryTypes["note"],
                 "Contents": (
-                    "<div style=display:block;text-align:center;><h1 style=color:#FF1744;" "font-size:275%;>1</h1></div>"
+                    "<div style=display:block;text-align:center;><h1 style=color:#FF1744;font-size:275%;>1</h1></div>"
                 ),
             }
         )

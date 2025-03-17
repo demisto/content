@@ -64,9 +64,9 @@ def convert_to_ds_query_array(args: Dict[str, Any]):
     """
     terms = extract_terms(args)
 
-    res = list()
+    res = []
     query = sorted(terms, key=lambda x: count_terms(x))
-    init = list()  # type: List[str]
+    init = []  # type: List[str]
     term_count = 0
 
     for q in query:
@@ -86,7 +86,7 @@ def check_ip(ip):
     """
     Filter function that excludes the inet any address (0.0.0.0).
     """
-    return "0.0.0.0" != ip
+    return ip != "0.0.0.0"
 
 
 def check_domain_name(domain):

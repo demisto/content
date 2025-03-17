@@ -98,7 +98,7 @@ def reformat_outputs(text: str) -> str:
     if text == "generationtime_epoch":
         return "GenerationTime_Epoch"
 
-    if text.startswith("U_") or text.startswith("u_"):
+    if text.startswith(("U_", "u_")):
         text = text[2:]
     return "".join(" " + char if char.isupper() else char.strip() for char in text).strip().title()
 
@@ -262,31 +262,28 @@ def validate_mirroring_parameters(params: dict[str, Any]) -> None:
     if mirror_direction == "None":
         return
 
-    if mirror_direction == "Incoming":
-        if not close_states_of_securonix or not argToList(close_states_of_securonix):
-            raise ValueError(
-                'Following field is required for Incoming Mirroring: "Securonix workflow state(s) that '
-                'can be considered as Close state in XSOAR for Incoming mirroring".'
-            )
+    if mirror_direction == "Incoming" and not close_states_of_securonix or not argToList(close_states_of_securonix):
+        raise ValueError(
+            'Following field is required for Incoming Mirroring: "Securonix workflow state(s) that '
+            'can be considered as Close state in XSOAR for Incoming mirroring".'
+        )
 
-    if mirror_direction == "Outgoing":
-        if (
+    if mirror_direction == "Outgoing" and (
             not active_state_action
             or not active_state_status
             or not close_state_action
             or not close_state_status
             or not comment_entry_tag
         ):
-            raise ValueError(
-                'Following fields are required for Outgoing Mirroring: "Securonix action name to map '
-                'with XSOAR\'s active state for Outgoing mirroring", "Securonix status to map with '
-                'XSOAR\'s active state for Outgoing mirroring", "Securonix action name to map with '
-                "XSOAR's closed state for Outgoing mirroring\", \"Securonix status to map with XSOAR's "
-                'closed state for Outgoing mirroring", "Comment Entry Tag".'
-            )
+        raise ValueError(
+            'Following fields are required for Outgoing Mirroring: "Securonix action name to map '
+            'with XSOAR\'s active state for Outgoing mirroring", "Securonix status to map with '
+            'XSOAR\'s active state for Outgoing mirroring", "Securonix action name to map with '
+            "XSOAR's closed state for Outgoing mirroring\", \"Securonix status to map with XSOAR's "
+            'closed state for Outgoing mirroring", "Comment Entry Tag".'
+        )
 
-    if mirror_direction == "Incoming And Outgoing":
-        if (
+    if mirror_direction == "Incoming And Outgoing" and (
             not active_state_action
             or not active_state_status
             or not close_state_action
@@ -295,24 +292,23 @@ def validate_mirroring_parameters(params: dict[str, Any]) -> None:
             or not argToList(close_states_of_securonix)
             or not comment_entry_tag
         ):
-            raise ValueError(
-                'Following fields are required for Incoming And Outgoing Mirroring: "Securonix workflow '
-                'state(s) that can be considered as Close state in XSOAR for Incoming mirroring", '
-                '"Securonix action name to map with XSOAR\'s active state for Outgoing mirroring", '
-                '"Securonix status to map with XSOAR\'s active state for Outgoing mirroring", "Securonix'
-                ' action name to map with XSOAR\'s closed state for Outgoing mirroring", "Securonix status'
-                ' to map with XSOAR\'s closed state for Outgoing mirroring", "Comment Entry Tag".'
-            )
+        raise ValueError(
+            'Following fields are required for Incoming And Outgoing Mirroring: "Securonix workflow '
+            'state(s) that can be considered as Close state in XSOAR for Incoming mirroring", '
+            '"Securonix action name to map with XSOAR\'s active state for Outgoing mirroring", '
+            '"Securonix status to map with XSOAR\'s active state for Outgoing mirroring", "Securonix'
+            ' action name to map with XSOAR\'s closed state for Outgoing mirroring", "Securonix status'
+            ' to map with XSOAR\'s closed state for Outgoing mirroring", "Comment Entry Tag".'
+        )
 
-    if close_incident:
-        if not active_state_action or not active_state_status or not close_state_action or not close_state_status:
-            raise ValueError(
-                'Following fields are required for closing incident on Securonix: "Securonix action name '
-                'to map with XSOAR\'s active state for Outgoing mirroring", "Securonix status to map '
-                'with XSOAR\'s active state for Outgoing mirroring", "Securonix action name to map with '
-                "XSOAR's closed state for Outgoing mirroring\", \"Securonix status to map with XSOAR's "
-                'closed state for Outgoing mirroring".'
-            )
+    if close_incident and not active_state_action or not active_state_status or not close_state_action or not close_state_status:
+        raise ValueError(
+            'Following fields are required for closing incident on Securonix: "Securonix action name '
+            'to map with XSOAR\'s active state for Outgoing mirroring", "Securonix status to map '
+            'with XSOAR\'s active state for Outgoing mirroring", "Securonix action name to map with '
+            "XSOAR's closed state for Outgoing mirroring\", \"Securonix status to map with XSOAR's "
+            'closed state for Outgoing mirroring".'
+        )
 
 
 def validate_delete_whitelist_parameters(
@@ -333,7 +329,7 @@ def validate_delete_whitelist_parameters(
     # Validate whitelist_type parameter.
     if whitelist_type and whitelist_type not in VALID_WHITELIST_TYPE:
         raise ValueError(
-            f"{whitelist_type} is an invalid value for whitelist_type." f"Valid whitelist types are {VALID_ENTITY_TYPE}"
+            f"{whitelist_type} is an invalid value for whitelist_type.Valid whitelist types are {VALID_ENTITY_TYPE}"
         )
 
     # Validate entity_id parameter.
@@ -685,7 +681,7 @@ class Client(BaseClient):
         """
         global FULL_URL
         FULL_URL = urljoin(self._base_url, url_suffix)
-        status_list_to_retry = [429] + [i for i in range(500, 600)]
+        status_list_to_retry = [429] + list(range(500, 600))
         if self._securonix_retry_count > 0:
             self.implement_retry(
                 retries=self._securonix_retry_count,
@@ -744,7 +740,7 @@ class Client(BaseClient):
 
         except requests.exceptions.ConnectionError as exception:
             error_class = str(exception.__class__)
-            err_type = "<" + error_class[error_class.find("'") + 1 : error_class.rfind("'")] + ">"
+            err_type = "<" + error_class[error_class.find("'") + 1: error_class.rfind("'")] + ">"
             err_msg = (
                 f"Error Type: {err_type}\n"
                 f"Error Number: [{exception.errno}]\n"
@@ -1053,7 +1049,7 @@ class Client(BaseClient):
         if "error" in possible_action:
             err_msg = possible_action.get("error")
             raise Exception(
-                f"Failed to perform the action {action} on incident {incident_id}.\n" f"Error from Securonix is: {err_msg}"
+                f"Failed to perform the action {action} on incident {incident_id}.\nError from Securonix is: {err_msg}"
             )
 
         incident = self.http_request("POST", "/incident/actions", headers={"token": self._token}, params=params)
@@ -1976,7 +1972,7 @@ def get_incident_attachments(client: Client, args: dict, incident_id: str = None
     try:
         # So if there is no attachments then in response status code will be 200 and in content there is json with
         # error field
-        if "Content-Disposition" not in attachments_res.headers.keys():
+        if "Content-Disposition" not in attachments_res.headers:
             return CommandResults(readable_output=f"#### No Attachments found for Incident ID:{incident_id_}")
     except requests.exceptions.JSONDecodeError:  # type: ignore
         # Here if API have attachments then it will return byte data so then res.json() raise decode error. Means we
@@ -2134,7 +2130,7 @@ def get_watchlist(client: Client, args) -> tuple[str, dict, dict]:
     watchlist_events = watchlist.get("events")
     if not watchlist_events:
         raise Exception(
-            "Watchlist does not contain items.\n" "Make sure the watchlist is not empty and that the watchlist name is correct."
+            "Watchlist does not contain items.\nMake sure the watchlist is not empty and that the watchlist name is correct."
         )
     fields_to_drop = ["decayflag", "tenantid", "tenantname", "watchlistname", "type"]
     watchlist_readable, watchlist_events_outputs = parse_data_arr(watchlist_events, fields_to_drop=fields_to_drop)
@@ -2176,7 +2172,7 @@ def create_watchlist(client: Client, args) -> tuple[str, dict, dict]:
     watchlist = {"Watchlistname": watchlist_name, "TenantName": tenant_name}
     remove_nulls_from_dictionary(watchlist)
     entry_context = {
-        "Securonix.Watchlists(val.Watchlistname === obj.Watchlistname && val.TenantName === " "obj.TenantName)": watchlist
+        "Securonix.Watchlists(val.Watchlistname === obj.Watchlistname && val.TenantName === obj.TenantName)": watchlist
     }
     return human_readable, entry_context, response
 
@@ -2223,7 +2219,7 @@ def add_entity_to_watchlist(client: Client, args) -> tuple[str, dict, dict]:
 
     if "successfull" not in response:
         raise Exception(
-            f"Failed to add entity {entity_name} to the watchlist {watchlist_name}.\n" f"Error from Securonix is: {response}."
+            f"Failed to add entity {entity_name} to the watchlist {watchlist_name}.\nError from Securonix is: {response}."
         )
     human_readable = f"Added successfully the entity {entity_name} to the watchlist {watchlist_name}."
     return human_readable, {}, response
@@ -2370,7 +2366,7 @@ def list_whitelists(client: Client, args: dict[str, Any]) -> tuple[str, dict, li
     headers = ["WhitelistName", "WhitelistType", "TenantName"]
     human_readable = tableToMarkdown(name="Whitelists:", t=whitelists_entries, headers=headers, removeNull=True)
     entry_context = {
-        "Securonix.Whitelist(val.WhitelistName === obj.WhitelistName && val.TenantName === " "obj.TenantName)": whitelists_entries
+        "Securonix.Whitelist(val.WhitelistName === obj.WhitelistName && val.TenantName === obj.TenantName)": whitelists_entries
     }
 
     return human_readable, entry_context, whitelists
@@ -2392,7 +2388,7 @@ def get_whitelist_entry(client: Client, args: dict[str, Any]) -> tuple[str, dict
     whitelist = client.get_whitelist_entry_request(tenant_name, whitelist_name)
 
     if not whitelist:
-        raise Exception("Whitelist does not contain items.\n" "Make sure the whitelist_name is not empty and it is correct.")
+        raise Exception("Whitelist does not contain items.\nMake sure the whitelist_name is not empty and it is correct.")
 
     whitelist_entries = []
 
@@ -2406,7 +2402,7 @@ def get_whitelist_entry(client: Client, args: dict[str, Any]) -> tuple[str, dict
         name=f"Whitelist: {whitelist_name}", t=remove_empty_elements(whitelist_entries), headers=headers, removeNull=True
     )
     entry_context = {
-        "Securonix.Whitelist(val.WhitelistName === obj.WhitelistName && val.TenantName === " "obj.TenantName)": watchlist_outputs
+        "Securonix.Whitelist(val.WhitelistName === obj.WhitelistName && val.TenantName === obj.TenantName)": watchlist_outputs
     }
 
     return human_readable, entry_context, whitelist
@@ -2437,9 +2433,8 @@ def add_whitelist_entry(client: Client, args) -> tuple[str, dict, dict]:
     if whitelist_type not in ["Global", "Attribute"]:
         raise Exception("Provide valid whitelist_type")
 
-    if whitelist_type == "Global":
-        if entity_type not in ["Users", "Activityaccount", "Resources", "Activityip"]:
-            raise Exception("Provide valid entity_type")
+    if whitelist_type == "Global" and entity_type not in ["Users", "Activityaccount", "Resources", "Activityip"]:
+        raise Exception("Provide valid entity_type")
 
     if whitelist_type == "Attribute":
         if attribute_name not in ["source ip", "resourcetype", "transactionstring"]:
@@ -2469,7 +2464,7 @@ def add_whitelist_entry(client: Client, args) -> tuple[str, dict, dict]:
         violation_name,
     )
     if response.get("status_code") == 400:
-        raise Exception("Failed to add entity to the whitelist.\n" f"Error from Securonix is: {response}.")
+        raise Exception(f"Failed to add entity to the whitelist.\nError from Securonix is: {response}.")
     human_readable = "Entity added to global whitelist Successfully."
 
     return human_readable, {}, response
@@ -2872,7 +2867,7 @@ def fetch_securonix_incident(
         new_last_run = last_run
         demisto.debug("Using the last run object got from the previous run.")
 
-    demisto_incidents: list = list()
+    demisto_incidents: list = []
 
     from_epoch = new_last_run.get("from")
     to_epoch = new_last_run.get("to")
@@ -3006,7 +3001,7 @@ def fetch_securonix_threat(client: Client, fetch_time: str | None, tenant_name: 
         }
     else:
         new_last_run = last_run
-    demisto_incidents: list = list()
+    demisto_incidents: list = []
     from_epoch = date_to_timestamp(new_last_run.get("time"), date_format=timestamp_format)
     to_epoch = date_to_timestamp(datetime.now(), date_format=timestamp_format)
     # Get threats from Securonix
@@ -3138,9 +3133,9 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
     updated_incident_ids = updated_incident_ids[:10000]
 
     demisto.debug(
-        f"Number of incidents modified between {from_epoch_time} to {to_epoch_time} are " f"{len(updated_incident_ids)}."
+        f"Number of incidents modified between {from_epoch_time} to {to_epoch_time} are {len(updated_incident_ids)}."
     )
-    demisto.debug(f"List of modified incident ids between {from_epoch_time} to {to_epoch_time} is " f"{updated_incident_ids}.")
+    demisto.debug(f"List of modified incident ids between {from_epoch_time} to {to_epoch_time} is {updated_incident_ids}.")
 
     return GetModifiedRemoteDataResponse(updated_incident_ids)
 
@@ -3170,7 +3165,7 @@ def get_remote_data_command(
     command_last_run_dt = arg_to_datetime(arg=args.get("lastUpdate"), arg_name="lastUpdate", required=True)
     command_last_run_epoch = date_to_timestamp(command_last_run_dt, date_format=timestamp_format)
     demisto.debug(
-        f"The time when the last time get-remote-data command is called for current incident is " f"{command_last_run_dt}."
+        f"The time when the last time get-remote-data command is called for current incident is {command_last_run_dt}."
     )
 
     # Retrieve the latest incident data from the Securonix platform.
@@ -3214,7 +3209,7 @@ def get_remote_data_command(
             )
         else:
             demisto.debug(
-                f"Not closing the XSOAR incident as its respective Securonix incident {sx_incident_id} is" f" still open."
+                f"Not closing the XSOAR incident as its respective Securonix incident {sx_incident_id} is still open."
             )
 
     # Update the comments.
@@ -3343,26 +3338,25 @@ def update_remote_system(client: Client, args: dict[str, Any]) -> str:
 
     close_incident = parsed_args.data.get("securonixcloseincident", False)
 
-    if not close_incident:
-        if parsed_args.incident_changed and parsed_args.inc_status == IncidentStatus.DONE:
-            delta_keys = parsed_args.delta.keys()
-            if "closingUserId" not in delta_keys and "closeReason" not in delta_keys:
-                return remote_incident_id
+    if not close_incident and parsed_args.incident_changed and parsed_args.inc_status == IncidentStatus.DONE:
+        delta_keys = parsed_args.delta.keys()
+        if "closingUserId" not in delta_keys and "closeReason" not in delta_keys:
+            return remote_incident_id
 
-            close_notes = parsed_args.delta.get("closeNotes", "")
-            close_reason = parsed_args.delta.get("closeReason", "")
-            close_user_id = parsed_args.delta.get("closingUserId", "")
+        close_notes = parsed_args.delta.get("closeNotes", "")
+        close_reason = parsed_args.delta.get("closeReason", "")
+        close_user_id = parsed_args.delta.get("closingUserId", "")
 
-            closing_comment = (
-                f"[Mirrored From XSOAR] XSOAR Incident ID: {xsoar_incident_id}\n"
-                f"Closed By: {close_user_id}\nClose Reason: {close_reason}\nClose Notes: {close_notes}"
-            )
-            demisto.debug(f"Closing Comment: {closing_comment}")
+        closing_comment = (
+            f"[Mirrored From XSOAR] XSOAR Incident ID: {xsoar_incident_id}\n"
+            f"Closed By: {close_user_id}\nClose Reason: {close_reason}\nClose Notes: {close_notes}"
+        )
+        demisto.debug(f"Closing Comment: {closing_comment}")
 
-            client.perform_action_on_incident_request(
-                incident_id=remote_incident_id, action=XSOAR_TO_SECURONIX_STATE_MAPPING["DONE"]["action"], action_parameters=""
-            )
-            client.add_comment_to_incident_request(incident_id=remote_incident_id, comment=closing_comment)
+        client.perform_action_on_incident_request(
+            incident_id=remote_incident_id, action=XSOAR_TO_SECURONIX_STATE_MAPPING["DONE"]["action"], action_parameters=""
+        )
+        client.add_comment_to_incident_request(incident_id=remote_incident_id, comment=closing_comment)
 
     return remote_incident_id
 

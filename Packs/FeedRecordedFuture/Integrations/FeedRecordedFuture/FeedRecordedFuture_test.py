@@ -356,13 +356,13 @@ def test_fetch_indicators_command(mocker):
     client_outputs = []
     for output in fetch_indicators_command(client, indicator_type):
         client_outputs.extend(output)
-    assert {
+    assert client_outputs[0] == {
         "fields": {"recordedfutureevidencedetails": [], "recordedfutureriskscore": None, "tags": []},
         "rawJSON": {"Name": "192.168.0.1", "a": "3", "type": "IP", "value": "192.168.0.1"},
         "score": 0,
         "type": "IP",
         "value": "192.168.0.1",
-    } == client_outputs[0]
+    }
     assert len(client_outputs) == 1
 
 
@@ -388,7 +388,7 @@ def test_fetch_indicators_risk_threshold_command(mocker):
     client_outputs = []
     for output in fetch_indicators_command(client, indicator_type):
         client_outputs.extend(output)
-    assert {
+    assert client_outputs[0] == {
         "fields": {"recordedfutureevidencedetails": [], "recordedfutureriskscore": "80", "tags": []},
         "rawJSON": {
             "Criticality Label": "Malicious",
@@ -401,7 +401,7 @@ def test_fetch_indicators_risk_threshold_command(mocker):
         "score": 3,
         "type": "IP",
         "value": "192.168.0.1",
-    } == client_outputs[0]
+    }
 
     assert len(client_outputs) == 1
 

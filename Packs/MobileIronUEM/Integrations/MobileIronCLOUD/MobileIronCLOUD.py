@@ -126,7 +126,7 @@ class MobileIronCloudClient(BaseClient):
         if not partition_id:
             raise ValueError("partition_id not specified")
 
-        should_send_mail = True if message_type == "email" else False
+        should_send_mail = message_type == "email"
         data = {
             "sendPushNotification": not should_send_mail,
             "sendEmail": should_send_mail,
@@ -281,7 +281,7 @@ def execute_test_module_command(client: MobileIronCloudClient):
     """This definition is for test command to get Ping response from Cloud"""
 
     response = client.get_tenant_partitions()
-    if response:
+    if response:    # noqa: RET503
         return "ok"
 
 

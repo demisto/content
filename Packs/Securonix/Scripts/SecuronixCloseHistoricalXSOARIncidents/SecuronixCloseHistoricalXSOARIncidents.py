@@ -94,7 +94,7 @@ def close_xsoar_incident(xsoar_incident_id: str, sx_incident_id: str, close_stat
         bool: True if the XSOAR incident is close, False otherwise.
     """
     demisto.debug(
-        f"Getting update for XSOAR Incident: {xsoar_incident_id} from the respective " f"Securonix Incident: {sx_incident_id}"
+        f"Getting update for XSOAR Incident: {xsoar_incident_id} from the respective Securonix Incident: {sx_incident_id}"
     )
 
     incident_activity_history_args = {"incident_id": sx_incident_id}
@@ -120,7 +120,7 @@ def close_xsoar_incident(xsoar_incident_id: str, sx_incident_id: str, close_stat
         demisto.executeCommand("closeInvestigation", close_investigation_args)
         return True
 
-    demisto.info(f"The XSOAR Incident: {xsoar_incident_id} is not closed." f"Respective Securonix Incident: {sx_incident_id}.")
+    demisto.info(f"The XSOAR Incident: {xsoar_incident_id} is not closed.Respective Securonix Incident: {sx_incident_id}.")
     return False
 
 

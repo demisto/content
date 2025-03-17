@@ -43,7 +43,7 @@ def main():
                 shifts = role.get("shifts") or []
                 for shift in shifts:
                     role_on_call_hours += count_hours_in_shift(shift)
-                role_users = map(
+                role_users = map(   # noqa: C417
                     lambda role_user: role_user.get("name", ""),
                     filter(lambda u: role.get("name") in reduce(operator.add, u.get("roles", {}).values()), users),
                 )

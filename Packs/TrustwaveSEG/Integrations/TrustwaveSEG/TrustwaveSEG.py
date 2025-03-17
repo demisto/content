@@ -57,9 +57,8 @@ class Client(BaseClient):
         """
         integration_context = get_integration_context()
         now = int(time.time())
-        if integration_context.get("token") and integration_context.get("expires_in"):
-            if now < integration_context["expires_in"]:
-                return integration_context["token"]
+        if integration_context.get("token") and integration_context.get("expires_in") and now < integration_context["expires_in"]:
+            return integration_context["token"]
 
         try:
             hashed_password = hashlib.sha256(password.encode()).hexdigest()
@@ -493,8 +492,9 @@ def trustwave_seg_statistics_command(
     start_time = dateparser.parse(time_range if time_range else start_time)  # type: ignore
 
     # if end time not provided - set it to current date
-    end_time = dateparser.parse("now" if not end_time else end_time)
-    assert start_time is not None and end_time is not None
+    end_time = dateparser.parse(end_time if end_time else "now")
+    assert start_time is not None
+    assert end_time is not None
     start_info = start_time.strftime(DATE_FORMAT)
     end_info = end_time.strftime(DATE_FORMAT)
 
@@ -771,8 +771,9 @@ def trustwave_seg_find_quarantine_message_command(
     start_time = dateparser.parse(time_range if time_range else start_time)  # type: ignore
 
     # if end time not provided - set it to current date
-    end_time = dateparser.parse("now" if not end_time else end_time)
-    assert start_time is not None and end_time is not None
+    end_time = dateparser.parse(end_time if end_time else "now")
+    assert start_time is not None
+    assert end_time is not None
     start_time = int(datetime.timestamp(start_time))
     end_time = int(datetime.timestamp(end_time))
 

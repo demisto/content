@@ -54,7 +54,7 @@ def perform_copy_command(
     except (FileNotFoundError, SCPException) as e:
         if "No such file or directory" in str(e):
             raise DemistoException(
-                f"Could not find the given path {file_path} in the local machine.\n" "Please verify the path is correct."
+                f"Could not find the given path {file_path} in the local machine.\nPlease verify the path is correct."
             ) from e
         if "Not a directory" in str(e):
             raise DemistoException(
@@ -63,7 +63,7 @@ def perform_copy_command(
             ) from e
         if "No such file or directory" in str(e):
             raise DemistoException(
-                f"Could not find the given path {file_path} in the remote machine.\n" "Please verify the path is correct."
+                f"Could not find the given path {file_path} in the remote machine.\nPlease verify the path is correct."
             ) from e
         raise e
 
@@ -121,7 +121,7 @@ def create_paramiko_ssh_client(
         available_ciphers = get_available_ciphers()
         if not ciphers.intersection(available_ciphers):
             raise DemistoException(
-                f"Given ciphers are not available in server.\n" f"Ciphers available in server are: {available_ciphers}"
+                f"Given ciphers are not available in server.\nCiphers available in server are: {available_ciphers}"
             )
         Transport._preferred_ciphers = (*ciphers,)  # type: ignore
     if key_algorithms:
@@ -291,7 +291,7 @@ def copy_to_command(ssh_client: SSHClient, args: Dict[str, Any]) -> CommandResul
             demisto.debug(f"Ignoring the error: {e!s}, occurred when run the command: mkdir -p {destination_dir}")
 
     perform_copy_command(ssh_client, file_path, destination_path, copy_to_remote=True, socket_timeout=timeout)
-    return CommandResults(readable_output=f"### The file corresponding to entry ID: {entry_id} was copied to remote" " host.")
+    return CommandResults(readable_output=f"### The file corresponding to entry ID: {entry_id} was copied to remote host.")
 
 
 def copy_from_command(ssh_client: SSHClient, args: Dict[str, Any]) -> Dict:
@@ -335,13 +335,13 @@ def main() -> None:
     key_algorithms: Set[str] = set(argToList(params.get("key_algorithms")))
 
     demisto.debug(f"Command being called is {demisto.command()}")
-    if password_param := params.get("additional_password", {}).get("password"):
-        if command != "test-module" and password_param != args.get("additional_password"):
-            raise DemistoException(
-                "Additional password to use the module have been supplied.\n"
-                'Please supply "additional_password" argument that matches the "Additional Password"'
-                " parameter value."
-            )
+    if ((password_param := params.get("additional_password", {}).get("password")) and
+        command != "test-module" and password_param != args.get("additional_password")):
+        raise DemistoException(
+            "Additional password to use the module have been supplied.\n"
+            'Please supply "additional_password" argument that matches the "Additional Password"'
+            " parameter value."
+        )
 
     systems = argToList(args.get("system"))
     hosts = argToList(args.get("host"))

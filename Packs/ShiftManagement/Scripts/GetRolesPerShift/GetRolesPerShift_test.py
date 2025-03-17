@@ -57,10 +57,14 @@ def test_get_shifts(mocker):
 | __13:00 - 14:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 |  | Shift1, Shift2 | Shift1, Shift2 |
 | __14:00 - 15:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 |  | Shift1, Shift2 | Shift1, Shift2 |
 | __15:00 - 16:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 |  | Shift1, Shift2 | Shift1, Shift2 |
-| __16:00 - 17:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 |
-| __17:00 - 18:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 |
-| __18:00 - 19:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 |
-| __19:00 - 20:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 |
+| __16:00 - 17:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 | Shift1, Shift2 | Shift1, Shift2 |
+ Shift1, Shift2 |
+| __17:00 - 18:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 | Shift1, Shift2 | Shift1, Shift2 |
+ Shift1, Shift2 |
+| __18:00 - 19:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 | Shift1, Shift2 | Shift1, Shift2 |
+ Shift1, Shift2 |
+| __19:00 - 20:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 | Shift1, Shift2 | Shift1, Shift2 |
+ Shift1, Shift2 |
 | __20:00 - 21:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 | Shift1, Shift2 | Shift1, Shift2 |  |
 | __21:00 - 22:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 | Shift1, Shift2 | Shift1, Shift2 |  |
 | __22:00 - 23:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 | Shift1, Shift2 | Shift1, Shift2 |  |

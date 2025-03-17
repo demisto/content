@@ -384,7 +384,7 @@ def upload_file_command(client: Client, args: dict) -> CommandResults:
         # file name override by user
         file_name = file_name if file_name else res_name
         if not file_name:
-            return_error("Impossible to detect a filename in the path, " "use the argument 'fileName' to set one !")
+            return_error("Impossible to detect a filename in the path, use the argument 'fileName' to set one !")
         file_binary = open(res_path, "rb")
         response = client.upload_file(incident_id, file_binary, file_name, target == "incident attachment")
         file_binary.close()
@@ -444,7 +444,7 @@ def download_file_command(client: Client, args: dict) -> CommandResults:
     # extract file_name from URL or reponse header
     if not file_name:
         headers = response.headers
-        if "Content-Disposition" in headers.keys():
+        if "Content-Disposition" in headers:
             file_name = re.findall("filename=(.+)", headers["Content-Disposition"])[0]
         else:
             file_name = file_uri.split("/")[-1]
@@ -475,7 +475,7 @@ def get_file_hash_command(client: Client, args: dict) -> CommandResults:
     if response.status_code != 200:
         return_error(f"HTTP error {response.status_code}")
     file_name = ""
-    if "Content-Disposition" in response.headers.keys():
+    if "Content-Disposition" in response.headers:
         file_name = re.findall("filename=(.+)", response.headers["Content-Disposition"])[0]
 
     # structure to return

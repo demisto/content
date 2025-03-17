@@ -210,7 +210,7 @@ def fetch_incidents(
     # A dictionary to store last fetch values for each severity.
     next_run = {}
     # Sorting the severity levels and creating a list.
-    severity_levels = ZEROHACK_SEVERITIES[ZEROHACK_SEVERITIES.index(min_severity) :]
+    severity_levels = ZEROHACK_SEVERITIES[ZEROHACK_SEVERITIES.index(min_severity):]
     severity_levels.sort()
     # Initializating the incidents dictionary and setting the severity levels.
     incidents: List[Dict[str, Any]] = []
@@ -245,22 +245,21 @@ def fetch_incidents(
             for alert in response_data:
                 attack_time = datetime.strptime(alert.get("attack_timestamp", "0"), DATE_FORMAT)
                 incident_created_time = int((attack_time - datetime(1970, 1, 1)).total_seconds())
-                if last_fetch is not None:
-                    if incident_created_time > last_fetch:
-                        incident_name = "Zerohack XDR " + alert["ids_threat_class"]
-                        incident = {
-                            "name": incident_name,
-                            "occurred": timestamp_to_datestring(incident_created_time),
-                            "type": alert["ids_threat_class"],
-                            "movement_type": alert["type_of_threat"],
-                            "platform": alert["platform"],
-                            "attacker_rep": alert["ip_rep"],
-                            "rawJSON": json.dumps(alert),
-                            "severity": convert_to_demisto_severity(alert.get("ids_threat_severity", "Low")),
-                        }
-                        demisto.debug(incident)
-                        incidents.append(incident)
-                        last_incident_time = incident_created_time
+                if last_fetch is not None and incident_created_time > last_fetch:
+                    incident_name = "Zerohack XDR " + alert["ids_threat_class"]
+                    incident = {
+                        "name": incident_name,
+                        "occurred": timestamp_to_datestring(incident_created_time),
+                        "type": alert["ids_threat_class"],
+                        "movement_type": alert["type_of_threat"],
+                        "platform": alert["platform"],
+                        "attacker_rep": alert["ip_rep"],
+                        "rawJSON": json.dumps(alert),
+                        "severity": convert_to_demisto_severity(alert.get("ids_threat_severity", "Low")),
+                    }
+                    demisto.debug(incident)
+                    incidents.append(incident)
+                    last_incident_time = incident_created_time
 
         # Based on the findings update the last fetch dictionary.
         if last_fetch == last_incident_time:

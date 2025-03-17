@@ -19,7 +19,7 @@ def escape_illegal_characters_in_file_name(file_name: str) -> str:
 
 def gzip_file(fileEntryID: str):
     entry_ids = argToList(fileEntryID)
-    file_names = list()
+    file_names = []
     for entry_id in entry_ids:
         res = demisto.executeCommand("getFilePath", {"id": entry_id})
 

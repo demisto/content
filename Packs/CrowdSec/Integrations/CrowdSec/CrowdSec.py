@@ -73,11 +73,11 @@ class Client(BaseClient):
 
 def format_readable(ip: str, data: dict, status: int) -> str:
     behaviors_readable = ""
-    for behavior in data.get("behaviors", list()):
+    for behavior in data.get("behaviors", []):
         behaviors_readable += behavior["label"] + "\n"
 
     cves_readable = ""
-    for attack_detail in data.get("attack_details", list()):
+    for attack_detail in data.get("attack_details", []):
         cves_readable += attack_detail["label"] + "\n"
 
     history = data.get("history", {})
@@ -182,8 +182,8 @@ def ip_command(client: Client, reliability: str, args: dict[str, Any]) -> List[C
                 dbot_score=dbot_score,
             )
         else:
-            tags = [behavior["name"] for behavior in result.get("behaviors", list())]
-            tags.extend([classification["name"] for classification in result["classifications"].get("classifications", list())])
+            tags = [behavior["name"] for behavior in result.get("behaviors", [])]
+            tags.extend([classification["name"] for classification in result["classifications"].get("classifications", [])])
             ip_indicator = Common.IP(
                 ip=ip,
                 dbot_score=dbot_score,

@@ -276,7 +276,8 @@ class EclecticIQ_api:
             try:
                 err = r.json()
                 detail = err["errors"][0]["detail"]
-                msg = f"EclecticIQ VA returned an error, code:{r.status_code}, reason:[{r.reason}], URL: [{r.url}], details:[{detail}]"
+                msg = (f"EclecticIQ VA returned an error, code:{r.status_code},"
+                       f" reason:[{r.reason}], URL: [{r.url}], details:[{detail}]")
             except Exception:
                 msg = f"EclecticIQ VA returned an error, code:{r.status_code}, reason:[{r.reason}], URL: [{r.url}]"
             raise Exception(msg)
@@ -777,7 +778,7 @@ class EclecticIQ_api:
             else:
                 try:
                     last_ingested_index = data.index(feed_last_run["last_ingested"])
-                    diff_data = data[last_ingested_index + 1 :]
+                    diff_data = data[last_ingested_index + 1:]
                     self.eiq_logging.info(
                         "Received list contains {} blocks for {} feed:{}.".format(
                             len(diff_data), feed["update_strategy"], feed["id"]
@@ -1377,7 +1378,7 @@ def maliciousness_to_dbotscore(maliciousness, threshold):
         "high": 3,
     }
 
-    for i in maliciousness_list[maliciousness_list.index(threshold) :]:
+    for i in maliciousness_list[maliciousness_list.index(threshold):]:
         maliciousness_dictionary[i] = 3
 
     return maliciousness_dictionary[maliciousness]

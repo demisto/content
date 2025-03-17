@@ -1858,12 +1858,12 @@ def varonis_get_alerts_command(client: Client, args: dict[str, Any]) -> CommandR
 
     if alert_severities:
         for severity in alert_severities:
-            if severity.lower() not in ALERT_SEVERITIES.keys():
+            if severity.lower() not in ALERT_SEVERITIES:
                 raise ValueError(f"There is no severity {severity}.")
 
     if alert_statuses:
         for status in alert_statuses:
-            if status.lower() not in ALERT_STATUSES.keys():
+            if status.lower() not in ALERT_STATUSES:
                 raise ValueError(f"There is no status {status}.")
 
     alerts = client.varonis_get_alerts(

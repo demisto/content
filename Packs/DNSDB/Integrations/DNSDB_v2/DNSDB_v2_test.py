@@ -1346,7 +1346,7 @@ class TestParseRData:
             "xn--frsightscurity-lib5e.com.  SOA  fsi.io. hostmaster.xn--frsight-exa.xn--scurity-bya.com. "
             "2014081222 7200 3600 604800 3600"
         )
-        assert soa == "fårsightsécurity.com.  SOA  fsi.io. hostmaster.fårsight.sécurity.com. 2014081222 7200 3600 " "604800 3600"
+        assert soa == "fårsightsécurity.com.  SOA  fsi.io. hostmaster.fårsight.sécurity.com. 2014081222 7200 3600 604800 3600"
 
     def test_idna_spf(self):
         assert DNSDB.parse_rdata("include:xn--frsight-exa.com.") == "include:fårsight.com."
