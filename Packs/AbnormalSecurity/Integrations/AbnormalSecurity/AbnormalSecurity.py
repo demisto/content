@@ -133,9 +133,6 @@ class Client(BaseClient):
                 filter_=filter_, page_size=page_size, page_number=page_number
             )
             cases_response["cases"].extend(response.get('cases', []))
-            if len(response.get('cases', [])) < page_size:
-                # There are no more cases to fetch
-                return cases_response
             page_number = response.get('nextPageNumber', None)
             current_iteration += 1
             if current_iteration > max_iterations:
@@ -155,9 +152,6 @@ class Client(BaseClient):
                 filter_=filter_, page_size=page_size, page_number=page_number
             )
             threats_response["threats"].extend(response.get('threats', []))
-            if len(response.get('threats', [])) < page_size:
-                # There are no more threats to fetch
-                return threats_response
             page_number = response.get('nextPageNumber', None)
             current_iteration += 1
             if current_iteration > max_iterations:
@@ -177,9 +171,6 @@ class Client(BaseClient):
                 filter_=filter_, page_size=page_size, page_number=page_number
             )
             campaigns_response["campaigns"].extend(response.get('campaigns', []))
-            if len(response.get('campaigns', [])) < page_size:
-                # There are no more campaigns to fetch
-                return campaigns_response
             page_number = response.get('nextPageNumber', None)
             current_iteration += 1
             if current_iteration > max_iterations:
@@ -961,29 +952,32 @@ def fetch_incidents(
         current_iso_format_time = current_datetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
         all_incidents = []
         current_pending_incidents_to_fetch = max_incidents_to_fetch
+        threat_incidents, abuse_campaign_incidents, account_takeover_cases_incidents = [], [], []
+
         if fetch_threats:
             threats_filter = f"remediationTimestamp gte {start_timestamp} and remediationTimestamp lte {end_timestamp}"
             threats_response = client.get_paginated_threats_list(
                 filter_=threats_filter, max_incidents_to_fetch=current_pending_incidents_to_fetch)
-            all_incidents += generate_threat_incidents(
+            threat_incidents = generate_threat_incidents(
                 client, threats_response.get('threats', []), max_page_number, start_time, end_time
             )
-        current_pending_incidents_to_fetch -= len(all_incidents)
+        current_pending_incidents_to_fetch -= len(threat_incidents)
 
         if fetch_abuse_campaigns:
             abuse_campaigns_filter = f"lastReportedTime gte {last_fetch}"
             abuse_campaigns_response = client.get_paginated_abusecampaigns_list(
                 filter_=abuse_campaigns_filter, max_incidents_to_fetch=current_pending_incidents_to_fetch)
-            all_incidents += generate_abuse_campaign_incidents(client, abuse_campaigns_response.get('campaigns', []))
-        current_pending_incidents_to_fetch -= len(all_incidents)
+            abuse_campaign_incidents = generate_abuse_campaign_incidents(client, abuse_campaigns_response.get('campaigns', []))
+        current_pending_incidents_to_fetch -= len(abuse_campaign_incidents)
 
         if fetch_account_takeover_cases:
             account_takeover_cases_filter = f"lastModifiedTime gte {last_fetch}"
             account_takeover_cases_response = client.get_paginated_cases_list(
                 filter_=account_takeover_cases_filter, max_incidents_to_fetch=current_pending_incidents_to_fetch)
-            all_incidents += generate_account_takeover_cases_incidents(
+            account_takeover_cases_incidents = generate_account_takeover_cases_incidents(
                 client, account_takeover_cases_response.get('cases', []))
 
+        all_incidents = threat_incidents + abuse_campaign_incidents + account_takeover_cases_incidents
     except Exception as e:
         logging.error(f"Failed fetching incidents: {e}")
         raise FetchIncidentsError(f"Error while fetching incidents: {e}")
