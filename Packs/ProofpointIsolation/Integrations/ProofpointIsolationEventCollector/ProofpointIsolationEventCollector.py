@@ -28,7 +28,7 @@ class Client(BaseClient):
         self.api_key = api_key
         super().__init__(base_url=base_url, verify=verify)
 
-    def get_events(self, start_date: str, end_date: str) -> dict:
+    def get_events(self, start_date: str, end_date: str, timeout: int = 60) -> dict:
         """
         Gets events from the specified start date to the end date using the API.
 
@@ -43,6 +43,7 @@ class Client(BaseClient):
             method="GET",
             url_suffix=f"/api/v2/reporting/usage-data?key={self.api_key}&pageSize={ITEMS_PER_PAGE}"
                        f"&from={start_date}&to={end_date}",
+            timeout=timeout,
         )
         return results
 
@@ -115,10 +116,11 @@ def remove_duplicate_events(start_date, ids: set, events: list) -> None:
             break
         hashed_id = hash_user_name_and_url(event)
         if hashed_id in ids:
+            demisto.debug(f'Removing duplicated event with hash_id {hashed_id}')
             events.remove(event)
 
 
-def get_and_reorganize_events(client: Client, start: str, end: str, ids: set) -> list:
+def get_and_reorganize_events(client: Client, start: str, end: str, ids: set, timeout: int) -> list:
     """
     Fetches events, sorts them by date, and removes duplicates.
 
@@ -131,7 +133,7 @@ def get_and_reorganize_events(client: Client, start: str, end: str, ids: set) ->
     Returns:
         list: A list of sorted and deduplicated events.
     """
-    events: list = client.get_events(start, end).get('data', [])
+    events: list = client.get_events(start, end, timeout).get('data', [])
     events = sort_events_by_date(events)
     remove_duplicate_events(start, ids, events)
     return events
@@ -154,14 +156,14 @@ def test_module(client: Client) -> str:
         current_time = get_current_time()
         start_date = (current_time - timedelta(minutes=1)).strftime(DATE_FORMAT)
         end_date = current_time.strftime(DATE_FORMAT)
-        fetch_events(client, 1, {'start_date': start_date, 'end_date': end_date})
+        fetch_events(client, 1, 60, {'start_date': start_date, 'end_date': end_date})
         message = 'ok'
     except DemistoException as e:
         raise e
     return message
 
 
-def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None) -> tuple[list, dict]:
+def fetch_events(client: Client, fetch_limit: int,  timeout: int = 60, get_events_args: dict = None) -> tuple[list, dict]:
     output: list = []
 
     if get_events_args:  # handle get_event command
@@ -177,11 +179,14 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
         ids = set(last_run.get('ids', []))
 
     current_start_date = event_date
+    demisto.debug(f'Fetching events from {current_start_date} to {end}')
     while True:
-        events = get_and_reorganize_events(client, event_date, end, ids)
+        events = get_and_reorganize_events(client, event_date, end, ids, timeout)
         if not events:
+            demisto.debug(f'No more events found, breaking with {len(output)} events in total.')
             break
 
+        demisto.debug(f'Iterates over {len(events)=} events.')
         for event in events:
             event['_TIME'] = event.get('date')
             output.append(event)
@@ -194,6 +199,7 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
             ids.add(hashed_id)
 
             if len(output) >= fetch_limit:
+                demisto.debug(f'Reached fetch limit, outputs {len(output)} events in total.')
                 new_last_run = {'start_date': event_date, 'ids': list(ids)}
                 return output, new_last_run
 
@@ -216,7 +222,7 @@ def get_events(client: Client, args: dict) -> tuple[list, CommandResults]:
     end_date = args.get('end_date')
     limit: int = arg_to_number(args.get('limit')) or DEFAULT_FETCH_LIMIT
 
-    output, _ = fetch_events(client, limit, {"start_date": start_date, "end_date": end_date})
+    output, _ = fetch_events(client, limit, 60, {"start_date": start_date, "end_date": end_date})
 
     filtered_events = []
     for event in output:
@@ -251,6 +257,7 @@ def main() -> None:  # pragma: no cover
         verify = not params.get('insecure', False)
         api_key = params.get('credentials').get('password')
         fetch_limit = arg_to_number(params.get('max_events_per_fetch')) or DEFAULT_FETCH_LIMIT
+        timeout = arg_to_number(params.get('timeout')) or 60
 
         client = Client(
             base_url=base_url,
@@ -262,7 +269,8 @@ def main() -> None:  # pragma: no cover
             result = test_module(client)
             return_results(result)
         elif command == 'fetch-events':
-            events, new_last_run_dict = fetch_events(client, fetch_limit)
+            events, new_last_run_dict = fetch_events(client, fetch_limit, timeout)
+            demisto.debug(f'Successfully run fetch events with Proofpoint Isolation integration.')
             if events:
                 demisto.debug(f'Sending {len(events)} events.')
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
