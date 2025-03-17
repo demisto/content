@@ -1726,7 +1726,7 @@ script:
         - 2 - Medium
         - 3 - Low
     - auto: PREDEFINED
-      description: Whether to set the ticket as Active. Can be "true" or "false".
+      description: Whether to set the ticket as Active. 
       name: active
       predefined:
         - 'true'
@@ -1739,7 +1739,7 @@ script:
       name: assigned_to
     - description: Category of the ticket.
       name: category
-    - description: UID Format.
+    - description: UID format.
       name: caused_by
     - description: Format type journal input.
       name: comments
@@ -1768,7 +1768,7 @@ script:
     - description: SLA of the ticket.
       name: made_sla
     - auto: PREDEFINED
-      description: Whether to be notified about this ticket. Can be "1" or "0".
+      description: Whether to be notified about this ticket. 
       name: notify
       predefined:
         - '1'
@@ -1808,7 +1808,7 @@ script:
       name: custom_fields
     - auto: PREDEFINED
       defaultValue: normal
-      description: Type of Change Request ticket. Can be "normal", "standard", or "emergency". Default is "normal".
+      description: Type of Change Request ticket. 
       name: change_type
       predefined:
         - normal
@@ -1816,7 +1816,7 @@ script:
         - emergency
     - description: 'State of the ticket, for example: "Closed" or "7" or "7 - Closed".'
       name: state
-    - description: ' Date/time the ticket was opened, in the format: YYYY-MM-DD HH:MM:SS.'
+    - description: 'Date/time the ticket was opened, in the format: YYYY-MM-DD HH:MM:SS.'
       name: opened_at
     - description: 'Additional fields in the format: fieldname1=value;fieldname2=value;.'
       name: additional_fields
