@@ -836,7 +836,7 @@ def generate_account_takeover_cases_incidents(client, cases):
             "name": "Account Takeover Case",
             "occurred": case_details["firstObserved"],
             "details": case["description"],
-            "genai_summary": case_details["genai_summary"],
+            "genaiSummary": case_details["genai_summary"],
             "rawJSON": json.dumps(case_details) if case_details else {}
         }
         incidents.append(incident)
