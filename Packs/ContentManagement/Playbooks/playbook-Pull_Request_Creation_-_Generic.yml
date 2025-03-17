@@ -495,8 +495,8 @@ tasks:
       '#none#':
       - "32"
     scriptarguments:
-      DontReplace:
-        simple: ${incident.dontreplace}
+      KeepPlaceholdersInFiles:
+        simple: ${incident.keepplaceholdersinfiles}
       MainBranch:
         complex:
           root: inputs.MainBranch

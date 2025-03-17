@@ -1,7 +1,7 @@
 args:
-- description: Should the script not replace all content with ${} to the data in the context
+- description: Should the script keep all placeholders (${}) in the files or replace them with the data from the context.
   isArray: false
-  name: dont_replace
+  name: keep_placeholders_in_files
   defaultValue: true
 - description: The files to commit.
   isArray: true

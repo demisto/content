@@ -90,11 +90,11 @@ def escape_placeholders(content: str) -> str:
     return re.sub(r"\$(\{[^}]+})", r"$\\\1", content)  # Prepend a backslash to preserve the placeholder
 
 
-def commit_content_item(branch_name: str, content_file: ContentFile, new_files: List, modified_files: List, dont_replace: bool = False):
+def commit_content_item(branch_name: str, content_file: ContentFile, new_files: List, modified_files: List, keep_placeholders_in_files: bool = False):
     commit_args = {'commit_message': f'Added {content_file.file_name}',
                    'path_to_file': f'{content_file.path_to_file}/{content_file.file_name}',
                    'branch_name': branch_name, 'file_text': content_file.file_text}
-
+    return_results(f"###### CommitFiles script got {keep_placeholders_in_files=}")
     file_sha = get_file_sha(branch_name, content_file, 'Github-list-files')
 
     # dont commit pack_metadata.json if already exists in the branch
@@ -107,12 +107,12 @@ def commit_content_item(branch_name: str, content_file: ContentFile, new_files: 
         modified_files.append(content_file.file_name)
     else:
         # new file added
-        if dont_replace:
-           commit_args['file_text'] = escape_placeholders(content_file.file_text)
-           commit_args['placeholders_escaped'] = "True"
+        #if keep_placeholders_in_files:
+        demisto.debug(f"Got {keep_placeholders_in_files=}, escaping placeholders with \\")
+        commit_args['file_text'] = escape_placeholders(content_file.file_text)
+        commit_args['placeholders_escaped'] = "True"
         new_files.append(content_file.file_name)
-    return_results(f"Calling execute_command with {commit_args=}")
-    demisto.debug(f"Calling execute_command with {commit_args=}")
+
     status, commit_res = execute_command('Github-commit-file', commit_args, fail_on_error=False)
     if not status:
         raise DemistoException(commit_res)
@@ -306,11 +306,11 @@ def split_yml_file(content_file: ContentFile):  # pragma: no cover
 
 
 def commit_git(git_integration: str, branch_name: str, content_file: ContentFile,
-               new_files: List, modified_files: List, dont_replace: bool):
+               new_files: List, modified_files: List, keep_placeholders_in_files: bool):
     if git_integration == 'Gitlab':
         commit_content_item_gitlab(branch_name, content_file, new_files, modified_files)
     elif git_integration == 'GitHub':
-        commit_content_item(branch_name, content_file, new_files, modified_files, dont_replace)
+        commit_content_item(branch_name, content_file, new_files, modified_files, keep_placeholders_in_files)
     elif git_integration == 'Bitbucket':
         commit_content_item_bitbucket(branch_name, content_file, new_files, modified_files)
     elif git_integration == 'AzureDevOps':
@@ -331,7 +331,7 @@ def main():
         comment = demisto.getArg('comment')
         template = demisto.getArg('template')
         git_integration = demisto.getArg('git_integration')
-        dont_replace = demisto.getArg('dont_replace') or False
+        keep_placeholders_in_files = demisto.getArg('keep_placeholders_in_files') or False
         new_files: List[str] = []
         modified_files: List[str] = []
 
@@ -357,10 +357,10 @@ def main():
                 # split automation file to yml and script files
                 content_files = split_yml_file(content_file)
                 for file_to_commit in content_files:
-                    commit_git(git_integration, branch_name, file_to_commit, new_files, modified_files, dont_replace)
+                    commit_git(git_integration, branch_name, file_to_commit, new_files, modified_files, keep_placeholders_in_files)
 
             else:
-                commit_git(git_integration, branch_name, content_file, new_files, modified_files, dont_replace)
+                commit_git(git_integration, branch_name, content_file, new_files, modified_files, keep_placeholders_in_files)
         incident_url = demisto.demistoUrls().get('investigation')
 
         # create the PR text

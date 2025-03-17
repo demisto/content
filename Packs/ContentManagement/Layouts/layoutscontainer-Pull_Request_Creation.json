@@ -343,7 +343,7 @@
                         "isVisible": true
                     },
                     {
-						"fieldId": "incident_dontreplace",
+						"fieldId": "incident_keepplaceholdersinfiles",
 						"isVisible": true
 					}
                 ],
