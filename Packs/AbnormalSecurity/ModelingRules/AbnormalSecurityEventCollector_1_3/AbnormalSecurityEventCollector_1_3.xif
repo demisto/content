@@ -1,4 +1,5 @@
 [MODEL: dataset="abnormal_security_email_protection_raw"]
+BAD MODELING RULE
 alter
 	attachmentNames = arraystring(json_extract_scalar_array(attachmentNames, "$"), ","),
 	ccEmails = json_extract_scalar_array(ccEmails, "$"),

@@ -93,7 +93,7 @@ def test_module(client: Client) -> str:
 
     Return: 'ok' if test passed, anything else will fail the test.
     """
-
+    raise Exception(f"TESTING AAA")
     try:
         client.alexa_rank('google.com')
         return 'ok'
@@ -151,6 +151,7 @@ def main() -> None:
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f"adding for tests")
     try:
         suspicious_domain_threshold = arg_to_number(params.get('suspicious_domain_threshold', None),
                                                     required=False,

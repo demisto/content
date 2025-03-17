@@ -1558,7 +1558,7 @@ def test_module(client: Client, demisto_last_run: Dict[str, Any], demisto_params
 
     Returns 'ok' on success and an error message otherwise.
     """
-
+    raise Exception(f"TESTTT AAAA")
     try:
         if demisto_params.get('isFetch'):
             fetch_incidents(client=client,
