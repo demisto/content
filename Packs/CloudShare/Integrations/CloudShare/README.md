@@ -11,47 +11,179 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### cloudshare-get-envs
 
 ***
-Retrieves environments.
+Retrieves environments
 
 #### Base Command
 
 `cloudshare-get-envs`
 
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| owned | Returns only environments owned by the user. Possible values are: true, false. Default is false. | Optional | 
+| visible | Returns all environments visible to the user. Possible values are: true, false. Default is false. | Optional | 
+| ownerEmail | Optional. Filters results by the environment owner's email address, where {ownerEmail} is the environment owner's email address. | Optional | 
+| classId | Optional. Filters results to include only environments created for a specified class, including instructor and student environments, where {classId} is the ID of the class. | Optional | 
+| brief | Optional. Whether to return a less detailed or more detailed response. {brief_value} can be: true (default) - Returns less detail. false - Returns more detail. Possible values are: true, false. Default is true. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CloudShare.Environments.projectId | string | Project ID | 
+| CloudShare.Environments.policyId | string | Policy ID | 
+| CloudShare.Environments.blueprintId | string | Blueprint ID | 
+| CloudShare.Environments.description | string | Description | 
+| CloudShare.Environments.ownerEmail | string | Owner email | 
+| CloudShare.Environments.regionId | string | Region ID | 
+| CloudShare.Environments.name | string | Name | 
+| CloudShare.Environments.id | string | ID | 
+| CloudShare.Environments.status | string | Status | 
+| CloudShare.Environments.teamId | string | Team ID | 
+
 ### cloudshare-get-projects
 
 ***
-Retrieves all available projects.
+Retrieves all available projects
 
 #### Base Command
 
 `cloudshare-get-projects`
 
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| WhereUserIsProjectManager | Returns only projects in which the user is a project manager. Possible values are: tru, false. Default is false. | Optional | 
+| WhereUserIsProjectMember | Returns only projects in which the user is a project member. Possible values are: true, false. Default is false. | Optional | 
+| WhereUserCanCreateClass | Returns only projects in which the user is allowed to create a class. The minimum user level allowed to create classes is set per project and can be changed by project manager users. Possible values are: true, false. Default is false. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CloudShare.Projects.name | string | Name | 
+| CloudShare.Projects.isActive | boolean | Is Active | 
+| CloudShare.Projects.id | string | ID | 
+
 ### cloudshare-get-project
 
 ***
-Retrieves a specified project's details.
+Retrieves a specified project's details
 
 #### Base Command
 
 `cloudshare-get-project`
 
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| projectId | The ID of a specific project. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CloudShare.Projects.id | string | ID | 
+| CloudShare.Projects.name | string | Name | 
+| CloudShare.Projects.hasNonGenericPolicy | boolean | Has non-generic policy | 
+| CloudShare.Projects.canAddPolicy | boolean | Can add policy | 
+| CloudShare.Projects.awsEnabled | boolean | AWS enabled | 
+| CloudShare.Projects.environmentResourceQuota.cpuCount | number | CPU count | 
+| CloudShare.Projects.environmentResourceQuota.diskSizeMB | number | Disk size\(MB\) | 
+| CloudShare.Projects.environmentResourceQuota.memorySizeMB | number | Memory size\(MB\) | 
+| CloudShare.Projects.projectResourceQuota.cpuCount | number | CPU count | 
+| CloudShare.Projects.projectResourceQuota.diskSizeMB | number | Disk size\(MB\) | 
+| CloudShare.Projects.projectResourceQuota.memorySizeMB | number | Memory size\(MB\) | 
+| CloudShare.Projects.subscriptionResourceQuota.cpuCount | number | CPU count | 
+| CloudShare.Projects.subscriptionResourceQuota.diskSizeMB | number | Disk size\(MB\) | 
+| CloudShare.Projects.subscriptionResourceQuota.memorySizeMB | number | Memory size\(MB\) | 
+| CloudShare.Projects.canCreateFromScratch | boolean | Can create from scratch | 
+| CloudShare.Projects.defaultPolicyForEnvCreation | string | Default policy for env creation | 
+| CloudShare.Projects.isActive | boolean | Is active | 
+
 ### cloudshare-get-project-policies
 
 ***
-Retrieves all environment policies available in a specified project.
+Retrieves all environment policies available in a specified project. Environment policies define how long an environment will run, when it will be deleted, and what happens to it when it has been idle for a certain length of time.
 
 #### Base Command
 
 `cloudshare-get-project-policies`
 
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| projectId | The ID of the project. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CloudShare.Project.Policies.allowEnvironmentCreation | boolean | Allow environment creation | 
+| CloudShare.Project.Policies.id | string | ID | 
+| CloudShare.Project.Policies.name | string | Name | 
+| CloudShare.Project.Policies.projectId | string | Project ID | 
+
 ### cloudshare-get-project-blueprints
 
 ***
-Retrieves all blueprints available in a specified project.
+Retrieves all blueprints available in a specified project
 
 #### Base Command
 
 `cloudshare-get-project-blueprints`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| projectId | The Id of the project. | Required | 
+| regionId | The ID of a region. Returns all blueprints that have default snapshots on the specified region.  If unspecified, returns all blueprints in the project on all regions. | Optional | 
+| defaultSnapshot |  If set to true - get the default snapshot for every blueprint. The returned JSON will contain a property 'CreateFromVersions', which is an array of one element - the default snapshot. If unspecified, default is false (don't return the default snapshot). Possible values are: true, false. Default is false. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CloudShare.Projects.Blueprints.id | string | ID | 
+| CloudShare.Projects.Blueprints.name | string | Name | 
+| CloudShare.Projects.Blueprints.description | string | Description | 
+| CloudShare.Projects.Blueprints.isEnvironmentTemplate | boolean | Is template | 
+| CloudShare.Projects.Blueprints.type | number | Type | 
+| CloudShare.Projects.Blueprints.imageUrl | string | Image URL | 
+| CloudShare.Projects.Blueprints.tags | unknown | Tags | 
+| CloudShare.Projects.Blueprints.categories | unknown | Categories | 
+| CloudShare.Projects.Blueprints.resources.cpuCount | number | CPU count | 
+| CloudShare.Projects.Blueprints.resources.diskSizeMB | number | Disk size\(MB\) | 
+| CloudShare.Projects.Blueprints.resources.memorySizeMB | number | Memory size\(MB\) | 
+| CloudShare.Projects.Blueprints.numberOfMachines | number | Number of machines | 
+| CloudShare.Projects.Blueprints.hasMultipleVersions | boolean | Has multiple versions | 
+| CloudShare.Projects.Blueprints.hasDefaultVersion | boolean | Has default version | 
+| CloudShare.Projects.Blueprints.disabledForRegularEnvironmentCreation | boolean | Disabled for regular environment creation | 
+| CloudShare.Projects.Blueprints.disabledForTrainingEnvironmentCreation | boolean | Disabled for training environment creation | 
+| CloudShare.Projects.Blueprints.canAddMultipleInstances | boolean | Can add multiple instances | 
+| CloudShare.Projects.Blueprints.envTemplateScope | unknown | Environment template scope | 
+| CloudShare.Projects.Blueprints.creationDate | string | Creation date | 
+| CloudShare.Projects.Blueprints.CreateFromVersions.Machines | unknown | Machines | 
+| CloudShare.Projects.Blueprints.CreateFromVersions.AuthorName | string | Author name | 
+| CloudShare.Projects.Blueprints.CreateFromVersions.Comment | string | Comment | 
+| CloudShare.Projects.Blueprints.CreateFromVersions.Type | number | Type | 
+| CloudShare.Projects.Blueprints.CreateFromVersions.Name | string | Name | 
+| CloudShare.Projects.Blueprints.CreateFromVersions.IsDefault | boolean | Is default | 
+| CloudShare.Projects.Blueprints.CreateFromVersions.IsLatest | boolean | Is latest | 
+| CloudShare.Projects.Blueprints.CreateFromVersions.Number | number | Number | 
+| CloudShare.Projects.Blueprints.CreateFromVersions.Resources.CpuCount | number | CPU count | 
+| CloudShare.Projects.Blueprints.CreateFromVersions.Resources.DiskSizeMB | number | Disk size\(MB\) | 
+| CloudShare.Projects.Blueprints.CreateFromVersions.Resources.MemorySizeMB | number | Memory size\(MB\) | 
+| CloudShare.Projects.Blueprints.CreateFromVersions.CreateTime | string | Create time | 
+| CloudShare.Projects.Blueprints.CreateFromVersions.Description | string | Description | 
+| CloudShare.Projects.Blueprints.CreateFromVersions.ImageUrl | string | Image URL | 
+| CloudShare.Projects.Blueprints.CreateFromVersions.Regions | unknown | Regions | 
+| CloudShare.Projects.Blueprints.CreateFromVersions.Id | string | ID | 
 
 ### cloudshare-get-project-blueprint
 
@@ -62,14 +194,81 @@ Retrieves details of a specified blueprint, including snapshots.
 
 `cloudshare-get-project-blueprint`
 
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| projectId | The ID of the project in which the blueprint resides. | Required | 
+| blueprintId | The ID of the blueprint. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CloudShare.Projects.Blueprints.id | string | ID | 
+| CloudShare.Projects.Blueprints.name | string | Name | 
+| CloudShare.Projects.Blueprints.description | string | Description | 
+| CloudShare.Projects.Blueprints.isEnvironmentTemplate | boolean | Is template | 
+| CloudShare.Projects.Blueprints.type | number | Type | 
+| CloudShare.Projects.Blueprints.imageUrl | string | Image URL | 
+| CloudShare.Projects.Blueprints.tags | unknown | Tags | 
+| CloudShare.Projects.Blueprints.categories | unknown | Categories | 
+| CloudShare.Projects.Blueprints.resources.cpuCount | number | CPU count | 
+| CloudShare.Projects.Blueprints.resources.diskSizeMB | number | Disk size\(MB\) | 
+| CloudShare.Projects.Blueprints.resources.memorySizeMB | number | Memory size\(MB\) | 
+| CloudShare.Projects.Blueprints.numberOfMachines | number | Number of machines | 
+| CloudShare.Projects.Blueprints.hasMultipleVersions | boolean | Has multiple versions | 
+| CloudShare.Projects.Blueprints.hasDefaultVersion | boolean | Has default version | 
+| CloudShare.Projects.Blueprints.disabledForRegularEnvironmentCreation | boolean | Disabled for regular environment creation | 
+| CloudShare.Projects.Blueprints.disabledForTrainingEnvironmentCreation | boolean | Disabled for training environment creation | 
+| CloudShare.Projects.Blueprints.canAddMultipleInstances | boolean | Can add multiple instances | 
+| CloudShare.Projects.Blueprints.envTemplateScope | unknown | Environment template scope | 
+| CloudShare.Projects.Blueprints.creationDate | string | Creation date | 
+| CloudShare.Projects.Blueprints.CreateFromVersions.Machines | unknown | Machines | 
+| CloudShare.Projects.Blueprints.CreateFromVersions.AuthorName | string | Author name | 
+| CloudShare.Projects.Blueprints.CreateFromVersions.Comment | string | Comment | 
+| CloudShare.Projects.Blueprints.CreateFromVersions.Type | number | Type | 
+| CloudShare.Projects.Blueprints.CreateFromVersions.Name | string | Name | 
+| CloudShare.Projects.Blueprints.CreateFromVersions.IsDefault | boolean | Is default | 
+| CloudShare.Projects.Blueprints.CreateFromVersions.IsLatest | boolean | Is latest | 
+| CloudShare.Projects.Blueprints.CreateFromVersions.Number | number | Number | 
+| CloudShare.Projects.Blueprints.CreateFromVersions.Resources.CpuCount | number | CPU count | 
+| CloudShare.Projects.Blueprints.CreateFromVersions.Resources.DiskSizeMB | number | Disk size\(MB\) | 
+| CloudShare.Projects.Blueprints.CreateFromVersions.Resources.MemorySizeMB | number | Memory size\(MB\) | 
+| CloudShare.Projects.Blueprints.CreateFromVersions.CreateTime | string | Create time | 
+| CloudShare.Projects.Blueprints.CreateFromVersions.Description | string | Description | 
+| CloudShare.Projects.Blueprints.CreateFromVersions.ImageUrl | string | Image URL | 
+| CloudShare.Projects.Blueprints.CreateFromVersions.Regions | unknown | Regions | 
+| CloudShare.Projects.Blueprints.CreateFromVersions.Id | string | ID | 
+
 ### cloudshare-get-classes
 
 ***
-cloudshare-get-classes.
+Retrieves all classes visible to the user
 
 #### Base Command
 
 `cloudshare-get-classes`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CloudShare.Classes.instructorEmail | string | Instructor email | 
+| CloudShare.Classes.timeZoneName | string | Timezone name | 
+| CloudShare.Classes.startDate | string | Start date | 
+| CloudShare.Classes.endDate | string | End date | 
+| CloudShare.Classes.status | string | Status | 
+| CloudShare.Classes.name | unknown | Name | 
+| CloudShare.Classes.shortId | string | Short ID | 
+| CloudShare.Classes.id | string | ID | 
+| CloudShare.Classes.regionId | string | Region ID | 
+
 ### cloudshare-get-class
 
 ***
