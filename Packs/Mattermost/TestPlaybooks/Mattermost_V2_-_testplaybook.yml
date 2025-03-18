@@ -699,7 +699,7 @@ tasks:
     task:
       id: 1f35dba5-0809-42c0-81da-88ed77f84c19
       version: -1
-      name: mattermost-group-member
+      name: mattermost-remove-group-member
       description: Remove group member(s).
       script: 'MattermostV2|||mattermost-remove-group-member'
       type: regular
