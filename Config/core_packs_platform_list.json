@@ -75,9 +75,6 @@
         {
             "id": "CoreAlertFields",
             "supportedModules": [
-                "C1",
-                "C3",
-                "X0",
                 "X1",
                 "X3",
                 "X5",
@@ -123,9 +120,6 @@
         {
             "id": "EDL",
             "supportedModules": [
-                "C1",
-                "C3",
-                "X0",
                 "X1",
                 "X3",
                 "X5",
@@ -135,9 +129,6 @@
         {
             "id": "FeedMitreAttackv2",
             "supportedModules": [
-                "C1",
-                "C3",
-                "X0",
                 "X1",
                 "X3",
                 "X5",
@@ -145,11 +136,8 @@
             ]
         },
         {
-            "id": "FeedUnit42v2",
+        "id": "FeedUnit42v2",
             "supportedModules": [
-                "C1",
-                "C3",
-                "X0",
                 "X1",
                 "X3",
                 "X5",
@@ -171,9 +159,6 @@
         {
             "id": "HelloWorld",
             "supportedModules": [
-                "C1",
-                "C3",
-                "X0",
                 "X1",
                 "X3",
                 "X5",
@@ -183,9 +168,6 @@
         {
             "id": "ImageOCR",
             "supportedModules": [
-                "C1",
-                "C3",
-                "X0",
                 "X1",
                 "X3",
                 "X5",
@@ -195,9 +177,6 @@
         {
             "id": "Palo_Alto_Networks_WildFire",
             "supportedModules": [
-                "C1",
-                "C3",
-                "X0",
                 "X1",
                 "X3",
                 "X5",
@@ -207,9 +186,6 @@
         {
             "id": "PrismaCloud",
             "supportedModules": [
-                "C1",
-                "C3",
-                "X0",
                 "X1",
                 "X3",
                 "X5",
@@ -219,9 +195,6 @@
         {
             "id": "ThreatIntelligenceManagement",
             "supportedModules": [
-                "C1",
-                "C3",
-                "X0",
                 "X1",
                 "X3",
                 "X5",
@@ -231,9 +204,6 @@
         {
             "id": "Unit42Intel",
             "supportedModules": [
-                "C1",
-                "C3",
-                "X0",
                 "X1",
                 "X3",
                 "X5",
@@ -243,9 +213,6 @@
         {
             "id": "VirusTotal",
             "supportedModules": [
-                "C1",
-                "C3",
-                "X0",
                 "X1",
                 "X3",
                 "X5",
@@ -255,9 +222,6 @@
         {
             "id": "Whois",
             "supportedModules": [
-                "C1",
-                "C3",
-                "X0",
                 "X1",
                 "X3",
                 "X5",
@@ -276,9 +240,6 @@
         {
             "id": "GCP-IAM",
             "supportedModules": [
-                "C1",
-                "C3",
-                "X0",
                 "X1",
                 "X3",
                 "X5",
@@ -288,9 +249,6 @@
         {
             "id": "AWS-SecretsManager",
             "supportedModules": [
-                "C1",
-                "C3",
-                "X0",
                 "X1",
                 "X3",
                 "X5",
@@ -360,9 +318,6 @@
         {
             "id": "CortexResponseAndRemediation",
             "supportedModules": [
-                "C1",
-                "C3",
-                "X0",
                 "X1",
                 "X3",
                 "X5",
