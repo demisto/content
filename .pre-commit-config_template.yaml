@@ -1,6 +1,7 @@
 exclude: .devcontainer/|.vscode|Pipfile.lock|.gitlab/ci/|docs
 files: ''
 repos:
+
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v4.4.0
   hooks:
@@ -372,3 +373,10 @@ repos:
     - --diff
     - git diff HEAD
     skip: true
+- repo: https://github.com/igorshubovych/markdownlint-cli
+  rev: v0.44.0  # Check for the latest version
+  hooks:
+    - id: markdownlint
+      files: ^(.*/)?README\\.md$
+      args: ["--config", ".markdownlint.json", "--fix"]
+
