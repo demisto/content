@@ -15,7 +15,6 @@ INDICATOR_TO_GALAXY_RELATION_DICT: Dict[str, Any] = {
         FeedIndicatorType.Domain: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.URL: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.Email: EntityRelationship.Relationships.INDICATOR_OF,
-        FeedIndicatorType.Host: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.Registry: EntityRelationship.Relationships.RELATED_TO,
         ThreatIntel.ObjectsNames.THREAT_ACTOR: EntityRelationship.Relationships.USES,
         DBotScoreType.CRYPTOCURRENCY: EntityRelationship.Relationships.RELATED_TO,
