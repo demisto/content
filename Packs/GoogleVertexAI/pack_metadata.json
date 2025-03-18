@@ -2,7 +2,7 @@
     "name": "Google Vertex AI",
     "description": "Fine-tuned to conduct natural conversation. Using Google Vertex Ai (PaLM API for Chat) The current integration of Google Vertex Ai is focusing only on the Generative AI model (PaLM) using the Chat prediction. Later, this plugin will be updated to include the following: \n- Model Creation \n- Model Fine Tuning \n- PaLM for Text",
     "support": "community",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "Sameh El-Hakim",
     "url": "",
     "email": "",
