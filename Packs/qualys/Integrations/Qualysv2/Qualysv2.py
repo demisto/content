@@ -1711,9 +1711,10 @@ class Client(BaseClient):
             params["id_min"] = next_page
 
         timeout = (
-            60,  # Connection Timeout - max seconds to wait for connection to server to be established
-            150,  # Read Timeout - max seconds to wait between bytes from server - does *not* specify request max execution time
+            60,  # Connection Timeout: max seconds to wait for a connection to the server to be established
+            150,  # Read Timeout: max seconds to wait between streamed bytes of the response body from the server
         )
+        # Read Timeout does *not* specify request max execution time! Handle using a timed thread (via `ThreadPoolExecutor`)
 
         try:
             response = self._http_request(
@@ -3017,21 +3018,15 @@ def get_client_host_list_detection_with_timeout(
     demisto.debug('Starting thread pool executor to get host list dectections.')
     with ThreadPoolExecutor(max_workers=1) as executor:
         future = executor.submit(client.get_host_list_detection, since_datetime, next_page, limit)
-        start_time = time.time()
 
         try:
             # Specify request max execution time for the whole request
             demisto.debug(f'Running host list dectections thread with timeout: {thread_timeout}.')
             raw_response, set_new_limit = future.result(timeout=thread_timeout)
-            current_time = time.time()
-            demisto.debug(f'Finished host list dectections thread. Elapsed time: {current_time - start_time}.')
+            demisto.debug('Finished host list dectections thread.')
 
         except ThreadTimeoutError:
-            current_time = time.time()
-            demisto.debug(
-                f'Exceeded host list dectections thread timeout: {thread_timeout}. '
-                f'Elapsed time: {current_time - start_time}. Setting new limit.'
-            )
+            demisto.debug(f'Exceeded host list dectections thread timeout: {thread_timeout}. Setting new limit.')
             raw_response, set_new_limit = '', True  # empty response and set_new_limit = True due to timeout
 
     return raw_response, set_new_limit
