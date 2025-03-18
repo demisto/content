@@ -14,7 +14,7 @@ This integration was integrated and tested with version 21.2 of Cybereason
 | Fetch incidents | False |
 | Incident type | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | False |
-| Fetch by "MALOP CREATION TIME" or by "MALOP UPDATE TIME" (Fetching by Malop update time might create duplicates of Malops as incidents) | False |
+| Fetch by "MALOP UPDATE TIME" (Fetching by Malop creation time is no longer supported) | False |
 
 
 ## Cybereason MalOp to XSOAR Incident Map

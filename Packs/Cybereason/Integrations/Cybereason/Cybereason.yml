@@ -39,8 +39,8 @@ configuration:
   type: 0
   required: false
   section: Collect
-- defaultvalue: MALOP CREATION TIME
-  display: Fetch by "MALOP CREATION TIME" or by "MALOP UPDATE TIME" (Fetching by Malop update time might create duplicates of Malops as incidents)
+- defaultvalue: MALOP UPDATE TIME
+  display: Fetch by "MALOP UPDATE TIME" (Fetching by Malop creation time is no longer supported)
   name: fetch_by
   type: 0
   required: false
