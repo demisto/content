@@ -216,7 +216,7 @@ manage_system
 >| name | Display_Name | O | id |
 >| off-topic | Off-Topic | O | id |
 
-### mattermost-list-channels-for-user
+### mattermost-list-private-channels-for-user
 
 ***
 Get all private channel memberships for a user on a specific team.
@@ -227,7 +227,7 @@ Must have manage_system permission.
 
 #### Base Command
 
-`mattermost-list-channels-for-user`
+`mattermost-list-private-channels-for-user`
 
 #### Input
 
@@ -245,7 +245,7 @@ Must have manage_system permission.
 
 #### Command example
 
-```!mattermost-list-channels-for-user user_id=user_id team_name=panw```
+```!mattermost-list-private-channels-for-user user_id=user_id team_name=panw```
 
 #### Context Example
 
@@ -710,7 +710,7 @@ There is no context output for this command.
 ### mattermost-list-groups
 
 ***
-Lists groups.
+Lists groups. Groups are available on Enterprise and Professional plans. Minimum server version: 5.11
 
 #### Required Permissions
 
@@ -795,7 +795,7 @@ No permissions required.
 ### mattermost-list-group-members
 
 ***
-Lists group members.
+Lists group members. Groups are available on Enterprise and Professional plans. Minimum server version: 5.11
 
 #### Required Permissions
 
@@ -835,7 +835,7 @@ Must have manage_system permission.
 ### mattermost-add-group-member
 
 ***
-Add group member(s).
+Add group member(s). Groups are available on Enterprise and Professional plans. Minimum server version: 6.3
 
 #### Required Permissions
 
@@ -867,7 +867,7 @@ There is no context output for this command.
 ### mattermost-remove-group-member
 
 ***
-Remove group member(s).
+Remove group member(s). Groups are available on Enterprise and Professional plans. Minimum server version: 6.3
 
 #### Required Permissions
 
@@ -899,7 +899,7 @@ The member username was removed from group successfully, with group ID: moi9ygz8
 ### mattermost-set-channel-role
 
 ***
-Update a user's roles for a channel.
+Update a user's roles for a channel. The user has to already be a member of the channel.
 
 #### Required Permissions
 

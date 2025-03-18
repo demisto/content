@@ -221,7 +221,7 @@ script:
       description: The ID of the user.
       type: String
     description: Get all private channel memberships for a user on a specific team.
-    name: mattermost-list-channels-for-user
+    name: mattermost-list-private-channels-for-user
   - arguments:
     - description: The display name of the channel to create.
       name: display_name
@@ -580,7 +580,7 @@ script:
     - contextPath: Mattermost.Groups.has_syncables
       description: If the group has any syncables.
       type: boolean
-    description: Lists groups.
+    description: 'Lists groups. Groups are available on Enterprise and Professional plans. Minimum server version: 5.11'
   - name: mattermost-list-group-members
     arguments:
     - name: group_id
@@ -597,7 +597,7 @@ script:
     - contextPath: Mattermost.Groups.members
       description: Detailed list of the group members.
       type: Unknown
-    description: Lists group members.
+    description: 'Lists group members. Groups are available on Enterprise and Professional plans. Minimum server version: 5.11'
   - name: mattermost-add-group-member
     arguments:
     - name: group_id
@@ -609,7 +609,7 @@ script:
       isArray: true
       description: The ID(s) of the user(s) to add. Use the command 'mattermost-list-users'
         to fetch the user ID(s).
-    description: Add group member(s).
+    description: 'Add group member(s). Groups are available on Enterprise and Professional plans. Minimum server version: 6.3'
   - name: mattermost-remove-group-member
     arguments:
     - name: group
@@ -621,7 +621,7 @@ script:
       isArray: true
       description: The ID(s) of the user(s) to remove. Use the command 'mattermost-list-users'
         to fetch the user ID(s).
-    description: Remove group member(s).
+    description: 'Remove group member(s). Groups are available on Enterprise and Professional plans. Minimum server version: 6.3'
   - name: mattermost-set-channel-role
     arguments:
     - name: channel_id
@@ -639,7 +639,7 @@ script:
       - Member
       description: The role to set for the user.
       defaultValue: Member
-    description: Update a user's roles for a channel.
+    description: Update a user's roles for a channel. The user has to already be a member of the channel.
   longRunning: true
   runonce: false
   script: '-'

@@ -354,7 +354,7 @@ class HTTPClient(BaseClient):
         return response
 
     def list_group_members_request(self, group_id: str) -> dict[str, Any]:
-        """list group members based on group id and team name"""
+        """list group members based on group id"""
         response = self._http_request(method='GET', url_suffix=f'/api/v4/groups/{group_id}/members')
 
         return response
@@ -1244,7 +1244,9 @@ def list_channels_command(client: HTTPClient, args: dict[str, Any]) -> CommandRe
 
 
 def list_private_channels_for_user_command(client: HTTPClient, args: dict[str, Any]) -> CommandResults:
-    """ Lists private channels for user """
+    """
+    Lists all private channels which belong to team_name and user is member
+    """
     team_name = args.get('team_name', client.team_name)
     user_id = args.get('user_id', '')
     list_private_channels = []
@@ -1253,7 +1255,7 @@ def list_private_channels_for_user_command(client: HTTPClient, args: dict[str, A
 
     all_user_channels = client.list_channels_for_user_request(team_details.get('id', ''), user_id)
 
-    params: dict[Any, Any] = {}
+    params: dict[Any, Any] = {'per_page': 100000}
     list_private_channels = client.list_channel_request(team_details.get('id', ''), params, get_private=True)
     channels = [
         private_channel for private_channel in list_private_channels
@@ -1468,7 +1470,7 @@ def send_file_command(client: HTTPClient, args) -> CommandResults:
             to = get_user_id_by_username(client, to)
 
         bot_id = get_user_id_from_token(client, bot_user=True)
-        channel_details = client.create_direct_channel_request(to, bot_id)
+        channel_details = client.create_direct_channel_request([to], bot_id)
         demisto.debug(f'MM: Created a new direct channel to: {to} with channel_id: {channel_details.get("id")}')
     else:
         channel_details = client.get_channel_by_name_and_team_name_request(team_name, channel_name)
@@ -1699,17 +1701,19 @@ def send_notification(client: HTTPClient, **args):
 
 
 def list_groups_command(client: HTTPClient, args: dict[str, Any]) -> CommandResults:
-    """ Lists user groups """
+    """ Lists groups """
     page = arg_to_number(args.get('page', DEFAULT_PAGE_NUMBER))
     page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE))
-    limit = args.get('limit', '')
+    limit = arg_to_number(args.get('limit', ''))
     q = args.get('group', '')
     group_details: list[Any] = []
     if limit:
         page = DEFAULT_PAGE_NUMBER
         page_size = limit
 
-    params = {'page': page, 'per_page': page_size, 'q': q}
+    params = {'page': page, 'per_page': page_size}
+    if q:
+        params['q'] = q
     group_details = client.list_groups_request(params)
 
     hr = tableToMarkdown('Groups:', group_details, headers=['name', 'display_name', 'description', 'id'])
@@ -1723,7 +1727,7 @@ def list_groups_command(client: HTTPClient, args: dict[str, Any]) -> CommandResu
 
 
 def list_group_members_command(client: HTTPClient, args: dict[str, Any]) -> CommandResults:
-    """ List the members of a user group """
+    """ List the members of a group """
     group_id = args.get('group_id', '')
     member_details = {}
 
@@ -1741,7 +1745,7 @@ def list_group_members_command(client: HTTPClient, args: dict[str, Any]) -> Comm
 
 
 def add_group_member_command(client: HTTPClient, args: dict[str, Any]) -> CommandResults:
-    """ Adds a member to a user group """
+    """ Adds member(s) to a group """
     group_id = args.get('group_id', '')
     user_ids = argToList(args.get('user_ids', ''))
 
@@ -1761,7 +1765,7 @@ def add_group_member_command(client: HTTPClient, args: dict[str, Any]) -> Comman
 
 
 def remove_group_member_command(client: HTTPClient, args: dict[str, Any]) -> CommandResults:
-    """ Removes a member form a user group """
+    """ Removes member(s) form a group """
     group_id = args.get('group_id', '')
     user_ids = argToList(args.get('user_ids', ''))
 
@@ -1897,7 +1901,7 @@ def main():  # pragma: no cover
             return_results(get_team_command(client, args))
         elif command == 'mattermost-list-channels':
             return_results(list_channels_command(client, args))
-        elif command == 'mattermost-list-channels-for-user':
+        elif command == 'mattermost-list-private-channels-for-user':
             return_results(list_private_channels_for_user_command(client, args))
         elif command == 'mattermost-create-channel':
             return_results(create_channel_command(client, args))
