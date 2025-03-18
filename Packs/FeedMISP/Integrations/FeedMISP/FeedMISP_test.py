@@ -562,3 +562,34 @@ def test_build_indicators_from_galaxies_attack_type():
     assert galaxy_indicators['type'] == 'Attack Pattern'
     assert galaxy_indicators['service'] == 'MISP'
     assert galaxy_indicators['Reputation'] == 'High'
+
+
+def test_create_and_add_relationships_host_type():
+    """
+    Given:
+        - An indicator object of type 'Host'.
+    When:
+        - create_and_add_relationships executed.
+    Then:
+        - Successfully creates relationship.
+    """
+    from FeedMISP import create_and_add_relationships
+    indicator_obj= {
+        'type': 'Host',
+        'value': '111'
+        
+    }
+    galaxy_indicators = [{
+        'type': ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+        'value': '222'
+    }]
+    create_and_add_relationships(indicator_obj, galaxy_indicators)
+    assert indicator_obj.get('Relationships') == [{'name': 'indicator-of', 'reverseName': 'indicated-by',
+                                                   'type': 'IndicatorToIndicator', 'entityA': '111', 'entityAFamily': 'Indicator',
+                                                   'entityAType': 'Host', 'entityB': '222', 'entityBFamily': 'Indicator',
+                                                   'entityBType': 'Attack Pattern', 'fields': {}}]
+    assert galaxy_indicators[0].get('Relationships') == [{'name': 'indicated-by', 'reverseName': 'indicator-of',
+                                                          'type': 'IndicatorToIndicator', 'entityA': '222',
+                                                          'entityAFamily': 'Indicator', 'entityAType': 'Attack Pattern',
+                                                          'entityB': '111', 'entityBFamily': 'Indicator', 'entityBType': 'Host',
+                                                          'fields': {}}]
