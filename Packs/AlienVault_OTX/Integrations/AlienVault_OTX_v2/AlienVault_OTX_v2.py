@@ -78,8 +78,10 @@ class Client(BaseClient):
             demisto.info("DemistoException was raised")
             if hasattr(e.res, 'status_code'):
                 if e.res.status_code == 404:
+                    demisto.debug("The status code is 404")
                     result = 404
                 elif e.res.status_code == 400:
+                    demisto.debug("The status code is 400")
                     demisto.debug(f'{e.res.text} response received from server when trying to get api:{e.res.url}')
                     if not self.should_error:
                         return_warning(f'The command could not be execute: {argument} is invalid.', exit=True)
