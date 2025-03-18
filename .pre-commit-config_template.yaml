@@ -377,6 +377,6 @@ repos:
   rev: v0.44.0  # Check for the latest version
   hooks:
     - id: markdownlint
-      files: ^(.*/)?README\\.md$
+      files: "^(.*/)?README\\.md$"
       args: ["--config", ".markdownlint.json", "--fix"]
 
