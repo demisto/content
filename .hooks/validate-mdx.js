@@ -54,14 +54,6 @@ async function parseMDX(file) {
 }
 
 const files = process.argv.slice(2);
-
-if (files.length === 0) {
-    console.log("No files provided for validation.");
-    process.exit(0);
-}
-
-console.log(`Found ${files.length} files to validate. Processing...`);
-
 (async () => {
     let hasErrors = false;
 
@@ -73,9 +65,6 @@ console.log(`Found ${files.length} files to validate. Processing...`);
     }
 
     if (hasErrors) {
-        console.error("Some files failed validation. Commit aborted.");
         process.exit(1);
     }
-
-    console.log("All provided files have been successfully validated!");
 })();
