@@ -34,7 +34,8 @@
         "Test Mitre Name 1",
         "T1113",
         "Download"
-      ]
+      ],
+      "url": "https://lolbas-project.github.io/lolbas/Binaries/AppInstaller/"
     },
     "rawJSON": {
       "Name": "AppInstaller.exe",
@@ -127,7 +128,8 @@
         "Test Mitre Name 2",
         "T2223",
         "AWL Bypass"
-      ]
+      ],
+      "url": "https://lolbas-project.github.io/lolbas/Binaries/Aspnet_Compiler/"
     },
     "rawJSON": {
       "Name": "Aspnet_Compiler.exe",
