@@ -3,19 +3,18 @@ import subprocess
 
 from CommonServerPython import *
 
-TWIST_EXE = '/dnstwist/dnstwist.py'
+TWIST_EXE = "/dnstwist/dnstwist.py"
 
-if demisto.command() == 'dnstwist-domain-variations':
-
+if demisto.command() == "dnstwist-domain-variations":
     KEYS_TO_MD = ["whois_updated", "whois_created", "dns_a", "dns_mx", "dns_ns"]
-    DOMAIN = demisto.args()['domain']
-    LIMIT = int(demisto.args()['limit'])
-    WHOIS = demisto.args().get('whois')
+    DOMAIN = demisto.args()["domain"]
+    LIMIT = int(demisto.args()["limit"])
+    WHOIS = demisto.args().get("whois")
 
     def get_dnstwist_result(domain, include_whois):
-        args = [TWIST_EXE, '-f', 'json']
+        args = [TWIST_EXE, "-f", "json"]
         if include_whois:
-            args.append('-w')
+            args.append("-w")
         args.append(domain)
         res = subprocess.check_output(args, stderr=subprocess.DEVNULL)
         return json.loads(res)
@@ -36,13 +35,16 @@ if demisto.command() == 'dnstwist-domain-variations':
                 results.append(temp)
         return results
 
-    dnstwist_result = get_dnstwist_result(DOMAIN, WHOIS == 'yes')
+    dnstwist_result = get_dnstwist_result(DOMAIN, WHOIS == "yes")
     new_result = get_domain_to_info_map(dnstwist_result)
-    md = tableToMarkdown('dnstwist for domain - ' + DOMAIN, new_result,
-                         headers=["domain-name", "IP Address", "dns_mx", "dns_ns", "whois_updated", "whois_created"])
+    md = tableToMarkdown(
+        "dnstwist for domain - " + DOMAIN,
+        new_result,
+        headers=["domain-name", "IP Address", "dns_mx", "dns_ns", "whois_updated", "whois_created"],
+    )
 
     domain_context = new_result[0]  # The requested domain for variations
-    domains_context_list = new_result[1:LIMIT + 1]  # The variations domains
+    domains_context_list = new_result[1 : LIMIT + 1]  # The variations domains
 
     domains = []
     for item in domains_context_list:
@@ -74,18 +76,18 @@ if demisto.command() == 'dnstwist-domain-variations':
         ec["WhoisCreated"] = domain_context["whois_created"]
 
     entry_result = {
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': dnstwist_result,
-        'HumanReadable': md,
-        'ReadableContentsFormat': formats['markdown'],
-        'EntryContext': {'dnstwist.Domain(val.Name == obj.Name)': ec}
+        "Type": entryTypes["note"],
+        "ContentsFormat": formats["json"],
+        "Contents": dnstwist_result,
+        "HumanReadable": md,
+        "ReadableContentsFormat": formats["markdown"],
+        "EntryContext": {"dnstwist.Domain(val.Name == obj.Name)": ec},
     }
 
     demisto.results(entry_result)
 
-if demisto.command() == 'test-module':
+if demisto.command() == "test-module":
     # This is the call made when pressing the integration test button.
-    subprocess.check_output([TWIST_EXE, '-h'], stderr=subprocess.STDOUT)
-    demisto.results('ok')
+    subprocess.check_output([TWIST_EXE, "-h"], stderr=subprocess.STDOUT)
+    demisto.results("ok")
     sys.exit(0)
