@@ -19,9 +19,12 @@ Use the IPinfo.io API to get data about an IP address.
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Check IP reputation (when information is available, returns a JSON with details). Uses all configured Threat Intelligence feeds.
 
@@ -29,6 +32,7 @@ Check IP reputation (when information is available, returns a JSON with details)
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -77,8 +81,11 @@ Check IP reputation (when information is available, returns a JSON with details)
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 
 #### Command example
+
 ```!ip ip=1.1.1.1```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
