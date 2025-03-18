@@ -1272,3 +1272,38 @@ def test_fetch_incidents_dedup_held_messages(mocker):
                                     'dedup_held_messages': ['123456'],
                                     'time_held_messages': '2025-03-16T16:31:00Z'})
     set_new_incidents.assert_called_with([])
+
+
+@freeze_time("2025-01-15 17:00:00 UTC")
+def test_fetch_incidents_not_fetching_held_messages(mocker):
+    """
+    Given:
+    - No last run data is available.
+    - FETCH_ATTACHMENTS is enabled.
+    - request_with_pagination returns a malicious attachment.
+    
+    When:
+    - fetch_incidents is executed for the first time.
+    
+    Then:
+    - The same timestamps should be used for fetching incidents and held messages.
+    - setLastRun should store the latest timestamps and deduplication list.
+    - incidents should contain the fetched malicious attachment.
+    """
+    mocker.patch.object(demisto, 'getLastRun', return_value={})
+    set_last_run = mocker.patch.object(demisto, 'setLastRun')
+    set_new_incidents = mocker.patch.object(demisto, 'incidents')
+    MimecastV2.FETCH_URL = False
+    MimecastV2.FETCH_ATTACHMENTS = True
+    MimecastV2.FETCH_IMPERSONATIONS = False
+    MimecastV2.FETCH_HELD_MESSAGES = False
+    request_with_pagination = mocker.patch.object(MimecastV2, 'request_with_pagination',
+                                                  return_value=([{'fileName': 'file_test',
+                                                                  'date': '2025-01-14T17:01:00+0000'}], 1))
+    MimecastV2.fetch_incidents()
+    time_for_incidents = request_with_pagination.call_args[1].get('data')[0].get('from')
+    assert time_for_incidents == '2025-01-14T17:00:00+0000'
+    set_last_run.assert_called_with({'time': '2025-01-14T17:01:01Z'})
+    set_new_incidents.assert_called_with([{'name': 'Mimecast malicious attachment: file_test',
+                                           'occurred': '2025-01-14T17:01:00Z',
+                                           'rawJSON': '{"fileName": "file_test", "date": "2025-01-14T17:01:00+0000"}'}])
