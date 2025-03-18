@@ -7,3 +7,19 @@ ignore=MR108
 [file:AbnormalSecurityEventCollector.yml]
 ignore=MR108
 
+[known_words]
+gte
+lte
+MM
+YYYY
+datetime
+Covid
+UUID
+RFC
+URLs
+csv
+abusecampaigns
+UTC
+occurences
+unanalyzed
+graymail
