@@ -848,7 +848,6 @@ marketplaces:
 - platform
 fromversion: 6.8.0
 supportedModules:
-- C1
 - X1
 - X3
 - X5

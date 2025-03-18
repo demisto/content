@@ -1,13 +1,7 @@
 id: Phishing - Core v2
 version: -1
 name: Phishing - Core v2
-description: "This playbook provides a basic response to phishing incidents, including:\n\
-  - Calculating reputation for all indicators\n- Extracting indicators from email attachments\n\
-  - Calculating severity for the incident based on indicator reputation\n- Updating the\
-  \ reporting user about investigation status\n- Enabling manual incident remediation\
-  \ \n\nThis updated playbook uses:\n\
-  \  1) Incident fields instead of labels\n  2) The \"Process Email - Core v2\" playbook\
-   "
+description: "This playbook provides a basic response to phishing incidents, including:\n- Calculating reputation for all indicators\n- Extracting indicators from email attachments\n- Calculating severity for the incident based on indicator reputation\n- Updating the reporting user about investigation status\n- Enabling manual incident remediation \n\nThis updated playbook uses:\n  1) Incident fields instead of labels\n  2) The \"Process Email - Core v2\" playbook"
 starttaskid: "0"
 tasks:
   "0":
@@ -1321,3 +1315,8 @@ outputs: []
 fromversion: 6.0.0
 tests:
 - Phishing - Core - Test - Incident Starter
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS

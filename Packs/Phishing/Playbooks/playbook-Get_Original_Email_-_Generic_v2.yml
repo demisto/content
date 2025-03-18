@@ -13,8 +13,7 @@ description: |-
       * Mimecast
 id: Get Original Email - Generic v2
 inputs:
-- description: The original email message ID to retrieve. This should hold the value
-    of the "Message-ID" header of the original email.
+- description: The original email message ID to retrieve. This should hold the value of the "Message-ID" header of the original email.
   key: MessageID
   playbookInputQuery:
   required: false
@@ -78,8 +77,7 @@ outputs:
   description: The email headers map.
   type: string
 - contextPath: reportedemailentryid
-  description: If the original EML was retrieved, this field holds the file's
-    Entry ID.
+  description: If the original EML was retrieved, this field holds the file's Entry ID.
   type: string
 starttaskid: "0"
 tasks:
@@ -466,3 +464,8 @@ view: |-
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS

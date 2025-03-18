@@ -266,7 +266,6 @@ tests:
 - Create ServiceNow Ticket and State Polling Test
 fromversion: 6.0.0
 supportedModules:
-- C1
 - X1
 - X3
 - X5

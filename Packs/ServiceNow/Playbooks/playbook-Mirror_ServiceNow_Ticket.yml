@@ -506,8 +506,7 @@ inputs:
   value:
     simple: Both
   required: false
-  description: "Set the mirror direction, should be one of the following: \n1. In\n2. Out\n3.
-    Both"
+  description: "Set the mirror direction, should be one of the following: \n1. In\n2. Out\n3. Both"
   playbookInputQuery:
 - key: MirrorCommentTags
   value:
@@ -542,7 +541,6 @@ tests:
 - Create ServiceNow Ticket and Mirror Test
 fromversion: 6.0.0
 supportedModules:
-- C1
 - X1
 - X3
 - X5

@@ -2601,13 +2601,13 @@ tasks:
                 value:
                   simple: incident.emailto
                 iscontext: true
-              equals: { }
+              equals: {}
               lhs:
                 value:
                   simple: inputs.ListenerMailbox
                 iscontext: true
-              options: { }
-              rhs: { }
+              options: {}
+              rhs: {}
               then:
                 value:
                   simple: inputs.ListenerMailbox
@@ -3677,9 +3677,7 @@ inputs:
 - key: SendMailInstance
   value: {}
   required: false
-  description: The name of the instance to be used when executing the "send-mail"
-    command in the playbook. In case it will be empty, all available instances will
-    be used (default).
+  description: The name of the instance to be used when executing the "send-mail" command in the playbook. In case it will be empty, all available instances will be used (default).
   playbookInputQuery:
 - key: OriginalAuthenticationHeader
   value: {}
@@ -3718,3 +3716,8 @@ tests:
 - Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test
 fromversion: 6.5.0
 toversion: 6.7.9
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
