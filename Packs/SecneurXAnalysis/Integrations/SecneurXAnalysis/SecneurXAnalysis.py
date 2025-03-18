@@ -1,84 +1,65 @@
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from collections import OrderedDict  # noqa
-
 import json  # noqa
 import traceback  # noqa
-from typing import Dict, Any  # noqa
+from collections import OrderedDict  # noqa
+from typing import Any, Dict  # noqa
 
+import demistomock as demisto
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
 # Disable insecure warnings
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
 SNX_IOC_TYPES_TO_DEMISTO_TYPES = {
-    'url': FeedIndicatorType.URL,
-    'md5': FeedIndicatorType.File,
-    'sha-1': FeedIndicatorType.File,
-    'sha-256': FeedIndicatorType.File,
-    'ipv4-addr': FeedIndicatorType.IP,
-    'domain': FeedIndicatorType.Domain,
-    'ipv6-addr': FeedIndicatorType.IPv6,
-    'email-addr': FeedIndicatorType.Email,
-    'domain-name': FeedIndicatorType.Domain,
-    'file:hashes.MD5': FeedIndicatorType.File
+    "url": FeedIndicatorType.URL,
+    "md5": FeedIndicatorType.File,
+    "sha-1": FeedIndicatorType.File,
+    "sha-256": FeedIndicatorType.File,
+    "ipv4-addr": FeedIndicatorType.IP,
+    "domain": FeedIndicatorType.Domain,
+    "ipv6-addr": FeedIndicatorType.IPv6,
+    "email-addr": FeedIndicatorType.Email,
+    "domain-name": FeedIndicatorType.Domain,
+    "file:hashes.MD5": FeedIndicatorType.File,
 }
 
 SNX_VERDICT_TO_DBOTSCORE = {
-    'No Threats': Common.DBotScore.GOOD,
-    'Suspicious': Common.DBotScore.SUSPICIOUS,
-    'Malware': Common.DBotScore.BAD,
-    'Ransomware': Common.DBotScore.BAD
+    "No Threats": Common.DBotScore.GOOD,
+    "Suspicious": Common.DBotScore.SUSPICIOUS,
+    "Malware": Common.DBotScore.BAD,
+    "Ransomware": Common.DBotScore.BAD,
 }
 
 
 class Client(BaseClient):
     """Implement class for SecneurX Analysis sandbox"""
 
-    def get_response(self, urlSuffix: str, paramsDict: Dict[str, str]):
+    def get_response(self, urlSuffix: str, paramsDict: dict[str, str]):
         try:
-            if urlSuffix == '/get_report':
-                respType = 'text'
+            if urlSuffix == "/get_report":
+                respType = "text"
             else:
-                respType = 'json'
-            return self._http_request(
-                method="GET",
-                url_suffix=urlSuffix,
-                params=paramsDict,
-                resp_type=respType,
-                timeout=90
-            ), None
+                respType = "json"
+            return self._http_request(method="GET", url_suffix=urlSuffix, params=paramsDict, resp_type=respType, timeout=90), None
 
         except Exception as e:
             return None, e
 
-    def submit_file(self, urlSuffix: str, fileData: Dict[str, Any], paramsDict: Dict[str, str]):
+    def submit_file(self, urlSuffix: str, fileData: dict[str, Any], paramsDict: dict[str, str]):
         try:
-            return self._http_request(
-                method="POST",
-                url_suffix=urlSuffix,
-                files=fileData,
-                params=paramsDict,
-                timeout=90
-            ), None
+            return self._http_request(method="POST", url_suffix=urlSuffix, files=fileData, params=paramsDict, timeout=90), None
 
         except Exception as e:
             return None, e
 
-    def submit_url(self, urlSuffix: str, paramsDict: Dict[str, str], urlParams: Dict[str, str]):
+    def submit_url(self, urlSuffix: str, paramsDict: dict[str, str], urlParams: dict[str, str]):
         try:
-            return self._http_request(
-                method="POST",
-                url_suffix=urlSuffix,
-                data=urlParams,
-                params=paramsDict,
-                timeout=90
-            ), None
+            return self._http_request(method="POST", url_suffix=urlSuffix, data=urlParams, params=paramsDict, timeout=90), None
 
         except Exception as e:
             return None, e
 
 
-class SNXReportParser():
+class SNXReportParser:
     JSON_URL = "url"
     JSON_IOC = "IOC"
     JSON_KEY = "key"
@@ -111,7 +92,7 @@ class SNXReportParser():
     SNX_SUBMISSION_TYPE_KEY = "analysisSubjectType"
 
 
-class JsonTableParser():
+class JsonTableParser:
     SNX_URL = "URL"
     SNX_TAGS = "Tags"
     SNX_SHA256 = "SHA256"
@@ -132,7 +113,7 @@ class JsonTableParser():
     SNX_REGISTRY_DELETED = "RegistryDeleted"
 
 
-class SNXResponse():
+class SNXResponse:
     FAILED = 0
     SUCCESS = 1
     SNX_URL_KEY = "url"
@@ -169,7 +150,7 @@ class SNXResponse():
     SNX_FILE_PWD_KEY = "compressed_password"
 
 
-class SNXErrorMsg():
+class SNXErrorMsg:
     SUCCESS_MSG = "ok"
     CONFIG_ERR = "Configuration Error"
     INVALID_ERR = "Endpoint Error: Invalid Server URL"
@@ -180,11 +161,11 @@ class SNXErrorMsg():
 
 
 def test_module(client: Client) -> Any:
-    get_status_cmd(client, {SNXResponse.SNX_LAST_COUNT_KEY: '2'})
+    get_status_cmd(client, {SNXResponse.SNX_LAST_COUNT_KEY: "2"})
     return SNXErrorMsg.SUCCESS_MSG
 
 
-def create_request_json(argsDict: Dict[str, str]) -> Dict:
+def create_request_json(argsDict: dict[str, str]) -> dict:
     params = {}
     try:
         if SNXResponse.SNX_TASK_UUID_KEY in argsDict.keys():
@@ -281,9 +262,10 @@ def parse_response(response):
                 if SNXReportParser.JSON_STATUS_CODE in httpData.keys():
                     statusCodeValue = httpData[SNXReportParser.JSON_STATUS_CODE]
                 if methodValue and requestValue and statusCodeValue:
-                    httpList.append(f"{split_line}[" + methodValue + "] "
-                                    + requestValue + " [Status : " + str(statusCodeValue) + "]")
-                    split_line = '\n'
+                    httpList.append(
+                        f"{split_line}[" + methodValue + "] " + requestValue + " [Status : " + str(statusCodeValue) + "]"
+                    )
+                    split_line = "\n"
             if httpList:
                 jsonContent[JsonTableParser.SNX_HTTP_REQ] = httpList
         if SNXReportParser.JSON_JA3_LIST in response.keys():
@@ -331,7 +313,7 @@ def parse_response(response):
 def convert_json_to_str(data_list):
     formated_list = []
     try:
-        split_line = ''
+        split_line = ""
         for data in data_list:
             formatValue = json.dumps(data)
             formatValue = formatValue.rstrip('"').lstrip('"')
@@ -350,9 +332,9 @@ def parse_report_iocs(ioc_json):
             for ioc_data in ioc_list:
                 if SNXReportParser.JSON_PATTERN in ioc_data.keys():
                     patternData = ioc_data[SNXReportParser.JSON_PATTERN]
-                    patternData = patternData.replace('[', '').replace(']', '')
+                    patternData = patternData.replace("[", "").replace("]", "")
                     patternKey = patternData.split(":")[0]
-                    patternValue = patternData.split(" = ")[1].replace("'", '')
+                    patternValue = patternData.split(" = ")[1].replace("'", "")
                     if patternKey.lower() in SNX_IOC_TYPES_TO_DEMISTO_TYPES.keys():
                         patternKey = SNX_IOC_TYPES_TO_DEMISTO_TYPES[patternKey]
                     parsed_ioc_list.append(patternKey + " : " + str(patternValue))
@@ -364,8 +346,9 @@ def parse_report_iocs(ioc_json):
 
 def format_report_contents(contents):
     try:
+
         def dict_to_string(nested_dict):
-            return json.dumps(nested_dict).lstrip('{').rstrip('}').replace('\'', '').replace('\"', '')
+            return json.dumps(nested_dict).lstrip("{").rstrip("}").replace("'", "").replace('"', "")
 
         table_contents = OrderedDict()
         for key, val in contents.items():
@@ -402,7 +385,7 @@ def parse_dbot_score(reportJson):
                         indicator=indicatorValue,
                         indicator_type=DBotScoreType.FILE,
                         score=verdictScore,
-                        integration_name=SNXResponse.SNX_PROVIDER
+                        integration_name=SNXResponse.SNX_PROVIDER,
                     )
             else:
                 indicatorValue = reportJson.get(SNXReportParser.SNX_SUBMISSION_NAME_KEY, None)
@@ -411,7 +394,7 @@ def parse_dbot_score(reportJson):
                         indicator=indicatorValue,
                         indicator_type=DBotScoreType.URL,
                         score=verdictScore,
-                        integration_name=SNXResponse.SNX_PROVIDER
+                        integration_name=SNXResponse.SNX_PROVIDER,
                     )
 
     except Exception as e:
@@ -432,55 +415,38 @@ def parse_report_entity(reportJson):
             if subjectName:
                 if submissionType == SNXResponse.SNX_FILE_KEY:
                     indicator = Common.File(
-                        name=subjectName,
-                        dbot_score=dbot_score,
-                        sha256=sha256Value,
-                        tags=tagList,
-                        description=verdictValue
+                        name=subjectName, dbot_score=dbot_score, sha256=sha256Value, tags=tagList, description=verdictValue
                     )
                 elif submissionType == SNXResponse.SNX_URL_KEY:
-                    indicator = Common.URL(
-                        url=subjectName,
-                        dbot_score=dbot_score,
-                        tags=tagList,
-                        description=verdictValue
-                    )  # type: ignore
+                    indicator = Common.URL(url=subjectName, dbot_score=dbot_score, tags=tagList, description=verdictValue)  # type: ignore
 
     except Exception as e:
         raise DemistoException(e)
     return indicator
 
 
-def post_submit_file(client: Client, args: Dict[str, str]) -> CommandResults:
+def post_submit_file(client: Client, args: dict[str, str]) -> CommandResults:
     urlSuffix = "/submit_file"
-    entryId = args.get('EntryID') or None
+    entryId = args.get("EntryID") or None
     if entryId is None:
         raise DemistoException("Entry ID Not Found")
-    platformValue = args.get('platform') or SNXResponse.SNX_WINDOWS_KEY
+    platformValue = args.get("platform") or SNXResponse.SNX_WINDOWS_KEY
     params = create_request_json(args)
-    if 'platform' not in params.keys():
-        params['platform'] = platformValue
+    if "platform" not in params.keys():
+        params["platform"] = platformValue
     fileEntry = demisto.getFilePath(entryId)
-    fileName = fileEntry['name']
-    filePath = fileEntry['path']
-    fileData = {'file': (fileName, open(filePath, 'rb'))}
+    fileName = fileEntry["name"]
+    filePath = fileEntry["path"]
+    fileData = {"file": (fileName, open(filePath, "rb"))}
     response, err_msg = client.submit_file(urlSuffix, fileData, params)
     if response:
         if SNXResponse.SNX_SUCCESS_KEY in response.keys() and SNXResponse.SNX_RESULT_KEY in response.keys():
             finalJson = response[SNXResponse.SNX_RESULT_KEY]
             readableOutput = tableToMarkdown(f"File Submitted Successfully: {fileName}", finalJson)
-            return CommandResults(
-                readable_output=readableOutput,
-                outputs_prefix="SecneurXAnalysis.SubmitFile",
-                outputs=finalJson
-            )
+            return CommandResults(readable_output=readableOutput, outputs_prefix="SecneurXAnalysis.SubmitFile", outputs=finalJson)
         else:
             readableOutput = tableToMarkdown(f"File Submission Failed: {fileName}", response)
-            return CommandResults(
-                readable_output=readableOutput,
-                outputs_prefix="SecneurXAnalysis.SubmitFile",
-                outputs=response
-            )
+            return CommandResults(readable_output=readableOutput, outputs_prefix="SecneurXAnalysis.SubmitFile", outputs=response)
     else:
         msg = error_response(err_msg)
         outputJson = {SNXResponse.SNX_ERROR_MSG_KEY: msg}
@@ -488,7 +454,7 @@ def post_submit_file(client: Client, args: Dict[str, str]) -> CommandResults:
         return CommandResults(readable_output=readableOutput, outputs_prefix="SecneurXAnalysis.SubmitFile", outputs=outputJson)
 
 
-def post_submit_url(client: Client, args: Dict[str, str]) -> CommandResults:
+def post_submit_url(client: Client, args: dict[str, str]) -> CommandResults:
     urlSuffix = "/analyze_url"
     urlValue = args.get("URL") or None
     if urlValue is None or len(urlValue) == 0:
@@ -500,18 +466,10 @@ def post_submit_url(client: Client, args: Dict[str, str]) -> CommandResults:
         if SNXResponse.SNX_SUCCESS_KEY in response.keys() and SNXResponse.SNX_RESULT_KEY in response.keys():
             finalJson = response[SNXResponse.SNX_RESULT_KEY]
             readableOutput = tableToMarkdown("URL Submitted Successfuly", finalJson)
-            return CommandResults(
-                readable_output=readableOutput,
-                outputs_prefix="SecneurXAnalysis.SubmitURL",
-                outputs=finalJson
-            )
+            return CommandResults(readable_output=readableOutput, outputs_prefix="SecneurXAnalysis.SubmitURL", outputs=finalJson)
         else:
             readableOutput = tableToMarkdown("URL Submission Failed", response)
-            return CommandResults(
-                readable_output=readableOutput,
-                outputs_prefix="SecneurXAnalysis.SubmitURL",
-                outputs=response
-            )
+            return CommandResults(readable_output=readableOutput, outputs_prefix="SecneurXAnalysis.SubmitURL", outputs=response)
     else:
         msg = error_response(err_msg)
         outputJson = {SNXResponse.SNX_ERROR_MSG_KEY: msg}
@@ -519,7 +477,7 @@ def post_submit_url(client: Client, args: Dict[str, str]) -> CommandResults:
         return CommandResults(readable_output=readableOutput, outputs_prefix="SecneurXAnalysis.SubmitURL", outputs=outputJson)
 
 
-def get_verdict_cmd(client: Client, args: Dict[str, str]) -> CommandResults:
+def get_verdict_cmd(client: Client, args: dict[str, str]) -> CommandResults:
     taskUuid = args.get(SNXResponse.SNX_TASK_UUID_KEY) or None
     if taskUuid is None:
         raise DemistoException("Task UUID Parameter value is not found")
@@ -536,7 +494,7 @@ def get_verdict_cmd(client: Client, args: Dict[str, str]) -> CommandResults:
                     outputs=dataResult,
                     outputs_key_field="task_uuid",
                     outputs_prefix="SecneurXAnalysis.Verdict",
-                    raw_response=dataResult
+                    raw_response=dataResult,
                 )
             else:
                 readableOutput = tableToMarkdown(f"SecneurX Analysis - Verdict Result: {taskUuid}", t=response)
@@ -545,7 +503,7 @@ def get_verdict_cmd(client: Client, args: Dict[str, str]) -> CommandResults:
                     outputs={"Status": SNXResponse.SNX_FAILED_KEY},
                     outputs_key_field="task_uuid",
                     outputs_prefix="SecneurXAnalysis.Verdict",
-                    raw_response=response
+                    raw_response=response,
                 )
         else:
             msg = error_response(err_msg)
@@ -555,11 +513,11 @@ def get_verdict_cmd(client: Client, args: Dict[str, str]) -> CommandResults:
                 readable_output=readableOutput,
                 outputs=outputJson,
                 outputs_prefix="SecneurXAnalysis.Verdict",
-                outputs_key_field="task_uuid"
+                outputs_key_field="task_uuid",
             )
 
 
-def get_completed_cmd(client: Client, args: Dict[str, str]) -> CommandResults:
+def get_completed_cmd(client: Client, args: dict[str, str]) -> CommandResults:
     urlSuffix = "/get_completed"
     params = create_request_json(args)
     response, err_msg = client.get_response(urlSuffix, params)
@@ -567,36 +525,34 @@ def get_completed_cmd(client: Client, args: Dict[str, str]) -> CommandResults:
         if SNXResponse.SNX_SUCCESS_KEY in response.keys() and response[SNXResponse.SNX_SUCCESS_KEY] == SNXResponse.SUCCESS:
             reportList = response.get(SNXResponse.SNX_RESULT_KEY, SNXResponse.SNX_NULL_KEY)
             if reportList != SNXResponse.SNX_NULL_KEY and len(reportList) > 0:
-                readableOutput = tableToMarkdown("SecneurX Analysis - List of Completed Samples:", t=reportList,
-                                                 headers=[
-                                                     SNXResponse.SNX_TASK_UUID_KEY, SNXResponse.SNX_VERDICT_KEY,
-                                                     SNXResponse.SNX_STATUS_KEY, SNXResponse.SNX_REPORT_KEY])
+                readableOutput = tableToMarkdown(
+                    "SecneurX Analysis - List of Completed Samples:",
+                    t=reportList,
+                    headers=[
+                        SNXResponse.SNX_TASK_UUID_KEY,
+                        SNXResponse.SNX_VERDICT_KEY,
+                        SNXResponse.SNX_STATUS_KEY,
+                        SNXResponse.SNX_REPORT_KEY,
+                    ],
+                )
                 return CommandResults(
-                    readable_output=readableOutput,
-                    outputs_prefix="SecneurXAnalysis.Completed",
-                    raw_response=reportList
+                    readable_output=readableOutput, outputs_prefix="SecneurXAnalysis.Completed", raw_response=reportList
                 )
             else:
                 msgJson = {"msg": "No samples to display"}
                 readableOutput = tableToMarkdown("SecneurX Analysis - List of Completed Samples: ", msgJson)
                 return CommandResults(
-                    readable_output=readableOutput,
-                    outputs_prefix="SecneurXAnalysis.Completed",
-                    outputs=msgJson
+                    readable_output=readableOutput, outputs_prefix="SecneurXAnalysis.Completed", outputs=msgJson
                 )
         else:
             readableOutput = tableToMarkdown("", response)
-            return CommandResults(
-                readable_output=readableOutput,
-                outputs_prefix="SecneurXAnalysis.Completed",
-                outputs=response
-            )
+            return CommandResults(readable_output=readableOutput, outputs_prefix="SecneurXAnalysis.Completed", outputs=response)
     else:
         msg = error_response(err_msg)
         raise DemistoException(msg)
 
 
-def get_pending_cmd(client: Client, args: Dict[str, str]) -> CommandResults:
+def get_pending_cmd(client: Client, args: dict[str, str]) -> CommandResults:
     urlSuffix = "/get_processing"
     params = create_request_json(args)
     response, err_msg = client.get_response(urlSuffix, params)
@@ -611,35 +567,32 @@ def get_pending_cmd(client: Client, args: Dict[str, str]) -> CommandResults:
                         report[SNXResponse.SAMPLE_KEY] = report[SNXReportParser.JSON_URL]
                     else:
                         continue
-                readableOutput = tableToMarkdown("SecneurX Analysis - List of Samples in Pending State: ", t=reportList,
-                                                 headers=[SNXResponse.SNX_TASK_UUID_KEY, SNXResponse.SAMPLE_KEY,
-                                                          SNXResponse.SNX_STATUS_KEY, SNXResponse.SNX_SHA256_KEY])
+                readableOutput = tableToMarkdown(
+                    "SecneurX Analysis - List of Samples in Pending State: ",
+                    t=reportList,
+                    headers=[
+                        SNXResponse.SNX_TASK_UUID_KEY,
+                        SNXResponse.SAMPLE_KEY,
+                        SNXResponse.SNX_STATUS_KEY,
+                        SNXResponse.SNX_SHA256_KEY,
+                    ],
+                )
                 return CommandResults(
-                    readable_output=readableOutput,
-                    outputs_prefix="SecneurXAnalysis.Pending",
-                    raw_response=reportList
+                    readable_output=readableOutput, outputs_prefix="SecneurXAnalysis.Pending", raw_response=reportList
                 )
             else:
-                msgJson = {'msg': "No samples to display"}
+                msgJson = {"msg": "No samples to display"}
                 readableOutput = tableToMarkdown("SecneurX Analysis - List of Samples in Pending State:", msgJson)
-                return CommandResults(
-                    readable_output=readableOutput,
-                    outputs_prefix="SecneurXAnalysis.Pending",
-                    outputs=msgJson
-                )
+                return CommandResults(readable_output=readableOutput, outputs_prefix="SecneurXAnalysis.Pending", outputs=msgJson)
         else:
             readableOutput = tableToMarkdown("", response)
-            return CommandResults(
-                readable_output=readableOutput,
-                outputs_prefix="SecneurXAnalysis.Pending",
-                outputs=response
-            )
+            return CommandResults(readable_output=readableOutput, outputs_prefix="SecneurXAnalysis.Pending", outputs=response)
     else:
         msg = error_response(err_msg)
         raise DemistoException(msg)
 
 
-def get_status_cmd(client: Client, args: Dict[str, str]) -> CommandResults:
+def get_status_cmd(client: Client, args: dict[str, str]) -> CommandResults:
     urlSuffix = "/get_status"
     params = create_request_json(args)
     response, err_msg = client.get_response(urlSuffix, params)
@@ -654,40 +607,37 @@ def get_status_cmd(client: Client, args: Dict[str, str]) -> CommandResults:
                         report[SNXResponse.SAMPLE_KEY] = report[SNXReportParser.JSON_URL]
                     else:
                         continue
-                readableOutput = tableToMarkdown("SecneurX Analysis - Status of Submitted Samples:", t=reportList,
-                                                 headers=[SNXResponse.SNX_TASK_UUID_KEY, SNXResponse.SAMPLE_KEY,
-                                                          SNXResponse.SNX_STATUS_KEY, SNXResponse.SNX_SHA256_KEY])
+                readableOutput = tableToMarkdown(
+                    "SecneurX Analysis - Status of Submitted Samples:",
+                    t=reportList,
+                    headers=[
+                        SNXResponse.SNX_TASK_UUID_KEY,
+                        SNXResponse.SAMPLE_KEY,
+                        SNXResponse.SNX_STATUS_KEY,
+                        SNXResponse.SNX_SHA256_KEY,
+                    ],
+                )
                 return CommandResults(
-                    readable_output=readableOutput,
-                    outputs_prefix="SecneurXAnalysis.Status",
-                    raw_response=reportList
+                    readable_output=readableOutput, outputs_prefix="SecneurXAnalysis.Status", raw_response=reportList
                 )
             else:
                 msgJson = {"msg": "No samples to display"}
                 readableOutput = tableToMarkdown("SecneurX Analysis - Status of Submitted Samples: ", msgJson)
-                return CommandResults(
-                    readable_output=readableOutput,
-                    outputs_prefix="SecneurXAnalysis.Status",
-                    outputs=msgJson
-                )
+                return CommandResults(readable_output=readableOutput, outputs_prefix="SecneurXAnalysis.Status", outputs=msgJson)
         else:
             readableOutput = tableToMarkdown("", response)
-            return CommandResults(
-                readable_output=readableOutput,
-                outputs_prefix="SecneurXAnalysis.Status",
-                outputs=response
-            )
+            return CommandResults(readable_output=readableOutput, outputs_prefix="SecneurXAnalysis.Status", outputs=response)
 
     else:
         msg = error_response(err_msg)
         raise DemistoException(msg)
 
 
-def get_report_cmd(client: Client, args: Dict[str, str]):
+def get_report_cmd(client: Client, args: dict[str, str]):
     urlSuffix = "/get_report"
     taskUuid = args.get(SNXResponse.SNX_TASK_UUID_KEY) or None
     reportFormat = args.get(SNXResponse.SNX_REPORT_FORMAT_KEY) or "json"
-    if reportFormat is None or reportFormat != "html" and reportFormat != "json":
+    if reportFormat is None or (reportFormat != "html" and reportFormat != "json"):
         raise DemistoException("Invalid value of report file format paramater")
     if taskUuid is None:
         raise DemistoException("Task Uuid Parameter value is not found")
@@ -707,7 +657,7 @@ def get_report_cmd(client: Client, args: Dict[str, str]):
                 readableContents = None
                 for header in contents.keys():
                     headerList.append(header)
-                title = (f"SecneurX Analysis - Detailed Report of the Analyzed Sample: {taskUuid}")
+                title = f"SecneurX Analysis - Detailed Report of the Analyzed Sample: {taskUuid}"
                 readableContents = format_report_contents(contents)
                 readableOutputs = tableToMarkdown(title, readableContents, headers=headerList, headerTransform=pascalToSpace)
                 reportFileName = taskUuid + reportExtn
@@ -718,7 +668,7 @@ def get_report_cmd(client: Client, args: Dict[str, str]):
                     indicator=indicator,
                     outputs=contents,
                     outputs_prefix="SecneurXAnalysis.Report",
-                    raw_response=resJson
+                    raw_response=resJson,
                 )
             else:
                 reportFileName = taskUuid + reportExtn
@@ -728,11 +678,7 @@ def get_report_cmd(client: Client, args: Dict[str, str]):
             msg = error_response(err_msg)
             result = {SNXResponse.SNX_ERROR_MSG_KEY: msg, "Status": SNXResponse.SNX_FAILED_KEY}
             readableOutputs = tableToMarkdown(f"SecneurX Analysis - Failed: {taskUuid}", result)
-            return CommandResults(
-                readable_output=readableOutputs,
-                outputs_prefix="SecneurXAnalysis.Report",
-                outputs=result
-            )
+            return CommandResults(readable_output=readableOutputs, outputs_prefix="SecneurXAnalysis.Report", outputs=result)
 
 
 def get_quota_cmd(client: Client) -> CommandResults:
@@ -743,18 +689,12 @@ def get_quota_cmd(client: Client) -> CommandResults:
             quotaData = response[SNXResponse.SNX_RESULT_KEY]
             readableOutput = tableToMarkdown("SecneurX Analysis - API Key Quota Usage:", t=quotaData)
             return CommandResults(
-                readable_output=readableOutput,
-                outputs=quotaData,
-                outputs_prefix="SecneurXAnalysis.Quota",
-                raw_response=response
+                readable_output=readableOutput, outputs=quotaData, outputs_prefix="SecneurXAnalysis.Quota", raw_response=response
             )
         else:
             readableOutput = tableToMarkdown("SecneurX Analysis - API Key Quota Usage:", t=response)
             return CommandResults(
-                readable_output=readableOutput,
-                outputs=response,
-                outputs_prefix="SecneurXAnalysis.Quota",
-                raw_response=response
+                readable_output=readableOutput, outputs=response, outputs_prefix="SecneurXAnalysis.Quota", raw_response=response
             )
     else:
         msg = error_response(err_msg)
@@ -767,12 +707,7 @@ def main():
     verifyCertificate = not demisto.params().get("insecure", False)
     proxy = demisto.params().get("proxy", False)
     headers = {"api-key": apiKey}
-    client = Client(
-        base_url=baseUrl,
-        verify=verifyCertificate,
-        headers=headers,
-        proxy=proxy
-    )
+    client = Client(base_url=baseUrl, verify=verifyCertificate, headers=headers, proxy=proxy)
     cmdAction = demisto.command()
     demisto.debug(f"Command being called is {cmdAction}")
     try:
@@ -806,7 +741,7 @@ def main():
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"Failed to execute {cmdAction} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {cmdAction} command.\nError:\n{e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
