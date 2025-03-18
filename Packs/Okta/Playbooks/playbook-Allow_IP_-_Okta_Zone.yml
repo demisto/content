@@ -730,6 +730,7 @@ fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
 supportedModules:
+- C1
 - X1
 - X3
 - X5

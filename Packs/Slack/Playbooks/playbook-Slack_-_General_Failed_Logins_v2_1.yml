@@ -758,6 +758,7 @@ fromversion: 5.0.0
 tests:
 - No tests
 supportedModules:
+- C1
 - X1
 - X3
 - X5
