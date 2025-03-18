@@ -85,10 +85,7 @@ class Client(BaseClient):
                         return_warning(f'The command could not be execute: {argument} is invalid.', exit=True)
                     raise Exception(f'The command could not be execute: {argument} is invalid.')
                 elif e.res.status_code in (504, 502):
-                    try:
-                        demisto.debug(f"The status code is {e.res.status_code}")
-                    except Exception as e:
-                        demisto.debug("Could not show e.res.status_code")
+                    demisto.debug(f"The status code is {e.res.status_code}")
                     if self.should_error:
                         raise e
                     try:
@@ -96,19 +93,21 @@ class Client(BaseClient):
                     except Exception as e:
                         return_warning("Could not handle e.res.text", exit=True)
                 else:
+                    demisto.debug("The DemistoException status code is not handled, raising an error")
                     raise
             else:
+                demisto.debug("The DemistoException does not have a status_code attribute, raising an error")
                 raise
         except requests.exceptions.ReadTimeout as e:
             if self.should_error:
                 raise e
-            demisto.info("A ReadTimeout error was raised")
+            demisto.debug("A ReadTimeout error was raised but should be handled as a warning")
             return_warning(f"{e}")
             result = {}
             if section == 'url':
                 result =  404
         except Exception as e:
-            demisto.info("has an exception which is not of type DemistoException")
+            demisto.debug("has an exception which is not of type DemistoException")
             raise e
         return result
 
