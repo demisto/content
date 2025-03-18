@@ -7,39 +7,21 @@
     "url": "www.anomali.com",
     "email": "support@anomali.com",
     "categories": [
-        "Data Enrichment & Threat Intelligence",
         "Analytics & SIEM",
-        "Forensics & Malware Analysis",
-        "Network Security",
         "Case Management"
     ],      
     "tags": [
         "Alerts",
         "Incident Response",
-        "Threat Intelligence",
-        "Threat Intelligence Management",
         "Security Analytics",
-        "Palo Alto Networks Products",
-        "Malware",
-        "Network",
-        "Incident Handling",
-        "Use Case",
-        "MITRE ATT&CK",
-        "Forensics"
+        "Incident Handling"
     ],      
     "created": "2025-03-14T00:00:00Z",
     "useCases": [
-        "Threat Intelligence Management",
         "Incident Response",
-        "Hunting",
-        "Case Management",
-        "Network Security",
-        "Malware",
-        "Phishing",
-        "Ransomware"
+        "Case Management"
     ],
     "keywords": [
-        "Data Enrichment & Threat Intelligence",
         "Analytics & SIEM"
     ]
 }

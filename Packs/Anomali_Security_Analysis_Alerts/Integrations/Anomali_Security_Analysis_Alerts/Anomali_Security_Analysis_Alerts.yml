@@ -4,7 +4,7 @@ commonfields:
 vcShouldKeepItemLegacyProdMachine: false
 name: Anomali_SA_Alerts
 display: Anomali_SA_Alerts
-category: Data Enrichment & Threat Intelligence
+category: Security Analytic XSOAR Alert Integration
 description: Anomali SA Alerts
 detaileddescription: "To access Anomali SA Alerts using the API, you need a username and a password. "
 configuration:
@@ -29,7 +29,7 @@ configuration:
 script:
   type: python
   commands:
-  - name: threatstream-search-job-create
+  - name: security-analytics-search-job-create
     arguments:
     - name: query
     - name: source
@@ -37,20 +37,20 @@ script:
     - name: to
     - name: timezone
     description: create a new search job
-  - name: threatstream-search-job-status
+  - name: security-analytics-search-job-status
     arguments:
     - name: job_id
     description: query a search job status
-  - name: threatstream-search-job-results
+  - name: security-analytics-search-job-results
     arguments:
     - name: job_id
     description: get search job results
-  - name: threatstream-update-alert-status
+  - name: security-analytics-update-alert-status
     arguments:
     - name: status
     - name: uuid
     description: update status of alert
-  - name: threatstream-update-alert-comment
+  - name: security-analytics-update-alert-comment
     arguments:
     - name: comment
     - name: uuid

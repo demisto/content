@@ -325,11 +325,11 @@ def main():
         )
         args = demisto.args()
         commands = {
-            'threatstream-search-job-create': command_create_search_job,
-            'threatstream-search-job-status': command_get_search_job_status,
-            'threatstream-search-job-results': command_get_search_job_results,
-            'threatstream-update-alert-status': command_update_alert_status,
-            'threatstream-update-alert-comment': command_update_alert_comment,
+            'security-analytics-search-job-create': command_create_search_job,
+            'security-analytics-search-job-status': command_get_search_job_status,
+            'security-analytics-search-job-results': command_get_search_job_results,
+            'security-analytics-update-alert-status': command_update_alert_status,
+            'security-analytics-update-alert-comment': command_update_alert_comment,
         }
         if command == 'test-module':
             return_results(test_module(client))
