@@ -577,9 +577,9 @@ def test_build_indicators_with_hostname():
     from FeedMISP import build_indicators
     client = Mock()
     response = {'response': {'Attribute': [{'type': 'hostname',
-                                            'value': {'value': '1.1.1.1'},
-                                            'Tag': [{'name': 'misp-galaxy:mitre-attack-pattern="aaaaaa T111"'}]}]}}
+                                            'value': {'value': 'www.test.com'},
+                                            'Tag': [{'name': 'misp-galaxy:mitre-attack-pattern="T1111"'}]}]}}
     result = build_indicators(client, response, ['hostname'], 'color', 'url', 'reputation', ['feed_tags'])
     assert result[0].get('Relationships', [])[0].get('entityAType') == 'Domain'
     assert result[0].get('Relationships', [])[0].get('entityBType') == 'Attack Pattern'
-    assert result[0].get('Relationships', [])[0].get('entityB') == 'aaaaaa T111'
+    assert result[0].get('Relationships', [])[0].get('entityB') == 'T1111'
