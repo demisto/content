@@ -1,11 +1,10 @@
 import json
 from unittest.mock import patch
 
+import demistomock as demisto
 import pytest
 import SigmaConverttoQuery
 from SigmaConverttoQuery import get_sigma_dictionary, main
-
-import demistomock as demisto
 
 
 def load_file(path: str) -> str:
@@ -13,14 +12,17 @@ def load_file(path: str) -> str:
         return f.read()
 
 
-@pytest.mark.parametrize("indicator, result, expect_exception", [
-    ("Okta User Account Locked Out", load_file("test_data/sigma_rule.yml"), False),
-    ("No Indicator", "No indicator found with value No Indicator", True)
-])
+@pytest.mark.parametrize(
+    "indicator, result, expect_exception",
+    [
+        ("Okta User Account Locked Out", load_file("test_data/sigma_rule.yml"), False),
+        ("No Indicator", "No indicator found with value No Indicator", True),
+    ],
+)
 @patch.object(SigmaConverttoQuery, "return_error")
 @patch.object(demisto, "executeCommand")
 def test_get_sigma_dictionary(mock_executeCommand, mock_return_error, indicator, result, expect_exception):
-    mock_executeCommand.side_effect = [json.loads(load_file('test_data/response.json')), []]
+    mock_executeCommand.side_effect = [json.loads(load_file("test_data/response.json")), []]
 
     if expect_exception:
         mock_return_error.side_effect = Exception(result)
@@ -36,7 +38,7 @@ def test_get_sigma_dictionary(mock_executeCommand, mock_return_error, indicator,
 @patch.object(SigmaConverttoQuery, "return_results")
 @patch.object(SigmaConverttoQuery, "get_sigma_dictionary")
 def test_main(mock_get_sigma_dictionary, mock_return_results, mock_args):
-    mock_args.return_value = {'SIEM': "Splunk", "indicator": "Test"}
+    mock_args.return_value = {"SIEM": "Splunk", "indicator": "Test"}
     mock_get_sigma_dictionary.return_value = load_file("test_data/sigma_rule.yml")
     main()
     args, kwargs = mock_return_results.call_args
