@@ -20,7 +20,7 @@ class Client:
         self.apiKey = api_key
 
     def send_request(self, method: str, path: str, queryParams: dict = None, content: dict = None):
-        res = cloudshare.req(
+        res = cloudshare.req(   # pylint: disable=E1101
             hostname=self.hostname,
             method=method,
             path=path,

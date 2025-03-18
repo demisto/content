@@ -356,7 +356,7 @@ class GoogleSccClient(BaseGoogleClient):
         :return: list of findings
         """
         request = (
-            self.service.organizations()
+            self.service.organizations()     # pylint: disable=E1101
             .sources()
             .findings()
             .list(  # pylint: disable=E1101
@@ -398,7 +398,7 @@ class GoogleSccClient(BaseGoogleClient):
         :return: list of assets
         """
         request = (
-            self.service.organizations()
+            self.service.organizations()     # pylint: disable=E1101
             .assets()
             .list(  # pylint: disable=E1101
                 parent=parent,
@@ -452,7 +452,7 @@ class GoogleSccClient(BaseGoogleClient):
         )
         update_mask = get_update_mask_for_update_finding(body, update_mask)  # type: ignore
         request = (
-            self.service.organizations()
+            self.service.organizations()     # pylint: disable=E1101
             .sources()
             .findings()
             .patch(  # pylint: disable=E1101
@@ -481,7 +481,7 @@ class GoogleSccClient(BaseGoogleClient):
         body = assign_params(startTime=event_time, state=state)
 
         request = (
-            self.service.organizations()
+            self.service.organizations()     # pylint: disable=E1101
             .sources()
             .findings()
             .setState(  # pylint: disable=E1101
@@ -514,7 +514,7 @@ class GooglePubSubClient(BaseGoogleClient):
         subscription = GoogleNameParser.get_subscription_path(self.project_id, self.subscription_id)
         body = assign_params(returnImmediately=ret_immediately, maxMessages=max_messages)
         request = (
-            self.service.projects()
+            self.service.projects()  # pylint: disable=E1101
             .subscriptions()
             .pull(  # pylint: disable=E1101
                 subscription=subscription, body=body
@@ -533,7 +533,7 @@ class GooglePubSubClient(BaseGoogleClient):
         subscription = GoogleNameParser.get_subscription_path(self.project_id, self.subscription_id)
         body = assign_params(ackIds=acks_list)
         request = (
-            self.service.projects()
+            self.service.projects()  # pylint: disable=E1101
             .subscriptions()
             .acknowledge(  # pylint: disable=E1101
                 subscription=subscription, body=body
