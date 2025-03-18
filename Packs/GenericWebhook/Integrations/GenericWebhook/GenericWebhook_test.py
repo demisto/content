@@ -1,13 +1,14 @@
 import asyncio
 from http import HTTPStatus
 from unittest.mock import MagicMock
+
+import pytest
+from CommonServerPython import *
+
 # import demistomock as demisto
 from fastapi import Request
-import pytest
 from fastapi.testclient import TestClient
-
-from GenericWebhook import app, parse_incidents, main
-from CommonServerPython import *
+from GenericWebhook import app, main, parse_incidents
 
 
 @pytest.fixture
@@ -21,12 +22,16 @@ def test_handle_post_single_incident(mocker, client):
     When: Sending a post request
     Then: The body is parsed properly
     """
-    incident_data = {"name": "Test Incident", "type": "Test Type", "occurred": "2024-03-17T12:00:00Z",
-                     "rawJson": {"key": "value"}}
-    return_incidents = [{'name': 'something'}]
+    incident_data = {
+        "name": "Test Incident",
+        "type": "Test Type",
+        "occurred": "2024-03-17T12:00:00Z",
+        "rawJson": {"key": "value"},
+    }
+    return_incidents = [{"name": "something"}]
 
-    create_incidents = mocker.patch.object(demisto, 'createIncidents', return_value=return_incidents)
-    response = client.post('/', json=incident_data)
+    create_incidents = mocker.patch.object(demisto, "createIncidents", return_value=return_incidents)
+    response = client.post("/", json=incident_data)
 
     called_arg = create_incidents.call_args_list[0].args[0]
     assert isinstance(called_arg, list)
@@ -41,14 +46,14 @@ def test_handle_post_multiple_incident(mocker, client):
     When: Sending a post request
     Then: The body is parsed properly
     """
-    incident_data = [{"name": "Test Incident", "type": "Test Type", "occurred": "2024-03-17T12:00:00Z",
-                      "raw_json": {"key": "value"}},
-                     {"name": "Test Incident2", "type": "Test Type", "occurred": "2024-03-17T12:00:00Z",
-                      "raw_json": {"key": "value"}}]
-    return_incidents = [{'name': 'something'}]
+    incident_data = [
+        {"name": "Test Incident", "type": "Test Type", "occurred": "2024-03-17T12:00:00Z", "raw_json": {"key": "value"}},
+        {"name": "Test Incident2", "type": "Test Type", "occurred": "2024-03-17T12:00:00Z", "raw_json": {"key": "value"}},
+    ]
+    return_incidents = [{"name": "something"}]
 
-    create_incidents = mocker.patch.object(demisto, 'createIncidents', return_value=return_incidents)
-    response = client.post('/', json=incident_data)
+    create_incidents = mocker.patch.object(demisto, "createIncidents", return_value=return_incidents)
+    response = client.post("/", json=incident_data)
 
     called_arg = create_incidents.call_args_list[0].args[0]
     assert isinstance(called_arg, list)
@@ -63,13 +68,10 @@ def test_handle_post_with_invalid_credentials(mocker, client):
     When: Calling post with bad credentials
     Then:a 401 response code is recieved
     """
-    mocker.patch.object(demisto, 'params', return_value={'credentials': {
-        'identifier': 'user',
-        'password': 'pass'
-    }})
-    response = client.post('/', json=[{"name": "Test Incident"}], auth=('invalid_username', 'invalid_password'))
+    mocker.patch.object(demisto, "params", return_value={"credentials": {"identifier": "user", "password": "pass"}})
+    response = client.post("/", json=[{"name": "Test Incident"}], auth=("invalid_username", "invalid_password"))
     assert response.status_code == HTTPStatus.UNAUTHORIZED
-    assert response.text == 'Authorization failed.'
+    assert response.text == "Authorization failed."
 
 
 def test_handle_post_with_valid_credentials(mocker, client):
@@ -78,13 +80,10 @@ def test_handle_post_with_valid_credentials(mocker, client):
     When: Calling post with proper credentials
     Then:a 200 response code is recieved
     """
-    mocker.patch.object(demisto, 'params', return_value={'credentials': {
-        'identifier': 'user',
-        'password': 'pass'
-    }})
-    response = client.post('/', json=[{"name": "Test Incident"}], auth=('user', 'pass'))
+    mocker.patch.object(demisto, "params", return_value={"credentials": {"identifier": "user", "password": "pass"}})
+    response = client.post("/", json=[{"name": "Test Incident"}], auth=("user", "pass"))
     assert response.status_code == HTTPStatus.OK
-    assert response.text == '[]'
+    assert response.text == "[]"
 
 
 def test_handle_post_with_missing_data(mocker, client):
@@ -93,8 +92,8 @@ def test_handle_post_with_missing_data(mocker, client):
     When: Post is called
     Then: A readable error message is returned
     """
-    mocker.patch.object(demisto, 'error')
-    response = client.post('/')
+    mocker.patch.object(demisto, "error")
+    response = client.post("/")
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert "Request, and rawJson field if exists must be in JSON format" in response.text
 
@@ -105,23 +104,20 @@ def test_handle_post_with_invalid_json(mocker, client):
     When: Post is called
     Then: A readable error message is returned
     """
-    mocker.patch.object(demisto, 'error')
-    response = client.post('/', data='invalid_json')
+    mocker.patch.object(demisto, "error")
+    response = client.post("/", data="invalid_json")
     assert response.status_code == HTTPStatus.BAD_REQUEST
-    assert 'Request, and rawJson field if exists must be in JSON format' in response.text
+    assert "Request, and rawJson field if exists must be in JSON format" in response.text
 
 
-@pytest.mark.parametrize('body', [
-    {"name": "Test Incident 1", "type": "Test Type 1",
-     "occurred": "2024-03-17T12:00:00Z",
-     "rawJson": {"key": "value"}},
-    {"name": "Test Incident 1", "type": "Test Type 1",
-     "occurred": "2024-03-17T12:00:00Z",
-     "key": "value"},
-    {"name": "Test Incident 1", "type": "Test Type 1",
-     "occurred": "2024-03-17T12:00:00Z",
-     "raw_json": {"key": "value"}}
-])
+@pytest.mark.parametrize(
+    "body",
+    [
+        {"name": "Test Incident 1", "type": "Test Type 1", "occurred": "2024-03-17T12:00:00Z", "rawJson": {"key": "value"}},
+        {"name": "Test Incident 1", "type": "Test Type 1", "occurred": "2024-03-17T12:00:00Z", "key": "value"},
+        {"name": "Test Incident 1", "type": "Test Type 1", "occurred": "2024-03-17T12:00:00Z", "raw_json": {"key": "value"}},
+    ],
+)
 def test_parse_request(body):
     """
     Given: two inputs, either with raw_json being real json or a string representation of json
@@ -142,33 +138,34 @@ def test_parse_request(body):
     # Check if the function returns a list of dictionaries with the parsed incidents
     assert isinstance(result, list)
     assert len(result) == 1
-    assert result[0]['name'] == 'Test Incident 1'
-    assert result[0]['type'] == 'Test Type 1'
-    assert result[0]['occurred'] == '2024-03-17T12:00:00Z'
-    assert result[0]['rawJson']['key'] == 'value'
+    assert result[0]["name"] == "Test Incident 1"
+    assert result[0]["type"] == "Test Type 1"
+    assert result[0]["occurred"] == "2024-03-17T12:00:00Z"
+    assert result[0]["rawJson"]["key"] == "value"
 
 
 def test_main_test_module(mocker):
-    mocker.patch.object(demisto, 'command', return_value="test-module")
-    mocker.patch.object(demisto, 'params', return_value={'longRunningPort': '444'})
-    results = mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(demisto, "params", return_value={"longRunningPort": "444"})
+    results = mocker.patch.object(demisto, "results")
     main()
-    assert results.call_args_list[0].args[0] == 'ok'
+    assert results.call_args_list[0].args[0] == "ok"
 
 
 def test_main_long_running(mocker):
     """
     We have an autorecovery mechanism here that when the app fails with an exception it should be restarted five seconds later
     """
-    mocker.patch.object(demisto, 'error')
+    mocker.patch.object(demisto, "error")
 
-    mocker.patch.object(demisto, 'command', return_value="long-running-execution")
-    mocker.patch.object(demisto, 'params', return_value={
-        'longRunningPort': '444', 'certificate': 'something', 'key': 'something'})
-    mocker.patch.object(demisto, 'results')
-    mocker.patch('time.sleep')
-    uvicornmock = MagicMock(side_effect=[Exception('restart once'), Exception('Twice'), BaseException('Hack to get out')])
-    mocker.patch('uvicorn.run', uvicornmock)
+    mocker.patch.object(demisto, "command", return_value="long-running-execution")
+    mocker.patch.object(
+        demisto, "params", return_value={"longRunningPort": "444", "certificate": "something", "key": "something"}
+    )
+    mocker.patch.object(demisto, "results")
+    mocker.patch("time.sleep")
+    uvicornmock = MagicMock(side_effect=[Exception("restart once"), Exception("Twice"), BaseException("Hack to get out")])
+    mocker.patch("uvicorn.run", uvicornmock)
     try:
         main()
         raise AssertionError
