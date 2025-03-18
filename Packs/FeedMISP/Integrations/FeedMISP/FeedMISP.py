@@ -161,7 +161,6 @@ def build_indicators_iterator(attributes: Dict[str, Any], url: Optional[str]) ->
         attributes_list: List[Dict[str, Any]] = attributes['response']['Attribute']
         for attribute in attributes_list:
             if indicator_type := get_attribute_indicator_type(attribute):
-                demisto.debug(f"build_indicators_iterator {indicator_type=}")
                 indicators_iterator.append({
                     'value': attribute,
                     'type': indicator_type,
@@ -283,8 +282,6 @@ def get_attribute_indicator_type(attribute: Dict[str, Any]) -> Optional[str]:
     Returns: The matching indicator type or None if the attribute type is not supported
     """
     attribute_type = attribute['type']
-    demisto.debug(f"get_attribute_indicator_type {attribute=}")
-    demisto.debug(f"get_attribute_indicator_type {attribute_type=}")
     if attribute_type == 'ip-src' or attribute_type == 'ip-dst':
         return get_ip_type(attribute)
     else:
@@ -335,14 +332,10 @@ def build_indicators(client: Client, response: Dict[str, Any],
     indicators = []
     for indicator in indicators_iterator:
         value_ = indicator['value']['value']
-        demisto.debug(f"build_indicators {value_=}")
         type_ = indicator['type']
-        demisto.debug(f"build_indicators {type_=}")
         raw_type = indicator.pop('raw_type')
-        demisto.debug(f"build_indicators {raw_type=}")
 
         indicator_obj = build_indicator(value_, type_, indicator, reputation)
-        demisto.debug(f"build_indicators {indicator_obj}")
 
         update_indicator_fields(indicator_obj, tlp_color, raw_type, feed_tags)
         galaxy_indicators = build_indicators_from_galaxies(indicator_obj, reputation)
@@ -388,17 +381,12 @@ def create_and_add_relationships(indicator_obj: Dict[str, Any], galaxy_indicator
         galaxy_indicators: List of indicators created from the galaxies
     Returns: None
     """
-    demisto.debug(f"create_and_add_relationships {indicator_obj=}")
     indicator_obj_type = indicator_obj['type']
-    demisto.debug(f"create_and_add_relationships {indicator_obj_type=}")
     relationships_indicators = []
     for galaxy_indicator in galaxy_indicators:
-        demisto.debug(f"create_and_add_relationships {galaxy_indicator=}")
         galaxy_indicator_type = galaxy_indicator['type']
-        demisto.debug(f"create_and_add_relationships {galaxy_indicator_type=}")
 
         indicator_to_galaxy_relation = INDICATOR_TO_GALAXY_RELATION_DICT[galaxy_indicator_type][indicator_obj_type]
-        demisto.debug(f"create_and_add_relationships {indicator_to_galaxy_relation=}")
         galaxy_to_indicator_relation = EntityRelationship.Relationships. \
             RELATIONSHIPS_NAMES[indicator_to_galaxy_relation]
 
@@ -410,8 +398,6 @@ def create_and_add_relationships(indicator_obj: Dict[str, Any], galaxy_indicator
             entity_b_type=galaxy_indicator_type,
         ).to_indicator()
 
-        demisto.debug("created indicator_relation")
-
         galaxy_relation = EntityRelationship(
             name=galaxy_to_indicator_relation,
             entity_a=galaxy_indicator['value'],
@@ -419,8 +405,6 @@ def create_and_add_relationships(indicator_obj: Dict[str, Any], galaxy_indicator
             entity_b=indicator_obj['value'],
             entity_b_type=indicator_obj_type,
         ).to_indicator()
-
-        demisto.debug("created galaxy_relation")
 
         relationships_indicators.append(indicator_relation)
         galaxy_indicator['Relationships'] = [galaxy_relation]
@@ -566,7 +550,6 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     tags = argToList(params.get('attribute_tags', ''))
     feed_tags = argToList(params.get("feedTags", []))
     attribute_types = argToList(params.get('attribute_types', ''))
-    demisto.debug(f"fetch_attributes_command {attribute_types=}")
     fetch_limit = client.max_indicator_to_fetch
     last_run = demisto.getLastRun()
     total_fetched_indicators = 0
