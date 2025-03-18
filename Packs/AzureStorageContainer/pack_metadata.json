@@ -2,7 +2,7 @@
     "name": "Azure Storage Container",
     "description": "Create and Manage Azure Storage Container services.",
     "support": "xsoar",
-    "currentVersion": "1.0.24",
+    "currentVersion": "1.0.25",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
