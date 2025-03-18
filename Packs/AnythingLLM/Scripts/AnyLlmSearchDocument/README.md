@@ -14,7 +14,7 @@ Full text search of a LLM document for a text pattern (regex) for more results a
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| title | title of the LLM document to search with the XSOAR file entry ID. Example:  "37@25496_anythingllm.txt" |
+| title | title of the LLM document to search with the XSOAR file entry ID. Example:  "<37@25496_anythingllm.txt>" |
 | pattern | regex to search text for \[ see re.findall\(\) \] |
 
 ## Outputs
