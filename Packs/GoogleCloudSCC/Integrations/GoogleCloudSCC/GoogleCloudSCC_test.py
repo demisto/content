@@ -205,7 +205,7 @@ def test_create_filter_list_findings():
 
     output = create_filter_list_findings("A, B ,C", "", ["HIGH", "LOW"], ["ACTIVE"])
     assert (
-        output == '(Severity="HIGH" OR Severity="LOW") AND (State="ACTIVE") AND ' '(Category="A" OR Category="B" OR Category="C")'
+        output == '(Severity="HIGH" OR Severity="LOW") AND (State="ACTIVE") AND (Category="A" OR Category="B" OR Category="C")'
     )
 
 

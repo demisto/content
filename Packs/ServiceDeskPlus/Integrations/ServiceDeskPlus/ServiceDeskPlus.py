@@ -212,7 +212,7 @@ def create_output(request: dict) -> dict:
         A dictionary containing all valid fields in the request
     """
     output = {}
-    for field in request.keys():
+    for field in request:
         value = request.get(field, None)
         if value not in [None, {}, []] and field not in FIELDS_TO_IGNORE:
             output[string_to_context_key(field)] = value
@@ -333,7 +333,7 @@ def resolution_human_readable(output: dict) -> dict:
         A dictionary containing all the valid fields in the resolution output
     """
     hr = {}
-    for key in output.keys():
+    for key in output:
         if key == "SubmittedBy":
             hr["SubmittedBy"] = output.get("SubmittedBy", {}).get("name", "")
         else:
@@ -722,7 +722,7 @@ def fetch_incidents(client: Client, test_command: bool = False) -> list:
             return_error(f"Invalid fetch time range.\n{e.args[0]}")
     else:
         new_last_run = last_run
-    demisto_incidents: list = list()
+    demisto_incidents: list = []
     time_from = new_last_run.get("time")
     time_to = date_to_timestamp(datetime.now(), date_format=date_format)
     list_info = create_fetch_list_info(

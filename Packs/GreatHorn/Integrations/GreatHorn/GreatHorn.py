@@ -163,7 +163,7 @@ def gh_revert_remediate_message_command(client: Client, args: dict[str, Any]) ->
         "removeattachments": [],
         "review": [],
     }
-    if args.get("action", "").lower() not in valid_actions.keys():
+    if args.get("action", "").lower() not in valid_actions:
         raise ValueError('Invalid action "{}" specified'.format(args.get("action")))
     action = args.get("action", "").lower()
     for arg in valid_actions.get(action, []):
@@ -206,7 +206,7 @@ def gh_remediate_message_command(client: Client, args: dict[str, Any]) -> Comman
         "review": [],
         "trash": [],
     }
-    if args.get("action", "").lower() not in valid_actions.keys():
+    if args.get("action", "").lower() not in valid_actions:
         raise ValueError('Invalid action "{}" specified'.format(args.get("action")))
     action = args.get("action", "").lower()
     for arg in valid_actions.get(action, []):
@@ -359,7 +359,7 @@ def gh_get_message_command(client: Client, args: dict[str, Any]) -> CommandResul
 
         headers = []
         msgheaders = message.get("headers")
-        for header in message.get("headers").keys():
+        for header in message.get("headers"):
             h = {"Name": header, "Value": msgheaders[header]}
             headers.append(h)
 

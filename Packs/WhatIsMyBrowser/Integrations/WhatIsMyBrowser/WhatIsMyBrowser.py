@@ -30,7 +30,7 @@ def http_request(data):
     }
     r = requests.request("POST", API_URL, data=data, headers=headers, verify=USE_SSL)
     if r.status_code != 200:
-        return_error("Error in API call to WhatIsMyBrowser [%d] - %s" % (r.status_code, r.reason))
+        return_error(f"Error in API call to WhatIsMyBrowser [{r.status_code}] - {r.reason}")
     return r.content
 
 

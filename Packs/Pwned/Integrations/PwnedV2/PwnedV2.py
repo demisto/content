@@ -40,8 +40,8 @@ def error_handler(res):
     if res.status_code == 404:
         raise DemistoException("No result found.")
     else:
-        demisto.error("Error in API call to Pwned Integration [%d]. Full text: %s" % (res.status_code, res.text))
-    return_error("Error in API call to Pwned Integration [%d] - %s" % (res.status_code, res.reason))
+        demisto.error(f"Error in API call to Pwned Integration [{res.status_code}]. Full text: {res.text}")
+    return_error(f"Error in API call to Pwned Integration [{res.status_code}] - {res.reason}")
 
 
 def http_request(method, url_suffix, params=None, data=None):

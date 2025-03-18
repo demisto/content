@@ -304,7 +304,7 @@ def test_create_rule_command(mocker):
     properties = client.http_request.call_args_list[0][1].get("data").get("properties")
     assert properties.get("protocol") == "*"
     assert properties.get("sourceAddressPrefix") == "*"
-    assert "sourcePortRanges" not in properties.keys()
+    assert "sourcePortRanges" not in properties
     assert properties.get("destinationPortRanges") == ["1", "2", "3", "4-6"]
 
 
@@ -335,9 +335,9 @@ def test_update_rule_command(mocker):
         params={"subscription_id": "subscriptionID", "resource_group_name": "resourceGroupName"},
     )
     properties = client.http_request.call_args_list[1][1].get("data").get("properties")
-    assert "destinationPortRange" not in properties.keys()
+    assert "destinationPortRange" not in properties
     assert "destinationPortRanges" in properties
-    assert "sourcePortRanges" not in properties.keys()
+    assert "sourcePortRanges" not in properties
     assert "sourcePortRange" in properties
     assert properties.get("protocol") == properties.get("sourceAddressPrefix") == "*"
 

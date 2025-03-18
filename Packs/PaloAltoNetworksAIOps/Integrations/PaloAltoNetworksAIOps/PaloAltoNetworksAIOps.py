@@ -55,12 +55,12 @@ class Client(BaseClient):
                 )
             except DemistoException as e:
                 raise DemistoException(
-                    f"Error occurred while creating an access token. Please check the instance" f" configuration.\n\n{e}"
+                    f"Error occurred while creating an access token. Please check the instance configuration.\n\n{e}"
                 )
             try:
                 res = res.json()
             except ValueError as exception:
-                raise DemistoException(f"Failed to parse json object from response: {res.text}.\n" f"Error: {exception}")
+                raise DemistoException(f"Failed to parse json object from response: {res.text}.\nError: {exception}")
 
             if access_token := res.get("access_token"):
                 expiry_time += res.get("expires_in", 0) * 1000
@@ -169,7 +169,7 @@ def adjust_xml_format(xml_string, new_root_tag):
     sub_tags = root.find(f".//{new_root_tag}")
     if not sub_tags:
         raise DemistoException(
-            f"Request Succeeded, A parse error occurred- could not find {new_root_tag} tag to adjust to AIOps " f"API."
+            f"Request Succeeded, A parse error occurred- could not find {new_root_tag} tag to adjust to AIOps API."
         )
     attributes = " ".join([f'{k}="{v}"' for k, v in sub_tags.attrib.items()])
     new_xml = f"<{new_root_tag} {attributes}>"
@@ -201,7 +201,7 @@ def convert_config_to_bytes(config_file, origin_flag):
             return file_bytes
         except Exception as e:
             raise DemistoException(
-                f"The config file upload was unsuccessful or the file could not be converted. " f"With error: {e}."
+                f"The config file upload was unsuccessful or the file could not be converted. With error: {e}."
             )
     else:
         try:
@@ -292,7 +292,7 @@ def test_module(client: Client) -> str:
     except DemistoException as e:
         if "access token" in e.message or "Forbidden" in e.message or "Authorization" in e.message:
             raise DemistoException(
-                f"Authorization Error: make sure your tsg_id, client_id, client_secret are correctly set. " f"With error {e}"
+                f"Authorization Error: make sure your tsg_id, client_id, client_secret are correctly set. With error {e}"
             )
         else:
             raise

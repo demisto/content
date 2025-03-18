@@ -31,7 +31,7 @@ class Client(BaseClient):
         self.op_api_token = op_api_token
         self.region = region
         self.max_fetch = max_fetch
-        super(Client, self).__init__(self.get_base_api_url(), verify, proxy)
+        super().__init__(self.get_base_api_url(), verify, proxy)
 
     def fetch_triggered_rules(self, search=None, severities=None, start_time=time.time()):
         payload = {

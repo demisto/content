@@ -36,7 +36,7 @@ def http_request(method, url, use_ssl, params=None, data=None):
     res = requests.request(method, url, verify=use_ssl, params=params, data=data, headers=HEADERS)
 
     if res.status_code not in {200}:
-        return_error("Error in API call to CheckPhish [%d] - %s" % (res.status_code, res.reason))
+        return_error(f"Error in API call to CheckPhish [{res.status_code}] - {res.reason}")
 
     try:
         return res.json()
@@ -103,14 +103,14 @@ def submit_to_checkphish(url, api_key, base_url, use_ssl):
         return res["jobID"]
 
     else:
-        return_error(url + " is not a valid url")
+        return_error(url + " is not a valid url")   # noqa: RET503
 
 
 def is_job_ready_checkphish(jobID, api_key, base_url, use_ssl):
     query = {"apiKey": api_key, "jobID": jobID}
     res = http_request("POST", base_url + STATUS_SUFFIX, use_ssl, data=json.dumps(query))
 
-    if res and res["status"] == DONE_STATUS:
+    if res and res["status"] == DONE_STATUS:    # noqa: SIM103
         return True
 
     return False
@@ -174,7 +174,7 @@ def checkphish_check_urls(**kwargs):
 
 """ COMMANDS MANAGER / SWITCH PANEL """
 
-LOG("Command being called is %s" % (demisto.command()))
+LOG(f"Command being called is {demisto.command()}")
 handle_proxy()
 
 

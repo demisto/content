@@ -410,7 +410,7 @@ def parse_item_as_dict(item, email_address=None, camel_case=False, compact_field
     if getattr(item, "folder", None):
         raw_dict["folder"] = parse_folder_as_json(item.folder)
         folder_path = (
-            item.folder.absolute[len(TOIS_PATH) :] if item.folder.absolute.startswith(TOIS_PATH) else item.folder.absolute
+            item.folder.absolute[len(TOIS_PATH):] if item.folder.absolute.startswith(TOIS_PATH) else item.folder.absolute
         )
         raw_dict["folder_path"] = folder_path
 
@@ -544,8 +544,8 @@ def get_entry_for_item_attachment(item_id, attachment, target_email):  # pragma:
     dict_result.update(parse_item_as_dict(item, target_email, camel_case=True, compact_fields=True))
     title = (
         f'EWS get attachment got item for "{target_email}", '
-        f'"{get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, is_inline=attachment.is_inline)}"'
-    )  # noqa: E501
+        f'"{get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, is_inline=attachment.is_inline)}"'     # noqa: E501
+    )
 
     return get_entry_for_object(
         title,
@@ -1763,7 +1763,7 @@ def test_module(client: EWSClient, max_fetch):  # pragma: no cover
     try:
         if int(max_fetch) > MAX_INCIDENTS_PER_FETCH:
             return_error(
-                f"Error - Max incidents per fetch cannot be greater than {MAX_INCIDENTS_PER_FETCH}. " f"You provided: {max_fetch}"
+                f"Error - Max incidents per fetch cannot be greater than {MAX_INCIDENTS_PER_FETCH}. You provided: {max_fetch}"
             )
         account = client.get_account()
         if not account.root.effective_rights.read:  # pylint: disable=E1101
@@ -1895,7 +1895,7 @@ def sub_main():  # pragma: no cover
         # Office365 regular maintenance case
         if isinstance(e, ErrorMailboxStoreUnavailable | ErrorMailboxMoveInProgress):
             log_message = (
-                "Office365 is undergoing load balancing operations. " "As a result, the service is temporarily unavailable."
+                "Office365 is undergoing load balancing operations. As a result, the service is temporarily unavailable."
             )
             if demisto.command() == "fetch-incidents":
                 demisto.info(log_message)
@@ -1907,7 +1907,7 @@ def sub_main():  # pragma: no cover
             error_message_simple = log_message + " Please retry your request."
 
         if isinstance(e, ConnectionError):
-            error_message_simple = "Could not connect to the server.\n" f"Additional information: {e!s}"
+            error_message_simple = f"Could not connect to the server.\nAdditional information: {e!s}"
         else:
             if is_test_module and isinstance(e, MalformedResponseError):
                 error_message_simple = "Got invalid response from the server.\n"
@@ -1918,7 +1918,7 @@ def sub_main():  # pragma: no cover
 
         if "Status code: 503" in debug_log:
             error_message_simple = (
-                "Got timeout from the server. " "Probably the server is not reachable with the current settings. "
+                "Got timeout from the server. Probably the server is not reachable with the current settings. "
             )
 
         if not error_message_simple:

@@ -54,7 +54,8 @@ username_req = [
         "LogoPath": "https://haveibeenpwned.com/Content/Images/PwnedLogos/Gawker.png",
         "AddedDate": "2013-12-04T00:00:00Z",
         "IsVerified": True,
-        "Description": "In December 2010, Gawker was attacked by the hacker collective &quot;Gnosis&quot; in retaliation for what was"
+        "Description": "In December 2010, Gawker was attacked by the hacker collective &quot;Gnosis&quot;"
+                       " in retaliation for what was"
         " reported to be a feud between Gawker and 4Chan. Information about Gawkers 1.3M users was published along"
         " with the data from Gawker's other web presences including Gizmodo and Lifehacker. Due to the prevalence of"
         ' password reuse, many victims of the breach <a href="http://www.troyhunt.com/2011/01/why-your-apps-security'
@@ -85,7 +86,7 @@ username_req = [
         "BreachDate": "2011-06-25",
         "IsFabricated": False,
         "ModifiedDate": "2014-05-11T10:30:43Z",
-        "LogoPath": "https://haveibeenpwned.com/" "Content/Images/PwnedLogos/HackForums.png",
+        "LogoPath": "https://haveibeenpwned.com/Content/Images/PwnedLogos/HackForums.png",
         "AddedDate": "2014-05-11T10:30:43Z",
         "IsVerified": True,
         "Description": 'In June 2011, the hacktivist group known as "LulzSec" leaked <a href='
@@ -112,7 +113,7 @@ domain_req = [
         "BreachDate": "2013-10-04",
         "IsFabricated": False,
         "ModifiedDate": "2013-12-04T00:00:00Z",
-        "LogoPath": "https://haveibeenpwned.com/Content/Images/PwnedLogos/Adobe" ".png",
+        "LogoPath": "https://haveibeenpwned.com/Content/Images/PwnedLogos/Adobe.png",
         "AddedDate": "2013-12-04T00:00:00Z",
         "IsVerified": True,
         "Description": "In October 2013, 153 million Adobe accounts were breached with each"
@@ -197,7 +198,7 @@ def test_valid_emails(mocker):
         "| ID | Title | Date | Source | Amount of emails in paste |\n"
         "|----|-------|------|--------|--------------------------|\n"
         "| 1234 | Paste Title | 2021-01-01 | Paste1 | 10 |\n",
-        "### Have I Been Pwned query for email: *test2@example.com*\n" "No records found",
+        "### Have I Been Pwned query for email: *test2@example.com*\nNo records found",
     ]
     expected_ec_list = [
         {

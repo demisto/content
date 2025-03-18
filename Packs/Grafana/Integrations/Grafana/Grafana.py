@@ -243,7 +243,7 @@ def set_time_to_epoch_millisecond(time_to_set: Optional[str] = None):
     """
     For annotation creation, sets the time to epoch numbers in millisecond resolution - if it was filled.
     """
-    if time_to_set:
+    if time_to_set: # noqa: RET503
         time_to_set_date = dateparser.parse(time_to_set)
         assert time_to_set_date is not None
         return int(time_to_set_date.timestamp()) * 1000
@@ -264,7 +264,7 @@ def keys_to_lowercase(response: dict):
     Lowers firsts letter of all keys in the dictionary given and returns the new dictionary.
     """
     demisto.debug(f"lowering keys for response: {response}")
-    return dict((decapitalize(key), value) for (key, value) in response.items())
+    return {decapitalize(key): value for (key, value) in response.items()}
 
 
 def decapitalize(s: str):
@@ -315,7 +315,8 @@ def calculate_fetch_start_time(last_fetch: str = None, first_fetch: str = FETCH_
 
 def filter_alerts_by_time(alerts: List[Dict[str, Any]], last_fetch: datetime):
     # ignoring microsecond because date_to_timestamp doesn't know how to handle it
-    return [alert for alert in alerts if dateparser.parse(alert["newStateDate"]).replace(tzinfo=utc, microsecond=0) >= last_fetch]  # type: ignore
+    return [alert for alert in alerts
+            if dateparser.parse(alert["newStateDate"]).replace(tzinfo=utc, microsecond=0) >= last_fetch]    # type: ignore
 
 
 def filter_alerts_by_id(alerts: List[Dict[str, Any]], last_fetch: datetime, last_id_fetched: int):
@@ -899,7 +900,7 @@ def fetch_incidents(
     last_id_fetched = demisto.getLastRun().get("last_id_fetched", -1)
     fetch_start_time = calculate_fetch_start_time(last_fetch, first_fetch)
     demisto.debug(
-        f"last fetch was at: {last_fetch}, last id fetched was: {last_id_fetched}, " f"time to fetch from is: {fetch_start_time}"
+        f"last fetch was at: {last_fetch}, last id fetched was: {last_id_fetched}, time to fetch from is: {fetch_start_time}"
     )
 
     alerts = client.alerts_list_request(

@@ -129,7 +129,7 @@ def build_indicator_custom_fields(client: Client) -> dict[str, Any]:
             mitre_name = obj.get("name")
             if mitre_id := external_ref.get("external_id"):
                 result_map[mitre_id] = mitre_name
-    for mitre_id in result_map.keys():
+    for mitre_id in result_map:
         if len(mitre_id.split(".")) == 2:
             main_mitre_id = mitre_id.split(".")[0]
             result_map[mitre_id] = f"{result_map[main_mitre_id]}: {result_map[mitre_id]}"
@@ -272,7 +272,7 @@ def main() -> None:  # pragma: no cover
                             demisto.createIndicators([indicator])
                         except Exception as err:
                             demisto.debug(
-                                f"createIndicators Error: failed to create the following indicator:" f" {indicator}\n {err}"
+                                f"createIndicators Error: failed to create the following indicator: {indicator}\n {err}"
                             )
                     raise
         elif command == "lolbas-get-indicators":

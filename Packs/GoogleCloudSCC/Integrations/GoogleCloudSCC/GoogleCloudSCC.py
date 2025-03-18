@@ -240,7 +240,7 @@ class BaseGoogleClient:
         except (httplib2.socks.HTTPError, IndexError) as e:
             # library not able to handle Proxy error and throws Index Error
             demisto.debug(
-                f"Failed to execute {demisto.command()} command. Error: {e!s} , " f"traceback: {traceback.format_exc()}"
+                f"Failed to execute {demisto.command()} command. Error: {e!s} , traceback: {traceback.format_exc()}"
             )
             raise ValueError(ERROR_MESSAGES["PROXY_ERROR"])
         except exceptions.RefreshError as error:
@@ -313,7 +313,7 @@ class BaseGoogleClient:
                 raise ValueError(ERROR_MESSAGES["UNKNOWN_ERROR"].format(status, reason))
         except httplib2.socks.HTTPError as e:
             demisto.debug(
-                f"Failed to execute {demisto.command()} command. Error: {e!s} , " f"traceback: {traceback.format_exc()}"
+                f"Failed to execute {demisto.command()} command. Error: {e!s} , traceback: {traceback.format_exc()}"
             )
             raise ValueError(ERROR_MESSAGES["PROXY_ERROR"])
         except httplib2.ServerNotFoundError as e:
@@ -1174,7 +1174,7 @@ def get_update_mask_for_update_finding(body: dict[str, Any], update_mask: list) 
     """
     for key, value in body.items():
         if key == "sourceProperties" and key not in update_mask:
-            update_mask.extend(["sourceProperties." + inner_key for inner_key in value.keys()])
+            update_mask.extend(["sourceProperties." + inner_key for inner_key in value])
             continue
         if key not in update_mask:
             update_mask.append(key)
@@ -1190,7 +1190,7 @@ def split_and_escape(key: str, delimiter) -> list[str]:
     :return: a list of the extract keys
     """
     regex = r"(?<!\\)" + re.escape(delimiter)
-    split_keys = map(lambda x: x.replace(rf"\{delimiter}", delimiter), re.split(regex, key))
+    split_keys = (x.replace(rf"\{delimiter}", delimiter) for x in re.split(regex, key))
     keys = [split_key.strip() for split_key in list(split_keys)]
     return keys
 
@@ -1517,7 +1517,7 @@ def cloud_asset_owner_get_command(client: GoogleCloudAssetClient, args: dict) ->
     )
 
     # Remove duplicate project names and extract id's.
-    project_ids = list(map(lambda name: name.split("/")[-1], set(project_names)))
+    project_ids = list(map(lambda name: name.split("/")[-1], set(project_names)))   # noqa: C417
     page_token = ""
     matching_assets = []
     iteration = 0

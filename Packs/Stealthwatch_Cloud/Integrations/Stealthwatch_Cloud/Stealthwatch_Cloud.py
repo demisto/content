@@ -96,7 +96,7 @@ def show_alert_command():
 
     alert_data = show_alert(alert_id)
 
-    if not demisto.args().get("addComments", False) == "true":
+    if demisto.args().get("addComments", False) != "true":
         alert_data.pop("comments")
         alert_data.pop("new_comment")
 
@@ -199,7 +199,7 @@ def list_alerts_command():
     md_dicts_list = []
 
     for alert in alerts_data:
-        if not demisto.args().get("addComments", False) == "true":
+        if demisto.args().get("addComments", False) != "true":
             alert.pop("comments")
             alert.pop("new_comment")
         alert.pop("observations")

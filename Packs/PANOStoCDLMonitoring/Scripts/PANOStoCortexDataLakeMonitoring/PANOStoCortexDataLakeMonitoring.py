@@ -13,7 +13,7 @@ def check_instance(all_instances: dict, integration_name: str, err_msg: str):
     :param err_msg: error message string
     """
     instance_found_active: bool = False
-    for instance in all_instances.keys():
+    for instance in all_instances:
         if (all_instances[instance]["brand"] == integration_name or instance == integration_name) and all_instances[instance][
             "state"
         ] == "active":
@@ -105,7 +105,7 @@ def main():
             check_instance(
                 all_instances,
                 pan_os_integration_instance_name,
-                f"Integration instance {pan_os_integration_instance_name}" f" is not active or is not a PAN-OS integration.",
+                f"Integration instance {pan_os_integration_instance_name} is not active or is not a PAN-OS integration.",
             )
             # Get FW serials
             fw_monitor_list = get_firewall_serials(pan_os_integration_instance_name)

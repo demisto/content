@@ -629,7 +629,7 @@ def test_get_indicators_command_with_invalid_limit(mock_client):
     # Call the function, limit should be parsed as 0
 
     with pytest.raises(
-        TypeError, match=r"int\(\) argument must be a string, a bytes-like object or a real number, " r"not 'NoneType'"
+        TypeError, match=r"int\(\) argument must be a string, a bytes-like object or a real number, not 'NoneType'"
     ):
         FeedCyberint.get_indicators_command(mock_client, args)
 

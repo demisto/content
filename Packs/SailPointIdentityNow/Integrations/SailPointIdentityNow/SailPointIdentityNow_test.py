@@ -9,7 +9,7 @@ from CommonServerPython import *
 
 MOCK_IDENTITYNOW_BASE_URL = "https://org.api.identitynow.com"
 MOCK_BEARER_TOKEN = "RXAxTEQ0ZkhUVm94dmhIWDd1M2Q0TjU3NDRnQUYzN2ouZXVlV2h1WUk4OW9jMi95Zml"
-MOCK_HEADERS = {"Authorization": "Bearer %s" % MOCK_BEARER_TOKEN, "Content-Type": "application/json"}
+MOCK_HEADERS = {"Authorization": f"Bearer {MOCK_BEARER_TOKEN}", "Content-Type": "application/json"}
 MOCK_CLIENT = SailPointIdentityNow.Client(
     base_url=MOCK_IDENTITYNOW_BASE_URL, verify=False, proxy=False, headers=MOCK_HEADERS, max_results=250, request_timeout=10
 )

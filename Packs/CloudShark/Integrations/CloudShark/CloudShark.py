@@ -69,7 +69,7 @@ def parse_error_response(http_response):
             f" Reason: {http_response.reason}; contents: {http_response.content}"
         )
     exceptions = response.get("exceptions", "")
-    if exceptions:
+    if exceptions:  # noqa: RET503
         return f"Call Failed. status code:{http_response.status_code}, reason: {exceptions}"
 
 
@@ -240,7 +240,7 @@ def delete_command():
 
 
 """ EXECUTION CODE """
-LOG("command is %s" % (demisto.command(),))
+LOG(f"command is {demisto.command()}")
 try:
     handle_proxy()
     # The command demisto.command() holds the command sent from the user.
@@ -261,7 +261,7 @@ try:
             # Token is valid but search method not allowed
             demisto.results("ok")
         else:
-            demisto.results("Error: Server returned %s: %s" % (response.status_code, response.reason))
+            demisto.results(f"Error: Server returned {response.status_code}: {response.reason}")
         sys.exit(0)
 except Exception as e:
     LOG(e)

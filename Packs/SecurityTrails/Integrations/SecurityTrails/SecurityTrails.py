@@ -9,7 +9,7 @@ removed_keys = ["endpoint", "domain", "hostname"]
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None, timeout=10):
+    def __init__(self, base_url, verify=True, proxy=False, ok_codes=(), headers=None, auth=None, timeout=10):
         super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=ok_codes, headers=headers, auth=auth)
         self.timeout = timeout
 
@@ -72,7 +72,7 @@ class Client(BaseClient):
         return res.get("record", {})
 
     def get_whois(self, query_type: str = "domain", hostname: str = None):
-        if query_type == "domain":
+        if query_type == "domain":  # noqa: RET503
             return self._http_request("GET", f"domain/{hostname}/whois", ok_codes=(200, 403), timeout=self.timeout)
         elif query_type == "ip":
             return self._http_request("GET", f"ips/{hostname}/whois", ok_codes=(200, 403), timeout=self.timeout)
@@ -93,7 +93,7 @@ class Client(BaseClient):
         return res.get("blocks")
 
     def query(self, query_type: str = "domain_search", body: dict = None, params: dict = None):
-        if query_type == "domain_search":
+        if query_type == "domain_search":   # noqa: RET503
             return self._http_request(
                 "POST", "domains/list", params=params, json_data=body, ok_codes=(200, 403), timeout=self.timeout
             )
@@ -402,13 +402,13 @@ def get_whois_command(client, args):
 def domain_search_command(client, args):
     include_ips = argToBoolean(args.get("include_ips", "false"))
     page = int(args.get("page", 1))
-    scroll = True if args.get("include_ips", "false") == "true" else False
+    scroll = args.get("include_ips", "false") == "true"
     query = args.get("query", None)
     filter = args.get("filter", None)
     if not query and not filter:
         return_error("You must provide at least a query or a filter")
     params = {"include_ips": include_ips, "page": page, "scroll": scroll}
-    body = dict()
+    body = {}
     if query:
         body["query"] = query
     elif filter:
@@ -429,7 +429,7 @@ def domain_statistics_command(client, args):
     filter = args.get("filter", None)
     if not query and not filter:
         return_error("You must provide at least a query or a filter")
-    body = dict()
+    body = {}
     if query:
         body["query"] = query
     elif filter:
@@ -478,7 +478,7 @@ def associated_domains_command(client, args):
 
 def get_ssl_certificates(client, args):
     hostname = args.get("hostname")
-    include_subdomains = True if args.get("include_subdomains", "false") == "true" else False
+    include_subdomains = args.get("include_subdomains", "false") == "true"
     status = args.get("status", "valid")
     page = None
     params = {"include_subdomains": include_subdomains, "status": status}
@@ -493,7 +493,7 @@ def get_ssl_certificates(client, args):
         {
             "Subject Key ID": x.get("subject_key_id"),
             "Subject Common Name": x.get("subject", {}).get("common_name"),
-            "Subject Alternative Names": ", ".join([y for y in x.get("subject", {}).get("alt_names", [])]),
+            "Subject Alternative Names": ", ".join(list(x.get("subject", {}).get("alt_names", []))),
             "Serial Number": x.get("serial_number"),
             "Public Key Type": x.get("public_key", {}).get("key_type"),
             "Public Key": x.get("public_key", {}).get("key"),
@@ -551,7 +551,7 @@ def get_dns_history_command(client, args):
     page = int(args.get("page", 1))
     res = client.get_dns_history(hostname=hostname, record_type=record_type, page=page)
     res = {k: v for k, v in res.items() if k not in removed_keys}
-    records_list = list()
+    records_list = []
 
     if record_type == "a":
         pull_field = "ip"
@@ -630,7 +630,7 @@ def get_whois_history_command(client, args):
     registrant_contact = registrant_contact[0] if registrant_contact else None
     registrar_contact = admin_contact if admin_contact else None
 
-    whois_objects = list()
+    whois_objects = []
 
     for x in res.get("items", []):
         whois_object = {

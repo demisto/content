@@ -260,7 +260,7 @@ PARSE_ALERTS_VALUES = [
 
 
 @pytest.mark.parametrize(
-    "alerts, max_fetch, last_fetch, last_id_fetched, " "expected_output_time, expected_output_id, expected_incidents_names",
+    "alerts, max_fetch, last_fetch, last_id_fetched, expected_output_time, expected_output_id, expected_incidents_names",
     PARSE_ALERTS_VALUES,
 )
 def test_parse_alerts(

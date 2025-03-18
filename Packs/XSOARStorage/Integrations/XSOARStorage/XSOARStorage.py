@@ -21,7 +21,7 @@ def xsoar_store_list_command(args: dict[str, Any]) -> CommandResults:
         else:
             return_error(f"Namespace: <{namespace}> not found!")
 
-    data = [key for key in demisto.getIntegrationContext().get(namespace, [])]
+    data = list(demisto.getIntegrationContext().get(namespace, []))
 
     number_of_keys = len(data)
 

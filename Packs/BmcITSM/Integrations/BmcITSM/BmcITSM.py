@@ -1506,7 +1506,7 @@ def list_command(
 
     response = client.list_request(form_name, query_with_filtering if query_with_filtering else None)
     relevant_records, header_suffix = get_paginated_records_with_hr(
-        response.get("entries"),
+        response.get("entries"),  # type: ignore[arg-type]
         limit,  # type: ignore[arg-type]
         page,
         page_size,
@@ -2918,12 +2918,13 @@ def format_command_output(records: List[dict], mapper: Dict[str, Any], context_d
                     "RequestID",
                     "ID",
                 ):  # extract request ID out of pattern: <id|id> -> id
-                    formatted_record[formatted_attrib_name] = extract_ticket_request_id(record_attributes[origin_attrib_name])  # type: ignore[index]
+                    formatted_record[formatted_attrib_name] = extract_ticket_request_id(
+                        record_attributes[origin_attrib_name])  # type: ignore[index]
 
                 elif "Date" in formatted_attrib_name and record_attributes[origin_attrib_name]:  # type: ignore[index]
                     formatted_record[formatted_attrib_name] = FormatIso8601(
-                        arg_to_datetime(record_attributes[origin_attrib_name])
-                    )  # type: ignore[index]
+                        arg_to_datetime(record_attributes[origin_attrib_name])  # type: ignore[index]
+                    )
 
                 else:
                     formatted_record[formatted_attrib_name] = record_attributes[origin_attrib_name]  # type: ignore[index]
@@ -2960,7 +2961,7 @@ def get_paginated_records_with_hr(
         from_index = min((page - 1) * page_size, rows_count)
         to_index = min(from_index + page_size, rows_count)
         relevant_raw_data = raw_data[from_index:to_index]
-        header = f"Showing page {page} out of {total_pages} total pages." f" Current page size: {page_size}."
+        header = f"Showing page {page} out of {total_pages} total pages. Current page size: {page_size}."
     else:
         relevant_raw_data = raw_data[: min(rows_count, limit)]  # type: ignore[type-var]
         header = f"Showing {len(relevant_raw_data)} records out of {rows_count}."
@@ -3781,7 +3782,7 @@ def update_remote_system(client: Client, args: Dict[str, Any], close_ticket: str
 
         demisto.info(f"remote data of {ticket_id}: {parsed_args.data}")
     except Exception as error:
-        demisto.info(f"Error in BMC Helix ITSM outgoing mirror for incident {ticket_id} \n" f"Error message: {error!s}")
+        demisto.info(f"Error in BMC Helix ITSM outgoing mirror for incident {ticket_id} \nError message: {error!s}")
 
     finally:
         return ticket_id
@@ -3837,7 +3838,8 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     mapping_response = GetMappingFieldsResponse()
     for ticket_type, incident_type in TICKET_TYPE_TO_INCIDENT_TYPE.items():
         incident_type_scheme = SchemeTypeMapping(type_name=incident_type)
-        outgoing_fields = MIRRORING_COMMON_FIELDS + TICKET_TYPE_TO_ADDITIONAL_MIRRORING_FIELDS[ticket_type]  # type: ignore[union-attr,operator]
+        outgoing_fields = MIRRORING_COMMON_FIELDS + \
+            TICKET_TYPE_TO_ADDITIONAL_MIRRORING_FIELDS[ticket_type]  # type: ignore[union-attr,operator]
         for field in outgoing_fields:
             incident_type_scheme.add_field(field)
 

@@ -402,7 +402,7 @@ def test_get_config_file_request_return(mocker, AIOps_client):
     http_request_mock.return_value = response_mock
     result = AIOps_client.get_config_file_request()
     assert result == (
-        '<config version="10.2.0" urldb="paloaltonetworks" detail-version="10.2.1"><config-mgt>khbk,g</config-mgt>' "\n</config>"
+        '<config version="10.2.0" urldb="paloaltonetworks" detail-version="10.2.1"><config-mgt>khbk,g</config-mgt>\n</config>'
     )
 
 
@@ -712,7 +712,7 @@ def test_get_values_from_xml_invalid():
     with pytest.raises(DemistoException) as e:
         get_values_from_xml(xml_string, tags)
     assert e.value.message == (
-        "Could not find the required tags in the System file. Error: 'NoneType' object has no attribute " "'text'"
+        "Could not find the required tags in the System file. Error: 'NoneType' object has no attribute 'text'"
     )
 
 
@@ -758,7 +758,7 @@ def test_convert_config_to_bytes_get_path_exception():
     with patch("demistomock.getFilePath", side_effect=Exception("invalid to parse")), pytest.raises(DemistoException) as e:
         convert_config_to_bytes("config_file.txt", "User")
     assert e.value.message == (
-        "The config file upload was unsuccessful or the file could not be converted. " "With error: invalid to parse."
+        "The config file upload was unsuccessful or the file could not be converted. With error: invalid to parse."
     )
 
 

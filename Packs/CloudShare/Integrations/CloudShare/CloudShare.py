@@ -48,9 +48,9 @@ def test_module_command(client, args):
 
 def get_projects_command(client, args):
     queryParams = {
-        "WhereUserIsProjectManager": True if args.get("WhereUserIsProjectManager", "false") == "true" else False,
-        "WhereUserIsProjectMember": True if args.get("WhereUserIsProjectMember", "false") == "true" else False,
-        "WhereUserCanCreateClass": True if args.get("WhereUserCanCreateClass", "false") == "true" else False,
+        "WhereUserIsProjectManager": args.get("WhereUserIsProjectManager", "false") == "true",
+        "WhereUserIsProjectMember": args.get("WhereUserIsProjectMember", "false") == "true",
+        "WhereUserCanCreateClass": args.get("WhereUserCanCreateClass", "false") == "true",
     }
     res = client.send_request("GET", "projects", queryParams=queryParams)
     if res.status == 200:
@@ -332,7 +332,7 @@ def get_students_command(client, args):
     classId = args.get("classId")
 
     res = client.send_request(
-        "GET", f"class/{classId}/students", queryParams={"isFull": True if args.get("isFull", "false") == "true" else False}
+        "GET", f"class/{classId}/students", queryParams={"isFull": args.get("isFull", "false") == "true"}
     )
     if res.status == 200:
         md = tableToMarkdown(f"CloudShare students for class {classId}:", res.content)
@@ -433,14 +433,14 @@ def get_timezones_command(client, args):
 
 
 def get_envs_command(client, args):
-    owned = True if args.get("owned", "false") == "true" else False
-    visible = True if args.get("visible", "false") == "true" else False
+    owned = args.get("owned", "false") == "true"
+    visible = args.get("visible", "false") == "true"
     owner_email = args.get("ownerEmail", None)
     class_id = args.get("classId", None)
     brief = args.get("brief", "false")
-    queryParams = dict()
+    queryParams = {}
     if owned or visible:
-        owned_visible = list()
+        owned_visible = []
         if owned:
             owned_visible.append("allowned")
         if visible:
@@ -531,7 +531,7 @@ def get_env_extended_token_command(client, args):
 
 
 def get_env_multiple_resources_command(client, args):
-    res = client.send_request("GET", "envs/actions/getmultipleenvsresources", queryParams={k: v for k, v in args.items()})
+    res = client.send_request("GET", "envs/actions/getmultipleenvsresources", queryParams=dict(args.items()))
     if res.status == 200:
         md = tableToMarkdown("CloudShare Environment Resources from {args.starttime} to {args.endtime}:", res.content)
         command_results = CommandResults(
@@ -593,7 +593,7 @@ def suspend_env_command(client, args):
 
 def get_env_command(client, args):
     envID = args.get("envID")
-    res = client.send_request("GET", f"envs/{envID}", queryParams={k: v for k, v in args.items()})
+    res = client.send_request("GET", f"envs/{envID}", queryParams=dict(args.items()))
     if res.status == 200:
         md = tableToMarkdown("CloudShare Environment {envID}:", res.content)
         command_results = CommandResults(
@@ -617,7 +617,7 @@ def delete_env_command(client, args):
 
 
 def create_env_command(client, args):
-    res = client.send_request("POST", "envs", content={k: v for k, v in args.items()})
+    res = client.send_request("POST", "envs", content=dict(args.items()))
     if res.status == 200:
         res.content["id"] = res.content.get("environmentId")
         md = tableToMarkdown("CloudShare Environment Created:", res.content)
@@ -678,7 +678,7 @@ def vm_check_execution_status_command(client, args):
 
 def vm_get_remote_command(client, args):
     VmID = args.get("VmID")
-    res = client.send_request("GET", "vms/actions/getremoteaccessfile", queryParams={k: v for k, v in args.items()})
+    res = client.send_request("GET", "vms/actions/getremoteaccessfile", queryParams=dict(args.items()))
     if res.status == 200:
         res.content["VmID"] = VmID
         md = tableToMarkdown("VM {VmID} remote file:", res.content)
@@ -800,7 +800,7 @@ def unmount_env_folders_command(client, args):
 
 
 def get_templates_command(client, args):
-    queryParams = {k: v for k, v in args.items()}
+    queryParams = dict(args.items())
     if "skip" in queryParams:
         queryParams["skip"] = int(queryParams["skip"])
     if "take" in queryParams:
@@ -862,7 +862,7 @@ def mark_default_snapshot_command(client, args):
 
 def take_snapshot_env_command(client, args):
     envId = args.get("envId")
-    content = {k: v for k, v in args.items()}
+    content = dict(args.items())
     res = client.send_request(method="GET", path="snapshots/actions/takesnapshot", content=content)
     if res.status == 200:
         return_results("Snapshot of env {envId} taken successfully")
@@ -902,7 +902,7 @@ def invite_user_poc_command(client, args):
 
 
 def get_poc_invitations_command(client, args):
-    res = client.send_request(method="GET", path="ProofOfConceptInvitations/Rows", queryParams={k: v for k, v in args.items()})
+    res = client.send_request(method="GET", path="ProofOfConceptInvitations/Rows", queryParams=dict(args.items()))
     if res.status == 200:
         rows = res.content.get("rows")
         md = tableToMarkdown("CloudShare POC invites:", rows)

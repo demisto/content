@@ -178,7 +178,7 @@ def build_ip_rule_object(args: dict) -> dict:
     condition_operator = args.get("condition_operator", "")
     if len(ip_set_arns) > 1 and not condition_operator:
         raise DemistoException(
-            "The condition_operator argument must be specified when " "ip_set_arn contains more than one value."
+            "The condition_operator argument must be specified when ip_set_arn contains more than one value."
         )
 
     if len(ip_set_arns) == 1:
@@ -914,7 +914,7 @@ def add_country_statement_command(client: "WAFV2Client", args: dict) -> CommandR
         rule_group_visibility_config=rule_group_visibility_config,
     )
 
-    readable_output = f'AWS Waf country statement was added to rule with name {args.get("rule_name", "")} ' f'successfully.'
+    readable_output = f'AWS Waf country statement was added to rule with name {args.get("rule_name", "")} successfully.'
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -936,7 +936,7 @@ def add_string_match_statement_command(client: "WAFV2Client", args: dict) -> Com
         rule_group_visibility_config=rule_group_visibility_config,
     )
 
-    readable_output = f'AWS Waf string match statement was added to rule with name {args.get("rule_name", "")} ' f'successfully.'
+    readable_output = f'AWS Waf string match statement was added to rule with name {args.get("rule_name", "")} successfully.'
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
