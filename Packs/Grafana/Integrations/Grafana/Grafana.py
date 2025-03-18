@@ -243,7 +243,7 @@ def set_time_to_epoch_millisecond(time_to_set: Optional[str] = None):
     """
     For annotation creation, sets the time to epoch numbers in millisecond resolution - if it was filled.
     """
-    if time_to_set: # noqa: RET503
+    if time_to_set:  # noqa: RET503
         time_to_set_date = dateparser.parse(time_to_set)
         assert time_to_set_date is not None
         return int(time_to_set_date.timestamp()) * 1000
