@@ -1,122 +1,314 @@
 """Unit test cases."""
+
+import base64
 import json
 
 import pytest
-
 from CofenseIntelligenceV2 import *
-import base64
 
-mock_params = {'url_threshold': 'Major', 'file_threshold': 'Major', 'email_threshold': 'Major', 'ip_threshold': 'Major',
-               'domain_threshold': 'Major',
-               'days_back': 90}
-
-mock_base_url = 'mock_base_url'
-mock_username = 'mock_username'
-mock_password = 'mock_password'
-
-headers: dict = {
-    "Authorization": f"Basic {base64.b64encode(':'.join([mock_username, mock_password]).encode()).decode().strip()}"
+mock_params = {
+    "url_threshold": "Major",
+    "file_threshold": "Major",
+    "email_threshold": "Major",
+    "ip_threshold": "Major",
+    "domain_threshold": "Major",
+    "days_back": 90,
 }
+
+mock_base_url = "mock_base_url"
+mock_username = "mock_username"
+mock_password = "mock_password"
+
+headers: dict = {"Authorization": f"Basic {base64.b64encode(':'.join([mock_username, mock_password]).encode()).decode().strip()}"}
 DOMAIN_RELATIONSHIP = [
-    {'brand': 'Cofense Intelligence', 'entityA': 'domain', 'entityAFamily': 'Indicator', 'entityAType': 'Domain',
-     'entityB': 'domain', 'entityBFamily': 'Indicator', 'entityBType': None, 'fields': {}, 'name': 'related-to',
-     'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
-    {'brand': 'Cofense Intelligence', 'entityA': 'domain', 'entityAFamily': 'Indicator', 'entityAType': 'Domain',
-     'entityB': 'domain2', 'entityBFamily': 'Indicator', 'entityBType': None, 'fields': {}, 'name': 'related-to',
-     'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
-    {'brand': 'Cofense Intelligence', 'entityA': 'domain', 'entityAFamily': 'Indicator', 'entityAType': 'Domain',
-     'entityB': '8e1a7d8b88096693a52173618b7b709e', 'entityBFamily': 'Indicator', 'entityBType': 'File', 'fields': {},
-     'name': 'related-to', 'reverseName': 'related-to', 'type': 'IndicatorToIndicator'}
+    {
+        "brand": "Cofense Intelligence",
+        "entityA": "domain",
+        "entityAFamily": "Indicator",
+        "entityAType": "Domain",
+        "entityB": "domain",
+        "entityBFamily": "Indicator",
+        "entityBType": None,
+        "fields": {},
+        "name": "related-to",
+        "reverseName": "related-to",
+        "type": "IndicatorToIndicator",
+    },
+    {
+        "brand": "Cofense Intelligence",
+        "entityA": "domain",
+        "entityAFamily": "Indicator",
+        "entityAType": "Domain",
+        "entityB": "domain2",
+        "entityBFamily": "Indicator",
+        "entityBType": None,
+        "fields": {},
+        "name": "related-to",
+        "reverseName": "related-to",
+        "type": "IndicatorToIndicator",
+    },
+    {
+        "brand": "Cofense Intelligence",
+        "entityA": "domain",
+        "entityAFamily": "Indicator",
+        "entityAType": "Domain",
+        "entityB": "8e1a7d8b88096693a52173618b7b709e",
+        "entityBFamily": "Indicator",
+        "entityBType": "File",
+        "fields": {},
+        "name": "related-to",
+        "reverseName": "related-to",
+        "type": "IndicatorToIndicator",
+    },
 ]
 
 FILE_RELATIONSHIP_MD5 = [
-    {'brand': 'Cofense Intelligence', 'entityA': 'md5', 'entityAFamily': 'Indicator', 'entityAType': 'File',
-     'entityB': 'com', 'entityBFamily': 'Indicator', 'entityBType': 'Domain', 'fields': {}, 'name': 'related-to',
-     'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
-    {'brand': 'Cofense Intelligence', 'entityA': 'md5', 'entityAFamily': 'Indicator', 'entityAType': 'File',
-     'entityB': '127.0.0.1', 'entityBFamily': 'Indicator', 'entityBType': 'IP', 'fields': {}, 'name': 'related-to',
-     'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
-    {'brand': 'Cofense Intelligence', 'entityA': 'md5', 'entityAFamily': 'Indicator', 'entityAType': 'File',
-     'entityB': 'md5', 'entityBFamily': 'Indicator', 'entityBType': 'File', 'fields': {}, 'name': 'related-to',
-     'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
-    {'brand': 'Cofense Intelligence', 'entityA': 'md5', 'entityAFamily': 'Indicator', 'entityAType': 'File',
-     'entityB': 'md5', 'entityBFamily': 'Indicator', 'entityBType': 'File', 'fields': {}, 'name': 'related-to',
-     'reverseName': 'related-to', 'type': 'IndicatorToIndicator'}
+    {
+        "brand": "Cofense Intelligence",
+        "entityA": "md5",
+        "entityAFamily": "Indicator",
+        "entityAType": "File",
+        "entityB": "com",
+        "entityBFamily": "Indicator",
+        "entityBType": "Domain",
+        "fields": {},
+        "name": "related-to",
+        "reverseName": "related-to",
+        "type": "IndicatorToIndicator",
+    },
+    {
+        "brand": "Cofense Intelligence",
+        "entityA": "md5",
+        "entityAFamily": "Indicator",
+        "entityAType": "File",
+        "entityB": "127.0.0.1",
+        "entityBFamily": "Indicator",
+        "entityBType": "IP",
+        "fields": {},
+        "name": "related-to",
+        "reverseName": "related-to",
+        "type": "IndicatorToIndicator",
+    },
+    {
+        "brand": "Cofense Intelligence",
+        "entityA": "md5",
+        "entityAFamily": "Indicator",
+        "entityAType": "File",
+        "entityB": "md5",
+        "entityBFamily": "Indicator",
+        "entityBType": "File",
+        "fields": {},
+        "name": "related-to",
+        "reverseName": "related-to",
+        "type": "IndicatorToIndicator",
+    },
+    {
+        "brand": "Cofense Intelligence",
+        "entityA": "md5",
+        "entityAFamily": "Indicator",
+        "entityAType": "File",
+        "entityB": "md5",
+        "entityBFamily": "Indicator",
+        "entityBType": "File",
+        "fields": {},
+        "name": "related-to",
+        "reverseName": "related-to",
+        "type": "IndicatorToIndicator",
+    },
 ]
 
 FILE_RELATIONSHIP_SHA256 = [
-    {'brand': 'Cofense Intelligence', 'entityA': 'sha256', 'entityAFamily': 'Indicator', 'entityAType': 'File',
-     'entityB': 'com', 'entityBFamily': 'Indicator', 'entityBType': 'Domain', 'fields': {}, 'name': 'related-to',
-     'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
-    {'brand': 'Cofense Intelligence', 'entityA': 'sha256', 'entityAFamily': 'Indicator', 'entityAType': 'File',
-     'entityB': '127.0.0.1', 'entityBFamily': 'Indicator', 'entityBType': 'IP', 'fields': {}, 'name': 'related-to',
-     'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
-    {'brand': 'Cofense Intelligence', 'entityA': 'sha256', 'entityAFamily': 'Indicator', 'entityAType': 'File',
-     'entityB': 'md5', 'entityBFamily': 'Indicator', 'entityBType': 'File', 'fields': {}, 'name': 'related-to',
-     'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
-    {'brand': 'Cofense Intelligence', 'entityA': 'sha256', 'entityAFamily': 'Indicator', 'entityAType': 'File',
-     'entityB': 'md5', 'entityBFamily': 'Indicator', 'entityBType': 'File', 'fields': {}, 'name': 'related-to',
-     'reverseName': 'related-to', 'type': 'IndicatorToIndicator'}
+    {
+        "brand": "Cofense Intelligence",
+        "entityA": "sha256",
+        "entityAFamily": "Indicator",
+        "entityAType": "File",
+        "entityB": "com",
+        "entityBFamily": "Indicator",
+        "entityBType": "Domain",
+        "fields": {},
+        "name": "related-to",
+        "reverseName": "related-to",
+        "type": "IndicatorToIndicator",
+    },
+    {
+        "brand": "Cofense Intelligence",
+        "entityA": "sha256",
+        "entityAFamily": "Indicator",
+        "entityAType": "File",
+        "entityB": "127.0.0.1",
+        "entityBFamily": "Indicator",
+        "entityBType": "IP",
+        "fields": {},
+        "name": "related-to",
+        "reverseName": "related-to",
+        "type": "IndicatorToIndicator",
+    },
+    {
+        "brand": "Cofense Intelligence",
+        "entityA": "sha256",
+        "entityAFamily": "Indicator",
+        "entityAType": "File",
+        "entityB": "md5",
+        "entityBFamily": "Indicator",
+        "entityBType": "File",
+        "fields": {},
+        "name": "related-to",
+        "reverseName": "related-to",
+        "type": "IndicatorToIndicator",
+    },
+    {
+        "brand": "Cofense Intelligence",
+        "entityA": "sha256",
+        "entityAFamily": "Indicator",
+        "entityAType": "File",
+        "entityB": "md5",
+        "entityBFamily": "Indicator",
+        "entityBType": "File",
+        "fields": {},
+        "name": "related-to",
+        "reverseName": "related-to",
+        "type": "IndicatorToIndicator",
+    },
 ]
 
 EMAIL_RELATIONSHIP = [
-    {'brand': 'Cofense Intelligence', 'entityA': 'email@email.com', 'entityAFamily': 'Indicator',
-     'entityAType': 'Email', 'entityB': 'email@email.com', 'entityBFamily': 'Indicator',
-     'entityBType': 'Email', 'fields': {}, 'name': 'related-to', 'reverseName': 'related-to',
-     'type': 'IndicatorToIndicator'},
-    {'brand': 'Cofense Intelligence', 'entityA': 'email@email.com', 'entityAFamily': 'Indicator',
-     'entityAType': 'Email', 'entityB': 'md5', 'entityBFamily': 'Indicator', 'entityBType': 'File', 'fields': {},
-     'name': 'related-to', 'reverseName': 'related-to', 'type': 'IndicatorToIndicator'}]
+    {
+        "brand": "Cofense Intelligence",
+        "entityA": "email@email.com",
+        "entityAFamily": "Indicator",
+        "entityAType": "Email",
+        "entityB": "email@email.com",
+        "entityBFamily": "Indicator",
+        "entityBType": "Email",
+        "fields": {},
+        "name": "related-to",
+        "reverseName": "related-to",
+        "type": "IndicatorToIndicator",
+    },
+    {
+        "brand": "Cofense Intelligence",
+        "entityA": "email@email.com",
+        "entityAFamily": "Indicator",
+        "entityAType": "Email",
+        "entityB": "md5",
+        "entityBFamily": "Indicator",
+        "entityBType": "File",
+        "fields": {},
+        "name": "related-to",
+        "reverseName": "related-to",
+        "type": "IndicatorToIndicator",
+    },
+]
 
 URL_RELATIONSHIP = [
-    {'brand': 'Cofense Intelligence', 'entityA': 'url', 'entityAFamily': 'Indicator', 'entityAType': 'URL',
-     'entityB': 'url', 'entityBFamily': 'Indicator', 'entityBType': None, 'fields': {}, 'name': 'related-to',
-     'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
-    {'brand': 'Cofense Intelligence', 'entityA': 'url', 'entityAFamily': 'Indicator', 'entityAType': 'URL',
-     'entityB': 'url2', 'entityBFamily': 'Indicator', 'entityBType': None, 'fields': {}, 'name': 'related-to',
-     'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
-    {'brand': 'Cofense Intelligence', 'entityA': 'url', 'entityAFamily': 'Indicator',
-     'entityAType': 'URL', 'entityB': 'f23e89543e8627182579f68c5916fd05', 'entityBFamily': 'Indicator',
-     'entityBType': 'File', 'fields': {}, 'name': 'related-to', 'reverseName': 'related-to',
-     'type': 'IndicatorToIndicator'}
+    {
+        "brand": "Cofense Intelligence",
+        "entityA": "url",
+        "entityAFamily": "Indicator",
+        "entityAType": "URL",
+        "entityB": "url",
+        "entityBFamily": "Indicator",
+        "entityBType": None,
+        "fields": {},
+        "name": "related-to",
+        "reverseName": "related-to",
+        "type": "IndicatorToIndicator",
+    },
+    {
+        "brand": "Cofense Intelligence",
+        "entityA": "url",
+        "entityAFamily": "Indicator",
+        "entityAType": "URL",
+        "entityB": "url2",
+        "entityBFamily": "Indicator",
+        "entityBType": None,
+        "fields": {},
+        "name": "related-to",
+        "reverseName": "related-to",
+        "type": "IndicatorToIndicator",
+    },
+    {
+        "brand": "Cofense Intelligence",
+        "entityA": "url",
+        "entityAFamily": "Indicator",
+        "entityAType": "URL",
+        "entityB": "f23e89543e8627182579f68c5916fd05",
+        "entityBFamily": "Indicator",
+        "entityBType": "File",
+        "fields": {},
+        "name": "related-to",
+        "reverseName": "related-to",
+        "type": "IndicatorToIndicator",
+    },
 ]
 
 IP_RELATIONSHIP = [
-    {'brand': 'Cofense Intelligence', 'entityA': '127.0.0.1', 'entityAFamily': 'Indicator', 'entityAType': 'IP',
-     'entityB': '127.0.0.1', 'entityBFamily': 'Indicator', 'entityBType': 'IP', 'fields': {}, 'name': 'related-to',
-     'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
-    {'brand': 'Cofense Intelligence', 'entityA': '127.0.0.1', 'entityAFamily': 'Indicator', 'entityAType': 'IP',
-     'entityB': 'md5', 'entityBFamily': 'Indicator', 'entityBType': 'File', 'fields': {}, 'name': 'related-to',
-     'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
-    {'brand': 'Cofense Intelligence',
-     'entityA': '127.0.0.1', 'entityAFamily': 'Indicator', 'entityAType': 'IP', 'entityB': 'md5',
-     'entityBFamily': 'Indicator', 'entityBType': 'File', 'fields': {}, 'name': 'related-to',
-     'reverseName': 'related-to', 'type': 'IndicatorToIndicator'}]
+    {
+        "brand": "Cofense Intelligence",
+        "entityA": "127.0.0.1",
+        "entityAFamily": "Indicator",
+        "entityAType": "IP",
+        "entityB": "127.0.0.1",
+        "entityBFamily": "Indicator",
+        "entityBType": "IP",
+        "fields": {},
+        "name": "related-to",
+        "reverseName": "related-to",
+        "type": "IndicatorToIndicator",
+    },
+    {
+        "brand": "Cofense Intelligence",
+        "entityA": "127.0.0.1",
+        "entityAFamily": "Indicator",
+        "entityAType": "IP",
+        "entityB": "md5",
+        "entityBFamily": "Indicator",
+        "entityBType": "File",
+        "fields": {},
+        "name": "related-to",
+        "reverseName": "related-to",
+        "type": "IndicatorToIndicator",
+    },
+    {
+        "brand": "Cofense Intelligence",
+        "entityA": "127.0.0.1",
+        "entityAFamily": "Indicator",
+        "entityAType": "IP",
+        "entityB": "md5",
+        "entityBFamily": "Indicator",
+        "entityBType": "File",
+        "fields": {},
+        "name": "related-to",
+        "reverseName": "related-to",
+        "type": "IndicatorToIndicator",
+    },
+]
 client = Client(
-    base_url=mock_base_url,
-    verify=True,
-    headers=headers,
-    proxy=False,
-    score_mapping="None:0, Minor:1, Moderate:2, Major:3")
+    base_url=mock_base_url, verify=True, headers=headers, proxy=False, score_mapping="None:0, Minor:1, Moderate:2, Major:3"
+)
 
 
 def util_load_json(path):
     """Return json data from given file path."""
-    with open(path, encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
-@pytest.mark.parametrize("threshold, expected_value", [('None', 0), ('Minor', 1), ('Major', 3), ('Moderate', 2)])
+@pytest.mark.parametrize("threshold, expected_value", [("None", 0), ("Minor", 1), ("Major", 3), ("Moderate", 2)])
 def test_reputation_commands_threshold_working_success(threshold, expected_value):
     """Test case scenario when valid threshold value is provided."""
     assert client.severity_score.get(threshold) == expected_value
 
 
-@pytest.mark.parametrize("threshold, expected_err_msg", [
-    ('', "Cofense error: Invalid threshold value: . Valid values are: None, Minor, Moderate or Major"),
-    ('dummy', "Cofense error: Invalid threshold value: dummy. Valid values are: None, Minor, Moderate or Major"),
-    (None, "Cofense error: Invalid threshold value: None. Valid values are: None, Minor, Moderate or Major"),
-])
+@pytest.mark.parametrize(
+    "threshold, expected_err_msg",
+    [
+        ("", "Cofense error: Invalid threshold value: . Valid values are: None, Minor, Moderate or Major"),
+        ("dummy", "Cofense error: Invalid threshold value: dummy. Valid values are: None, Minor, Moderate or Major"),
+        (None, "Cofense error: Invalid threshold value: None. Valid values are: None, Minor, Moderate or Major"),
+    ],
+)
 def test_reputation_commands_threshold_when_invalid_values_provided(threshold, expected_err_msg):
     """Test case scenario when invalid threshold value is provided."""
     from CofenseIntelligenceV2 import threats_analysis
@@ -138,11 +330,11 @@ def test_threats_analysis():
         - Verify md table data
         - Verify dbot score
     """
-    indicator = 'email1'
-    threshold = 'Major'
-    mock_threats = util_load_json('test_data/test_threats.json').get('threats')
-    mock_md_data = util_load_json('test_data/test_threats.json').get('mock_md_data')
-    mock_dbot_score = util_load_json('test_data/test_threats.json').get('mock_dbot_score')
+    indicator = "email1"
+    threshold = "Major"
+    mock_threats = util_load_json("test_data/test_threats.json").get("threats")
+    mock_md_data = util_load_json("test_data/test_threats.json").get("mock_md_data")
+    mock_dbot_score = util_load_json("test_data/test_threats.json").get("mock_dbot_score")
     md_data, dbot_score = threats_analysis(client.severity_score, mock_threats, indicator, threshold, "email")
     assert mock_dbot_score == dbot_score
     assert mock_md_data == md_data
@@ -159,10 +351,10 @@ def test_create_threat_md_row():
     Then:
         - Verify md row data
     """
-    threat = util_load_json('test_data/test_threats.json').get('threats')[0]
-    severity_level = util_load_json('test_data/test_threats.json').get('mock_dbot_score')
+    threat = util_load_json("test_data/test_threats.json").get("threats")[0]
+    severity_level = util_load_json("test_data/test_threats.json").get("mock_dbot_score")
     threat_md_row = create_threat_md_row(threat, severity_level)
-    mock_threat_md_row = util_load_json('test_data/test_threats.json').get('mock_md_data')[0]
+    mock_threat_md_row = util_load_json("test_data/test_threats.json").get("mock_md_data")[0]
     assert mock_threat_md_row == threat_md_row
 
 
@@ -178,14 +370,14 @@ def test_extracted_string(mocker):
         - Verify response outputs
         - verify response readable output
     """
-    mock_args = {'str': 'str', 'limit': '10'}
-    test_data = util_load_json('test_data/test_extracted_string.json')
+    mock_args = {"str": "str", "limit": "10"}
+    test_data = util_load_json("test_data/test_extracted_string.json")
 
-    return_value = test_data.get('string_search_response')
-    mocker.patch.object(client, 'search_cofense', return_value=return_value)
+    return_value = test_data.get("string_search_response")
+    mocker.patch.object(client, "search_cofense", return_value=return_value)
     response = extracted_string(client, mock_args, mock_params)
-    mock_outputs = test_data.get('mock_outputs')
-    mock_readable_outputs = test_data.get('mock_readable')
+    mock_outputs = test_data.get("mock_outputs")
+    mock_readable_outputs = test_data.get("mock_readable")
     assert mock_outputs == str(response.outputs)
     assert mock_readable_outputs == response.readable_output
 
@@ -202,16 +394,16 @@ def test_search_url_command(mocker):
         - Verify response outputs
         - verify response readable output
     """
-    mock_args = {'url': 'url'}
-    test_data = util_load_json('test_data/test_search_url.json')
-    return_value = test_data.get('url_search_response')
-    mocker.patch.object(client, 'threat_search_call', return_value=return_value)
+    mock_args = {"url": "url"}
+    test_data = util_load_json("test_data/test_search_url.json")
+    return_value = test_data.get("url_search_response")
+    mocker.patch.object(client, "threat_search_call", return_value=return_value)
     response = search_url_command(client, mock_args, mock_params)
-    mock_outputs = test_data.get('mock_output')
-    mock_readable_outputs = test_data.get('mock_readable')
+    mock_outputs = test_data.get("mock_output")
+    mock_readable_outputs = test_data.get("mock_readable")
     assert mock_outputs == str(response[0].outputs)
     assert mock_readable_outputs == response[0].readable_output
-    assert (response[0].to_context())['Relationships'] == URL_RELATIONSHIP
+    assert (response[0].to_context())["Relationships"] == URL_RELATIONSHIP
 
 
 def test_check_email_command(mocker):
@@ -226,14 +418,14 @@ def test_check_email_command(mocker):
         - Verify response outputs
         - verify response readable output
     """
-    mock_args = {'email': 'email@email.com'}
-    test_data = util_load_json('test_data/test_search_email.json')
-    return_value = test_data.get('email_search_response')
-    mocker.patch.object(client, 'threat_search_call', return_value=return_value)
+    mock_args = {"email": "email@email.com"}
+    test_data = util_load_json("test_data/test_search_email.json")
+    return_value = test_data.get("email_search_response")
+    mocker.patch.object(client, "threat_search_call", return_value=return_value)
     response = check_email_command(client, mock_args, mock_params)
-    mock_readable_outputs = test_data.get('mock_readable')
+    mock_readable_outputs = test_data.get("mock_readable")
     assert mock_readable_outputs == response[0].readable_output
-    assert (response[0].to_context())['Relationships'] == EMAIL_RELATIONSHIP
+    assert (response[0].to_context())["Relationships"] == EMAIL_RELATIONSHIP
 
 
 def test_check_ip_command(mocker):
@@ -248,16 +440,16 @@ def test_check_ip_command(mocker):
         - Verify response outputs
         - verify response readable output
     """
-    mock_args = {'ip': '127.0.0.1'}
-    test_data = util_load_json('test_data/test_search_ip.json')
-    return_value = test_data.get('ip_search_response')
-    mocker.patch.object(client, 'threat_search_call', return_value=return_value)
+    mock_args = {"ip": "127.0.0.1"}
+    test_data = util_load_json("test_data/test_search_ip.json")
+    return_value = test_data.get("ip_search_response")
+    mocker.patch.object(client, "threat_search_call", return_value=return_value)
     response = check_ip_command(client, mock_args, mock_params)
-    mock_outputs = test_data.get('mock_output')
-    mock_readable_outputs = test_data.get('mock_readable')
+    mock_outputs = test_data.get("mock_output")
+    mock_readable_outputs = test_data.get("mock_readable")
     assert mock_outputs == str(response[0].outputs)
     assert mock_readable_outputs == response[0].readable_output
-    assert (response[0].to_context())['Relationships'] == IP_RELATIONSHIP
+    assert (response[0].to_context())["Relationships"] == IP_RELATIONSHIP
 
 
 def test_check_file_command_with_md5_hash(mocker):
@@ -272,18 +464,18 @@ def test_check_file_command_with_md5_hash(mocker):
         - Verify response outputs
         - verify response readable output
     """
-    mock_args = {'file': 'md5'}
-    test_data = util_load_json('test_data/test_search_file.json')
-    return_value = test_data.get('file_search_response')
-    mocker.patch.object(client, 'threat_search_call', return_value=return_value)
+    mock_args = {"file": "md5"}
+    test_data = util_load_json("test_data/test_search_file.json")
+    return_value = test_data.get("file_search_response")
+    mocker.patch.object(client, "threat_search_call", return_value=return_value)
     response = check_file_command(client, mock_args, mock_params)
-    mock_outputs = test_data.get('mock_output_md5')
-    mock_readable_outputs = test_data.get('mock_readable_md5')
+    mock_outputs = test_data.get("mock_output_md5")
+    mock_readable_outputs = test_data.get("mock_readable_md5")
     assert mock_outputs == str(response[0].outputs)
     assert mock_readable_outputs == response[0].readable_output
-    assert (response[0].to_context())['Relationships'] == FILE_RELATIONSHIP_MD5
-    assert response[0].indicator.md5 == mock_args['file']
-    assert response[0].indicator.sha256 != mock_args['file']
+    assert (response[0].to_context())["Relationships"] == FILE_RELATIONSHIP_MD5
+    assert response[0].indicator.md5 == mock_args["file"]
+    assert response[0].indicator.sha256 != mock_args["file"]
 
 
 def test_check_file_command_with_sha256_hash(mocker):
@@ -298,18 +490,18 @@ def test_check_file_command_with_sha256_hash(mocker):
         - Verify response outputs
         - verify response readable output
     """
-    mock_args = {'file': 'sha256'}
-    test_data = util_load_json('test_data/test_search_file.json')
-    return_value = test_data.get('file_search_response')
-    mocker.patch.object(client, 'threat_search_call', return_value=return_value)
+    mock_args = {"file": "sha256"}
+    test_data = util_load_json("test_data/test_search_file.json")
+    return_value = test_data.get("file_search_response")
+    mocker.patch.object(client, "threat_search_call", return_value=return_value)
     response = check_file_command(client, mock_args, mock_params)
-    mock_outputs = test_data.get('mock_output_sha256')
-    mock_readable_outputs = test_data.get('mock_readable_sha256')
+    mock_outputs = test_data.get("mock_output_sha256")
+    mock_readable_outputs = test_data.get("mock_readable_sha256")
     assert mock_outputs == str(response[0].outputs)
     assert mock_readable_outputs == response[0].readable_output
-    assert (response[0].to_context())['Relationships'] == FILE_RELATIONSHIP_SHA256
-    assert response[0].indicator.sha256 == mock_args['file']
-    assert response[0].indicator.md5 != mock_args['file']
+    assert (response[0].to_context())["Relationships"] == FILE_RELATIONSHIP_SHA256
+    assert response[0].indicator.sha256 == mock_args["file"]
+    assert response[0].indicator.md5 != mock_args["file"]
 
 
 def test_check_domain_command(mocker):
@@ -324,16 +516,16 @@ def test_check_domain_command(mocker):
         - Verify response outputs
         - verify response readable output
     """
-    mock_args = {'domain': 'domain'}
-    test_data = util_load_json('test_data/test_search_domain.json')
-    return_value = test_data.get('domain_search_response')
-    mocker.patch.object(client, 'threat_search_call', return_value=return_value)
+    mock_args = {"domain": "domain"}
+    test_data = util_load_json("test_data/test_search_domain.json")
+    return_value = test_data.get("domain_search_response")
+    mocker.patch.object(client, "threat_search_call", return_value=return_value)
     response = check_domain_command(client, mock_args, mock_params)
-    mock_outputs = test_data.get('mock_output')
-    mock_readable_outputs = test_data.get('mock_readable')
+    mock_outputs = test_data.get("mock_output")
+    mock_readable_outputs = test_data.get("mock_readable")
     assert mock_outputs == str(response[0].outputs)
     assert response[0].indicator.domain == "domain"
-    assert (response[0].to_context())['Relationships'] == DOMAIN_RELATIONSHIP
+    assert (response[0].to_context())["Relationships"] == DOMAIN_RELATIONSHIP
     assert mock_readable_outputs == response[0].readable_output
 
 
@@ -349,7 +541,7 @@ def test_when_domain_not_specified():
         - Returns the response message of invalid input arguments
     """
     with pytest.raises(ValueError) as de:
-        check_domain_command(client, {'domain': []}, mock_params)
+        check_domain_command(client, {"domain": []}, mock_params)
     assert str(de.value) == "Domain not specified"
 
 
@@ -365,15 +557,15 @@ def test_dummy_is_safe_domain_even_though_abc_dummy_is_malicious(mocker):
     Then:
         - Should return the dbot score of 1 indicating domain is 'Good'.
     """
-    mock_args = {'domain': 'dummy.com'}
-    mock_api_resp = util_load_json('test_data/test_google_safe_domain.json')
-    mocker.patch.object(client, 'threat_search_call', return_value=mock_api_resp)
+    mock_args = {"domain": "dummy.com"}
+    mock_api_resp = util_load_json("test_data/test_google_safe_domain.json")
+    mocker.patch.object(client, "threat_search_call", return_value=mock_api_resp)
     response = check_domain_command(client, mock_args, mock_params)
 
     assert response[0].indicator.domain == "dummy.com"
     assert response[0].indicator.dbot_score.score == 1
 
-    mock_args = {'domain': 'abc.dummy.com'}
+    mock_args = {"domain": "abc.dummy.com"}
     response = check_domain_command(client, mock_args, mock_params)
 
     assert response[0].indicator.domain == "abc.dummy.com"
@@ -392,9 +584,9 @@ def test_check_whether_dbot_score_is_updated_for_every_instance_present_in_respo
     Then:
         - Should return the dbot score of 1 indicating domain is 'Good'.
     """
-    mock_args = {'domain': 'dummy.com'}
-    mock_api_resp = util_load_json('test_data/test_google_safe_domain_miltiple_instance.json')
-    mocker.patch.object(client, 'threat_search_call', return_value=mock_api_resp)
+    mock_args = {"domain": "dummy.com"}
+    mock_api_resp = util_load_json("test_data/test_google_safe_domain_miltiple_instance.json")
+    mocker.patch.object(client, "threat_search_call", return_value=mock_api_resp)
     response = check_domain_command(client, mock_args, mock_params)
 
     assert response[0].indicator.domain == "dummy.com"
@@ -413,9 +605,9 @@ def test_url_is_malicious_and_domain_is_safe(mocker):
     Then:
         - Should return the dbot score of 1 indicating domain is 'Good'.
     """
-    mock_args = {'domain': 'dummy.com'}
-    mock_api_resp = util_load_json('test_data/test_url_bad_and_domain_safe.json')
-    mocker.patch.object(client, 'threat_search_call', return_value=mock_api_resp)
+    mock_args = {"domain": "dummy.com"}
+    mock_api_resp = util_load_json("test_data/test_url_bad_and_domain_safe.json")
+    mocker.patch.object(client, "threat_search_call", return_value=mock_api_resp)
     response = check_domain_command(client, mock_args, mock_params)
 
     assert response[0].indicator.domain == "dummy.com"
@@ -434,9 +626,9 @@ def test_url_is_malicious_and_no_entry_in_domain(mocker):
     Then:
         - Should return dbot score of 0 indicating the domain is 'Unknown'.
     """
-    mock_args = {'domain': 'dummy.com'}
-    mock_api_resp = util_load_json('test_data/test_url_malicious_domain_safe.json')
-    mocker.patch.object(client, 'threat_search_call', return_value=mock_api_resp)
+    mock_args = {"domain": "dummy.com"}
+    mock_api_resp = util_load_json("test_data/test_url_malicious_domain_safe.json")
+    mocker.patch.object(client, "threat_search_call", return_value=mock_api_resp)
     response = check_domain_command(client, mock_args, mock_params)
 
     assert response[0].indicator.domain == "dummy.com"
@@ -447,12 +639,13 @@ def test_url_is_malicious_and_no_entry_in_domain(mocker):
 def mock_client():
     """Create a mock client object to work with."""
     from CofenseIntelligenceV2 import Client
+
     client = Client(
-        base_url='https://www.threathq.com/',
+        base_url="https://www.threathq.com/",
         verify=True,
         headers=headers,
         proxy=False,
-        score_mapping="None:0, Minor:1, Moderate:2, Major:3"
+        score_mapping="None:0, Minor:1, Moderate:2, Major:3",
     )
 
     return client
@@ -471,7 +664,7 @@ def test_threat_report_command_success(mock_client, requests_mock):
     """
     from CofenseIntelligenceV2 import threat_report_command
 
-    mock_threat_report_endpoint = 'https://www.threathq.com/apiv1/t3/malware/111/html'
+    mock_threat_report_endpoint = "https://www.threathq.com/apiv1/t3/malware/111/html"
     mock_response = "some data"
     requests_mock.get(mock_threat_report_endpoint, text=mock_response, status_code=200)
 
@@ -480,10 +673,13 @@ def test_threat_report_command_success(mock_client, requests_mock):
     assert actual["File"] == "111.html"
 
 
-@pytest.mark.parametrize("args, error_msg",
-                         [({"report_id": "111a"}, "Argument 'report_id' accepts only numeric literals."),
-                          ({"report_id": "111", "report_format": "dummy"},
-                           "Argument 'report_format' accepts only 'html' or 'pdf' as input.")])
+@pytest.mark.parametrize(
+    "args, error_msg",
+    [
+        ({"report_id": "111a"}, "Argument 'report_id' accepts only numeric literals."),
+        ({"report_id": "111", "report_format": "dummy"}, "Argument 'report_format' accepts only 'html' or 'pdf' as input."),
+    ],
+)
 def test_threat_report_command_invalid_arg(args, error_msg, mock_client):
     """
     Test case scenario where invalid arguments are provided.
@@ -496,6 +692,7 @@ def test_threat_report_command_invalid_arg(args, error_msg, mock_client):
         - Raises an error.
     """
     from CofenseIntelligenceV2 import threat_report_command
+
     with pytest.raises(DemistoException) as e:
         threat_report_command(client, args)
     assert str(e.value) == error_msg
@@ -514,7 +711,7 @@ def test_threat_report_command_no_report_found_500(mock_client, requests_mock):
     """
     from CofenseIntelligenceV2 import threat_report_command
 
-    mock_threat_report_endpoint = 'https://www.threathq.com/apiv1/t3/malware/11111111111/html'
+    mock_threat_report_endpoint = "https://www.threathq.com/apiv1/t3/malware/11111111111/html"
     mock_response = ""
     requests_mock.get(mock_threat_report_endpoint, text=mock_response, status_code=500)
 
