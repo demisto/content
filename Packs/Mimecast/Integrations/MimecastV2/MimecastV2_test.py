@@ -1,3 +1,4 @@
+from freezegun import freeze_time
 import pytest
 
 import MimecastV2
@@ -1075,7 +1076,7 @@ def test_fetch_held_messages_prev_dedup(mocker):
                                    dedup_held_messages,
                                    current_next_page,
                                    incidents)
-    assert result == ('test_next', ['prev_dedup', '123456'], datetime(2025, 3, 11, 15, 31))
+    assert result == ('test_next', ['prev_dedup', '123456'], datetime(2025, 3, 11, 15, 30))
 
 
 def test_fetch_held_messages_no_next_token(mocker):
@@ -1191,7 +1192,7 @@ def test_fetch_incidents_no_held_message(mocker):
                                            'rawJSON': ('{"id": "123456", "subject": "test_subject", "dateReceived": '
                                                        '"2025-03-16T16:31:00+0000"}'),
                                            'dbotMirrorId': '123456'}])
-
+@freeze_time("2025-01-15 17:00:00 UTC")
 def test_fetch_incidents_first_fetch(mocker):
     """
     Given:
@@ -1215,26 +1216,28 @@ def test_fetch_incidents_first_fetch(mocker):
     MimecastV2.FETCH_ATTACHMENTS = True
     MimecastV2.FETCH_IMPERSONATIONS = False
     MimecastV2.FETCH_HELD_MESSAGES = True
-    request_with_pagination = mocker.patch.object(MimecastV2, 'request_with_pagination', return_value=([{'fileName': 'file_test',
-                                                                                                       'date': '2025-03-16T05:50:00+0000'}], 1))
+    request_with_pagination = mocker.patch.object(MimecastV2, 'request_with_pagination',
+                                                  return_value=([{'fileName': 'file_test',
+                                                                  'date': '2025-01-14T17:01:00+0000'}], 1))
     fetch_held_messages_with_pagination = mocker.patch.object(MimecastV2, 'fetch_held_messages_with_pagination', return_value=([
         {'id': '123456',
          'subject': 'test_subject',
-         'dateReceived': '2025-03-16T16:31:00+0000'}], 1, ''))
+         'dateReceived': '2025-01-14T17:01:00+0000'}], 1, ''))
     MimecastV2.fetch_incidents()
     time_for_incidents = request_with_pagination.call_args[1].get('data')[0].get('from')
     time_for_held_messages = fetch_held_messages_with_pagination.call_args[1].get('data')[0].get('start')
     assert time_for_incidents == time_for_held_messages
-    set_last_run.assert_called_with({'time': '2025-03-16T05:50:01Z',
-                                    'dedup_held_messages': ['123456'],
-                                    'time_held_messages': '2025-03-16T16:31:00Z'})
-    set_new_incidents.assert_called_with([{'name': 'Mimecast malicious attachment: file_test', 'occurred': '2025-03-16T05:50:00Z',
-                                        'rawJSON': '{"fileName": "file_test", "date": "2025-03-16T05:50:00+0000"}'},
-                                        {'name': 'Mimecast held message: test_subject',
-                                        'occurred': '2025-03-16T16:31:00Z',
-                                        'rawJSON': ('{"id": "123456", "subject": "test_subject", "dateReceived": '
-                                                    '"2025-03-16T16:31:00+0000"}'),
-                                        'dbotMirrorId': '123456'}])
+    set_last_run.assert_called_with({'time': '2025-01-14T17:01:01Z',
+                                     'dedup_held_messages': ['123456'],
+                                     'time_held_messages': '2025-01-14T17:01:00Z'})
+    set_new_incidents.assert_called_with([{'name': 'Mimecast malicious attachment: file_test',
+                                           'occurred': '2025-01-14T17:01:00Z',
+                                           'rawJSON': '{"fileName": "file_test", "date": "2025-01-14T17:01:00+0000"}'},
+                                          {'name': 'Mimecast held message: test_subject',
+                                           'occurred': '2025-01-14T17:01:00Z',
+                                           'rawJSON':('{"id": "123456", "subject": "test_subject", '
+                                                      '"dateReceived": "2025-01-14T17:01:00+0000"}'),
+                                           'dbotMirrorId': '123456'}])
 
 
 def test_fetch_incidents_dedup_held_messages(mocker):
