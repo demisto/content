@@ -574,10 +574,10 @@ def test_create_and_add_relationships_host_type():
         - Successfully creates relationship.
     """
     from FeedMISP import create_and_add_relationships
-    indicator_obj= {
+    indicator_obj = {
         'type': 'Host',
         'value': '111'
-        
+
     }
     galaxy_indicators = [{
         'type': ThreatIntel.ObjectsNames.ATTACK_PATTERN,
