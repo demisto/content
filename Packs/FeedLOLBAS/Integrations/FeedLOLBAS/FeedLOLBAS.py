@@ -16,7 +16,7 @@ DEFAULT_FEED_TAGS = {'LOLBAS'}
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
+    """Client class to interact with the service API test
     """
 
     def __init__(self, base_url: str, verify: bool, proxy: bool,
