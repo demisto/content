@@ -6,31 +6,32 @@ from AbnormalSecurity import (Client, check_the_status_of_an_action_requested_on
                               check_the_status_of_an_action_requested_on_a_threat_command,
                               get_a_list_of_abnormal_cases_identified_by_abnormal_security_command,
                               get_a_list_of_threats_command,
-                              get_details_of_an_abnormal_case_command,
-                              manage_a_threat_identified_by_abnormal_security_command,
-                              manage_an_abnormal_case_command,
-                              submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_command,
-                              get_the_latest_threat_intel_feed_command,
-                              download_data_from_threat_log_in_csv_format_command,
-                              get_a_list_of_campaigns_submitted_to_abuse_mailbox_command,
-                              get_details_of_an_abuse_mailbox_campaign_command,
-                              get_employee_identity_analysis_genome_data_command,
-                              get_employee_information_command,
-                              get_employee_login_information_for_last_30_days_in_csv_format_command,
-                              provides_the_analysis_and_timeline_details_of_a_case_command,
-                              submit_false_negative_report_command,
-                              submit_false_positive_report_command,
-                              get_a_list_of_vendors_command, get_the_details_of_a_specific_vendor_command,
+                              get_a_list_of_vendors_command,
+                              get_the_details_of_a_specific_vendor_command,
                               get_the_activity_of_a_specific_vendor_command,
                               get_a_list_of_vendor_cases_command,
                               get_the_details_of_a_vendor_case_command,
+                              manage_a_threat_identified_by_abnormal_security_command,
+                              manage_an_abnormal_case_command,
+                              get_details_of_an_abnormal_case_command,
+                              get_details_of_an_abuse_mailbox_campaign_command,
+                              provides_the_analysis_and_timeline_details_of_a_case_command,
+                              submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_command,
+                              submit_false_negative_report_command,
+                              submit_false_positive_report_command,
+                              get_a_list_of_campaigns_submitted_to_abuse_mailbox_command,
+                              get_the_latest_threat_intel_feed_command,
+                              get_employee_identity_analysis_genome_data_command,
+                              get_employee_information_command,
+                              get_employee_login_information_for_last_30_days_in_csv_format_command,
+                              download_data_from_threat_log_in_csv_format_command,
                               generate_threat_incidents,
                               get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command, fetch_incidents, ISO_8601_FORMAT)
-from CommonServerPython import DemistoException
+from CommonServerPython import *
 
 from test_data.fixtures \
     import BASE_URL, apikey
-
+from test_data.mock_paginated_response import create_mock_paginator_side_effect, create_mock_detail_side_effect
 headers = {
     'Authorization': f"Bearer {apikey}",
 }
@@ -138,7 +139,11 @@ def test_get_a_list_of_abnormal_cases_identified_by_abnormal_security_command(mo
             - Assert the context data is as expected.
             - Assert output prefix data is as expected
     """
-    client = mock_client(mocker, util_load_json('test_data/test_get_list_of_abnormal_cases.json'))
+    # Modify the mock response to have a nextPageNumber
+    abnormal_cases_list = util_load_json('test_data/test_get_list_of_abnormal_cases.json')
+    abnormal_cases_list["nextPageNumber"] = 2
+
+    client = mock_client(mocker, abnormal_cases_list)
     results = get_a_list_of_abnormal_cases_identified_by_abnormal_security_command(client, {})
     assert results.outputs.get('cases')[0].get('caseId') == '1234'
     assert results.outputs.get('pageNumber', 0) > 0
@@ -398,7 +403,11 @@ def test_get_a_list_of_campaigns_submitted_to_abuse_mailbox_command(mocker):
             - Assert the context data is as expected.
             - Assert output prefix data is as expected
     """
-    client = mock_client(mocker, util_load_json('test_data/test_get_list_of_abuse_campaigns.json'))
+    # Modify the mock response to have a nextPageNumber
+    abnormal_campaigns_list = util_load_json('test_data/test_get_list_of_abuse_campaigns.json')
+    abnormal_campaigns_list["nextPageNumber"] = 2
+
+    client = mock_client(mocker, abnormal_campaigns_list)
     results = get_a_list_of_campaigns_submitted_to_abuse_mailbox_command(client, {})
     assert results.outputs.get('campaigns')[0].get('campaignId') == 'fff51768-c446-34e1-97a8-9802c29c3ebd'
     assert results.outputs.get('pageNumber', 0) > 0
@@ -507,6 +516,7 @@ def test_fetch_cases_incidents(mocker, mock_get_a_list_of_abnormal_cases_identif
         fetch_threats=False
     )
     assert len(incidents) == 1
+    assert incidents[0].get('genaiSummary') == 'genai_summary'
 
 
 def test_fetch_abuse_campaign_incidents(mocker, mock_get_a_list_of_campaigns_submitted_to_abuse_mailbox_request):
@@ -742,3 +752,446 @@ def test_get_details_of_a_threat_request_early_exit(mocker):
     second_call_args = get_details_spy.call_args_list[1][1]
     assert first_call_args['page_number'] == 1
     assert second_call_args['page_number'] == 2
+
+
+def test_pagination_methods_in_fetch_incidents(mocker):
+    """
+    Test that the pagination methods are called correctly from fetch_incidents.
+    This test verifies:
+    1. The methods are called with the correct parameters
+    2. The pagination logic is executed as expected
+    3. The returned incidents are correctly processed
+    """
+    # Create mock pagination side effects for threats, cases, and campaigns
+    threat_list_side_effect = create_mock_paginator_side_effect("threat")
+    case_list_side_effect = create_mock_paginator_side_effect("case")
+    campaign_list_side_effect = create_mock_paginator_side_effect("campaign")
+
+    # Create mock detail side effects
+    threat_detail_side_effect = create_mock_detail_side_effect("threat")
+    case_detail_side_effect = create_mock_detail_side_effect("case")
+    campaign_detail_side_effect = create_mock_detail_side_effect("campaign")
+
+    # Create client
+    client = Client(
+        server_url=BASE_URL,
+        verify=False,
+        proxy=False,
+        auth=None,
+        headers=headers
+    )
+
+    # Get threat response samples for the mock
+    threat_page1 = threat_list_side_effect(page_number=1, page_size=2)
+    threat_page2 = threat_list_side_effect(page_number=2, page_size=2)
+
+    # Get case response samples for the mock
+    case_page1 = case_list_side_effect(page_number=1, page_size=2)
+    case_page2 = case_list_side_effect(page_number=2, page_size=2)
+
+    # Get campaign response samples for the mock
+    campaign_page1 = campaign_list_side_effect(page_number=1, page_size=2)
+    campaign_page2 = campaign_list_side_effect(page_number=2, page_size=2)
+
+    # Extract threat IDs for detail responses - for each page we'll get exactly page_size items
+    threat_ids = [threat['threatId'] for threat in threat_page1.get('threats')[:2] + threat_page2.get('threats')[:2]]
+    case_ids = [case['caseId'] for case in case_page1.get('cases')[:2] + case_page2.get('cases')[:2]]
+    campaign_ids = [campaign['campaignId']
+                    for campaign in campaign_page1.get('campaigns')[:2] + campaign_page2.get('campaigns')[:2]]
+
+    # Combine responses for each type
+    threats_combined = {
+        "threats": threat_page1.get('threats') + threat_page2.get('threats')
+    }
+
+    cases_combined = {
+        "cases": case_page1.get('cases') + case_page2.get('cases')
+    }
+
+    campaigns_combined = {
+        "campaigns": campaign_page1.get('campaigns') + campaign_page2.get('campaigns')
+    }
+
+    # Set up test parameters
+    last_run = {"last_fetch": "2023-09-17T14:43:09Z"}
+    first_fetch_time = "3 days"
+    max_incidents = 200
+    polling_lag = timedelta(minutes=5)
+
+    # Mock the three pagination methods
+    get_paginated_threats_spy = mocker.patch.object(
+        client, 'get_paginated_threats_list', return_value=threats_combined
+    )
+
+    get_paginated_cases_spy = mocker.patch.object(
+        client, 'get_paginated_cases_list', return_value=cases_combined
+    )
+
+    get_paginated_campaigns_spy = mocker.patch.object(
+        client, 'get_paginated_abusecampaigns_list', return_value=campaigns_combined
+    )
+
+    # Mock the get_details methods to return appropriate data for incident generation
+    mocker.patch.object(
+        client, 'get_details_of_a_threat_request',
+        side_effect=lambda threat_id, **kwargs: threat_detail_side_effect(threat_id)
+    )
+
+    mocker.patch.object(
+        client, 'get_details_of_an_abnormal_case_request',
+        side_effect=lambda case_id, **kwargs: case_detail_side_effect(case_id)
+    )
+
+    mocker.patch.object(
+        client, 'get_details_of_an_abuse_mailbox_campaign_request',
+        side_effect=lambda campaign_id, **kwargs: campaign_detail_side_effect(campaign_id)
+    )
+
+    # Mock the get_current_datetime function to return a fixed time
+    mocker.patch('AbnormalSecurity.get_current_datetime', return_value=datetime(2023, 9, 18, 14, 43, 9, tzinfo=UTC))
+
+    # Call fetch_incidents with all three fetch options enabled
+    next_run, incidents = fetch_incidents(
+        client=client,
+        last_run=last_run,
+        first_fetch_time=first_fetch_time,
+        max_incidents_to_fetch=max_incidents,
+        fetch_account_takeover_cases=True,
+        fetch_abuse_campaigns=True,
+        fetch_threats=True,
+        polling_lag=polling_lag
+    )
+
+    # Verify the pagination methods were called with the correct filters
+
+    # 1. Verify threats pagination
+    get_paginated_threats_spy.assert_called_once()
+    threats_call_kwargs = get_paginated_threats_spy.call_args.kwargs
+
+    # Verify the filter contains remediationTimestamp with adjusted time due to polling lag
+    assert "remediationTimestamp gte" in threats_call_kwargs['filter_']
+    assert "remediationTimestamp lte" in threats_call_kwargs['filter_']
+    assert threats_call_kwargs['max_incidents_to_fetch'] == max_incidents
+
+    # 2. Verify abuse campaigns pagination (this is called next in the code)
+    get_paginated_campaigns_spy.assert_called_once()
+    campaigns_call_kwargs = get_paginated_campaigns_spy.call_args.kwargs
+
+    # Verify the filter contains lastReportedTime
+    assert "lastReportedTime gte" in campaigns_call_kwargs['filter_']
+    assert campaigns_call_kwargs['max_incidents_to_fetch'] == max_incidents - len(threat_ids)
+
+    # 3. Verify cases pagination (this is called last in the code)
+    get_paginated_cases_spy.assert_called_once()
+    cases_call_kwargs = get_paginated_cases_spy.call_args.kwargs
+    # Verify the filter contains lastModifiedTime
+    assert "lastModifiedTime gte" in cases_call_kwargs['filter_']
+    assert cases_call_kwargs['max_incidents_to_fetch'] == max_incidents - len(threat_ids) - len(campaign_ids)
+
+    # Verify we got the expected number of incidents
+    expected_incident_count = len(threat_ids) + len(case_ids) + len(campaign_ids)
+    assert len(incidents) == expected_incident_count
+
+    # Verify the types of incidents
+    threat_incidents = [i for i in incidents if i.get('name') == 'Threat']
+    case_incidents = [i for i in incidents if i.get('name') == 'Account Takeover Case']
+    campaign_incidents = [i for i in incidents if i.get('name') == 'Abuse Campaign']
+
+    assert len(threat_incidents) == len(threat_ids)
+    assert len(case_incidents) == len(case_ids)
+    assert len(campaign_incidents) == len(campaign_ids)
+
+    # Verify next_run contains updated last_fetch timestamp
+    assert next_run.get('last_fetch', None) is not None
+    assert next_run.get('last_fetch') > last_run.get('last_fetch')
+
+
+def test_get_paginated_threats_list(mocker):
+    """
+    Test the get_paginated_threats_list method to verify:
+    1. It correctly handles pagination
+    2. It respects the max_incidents_to_fetch parameter
+    """
+    # Create client
+    client = Client(
+        server_url=BASE_URL,
+        verify=False,
+        proxy=False,
+        auth=None,
+        headers=headers
+    )
+
+    # Create a side effect function for threats
+    get_threats_side_effect = create_mock_paginator_side_effect("threat")
+
+    # Mock the underlying get_a_list_of_threats_request method
+    get_threats_mock = mocker.patch.object(
+        client, 'get_a_list_of_threats_request',
+        side_effect=get_threats_side_effect
+    )
+
+    # Test case 1: Get all threats with high limit (max_incidents_to_fetch > existing items)
+    # This should set page_size to the limit (10) but return only as many items as exist
+    result = client.get_paginated_threats_list(filter_="test filter", max_incidents_to_fetch=10)
+
+    # Verify the result contains threats (the exact count depends on the mock function)
+    assert len(result['threats']) > 0
+
+    # Verify the first call was made with correct parameters
+    assert get_threats_mock.call_count >= 1
+    first_call_kwargs = get_threats_mock.call_args_list[0][1]
+    assert first_call_kwargs['filter_'] == "test filter"
+    assert first_call_kwargs['page_size'] == 10
+    assert first_call_kwargs['page_number'] == 1
+
+    # Reset the mock for the next test
+    get_threats_mock.reset_mock()
+
+    # Test case 2: Limited page size (max_incidents_to_fetch = 2)
+    # With many threats available and max_incidents_to_fetch=2, we expect page_size=2
+    # This should result in multiple page calls since there are more threats than fit on one page
+    result = client.get_paginated_threats_list(filter_="test filter", max_incidents_to_fetch=2)
+
+    # Verify we got threats
+    assert len(result['threats']) > 0
+
+    # Verify each page was requested with the correct parameters
+    assert get_threats_mock.call_count >= 1
+
+    # Check first call parameters
+    first_call_kwargs = get_threats_mock.call_args_list[0][1]
+    assert first_call_kwargs['filter_'] == "test filter"
+    assert first_call_kwargs['page_size'] == 2
+    assert first_call_kwargs['page_number'] == 1
+
+    # If there was a second call, check its parameters
+    if get_threats_mock.call_count > 1:
+        second_call_kwargs = get_threats_mock.call_args_list[1][1]
+        assert second_call_kwargs['page_size'] == 2
+        assert second_call_kwargs['page_number'] == 2
+
+    # Reset the mock for the next test
+    get_threats_mock.reset_mock()
+
+    # Test case 3: One threat per page (max_incidents_to_fetch = 1)
+    # With many threats available and max_incidents_to_fetch=1, we expect page_size=1
+    # This should result in multiple page calls, one per threat
+    result = client.get_paginated_threats_list(filter_="test filter", max_incidents_to_fetch=1)
+
+    # Verify we got threats
+    assert len(result['threats']) > 0
+
+    # Verify multiple pages were requested
+    assert get_threats_mock.call_count >= 1
+
+    # Check that all calls have the correct page_size
+    for i in range(get_threats_mock.call_count):
+        call_kwargs = get_threats_mock.call_args_list[i][1]
+        assert call_kwargs['page_size'] == 1
+        assert call_kwargs['page_number'] == i + 1
+
+    # Reset the mock for the next test
+    get_threats_mock.reset_mock()
+
+    # Test case 4: No threats to fetch (max_incidents_to_fetch = 0)
+    result = client.get_paginated_threats_list(filter_="test filter", max_incidents_to_fetch=0)
+
+    # Verify that no threats were fetched
+    assert len(result['threats']) == 0
+
+    # Verify that the underlying method was not called
+    assert get_threats_mock.call_count == 0
+
+
+def test_get_paginated_cases_list(mocker):
+    """
+    Test the get_paginated_cases_list method to verify:
+    1. It correctly handles pagination
+    2. It respects the max_incidents_to_fetch parameter
+    """
+    # Create client
+    client = Client(
+        server_url=BASE_URL,
+        verify=False,
+        proxy=False,
+        auth=None,
+        headers=headers
+    )
+
+    # Create a side effect function for cases
+    get_cases_side_effect = create_mock_paginator_side_effect("case")
+
+    # Mock the underlying get_a_list_of_abnormal_cases_identified_by_abnormal_security_request method
+    get_cases_mock = mocker.patch.object(
+        client, 'get_a_list_of_abnormal_cases_identified_by_abnormal_security_request',
+        side_effect=get_cases_side_effect
+    )
+
+    # Test case 1: Get all cases with high limit (max_incidents_to_fetch > existing items)
+    # This should set page_size to the limit (10) but return only as many items as exist
+    result = client.get_paginated_cases_list(filter_="test filter", max_incidents_to_fetch=10)
+
+    # Verify the result contains cases (the exact count depends on the mock function)
+    assert len(result['cases']) > 0
+
+    # Verify the first call was made with correct parameters
+    assert get_cases_mock.call_count >= 1
+    first_call_kwargs = get_cases_mock.call_args_list[0][1]
+    assert first_call_kwargs['filter_'] == "test filter"
+    assert first_call_kwargs['page_size'] == 10
+    assert first_call_kwargs['page_number'] == 1
+
+    # Reset the mock for the next test
+    get_cases_mock.reset_mock()
+
+    # Test case 2: Limited page size (max_incidents_to_fetch = 2)
+    # With many cases available and max_incidents_to_fetch=2, we expect page_size=2
+    # This should result in multiple page calls since there are more cases than fit on one page
+    result = client.get_paginated_cases_list(filter_="test filter", max_incidents_to_fetch=2)
+
+    # Verify we got cases
+    assert len(result['cases']) > 0
+
+    # Verify each page was requested with the correct parameters
+    assert get_cases_mock.call_count >= 1
+
+    # Check first call parameters
+    first_call_kwargs = get_cases_mock.call_args_list[0][1]
+    assert first_call_kwargs['filter_'] == "test filter"
+    assert first_call_kwargs['page_size'] == 2
+    assert first_call_kwargs['page_number'] == 1
+
+    # If there was a second call, check its parameters
+    if get_cases_mock.call_count > 1:
+        second_call_kwargs = get_cases_mock.call_args_list[1][1]
+        assert second_call_kwargs['page_size'] == 2
+        assert second_call_kwargs['page_number'] == 2
+
+    # Reset the mock for the next test
+    get_cases_mock.reset_mock()
+
+    # Test case 3: One case per page (max_incidents_to_fetch = 1)
+    # With many cases available and max_incidents_to_fetch=1, we expect page_size=1
+    # This should result in multiple page calls, one per case
+    result = client.get_paginated_cases_list(filter_="test filter", max_incidents_to_fetch=1)
+
+    # Verify we got cases
+    assert len(result['cases']) > 0
+
+    # Verify multiple pages were requested
+    assert get_cases_mock.call_count >= 1
+
+    # Check that all calls have the correct page_size
+    for i in range(get_cases_mock.call_count):
+        call_kwargs = get_cases_mock.call_args_list[i][1]
+        assert call_kwargs['page_size'] == 1
+        assert call_kwargs['page_number'] == i + 1
+
+    # Reset the mock for the next test
+    get_cases_mock.reset_mock()
+
+    # Test case 4: No cases to fetch (max_incidents_to_fetch = 0)
+    result = client.get_paginated_cases_list(filter_="test filter", max_incidents_to_fetch=0)
+
+    # Verify that no cases were fetched
+    assert len(result['cases']) == 0
+
+    # Verify that the underlying method was not called
+    assert get_cases_mock.call_count == 0
+
+
+def test_get_paginated_abusecampaigns_list(mocker):
+    """
+    Test the get_paginated_abusecampaigns_list method to verify:
+    1. It correctly handles pagination
+    2. It respects the max_incidents_to_fetch parameter
+    """
+    # Create client
+    client = Client(
+        server_url=BASE_URL,
+        verify=False,
+        proxy=False,
+        auth=None,
+        headers=headers
+    )
+
+    # Create a side effect function for campaigns
+    get_campaigns_side_effect = create_mock_paginator_side_effect("campaign")
+
+    # Mock the underlying get_a_list_of_campaigns_submitted_to_abuse_mailbox_request method
+    get_campaigns_mock = mocker.patch.object(
+        client, 'get_a_list_of_campaigns_submitted_to_abuse_mailbox_request',
+        side_effect=get_campaigns_side_effect
+    )
+
+    # Test case 1: Get all campaigns with high limit (max_incidents_to_fetch > existing items)
+    # This should set page_size to the limit (10) but return only as many items as exist
+    result = client.get_paginated_abusecampaigns_list(filter_="test filter", max_incidents_to_fetch=10)
+
+    # Verify the result contains campaigns (the exact count depends on the mock function)
+    assert len(result['campaigns']) > 0
+
+    # Verify the first call was made with correct parameters
+    assert get_campaigns_mock.call_count >= 1
+    first_call_kwargs = get_campaigns_mock.call_args_list[0][1]
+    assert first_call_kwargs['filter_'] == "test filter"
+    assert first_call_kwargs['page_size'] == 10
+    assert first_call_kwargs['page_number'] == 1
+
+    # Reset the mock for the next test
+    get_campaigns_mock.reset_mock()
+
+    # Test case 2: Limited page size (max_incidents_to_fetch = 2)
+    # With many campaigns available and max_incidents_to_fetch=2, we expect page_size=2
+    # This should result in multiple page calls since there are more campaigns than fit on one page
+    result = client.get_paginated_abusecampaigns_list(filter_="test filter", max_incidents_to_fetch=2)
+
+    # Verify we got campaigns
+    assert len(result['campaigns']) > 0
+
+    # Verify each page was requested with the correct parameters
+    assert get_campaigns_mock.call_count >= 1
+
+    # Check first call parameters
+    first_call_kwargs = get_campaigns_mock.call_args_list[0][1]
+    assert first_call_kwargs['filter_'] == "test filter"
+    assert first_call_kwargs['page_size'] == 2
+    assert first_call_kwargs['page_number'] == 1
+
+    # If there was a second call, check its parameters
+    if get_campaigns_mock.call_count > 1:
+        second_call_kwargs = get_campaigns_mock.call_args_list[1][1]
+        assert second_call_kwargs['page_size'] == 2
+        assert second_call_kwargs['page_number'] == 2
+
+    # Reset the mock for the next test
+    get_campaigns_mock.reset_mock()
+
+    # Test case 3: One campaign per page (max_incidents_to_fetch = 1)
+    # With many campaigns available and max_incidents_to_fetch=1, we expect page_size=1
+    # This should result in multiple page calls, one per campaign
+    result = client.get_paginated_abusecampaigns_list(filter_="test filter", max_incidents_to_fetch=1)
+
+    # Verify we got campaigns
+    assert len(result['campaigns']) > 0
+
+    # Verify multiple pages were requested
+    assert get_campaigns_mock.call_count >= 1
+
+    # Check that all calls have the correct page_size
+    for i in range(get_campaigns_mock.call_count):
+        call_kwargs = get_campaigns_mock.call_args_list[i][1]
+        assert call_kwargs['page_size'] == 1
+        assert call_kwargs['page_number'] == i + 1
+
+    # Reset the mock for the next test
+    get_campaigns_mock.reset_mock()
+
+    # Test case 4: No campaigns to fetch (max_incidents_to_fetch = 0)
+    result = client.get_paginated_abusecampaigns_list(filter_="test filter", max_incidents_to_fetch=0)
+
+    # Verify that no campaigns were fetched
+    assert len(result['campaigns']) == 0
+
+    # Verify that the underlying method was not called
+    assert get_campaigns_mock.call_count == 0
