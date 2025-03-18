@@ -86,6 +86,7 @@ alter
 	xdm.source.user.username = get_properties_log_user_username,
 	xdm.source.user.identifier = get_properties_log_user_uid,
 	xdm.source.user.groups = get_properties_log_user_groups,
+    xdm.source.ipv4 = arrayindex(check_properties_log_sourceIPs_ipv4, 0),
 	xdm.source.host.ipv4_addresses = arraymap(check_properties_log_sourceIPs_ipv4, if(
         incidr("@element", "10.0.0.0/8")
         or incidr("@element", "172.16.0.0/12")
@@ -104,6 +105,7 @@ alter
         or incidr("@element", "100.64.0.0/10"),
         null, "@element")
     ),
+    xdm.source.ipv6 = arrayindex(check_properties_log_sourceIPs_ipv6, 0),
     xdm.source.host.ipv6_addresses = check_properties_log_sourceIPs_ipv6,
 	xdm.source.user_agent = get_properties_log_userAgent,
 	xdm.target.resource.name = coalesce(get_properties_log_responseStatus_name, get_properties_log_objectRef_name),
