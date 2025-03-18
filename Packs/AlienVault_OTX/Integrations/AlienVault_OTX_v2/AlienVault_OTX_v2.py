@@ -107,7 +107,7 @@ class Client(BaseClient):
             if section == 'url':
                 result =  404
         except Exception as e:
-            demisto.debug("has an exception which is not of type DemistoException")
+            demisto.debug("An exception was caught, raising an error.")
             raise e
         return result
 
