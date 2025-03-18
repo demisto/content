@@ -1,17 +1,18 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 """Implementation file for IllumioCore Integration."""
 import json
-from typing import Any
-from enum import Enum
 from datetime import datetime
+from enum import Enum
+from typing import Any
+
 import urllib3
-from illumio import PolicyComputeEngine, convert_draft_href_to_active, IllumioException, Workload
+from illumio import IllumioException, PolicyComputeEngine, Workload, convert_draft_href_to_active
 from illumio.explorer import TrafficQuery
 from illumio.policyobjects import ServiceBinding, ServicePort, VirtualService
 from illumio.rules import EnforcementBoundary, Rule
-from illumio.util import (EnforcementMode, IllumioEncoder, Reference,
-                          convert_protocol)
+from illumio.util import EnforcementMode, IllumioEncoder, Reference, convert_protocol
 
 from CommonServerUserPython import *  # noqa
 
@@ -53,9 +54,7 @@ class InvalidValueError(Exception):
 
     def __init__(self, arg_name="", arg_value="", arg_list=[], message=""):
         if not message:
-            message = "{} is an invalid value for {}. Possible values are: {}".format(
-                arg_value, arg_name, arg_list
-            )
+            message = f"{arg_value} is an invalid value for {arg_name}. Possible values are: {arg_list}"
         super().__init__(message)
 
 
@@ -76,9 +75,7 @@ def validate_required_parameters(**kwargs) -> None:
     """
     for key, value in kwargs.items():
         if not value and value is not False:
-            raise ValueError(
-                f"{key} is a required parameter. Please provide correct value."
-            )
+            raise ValueError(f"{key} is a required parameter. Please provide correct value.")
 
 
 def trim_spaces_from_args(args: dict) -> dict:
@@ -123,14 +120,10 @@ def generate_change_description_for_object_provision(hrefs: list[str]) -> str:
     Returns:
         str: A string with the current time in UTC.
     """
-    return "XSOAR - {}\nProvisioning following objects:\n{}".format(
-        datetime.utcnow().isoformat(), ", ".join(hrefs)
-    )
+    return "XSOAR - {}\nProvisioning following objects:\n{}".format(datetime.utcnow().isoformat(), ", ".join(hrefs))
 
 
-def validate_traffic_analysis_arguments(
-        port: Optional[int], policy_decisions: list, protocol: str
-) -> None:
+def validate_traffic_analysis_arguments(port: Optional[int], policy_decisions: list, protocol: str) -> None:
     """Validate arguments for traffic-analysis command.
 
     Args:
@@ -139,17 +132,11 @@ def validate_traffic_analysis_arguments(
         protocol: Communication protocol.
     """
     if port < TRAFFIC_MIN_PORT or port > MAX_PORT:  # type: ignore
-        raise InvalidValueError(
-            message="{} invalid value for port. Value must be in 1 to 65535.".format(
-                port
-            )
-        )
+        raise InvalidValueError(message=f"{port} invalid value for port. Value must be in 1 to 65535.")
 
     for decision in policy_decisions:
         if decision not in VALID_POLICY_DECISIONS:
-            raise InvalidValueError(
-                "policy_decisions", decision, VALID_POLICY_DECISIONS
-            )
+            raise InvalidValueError("policy_decisions", decision, VALID_POLICY_DECISIONS)
 
     if protocol not in VALID_PROTOCOLS:
         raise InvalidValueError("protocol", protocol, VALID_PROTOCOLS)
@@ -163,22 +150,18 @@ def validate_virtual_service_arguments(port: Optional[int], protocol: str) -> No
         protocol: Protocol name.
     """
     if port != -1 and (port > MAX_PORT or port < MIN_PORT):  # type: ignore
-        raise InvalidValueError(
-            message="{} is an invalid value for port. Value must be in 0 to 65535 or -1.".format(
-                port
-            )
-        )
+        raise InvalidValueError(message=f"{port} is an invalid value for port. Value must be in 0 to 65535 or -1.")
 
     if protocol not in VALID_PROTOCOLS:
         raise InvalidValueError("protocol", protocol, VALID_PROTOCOLS)
 
 
 def validate_workloads_list_arguments(
-        max_results: Optional[int],
-        online: Optional[str],
-        managed: Optional[str],
-        enforcement_mode: Optional[str],
-        visibility_level: Optional[str],
+    max_results: Optional[int],
+    online: Optional[str],
+    managed: Optional[str],
+    enforcement_mode: Optional[str],
+    visibility_level: Optional[str],
 ) -> None:
     """Validate arguments for workloads-list command.
 
@@ -191,9 +174,7 @@ def validate_workloads_list_arguments(
     """
     if isinstance(max_results, int) and (max_results < 1):  # type: ignore
         raise InvalidValueError(
-            message="{} is an invalid value for max_results. Max results must be positive integer.".format(
-                max_results
-            )
+            message=f"{max_results} is an invalid value for max_results. Max results must be positive integer."
         )
 
     if online:
@@ -203,19 +184,13 @@ def validate_workloads_list_arguments(
         argToBoolean(managed)
 
     if enforcement_mode and (enforcement_mode not in SUPPORTED_ENFORCEMENT_MODES):
-        raise InvalidValueError(
-            "enforcement_mode", enforcement_mode, SUPPORTED_ENFORCEMENT_MODES
-        )
+        raise InvalidValueError("enforcement_mode", enforcement_mode, SUPPORTED_ENFORCEMENT_MODES)
 
     if visibility_level and (visibility_level not in SUPPORTED_VISIBILITY_LEVEL):
-        raise InvalidValueError(
-            "visibility_level", visibility_level, SUPPORTED_VISIBILITY_LEVEL
-        )
+        raise InvalidValueError("visibility_level", visibility_level, SUPPORTED_VISIBILITY_LEVEL)
 
 
-def validate_enforcement_boundary_create_arguments(
-        port: Optional[int], protocol: str
-) -> None:
+def validate_enforcement_boundary_create_arguments(port: Optional[int], protocol: str) -> None:
     """Validate arguments for enforcement-boundary-create command.
 
     Args:
@@ -223,11 +198,7 @@ def validate_enforcement_boundary_create_arguments(
         protocol: Protocol name.
     """
     if port > MAX_PORT or port < MIN_PORT:  # type: ignore
-        raise InvalidValueError(
-            message="{} is an invalid value for port. Value must be in 0 to 65535.".format(
-                port
-            )
-        )
+        raise InvalidValueError(message=f"{port} is an invalid value for port. Value must be in 0 to 65535.")
 
     if protocol not in VALID_PROTOCOLS:
         raise InvalidValueError("protocol", protocol, VALID_PROTOCOLS)
@@ -242,18 +213,14 @@ def validate_ip_lists_get_arguments(max_results: Optional[int], ip_address: Opti
     """
     if isinstance(max_results, int) and (max_results < 1):  # type: ignore
         raise InvalidValueError(
-            message="{} is an invalid value for max_results. Max results must be positive integer.".format(
-                max_results
-            )
+            message=f"{max_results} is an invalid value for max_results. Max results must be positive integer."
         )
 
     if ip_address and not is_ipv6_valid(ip_address):
         try:
             socket.inet_aton(ip_address)  # type: ignore
         except:  # noqa
-            raise InvalidValueError(
-                message=f"{ip_address} is an invalid value for ip_address."
-            )
+            raise InvalidValueError(message=f"{ip_address} is an invalid value for ip_address.")
 
 
 def prepare_traffic_analysis_output(response: list) -> str:
@@ -268,20 +235,28 @@ def prepare_traffic_analysis_output(response: list) -> str:
     hr_output = []
 
     for traffic in response:
-        hr_output.append({
-            "Source IP": traffic.get("src", {}).get("ip"),
-            "Destination IP": traffic.get("dst", {}).get("ip"),
-            "Destination Workload Hostname": traffic.get("dst", {}).get("workload", {}).get("hostname"),
-            "Service Port": traffic.get("service", {}).get("port"),
-            "Service Protocol": Protocol(traffic.get("service").get("proto")).name,
-            "Policy Decision": traffic.get("policy_decision"),
-            "State": traffic.get("state"),
-            "Flow Direction": traffic.get("flow_direction"),
-            "First Detected": arg_to_datetime(traffic["timestamp_range"]["first_detected"]).strftime(  # type: ignore
-                HR_DATE_FORMAT) if traffic.get("timestamp_range", {}).get("first_detected") else None,
-            "Last Detected": arg_to_datetime(traffic["timestamp_range"]["last_detected"]).strftime(  # type: ignore
-                HR_DATE_FORMAT) if traffic.get("timestamp_range", {}).get("last_detected") else None
-        })
+        hr_output.append(
+            {
+                "Source IP": traffic.get("src", {}).get("ip"),
+                "Destination IP": traffic.get("dst", {}).get("ip"),
+                "Destination Workload Hostname": traffic.get("dst", {}).get("workload", {}).get("hostname"),
+                "Service Port": traffic.get("service", {}).get("port"),
+                "Service Protocol": Protocol(traffic.get("service").get("proto")).name,
+                "Policy Decision": traffic.get("policy_decision"),
+                "State": traffic.get("state"),
+                "Flow Direction": traffic.get("flow_direction"),
+                "First Detected": arg_to_datetime(traffic["timestamp_range"]["first_detected"]).strftime(  # type: ignore
+                    HR_DATE_FORMAT
+                )
+                if traffic.get("timestamp_range", {}).get("first_detected")
+                else None,
+                "Last Detected": arg_to_datetime(traffic["timestamp_range"]["last_detected"]).strftime(  # type: ignore
+                    HR_DATE_FORMAT
+                )
+                if traffic.get("timestamp_range", {}).get("last_detected")
+                else None,
+            }
+        )
 
     headers = list(hr_output[0].keys()) if hr_output else []
 
@@ -299,17 +274,25 @@ def prepare_virtual_service_output(response: dict) -> str:
     """
     hr_output = []
     for service_port in response.get("service_ports", []):
-        hr_output.append({
-            "Virtual Service HREF": response.get("href"),
-            "Created At": arg_to_datetime(response["created_at"]).strftime(  # type: ignore
-                HR_DATE_FORMAT) if response.get("created_at") else None,
-            "Updated At": arg_to_datetime(response["updated_at"]).strftime(  # type: ignore
-                HR_DATE_FORMAT) if response.get("updated_at") else None,
-            "Name": response.get("name"),
-            "Description": response.get("description"),
-            "Service Port": service_port.get("port", "all ports have been selected"),
-            "Service Protocol": Protocol(service_port.get("proto")).name,
-        })
+        hr_output.append(
+            {
+                "Virtual Service HREF": response.get("href"),
+                "Created At": arg_to_datetime(response["created_at"]).strftime(  # type: ignore
+                    HR_DATE_FORMAT
+                )
+                if response.get("created_at")
+                else None,
+                "Updated At": arg_to_datetime(response["updated_at"]).strftime(  # type: ignore
+                    HR_DATE_FORMAT
+                )
+                if response.get("updated_at")
+                else None,
+                "Name": response.get("name"),
+                "Description": response.get("description"),
+                "Service Port": service_port.get("port", "all ports have been selected"),
+                "Service Protocol": Protocol(service_port.get("proto")).name,
+            }
+        )
 
     headers = list(hr_output[0].keys()) if hr_output else []
 
@@ -349,21 +332,23 @@ def prepare_object_provision_output(response: dict[str, Any]) -> str:
     Returns:
         str: Human-readable markdown string.
     """
-    created_at = response.get('created_at')
+    created_at = response.get("created_at")
     if created_at:
         created_at = arg_to_datetime(created_at).strftime(HR_DATE_FORMAT)  # type: ignore
 
     hr_output = {
         "Provision Object URI": response.get("href"),
         "Commit Message": response.get("commit_message"),
-        "Created At": created_at
+        "Created At": created_at,
     }
 
-    return tableToMarkdown("Provision Objects:",
-                           hr_output,
-                           headers=["Provision Object URI", "Commit Message", "Created At"],
-                           metadata="Provision is completed for {}".format(response.get('href')),
-                           removeNull=True)
+    return tableToMarkdown(
+        "Provision Objects:",
+        hr_output,
+        headers=["Provision Object URI", "Commit Message", "Created At"],
+        metadata="Provision is completed for {}".format(response.get("href")),
+        removeNull=True,
+    )
 
 
 def prepare_workload_get_output(response: dict) -> str:
@@ -382,9 +367,15 @@ def prepare_workload_get_output(response: dict) -> str:
         "Name": response.get("name"),
         "Description": response.get("description"),
         "Created At": arg_to_datetime(response["created_at"]).strftime(  # type: ignore
-            HR_DATE_FORMAT) if response.get("created_at") else None,
+            HR_DATE_FORMAT
+        )
+        if response.get("created_at")
+        else None,
         "Updated At": arg_to_datetime(response["updated_at"]).strftime(  # type: ignore
-            HR_DATE_FORMAT) if response.get("updated_at") else None,
+            HR_DATE_FORMAT
+        )
+        if response.get("updated_at")
+        else None,
         "Hostname": response.get("hostname"),
     }
 
@@ -413,9 +404,15 @@ def prepare_workloads_list_output(response: list) -> str:
                 "Visibility Level": workload.get("visibility_level"),
                 "IP Address": workload.get("public_ip"),
                 "Created At": arg_to_datetime(workload["created_at"]).strftime(  # type: ignore
-                    HR_DATE_FORMAT) if workload.get("created_at") else None,
+                    HR_DATE_FORMAT
+                )
+                if workload.get("created_at")
+                else None,
                 "Updated At": arg_to_datetime(workload["updated_at"]).strftime(  # type: ignore
-                    HR_DATE_FORMAT) if workload.get("updated_at") else None,
+                    HR_DATE_FORMAT
+                )
+                if workload.get("updated_at")
+                else None,
             }
         )
 
@@ -440,9 +437,7 @@ def prepare_enforcement_boundary_create_output(response: dict) -> str:
         if "href" in ingress_service:
             ingress_service_formatted = ingress_service.get("href")
         elif "port" in ingress_service and "proto" in ingress_service:
-            ingress_service_formatted = "{}-{}".format(
-                ingress_service.get("port"), Protocol(ingress_service.get("proto")).name
-            )
+            ingress_service_formatted = "{}-{}".format(ingress_service.get("port"), Protocol(ingress_service.get("proto")).name)
 
         if ingress_service_formatted:
             ingress_services.append(ingress_service_formatted)
@@ -451,9 +446,15 @@ def prepare_enforcement_boundary_create_output(response: dict) -> str:
         "Enforcement Boundary HREF": response.get("href"),
         "Name": response.get("name"),
         "Created At": arg_to_datetime(response["created_at"]).strftime(  # type: ignore
-            HR_DATE_FORMAT) if response.get("created_at") else None,
+            HR_DATE_FORMAT
+        )
+        if response.get("created_at")
+        else None,
         "Updated At": arg_to_datetime(response["updated_at"]).strftime(  # type: ignore
-            HR_DATE_FORMAT) if response.get("updated_at") else None,
+            HR_DATE_FORMAT
+        )
+        if response.get("updated_at")
+        else None,
         "Ingress Services": ingress_services,
     }
 
@@ -483,8 +484,10 @@ def prepare_update_enforcement_mode_output(response: list):
             successful_update_count += 1
             hr_outputs.append({"Workload HREF": resp.get("href"), "Status": "Updated"})
 
-    title = "Workload Enforcement Update:\n#### Successfully updated enforcement " \
-            "mode for {} workloads, {} workloads failed to update".format(successful_update_count, failed_update_count)
+    title = (
+        "Workload Enforcement Update:\n#### Successfully updated enforcement "
+        f"mode for {successful_update_count} workloads, {failed_update_count} workloads failed to update"
+    )
 
     return tableToMarkdown(title, hr_outputs, headers=headers, removeNull=True)
 
@@ -502,13 +505,22 @@ def ip_list_human_readable(response: dict) -> dict:
         "IP List HREF": response.get("href", ""),
         "Name": response.get("name", ""),
         "Created At": arg_to_datetime(response.get("created_at")).strftime(  # type: ignore
-            HR_DATE_FORMAT) if response.get("created_at") else None,
+            HR_DATE_FORMAT
+        )
+        if response.get("created_at")
+        else None,
         "Updated At": arg_to_datetime(response.get("updated_at")).strftime(  # type: ignore
-            HR_DATE_FORMAT) if response.get("updated_at") else None,
+            HR_DATE_FORMAT
+        )
+        if response.get("updated_at")
+        else None,
         "IP Ranges": ", ".join(
-            [ip_range.get("from_ip") + (" - " + ip_range["to_ip"] if ip_range.get("to_ip") else "") for ip_range in
-             response.get("ip_ranges", [])]),
-        "FQDNs": ", ".join([fqdn_rec["fqdn"] for fqdn_rec in response.get("fqdns", [])])
+            [
+                ip_range.get("from_ip") + (" - " + ip_range["to_ip"] if ip_range.get("to_ip") else "")
+                for ip_range in response.get("ip_ranges", [])
+            ]
+        ),
+        "FQDNs": ", ".join([fqdn_rec["fqdn"] for fqdn_rec in response.get("fqdns", [])]),
     }
 
     return hr_output
@@ -560,19 +572,24 @@ def prepare_ruleset_create_output(response: dict, name: Optional[Any]):
         "Ruleset HREF": response.get("href"),
         "Name": name,
         "Created At": arg_to_datetime(response["created_at"]).strftime(  # type: ignore
-            HR_DATE_FORMAT) if response.get("created_at") else None,
+            HR_DATE_FORMAT
+        )
+        if response.get("created_at")
+        else None,
         "Updated At": arg_to_datetime(response["updated_at"]).strftime(  # type: ignore
-            HR_DATE_FORMAT) if response.get("updated_at") else None,
+            HR_DATE_FORMAT
+        )
+        if response.get("updated_at")
+        else None,
         "Enabled": response.get("enabled"),
         "Rules": response.get("rules"),
-        "Caps": response.get("caps")
+        "Caps": response.get("caps"),
     }
 
     headers = list(hr_output.keys())
     title = f"Ruleset {name} has been created successfully."
 
-    return tableToMarkdown(title, hr_output, headers=headers,
-                           removeNull=True)
+    return tableToMarkdown(title, hr_output, headers=headers, removeNull=True)
 
 
 def prepare_rule_create_output(response: dict) -> str:
@@ -585,18 +602,25 @@ def prepare_rule_create_output(response: dict) -> str:
         markdown string to be displayed in the war room.
     """
     hr_output = {
-        "Rule HREF": response.get("href"), "Description": response.get("description"),
+        "Rule HREF": response.get("href"),
+        "Description": response.get("description"),
         "Created At": arg_to_datetime(response["created_at"]).strftime(  # type: ignore
-            HR_DATE_FORMAT) if response.get("created_at") else None,
+            HR_DATE_FORMAT
+        )
+        if response.get("created_at")
+        else None,
         "Updated At": arg_to_datetime(response["updated_at"]).strftime(  # type: ignore
-            HR_DATE_FORMAT) if response.get("updated_at") else None,
+            HR_DATE_FORMAT
+        )
+        if response.get("updated_at")
+        else None,
         "Enabled": response.get("enabled"),
         "Network Type": response.get("network_type"),
         "Ingress Services": ", ".join([resp.get("href") for resp in response.get("ingress_services", [])]),
         "Providers": extract_values_from_dictionary(response.get("providers")),  # type: ignore
         "Consumers": extract_values_from_dictionary(response.get("consumers")),  # type: ignore
         "Resolve Providers As": response["resolve_labels_as"]["providers"],
-        "Resolve Consumers As": response["resolve_labels_as"]["consumers"]
+        "Resolve Consumers As": response["resolve_labels_as"]["consumers"],
     }
 
     title = "Rule {} has been created successfully.".format(response.get("href"))
@@ -690,7 +714,7 @@ def virtual_service_create_command(client: PolicyComputeEngine, args: dict[str, 
 
     service = VirtualService(name=name, service_ports=[ServicePort(port=port, proto=proto)])
     try:
-        virtual_service = client.virtual_services.create(service)   # type: ignore[call-overload]
+        virtual_service = client.virtual_services.create(service)  # type: ignore[call-overload]
         virtual_service_json = virtual_service.to_json()
     except Exception as e:
         if EXISTING_VIRTUAL_SERVICE in str(e):
@@ -736,20 +760,15 @@ def service_binding_create_command(client: PolicyComputeEngine, args: dict[str, 
     try:
         client.virtual_services.get_by_reference(virtual_service)
     except IllumioException as e:
-        raise InvalidValueError(
-            message=f"no active record for virtual service with HREF {virtual_service}"
-        ) from e
+        raise InvalidValueError(message=f"no active record for virtual service with HREF {virtual_service}") from e
 
     service_bindings = [
-        ServiceBinding(virtual_service=Reference(href=virtual_service), workload=Reference(href=href))
-        for href in workloads
+        ServiceBinding(virtual_service=Reference(href=virtual_service), workload=Reference(href=href)) for href in workloads
     ]
 
     response = client.service_bindings.create(service_bindings)  # type: ignore[call-overload]
     results = json.loads(json.dumps(response, cls=IllumioEncoder))
-    context_data = {
-        "hrefs": [service.get("href", "") for service in results.get("service_bindings", [])]
-    }
+    context_data = {"hrefs": [service.get("href", "") for service in results.get("service_bindings", [])]}
     readable_output = prepare_service_binding_output(results)
 
     return CommandResults(
@@ -775,29 +794,22 @@ def object_provision_command(client: PolicyComputeEngine, args: dict[str, Any]) 
     security_policy_objects = args.get("security_policy_objects", "")
     validate_required_parameters(security_policy_objects=security_policy_objects)
     security_policy_objects = argToList(security_policy_objects)
-    change_description = generate_change_description_for_object_provision(
-        hrefs=security_policy_objects
-    )
+    change_description = generate_change_description_for_object_provision(hrefs=security_policy_objects)
     response_dict = {}
     try:
-        response_object = client.provision_policy_changes(
-            change_description=change_description, hrefs=security_policy_objects
-        )
+        response_object = client.provision_policy_changes(change_description=change_description, hrefs=security_policy_objects)
         response_dict = response_object.to_json()
         hr_output = prepare_object_provision_output(response_dict)
 
         # Converting draft HREFs to active
-        provisioned_hrefs = [
-            convert_draft_href_to_active(href) for href in security_policy_objects
-        ]
+        provisioned_hrefs = [convert_draft_href_to_active(href) for href in security_policy_objects]
 
         response_dict["provisioned_hrefs"] = provisioned_hrefs
     except Exception as e:
         if EXISTING_OBJECT not in str(e):
             raise Exception(f"Encountered error while provisioning security policy object: {e}")
         else:
-            hr_output = "### Security policy object(s) already provisioned: {}.".format(
-                ", ".join(security_policy_objects))
+            hr_output = "### Security policy object(s) already provisioned: {}.".format(", ".join(security_policy_objects))
 
     return CommandResults(
         outputs_prefix="Illumio.PolicyState",
@@ -885,9 +897,7 @@ def workloads_list_command(client: PolicyComputeEngine, args: dict[str, Any]) ->
     )
 
 
-def enforcement_boundary_create_command(
-        client: PolicyComputeEngine, args: dict[str, Any]
-) -> CommandResults:
+def enforcement_boundary_create_command(client: PolicyComputeEngine, args: dict[str, Any]) -> CommandResults:
     """Create an enforcement boundary.
 
     Args:
@@ -903,9 +913,7 @@ def enforcement_boundary_create_command(
     providers = args.get("providers")
     consumers = args.get("consumers")
 
-    validate_required_parameters(
-        name=name, port=port, providers=providers, consumers=consumers
-    )
+    validate_required_parameters(name=name, port=port, providers=providers, consumers=consumers)
     providers = argToList(providers)
     consumers = argToList(consumers)
     port = arg_to_number(port, arg_name="port")
@@ -936,9 +944,7 @@ def enforcement_boundary_create_command(
         else:
             raise Exception(f"Encountered error while creating enforcement boundary: {e}")  # type: ignore[misc]
 
-    readable_output = prepare_enforcement_boundary_create_output(
-        enforcement_boundary_json
-    )
+    readable_output = prepare_enforcement_boundary_create_output(enforcement_boundary_json)
 
     return CommandResults(
         outputs_prefix="Illumio.EnforcementBoundary",
@@ -1011,7 +1017,7 @@ def ip_list_get_command(client: PolicyComputeEngine, args: dict[str, Any]) -> Co
         outputs_key_field="href",
         outputs=remove_empty_elements(results),
         readable_output=readable_output,
-        raw_response=results
+        raw_response=results,
     )
 
 
@@ -1091,7 +1097,7 @@ def ruleset_create_command(client: PolicyComputeEngine, args: dict[str, Any]) ->
         outputs_key_field="href",
         outputs=remove_empty_elements(json_response),
         readable_output=readable_output,
-        raw_response=json_response
+        raw_response=json_response,
     )
 
 
@@ -1120,20 +1126,24 @@ def rule_create_command(client: PolicyComputeEngine, args: dict[str, Any]) -> Co
     resolve_consumers_as = argToList(resolve_consumers_as)
 
     # Building params to check whether rule is present in particular ruleset or not
-    params = {"ingress_services": sorted(ingress_services), "providers": sorted(providers),
-              "consumers": sorted(consumers),
-              "resolve_providers_as": sorted(resolve_providers_as), "resolve_consumers_as": sorted(resolve_consumers_as)
-              }
+    params = {
+        "ingress_services": sorted(ingress_services),
+        "providers": sorted(providers),
+        "consumers": sorted(consumers),
+        "resolve_providers_as": sorted(resolve_providers_as),
+        "resolve_consumers_as": sorted(resolve_consumers_as),
+    }
 
     ruleset = client.rule_sets.get_by_reference(ruleset_href)  # type: ignore[call-overload]
     ruleset_json = ruleset.to_json()
     for rules in ruleset_json.get("rules", []):
-        existing_rule = {"ingress_services": sorted([href.get('href') for href in rules.get("ingress_services", {})]),
-                         "providers": sorted(extract_values_from_dictionary(rules.get("providers"))),
-                         "consumers": sorted(extract_values_from_dictionary(rules.get("consumers"))),
-                         "resolve_providers_as": sorted(rules.get("resolve_labels_as", {}).get("providers")),
-                         "resolve_consumers_as": sorted(rules.get("resolve_labels_as", {}).get("consumers"))
-                         }
+        existing_rule = {
+            "ingress_services": sorted([href.get("href") for href in rules.get("ingress_services", {})]),
+            "providers": sorted(extract_values_from_dictionary(rules.get("providers"))),
+            "consumers": sorted(extract_values_from_dictionary(rules.get("consumers"))),
+            "resolve_providers_as": sorted(rules.get("resolve_labels_as", {}).get("providers")),
+            "resolve_consumers_as": sorted(rules.get("resolve_labels_as", {}).get("consumers")),
+        }
         if params == existing_rule:
             demisto.debug(f"Found existing Rule bounded to the Ruleset: {ruleset_href}.")
             rule_href = rules.get("href")
@@ -1142,9 +1152,10 @@ def rule_create_command(client: PolicyComputeEngine, args: dict[str, Any]) -> Co
     else:
         rule = Rule.build(
             ingress_services=ingress_services,
-            consumers=consumers, providers=providers,
+            consumers=consumers,
+            providers=providers,
             resolve_consumers_as=resolve_consumers_as,
-            resolve_providers_as=resolve_providers_as
+            resolve_providers_as=resolve_providers_as,
         )
         response = client.rules.create(rule, parent=ruleset_href)
 
@@ -1156,7 +1167,7 @@ def rule_create_command(client: PolicyComputeEngine, args: dict[str, Any]) -> Co
         outputs_key_field="href",
         outputs=remove_empty_elements(response),
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -1171,25 +1182,20 @@ def main():
 
         port = arg_to_number(params.get("port"), required=True, arg_name="port")
         if port < MIN_PORT or port > MAX_PORT:  # type: ignore[operator]
-            raise InvalidValueError(
-                message=f"{port} is an invalid value for port. Value must be in 1 to 65535.")
+            raise InvalidValueError(message=f"{port} is an invalid value for port. Value must be in 1 to 65535.")
 
         org_id = arg_to_number(params.get("org_id"), required=True, arg_name="org_id")
         if org_id <= 0:  # type: ignore[operator]
-            raise ValueError(
-                f"{org_id} is an invalid value. Organization ID must be a non-zero and positive numeric value."
-            )
+            raise ValueError(f"{org_id} is an invalid value. Organization ID must be a non-zero and positive numeric value.")
 
-        base_url = params.get("url", '').strip()
+        base_url = params.get("url", "").strip()
         if not base_url:
             raise ValueError("Server URL is required.")
 
         proxy = handle_proxy()
 
         client = PolicyComputeEngine(url=base_url, port=port, org_id=org_id)  # type: ignore[call-arg,arg-type]
-        client.set_proxies(
-            http_proxy=proxy.get("http", None), https_proxy=proxy.get("https", None)
-        )
+        client.set_proxies(http_proxy=proxy.get("http", None), https_proxy=proxy.get("https", None))
         client.set_credentials(api_user, api_key)  # type: ignore[arg-type]
 
         if command == "test-module":
@@ -1216,7 +1222,7 @@ def main():
             else:
                 raise NotImplementedError(f"Command {command} is not implemented")
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover

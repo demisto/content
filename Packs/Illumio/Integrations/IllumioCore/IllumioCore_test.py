@@ -2,52 +2,51 @@
 
 import re
 
-import pytest
 import illumio
+import pytest
+from CommonServerPython import *  # noqa
 from illumio import (
-    TrafficFlow,
-    ServiceBinding,
-    Workload,
-    PolicyVersion,
-    PolicyComputeEngine,
-    VirtualService,
-    IllumioException,
     EnforcementBoundary,
+    IllumioException,
     IPList,
+    PolicyComputeEngine,
+    PolicyVersion,
     Rule,
     RuleSet,
+    ServiceBinding,
+    TrafficFlow,
+    VirtualService,
+    Workload,
 )
-
-from CommonServerPython import *  # noqa
 from IllumioCore import (
-    command_test_module,
-    InvalidValueError,
     VALID_POLICY_DECISIONS,
     VALID_PROTOCOLS,
-    traffic_analysis_command,
-    prepare_traffic_analysis_output,
-    virtual_service_create_command,
-    prepare_virtual_service_output,
-    service_binding_create_command,
-    prepare_service_binding_output,
-    object_provision_command,
-    prepare_object_provision_output,
-    workload_get_command,
-    prepare_workload_get_output,
-    workloads_list_command,
-    prepare_workloads_list_output,
+    InvalidValueError,
+    command_test_module,
     enforcement_boundary_create_command,
-    prepare_enforcement_boundary_create_output,
-    prepare_update_enforcement_mode_output,
-    update_enforcement_mode_command,
     ip_list_get_command,
+    ip_lists_get_command,
+    object_provision_command,
+    prepare_enforcement_boundary_create_output,
     prepare_ip_list_get_output,
     prepare_ip_lists_get_output,
-    rule_create_command,
-    ip_lists_get_command,
-    ruleset_create_command,
-    prepare_ruleset_create_output,
+    prepare_object_provision_output,
     prepare_rule_create_output,
+    prepare_ruleset_create_output,
+    prepare_service_binding_output,
+    prepare_traffic_analysis_output,
+    prepare_update_enforcement_mode_output,
+    prepare_virtual_service_output,
+    prepare_workload_get_output,
+    prepare_workloads_list_output,
+    rule_create_command,
+    ruleset_create_command,
+    service_binding_create_command,
+    traffic_analysis_command,
+    update_enforcement_mode_command,
+    virtual_service_create_command,
+    workload_get_command,
+    workloads_list_command,
 )
 
 """ CONSTANTS """
@@ -55,30 +54,18 @@ from IllumioCore import (
 WORKLOAD_EXP_URL = "/orgs/1/workloads/dummy"
 WORKLOAD_URL = re.compile("/orgs/1/workloads")
 VIRTUAL_SERVICE_EXP_URL = "/orgs/1/sec_policy/active/virtual_services/dummy"
-TEST_DATA_DIRECTORY = os.path.join(
-    os.path.dirname(os.path.realpath(__file__)), "test_data"
-)
+TEST_DATA_DIRECTORY = os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data")
 INVALID_PORT_NUMBER_CREATE_VIRTUAL_SERVICE_EXCEPTION_MESSAGE = (
     "{} is an invalid value for port. Value must be in 0 to 65535 or -1."
 )
-INVALID_PORT_NUMBER_EXCEPTION_MESSAGE = (
-    "{} is an invalid value for port. Value must be in 1 to 65535."
-)
-CONVERT_PROTOCOL_EXCEPTION_MESSAGE = (
-    "{} is an invalid value for protocol. Possible values are: ['tcp', 'udp']."
-)
-MISSING_REQUIRED_PARAM_EXCEPTION_MESSAGE = (
-    "{} is a required parameter. Please provide correct value."
-)
+INVALID_PORT_NUMBER_EXCEPTION_MESSAGE = "{} is an invalid value for port. Value must be in 1 to 65535."
+CONVERT_PROTOCOL_EXCEPTION_MESSAGE = "{} is an invalid value for protocol. Possible values are: ['tcp', 'udp']."
+MISSING_REQUIRED_PARAM_EXCEPTION_MESSAGE = "{} is a required parameter. Please provide correct value."
 NOT_VALID_NUMBER_EXCEPTION_MESSAGE = 'Invalid number: "{}"="{}"'
 INVALID_ENFORCEMENT_MODES_EXCEPTION_MESSAGE = "{} is an invalid enforcement mode."
 INVALID_VISIBILITY_LEVEL_EXCEPTION_MESSAGE = "{} is an invalid visibility level."
-INVALID_BOOLEAN_EXCEPTION_MESSAGE = (
-    "Argument does not contain a valid boolean-like value"
-)
-INVALID_MAX_RESULTS_EXCEPTION_MESSAGE = (
-    "{} is an invalid value for max results. Max results must be between 0 and 500"
-)
+INVALID_BOOLEAN_EXCEPTION_MESSAGE = "Argument does not contain a valid boolean-like value"
+INVALID_MAX_RESULTS_EXCEPTION_MESSAGE = "{} is an invalid value for max results. Max results must be between 0 and 500"
 INVALID_VALUE_EXCEPTION_MESSAGE = "{} is an invalid for {}."
 INVALID_HREF_ENFORCEMENT_BOUNDARY = "Invalid HREF in policy provision changeset: {}"
 UPDATE_WORKLOAD_URL = re.compile("/orgs/1/workloads/bulk_update")
@@ -102,17 +89,13 @@ def util_load_json(path):
 @pytest.fixture(scope="module")
 def traffic_analysis_success():
     """Retrieve the json response for traffic analysis."""
-    return util_load_json(
-        os.path.join(TEST_DATA_DIRECTORY, "traffic_analysis_download_data.json")
-    )
+    return util_load_json(os.path.join(TEST_DATA_DIRECTORY, "traffic_analysis_download_data.json"))
 
 
 @pytest.fixture(scope="module")
 def traffic_analysis_success_hr():
     """Retrieve the human-readable for traffic analysis."""
-    with open(
-        os.path.join(TEST_DATA_DIRECTORY, "traffic_analysis_success_hr.md")
-    ) as file:
+    with open(os.path.join(TEST_DATA_DIRECTORY, "traffic_analysis_success_hr.md")) as file:
         hr_output = file.read()
     return hr_output
 
@@ -120,11 +103,7 @@ def traffic_analysis_success_hr():
 @pytest.fixture(scope="module")
 def virtual_service_create_success():
     """Retrieve the json response for virtual service."""
-    return util_load_json(
-        os.path.join(
-            TEST_DATA_DIRECTORY, "create_virtual_service_success_response.json"
-        )
-    )
+    return util_load_json(os.path.join(TEST_DATA_DIRECTORY, "create_virtual_service_success_response.json"))
 
 
 @pytest.fixture(scope="module")
@@ -141,11 +120,7 @@ def virtual_service_create_success_udp():
 @pytest.fixture(scope="module")
 def virtual_service_success_hr():
     """Retrieve the human-readable response for virtual service."""
-    with open(
-        os.path.join(
-            TEST_DATA_DIRECTORY, "create_virtual_service_success_response_hr.md"
-        )
-    ) as f:
+    with open(os.path.join(TEST_DATA_DIRECTORY, "create_virtual_service_success_response_hr.md")) as f:
         expected_hr_output = f.read()
     return expected_hr_output
 
@@ -166,19 +141,13 @@ def virtual_service_success_udp_hr():
 @pytest.fixture(scope="module")
 def service_binding_success():
     """Retrieve the json response for service binding."""
-    return util_load_json(
-        os.path.join(TEST_DATA_DIRECTORY, "create_service_binding_success_resp.json")
-    )
+    return util_load_json(os.path.join(TEST_DATA_DIRECTORY, "create_service_binding_success_resp.json"))
 
 
 @pytest.fixture(scope="module")
 def service_binding_success_hr():
     """Retrieve the human-readable for service binding."""
-    with open(
-        os.path.join(
-            TEST_DATA_DIRECTORY, "create_service_binding_success_response_hr.md"
-        )
-    ) as f:
+    with open(os.path.join(TEST_DATA_DIRECTORY, "create_service_binding_success_response_hr.md")) as f:
         expected_hr_output = f.read()
     return expected_hr_output
 
@@ -186,9 +155,7 @@ def service_binding_success_hr():
 @pytest.fixture(scope="module")
 def object_provision_success():
     """Retrieve the json response for object provision."""
-    return util_load_json(
-        os.path.join(TEST_DATA_DIRECTORY, "object_provision_success.json")
-    )
+    return util_load_json(os.path.join(TEST_DATA_DIRECTORY, "object_provision_success.json"))
 
 
 @pytest.fixture(scope="module")
@@ -201,19 +168,13 @@ def object_provision_success_hr():
 
 @pytest.fixture(scope="module")
 def service_binding_reference_success():
-    return util_load_json(
-        os.path.join(
-            TEST_DATA_DIRECTORY, "create_virtual_service_success_response.json"
-        )
-    )
+    return util_load_json(os.path.join(TEST_DATA_DIRECTORY, "create_virtual_service_success_response.json"))
 
 
 @pytest.fixture(scope="module")
 def workload_get_success():
     """Retrieve the json response for ip workload get success."""
-    return util_load_json(
-        os.path.join(TEST_DATA_DIRECTORY, "workload_get_success_response.json")
-    )
+    return util_load_json(os.path.join(TEST_DATA_DIRECTORY, "workload_get_success_response.json"))
 
 
 @pytest.fixture(scope="module")
@@ -227,17 +188,13 @@ def workload_get_success_hr():
 @pytest.fixture(scope="module")
 def workloads_list_success():
     """Retrieve the json response for workloads list."""
-    return util_load_json(
-        os.path.join(TEST_DATA_DIRECTORY, "workloads_list_success_response.json")
-    )
+    return util_load_json(os.path.join(TEST_DATA_DIRECTORY, "workloads_list_success_response.json"))
 
 
 @pytest.fixture(scope="module")
 def workloads_list_success_hr():
     """Retrieve the human-readable response for workloads list."""
-    with open(
-        os.path.join(TEST_DATA_DIRECTORY, "workloads_list_success_response_hr.md")
-    ) as f:
+    with open(os.path.join(TEST_DATA_DIRECTORY, "workloads_list_success_response_hr.md")) as f:
         expected_hr_output = f.read()
 
     return expected_hr_output
@@ -282,11 +239,7 @@ def enforcement_mode_success():
 @pytest.fixture(scope="module")
 def enforcement_mode_success_hr():
     """Retrieve the human-readable response for enforcement mode update success."""
-    with open(
-        os.path.join(
-            TEST_DATA_DIRECTORY, "enforcement_mode_update_success_response_hr.md"
-        )
-    ) as f:
+    with open(os.path.join(TEST_DATA_DIRECTORY, "enforcement_mode_update_success_response_hr.md")) as f:
         expected_hr_output = f.read()
 
     return expected_hr_output
@@ -306,11 +259,7 @@ def enforcement_mode_failure_expected():
 @pytest.fixture(scope="module")
 def enforcement_mode_failure_hr():
     """Retrieve the human-readable response for enforcement mode update failure."""
-    with open(
-        os.path.join(
-            TEST_DATA_DIRECTORY, "enforcement_mode_update_failure_response_hr.md"
-        )
-    ) as f:
+    with open(os.path.join(TEST_DATA_DIRECTORY, "enforcement_mode_update_failure_response_hr.md")) as f:
         expected_hr_output = f.read()
 
     return expected_hr_output
@@ -319,19 +268,13 @@ def enforcement_mode_failure_hr():
 @pytest.fixture(scope="module")
 def enforcement_mode_failure():
     """Retrieve the json response for enforcement mode update failure."""
-    return util_load_json(
-        os.path.join(
-            TEST_DATA_DIRECTORY, "enforcement_mode_update_failure_response.json"
-        )
-    )
+    return util_load_json(os.path.join(TEST_DATA_DIRECTORY, "enforcement_mode_update_failure_response.json"))
 
 
 @pytest.fixture(scope="module")
 def ip_list_get_success():
     """Retrieve the json response for ip list get."""
-    return util_load_json(
-        os.path.join(TEST_DATA_DIRECTORY, "get_ip_list_success_resp.json")
-    )
+    return util_load_json(os.path.join(TEST_DATA_DIRECTORY, "get_ip_list_success_resp.json"))
 
 
 @pytest.fixture(scope="module")
@@ -346,21 +289,13 @@ def ip_list_get_success_hr():
 @pytest.fixture(scope="module")
 def ip_lists_success():
     """Retrieve the json response for ip lists get success."""
-    return util_load_json(
-        os.path.join(
-            TEST_DATA_DIRECTORY, "ip_lists_get_command_for_success_response.json"
-        )
-    )
+    return util_load_json(os.path.join(TEST_DATA_DIRECTORY, "ip_lists_get_command_for_success_response.json"))
 
 
 @pytest.fixture(scope="module")
 def ip_lists_success_hr():
     """Retrieve the human-readable response for ip lists get success."""
-    with open(
-        os.path.join(
-            TEST_DATA_DIRECTORY, "ip_lists_get_command_for_success_response_hr.md"
-        )
-    ) as f:
+    with open(os.path.join(TEST_DATA_DIRECTORY, "ip_lists_get_command_for_success_response_hr.md")) as f:
         expected_hr_output = f.read()
 
     return expected_hr_output
@@ -369,17 +304,13 @@ def ip_lists_success_hr():
 @pytest.fixture(scope="module")
 def ruleset_create_success():
     """Retrieve the json response for ruleset create."""
-    return util_load_json(
-        os.path.join(TEST_DATA_DIRECTORY, "create_ruleset_success.json")
-    )
+    return util_load_json(os.path.join(TEST_DATA_DIRECTORY, "create_ruleset_success.json"))
 
 
 @pytest.fixture(scope="module")
 def ruleset_create_success_hr():
     """Retrieve the human-readable response for ruleset create."""
-    with open(
-        os.path.join(TEST_DATA_DIRECTORY, "create_ruleset_success_hr.md")
-    ) as file:
+    with open(os.path.join(TEST_DATA_DIRECTORY, "create_ruleset_success_hr.md")) as file:
         f = file.read()
     return f
 
@@ -387,9 +318,7 @@ def ruleset_create_success_hr():
 @pytest.fixture(scope="module")
 def ruleset_get_success():
     """Retrieve the json response for ruleset get."""
-    return util_load_json(
-        os.path.join(TEST_DATA_DIRECTORY, "get_ruleset_success.json")
-    )
+    return util_load_json(os.path.join(TEST_DATA_DIRECTORY, "get_ruleset_success.json"))
 
 
 @pytest.fixture(scope="module")
@@ -417,9 +346,7 @@ def test_command_test_module(mock_client, monkeypatch):
     Then:
        - Returns an ok message.
     """
-    monkeypatch.setattr(
-        illumio.pce.PolicyComputeEngine, "check_connection", lambda *a: True
-    )
+    monkeypatch.setattr(illumio.pce.PolicyComputeEngine, "check_connection", lambda *a: True)
     assert command_test_module(mock_client) == "ok"
 
 
@@ -467,9 +394,7 @@ def test_command_test_module(mock_client, monkeypatch):
                 "end_time": "2022-07-18T12:58:33.529Z",
                 "policy_decisions": ["dummy"],
             },
-            "Invalid value for {}. Possible comma separated values are {}.".format(
-                "policy_decisions", VALID_POLICY_DECISIONS
-            ),
+            "Invalid value for {}. Possible comma separated values are {}.".format("policy_decisions", VALID_POLICY_DECISIONS),
             InvalidValueError,
         ),
         (
@@ -480,16 +405,12 @@ def test_command_test_module(mock_client, monkeypatch):
                 "end_time": "2022-07-18T12:58:33.529Z",
                 "policy_decisions": ["potentially_blocked"],
             },
-            "{} is an invalid value for {}. Possible values are: {}.".format(
-                "dummy", "protocol", VALID_PROTOCOLS
-            ),
+            "{} is an invalid value for {}. Possible values are: {}.".format("dummy", "protocol", VALID_PROTOCOLS),
             InvalidValueError,
         ),
     ],
 )
-def test_traffic_analysis_command_for_invalid_arguments(
-    args, err_msg, err_type, mock_client
-):
+def test_traffic_analysis_command_for_invalid_arguments(args, err_msg, err_type, mock_client):
     """
     Test case scenario for execution of traffic-analysis-command when invalid argument provided.
 
@@ -507,9 +428,7 @@ def test_traffic_analysis_command_for_invalid_arguments(
         assert str(err.value) == err_msg
 
 
-def test_traffic_analysis_success(
-    mock_client, monkeypatch, traffic_analysis_success
-):
+def test_traffic_analysis_success(mock_client, monkeypatch, traffic_analysis_success):
     """
     Test case scenario for successful execution of traffic-analysis-command function.
 
@@ -531,9 +450,7 @@ def test_traffic_analysis_success(
     monkeypatch.setattr(
         illumio.pce.PolicyComputeEngine,
         "get_traffic_flows_async",
-        lambda *a, **k: [
-            TrafficFlow.from_json(flow) for flow in traffic_analysis_success
-        ],
+        lambda *a, **k: [TrafficFlow.from_json(flow) for flow in traffic_analysis_success],
     )
 
     resp = traffic_analysis_command(mock_client, args)
@@ -541,9 +458,7 @@ def test_traffic_analysis_success(
     assert resp.raw_response == traffic_analysis_success
 
 
-def test_traffic_analysis_human_readable(
-        traffic_analysis_success, traffic_analysis_success_hr
-):
+def test_traffic_analysis_human_readable(traffic_analysis_success, traffic_analysis_success_hr):
     """
     Test case scenario for successful execution of traffic-analysis-command function.
 
@@ -558,9 +473,7 @@ def test_traffic_analysis_human_readable(
     assert resp == traffic_analysis_success_hr
 
 
-def test_virtual_service_create_command_for_success(
-    mock_client, virtual_service_create_success, monkeypatch
-):
+def test_virtual_service_create_command_for_success(mock_client, virtual_service_create_success, monkeypatch):
     """Test case scenario for execution of virtual-service-create-command when valid and all arguments are provided.
 
     Given:
@@ -582,9 +495,7 @@ def test_virtual_service_create_command_for_success(
     assert resp.raw_response == virtual_service_create_success
 
 
-def test_virtual_service_create_command_for_human_readable(
-    virtual_service_create_success, virtual_service_success_hr
-):
+def test_virtual_service_create_command_for_human_readable(virtual_service_create_success, virtual_service_success_hr):
     """Test case scenario for execution of virtual-service-create-command when valid and all arguments are provided.
 
     Given:
@@ -615,9 +526,7 @@ def test_virtual_service_create_command_for_success_with_protocol_as_udp(
         "create",
         lambda *a: VirtualService.from_json(virtual_service_create_success_udp),
     )
-    resp = virtual_service_create_command(
-        mock_client, {"name": "test_create_virtual_service", "port": "3000"}
-    )
+    resp = virtual_service_create_command(mock_client, {"name": "test_create_virtual_service", "port": "3000"})
 
     assert resp.raw_response == virtual_service_create_success_udp
 
@@ -660,12 +569,10 @@ def test_virtual_service_create_command_for_human_readable_with_protocol_as_udp(
             INVALID_PORT_NUMBER_CREATE_VIRTUAL_SERVICE_EXCEPTION_MESSAGE.format(-3),
             {"name": "test", "port": "-3"},
             InvalidValueError,
-        )
+        ),
     ],
 )
-def test_virtual_service_create_command_when_invalid_arguments_provided(
-    err_msg, args, err_type, mock_client
-):
+def test_virtual_service_create_command_when_invalid_arguments_provided(err_msg, args, err_type, mock_client):
     """Test case scenario for execution of virtual-service-create-command when invalid argument provided.
 
     Given:
@@ -721,14 +628,10 @@ def test_service_binding_create_command_for_human_readable(service_binding_succe
         - Returns a valid human-readable
     """
     create_service_binding_expected_resp_output = util_load_json(
-        os.path.join(
-            TEST_DATA_DIRECTORY, "create_service_binding_success_response_output.json"
-        )
+        os.path.join(TEST_DATA_DIRECTORY, "create_service_binding_success_response_output.json")
     )
 
-    response = prepare_service_binding_output(
-        create_service_binding_expected_resp_output
-    )
+    response = prepare_service_binding_output(create_service_binding_expected_resp_output)
     assert response == service_binding_success_hr
 
 
@@ -739,9 +642,7 @@ def test_service_binding_create_command_for_human_readable(service_binding_succe
         ({"workloads": WORKLOAD_EXP_URL, "virtual_service": "abc"}),
     ],
 )
-def test_service_binding_create_when_invalid_arguments_provided(
-    args, mock_client, requests_mock
-):
+def test_service_binding_create_when_invalid_arguments_provided(args, mock_client, requests_mock):
     """Test case scenario when arguments provided to service-binding-create are invalid.
 
     Given:
@@ -760,10 +661,7 @@ def test_service_binding_create_when_invalid_arguments_provided(
     with pytest.raises(Exception) as err:
         service_binding_create_command(mock_client, args)
 
-        assert (
-            str(err.value)
-            == "406 Client Error: None for url: https://127.0.0.1:8443/api/v2/orgs/1/service_bindings"
-        )
+        assert str(err.value) == "406 Client Error: None for url: https://127.0.0.1:8443/api/v2/orgs/1/service_bindings"
 
 
 @pytest.mark.parametrize(
@@ -779,9 +677,7 @@ def test_service_binding_create_when_invalid_arguments_provided(
         ),
     ],
 )
-def test_create_service_binding_when_blank_arguments_provided(
-    err_msg, args, mock_client
-):
+def test_create_service_binding_when_blank_arguments_provided(err_msg, args, mock_client):
     """Test case scenario when arguments provided to service-binding-create are blank.
 
     Given:
@@ -811,9 +707,7 @@ def test_object_provision_command_when_invalid_arguments_provided(mock_client):
     from IllumioCore import object_provision_command
 
     args = {"security_policy_objects": ""}
-    err_msg = (
-        "security_policy_objects is a required parameter. Please provide correct value."
-    )
+    err_msg = "security_policy_objects is a required parameter. Please provide correct value."
 
     with pytest.raises(ValueError) as err:
         object_provision_command(mock_client, args)
@@ -821,9 +715,7 @@ def test_object_provision_command_when_invalid_arguments_provided(mock_client):
     assert str(err.value) == err_msg
 
 
-def test_object_provision_command_when_valid_arguments_provided(
-    mock_client, object_provision_success, monkeypatch
-):
+def test_object_provision_command_when_valid_arguments_provided(mock_client, object_provision_success, monkeypatch):
     """
     Test case scenario for execution of object-provision-command when valid arguments are provided.
 
@@ -884,9 +776,7 @@ def test_workload_get_command_success(mock_client, workload_get_success, monkeyp
     assert resp.raw_response == workload_get_success
 
 
-def test_workload_get_command_human_readable(
-    workload_get_success, workload_get_success_hr
-):
+def test_workload_get_command_human_readable(workload_get_success, workload_get_success_hr):
     """
     Test case scenario for successful execution of workload-get-command.
 
@@ -905,9 +795,7 @@ def test_workload_get_command_human_readable(
     "err_msg, args",
     [(MISSING_REQUIRED_PARAM_EXCEPTION_MESSAGE.format("href"), {"href": ""})],
 )
-def test_workload_get_command_when_blank_value_in_arguments_provided(
-    err_msg, args, mock_client
-):
+def test_workload_get_command_when_blank_value_in_arguments_provided(err_msg, args, mock_client):
     """
     Test case scenario for execution of workload-get-command when blank value in argument is provided.
 
@@ -923,9 +811,7 @@ def test_workload_get_command_when_blank_value_in_arguments_provided(
     assert str(err.value) == err_msg
 
 
-def test_workloads_list_command_for_success(
-    mock_client, workloads_list_success, monkeypatch
-):
+def test_workloads_list_command_for_success(mock_client, workloads_list_success, monkeypatch):
     """
     Test case scenario for successful execution of workloads-list-command.
 
@@ -939,20 +825,14 @@ def test_workloads_list_command_for_success(
     monkeypatch.setattr(
         illumio.pce.PolicyComputeEngine._PCEObjectAPI,
         "get",
-        lambda *a, **k: [
-            Workload.from_json(workload) for workload in workloads_list_success
-        ],
+        lambda *a, **k: [Workload.from_json(workload) for workload in workloads_list_success],
     )
-    resp = workloads_list_command(
-        mock_client, {"max_results": "1", "online": "yes", "managed": "false"}
-    )
+    resp = workloads_list_command(mock_client, {"max_results": "1", "online": "yes", "managed": "false"})
 
     assert resp.raw_response == workloads_list_success
 
 
-def test_workloads_list_command_human_readable(
-    workloads_list_success, workloads_list_success_hr
-):
+def test_workloads_list_command_human_readable(workloads_list_success, workloads_list_success_hr):
     """
     Test case scenario for successful execution of workloads-list-command.
 
@@ -994,9 +874,7 @@ def test_workloads_list_command_human_readable(
         ),
     ],
 )
-def test_workloads_list_command_when_invalid_arguments_provided(
-    err_msg, args, err_type, mock_client
-):
+def test_workloads_list_command_when_invalid_arguments_provided(err_msg, args, err_type, mock_client):
     """
     Test case scenario for execution of workloads-list-command function when invalid arguments provided.
 
@@ -1012,9 +890,7 @@ def test_workloads_list_command_when_invalid_arguments_provided(
         assert str(err.value) == err_msg
 
 
-def test_enforcement_boundary_create_command_success(
-    mock_client, enforcement_boundary_success, monkeypatch
-):
+def test_enforcement_boundary_create_command_success(mock_client, enforcement_boundary_success, monkeypatch):
     """
     Test case scenario for successful execution of enforcement-boundary-create-command function.
 
@@ -1044,9 +920,7 @@ def test_enforcement_boundary_create_command_success(
     assert resp.raw_response == enforcement_boundary_success
 
 
-def test_enforcement_boundary_create_command_human_readable(
-    enforcement_boundary_success, enforcement_boundary_success_hr
-):
+def test_enforcement_boundary_create_command_human_readable(enforcement_boundary_success, enforcement_boundary_success_hr):
     """
     Test case scenario for successful execution of enforcement-boundary-create.
 
@@ -1165,9 +1039,7 @@ def test_enforcement_boundary_create_command_human_readable(
         ),
     ],
 )
-def test_enforcement_boundary_create_command_when_invalid_arguments_provided(
-    err_msg, args, err_type, mock_client
-):
+def test_enforcement_boundary_create_command_when_invalid_arguments_provided(err_msg, args, err_type, mock_client):
     """
     Test case scenario for execution of enforcement-boundary-create-command function when invalid arguments provided.
 
@@ -1199,9 +1071,7 @@ def test_enforcement_boundary_create_command_when_invalid_arguments_provided(
         ),
     ],
 )
-def test_enforcement_mode_update_command_when_blank_arguments_provided(
-    err_msg, args, mock_client
-):
+def test_enforcement_mode_update_command_when_blank_arguments_provided(err_msg, args, mock_client):
     """Test case scenario for enforcement-mode-update-command when blank arguments are provided.
 
     Given:
@@ -1225,9 +1095,7 @@ def test_enforcement_mode_update_command_when_blank_arguments_provided(
         )
     ],
 )
-def test_enforcement_mode_update_command_when_invalid_arguments_provided(
-    err_msg, args, mock_client, requests_mock
-):
+def test_enforcement_mode_update_command_when_invalid_arguments_provided(err_msg, args, mock_client, requests_mock):
     """Test case scenario for enforcement-mode-update-command when invalid arguments are provided.
 
     Given:
@@ -1255,9 +1123,7 @@ def test_enforcement_mode_update_command_when_invalid_arguments_provided(
     assert str(err.value) == err_msg
 
 
-def test_update_enforcement_mode_command_success(
-    mock_client, enforcement_mode_success, monkeypatch
-):
+def test_update_enforcement_mode_command_success(mock_client, enforcement_mode_success, monkeypatch):
     """Test case scenario for successful execution of update-enforcement-mode-command.
 
     Given:
@@ -1270,9 +1136,7 @@ def test_update_enforcement_mode_command_success(
     monkeypatch.setattr(
         illumio.pce.PolicyComputeEngine._PCEObjectAPI,
         "bulk_update",
-        lambda *a: [
-            Workload.from_json(workload) for workload in enforcement_mode_success
-        ],
+        lambda *a: [Workload.from_json(workload) for workload in enforcement_mode_success],
     )
     args = {
         "enforcement_mode": "idle",
@@ -1283,9 +1147,7 @@ def test_update_enforcement_mode_command_success(
     assert resp.raw_response == enforcement_mode_success
 
 
-def test_update_enforcement_mode_command_success_human_readable(
-    enforcement_mode_success, enforcement_mode_success_hr
-):
+def test_update_enforcement_mode_command_success_human_readable(enforcement_mode_success, enforcement_mode_success_hr):
     """Test case scenario for successful execution of update-enforcement-mode-command.
 
     Given:
@@ -1300,9 +1162,7 @@ def test_update_enforcement_mode_command_success_human_readable(
     assert resp == enforcement_mode_success_hr
 
 
-def test_update_enforcement_mode_command_failure(
-    mock_client, enforcement_mode_failure, monkeypatch
-):
+def test_update_enforcement_mode_command_failure(mock_client, enforcement_mode_failure, monkeypatch):
     """Test case scenario for execution of update-enforcement-mode-command for failure.
 
     Given:
@@ -1315,9 +1175,7 @@ def test_update_enforcement_mode_command_failure(
     monkeypatch.setattr(
         illumio.pce.PolicyComputeEngine._PCEObjectAPI,
         "bulk_update",
-        lambda *a: [
-            Workload.from_json(workload) for workload in enforcement_mode_failure
-        ],
+        lambda *a: [Workload.from_json(workload) for workload in enforcement_mode_failure],
     )
     args = {"enforcement_mode": "selective", "workloads": ["/orgs/1/workloads/dummy"]}
     resp = update_enforcement_mode_command(mock_client, args)
@@ -1325,9 +1183,7 @@ def test_update_enforcement_mode_command_failure(
     assert resp.raw_response == enforcement_mode_failure
 
 
-def test_update_enforcement_mode_command_failure_human_readable(
-    enforcement_mode_failure_hr, enforcement_mode_failure_expected
-):
+def test_update_enforcement_mode_command_failure_human_readable(enforcement_mode_failure_hr, enforcement_mode_failure_expected):
     """
     Test case scenario for execution of update-enforcement-mode-command for failure.
 
@@ -1365,9 +1221,7 @@ def test_ip_list_get_success(mock_client, ip_list_get_success, monkeypatch):
     assert resp.raw_response == ip_list_get_success
 
 
-def test_ip_list_get_success_hr(
-    mock_client, ip_list_get_success, ip_list_get_success_hr, monkeypatch
-):
+def test_ip_list_get_success_hr(mock_client, ip_list_get_success, ip_list_get_success_hr, monkeypatch):
     """Test case scenario for execution of ip-list-get command when valid and all arguments are provided.
 
     Given:
@@ -1461,9 +1315,7 @@ def test_ip_lists_get_command_human_readable(ip_lists_success, ip_lists_success_
         ),
     ],
 )
-def test_ip_lists_get_command_when_invalid_arguments_provided(
-    err_msg, args, err_type, mock_client
-):
+def test_ip_lists_get_command_when_invalid_arguments_provided(err_msg, args, err_type, mock_client):
     """
     Test case scenario for execution of ip-lists-get-command when invalid arguments provided.
 
@@ -1481,9 +1333,7 @@ def test_ip_lists_get_command_when_invalid_arguments_provided(
         assert str(err.value) == err_msg
 
 
-def test_ruleset_create_command_success(
-    mock_client, ruleset_create_success, monkeypatch
-):
+def test_ruleset_create_command_success(mock_client, ruleset_create_success, monkeypatch):
     """Test case scenario for ruleset-create-command when valid arguments provided to the command.
 
     Given:
@@ -1505,9 +1355,7 @@ def test_ruleset_create_command_success(
     assert resp.raw_response == ruleset_create_success
 
 
-def test_ruleset_create_command_success_hr(
-    ruleset_create_success, ruleset_create_success_hr
-):
+def test_ruleset_create_command_success_hr(ruleset_create_success, ruleset_create_success_hr):
     """Test case scenario for ruleset-create-command when valid arguments provided to the command.
 
     Given:
@@ -1566,9 +1414,7 @@ def test_rule_create_command_success(mock_client, rule_create_success, ruleset_g
         - Command should return valid raw response.
     """
     monkeypatch.setattr(
-        illumio.pce.PolicyComputeEngine._PCEObjectAPI,
-        "get_by_reference",
-        lambda *a, **k: Rule.from_json(ruleset_get_success)
+        illumio.pce.PolicyComputeEngine._PCEObjectAPI, "get_by_reference", lambda *a, **k: Rule.from_json(ruleset_get_success)
     )
 
     monkeypatch.setattr(
