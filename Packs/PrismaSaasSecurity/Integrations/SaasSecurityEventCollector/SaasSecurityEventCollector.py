@@ -1,22 +1,23 @@
 import demistomock as demisto
 import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+
 from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-VENDOR = 'paloaltonetworks'
-PRODUCT = 'saassecurity'
+VENDOR = "paloaltonetworks"
+PRODUCT = "saassecurity"
 
 MAX_ITERATIONS = 50
 MAX_EVENTS_PER_REQUEST = 1000
 MAX_LIMIT = 5000
 DEFAULT_LIMIT = 1000
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
@@ -44,74 +45,69 @@ class Client(BaseClient):
         """
         token = self.get_access_token()
         headers = {
-            'Authorization': f'Bearer {token}',
-            'Content-Type': 'application/json',
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json",
         }
         return super()._http_request(*args, headers=headers, **kwargs)  # type: ignore[misc]
 
     def get_access_token(self) -> str:
         """
-       Obtains access and refresh token from server.
-       Access token is used and stored in the integration context until expiration time.
-       After expiration, new refresh token and access token are obtained and stored in the
-       integration context.
+        Obtains access and refresh token from server.
+        Access token is used and stored in the integration context until expiration time.
+        After expiration, new refresh token and access token are obtained and stored in the
+        integration context.
 
-        Returns:
-            str: the access token.
-       """
+         Returns:
+             str: the access token.
+        """
         integration_context = get_integration_context()
-        access_token = integration_context.get('access_token')
-        token_initiate_time = integration_context.get('token_initiate_time')
-        token_expiration_seconds = integration_context.get('token_expiration_seconds')
+        access_token = integration_context.get("access_token")
+        token_initiate_time = integration_context.get("token_initiate_time")
+        token_expiration_seconds = integration_context.get("token_expiration_seconds")
 
         if access_token and not is_token_expired(
-            token_initiate_time=float(token_initiate_time),
-            token_expiration_seconds=float(token_expiration_seconds)
+            token_initiate_time=float(token_initiate_time), token_expiration_seconds=float(token_expiration_seconds)
         ):
             return access_token
 
         # there's no token or it is expired
         access_token, token_expiration_seconds = self.get_token_request()
         integration_context = {
-            'access_token': access_token,
-            'token_expiration_seconds': token_expiration_seconds,
-            'token_initiate_time': time.time()
+            "access_token": access_token,
+            "token_expiration_seconds": token_expiration_seconds,
+            "token_initiate_time": time.time(),
         }
-        demisto.debug(f'updating access token - {integration_context}')
+        demisto.debug(f"updating access token - {integration_context}")
         set_integration_context(context=integration_context)
 
         return access_token
 
     def get_token_request(self) -> tuple[str, str]:
         """
-        Sends request to retrieve token.
+         Sends request to retrieve token.
 
-       Returns:
-           tuple[str, str]: token and its expiration date
+        Returns:
+            tuple[str, str]: token and its expiration date
         """
-        base64_encoded_creds = b64_encode(f'{self.client_id}:{self.client_secret}')
+        base64_encoded_creds = b64_encode(f"{self.client_id}:{self.client_secret}")
         headers = {
-            'accept': 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded; charset=ISO-8859-1',
-            'Authorization': f'Basic {base64_encoded_creds}',
+            "accept": "application/json",
+            "Content-Type": "application/x-www-form-urlencoded; charset=ISO-8859-1",
+            "Authorization": f"Basic {base64_encoded_creds}",
         }
         data = {
-            'grant_type': 'client_credentials',
-            'scope': 'api_access',
+            "grant_type": "client_credentials",
+            "scope": "api_access",
         }
-        token_response = self._http_request('POST', url_suffix='/oauth/token', data=data, headers=headers)
-        return token_response.get('access_token'), token_response.get('expires_in')
+        token_response = self._http_request("POST", url_suffix="/oauth/token", data=data, headers=headers)
+        return token_response.get("access_token"), token_response.get("expires_in")
 
     def get_events_request(self, size: int = MAX_EVENTS_PER_REQUEST):
         """
         Get up to 100 event logs.
         """
         return self.http_request(
-            'GET',
-            url_suffix='/api/v1/log_events_bulk',
-            resp_type='response',
-            ok_codes=[200, 204],
-            params={"size": size}
+            "GET", url_suffix="/api/v1/log_events_bulk", resp_type="response", ok_codes=[200, 204], params={"size": size}
         )
 
 
@@ -146,7 +142,7 @@ def get_max_fetch(limit: Optional[int]) -> int:
     """
     if limit:
         if limit <= 0:
-            raise DemistoException('fetch limit parameter cannot be negative number or zero')
+            raise DemistoException("fetch limit parameter cannot be negative number or zero")
         if limit < 10:
             limit = 10
         if limit > MAX_LIMIT:  # do not allow limit of more than 5000 to avoid timeouts
@@ -160,7 +156,7 @@ def get_max_fetch(limit: Optional[int]) -> int:
     return limit
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_module(client: Client):
@@ -169,7 +165,7 @@ def test_module(client: Client):
     """
     # if 401 will be raised, that means that the credentials are invalid an exception will be raised.
     client.get_token_request()
-    return 'ok'
+    return "ok"
 
 
 def get_events_command(
@@ -178,16 +174,14 @@ def get_events_command(
     max_fetch: Optional[int],
     vendor: str = VENDOR,
     product: str = PRODUCT,
-    max_iterations: int = MAX_ITERATIONS
+    max_iterations: int = MAX_ITERATIONS,
 ) -> Union[str, CommandResults]:
     """
     Fetches events from the saas-security queue and return them to the war-room.
     in case should_push_events is set to True, they will be also sent to XSIAM.
     """
-    should_push_events = argToBoolean(args.get('should_push_events'))
-    events, exception = fetch_events_from_saas_security(
-        client=client, max_fetch=max_fetch, max_iterations=max_iterations
-    )
+    should_push_events = argToBoolean(args.get("should_push_events"))
+    events, exception = fetch_events_from_saas_security(client=client, max_fetch=max_fetch, max_iterations=max_iterations)
     if exception:
         raise exception
 
@@ -196,22 +190,22 @@ def get_events_command(
             try:
                 send_events_to_xsiam(events=events, vendor=vendor, product=product)
             except Exception as e:
-                demisto.setLastRun({'events': events})
+                demisto.setLastRun({"events": events})
                 raise e
         return CommandResults(
             readable_output=tableToMarkdown(
-                'SaaS Security Logs',
+                "SaaS Security Logs",
                 events,
-                headers=['log_type', 'item_type', 'item_name', 'timestamp', 'serial'],
+                headers=["log_type", "item_type", "item_name", "timestamp", "serial"],
                 headerTransform=underscoreToCamelCase,
-                removeNull=True
+                removeNull=True,
             ),
             raw_response=events,
             outputs=events,
-            outputs_key_field=['timestamp', 'log_type', 'item_name', 'item_type'],
-            outputs_prefix='SaasSecurity.Event'
+            outputs_key_field=["timestamp", "log_type", "item_name", "item_type"],
+            outputs_prefix="SaasSecurity.Event",
         )
-    return 'No events were found.'
+    return "No events were found."
 
 
 def fetch_events_from_saas_security(
@@ -235,17 +229,17 @@ def fetch_events_from_saas_security(
             response = client.get_events_request()
             if response.status_code == 204:  # if we got 204, it means there aren't events in the queue, hence breaking.
                 break
-            fetched_events = response.json().get('events') or []
-            demisto.info(f'fetched events length: ({len(fetched_events)}) in iteration {iteration_num}')
-            demisto.info(f'fetched the following events: {fetched_events} in iteration {iteration_num}')
+            fetched_events = response.json().get("events") or []
+            demisto.info(f"fetched events length: ({len(fetched_events)}) in iteration {iteration_num}")
+            demisto.info(f"fetched the following events: {fetched_events} in iteration {iteration_num}")
             events.extend(fetched_events)
             events_len = len(events)
             if max_fetch:
                 under_max_fetch = events_len < max_fetch
-            demisto.info(f'Collected already {events_len} events until iteration {iteration_num}')
+            demisto.info(f"Collected already {events_len} events until iteration {iteration_num}")
             iteration_num += 1
     except Exception as exc:
-        demisto.info(f'Got error get_events: {exc}')
+        demisto.info(f"Got error get_events: {exc}")
         return events, exc
 
     return events, None
@@ -253,18 +247,18 @@ def fetch_events_from_saas_security(
 
 def main() -> None:  # pragma: no cover
     params = demisto.params()
-    client_id: str = params.get('credentials', {}).get('identifier', '')
-    client_secret: str = params.get('credentials', {}).get('password', '')
-    base_url: str = params.get('url', '').rstrip('/')
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+    client_id: str = params.get("credentials", {}).get("identifier", "")
+    client_secret: str = params.get("credentials", {}).get("password", "")
+    base_url: str = params.get("url", "").rstrip("/")
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
     args = demisto.args()
 
-    max_fetch = get_max_fetch(arg_to_number(args.get('limit') or params.get('max_fetch')))
-    max_iterations = arg_to_number(params.get('max_iterations')) or MAX_ITERATIONS
+    max_fetch = get_max_fetch(arg_to_number(args.get("limit") or params.get("max_fetch")))
+    max_iterations = arg_to_number(params.get("max_iterations")) or MAX_ITERATIONS
 
     command = demisto.command()
-    demisto.info(f'Command being called is {command}')
+    demisto.info(f"Command being called is {command}")
     try:
         client = Client(
             base_url=base_url,
@@ -273,43 +267,37 @@ def main() -> None:  # pragma: no cover
             verify=verify_certificate,
             proxy=proxy,
         )
-        if command == 'test-module':
+        if command == "test-module":
             return_results(test_module(client))
-        elif command == 'fetch-events':
+        elif command == "fetch-events":
             integration_context = demisto.getIntegrationContext()
-            demisto.info(f'{integration_context=}')
-            if not integration_context.get('events'):
+            demisto.info(f"{integration_context=}")
+            if not integration_context.get("events"):
                 events, exception = fetch_events_from_saas_security(
                     client=client, max_fetch=max_fetch, max_iterations=max_iterations
                 )
                 if len(events) == 0 and exception:
-                    demisto.info(f'got exception when trying to fetch events: [{exception}]')
+                    demisto.info(f"got exception when trying to fetch events: [{exception}]")
             else:
-                events = integration_context.get('events')
-                demisto.info('Fetching events from integration context')
+                events = integration_context.get("events")
+                demisto.info("Fetching events from integration context")
             try:
-                demisto.info(f'Sending the following amount of events into XSIAM: {len(events)}')
-                send_events_to_xsiam(
-                    events=events,
-                    vendor=VENDOR,
-                    product=PRODUCT
-                )
+                demisto.info(f"Sending the following amount of events into XSIAM: {len(events)}")
+                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
                 demisto.setIntegrationContext({})
             except Exception as e:
-                demisto.info(f'Received error when trying to send events to XSIAM: [{e}]')
-                demisto.setIntegrationContext({'events': events})
-                demisto.info(f'Successfully set the following events into integration context: {events}')
-        elif command == 'saas-security-get-events':
+                demisto.info(f"Received error when trying to send events to XSIAM: [{e}]")
+                demisto.setIntegrationContext({"events": events})
+                demisto.info(f"Successfully set the following events into integration context: {events}")
+        elif command == "saas-security-get-events":
             return_results(get_events_command(client, args, max_fetch=max_fetch, max_iterations=max_iterations))
         else:
-            raise NotImplementedError(f'Command {command} is not implemented in saas-security integration.')
+            raise NotImplementedError(f"Command {command} is not implemented in saas-security integration.")
     except Exception as e:
-        return_error(
-            f'Failed to execute {command} command. Error in Palo Alto Saas Security Event Collector Integration [{e}].'
-        )
+        return_error(f"Failed to execute {command} command. Error in Palo Alto Saas Security Event Collector Integration [{e}].")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
