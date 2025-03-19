@@ -1119,13 +1119,11 @@ def checkpoint_access_rule_show_command(client: Client, identifier: str, layer: 
         limit (int): The maximal number of returned results.
         offset (int): Number of the results to initially skip.
     """
-    printable_result = []
-    readable_output = ''
 
     result = client.show_access_rule(identifier, layer, limit, offset)
 
     readable_output = tableToMarkdown(f'CheckPoint data for access rule {identifier} in layer {layer}:',
-                                          result, removeNull=True)
+                                      result, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='CheckPoint.AccessRule',
         outputs_key_field='uid',
