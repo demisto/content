@@ -79,9 +79,9 @@ repos:
     language: node
     files: "^(.*/)?README\\.md$"
     require_serial: true
-    additional_dependencies: #match package-lock of content docs
-      - "@mdx-js/mdx@1.6.22"
-      - "fs-extra@9.1.0"
+    additional_dependencies:
+      - "@mdx-js/mdx@1.6.22"  #match package-lock of content docs
+      - "fs-extra"
   - id: xsoar-lint
     name: xsoar-lint
     description: Run xsoar-linter on the code in content packs
