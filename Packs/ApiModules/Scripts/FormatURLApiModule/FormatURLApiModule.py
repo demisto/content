@@ -627,14 +627,7 @@ class ProofPointFormatter(object):
             self.v3_run_mapping[value] = run_length
             run_length += 1
 
-    def decode(self):
-        match = self.ud_pattern.search(self.url)
-        if match and match.group(2) == 'v3':
-                return self.decode_v3(self.url)
-        else:
-            raise ValueError('Unrecognized v3 version in: ', self.url)
-
-    def decode_v3(self, rewritten_url):
+    def decode_v3(self):
         def replace_token(token):
             if token == '*':
                 character = self.dec_bytes[self.current_marker]
@@ -658,22 +651,26 @@ class ProofPointFormatter(object):
                 return built_string
             else:
                 return text[start_pos:len(text)]
+        match = self.ud_pattern.search(self.url)
+        if match and match.group(2) == 'v3':
+            match = self.v3_pattern.search(self.url)
+            if match:
+                url = match.group('url')
+                singleSlash = self.v3_single_slash.findall(url)
+                if singleSlash and len(singleSlash[0]) == 2:
+                    url = singleSlash[0][0] + "/" + singleSlash[0][1]
+                encoded_url = urllib.parse.unquote(url)
+                enc_bytes = match.group('enc_bytes')
+                enc_bytes += '=='
+                self.dec_bytes = (urlsafe_b64decode(enc_bytes)).decode('utf-8')
+                self.current_marker = 0
+                return substitute_tokens(encoded_url)
 
-        match = self.v3_pattern.search(rewritten_url)
-        if match:
-            url = match.group('url')
-            singleSlash = self.v3_single_slash.findall(url)
-            if singleSlash and len(singleSlash[0]) == 2:
-                url = singleSlash[0][0] + "/" + singleSlash[0][1]
-            encoded_url = urllib.parse.unquote(url)
-            enc_bytes = match.group('enc_bytes')
-            enc_bytes += '=='
-            self.dec_bytes = (urlsafe_b64decode(enc_bytes)).decode('utf-8')
-            self.current_marker = 0
-            return substitute_tokens(encoded_url)
-
+            else:
+                raise ValueError('Error parsing URL')
         else:
-            raise ValueError('Error parsing URL')
+            raise ValueError('Unrecognized v3 version in: ', self.url)
+
 class URLFormatter:
 
     # URL Security Wrappers
@@ -774,7 +771,7 @@ class URLFormatter:
         else:
             # Proofpoint v3
             try:
-                result = ProofPointFormatter(original_url).decode()
+                result = ProofPointFormatter(original_url).decode_v3()
                 return result
             except Exception as e:
                 return urllib.parse.unquote(url[1])
