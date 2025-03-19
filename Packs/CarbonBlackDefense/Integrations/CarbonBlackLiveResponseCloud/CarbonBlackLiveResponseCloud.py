@@ -52,7 +52,7 @@ def delete_file_command(api_client: CBCloudAPI, device_id: str, source_path: str
 # Using Py API
 def list_directory_command(api_client: CBCloudAPI, device_id: str, directory_path: str, limit: Union[int, str]):
     """
-       Get list of directory entries in the remote device
+       Get list of directory entries in the remote device test
 
        :param api_client: The API client
 
