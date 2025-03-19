@@ -1684,7 +1684,6 @@ class IntegrationLogger(object):
         self.buffering = state
 
     def print_log(self, verbose=False):
-        demisto.info(f"[test] preparing to print logs with {verbose=}")
         if self.write_buf:
             self.messages.append("".join(self.write_buf))
         if self.messages:
@@ -8830,7 +8829,6 @@ class DebugLogger(object):
     """
 
     def __init__(self):
-        demisto.info("[test] init DebugLogger")
         self.handler = None  # just in case our http_client code throws an exception. so we don't error in the __del__
         self.int_logger = IntegrationLogger()
         self.int_logger.set_buffering(False)
@@ -8858,7 +8856,6 @@ class DebugLogger(object):
         self.root_logger.addHandler(self.handler)
 
     def __del__(self):
-        demisto.info("[test] remove DebugLogger")
         if self.handler:
             self.root_logger.setLevel(self.prev_log_level)
             self.root_logger.removeHandler(self.handler)
@@ -9447,7 +9444,8 @@ if 'requests' in sys.modules:
                     timeout=timeout,
                     **kwargs
                 )
-                self._handle_error(error_handler, res, with_metrics)
+                if not self._is_status_code_valid(res, ok_codes):
+                    self._handle_error(error_handler, res, with_metrics)
 
                 return self._handle_success(res, resp_type, empty_valid_codes, return_empty_response, with_metrics)
 
@@ -11992,7 +11990,6 @@ def xsiam_api_call_with_retries(
         )
         status_code = response.status_code
         demisto.debug('received status code: {status_code}'.format(status_code=status_code))
-        status_code = 429
         if status_code == 429:
             time.sleep(1)
         attempt_num += 1
@@ -12022,20 +12019,19 @@ def split_data_to_chunks(data, target_chunk_size):
     if isinstance(data, str):
         data = data.split('\n')
     for data_part in data:
-        yield [data_part]
-        # if chunk_size >= target_chunk_size:
-        #     demisto.debug("reached max chunk size, sending chunk with size: {size}".format(size=chunk_size))
-        #     yield chunk
-        #     chunk = []
-        #     chunk_size = 0
-        # data_part_size = sys.getsizeof(data_part)
-        # if data_part_size >= MAX_ALLOWED_ENTRY_SIZE:
-        #     demisto.error(
-        #         "entry size {} is larger than the maximum allowed entry size {}, skipping this entry".format(data_part_size,
-        #                                                                                                      MAX_ALLOWED_ENTRY_SIZE))
-        #     continue
-        # chunk.append(data_part)
-        # chunk_size += data_part_size
+        if chunk_size >= target_chunk_size:
+            demisto.debug("reached max chunk size, sending chunk with size: {size}".format(size=chunk_size))
+            yield chunk
+            chunk = []
+            chunk_size = 0
+        data_part_size = sys.getsizeof(data_part)
+        if data_part_size >= MAX_ALLOWED_ENTRY_SIZE:
+            demisto.error(
+                "entry size {} is larger than the maximum allowed entry size {}, skipping this entry".format(data_part_size,
+                                                                                                             MAX_ALLOWED_ENTRY_SIZE))
+            continue
+        chunk.append(data_part)
+        chunk_size += data_part_size
     if chunk_size != 0:
         demisto.debug("sending the remaining chunk with size: {size}".format(size=chunk_size))
         yield chunk
