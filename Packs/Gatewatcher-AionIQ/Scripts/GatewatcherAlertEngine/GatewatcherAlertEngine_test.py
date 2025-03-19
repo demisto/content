@@ -1,8 +1,7 @@
 import json
-import pytest
+
 import demistomock as demisto  # noqa: F401
-
-
+import pytest
 from GatewatcherAlertEngine import gatewatcherAlertEngine
 
 
@@ -13,16 +12,8 @@ from GatewatcherAlertEngine import gatewatcherAlertEngine
             "active_cti",
             {
                 "event": {"module": "active_cti"},
-                "dns": {
-                    "query": [{"type": "query"}]
-                },
-                "flow": {
-                    "bytes_toclient": 0,
-                    "bytes_toserver": 0,
-                    "pkts_toclient": 0,
-                    "pkts_toserver": 0,
-                    "start": "2025-03-06"
-                },
+                "dns": {"query": [{"type": "query"}]},
+                "flow": {"bytes_toclient": 0, "bytes_toserver": 0, "pkts_toclient": 0, "pkts_toserver": 0, "start": "2025-03-06"},
                 "sigflow": {
                     "action": "allowed",
                     "category": "cat",
@@ -33,8 +24,8 @@ from GatewatcherAlertEngine import gatewatcherAlertEngine
                     "rev": 0,
                     "signature": "sign",
                     "signature_id": 0,
-                    "stream": 0
-                }
+                    "stream": 0,
+                },
             },
             [
                 "dns.query",
@@ -52,8 +43,8 @@ from GatewatcherAlertEngine import gatewatcherAlertEngine
                 "sigflow.rev",
                 "sigflow.signature",
                 "sigflow.signature_id",
-                "sigflow.stream"
-            ]
+                "sigflow.stream",
+            ],
         ),
         (
             "malcore",
@@ -78,7 +69,7 @@ from GatewatcherAlertEngine import gatewatcherAlertEngine
                     "processing_time": 0,
                     "reporting_token": "token",
                     "state": "Infected",
-                    "total_found": "2/16"
+                    "total_found": "2/16",
                 },
             },
             [
@@ -100,8 +91,8 @@ from GatewatcherAlertEngine import gatewatcherAlertEngine
                 "malcore.processing_time",
                 "malcore.reporting_token",
                 "malcore.state",
-                "malcore.total_found"
-            ]
+                "malcore.total_found",
+            ],
         ),
         (
             "malcore_retroanalyzer",
@@ -126,7 +117,7 @@ from GatewatcherAlertEngine import gatewatcherAlertEngine
                     "processing_time": 0,
                     "reporting_token": "token",
                     "state": "Infected",
-                    "total_found": "2/16"
+                    "total_found": "2/16",
                 },
             },
             [
@@ -148,8 +139,8 @@ from GatewatcherAlertEngine import gatewatcherAlertEngine
                 "malcore_retroanalyzer.processing_time",
                 "malcore_retroanalyzer.reporting_token",
                 "malcore_retroanalyzer.state",
-                "malcore_retroanalyzer.total_found"
-            ]
+                "malcore_retroanalyzer.total_found",
+            ],
         ),
         (
             "shellcode_detect",
@@ -160,16 +151,10 @@ from GatewatcherAlertEngine import gatewatcherAlertEngine
                     "encodings": [{"name": "b64", "count": 0}],
                     "id": "avezv-5654-greb",
                     "sample_id": "sample",
-                    "sub_type": "embedded_shellcode"
+                    "sub_type": "embedded_shellcode",
                 },
             },
-            [
-                "shellcode.analysis",
-                "shellcode.encodings",
-                "shellcode.id",
-                "shellcode.sample_id",
-                "shellcode.sub_type"
-            ]
+            ["shellcode.analysis", "shellcode.encodings", "shellcode.id", "shellcode.sample_id", "shellcode.sub_type"],
         ),
         (
             "malicious_powershell_detect",
@@ -180,7 +165,7 @@ from GatewatcherAlertEngine import gatewatcherAlertEngine
                     "proba_obfuscated": 1,
                     "sample_id": "sample",
                     "score": 0,
-                    "score_details": {"test": 0}
+                    "score_details": {"test": 0},
                 },
             },
             [
@@ -188,8 +173,8 @@ from GatewatcherAlertEngine import gatewatcherAlertEngine
                 "malicious_powershell.proba_obfuscated",
                 "malicious_powershell.sample_id",
                 "malicious_powershell.score",
-                "malicious_powershell.score_details"
-            ]
+                "malicious_powershell.score_details",
+            ],
         ),
         (
             "sigflow_alert",
@@ -205,7 +190,7 @@ from GatewatcherAlertEngine import gatewatcherAlertEngine
                     "rev": 0,
                     "signature": "sign",
                     "signature_id": 0,
-                    "stream": 0
+                    "stream": 0,
                 },
             },
             [
@@ -218,8 +203,8 @@ from GatewatcherAlertEngine import gatewatcherAlertEngine
                 "sigflow.rev",
                 "sigflow.signature",
                 "sigflow.signature_id",
-                "sigflow.stream"
-            ]
+                "sigflow.stream",
+            ],
         ),
         (
             "dga_detect",
@@ -230,16 +215,10 @@ from GatewatcherAlertEngine import gatewatcherAlertEngine
                     "dga_ratio": 0.75,
                     "malware_behavior_confidence": 50,
                     "nx_domain_count": 5,
-                    "top_DGA": ["a.fr"]
+                    "top_DGA": ["a.fr"],
                 },
             },
-            [
-                "dga.dga_count",
-                "dga.dga_ratio",
-                "dga.malware_behavior_confidence",
-                "dga.nx_domain_count",
-                "dga.top_DGA"
-            ]
+            ["dga.dga_count", "dga.dga_ratio", "dga.malware_behavior_confidence", "dga.nx_domain_count", "dga.top_DGA"],
         ),
         (
             "ioc",
@@ -271,7 +250,7 @@ from GatewatcherAlertEngine import gatewatcherAlertEngine
                     "updated_date": "2025-01-12",
                     "usage_mode": "Detection",
                     "value": "Some IOC value",
-                    "vulnerabilities": ["CVE-2021-1234"]
+                    "vulnerabilities": ["CVE-2021-1234"],
                 },
             },
             [
@@ -300,24 +279,16 @@ from GatewatcherAlertEngine import gatewatcherAlertEngine
                 "ioc.updated_date",
                 "ioc.usage_mode",
                 "ioc.value",
-                "ioc.vulnerabilities"
-            ]
+                "ioc.vulnerabilities",
+            ],
         ),
         (
             "ransomware_detect",
             {
                 "event": {"module": "ransomware_detect"},
-                "ransomware": {
-                    "alert_threshold": 0,
-                    "malicious_behavior_confidence": 0,
-                    "session_score": 0
-                },
+                "ransomware": {"alert_threshold": 0, "malicious_behavior_confidence": 0, "session_score": 0},
             },
-            [
-                "ransomware.alert_threshold",
-                "ransomware.malicious_behavior_confidence",
-                "ransomware.session_score"
-            ]
+            ["ransomware.alert_threshold", "ransomware.malicious_behavior_confidence", "ransomware.session_score"],
         ),
         (
             "beacon_detect",
@@ -330,7 +301,7 @@ from GatewatcherAlertEngine import gatewatcherAlertEngine
                     "mean_time_interval": 0,
                     "possible_cnc": "some_address",
                     "session_count": 4,
-                    "type": "HTTP"
+                    "type": "HTTP",
                 },
             },
             [
@@ -340,8 +311,8 @@ from GatewatcherAlertEngine import gatewatcherAlertEngine
                 "beacon.mean_time_interval",
                 "beacon.possible_cnc",
                 "beacon.session_count",
-                "beacon.type"
-            ]
+                "beacon.type",
+            ],
         ),
         (
             "retrohunt",
@@ -373,12 +344,9 @@ from GatewatcherAlertEngine import gatewatcherAlertEngine
                     "updated_date": "2025-01-12",
                     "usage_mode": "Detection",
                     "value": "Some IOC value",
-                    "vulnerabilities": ["CVE-2021-1234"]
+                    "vulnerabilities": ["CVE-2021-1234"],
                 },
-                "matched_event": {
-                    "content": {"event": {"id": "id123"}},
-                    "id": "id123"
-                }
+                "matched_event": {"content": {"event": {"id": "id123"}}, "id": "id123"},
             },
             [
                 "ioc.campaigns",
@@ -408,10 +376,10 @@ from GatewatcherAlertEngine import gatewatcherAlertEngine
                 "ioc.value",
                 "ioc.vulnerabilities",
                 "matched_event.content",
-                "matched_event.id"
-            ]
-        )
-    ]
+                "matched_event.id",
+            ],
+        ),
+    ],
 )
 def test_gatewatcherAlertEngine(mocker, monkeypatch, module_name, module_data, expected_keys):
     """
@@ -421,13 +389,9 @@ def test_gatewatcherAlertEngine(mocker, monkeypatch, module_name, module_data, e
     """
 
     # Mock demisto.incident() to return our test data
-    mock_incident = {
-        'CustomFields': {
-            'GatewatcherRawEvent': json.dumps(module_data)
-        }
-    }
+    mock_incident = {"CustomFields": {"GatewatcherRawEvent": json.dumps(module_data)}}
 
-    mocker.patch.object(demisto, 'incident', return_value=mock_incident)
+    mocker.patch.object(demisto, "incident", return_value=mock_incident)
 
     # WHEN
     result = gatewatcherAlertEngine()
