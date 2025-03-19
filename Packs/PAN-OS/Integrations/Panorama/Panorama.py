@@ -301,7 +301,7 @@ class MaxFetch(TypedDict):
 
 class Offset(TypedDict):
     '''dict[str, int]
-    Contains the log types mapped to the offset needed.
+    Contains the log types mapped to the offset needed test.
     '''
     Traffic: NotRequired[int]
     Threat: NotRequired[int]
