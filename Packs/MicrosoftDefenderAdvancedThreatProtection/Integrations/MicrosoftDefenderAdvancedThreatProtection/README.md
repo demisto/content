@@ -7417,7 +7417,24 @@ Run this command to get the sofware installed on a specific machine.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | machine_id | Machine ID. Use the !microsoft-atp-get-machines command to get the ID. | Required |
- 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.Software.id | String | The Software ID. |
+| MicrosoftATP.Software.name | String | The software name. |
+| MicrosoftATP.Software.vendor | String | The software vendor name. |
+| MicrosoftATP.Software.weaknesses | Number | The amount of weaknesses present in the software. |
+| MicrosoftATP.Software.publicExploit | Boolean | Does this software have a public exploit? |
+| MicrosoftATP.Software.activeAlert | Boolean | Does this software have an active alert? |
+| MicrosoftATP.Software.exposedMachines | Number | The amount of machines exposed to this software. |
+| MicrosoftATP.Software.installedMachines | Number | The amount of machines with this software installed. |
+| MicrosoftATP.Software.impactScore | Number | The impact score of the software. |
+| MicrosoftATP.Software.isNormalized | Number | Is the software value normalized? |
+| MicrosoftATP.Software.category | String | The software category. |
+| MicrosoftATP.Software.distributions | String | The distributions on which this software is present. |
+
 #### Command example
 ```!microsoft-atp-get-machine-software machine_id="12342c13fef```
 
