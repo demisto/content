@@ -182,7 +182,7 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
         ids = set(last_run.get('ids', []))
 
     current_start_date = event_date
-    demisto.debug(f'Fetching events from {current_start_date} to {end}')
+    demisto.debug(f'Fetching events from {current_start_date=} to {end=}')
     while True:
         events = get_and_reorganize_events(client, event_date, end, ids)
         if not events:
