@@ -2,7 +2,7 @@
     "name": "Netscout Arbor Edge Defense - AED",
     "description": "Use the Netscout Arbor Edge Defense integration to detect and stop both inbound threats and outbound malicious communication from compromised internal devices.",
     "support": "partner",
-    "currentVersion": "1.0.27",
+    "currentVersion": "1.0.28",
     "author": "Netscout",
     "url": "https://www.netscout.com/product/arbor-aed-aem",
     "email": "supportmanagement@netscout.com",
