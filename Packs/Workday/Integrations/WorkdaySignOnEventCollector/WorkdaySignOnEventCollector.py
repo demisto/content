@@ -13,9 +13,27 @@ PRODUCT = "signon"
 REQUEST_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # Old format for making requests
 EVENT_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"  # New format for processing events
 TIMEDELTA = 1
+VERSION_PATTERN = re.compile(r"^v\d+\.\d+$")
 
 # To preserve the XML template, we are ignoring the long line ruff validation
 # ruff: noqa: E501
+
+
+def get_api_version(params, default="v40.0"):
+    """
+    Retrieve and validate the API version from the parameters dictionary.
+
+    Parameters:
+        params (dict): Dictionary containing parameters, potentially including 'api_version'.
+        default (str): The default API version to use if 'api_version' is not provided or invalid.
+
+    Returns:
+        str: The validated API version.
+    """
+    api_version = params.get("api_version", default)
+    if VERSION_PATTERN.match(api_version):
+        return api_version
+    return default
 
 
 def get_from_time(seconds_ago: int) -> str:
@@ -83,23 +101,27 @@ def generate_pseudo_id(event: dict) -> str:
 
 class Client(BaseClient):
     """
-    Client will implement the service API, and should not contain any Demisto logic.
+    Client will implement the service API and should not contain any Demisto logic.
     Should only do requests and return data.
     """
 
-    def __init__(
-        self,
-        base_url: str,
-        verify_certificate: bool,
-        proxy: bool,
-        tenant_name: str,
-        username: str,
-        password: str,
-        api_version: str,
-    ):
+    def __init__(self, params: dict):
+        base_url = params.get("base_url", "invalid")
+        tenant_name = params.get("tenant_name")
+        api_version = get_api_version(params)
+        username = params.get("credentials", {}).get("identifier")
+        password = params.get("credentials", {}).get("password")
+        verify_certificate = not params.get("insecure", False)
+        proxy = params.get("proxy", False)
+
+        if not base_url.startswith("https://"):
+            raise ValueError("Invalid base URL. Should begin with https://")
+
+        base_api_url = f"{base_url}/ccx/service/{tenant_name}/Identity_Management/{api_version}"
+
         headers = {"content-type": "text/xml;charset=UTF-8"}
 
-        super().__init__(base_url=base_url, verify=verify_certificate, proxy=proxy, headers=headers)
+        super().__init__(base_url=base_api_url, verify=verify_certificate, proxy=proxy, headers=headers)
 
         self.tenant_name = tenant_name
         self.username = escape(username)
@@ -480,33 +502,12 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
     params = demisto.params()
 
-    tenant_name = params.get("tenant_name")
-    base_url = params.get("base_url")
-
-    if not base_url.startswith("https://"):
-        raise ValueError("Invalid base URL. Should begin with https://")
-
-    api_version = params.get("api_version", "v40.0")
-    url = f"{base_url}/ccx/service/{tenant_name}/Identity_Management/{api_version}"
-
-    username = params.get("credentials", {}).get("identifier")
-    password = params.get("credentials", {}).get("password")
-
-    verify_certificate = not params.get("insecure", False)
-    proxy = params.get("proxy", False)
     max_fetch = arg_to_number(params.get("max_fetch")) or 10000
 
     demisto.debug(f"Command being called is {command}")
     try:
-        client = Client(
-            base_url=url,
-            tenant_name=tenant_name,
-            username=username,
-            password=password,
-            verify_certificate=verify_certificate,
-            proxy=proxy,
-            api_version=api_version,
-        )
+        client = Client(params=params
+                        )
 
         if command == "test-module":
             return_results(module_of_testing(client))
@@ -544,7 +545,11 @@ def main() -> None:  # pragma: no cover
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
+        return_error(
+            f"Failed to execute {demisto.command()} command.\n"
+            f"Error:\n{str(e)}\n"
+            f"Traceback:\n{traceback.format_exc()}"
+        )
 
 
 """ ENTRY POINT """
