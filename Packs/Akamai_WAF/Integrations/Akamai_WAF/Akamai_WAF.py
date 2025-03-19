@@ -713,7 +713,7 @@ class Client(BaseClient):
 
         return self._http_request(
             method="PUT",
-            url_suffix=f"/network-list/v2/network-lists/" f"{network_list_id}?extended=true&includeElements=true",
+            url_suffix=f"/network-list/v2/network-lists/{network_list_id}?extended=true&includeElements=true",
             json_data=body,
         )
 
@@ -732,7 +732,7 @@ class Client(BaseClient):
         body = {"comments": comment, "notificationRecipients": notify}
         return self._http_request(
             method="POST",
-            url_suffix=f"/network-list/v2/network-lists/{network_list_id}/environments/{env}" "/activate",
+            url_suffix=f"/network-list/v2/network-lists/{network_list_id}/environments/{env}/activate",
             json_data=body,
             resp_type="response",
         )
@@ -1549,7 +1549,7 @@ class Client(BaseClient):
 
         return self._http_request(
             method="PUT",
-            url_suffix=f"appsec/v1/configs/{config_id}/versions/{config_version}/" f"match-targets/{match_target_id}",
+            url_suffix=f"appsec/v1/configs/{config_id}/versions/{config_version}/match-targets/{match_target_id}",
             headers=headers,
             json_data=body,
         )
@@ -3796,7 +3796,8 @@ def add_papi_property_hostname_command(
     raw_response["edgeHostnameId"] = edge_hostname_id
     entry_context, human_readable_ec = add_papi_property_hostname_command_ec(raw_response)
     context_entry: dict = {
-        f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.EdgeHostnames(val.DomainPrefix && val.DomainPrefix == obj.DomainPrefix)": entry_context
+        f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.EdgeHostnames(val.DomainPrefix && val.DomainPrefix"
+        f" == obj.DomainPrefix)": entry_context
     }
     human_readable = tableToMarkdown(
         name=title,
@@ -3911,7 +3912,8 @@ def new_papi_edgehostname_command(
             raw_response["domainPrefix"] = domain_prefix
             entry_context, human_readable_ec = new_papi_edgehostname_command_ec(raw_response)
     context_entry: dict = {
-        f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.EdgeHostnames(val.DomainPrefix && val.DomainPrefix == obj.DomainPrefix)": entry_context
+        f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.EdgeHostnames(val.DomainPrefix && val.DomainPrefix"
+        f" == obj.DomainPrefix)": entry_context
     }
     human_readable = tableToMarkdown(
         name=title,
@@ -4268,7 +4270,8 @@ def clone_security_policy_command(
             title = f"{INTEGRATION_NAME} - clone security policy command - found existing Security Policy"
             entry_context, human_readable_ec = clone_security_policy_command_ec(returnDict)
             context_entry = {
-                f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig.Policy(val.PolicyName && val.PolicyName == obj.PolicyName)": entry_context
+                f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig.Policy(val.PolicyName && val.PolicyName"
+                f" == obj.PolicyName)": entry_context
             }
             human_readable = tableToMarkdown(name=title, t=human_readable_ec, removeNull=True)
             return human_readable, context_entry, raw_response
@@ -4297,7 +4300,8 @@ def clone_security_policy_command(
             title = f"{INTEGRATION_NAME} - clone security policy"
             entry_context, human_readable_ec = clone_security_policy_command_ec(raw_response)
             context_entry = {
-                f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig.Policy(val.PolicyName && val.PolicyName == obj.PolicyName)": entry_context
+                f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig.Policy(val.PolicyName && val.PolicyName"
+                f" == obj.PolicyName)": entry_context
             }
             human_readable = tableToMarkdown(name=title, t=human_readable_ec, removeNull=True)
         return human_readable, context_entry, raw_response
@@ -5154,7 +5158,7 @@ def list_papi_property_by_group_command(
     entry_context = raw_response.get("properties", {}).get("items", [])
     human_readable_ec = entry_context
     context_entry: dict = {
-        f"{INTEGRATION_CONTEXT_NAME}.{context_path}" f"(val.GroupId && val.GroupId == obj.GroupId)": entry_context
+        f"{INTEGRATION_CONTEXT_NAME}.{context_path}(val.GroupId && val.GroupId == obj.GroupId)": entry_context
     }
     human_readable = tableToMarkdown(
         name=title,
@@ -5259,7 +5263,7 @@ def list_appsec_configuration_activation_history_command(
     entry_context, human_readable_ec = list_appsec_configuration_activation_history_ec(
         raw_response=raw_response, config_id=config_id
     )
-    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig" f"(val.Id && val.Id == obj.Id)": entry_context}
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig(val.Id && val.Id == obj.Id)": entry_context}
 
     human_readable = tableToMarkdown(
         name=title,
@@ -5904,7 +5908,8 @@ def main():
         f"{INTEGRATION_COMMAND_NAME}-clone-appsec-config-version": clone_appsec_config_version_command,
         f"{INTEGRATION_COMMAND_NAME}-patch-papi-property-rule-httpmethods": patch_papi_property_rule_httpmethods_command,
         f"{INTEGRATION_COMMAND_NAME}-get-papi-property-activation-status-command": get_papi_property_activation_status_command,
-        f"{INTEGRATION_COMMAND_NAME}-get-papi-edgehostname-creation-status-command": get_papi_edgehostname_creation_status_command,
+        f"{INTEGRATION_COMMAND_NAME}-get-papi-edgehostname-creation-status-command":
+            get_papi_edgehostname_creation_status_command,
         f"{INTEGRATION_COMMAND_NAME}-acknowledge-warning-command": acknowledge_warning_command,
         f"{INTEGRATION_COMMAND_NAME}-get-production-deployment": get_production_deployment_command,
         f"{INTEGRATION_COMMAND_NAME}-get-change-history": get_change_history_command,
@@ -5920,7 +5925,8 @@ def main():
         f"{INTEGRATION_COMMAND_NAME}-get-papi-property-by-id": get_papi_property_by_id_command,
         f"{INTEGRATION_COMMAND_NAME}-new-papi-property-version": new_papi_property_version_command,
         f"{INTEGRATION_COMMAND_NAME}-list-papi-property-activations": list_papi_property_activations_command,
-        f"{INTEGRATION_COMMAND_NAME}-list-appsec-configuration-activation-history": list_appsec_configuration_activation_history_command,
+        f"{INTEGRATION_COMMAND_NAME}-list-appsec-configuration-activation-history":
+            list_appsec_configuration_activation_history_command,
         f"{INTEGRATION_COMMAND_NAME}-list-papi-property-by-hostname": list_papi_property_by_hostname_command,
         f"{INTEGRATION_COMMAND_NAME}-list-siteshield-map": list_siteshield_maps_command,
         f"{INTEGRATION_COMMAND_NAME}-get-cps-enrollment-deployment": get_cps_enrollment_deployment_command,

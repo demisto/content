@@ -366,7 +366,7 @@ def process_query_info(url_information: dict, uri: str, params: dict) -> Command
             return create_indicator_result_with_dbotscore_unknown(
                 indicator=uri, indicator_type=DBotScoreType.URL, reliability=params.get("reliability")
             )
-        human_readable = f"## URLhaus reputation for {uri}\n" f"Invalid URL!"
+        human_readable = f"## URLhaus reputation for {uri}\nInvalid URL!"
         return CommandResults(
             readable_output=human_readable,
             raw_response=url_information,
@@ -527,7 +527,7 @@ def run_domain_command(domain: str, params: dict) -> CommandResults:
         )
 
     elif domain_information["query_status"] == "invalid_host":
-        human_readable = f"## URLhaus reputation for {domain}\n" f"Invalid domain!"
+        human_readable = f"## URLhaus reputation for {domain}\nInvalid domain!"
         return CommandResults(readable_output=human_readable, raw_response=domain_information)
     else:
         raise DemistoException(f'Query results = {domain_information["query_status"]}', res=domain_information)
@@ -696,7 +696,7 @@ def run_file_command(hash: str, params: dict) -> CommandResults:
     elif file_information["query_status"] in ["invalid_md5", "invalid_sha256"]:
         human_readable = (
             f'## URLhaus reputation for {hash_type.upper()} : {hash}\n'
-            f'Invalid {file_information["query_status"].lstrip("invalid_").upper()}!'
+            f'Invalid {file_information["query_status"].lstrip("invalid_").upper()}!'   # noqa: B005
         )
         return CommandResults(readable_output=human_readable, raw_response=file_information)
     else:
@@ -754,7 +754,7 @@ def urlhaus_download_sample_command(**kwargs):
 
 """ COMMANDS MANAGER / SWITCH PANEL """
 
-LOG("Command being called is %s" % (demisto.command()))
+LOG(f"Command being called is {demisto.command()}")
 
 
 def main():

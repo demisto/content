@@ -235,7 +235,7 @@ def test_get_remote_data_command(requests_mock):
     }
     result = get_remote_data_command(args)
     assert metadata.get("data").items() <= result.mirrored_object.items()
-    assert "xsoar_mirroring" in result.mirrored_object.keys()
+    assert "xsoar_mirroring" in result.mirrored_object
     assert xsoar_mirroring.items() == result.mirrored_object.get("xsoar_mirroring").items()
     assert {"severity": 1} in result.entries
     assert {"arguscasestatus": "pendingCustomer"} in result.entries

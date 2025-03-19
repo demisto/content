@@ -386,7 +386,7 @@ def test_fetch_incidents_command():
 @pytest.mark.parametrize(
     "args, expected",
     [
-        (dict(), (MINIMUM_POSITIVE_VALUE, DEFAULT_PAGE_SIZE_VALUE)),
+        ({}, (MINIMUM_POSITIVE_VALUE, DEFAULT_PAGE_SIZE_VALUE)),
         ({"page": 5}, (5, DEFAULT_PAGE_SIZE_VALUE)),
         ({"limit": 250}, (MINIMUM_POSITIVE_VALUE, 250)),
         ({"page_size": 20}, (MINIMUM_POSITIVE_VALUE, 20)),

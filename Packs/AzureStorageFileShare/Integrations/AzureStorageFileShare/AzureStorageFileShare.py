@@ -184,7 +184,7 @@ class Client:
             shutil.copy(xsoar_system_file_path, new_file_name)
         except FileNotFoundError:
             raise Exception(
-                "Failed to prepare file for upload. " "The process of importing and copying the file data from XSOAR failed."
+                "Failed to prepare file for upload. The process of importing and copying the file data from XSOAR failed."
             )
 
         try:
@@ -226,7 +226,7 @@ class Client:
             shutil.copy(xsoar_system_file_path, new_file_name)
         except FileNotFoundError:
             raise Exception(
-                "Failed to prepare file for upload. " "The process of importing and copying the file data from XSOAR failed."
+                "Failed to prepare file for upload. The process of importing and copying the file data from XSOAR failed."
             )
 
         try:

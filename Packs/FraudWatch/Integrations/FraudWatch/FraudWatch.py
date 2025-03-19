@@ -392,7 +392,7 @@ def test_module(client: Client, params: Dict) -> str:
         (str): 'ok' if test passed, anything else will fail the test.
     """
     try:
-        fetch_incidents_command(client, params, dict())
+        fetch_incidents_command(client, params, {})
         return "ok"
     except DemistoException as e:
         if "Forbidden" in str(e) or "Authorization" in str(e):
@@ -669,7 +669,7 @@ def fraud_watch_incident_contact_emails_list_command(client: Client, args: Dict)
         if "Contact email not found" in str(e):
             page_error_msg = f"""Make sure page index: {page} is within bounds.""" if page else ""
             unknown_incident_msg = f"""Make sure incident id: {incident_id} is correct."""
-            raise DemistoException(f"""Error occurred. {page_error_msg}""" f" {unknown_incident_msg}")
+            raise DemistoException(f"Error occurred. {page_error_msg} {unknown_incident_msg}")
         raise e
 
     outputs = [dict(output, identifier=incident_id) for output in raw_responses]

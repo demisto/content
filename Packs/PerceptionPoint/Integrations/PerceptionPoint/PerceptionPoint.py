@@ -17,7 +17,7 @@ SECURED = not USER_PARAMS.get("insecure", False)
 PP_TOKEN = USER_PARAMS.get("pp_token", None)
 if PP_TOKEN is None:
     return_error(
-        "Perception Point token is mandatory. " "Please enter your token or contact PerceptionPoint support for assistance"
+        "Perception Point token is mandatory. Please enter your token or contact PerceptionPoint support for assistance"
     )
 try:
     API_MAX_LOOPS = int(USER_PARAMS.get("api_loops", 1))
@@ -147,7 +147,7 @@ def command_release_email():
         demisto.results(entry)
     except Exception as err:
         return_error(
-            f"An error occurred while trying to release email. " f"Please contact PerceptionPoint support for more info\n. {err}"
+            f"An error occurred while trying to release email. Please contact PerceptionPoint support for more info\n. {err}"
         )
 
 

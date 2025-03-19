@@ -740,7 +740,7 @@ def validate_params_for_list_assets(
     if not set(security_grade).issubset(AVAILABLE_SECURITY_GRADE):  # type: ignore
         raise ValueError(
             ERRORS["INVALID_MULTI_SELECT_PARAM"].format(
-                "security_grade", list(map(lambda x: x.upper(), AVAILABLE_SECURITY_GRADE))
+                "security_grade", [x.upper() for x in AVAILABLE_SECURITY_GRADE]
             )
         )
 

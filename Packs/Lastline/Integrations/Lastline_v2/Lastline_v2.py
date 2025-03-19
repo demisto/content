@@ -33,12 +33,12 @@ class Client(BaseClient):
         else:
             self.credentials = {}
 
-        super(Client, self).__init__(base_url, verify, proxy)
+        super().__init__(base_url, verify, proxy)
 
     def file(self):
         human_readable = ""
-        context_entry: dict = {"Lastline": list(), "File": list(), "DBotScore": list()}
-        result = list()
+        context_entry: dict = {"Lastline": [], "File": [], "DBotScore": []}
+        result = []
         hash_arg = argToList(self.command_params.get("file"))
         for arg in hash_arg:
             hash_type = hash_type_checker(arg)
@@ -71,7 +71,7 @@ class Client(BaseClient):
             if param in self.command_params:
                 self.command_params[param] = self.command_params[param].replace("T", " ")
         result = self.http_request("/analysis/get_completed")
-        if "data" in result:
+        if "data" in result:    # noqa: RET503
             context_entry: list = []
             if self.credentials:
                 context_entry = self.get_status_and_time_from_get_history_response(argToList(result["data"]))
@@ -140,7 +140,7 @@ class Client(BaseClient):
     def get_status_and_time_from_get_history_response(self, tasks) -> list:
         task_list: list[list] = []
         filtered_tasks: list = []
-        uuid_set: set = set(map(lambda x: x.get("task_uuid"), tasks))
+        uuid_set: set = set([x.get("task_uuid") for x in tasks])
 
         for uuid in uuid_set:
             tasks_same_uuid = [x for x in tasks if x.get("task_uuid") == uuid]
@@ -335,7 +335,7 @@ def main():
 
     if not (api_params or credentials):
         raise DemistoException(
-            "Please fill the credentials in the integration params" " - api key and token or username and password"
+            "Please fill the credentials in the integration params - api key and token or username and password"
         )
 
     client = Client(base_url, api_params, verify=verify_ssl, proxy=proxy, credentials=credentials, threshold=threshold)

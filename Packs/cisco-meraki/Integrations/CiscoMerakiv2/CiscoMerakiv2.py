@@ -2766,7 +2766,7 @@ def remove_device_command(client: Client, args: dict[str, Any]) -> CommandResult
 
     return CommandResults(
         readable_output=(
-            f"## The device with the serial number: '{serial}'" f" was successfully removed from the network '{network_id}'."
+            f"## The device with the serial number: '{serial}' was successfully removed from the network '{network_id}'."
         )
     )
 

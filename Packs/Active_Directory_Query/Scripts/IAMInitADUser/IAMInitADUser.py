@@ -131,11 +131,11 @@ def ad_update_user(username: str, password: str, password_generation_script: str
     enable_outputs = demisto.executeCommand("ad-enable-account", ad_command_args)
 
     if is_error(enable_outputs):
-        raise Exception(f"Could not enable the user account:" f"\n{get_error(enable_outputs)}")
+        raise Exception(f"Could not enable the user account:\n{get_error(enable_outputs)}")
 
     update_outputs = demisto.executeCommand("ad-update-user", ad_command_args)
     if is_error(update_outputs):
-        raise Exception(f"Could not update the user account:" f"\n{get_error(update_outputs)}")
+        raise Exception(f"Could not update the user account:\n{get_error(update_outputs)}")
 
 
 def send_email(
@@ -191,7 +191,7 @@ def send_email(
         email_password = "Available in the attached zip file" if zip_file_entry_id else password
 
         if not email_body:
-            email_body = "Hello,\n\n" "The following account has been created in Active Directory:\n\n"
+            email_body = "Hello,\n\nThe following account has been created in Active Directory:\n\n"
             if display_name:
                 email_body += f"Name: {display_name}\n"
 
@@ -341,7 +341,7 @@ def main():
 
     if context_outputs["success"] and context_outputs["sentMail"]:
         readable_output = (
-            f"Successfully activated user {username}. " f"An email with the user details was sent to {email_recipient}."
+            f"Successfully activated user {username}. An email with the user details was sent to {email_recipient}."
         )
 
     else:

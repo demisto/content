@@ -37,7 +37,7 @@ def convert_to_html(markdown):
     for line in lines[1:]:
         html += "<tr>"
         columns = line.split("|")
-        for i, column in enumerate(columns):
+        for _i, column in enumerate(columns):
             if column.strip():
                 html += f"<td style='font-family: Lato, Assistant, sans-serif; font-weight: 600; \
                 font-size: 12px; text-align: left; color: #404142; \

@@ -104,9 +104,8 @@ def build_argus_priority_from_min_severity(min_severity: str) -> list[str]:
 
 
 def parse_first_fetch(first_fetch: Any) -> Any:
-    if isinstance(first_fetch, str):
-        if first_fetch[0] != "-":
-            first_fetch = f"-{first_fetch}"
+    if isinstance(first_fetch, str) and first_fetch[0] != "-":
+        first_fetch = f"-{first_fetch}"
     return first_fetch
 
 
@@ -350,7 +349,7 @@ def get_remote_data_command(
     case_attachments = list_case_attachments(caseID=int(case_id)).get("data", [])
     for attachment in case_attachments:
         if ATTACHMENT_SUBSTRING in attachment["name"]:  # file already uploaded by xsoar
-            demisto.debug(f"Ignoring file {attachment['name']} " f"since it contains {ATTACHMENT_SUBSTRING}")
+            demisto.debug(f"Ignoring file {attachment['name']} since it contains {ATTACHMENT_SUBSTRING}")
         elif last_update_timestamp < attachment.get("addedTimestamp", 0):
             entries.append(
                 fileResult(
@@ -421,7 +420,7 @@ def update_remote_system_command(args: dict[str, Any]) -> CommandResults:
         for key, value in parsed_args.delta.items():
             # Allow changing status of case from XSOAR layout
             if key == "arguscasestatus":
-                if value in ARGUS_STATUS_MAPPING.keys():
+                if value in ARGUS_STATUS_MAPPING:
                     to_update["status"] = value
             # Allow changing argus priority based upon XSOAR severity
             elif key == "severity":
@@ -446,7 +445,7 @@ def update_remote_system_command(args: dict[str, Any]) -> CommandResults:
         )
     else:
         demisto.debug(
-            f"Skipping updating remote incident fields [{parsed_args.remote_incident_id}] as it is " f"not new nor changed."
+            f"Skipping updating remote incident fields [{parsed_args.remote_incident_id}] as it is not new nor changed."
         )
 
     # Send over comments and new files
@@ -474,7 +473,7 @@ def append_demisto_entry_to_argus_case(case_id: int, entry: dict[str, Any]) -> N
     demisto.debug(f"Appending entry to case {case_id}: {entry!s}")
     if entry.get("type") == 1:  # type note / chat
         comment = "<h3>Note mirrored from XSOAR</h3>"
-        comment += f"<i>Added by {entry.get('user')} at " f"{pretty_print_date(entry.get('created'))}</i><br><br>"
+        comment += f"<i>Added by {entry.get('user')} at {pretty_print_date(entry.get('created'))}</i><br><br>"
         comment += str(entry.get("contents"))
         add_comment(caseID=case_id, comment=comment)
     elif entry.get("type") == 3:  # type file
@@ -490,7 +489,7 @@ def add_attachment_command(args: dict[str, Any]) -> CommandResults:
         raise ValueError("file_id not specified")
 
     result = add_attachment_helper(case_id, file_id)
-    if "error" in result.keys():
+    if "error" in result:
         raise Exception(result["error"])
 
     readable_output = pretty_print_attachment_metadata(result, f"# #{case_id}: attachment metadata\n")

@@ -679,7 +679,7 @@ def test_list_issues_command_with_empty_response(requests_mock, mock_client):
         (
             {"security_grade": "dummy", "asset_type": "ip"},
             ERRORS["INVALID_MULTI_SELECT_PARAM"].format(
-                "security_grade", list(map(lambda x: x.upper(), AVAILABLE_SECURITY_GRADE))
+                "security_grade", [x.upper() for x in AVAILABLE_SECURITY_GRADE]
             ),
         ),
         ({"status": "dummy", "asset_type": "ip"}, ERRORS["INVALID_MULTI_SELECT_PARAM"].format("status", AVAILABLE_STATUS_TYPES)),

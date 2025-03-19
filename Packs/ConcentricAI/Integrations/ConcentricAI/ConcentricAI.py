@@ -236,7 +236,7 @@ class QueryClient(BaseClient):
                 res = callAPI(self, payload, loginClient)
             else:
                 raise Exception("Failed to pull file-names", e)
-        if res["data"]["allContents"]["allContents"]["rows"][0] is not None:
+        if res["data"]["allContents"]["allContents"]["rows"][0] is not None:    # noqa: RET503
             return res["data"]["allContents"]["allContents"]["rows"][0]
 
 
@@ -277,12 +277,11 @@ def fetch_token(client: LoginClient):
 def get_rule_names(risk_id: List, risk_rules: dict):
     rule_names = None
     for id in risk_id:
-        if id > 0:
-            if risk_rules[str(id)]:
-                if rule_names is None:
-                    rule_names = risk_rules[str(id)]
-                else:
-                    rule_names = rule_names + "," + risk_rules[str(id)]
+        if id > 0 and risk_rules[str(id)]:
+            if rule_names is None:
+                rule_names = risk_rules[str(id)]
+            else:
+                rule_names = rule_names + "," + risk_rules[str(id)]
 
     return rule_names
 
@@ -358,7 +357,7 @@ def get_file_360_link(cid: str):
     if p1 < 0 or p2 < 0:
         return None
     else:
-        link = url[0:p1] + url[p2 + 1 : length]
+        link = url[0:p1] + url[p2 + 1: length]
         link = link + "file360?cid=" + cid
         return link
 
@@ -376,23 +375,20 @@ def transform_file_information(target: dict, risk_dict: dict, queryClient: Query
         target.pop("word_cloud")
     if "confidence" in target:
         target.pop("confidence")
-    if "ownerDetails" in target:
-        if target["ownerDetails"] is not None:
-            target["ownerDetails"] = target["ownerDetails"]["name"]
-    if "cid" in target:
-        if target["cid"] is not None:
-            target["file360-link"] = get_file_360_link(target["cid"])
-    if "near_duplicate_contrib_cids" in target:
-        if target["near_duplicate_contrib_cids"] is not None:
-            file_names: list = []
-            for cid in target["near_duplicate_contrib_cids"]:
-                res = queryClient.get_file_names(loginClient, cid)
-                if res is not None:
-                    path = res["path"]
-                    name = res["name"]
-                    file_names.append(path + " --> " + name)
-            target["near_duplicate_files"] = file_names
-            target.pop("near_duplicate_contrib_cids")
+    if "ownerDetails" in target and target["ownerDetails"] is not None:
+        target["ownerDetails"] = target["ownerDetails"]["name"]
+    if "cid" in target and target["cid"] is not None:
+        target["file360-link"] = get_file_360_link(target["cid"])
+    if "near_duplicate_contrib_cids" in target and target["near_duplicate_contrib_cids"] is not None:
+        file_names: list = []
+        for cid in target["near_duplicate_contrib_cids"]:
+            res = queryClient.get_file_names(loginClient, cid)
+            if res is not None:
+                path = res["path"]
+                name = res["name"]
+                file_names.append(path + " --> " + name)
+        target["near_duplicate_files"] = file_names
+        target.pop("near_duplicate_contrib_cids")
     return target
 
 

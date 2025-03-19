@@ -254,7 +254,7 @@ def test_module(client: Client):
             return status
         else:
             status = (
-                "There is an error in communciating with Google Vertex AI API" "- Please regenerate the Authentication Code again"
+                "There is an error in communciating with Google Vertex AI API- Please regenerate the Authentication Code again"
             )
     except Exception as e:
         exception_text = str(e).lower()

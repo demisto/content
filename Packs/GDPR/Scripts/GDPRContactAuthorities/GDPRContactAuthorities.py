@@ -57,7 +57,7 @@ AUTHORITY_DETAILS = {
         "Site": "http://www.tietosuoja.fi/en/",
     },
     "France": {
-        "Name": "Commission Nationale de l’Informatique et des Libertés – CNIL",
+        "Name": "Commission Nationale de l’Informatique et des Libertés – CNIL",    # noqa: RUF001
         "Email": "",
         "Tel": "+33 1 53 73 22 22",
         "Site": "http://www.cnil.fr/",
@@ -123,13 +123,13 @@ AUTHORITY_DETAILS = {
         "Site": "https://autoriteitpersoonsgegevens.nl/nl",
     },
     "Poland": {
-        "Name": "The Bureau of the Inspector General for the Protection of Personal Data – GIODO",
+        "Name": "The Bureau of the Inspector General for the Protection of Personal Data – GIODO",  # noqa: RUF001
         "Email": "desiwm@giodo.gov.pl",
         "Tel": "+48 22 53 10 440",
         "Site": "http://www.giodo.gov.pl/",
     },
     "Portugal": {
-        "Name": "Comissão Nacional de Protecção de Dados – CNPD",
+        "Name": "Comissão Nacional de Protecção de Dados – CNPD",  # noqa: RUF001
         "Email": "geral@cnpd.pt",
         "Tel": "+351 21 392 84 00",
         "Site": "http://www.cnpd.pt/",
@@ -165,7 +165,7 @@ AUTHORITY_DETAILS = {
         "Site": "http://www.datainspektionen.se/",
     },
     "United Kingdom": {
-        "Name": "The Information Commissioner’s Office",
+        "Name": "The Information Commissioner’s Office",  # noqa: RUF001
         "Email": "international.team@ico.org.uk",
         "Tel": "+44 1625 545 745",
         "Site": "https://ico.org.uk",

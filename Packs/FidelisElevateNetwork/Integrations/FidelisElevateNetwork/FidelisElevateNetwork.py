@@ -95,7 +95,7 @@ def login():
                 raise requests.HTTPError(f'Failed to login: {res.get("error")}')
             SESSION_ID = res.get("uid")
         except requests.exceptions.RequestException as e:  # noqa
-            return_error("Demisto has encounter a connection error, " "please check the server_url and credentials parameters")
+            return_error("Demisto has encounter a connection error, please check the server_url and credentials parameters")
 
 
 def logout():

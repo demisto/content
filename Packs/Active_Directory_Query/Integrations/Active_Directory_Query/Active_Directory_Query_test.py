@@ -605,7 +605,7 @@ def test_search_attributes_to_exclude(mocker):
         demisto,
         "args",
         return_value={
-            "attributes-to-exclude": "memberOf,name,mail,displayName," "manager,sAMAccountName,userAccountControl",
+            "attributes-to-exclude": "memberOf,name,mail,displayName,manager,sAMAccountName,userAccountControl",
             "page-size": "1",
         },
     )

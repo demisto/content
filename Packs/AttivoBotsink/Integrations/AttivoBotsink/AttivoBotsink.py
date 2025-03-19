@@ -276,7 +276,7 @@ if demisto.command() == "attivo-get-events":
     severity_start = attivo_api.convert_severity_string(severity_string)
     attacker_ips = [attacker_ip]
 
-    demisto.info(f"Pulling events for {attacker_ip} and severity {severity_start} from {timestampStart} " f"to {timestampEnd}")
+    demisto.info(f"Pulling events for {attacker_ip} and severity {severity_start} from {timestampStart} to {timestampEnd}")
 
     events = attivo_api.get_events(
         severity_start=severity_start,
@@ -477,7 +477,7 @@ if demisto.command() == "attivo-run-playbook":
             if status_text == "submitted":
                 status = True
                 status_message = (
-                    f"Attivo playbook '{playbook_name}' (ID={playbook_id}) has been run with attacker " f"IP {attacker_ip}"
+                    f"Attivo playbook '{playbook_name}' (ID={playbook_id}) has been run with attacker IP {attacker_ip}"
                 )
             else:
                 status = False
@@ -770,7 +770,8 @@ if demisto.command() == "attivo-check-host":
                     this_rule = rule
                     is_deceptive = True
                     demisto.info(
-                        f"Attivo ThreatDirect IP match ({this_ip}) ({this_host_name}) ({mac}) ({dhcp}) ({vlan}) ({td_name}) ({td_type})"
+                        f"Attivo ThreatDirect IP match ({this_ip}) ({this_host_name})"
+                        f" ({mac}) ({dhcp}) ({vlan}) ({td_name}) ({td_type})"
                     )
                     host_info = {
                         "ip": this_ip,

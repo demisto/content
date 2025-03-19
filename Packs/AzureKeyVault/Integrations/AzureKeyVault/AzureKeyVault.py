@@ -43,7 +43,7 @@ class KeyVaultClient:
             app_name=APP_NAME,
             base_url=urljoin(
                 self.azure_cloud.endpoints.resource_manager,
-                f"/subscriptions/{subscription_id}/resourceGroups/" f"{resource_group_name}/providers/Microsoft.KeyVault",
+                f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.KeyVault",
             ),
             verify=verify,
             proxy=proxy,
@@ -242,7 +242,7 @@ class KeyVaultClient:
         """
         ful_url = urljoin(
             self.azure_cloud.endpoints.resource_manager,
-            f"subscriptions/{subscription_id}/providers/Microsoft.KeyVault/" f"vaults?$top={limit}",
+            f"subscriptions/{subscription_id}/providers/Microsoft.KeyVault/vaults?$top={limit}",
         )
         response = self.http_request("GET", full_url=ful_url, ok_codes=[200])
         return self.get_entities_independent_of_pages(response, limit, offset)
@@ -619,7 +619,7 @@ class KeyVaultClient:
             next_page_url = response.get("nextLink")
         if offset > len(entities):
             return []
-        return entities[offset : limit + offset]
+        return entities[offset: limit + offset]
 
     def get_secret_credentials(self, key_vault_name: str, secret_name: str):
         try:

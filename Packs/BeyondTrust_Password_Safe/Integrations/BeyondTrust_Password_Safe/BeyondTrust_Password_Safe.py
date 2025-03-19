@@ -471,7 +471,7 @@ def fetch_credentials():
 
 """ COMMANDS MANAGER / SWITCH PANEL """
 
-LOG("Command being called is %s" % (demisto.command()))
+LOG(f"Command being called is {demisto.command()}")
 
 try:
     handle_proxy()

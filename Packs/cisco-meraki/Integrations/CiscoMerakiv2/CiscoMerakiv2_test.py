@@ -218,7 +218,7 @@ def test_list_commands_manual_pagination(
 
 
 @pytest.mark.parametrize(
-    ("list_command," "args," "endpoint_suffix," "readable_output_title," "table_headers," "outputs_key_field," "outputs_prefix"),
+    ("list_command,args,endpoint_suffix,readable_output_title,table_headers,outputs_key_field,outputs_prefix"),
     [
         (
             CiscoMerakiv2.list_organization_command,
@@ -525,7 +525,7 @@ def test_list_commands_next_link(
     assert len(command_results) == 2
     assert command_results[1].outputs_prefix.endswith(f"{outputs_prefix}LinkTokens")
     assert command_results[1].readable_output == (
-        f"{outputs_prefix} Link Tokens for" f" next_token='{expected_outputs['Next']}'."
+        f"{outputs_prefix} Link Tokens for next_token='{expected_outputs['Next']}'."
     )
     assert command_results[1].outputs == expected_outputs
 

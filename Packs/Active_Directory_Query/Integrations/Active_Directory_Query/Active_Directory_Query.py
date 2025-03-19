@@ -142,7 +142,7 @@ def initialize_server(host, port, secure_connection, unsecure, ssl_version):
         return Server(host, use_ssl=unsecure, tls=tls)
 
     if secure_connection == SSL:  # Secure connection (SSL\TLS)
-        demisto.info(f"Initializing LDAP sever with SSL/TLS (unsecure: {unsecure})." f" port: {port or 'default(636)'}")
+        demisto.info(f"Initializing LDAP sever with SSL/TLS (unsecure: {unsecure}). port: {port or 'default(636)'}")
         tls = get_tls_object(unsecure, ssl_version)
         return Server(host=host, port=port, use_ssl=True, tls=tls, connect_timeout=DEFAULT_TIMEOUT)
 
@@ -338,9 +338,7 @@ def check_if_user_exists_by_attribute(default_base_dn, attr, val):
     """
     query = f"(&(objectClass=User)(objectCategory=person)({attr}={val}))"
     entries = search_with_paging(query, default_base_dn, attributes=[attr], size_limit=1, page_size=1)
-    if entries.get("flat"):
-        return True
-    return False
+    return bool(entries.get("flat"))
 
 
 def get_user_activity_by_samaccountname(default_base_dn, samaccountname):
@@ -807,7 +805,8 @@ def search_group_members(default_base_dn, page_size):
     if member_type == "group":
         query = f"(&(objectCategory={member_type})(memberOf{nested_search}={group_dn})(sAMAccountName={account_name}))"
     else:
-        query = f"(&(objectCategory={member_type})(objectClass=user)(memberOf{nested_search}={group_dn})(sAMAccountName={account_name}))"
+        query = f"(&(objectCategory={member_type})(objectClass=user)(memberOf{nested_search}={
+        group_dn})(sAMAccountName={account_name}))"
 
     size_limit = int(args.get("limit", "0"))
     page_cookie = args.get("page-cookie")
@@ -942,7 +941,7 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
 
         if not sam_account_name:
             raise DemistoException(
-                "User must have a sAMAccountName, please make sure a mapping " 'exists in "' + mapper_out + '" outgoing mapper.'
+                'User must have a sAMAccountName, please make sure a mapping exists in "' + mapper_out + '" outgoing mapper.'
             )
         if not ad_user.get("ou"):
             raise DemistoException(
@@ -1033,7 +1032,7 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
 
         if not sam_account_name:
             raise DemistoException(
-                "User must have a sAMAccountName, please make sure a mapping " 'exists in "' + mapper_out + '" outgoing mapper.'
+                'User must have a sAMAccountName, please make sure a mapping exists in "' + mapper_out + '" outgoing mapper.'
             )
         if not ad_user.get("ou"):
             raise DemistoException(
@@ -1438,7 +1437,7 @@ def disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out)
         sam_account_name = ad_user.get("sAMAccountName")
         if not sam_account_name:
             raise DemistoException(
-                "User must have a sAMAccountName, please make sure a mapping " 'exists in "' + mapper_out + '" outgoing mapper.'
+                'User must have a sAMAccountName, please make sure a mapping exists in "' + mapper_out + '" outgoing mapper.'
             )
 
         user_exists = check_if_user_exists_by_attribute(default_base_dn, "sAMAccountName", sam_account_name)
@@ -1682,12 +1681,12 @@ def set_password_not_expire(default_base_dn):
         if pwd_n_exp:
             # Sets the bit 16 to 1
             user_account_control |= 1 << 16
-            content_output = f'AD account {sam_account_name} has set "password never expire" attribute. ' f"Value is set to True"
+            content_output = f'AD account {sam_account_name} has set "password never expire" attribute. Value is set to True'
         else:
             # Clears the bit 16 to 0
             user_account_control &= ~(1 << 16)
             content_output = (
-                f'AD account {sam_account_name} has cleared "password never expire" attribute. ' f"Value is set to False"
+                f'AD account {sam_account_name} has cleared "password never expire" attribute. Value is set to False'
             )
 
         attribute_name = "userAccountControl"
@@ -1817,7 +1816,7 @@ def main():
             )
         except Exception as e:
             err_msg = str(e)
-            demisto.info(f"Failed connect to: {server_ip}:{port}. {type(e)}:{err_msg}\n" f"Trace:\n{traceback.format_exc()}")
+            demisto.info(f"Failed connect to: {server_ip}:{port}. {type(e)}:{err_msg}\nTrace:\n{traceback.format_exc()}")
             if isinstance(e, LDAPBindError):
                 message = (
                     f"Failed to bind server. Please validate that the credentials are configured correctly.\n"
@@ -1828,7 +1827,7 @@ def main():
                 if not insecure and secure_connection in (SSL, START_TLS):
                     message += ' Try using: "Trust any certificate" option.\n'
             else:
-                message = "Failed to access LDAP server. Please validate the server host and port are configured " "correctly.\n"
+                message = "Failed to access LDAP server. Please validate the server host and port are configured correctly.\n"
             return_error(message)
             return None
 
