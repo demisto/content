@@ -8,7 +8,7 @@
             },
             {
                 "id": "3podiwrjhh",
-                "name": "Alert Overview",
+                "name": "Issue Overview",
                 "sections": [
                     {
                         "displayType": "ROW",
@@ -109,7 +109,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Alert Details",
+                        "name": "Issue Details",
                         "static": false,
                         "w": 1,
                         "x": 0,
@@ -1688,8 +1688,8 @@
         ]
     },
     "group": "incident",
-    "id": "Default XDR Alert",
-    "name": "Default XDR Alert",
+    "id": "Default XDR Issue",
+    "name": "Default XDR Issue",
     "quickView": {
         "sections": [
             {
@@ -1807,7 +1807,6 @@
     "fromVersion": "6.8.0",
     "description": "",
     "marketplaces": [
-        "marketplacev2",
-        "xpanse"
+        "platform"
     ]
 }

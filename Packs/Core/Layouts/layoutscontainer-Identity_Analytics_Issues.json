@@ -8,7 +8,7 @@
             },
             {
                 "id": "w68olunplf",
-                "name": "Alert Overview",
+                "name": "Issue Overview",
                 "sections": [
                     {
                         "displayType": "ROW",
@@ -118,7 +118,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Alert Details",
+                        "name": "Issue Details",
                         "static": false,
                         "w": 1,
                         "x": 0,
@@ -495,7 +495,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Found Related Alerts",
+                        "name": "Found Related Issues",
                         "static": false,
                         "w": 2,
                         "x": 0,
@@ -966,8 +966,8 @@
         ]
     },
     "group": "incident",
-    "id": "Identity Analytics Alerts",
-    "name": "Identity Analytics Alerts",
+    "id": "Identity Analytics Issues",
+    "name": "Identity Analytics Issues",
     "quickView": {
         "sections": [
             {
@@ -1085,7 +1085,6 @@
     "fromVersion": "6.10.0",
     "description": "",
     "marketplaces": [
-        "marketplacev2",
-        "xpanse"
+        "platform"
     ]
 }

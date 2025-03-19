@@ -139,15 +139,13 @@ inputs:
 - key: field
   value: {}
   required: true
-  description: The field to poll for a value. Ensure that you use the lower case version
-    of the field. For example, the Details field should be details.
+  description: The field to poll for a value. Ensure that you use the lower case version of the field. For example, the Details field should be details.
   playbookInputQuery:
 - key: value
   value:
     simple: .+
   required: true
-  description: The regex to check the field for. By default the regex contains .+, which matches
-    anything other than None.
+  description: The regex to check the field for. By default the regex contains .+, which matches anything other than None.
   playbookInputQuery:
 - key: frequency
   value:
@@ -164,3 +162,8 @@ inputs:
 outputs: []
 tests:
 - Field polling test
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS

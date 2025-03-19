@@ -966,6 +966,7 @@ inputs: []
 outputs: []
 marketplaces:
 - marketplacev2
+- platform
 tests:
 - No tests (auto formatted)
 fromversion: 8.8.0
