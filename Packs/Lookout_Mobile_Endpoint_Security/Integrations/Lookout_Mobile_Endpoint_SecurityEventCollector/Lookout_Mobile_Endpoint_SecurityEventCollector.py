@@ -4,7 +4,8 @@ from CommonServerPython import *
 import urllib3
 from typing import Any
 
-import sseclient
+from sseclient import SSEClient
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -16,6 +17,7 @@ VENDOR = 'lookout_mobile'
 PRODUCT = 'endpoint_security'
 BASE_URL = 'https://api.lookout.com/'
 FETCH_SLEEP = 5
+FETCH_INTERVAL_IN_SECONDS = 60
 ''' CLIENT CLASS '''
 
 
@@ -28,11 +30,13 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     """
     def __init__(self, base_url: str, verify: bool, proxy: bool, event_type_query: str, app_key: str):
+        
         self.event_type_query = event_type_query
         self.app_key = app_key
-
+        self.base_url = base_url
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
 
+        
     def refresh_token_request(self):
         """request a new access token"""
         data = {'grant_type': 'client_credentials'}
@@ -44,16 +48,16 @@ class Client(BaseClient):
         pass
 
 
-    def get_token(self):
+    def get_token(self) -> str:
         """Returns the token, or refreshes it if the time of it was exceeded
         """
         integration_context = demisto.getIntegrationContext()
         if integration_context.get('token_expiration', 0) <= time.time():
-            self.refresh_token()
+            return self.refresh_token()
 
-        return integration_context.get('access_token')
+        return integration_context.get('access_token', '')
             
-    def refresh_token(self):
+    def refresh_token(self) -> str:
         """Refreshes the token and updated the integration context
         """
         demisto.debug("MES: refreshing the token")
@@ -61,79 +65,125 @@ class Client(BaseClient):
         
         access_token = response.get('access_token')
         token_expiration = response.get('expires_at')
+        
+        set_the_context('access_token', access_token)
+        set_the_context('token_expiration', token_expiration)
 
-        demisto.setIntegrationContext({'access_token': access_token, 'token_expiration': token_expiration})
         demisto.debug("MES: Updated integration context with new token")
+        return access_token
 
-
-def test_module(client):  # pragma: no cover
-    client.refresh_token()
-    return 'ok'
-
-
-def get_events(client: Client, alert_status: str, args: dict) -> tuple[List[Dict], CommandResults]:
-    limit = args.get('limit', 50)
-    from_date = args.get('from_date')
-    events = client.search_events(
-        prev_id=0,
-        alert_status=alert_status,
-        limit=limit,
-        from_date=from_date,
-    )
-    hr = tableToMarkdown(name='Test Event', t=events)
-    return events, CommandResults(readable_output=hr)
-
-
-def fetch_events(client: Client, last_run: dict[str, int],
-                 first_fetch_time, alert_status: str | None, max_events_per_fetch: int
-                 ) -> tuple[Dict, List[Dict]]:
+def set_the_context(key: str, val):  # pragma: no cover
+    """Adds a key-value pair to the integration context dictionary.
+        If the key already exists in the integration context, the function will overwrite the existing value with the new one.
     """
+    cnx = demisto.getIntegrationContext()
+    cnx[key] = val
+    demisto.setIntegrationContext(cnx)
+
+def fetch_events(sse_client: SSEClient, fetch_interval: int, recv_timeout: int = 10) -> list[dict]:
+    """
+    This function fetches events from the given connection, for the given fetch interval
+
     Args:
-        client (Client): HelloWorld client to use.
-        last_run (dict): A dict with a key containing the latest event created time we got from last fetch.
-        first_fetch_time: If last_run is None (first time we are fetching), it contains the timestamp in
-            milliseconds on when to start fetching events.
-        alert_status (str): status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'.
-        max_events_per_fetch (int): number of events per fetch
+        connection (EventConnection): the connection to the event type
+        fetch_interval (int): Total time to keep fetching before stopping
+        recv_timeout (int): The timeout for the receive function in the socket connection
+
     Returns:
-        dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
-        list: List of events that will be created in XSIAM.
+        list[dict]: A list of events
     """
-    prev_id = last_run.get('prev_id', None)
-    if not prev_id:
-        prev_id = 0
+    events: list[dict] = []
+    event_ids = set()
+    fetch_start_time = datetime.now().astimezone(timezone.utc)
+    demisto.debug(f'Starting to fetch events at {fetch_start_time}')
 
-    events = client.search_events(
-        prev_id=prev_id,
-        alert_status=alert_status,
-        limit=max_events_per_fetch,
-        from_date=first_fetch_time,
-    )
-    demisto.debug(f'Fetched event with id: {prev_id + 1}.')
+    for event in sse_client.events():
+        demisto.debug(f'MES: Got event {event}')
+        event_id = event.get("id")
+        event_created_time = event.get("created_time")
+        if not event_created_time:
+            # if timestamp is not in the response, use the current time
+            demisto.debug(f"Event {event_id} does not have a timestamp, using current time")
+            event_created_time = datetime.now().isoformat()
 
-    # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'prev_id': prev_id + 1}
-    demisto.debug(f'Setting next run {next_run}.')
-    return next_run, events
+        event["_time"] = event_created_time
+        event["SOURCE_LOG_TYPE"] = event.get("type")
+
+        events.append(event)
+        event_ids.add(event_id)
+        
+        if is_interval_passed(fetch_start_time, fetch_interval):
+            handle_fetched_events(events, event_ids, event_created_time)
+
+    set_the_context("last_run_results",
+                                f"Got from connection {len(events)} events starting\
+                                    at {str(fetch_start_time)} until {datetime.now().astimezone(timezone.utc)}")
+    return events
+
+def handle_fetched_events(events: list,event_ids: set, last_fetch_time: str):
+    demisto.debug(f"Fetched {len(events)} events")
+    demisto.debug("The fetched events ids are: " + ", ".join([str(event_id) for event_id in event_ids]))
+    # Send the events to the XSIAM.
+    try:
+        send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+        demisto.debug("Sended events to XSIAM successfully")
+        set_the_context('last_fetch_time', last_fetch_time)
+    except DemistoException:
+        demisto.error(f"Failed to send events to XSIAM. Error: {traceback.format_exc()}")
+    
+    
 
 
 ''' MAIN FUNCTION '''
 
+def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:  # pragma: no cover
+    """Checks if the specified interval has passed since the given start time.
+        This function is used within the fetch_events function to determine if the time to fetch events is over or not.
 
-def add_time_to_events(events: List[Dict] | None):
-    """
-    Adds the _time key to the events.
     Args:
-        events: List[Dict] - list of events to add the _time key to.
-    Returns:
-        list: The events with the _time key.
-    """
-    if events:
-        for event in events:
-            create_time = arg_to_datetime(arg=event.get('created_time'))
-            event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
+        fetch_start_time (datetime): The start time of the interval
+        fetch_interval (int): The interval in seconds
 
-def long_running_execution_command(client: Client):
+    Returns:
+        bool: True if the interval has passed, False otherwise
+    """
+    is_interval_passed = fetch_start_time + timedelta(seconds=fetch_interval) < datetime.now().astimezone(timezone.utc)
+    demisto.debug(f"returning {is_interval_passed=}")
+    return is_interval_passed
+
+def get_start_time_for_stream() -> str:
+    integration_context = demisto.getIntegrationContext()
+    last_fetch_time = integration_context.get('last_fetch_time', '')
+    if not last_fetch_time:
+        last_fetch_time = datetime.now().isoformat()
+
+    urlencoded_time = urllib.parse.quote(last_fetch_time)
+
+    return urlencoded_time
+    
+
+def perform_long_running_loop(client: Client, fetch_interval: int):
+    """
+    Long running loop iteration function. Fetches events from the connection and sends them to XSIAM.
+
+    Args:
+        connection (EventConnection): A connection object to fetch events from.
+        fetch_interval (int): Fetch time for this fetching events cycle.
+    """
+    token_for_stream = client.get_token()
+    start_time_for_stream = get_start_time_for_stream()
+
+    headers = {'Accept': 'text/event-stream', 'Authorization': token_for_stream}
+    params = {'types': client.event_type_query, 'start_time': start_time_for_stream}
+    remove_nulls_from_dictionary(params)
+    
+    response = requests.get(client.base_url + 'mra/stream/v2/events', stream=True, headers=headers, params=params)
+    sse_client = SSEClient(response)
+    demisto.debug(f"starting to fetch events from {start_time_for_stream}")
+    fetch_events(sse_client, fetch_interval)
+
+
+def long_running_execution_command(client: Client, fetch_interval: int):
     """
     Performs the long running execution loop.
     Opens a connection to Proofpoints for every event type and fetches events in a loop.
@@ -143,10 +193,16 @@ def long_running_execution_command(client: Client):
         host (str): host URL for the websocket connection.
     """
     while True:
-        perform_long_running_loop(client)
-        # sleep for a bit to not throttle the CPU
+        try:
+            perform_long_running_loop(client, fetch_interval)
+            # sleep for a bit to not throttle the CPU
+        except Exception as e:
+            pass
         time.sleep(FETCH_SLEEP)
 
+def test_module(client):  # pragma: no cover
+    client.refresh_token()
+    return 'ok'
 
 def main():  # pragma: no cover
     command = demisto.command()
@@ -155,16 +211,17 @@ def main():  # pragma: no cover
     proxy = params.get("proxy", False)
     verify = not params.get("insecure", False)
     event_types = params.get('event_types', [])
+    fetch_interval = int(params.get("fetch_interval", FETCH_INTERVAL_IN_SECONDS))
     
     if 'All' in event_types:
         event_type_query = ''
     else:
-        event_type_query = 'types=' + ','.join(event_type.upper() for event_type in event_types)
+        event_type_query = ','.join(event_type.upper() for event_type in event_types)
     client = Client(base_url=BASE_URL, verify=verify, proxy=proxy, event_type_query=event_type_query, app_key=app_key)
 
     try:
         if command == "long-running-execution":
-            return_results(long_running_execution_command(client))
+            return_results(long_running_execution_command(client, fetch_interval))
         elif command == "test-module":
             return_results(test_module(client))
         else:
