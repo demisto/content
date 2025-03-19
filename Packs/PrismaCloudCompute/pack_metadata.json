@@ -13,16 +13,6 @@
     "tags": [
         "Palo Alto Networks Products"
     ],
-    "dependencies": {
-        "Jira": {
-            "mandatory": false,
-            "display_name": "Atlassian Jira"
-        },
-        "ServiceNow": {
-            "mandatory": false,
-            "display_name": "ServiceNow v2"
-        }
-    },
     "useCases": [],
     "keywords": [],
     "itemPrefix": [
