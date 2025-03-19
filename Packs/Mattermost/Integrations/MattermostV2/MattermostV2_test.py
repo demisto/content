@@ -30,7 +30,7 @@ def http_mock(method: str, url_suffix: str = "", full_url: str = "", params: dic
         return util_load_json("test_data/get_team_response.json")
     elif url_suffix == '/api/v4/teams/team_id/channels' or url_suffix == '/api/v4/teams/team_id/channels/private':
         return util_load_json("test_data/list_channels_response.json")
-    elif url_suffix == '/api/v4/users/user_id/teams/team_id/channels/members':
+    elif url_suffix == '/api/v4/users/user_id/teams/team_id/channels':
         return util_load_json("test_data/list_channel_memberships_for_user.json")
     elif url_suffix == '/api/v4/channels':
         return util_load_json("test_data/create_channel_response.json")
