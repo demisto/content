@@ -18,9 +18,7 @@ def cidr_network_addresses_lower_from_const(ip_cidr: str, max_num_addresses: str
         bool: True if num of availbe addresses is lower than const num_addresses
     """
     ip_cidr_obj = ipaddress.ip_network(address=ip_cidr, strict=False)
-    if ip_cidr_obj.num_addresses < int(max_num_addresses):
-        return True
-    return False
+    return ip_cidr_obj.num_addresses < int(max_num_addresses)
 
 
 def main():

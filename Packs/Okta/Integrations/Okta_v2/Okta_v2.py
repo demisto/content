@@ -184,7 +184,7 @@ class Client(OktaClient):
             if log.get("target"):
                 for target in log.get("target"):
                     targets += f"{target.get('displayName')} ({target.get('type')})\n"
-            time_published = datetime.strptime(log.get("published"), "%Y-%m-%dT%H:%M:%S.%f%z").strftime("%m/%d/%Y, " "%H:%M:%S")
+            time_published = datetime.strptime(log.get("published"), "%Y-%m-%dT%H:%M:%S.%f%z").strftime("%m/%d/%Y, %H:%M:%S")
             log = {
                 "Actor": f"{log.get('actor', {}).get('displayName')} ({log.get('actor', {}).get('type')})",
                 "ActorAlternaneId": log.get("actor", {}).get("alternateId"),

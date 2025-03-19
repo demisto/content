@@ -251,7 +251,7 @@ def test_get_path_data_command(requests_mock, mocker):
     GitHub.TOKEN, GitHub.USE_SSL = "", ""
     test_get_file_data_command_response = load_test_data("./test_data/get_path_data_response.json")
     requests_mock.get(
-        "https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/pack_metadata.json?ref" "=Update-Docker-Image",
+        "https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/pack_metadata.json?ref=Update-Docker-Image",
         json=test_get_file_data_command_response["response"],
     )
     mocker_results = mocker.patch("GitHub.return_results")

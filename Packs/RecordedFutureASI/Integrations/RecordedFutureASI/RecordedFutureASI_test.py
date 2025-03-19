@@ -65,7 +65,7 @@ def test_added_issues_command(requests_mock, client):
     last_run = 1234
     mock_response = util_load_json("test_data/added-issues.json")
     requests_mock.get(
-        f"https://api.securitytrails.com/v1/asi/rules/history/{TEST_PROJECT_ID}/activity" f"?rule_action=added&start={last_run}",
+        f"https://api.securitytrails.com/v1/asi/rules/history/{TEST_PROJECT_ID}/activity?rule_action=added&start={last_run}",
         json=mock_response,
     )
     last_run, incidents = fetch_incidents(client, {"last_fetch": last_run}, False, False)

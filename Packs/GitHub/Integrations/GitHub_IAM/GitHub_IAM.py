@@ -72,14 +72,13 @@ def github_handle_error(e):
                 error_message = str(error_res.get("detail"))
             else:
                 error_code = e.res.status_code
-                if not e.res.ok:
-                    if e.res.json():
-                        error_message = error_res.json().get("message", "")
-                        if not error_message:
-                            error_message = error_res.json().get("detail", "")
-                        error_reason = error_res.reason
-                        if error_reason and error_reason != error_message:
-                            error_message += f" {error_reason}"
+                if not e.res.ok and e.res.json():
+                    error_message = error_res.json().get("message", "")
+                    if not error_message:
+                        error_message = error_res.json().get("detail", "")
+                    error_reason = error_res.reason
+                    if error_reason and error_reason != error_message:
+                        error_message += f" {error_reason}"
         return error_code, error_message
 
     except Exception as e:

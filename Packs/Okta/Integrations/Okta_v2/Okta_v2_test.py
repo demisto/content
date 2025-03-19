@@ -996,7 +996,7 @@ def test_hide_password():
 
     assert raw_response["tempPassword"] == "Output removed by user. hide_password argument set to True"
     assert readable_output == (
-        "### Okta Expired Password\n|tempPassword|\n|---|\n| Output removed by user. " "hide_password argument set to True |\n"
+        "### Okta Expired Password\n|tempPassword|\n|---|\n| Output removed by user. hide_password argument set to True |\n"
     )
 
 

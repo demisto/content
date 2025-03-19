@@ -7,7 +7,7 @@ def main():
         incid = demisto.args()["id"]
         context = demisto.executeCommand("getContext", {"id": incid})[0]["Contents"]["context"]
         # Set each context value
-        for key in context.keys():
+        for key in context:
             demisto.executeCommand("Set", {"key": key, "value": context[key]})
     except Exception as ex:
         demisto.error(traceback.format_exc())

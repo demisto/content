@@ -74,7 +74,7 @@ def main():
             return_results(output)
         else:
             raise DemistoException(
-                'Error occurred while running JiraListStatus because could not get "dbotMirrorId" from' " incident."
+                'Error occurred while running JiraListStatus because could not get "dbotMirrorId" from incident.'
             )
     except Exception as ex:
         return_error(f"Error occurred while running JiraListStatus. Got the error:\n{ex}")

@@ -33,7 +33,7 @@ def main():
 
     if taskID == "-1":
         demisto.results(
-            {"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "File type not " "supported"}
+            {"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "File type not supported"}
         )
         sys.exit(0)
 

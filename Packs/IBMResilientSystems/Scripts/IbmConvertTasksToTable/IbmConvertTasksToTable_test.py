@@ -9,7 +9,7 @@ def test_empty_incident(mocker):
     mocker.patch.object(demisto, "incident", return_value={})
     with pytest.raises(
         ValueError,
-        match=re.escape("Error - demisto.incident() expected to return current incident from context " "but returned None"),
+        match=re.escape("Error - demisto.incident() expected to return current incident from context but returned None"),
     ):
         convert_to_table()
 

@@ -19,7 +19,7 @@ if __name__ in ("__main__", "__builtin__", "builtins"):
 
     output = {"value": value, "begin_date": begin_date, "end_date": end_date, "result": result}
     human_readable = (
-        f'# BetweenDates\n' f'The date *{value}* {"*IS*" if result else "*IS NOT*"} between *{begin_date}* and *{end_date}*'
+        f'# BetweenDates\nThe date *{value}* {"*IS*" if result else "*IS NOT*"} between *{begin_date}* and *{end_date}*'
     )
 
     return_results(CommandResults(outputs_prefix="BetweenDates", readable_output=human_readable, outputs=result))

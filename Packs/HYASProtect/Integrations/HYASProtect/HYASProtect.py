@@ -107,18 +107,17 @@ def check_valid_indicator_value(indicator_type: str, indicator_value: str) -> bo
 
     if indicator_type == NAMESERVER_PARAM:
         if not re.match(domain_regex, indicator_value):
-            raise ValueError(f"Invalid indicator_value: {indicator_value}" f" for indicator_type {indicator_type}")
+            raise ValueError(f"Invalid indicator_value: {indicator_value} for indicator_type {indicator_type}")
     elif indicator_type == FQDN_PARAM:
         if not re.match(domain_regex, indicator_value):
-            raise ValueError(f"Invalid indicator_value: {indicator_value}" f" for indicator_type {indicator_type}")
+            raise ValueError(f"Invalid indicator_value: {indicator_value} for indicator_type {indicator_type}")
     elif indicator_type == DOMAIN_PARAM:
         if not re.match(domain_regex, indicator_value):
-            raise ValueError(f"Invalid indicator_value: {indicator_value}" f" for indicator_type {indicator_type}")
-    elif indicator_type == IP_PARAM:
-        if not re.match(ipv4Regex, indicator_value):
-            if not re.match(ipv6Regex, indicator_value):
-                raise ValueError(f"Invalid indicator_value: {indicator_value}" f" for indicator_type {indicator_type}")
-            raise ValueError(f"Invalid indicator_value: {indicator_value}" f" for indicator_type {indicator_type}")
+            raise ValueError(f"Invalid indicator_value: {indicator_value} for indicator_type {indicator_type}")
+    elif indicator_type == IP_PARAM and not re.match(ipv4Regex, indicator_value):
+        if not re.match(ipv6Regex, indicator_value):
+            raise ValueError(f"Invalid indicator_value: {indicator_value} for indicator_type {indicator_type}")
+        raise ValueError(f"Invalid indicator_value: {indicator_value} for indicator_type {indicator_type}")
 
     return True
 

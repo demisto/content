@@ -279,7 +279,7 @@ def parse_response(response: Runner, human_readable_name: str, installed_softwar
                 "EntryContext": {"Tidy.Install": result},
             }
         )
-        raise DemistoException(f"Installing {installed_software} has failed with return code {response.rc}, " f"See stdout.")
+        raise DemistoException(f"Installing {installed_software} has failed with return code {response.rc}, See stdout.")
 
     return {
         "Type": entryTypes["note"],

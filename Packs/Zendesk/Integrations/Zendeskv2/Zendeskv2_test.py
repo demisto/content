@@ -179,7 +179,7 @@ class TestPrepareKwargs:
         expected = {"test": [[[[["test"]]]]]}
         assert expected == prepare_kwargs(data, ignore_args="test")
         assert expected == prepare_kwargs(data, ignore_args=["test"])
-        assert {} == prepare_kwargs({}, ignore_args=["test", "test2", "test3"])
+        assert prepare_kwargs({}, ignore_args=["test", "test2", "test3"]) == {}
 
     def test_str_args(self):
         data = {"test": 1}
@@ -188,7 +188,7 @@ class TestPrepareKwargs:
         data = {"test": 1, "test2": "2"}
         expected = {"test": "1", "test2": "2"}
         assert expected == prepare_kwargs(data, str_args=["test", "test2"])
-        assert {} == prepare_kwargs({}, str_args=["test", "test2", "test3"])
+        assert prepare_kwargs({}, str_args=["test", "test2", "test3"]) == {}
 
     def test_list_args(self):
         data = {"test": "1"}
@@ -197,7 +197,7 @@ class TestPrepareKwargs:
         data = {"test": "1", "test2": "1,2", "test3": [1, 2, 3]}
         expected = {"test": ["1"], "test2": ["1", "2"], "test3": [1, 2, 3]}
         assert expected == prepare_kwargs(data, list_args=["test", "test2", "test3"])
-        assert {} == prepare_kwargs({}, list_args=["test", "test2", "test3"])
+        assert prepare_kwargs({}, list_args=["test", "test2", "test3"]) == {}
 
     def test_bool_args(self):
         data = {"test": "yes"}
@@ -206,7 +206,7 @@ class TestPrepareKwargs:
         data = {"test": "yes", "test2": "false", "test3": True}
         expected = {"test": True, "test2": False, "test3": True}
         assert expected == prepare_kwargs(data, bool_args=["test", "test2", "test3"])
-        assert {} == prepare_kwargs({}, bool_args=["test", "test2", "test3"])
+        assert prepare_kwargs({}, bool_args=["test", "test2", "test3"]) == {}
 
     def test_int_args(self):
         data = {"test": "1"}
@@ -215,7 +215,7 @@ class TestPrepareKwargs:
         data = {"test": 1, "test2": "2", "test3": 3.0}
         expected = {"test": 1, "test2": 2, "test3": 3}
         assert expected == prepare_kwargs(data, int_args=["test", "test2", "test3"])
-        assert {} == prepare_kwargs({}, int_args=["test", "test2", "test3"])
+        assert prepare_kwargs({}, int_args=["test", "test2", "test3"]) == {}
 
     def test_json_args(self):
         data = {"test": "{}"}
@@ -224,7 +224,7 @@ class TestPrepareKwargs:
         data = {"test": {"test": "test"}, "test2": '{"test": "test"}'}
         expected = {"test": {"test": "test"}, "test2": {"test": "test"}}
         assert expected == prepare_kwargs(data, json_args=["test", "test2"])
-        assert {} == prepare_kwargs({}, json_args=["test", "test2", "test3"])
+        assert prepare_kwargs({}, json_args=["test", "test2", "test3"]) == {}
 
 
 def test_error_entry():
@@ -916,7 +916,7 @@ class TestFetchIncidents:
         ),
     ]
     test_next_fetch_args_parametrize_str = (
-        "fetched_tickets, search_results_ids, query, time_filter, " "max_fetch, page_number, expected_next_run_args"
+        "fetched_tickets, search_results_ids, query, time_filter, max_fetch, page_number, expected_next_run_args"
     )
 
     @pytest.mark.parametrize(test_next_fetch_args_parametrize_str, data_test_next_fetch_args)
@@ -1105,7 +1105,7 @@ class TestFetchIncidents:
                         "ContentsFormat": "text",
                         "Type": 9,
                         "File": "TestFile.json",
-                        "FileID": "77fe1c6d-3096-4f1c-80c7-" "4e7c8573d580",
+                        "FileID": "77fe1c6d-3096-4f1c-80c7-4e7c8573d580",
                     }
                 ],
             )

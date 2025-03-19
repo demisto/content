@@ -141,7 +141,7 @@ def http_request(method, url_suffix, params=None, data=None, headers=None, is_ra
             else:
                 error_code = json_res.get("errors")[0].get("code")
                 if error_code == "missing_field":
-                    err_msg = f'Error: the field: "{json_res.get("errors")[0].get("field")}" requires a value. ' f'{err_msg}'
+                    err_msg = f'Error: the field: "{json_res.get("errors")[0].get("field")}" requires a value. {err_msg}'
                 elif error_code == "invalid":
                     field = json_res.get("errors")[0].get("field")
                     if field == "q":
@@ -156,7 +156,7 @@ def http_request(method, url_suffix, params=None, data=None, headers=None, is_ra
                     err_msg = f"Error: the field {json_res.get('errors')[0].get('field')} must be unique. {err_msg}"
 
                 else:
-                    err_msg = f"Error in API call to the GitHub Integration [{res.status_code}] - {res.reason}. " f"{err_msg}"
+                    err_msg = f"Error in API call to the GitHub Integration [{res.status_code}] - {res.reason}. {err_msg}"
             raise DemistoException(err_msg)
 
         except ValueError:
@@ -1221,7 +1221,7 @@ def add_issue_to_project_board_command():
 
     if response.status_code >= 400:
         message = response.json().get(
-            "message", f"Failed to add the issue with ID {content_id} to column with ID " f"{column_id}"
+            "message", f"Failed to add the issue with ID {content_id} to column with ID {column_id}"
         )
         return_error(f"Post result {response}\nMessage: {message}")
 

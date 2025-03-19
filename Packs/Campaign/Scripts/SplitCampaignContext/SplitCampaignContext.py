@@ -20,10 +20,10 @@ def _get_incident_campaign(_id: int):
     res = demisto.executeCommand("getIncidents", {"id": _id})
 
     if is_error(res):
-        return
+        return None
 
     res_custom_fields = res[0]["Contents"]["data"][0]["CustomFields"]
-    return res_custom_fields["partofcampaign"] if "partofcampaign" in res_custom_fields else None
+    return res_custom_fields.get("partofcampaign", None)
 
 
 def filter_by_threshold(context: list, threshold: float) -> tuple[list, list]:

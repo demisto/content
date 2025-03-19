@@ -64,7 +64,7 @@ def test_module(client: Client) -> str:
     data = reload(client)
     response_was_empty = len(data.keys()) == 0
     if response_was_empty:
-        return_error("Error - could not fetch PhishTankV2 database, " "API returned an empty response")
+        return_error("Error - could not fetch PhishTankV2 database, API returned an empty response")
     return "ok"
 
 
@@ -79,10 +79,8 @@ def was_phishtank_data_ever_reloaded(context: dict):
     Returns: True if context contains PhishTank data (from a previous reload). False otherwise.
 
     """
-    was_phishtank_data_reloaded = context != dict()
-    if was_phishtank_data_reloaded:
-        return True
-    return False
+    was_phishtank_data_reloaded = context != {}
+    return bool(was_phishtank_data_reloaded)
 
 
 def is_phishtank_data_outdated(client: Client, context: dict):
@@ -159,7 +157,7 @@ def url_command(client: Client, url_list: list) -> List[CommandResults]:
     for url in url_list:
         markdown = "### PhishTankV2 Database - URL Query \n"
         url_data, url = get_url_data(client, url)
-        url_data_is_valid = url_data and "verified" in url_data.keys()
+        url_data_is_valid = url_data and "verified" in url_data
         if url_data_is_valid:
             dbot = url_data_to_dbot_score(url_data, url, client.reliability)
             markdown += create_verified_markdown(url_data, url)
@@ -210,14 +208,14 @@ def phishtank_status_command():
     """
     data = get_integration_context()
     status = "PhishTankV2 Database Status\n"
-    data_was_not_reloaded_yet = data == dict()
+    data_was_not_reloaded_yet = data == {}
     last_load = ""
     if data_was_not_reloaded_yet:
         status += "Database not loaded.\n"
     else:
         last_load = datetime.utcfromtimestamp(data["timestamp"] / 1000.0).strftime("%a %b %d %Y %H:%M:%S (UTC)")
         number_of_urls_loaded = len(data["list"].keys())
-        status += f"Total **{number_of_urls_loaded}** URLs loaded.\n" f"Last Load time **{last_load}**\n"
+        status += f"Total **{number_of_urls_loaded}** URLs loaded.\nLast Load time **{last_load}**\n"
     output_to_context = {"value": last_load}
     return CommandResults(readable_output=status, outputs=output_to_context, outputs_prefix="LastReloadTime(obj)")
 
@@ -239,7 +237,7 @@ def reload(client: Client) -> dict:
     response = client.get_http_request(RELOAD_DATA_URL_SUFFIX)
     response_is_empty = not response
     if response_is_empty:
-        return dict()
+        return {}
     response = response.splitlines()
     parsed_response = {}
     columns = response[0].strip().split(",")  # get csv headers
@@ -319,7 +317,7 @@ def main() -> None:
 
     if not is_number(fetch_interval_hours):
         return_error(
-            "PhishTankV2 error: Please provide a numeric value (and bigger than 0) for Database refresh " "interval (hours)"
+            "PhishTankV2 error: Please provide a numeric value (and bigger than 0) for Database refresh interval (hours)"
         )
 
     # initialize a client

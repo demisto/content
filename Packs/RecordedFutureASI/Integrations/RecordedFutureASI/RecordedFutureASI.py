@@ -345,7 +345,7 @@ class ByHostIncident(ByHostIncidentBuilder):
             severity = SEVERITY_MAPPINGS["moderate"]
         else:
             severity = SEVERITY_MAPPINGS["informational"]
-        title = f"Attack Surface Risk Increase: {self.host} " f"({self.previous_score} --> {self.risk_score})"
+        title = f"Attack Surface Risk Increase: {self.host} ({self.previous_score} --> {self.risk_score})"
         return title, severity
 
     def _incident_description(self, by_classification: dict[str, list[dict]], added_rule_count: int) -> str:

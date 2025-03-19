@@ -79,7 +79,7 @@ def main():
             regex_list = concat_values(args.get("regex"), [])
             text_list = concat_values(args.get("value"), args.get("text"))
 
-            regexes = [re.compile(str(r), flags=regex_flags) for r in regex_list if isinstance(r, (str, int))]
+            regexes = [re.compile(str(r), flags=regex_flags) for r in regex_list if isinstance(r, str | int)]
             for text in text_list:
                 for regex in regexes:
                     for i, match in enumerate(re.finditer(regex, str(text)), start=1):
@@ -93,7 +93,7 @@ def main():
             text_list = concat_values(args.get("text"), [])
 
             for regex_pattern in regex_list:
-                if isinstance(regex_pattern, (str, int)):
+                if isinstance(regex_pattern, str| int):
                     regex = re.compile(str(regex_pattern), flags=regex_flags)
                     for text in text_list:
                         for i, match in enumerate(re.finditer(regex, str(text)), start=1):

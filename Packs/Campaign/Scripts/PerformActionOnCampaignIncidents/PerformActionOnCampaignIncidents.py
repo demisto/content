@@ -8,7 +8,7 @@ ALL_OPTION = "All"
 NO_CAMPAIGN_INCIDENTS_MSG = "There is no Campaign Incidents in the Context"
 COMMAND_SUCCESS = "The following incidents was successfully {action}: {ids}"
 COMMAND_ERROR_MSG = (
-    'Error occurred while trying to perform "{action}" on the selected incident ids: {ids}\n' "Error details: {error}"
+    'Error occurred while trying to perform "{action}" on the selected incident ids: {ids}\nError details: {error}'
 )
 ACTION_ON_CAMPAIGN_FIELD_NAME = "actionsoncampaignincidents"
 ACTION_ON_CAMPAIGN_LOWER_FIELD_NAME = "actionsonlowsimilarityincidents"

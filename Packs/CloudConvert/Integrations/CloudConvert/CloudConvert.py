@@ -450,7 +450,7 @@ def format_operation_title(results: dict[str, Any]):
 
     operation = results["data"]["operation"]
 
-    results["data"]["operation"] = title_exchange_dict[operation] if operation in title_exchange_dict.keys() else operation
+    results["data"]["operation"] = title_exchange_dict.get(operation, operation)
 
 
 def main() -> None:

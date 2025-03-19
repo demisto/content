@@ -110,7 +110,7 @@ def test_fetch_events(requests_mock, net_quest_omx_client):
     )
 
     requests_mock.get(
-        f"{BASE_URL}Systems/Slot/{slot_number}/Port/{port_number}/" f"EthernetInterfaces/Status/EthRxTx",
+        f"{BASE_URL}Systems/Slot/{slot_number}/Port/{port_number}/EthernetInterfaces/Status/EthRxTx",
         json=util_load_json("test_data/OptimizationStats.json"),
     )
 

@@ -12,10 +12,8 @@ def timezone_abbreviations(utc_offset: Optional[timedelta]) -> set[str]:
     if utc_offset is not None:
         now = datetime.now(pytz.utc)
         for tz in map(pytz.timezone, pytz.all_timezones_set):
-            if (d := now.astimezone(tz)).utcoffset() == utc_offset:
-                if tzname := d.tzname():
-                    if tzname[0:1] not in ("+", "-"):
-                        tznames.add(tzname)
+            if (d := now.astimezone(tz)).utcoffset() == utc_offset and (tzname := d.tzname()) and tzname[0:1] not in ("+", "-"):
+                tznames.add(tzname)
     return tznames
 
 

@@ -62,7 +62,7 @@ class Table:
 
         normalized_labels = []
         if labels:
-            for i, (count, label) in enumerate(rowspan_labels):
+            for _i, (count, label) in enumerate(rowspan_labels):
                 if count >= 2:
                     normalized_labels.append(label)
 
@@ -108,22 +108,21 @@ class Table:
         tbl_rows = self.__rows
         headers = self.__headers
 
-        if default_header_line and default_header_line != "none":
-            if not headers and not any(labels for labels, cols in tbl_rows):
-                if default_header_line in ("first_column", "first_row"):
-                    # The first column or row is considered as header
-                    if default_header_line == "first_column":
-                        # transpose
-                        tbl_rows = [([], list(cols)) for cols in zip(*[cols for labels, cols in tbl_rows])]
+        if default_header_line and default_header_line != "none" and (not headers and not any(labels for labels, cols in tbl_rows)):
+            if default_header_line in ("first_column", "first_row"):
+                # The first column or row is considered as header
+                if default_header_line == "first_column":
+                    # transpose
+                    tbl_rows = [([], list(cols)) for cols in zip(*[cols for labels, cols in tbl_rows])]
 
-                    labels, headers = tbl_rows[0]
-                    tbl_rows = tbl_rows[1:]
-                else:
-                    raise ValueError(f"Unknown default header line: {default_header_line}")
+                labels, headers = tbl_rows[0]
+                tbl_rows = tbl_rows[1:]
+            else:
+                raise ValueError(f"Unknown default header line: {default_header_line}")
 
         for labels, cols in tbl_rows:
             labels = labels[-1:]
-            headers = labels + headers[len(labels) : len(headers) - len(labels)]
+            headers = labels + headers[len(labels): len(headers) - len(labels)]
 
             if not cols:
                 continue
@@ -247,7 +246,7 @@ def is_descendant(
     :param node: The node to be checked.
     :return: True - node is descendant, False - node is not descendant.
     """
-    return ancestor is not None and node is not None and any([ancestor is p for p in node.parents])
+    return ancestor is not None and node is not None and any(ancestor is p for p in node.parents)
 
 
 def parse_table(

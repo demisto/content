@@ -32,7 +32,7 @@ def apply_status():
 
     if not (custom_fields := incident.get("CustomFields")):
         raise DemistoException(
-            f'Failed to get "CustomFields" of incident with {incident_id} dbotMirrorId. The incident is:\n' f" {incident} "
+            f'Failed to get "CustomFields" of incident with {incident_id} dbotMirrorId. The incident is:\n {incident} '
         )
     if not (chosen_status := custom_fields.get("jirav3status")):
         raise DemistoException(f'Failed to get "jirav3status" incident field from incident with {incident_id} dbotMirrorId.')

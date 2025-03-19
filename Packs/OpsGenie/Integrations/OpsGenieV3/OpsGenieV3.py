@@ -39,7 +39,7 @@ class Client(BaseClient):
 
         return self._http_request(
             method="GET",
-            url_suffix=f"{url_suffix}/{args.get('request_type')}/{REQUESTS_SUFFIX}/" f"{args.get('request_id')}",
+            url_suffix=f"{url_suffix}/{args.get('request_type')}/{REQUESTS_SUFFIX}/{args.get('request_id')}",
             ok_codes=(404, 200),
             resp_type="response",
         )
@@ -49,7 +49,8 @@ class Client(BaseClient):
         return data
 
     @staticmethod
-    def responders_to_json(responders: List, responder_key: str, one_is_dict: bool = False) -> Dict[str, Union[List, Dict]]:  # type: ignore
+    # type: ignore
+    def responders_to_json(responders: List, responder_key: str, one_is_dict: bool = False) -> Dict[str, Union[List, Dict]]:
         """
         :param responders: the responders list which we get from demisto.args()
         :param responder_key: Some of the api calls need "responder" and others "responders" as a
@@ -99,7 +100,7 @@ class Client(BaseClient):
 
     def ack_alert(self, args: dict):
         return self._http_request(
-            method="POST", url_suffix=f"/v2/{ALERTS_SUFFIX}/" f"{args.get('alert-id')}/acknowledge", json_data=args
+            method="POST", url_suffix=f"/v2/{ALERTS_SUFFIX}/{args.get('alert-id')}/acknowledge", json_data=args
         )
 
     def close_alert(self, args: dict):
@@ -162,11 +163,11 @@ class Client(BaseClient):
         attachment_id = args.get("attachment_id")
         if attachment_id:
             return self._http_request(method="GET", url_suffix=f"/v2/{ALERTS_SUFFIX}/attachments/{attachment_id}")
-        return self._http_request(method="GET", url_suffix=f"/v2/{ALERTS_SUFFIX}/" f"{args.get('alert-id')}/attachments")
+        return self._http_request(method="GET", url_suffix=f"/v2/{ALERTS_SUFFIX}/{args.get('alert-id')}/attachments")
 
     def get_alert_logs(self, args: dict):
         alert_id = args.get("alert_id")
-        return self._http_request(method="GET", url_suffix=f"/v2/{ALERTS_SUFFIX}/" f"{alert_id}/logs")
+        return self._http_request(method="GET", url_suffix=f"/v2/{ALERTS_SUFFIX}/{alert_id}/logs")
 
     def get_schedule(self, args: dict):
         if not is_one_argument_given(args.get("schedule_id"), args.get("schedule_name")):
@@ -185,7 +186,7 @@ class Client(BaseClient):
         schedule = args.get("schedule_id", None) or args.get("schedule_name", None)
         return self._http_request(
             method="GET",
-            url_suffix=f"/v2/{SCHEDULE_SUFFIX}/{schedule}/" f"overrides/{args.get('override_alias')}",
+            url_suffix=f"/v2/{SCHEDULE_SUFFIX}/{schedule}/overrides/{args.get('override_alias')}",
             params={"scheduleIdentifierType": identifier_type},
         )
 
@@ -252,32 +253,32 @@ class Client(BaseClient):
 
     def close_incident(self, args: dict):
         return self._http_request(
-            method="POST", url_suffix=f"/v1/{INCIDENTS_SUFFIX}/" f"{args.get('incident_id')}/close", json_data=args
+            method="POST", url_suffix=f"/v1/{INCIDENTS_SUFFIX}/{args.get('incident_id')}/close", json_data=args
         )
 
     def resolve_incident(self, args: dict):
         return self._http_request(
-            method="POST", url_suffix=f"/v1/{INCIDENTS_SUFFIX}/" f"{args.get('incident_id')}/resolve", json_data=args
+            method="POST", url_suffix=f"/v1/{INCIDENTS_SUFFIX}/{args.get('incident_id')}/resolve", json_data=args
         )
 
     def add_responder_incident(self, args: dict):
         args["responders"] = argToList(args.get("responders"))
         args.update(Client.responders_to_json(args.get("responders", []), "responder"))
         return self._http_request(
-            method="POST", url_suffix=f"/v1/{INCIDENTS_SUFFIX}/" f"{args.get('incident_id')}/responders", json_data=args
+            method="POST", url_suffix=f"/v1/{INCIDENTS_SUFFIX}/{args.get('incident_id')}/responders", json_data=args
         )
 
     def add_tag_incident(self, args: dict):
         args["tags"] = argToList(args.get("tags"))
         return self._http_request(
-            method="POST", url_suffix=f"/v1/{INCIDENTS_SUFFIX}/" f"{args.get('incident_id')}/tags", json_data=args
+            method="POST", url_suffix=f"/v1/{INCIDENTS_SUFFIX}/{args.get('incident_id')}/tags", json_data=args
         )
 
     def remove_tag_incident(self, args: dict):
         args["tags"] = argToList(args.get("tags"))
         return self._http_request(
             method="DELETE",
-            url_suffix=f"/v1/{INCIDENTS_SUFFIX}/" f"{args.get('incident_id')}/tags",
+            url_suffix=f"/v1/{INCIDENTS_SUFFIX}/{args.get('incident_id')}/tags",
             params={"tags": args.get("tags")},
             json_data=args,
         )

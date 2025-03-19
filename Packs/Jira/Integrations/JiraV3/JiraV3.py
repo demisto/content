@@ -24,7 +24,7 @@ ISSUE_INCIDENT_FIELDS = {
     "due_date": "The due date for the issue (in the format 2018-03-11).",
     "assignee": "The name of the assignee. Relevant for Jira Server only",
     "status": "The name of the status.",
-    "assignee_id": "The account ID of the assignee. Use" " the jira-get-id-by-attribute command to get the user's Account ID.",
+    "assignee_id": "The account ID of the assignee. Use the jira-get-id-by-attribute command to get the user's Account ID.",
     "original_estimate": "The original estimate of the Jira issue.",
 }
 DEFAULT_FETCH_LIMIT = 50
@@ -193,7 +193,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         token = integration_context.get("token", "")
         if not token:
             raise DemistoException(
-                "No access token was configured, please complete the authorization process" " as shown in the documentation"
+                "No access token was configured, please complete the authorization process as shown in the documentation"
             )
         # The valid_until key stores the valid date in seconds to make it easier for comparison
         valid_until = integration_context.get("valid_until", 0)
@@ -202,7 +202,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             refresh_token = integration_context.get("refresh_token", "")
             if not refresh_token:
                 raise DemistoException(
-                    "No refresh token was configured, please complete the authorization process" " as shown in the documentation"
+                    "No refresh token was configured, please complete the authorization process as shown in the documentation"
                 )
             # We try to retrieve a new access token and store it in the integration's context using the method bellow
             self.oauth2_retrieve_access_token(refresh_token=refresh_token)
@@ -952,7 +952,7 @@ class JiraCloudClient(JiraBaseClient):
             # refresh token saved in the integration's context.
             demisto.debug("Both the code, and refresh token were given to obtain a new access token, this is not normal behavior")
             raise DemistoException(
-                "Both authorization code and refresh token were given to retrieve an" " access token, please only provide one"
+                "Both authorization code and refresh token were given to retrieve an access token, please only provide one"
             )
         if not (code or refresh_token):
             # If reached here, that means both the authorization code and refresh tokens were empty.
@@ -1139,7 +1139,7 @@ class JiraOnPremClient(JiraBaseClient):
             # refresh token saved in the integration's context.
             demisto.debug("Both the code, and refresh token were given to get a new access token, this is not normal behavior")
             raise DemistoException(
-                "Both authorization code and refresh token were given to retrieve an" " access token, please only provide one"
+                "Both authorization code and refresh token were given to retrieve an access token, please only provide one"
             )
         if not (code or refresh_token):
             # If reached here, that means both the authorization code and refresh tokens were empty.
@@ -2784,7 +2784,7 @@ def list_fields_command(client: JiraBaseClient, args: Dict[str, str]) -> Command
     max_results = pagination_args.get("max_results", DEFAULT_PAGE_SIZE)
     # Since the API does not support pagination, and the issue fields returned can carry hundreds of entries,
     # we decided to do the pagination manually.
-    fields_entry = res[start_at : start_at + max_results]
+    fields_entry = res[start_at: start_at + max_results]
     markdown_dict: List[Dict[str, Any]] = [
         {
             "Id": field.get("id", ""),
@@ -3108,7 +3108,7 @@ def issues_to_backlog_command(client: JiraBaseClient, args: Dict[str, Any]) -> C
     rank_after_issue = args.get("rank_after_issue", "")
     if (rank_after_issue or rank_before_issue) and not board_id:
         raise DemistoException(
-            "Please supply the board_id argument when supplying the rank_after_issue, and" " rank_before_issue arguments"
+            "Please supply the board_id argument when supplying the rank_after_issue, and rank_before_issue arguments"
         )
     json_data = {"issues": issues}
     if board_id:
@@ -4042,7 +4042,7 @@ def get_remote_data_command(
     try:
         issue_id = parsed_args.remote_incident_id
         demisto.debug(
-            f"Performing get-remote-data command with incident id: {issue_id} " f"and last_update: {parsed_args.last_update}"
+            f"Performing get-remote-data command with incident id: {issue_id} and last_update: {parsed_args.last_update}"
         )
         # Get raw response for issue ID
         issue = client.get_issue(issue_id_or_key=issue_id)
@@ -4079,7 +4079,7 @@ def get_remote_data_command(
         return GetRemoteDataResponse(updated_incident, parsed_entries)
 
     except Exception as e:
-        demisto.debug(f"Error in Jira incoming mirror for incident {parsed_args.remote_incident_id}" f"Error message: {e!s}")
+        demisto.debug(f"Error in Jira incoming mirror for incident {parsed_args.remote_incident_id}Error message: {e!s}")
 
         if "Rate limit exceeded" in str(e):
             return_error("API rate limit")
@@ -4129,7 +4129,7 @@ def get_updated_remote_data(
         List[Dict[str, Any]]:  Parsed entries of the updated incident, which will be supplied to the class GetRemoteDataResponse.
     """
     parsed_entries: List[Dict[str, Any]] = []
-    demisto.debug(f"Update incident, Incident name: Jira issue {issue.get('id')}" f"Reason: Issue modified in remote")
+    demisto.debug(f"Update incident, Incident name: Jira issue {issue.get('id')}Reason: Issue modified in remote")
     # Close incident if the Jira issue gets resolved, or its status gets updated to Done.
     if mirror_resolved_issue and (closed_issue := handle_incoming_resolved_issue(updated_incident)):
         demisto.debug(f"Closing incident with ID: {issue_id}, since corresponding issue was resolved")
@@ -4376,7 +4376,7 @@ def update_remote_system_command(
                 demisto.debug("Updated the fields of the remote system successfully")
 
         else:
-            demisto.debug(f"Skipping updating remote incident fields [{remote_id}] " f"as it is neither new nor changed")
+            demisto.debug(f"Skipping updating remote incident fields [{remote_id}] as it is neither new nor changed")
 
         if entries:
             for entry in entries:
@@ -4403,7 +4403,7 @@ def update_remote_system_command(
                     client.add_comment(issue_id_or_key=remote_id, json_data=payload)
             demisto.debug("Updated the entries (attachments and/or comments) of the remote system successfully")
     except Exception as e:
-        demisto.error(f"Error in Jira outgoing mirror for incident {remote_args.remote_incident_id} \n" f"Error message: {e!s}")
+        demisto.error(f"Error in Jira outgoing mirror for incident {remote_args.remote_incident_id} \nError message: {e!s}")
     finally:
         return remote_id
 
@@ -4509,12 +4509,12 @@ def main():  # pragma: no cover
     comment_tag_to_jira = params.get("comment_tag_to_jira", "comment tag")
     comment_tag_from_jira = params.get("comment_tag_from_jira", "comment tag from Jira")
     if comment_tag_to_jira == comment_tag_from_jira:
-        raise DemistoException("Comment Entry Tag to Jira and Comment Entry Tag " "from jira cannot have the same value.")
+        raise DemistoException("Comment Entry Tag to Jira and Comment Entry Tag from jira cannot have the same value.")
 
     attachment_tag_to_jira = params.get("attachment_tag_to_jira", "attachment tag")
     attachment_tag_from_jira = params.get("attachment_tag_from_jira", "attachment tag from Jira")
     if attachment_tag_to_jira == attachment_tag_from_jira:
-        raise DemistoException("Attachment Entry Tag to Jira and Attachment Entry Tag " "from jira cannot have the same value.")
+        raise DemistoException("Attachment Entry Tag to Jira and Attachment Entry Tag from jira cannot have the same value.")
     # Mirroring params
     mirror_resolved_issue = argToBoolean(params.get("close_incident", False))
     command = demisto.command()

@@ -19,7 +19,7 @@ urllib3.disable_warnings()
 
 """ GLOBALS/PARAMS """
 
-TEST_QUERY = "SELECT name FROM `bigquery-public-data.usa_names.usa_1910_2013` " 'WHERE state = "TX" ' "LIMIT 10"
+TEST_QUERY = 'SELECT name FROM `bigquery-public-data.usa_names.usa_1910_2013` WHERE state = "TX" ' "LIMIT 10"
 
 
 """ HELPER FUNCTIONS """
@@ -210,7 +210,7 @@ def query_command(query_to_run=None):
     rows_contexts = []
     human_readable = "No results found."
     if dry_run and str_to_bool(dry_run):
-        human_readable = f"### Dry run results: \n This query will process {query_results.total_bytes_processed} " "bytes"
+        human_readable = f"### Dry run results: \n This query will process {query_results.total_bytes_processed} bytes"
 
     else:
         for row in query_results:
@@ -418,12 +418,12 @@ def test_module():
         next(results_rows_iterator)
         demisto.results("ok")
     except Exception as ex:
-        return_error("Authentication error: credentials JSON provided is invalid.\n Exception recieved:" f"{ex}")
+        return_error(f"Authentication error: credentials JSON provided is invalid.\n Exception recieved:{ex}")
 
 
 """ COMMANDS MANAGER / SWITCH PANEL """
 
-LOG("Command being called is %s" % (demisto.command()))
+LOG(f"Command being called is {demisto.command()}")
 
 try:
     if demisto.command() == "test-module":

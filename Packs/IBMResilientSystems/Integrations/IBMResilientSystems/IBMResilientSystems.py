@@ -1667,7 +1667,7 @@ def get_remote_data_command(client: SimpleClient, args: dict, tag_to_ibm: str, t
                 {
                     "ContentsFormat": EntryFormat.TEXT,
                     "Type": EntryType.NOTE,
-                    "Contents": f"{note_entry.get('text').get('content')}\n" f"Added By: {note_entry.get('created_by', '')}\n",
+                    "Contents": f"{note_entry.get('text').get('content')}\nAdded By: {note_entry.get('created_by', '')}\n",
                     "Tags": [tag_from_ibm],
                     "Note": True,
                 }
@@ -1768,7 +1768,7 @@ def test_module(client: SimpleClient, fetch_time: str, tag_to_ibm=DEFAULT_TAG_TO
             datetime.strptime(fetch_time, TIME_FORMAT)
         except ValueError:
             raise DemistoException(
-                "Invalid first fetch timestamp format, should be (YYYY-MM-DDTHH:MM:SSZ)." " For example: 2020-02-02T19:00:00Z"
+                "Invalid first fetch timestamp format, should be (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z"
             )
 
     # Testing tags

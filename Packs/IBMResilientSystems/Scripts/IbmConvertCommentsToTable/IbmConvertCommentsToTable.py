@@ -6,7 +6,7 @@ def convert_to_table():
     incident = demisto.incident()
     comments = []
     if not incident:
-        raise ValueError("Error - demisto.incident() expected to return current incident " "from context but returned None")
+        raise ValueError("Error - demisto.incident() expected to return current incident from context but returned None")
     demisto.debug(f"ibm_convert_comments_to_table {incident=}")
     fields = incident.get("CustomFields", [])
     mirror_tags = incident.get("dbotMirrorTags", [])

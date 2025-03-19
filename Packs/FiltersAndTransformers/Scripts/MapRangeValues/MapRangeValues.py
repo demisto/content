@@ -3,7 +3,7 @@ from typing import Union
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-VALUE_TYPE = Union[str, float]
+VALUE_TYPE = Union[str| float]
 
 
 class Replace:

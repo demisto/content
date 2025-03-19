@@ -26,14 +26,14 @@ def mapvalues(value, input_values, mapped_values):
         return_error("Length of input_values and mapped_values are not the same")
 
     # Create a dictionary to look up values against
-    mapper = dict()
+    mapper = {}
     for index in range(len(input_values)):
         mapper[input_values[index]] = mapped_values[index]
 
     # If the input is a dictionary then attempt to convert each
     # "key: value" as a string into the value in the mapper
     if type(value) is dict:
-        new_dict = dict()
+        new_dict = {}
         for k, v in value.items():
             key_value = f"{k}:{v}"
             key_value_space = f"{k}: {v}"
@@ -47,7 +47,7 @@ def mapvalues(value, input_values, mapped_values):
 
     elif type(value) is list:
         for val in value:
-            val = mapper[val] if val in mapper else val
+            val = mapper.get(val, val)
 
     elif value in mapper:
         value = mapper[value]

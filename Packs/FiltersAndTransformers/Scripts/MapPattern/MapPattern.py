@@ -166,7 +166,7 @@ class Formatter:
     @staticmethod
     def __is_end_mark(source: str, ci: int, end_marker: str) -> bool:
         if end_marker:
-            return source[ci : ci + len(end_marker)] == end_marker
+            return source[ci: ci + len(end_marker)] == end_marker
         else:
             c = source[ci]
             if c.isspace():
@@ -208,7 +208,7 @@ class Formatter:
                 else:
                     xval = key
                 return xval, ci + len(markers[1])
-            elif extractor and source[ci : ci + len(self.__start_marker)] == self.__start_marker:
+            elif extractor and source[ci: ci + len(self.__start_marker)] == self.__start_marker:
                 xval, ei = self.__extract(
                     source, extractor, dx, node, ci + len(self.__start_marker), (self.__start_marker, self.__end_marker)
                 )
@@ -329,7 +329,7 @@ class Translator:
                  Note: Returns True if the value matched to any of special wildcard patterns even in regex.
         """
         if algorithm == "literal":
-            if isinstance(value, (dict, list)):
+            if isinstance(value, dict | list):
                 return False
 
             value = "" if value is None else str(value)
@@ -344,7 +344,7 @@ class Translator:
             if any(x == value for x in exclusions):
                 return False
         elif algorithm in ("wildcard", "regex", "regmatch"):
-            if isinstance(value, (dict, list)):
+            if isinstance(value, dict | list):
                 return False
 
             value = "" if value is None else str(value)
@@ -368,9 +368,8 @@ class Translator:
                 return regex_match
 
         elif algorithm == "dt":
-            if pattern not in self.__wildcards:
-                if not self.__context.get(pattern, value, ignore_errors=ignore_syntax):
-                    return False
+            if pattern not in self.__wildcards and not self.__context.get(pattern, value, ignore_errors=ignore_syntax):
+                return False
 
             if any(self.__context.get(x, value, ignore_errors=ignore_syntax) for x in exclusions):
                 return False
@@ -458,7 +457,7 @@ class Translator:
             raise ValueError(f"field-mapping must be an array or an object in JSON: type={type(field_mapping)}")
 
         for path, mapping in field_mapping.items():
-            if not isinstance(mapping, (dict, list)):
+            if not isinstance(mapping, dict | list):
                 raise ValueError(f"pattern-mapping must be an array or an object in JSON: type={type(mapping)}")
 
             # Get a value for pattern matching
@@ -510,7 +509,7 @@ def main():
                     obj_value=value, field_mapping=mappings, priority=priority, algorithm=algorithm
                 )
         else:
-            if not isinstance(value, (dict, list)):
+            if not isinstance(value, dict | list):
                 value, matched = tr.translate(source=value, pattern_mapping=mappings, priority=priority, algorithm=algorithm)
         if default_value and not matched:
             value = default_value

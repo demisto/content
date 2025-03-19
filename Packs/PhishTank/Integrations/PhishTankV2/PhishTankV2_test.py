@@ -170,7 +170,7 @@ def test_reload(mocker, url, status_code, data, expected_result):
         got_data = reload(client)
         assert got_data == expected_result
     else:
-        assert False
+        pytest.fail()
 
 
 CONTEXT_LIST = [
@@ -296,7 +296,7 @@ def test_url_command(mocker, data, url, expected_score, expected_table):
 
     # validate score
     output = command_results[0].to_context().get("EntryContext", {})
-    dbot_key = "DBotScore(val.Indicator && val.Indicator == obj.Indicator &&" " val.Vendor == obj.Vendor && val.Type == obj.Type)"
+    dbot_key = "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)"
     assert output.get(dbot_key, [])[0].get("Score") == expected_score
     assert output.get(dbot_key, [])[0].get("Reliability") == DBotScoreReliability.C
 

@@ -430,7 +430,7 @@ def list_alerts_command(client: Client, args: dict[str, Any]) -> CommandResults:
     if limit > MAX_ALERTS:
         raise ValueError("Limit cannot be more than 100, please try again")
     if sort_by_creation_time and sort_by_severity:
-        raise ValueError("Should be provide either sort_by_creation_time or " "sort_by_severity. Can't provide both")
+        raise ValueError("Should be provide either sort_by_creation_time or sort_by_severity. Can't provide both")
 
     # starts with param to only look for ASM alerts.  Can add others if defined.
     search_params = [{"field": "alert_source", "operator": "in", "value": ["ASM"]}]
@@ -1015,7 +1015,7 @@ def list_incidents_command(client: Client, args: dict[str, Any]) -> CommandResul
     if limit > MAX_ALERTS:
         raise ValueError("Limit cannot be more than 100, please try again")
     if sort_by_creation_time and sort_by_severity:
-        raise ValueError("Should be provide either sort_by_creation_time or " "sort_by_severity. Can't provide both")
+        raise ValueError("Should be provide either sort_by_creation_time or sort_by_severity. Can't provide both")
 
     # starts with param to only look for ASM incidents.  Can add others if defined.
     search_params = [{"field": "alert_sources", "operator": "in", "value": ["ASM"]}]

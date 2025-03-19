@@ -132,7 +132,7 @@ def okta_update_user(username: str, password: str, temporary_password: str, pass
                 f"complies with your domain's password complexity policy."
             )
 
-        raise DemistoException(f"An error occurred while trying to set a new password for the user:\n" f"{error_message}")
+        raise DemistoException(f"An error occurred while trying to set a new password for the user:\n{error_message}")
 
     # Enable user (in case it was disabled)
     enable_outputs = demisto.executeCommand("okta-activate-user", {"username": username})
@@ -141,7 +141,7 @@ def okta_update_user(username: str, password: str, temporary_password: str, pass
         error_message = get_error(enable_outputs)
 
         if "the user is already active" not in error_message:
-            raise DemistoException(f"An error occurred while trying to enable the user account. " f"Error:\n{error_message}")
+            raise DemistoException(f"An error occurred while trying to enable the user account. Error:\n{error_message}")
 
 
 def send_email(
@@ -190,7 +190,7 @@ def send_email(
         email_password = "Available in the attached zip file" if zip_file_entry_id else password
 
         if not email_body:
-            email_body = "Hello,\n\n" "The following account has been activated in Okta:\n\n"
+            email_body = "Hello,\n\nThe following account has been activated in Okta:\n\n"
             if display_name:
                 email_body += f"Name: {display_name}\n"
 
@@ -342,7 +342,7 @@ def main():
 
     if context_outputs["success"] and context_outputs["sentMail"]:
         readable_output = (
-            f"Successfully activated user {username}. " f"An email with the user details was sent to {email_recipient}."
+            f"Successfully activated user {username}. An email with the user details was sent to {email_recipient}."
         )
     else:
         readable_output = ""

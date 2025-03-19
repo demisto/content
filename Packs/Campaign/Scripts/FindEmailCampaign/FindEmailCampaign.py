@@ -466,7 +466,7 @@ def is_number_of_unique_recipients_is_too_low(incidents):
         0 < len(unique_recipients) < MIN_UNIQUE_RECIPIENTS and missing_recipients > 0
     ):
         msg = (
-            "Similar emails were found, but the number of their unique recipients is too low to consider them as " "campaign.\n "
+            "Similar emails were found, but the number of their unique recipients is too low to consider them as campaign.\n "
         )
         msg += (
             "If you wish to consider similar emails as campaign even with low number of unique recipients, "
@@ -476,7 +476,7 @@ def is_number_of_unique_recipients_is_too_low(incidents):
         msg += f"* Found {len(incidents)} similar incidents.\n"
         msg += f"* Those incidents have {len(unique_recipients)} unique recipients"
         msg += " ({}).\n".format(", ".join(unique_recipients))
-        msg += "* The minimum number of unique recipients for similar emails as campaign: " f"{MIN_UNIQUE_RECIPIENTS}\n"
+        msg += f"* The minimum number of unique recipients for similar emails as campaign: {MIN_UNIQUE_RECIPIENTS}\n"
         if missing_recipients > 0:
             msg += (
                 f"* Could not find email recipient for {missing_recipients}/{len(incidents)} incidents "
@@ -754,7 +754,7 @@ def return_involved_incidents_entry(incidents_df, indicators_df, fields_to_displ
     incidents_df["similarity"] = incidents_df.apply(
         lambda x: "{} (current)".format(x["similarity"]) if x["id"] == current_incident_id else x["similarity"], axis=1
     )
-    incidents_df["status"] = incidents_df["status"].apply(lambda x: STATUS_DICT[x] if x in STATUS_DICT else "")
+    incidents_df["status"] = incidents_df["status"].apply(lambda x: STATUS_DICT.get(x, ""))
     incidents_df = incidents_df.rename(
         {"name": "Name", FROM_FIELD: "Email From", "similarity": "Similarity to Current Incident", "status": "Status"}, axis=1
     )

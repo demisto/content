@@ -278,8 +278,7 @@ class UpdatedTickets(TicketEvents):
         def filter_created_ticket(ticket: dict):
             return ticket["created_at"] != ticket["updated_at"]
 
-        for ticket in filter(filter_created_ticket, super().tickets()):
-            yield ticket
+        yield from filter(filter_created_ticket, super().tickets()):
 
 
 class ZendeskClient(BaseClient):

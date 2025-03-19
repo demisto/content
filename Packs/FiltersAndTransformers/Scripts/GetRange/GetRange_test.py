@@ -27,6 +27,6 @@ def test_get_range_command_by_index_list(mocker, indexes, expected_results):
     from GetRange import main
 
     with patch("GetRange.return_results") as return_results:
-        mocker.patch.object(demisto, "args", return_value={"range": indexes, "value": [i for i in range(10)]})
+        mocker.patch.object(demisto, "args", return_value={"range": indexes, "value": list(range(10))})
         main()
         assert return_results.call_args.kwargs.get("results") == expected_results

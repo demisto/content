@@ -1123,7 +1123,7 @@ class TestJiraListIssueFieldsCommand:
         command_result = list_fields_command(client=client, args={"issue_key": "dummy_issue_key"})
         # [start_at: start_at + max_results] is the way do the pagination manually, therefore we check it.
         expected_outputs = expected_context["EntryContext"]["Jira.IssueField(val.id && val.id == obj.id)"][
-            start_at : start_at + max_results
+            start_at: start_at + max_results
         ]
         assert expected_outputs == command_result.to_context()["EntryContext"]["Jira.IssueField(val.id && val.id == obj.id)"]
 
@@ -1436,7 +1436,7 @@ class TestJiraEpicIssuesCommand:
         entry_context = command_results.to_context()["EntryContext"]
         assert "Jira.EpicIssues(val.epicId && val.epicId == obj.epicId)" in entry_context
         assert (
-            "Jira.EpicIssues(val.epicId && val.epicId == obj.epicId && val.boardId && val." "boardId == obj.boardId)"
+            "Jira.EpicIssues(val.epicId && val.epicId == obj.epicId && val.boardId && val.boardId == obj.boardId)"
         ) not in entry_context
 
 
@@ -1537,7 +1537,7 @@ class TestJiraSprintIssuesCommand:
         entry_context = command_results.to_context()["EntryContext"]
         assert "Jira.SprintIssues(val.sprintId && val.sprintId == obj.sprintId)" in entry_context
         assert (
-            "Jira.SprintIssues(val.boardId && val.boardId == obj.boardId && val.sprintId && val." "sprintId == obj.sprintId)"
+            "Jira.SprintIssues(val.boardId && val.boardId == obj.boardId && val.sprintId && val.sprintId == obj.sprintId)"
         ) not in entry_context
 
 

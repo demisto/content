@@ -538,7 +538,7 @@ def http_request(
         demisto.debug(f"In http_request after the first call to generic_http_request {res=} {res.status_code=}")
     except requests.exceptions.RequestException as e:
         return_error(
-            f"Error in connection to the server. Please make sure you entered the URL correctly." f" Exception is {e!s}."
+            f"Error in connection to the server. Please make sure you entered the URL correctly. Exception is {e!s}."
         )
     try:
         if get_token_flag:
@@ -578,7 +578,8 @@ def http_request(
         demisto.debug("In http_request end")
         return res if no_json else res.json()
     except ValueError as exception:
-        raise ValueError(f"Failed to parse json object from response: {exception} - {res.content}")  # type: ignore[str-bytes-safe]
+        # type: ignore[str-bytes-safe]
+        raise ValueError(f"Failed to parse json object from response: {exception} - {res.content}")
 
 
 def create_relationships(cve: dict) -> list:
@@ -2173,7 +2174,7 @@ def update_incident_request(ids: list[str], action_parameters: dict[str, Any]):
 def update_detection_request(ids: list[str], status: str) -> dict:
     list_of_stats = LEGACY_DETECTION_STATUS if LEGACY_VERSION else STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES
     if status not in list_of_stats:
-        raise DemistoException(f"CrowdStrike Falcon Error: " f"Status given is {status} and it is not in {list_of_stats}")
+        raise DemistoException(f"CrowdStrike Falcon Error: Status given is {status} and it is not in {list_of_stats}")
     return resolve_detection(ids=ids, status=status, assigned_to_uuid=None, show_in_ui=None, comment=None, tag=None)
 
 
@@ -2189,7 +2190,7 @@ def update_idp_or_mobile_detection_request(ids: list[str], status: str) -> dict:
     """
     if status not in STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES:
         raise DemistoException(
-            f"CrowdStrike Falcon Error: " f"Status given is {status} and it is not in {STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES}"
+            f"CrowdStrike Falcon Error: Status given is {status} and it is not in {STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES}"
         )
     return resolve_detections_request(ids=ids, update_status=status)
 
@@ -3507,7 +3508,7 @@ def ioa_events_pagination(
     continue_pagination = True
     while continue_pagination:
         demisto.debug(
-            f"Doing IOA pagination with the arguments: {ioa_fetch_query=}, {api_limit=}, {ioa_new_next_token=}," f"{fetch_limit=}"
+            f"Doing IOA pagination with the arguments: {ioa_fetch_query=}, {api_limit=}, {ioa_new_next_token=},{fetch_limit=}"
         )
         ioa_events, ioa_new_next_token = get_ioa_events(
             ioa_fetch_query=ioa_fetch_query,
@@ -3668,7 +3669,7 @@ def iom_ids_pagination(
     continue_pagination = True
     while continue_pagination:
         demisto.debug(
-            f"Doing IOM pagination with the arguments: {filter=}, {api_limit=}, {iom_new_next_token=}," f"{fetch_limit=}"
+            f"Doing IOM pagination with the arguments: {filter=}, {api_limit=}, {iom_new_next_token=},{fetch_limit=}"
         )
         iom_resource_ids, iom_new_next_token = get_iom_ids_for_fetch(
             filter=filter, iom_next_token=iom_new_next_token, limit=min(api_limit, fetch_limit - total_incidents_count)
@@ -4213,7 +4214,7 @@ def get_status(device_ids):
     state_data = {}
     batch_size = 100
     for i in range(0, len(device_ids), batch_size):
-        batch = device_ids[i : i + batch_size]
+        batch = device_ids[i: i + batch_size]
         raw_res = http_request("GET", "/devices/entities/online-state/v1", params={"ids": batch})
         for res in raw_res.get("resources"):
             state = res.get("state", "")
@@ -5496,7 +5497,8 @@ def rtr_general_command_on_hosts(
     General function to run RTR commands depending on the given command.
     """
     batch_id = init_rtr_batch_session(host_ids, offline)
-    response = get_session_function(batch_id, command_type=command, full_command=full_command, host_ids=host_ids, timeout=timeout)  # type:ignore
+    response = get_session_function(batch_id, command_type=command, full_command=full_command,
+                                    host_ids=host_ids, timeout=timeout)  # type:ignore
     output, file, not_found_hosts = parse_rtr_stdout_response(host_ids, response, command)
 
     human_readable = tableToMarkdown(f"{INTEGRATION_NAME} {command} command on host {host_ids[0]}:", output, headers="Stdout")
@@ -5576,7 +5578,7 @@ def add_error_message(failed_hosts, all_requested_hosts):
     if failed_hosts:
         if len(all_requested_hosts) == len(failed_hosts):
             raise DemistoException(f"{INTEGRATION_NAME} The command was failed with the errors: {failed_hosts}")
-        human_readable = "Note: you don't see the following IDs in the results as the request was failed " "for them. \n"
+        human_readable = "Note: you don't see the following IDs in the results as the request was failed for them. \n"
         for host_id in failed_hosts:
             human_readable += f"ID {host_id} failed as it was not found. \n"
     return human_readable
@@ -6892,7 +6894,7 @@ def cs_falcon_cspm_list_policy_details_command(args: dict[str, Any]) -> CommandR
         for error in errors:
             if error.get("code") == 400:
                 return_warning(
-                    'CS Falcon CSPM returned an error.\n' f'Code:  {error.get("code")}\n' f'Message: {error.get("message")}\n'
+                    f'CS Falcon CSPM returned an error.\nCode:  {error.get("code")}\nMessage: {error.get("message")}\n'
                 )
 
     if resources := raw_response.get("resources", []):
@@ -7523,7 +7525,7 @@ def main():
         elif command == "cs-falcon-get-ioarules":
             return_results(get_ioarules_command(args=args))
         else:
-            raise NotImplementedError(f"CrowdStrike Falcon error: " f"command {command} is not implemented")
+            raise NotImplementedError(f"CrowdStrike Falcon error: command {command} is not implemented")
     except Exception as e:
         return_error(f"Failed to execute {command!r} command.\nError:\n{e!s}")
 

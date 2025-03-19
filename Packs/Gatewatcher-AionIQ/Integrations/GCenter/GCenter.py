@@ -436,7 +436,7 @@ class GwClient(GwRequests):
                 self.headers["API-KEY"] = response.json()["token"]
             else:
                 raise GwAPIException(
-                    f"Authentication on GCenter {self.ip} with" f" user {user}: [FAILED]",
+                    f"Authentication on GCenter {self.ip} with user {user}: [FAILED]",
                     response.text,
                     response.status_code,
                     response.reason,
@@ -540,11 +540,11 @@ class GwClient(GwRequests):
             endpoint=f"/api/malcore/{ltype}-list/", json_data={"sha256": sha256, "comment": comment, "threat": threat}
         )
         if response.status_code == 201:
-            demisto.info(f"Add {ltype} list with sha256 {sha256} on" f" GCenter {self.ip}: [OK]")
+            demisto.info(f"Add {ltype} list with sha256 {sha256} on GCenter {self.ip}: [OK]")
             return response.json()
         else:
             raise GwAPIException(
-                f"Add {ltype} list with sha256 {sha256} on" f" GCenter {self.ip}: [FAILED]",
+                f"Add {ltype} list with sha256 {sha256} on GCenter {self.ip}: [FAILED]",
                 response.text,
                 response.status_code,
                 response.reason,
@@ -562,10 +562,10 @@ class GwClient(GwRequests):
         """
         response = self._delete(endpoint=f"/api/malcore/{ltype}-list/{sha256}")
         if response.status_code == 204:
-            demisto.info(f"Delete {ltype} list with sha256 {sha256} on" f" GCenter {self.ip}: [OK]")
+            demisto.info(f"Delete {ltype} list with sha256 {sha256} on GCenter {self.ip}: [OK]")
         else:
             raise GwAPIException(
-                f"Delete {ltype} list with sha256 {sha256} on" f" GCenter {self.ip}: [FAILED]",
+                f"Delete {ltype} list with sha256 {sha256} on GCenter {self.ip}: [FAILED]",
                 response.text,
                 response.status_code,
                 response.reason,
@@ -587,11 +587,11 @@ class GwClient(GwRequests):
             endpoint=f"/api/dga-detection/{ltype}-list/",
         )
         if response.status_code == 200:
-            demisto.info(f"Get dga {ltype}lists on" f" GCenter {self.ip}: [OK]")
+            demisto.info(f"Get dga {ltype}lists on GCenter {self.ip}: [OK]")
             return response.json()["results"]
         else:
             raise GwAPIException(
-                f"Get dga {ltype}lists on" f" GCenter {self.ip}: [FAILED]", response.text, response.status_code, response.reason
+                f"Get dga {ltype}lists on GCenter {self.ip}: [FAILED]", response.text, response.status_code, response.reason
             )
 
     def add_dga_list_entry(self, ltype: str, domain: str, comment: str = None) -> dict:  # noqa: E501
@@ -609,11 +609,11 @@ class GwClient(GwRequests):
         """
         response = self._post(endpoint=f"/api/dga-detection/{ltype}-list/", json_data={"domain_name": domain, "comment": comment})
         if response.status_code == 201:
-            demisto.info(f"Add {ltype} list with domain {domain} on" f" GCenter {self.ip}: [OK]")
+            demisto.info(f"Add {ltype} list with domain {domain} on GCenter {self.ip}: [OK]")
             return response.json()
         else:
             raise GwAPIException(
-                f"Add {ltype} list with domain {domain} on" f" GCenter {self.ip}: [FAILED]",
+                f"Add {ltype} list with domain {domain} on GCenter {self.ip}: [FAILED]",
                 response.text,
                 response.status_code,
                 response.reason,
@@ -631,10 +631,10 @@ class GwClient(GwRequests):
         """
         response = self._delete(endpoint=f"/api/dga-detection/{ltype}-list/{domain}")
         if response.status_code == 204:
-            demisto.info(f"Delete {ltype} list with domain {domain} on" f" GCenter {self.ip}: [OK]")
+            demisto.info(f"Delete {ltype} list with domain {domain} on GCenter {self.ip}: [OK]")
         else:
             raise GwAPIException(
-                f"Delete {ltype} list with domain {domain} on" f" GCenter {self.ip}: [FAILED]",
+                f"Delete {ltype} list with domain {domain} on GCenter {self.ip}: [FAILED]",
                 response.text,
                 response.status_code,
                 response.reason,
@@ -660,11 +660,11 @@ class GwClient(GwRequests):
             raise TypeError(f"Index value must be between: {self.index_values}")
         response = self._post(endpoint=f"/api/data/es/search/?index={index}", json_data=json.loads(query))
         if response.status_code == 200:
-            demisto.info(f"Get elasticsearch results for index {index} on" f" GCenter {self.ip}: [OK]")
+            demisto.info(f"Get elasticsearch results for index {index} on GCenter {self.ip}: [OK]")
             return response.json()
         else:
             raise GwAPIException(
-                f"Get elasticsearch results for index {index} on" f" GCenter {self.ip}: [FAILED]",
+                f"Get elasticsearch results for index {index} on GCenter {self.ip}: [FAILED]",
                 response.text,
                 response.status_code,
                 response.reason,
@@ -728,7 +728,7 @@ class GwClient(GwRequests):
         response = self._post(endpoint=f"/api/data/es/search/?index={index}", json_data=json.loads(query_builder.dumps()))
 
         if response.status_code == 200:
-            demisto.info(f"Get elasticsearch results for index {index} on" f" GCenter {self.ip}: [OK]")
+            demisto.info(f"Get elasticsearch results for index {index} on GCenter {self.ip}: [OK]")
             response_formatted = response.json()
             if formatted == "True" and aggs_term:
                 response_formatted = {}
@@ -739,7 +739,7 @@ class GwClient(GwRequests):
             return response_formatted
         else:
             raise GwAPIException(
-                f"Get elasticsearch results for index {index} on" f" GCenter {self.ip}: [FAILED]",
+                f"Get elasticsearch results for index {index} on GCenter {self.ip}: [FAILED]",
                 response.text,
                 response.status_code,
                 response.reason,
@@ -880,7 +880,7 @@ class GwClient(GwRequests):
             return response.json()["results"]
         else:
             raise GwAPIException(
-                f"Get ignore kerberos username on" f" GCenter {self.ip}: [FAILED]",
+                f"Get ignore kerberos username on GCenter {self.ip}: [FAILED]",
                 response.text,
                 response.status_code,
                 response.reason,
@@ -980,7 +980,7 @@ class GwClient(GwRequests):
             return response.json()
         else:
             raise GwAPIException(
-                f"Ignore kerberos username {name} on" f" GCenter {self.ip}: [FAILED]",
+                f"Ignore kerberos username {name} on GCenter {self.ip}: [FAILED]",
                 response.text,
                 response.status_code,
                 response.reason,
@@ -1060,7 +1060,7 @@ class GwClient(GwRequests):
             demisto.info(f"Delete an ignore kerberos username {ignore_id} on GCenter {self.ip}: [OK]")
         else:
             raise GwAPIException(
-                f"Delete an ignore kerberos username {ignore_id} on" f" GCenter {self.ip}: [FAILED]",
+                f"Delete an ignore kerberos username {ignore_id} on GCenter {self.ip}: [FAILED]",
                 response.text,
                 response.status_code,
                 response.reason,

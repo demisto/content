@@ -75,7 +75,7 @@ def main():
             return_results(output)
         else:
             raise DemistoException(
-                'Error occurred while running script-JiraListTransition because could not get "dbotMirrorId"' " from incident."
+                'Error occurred while running script-JiraListTransition because could not get "dbotMirrorId" from incident.'
             )
     except Exception as ex:
         return_error(f"Error occurred while running script-JiraListTransition. Got the error:\n{ex}")

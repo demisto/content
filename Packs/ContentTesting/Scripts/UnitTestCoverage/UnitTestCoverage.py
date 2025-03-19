@@ -41,7 +41,7 @@ def TaskCoverageMarkdown(tasks: Dict) -> str:
 
 def GetAutomationName(scriptid) -> str:
     results = demisto.executeCommand("core-api-post", {"uri": f"/automation/load/{scriptid}"})[0]
-    if "response" not in results.keys():
+    if "response" not in results:
         return f"MISSING_SCRIPT_FOR_ID_{scriptid}"
     return results["Contents"]["response"]["name"]
 

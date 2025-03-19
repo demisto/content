@@ -297,7 +297,7 @@ def address_list_delete_command(client: Client, args: dict) -> CommandResults:
         client.address_list_delete_request(list_name_to_delete)
     except Exception as e:
         raise DemistoException(
-            f"An error was occurred when deleting the {list_name_to_delete} IPs list." f" Make sure {list_name_to_delete} exists."
+            f"An error was occurred when deleting the {list_name_to_delete} IPs list. Make sure {list_name_to_delete} exists."
         ) from e
 
     return CommandResults(readable_output=f"Successfully deleted {list_name_to_delete} list")
@@ -446,7 +446,7 @@ def main() -> None:  # pragma: no cover
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # prints the traceback
-        return_error(f"Failed to execute {command} command." f"\nError:\n{e!s}")
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
 """ ENTRY POINT """

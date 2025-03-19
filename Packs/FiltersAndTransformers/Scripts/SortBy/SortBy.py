@@ -80,7 +80,7 @@ class Key:
             return 0
         elif isinstance(self.__value, bool):
             return 1
-        elif isinstance(self.__value, (int, float)):
+        elif isinstance(self.__value, int | float):
             return 2
         elif isinstance(self.__value, str):
             return 3
@@ -91,7 +91,7 @@ class Key:
         def __get(value: Any) -> Any:
             if value is None:
                 return 0
-            elif isinstance(value, (bool, int, float, str)):
+            elif isinstance(value, bool| int| float| str):
                 return value
             elif isinstance(value, dict):
                 return OrderedDict((k, __get(value[k])) for k in sorted(value.keys()))
@@ -101,7 +101,7 @@ class Key:
                 return value
 
         v = __get(self.__value)
-        if v is None or isinstance(v, (bool, int, float, str)):
+        if v is None or isinstance(v, bool| int| float| str):
             return v
         else:
             return json.dumps(v)

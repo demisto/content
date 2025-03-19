@@ -32,7 +32,7 @@ def apply_transition():
 
     if not (custom_fields := incident.get("CustomFields")):
         raise DemistoException(
-            f'Failed to get "CustomFields" of incident with {incident_id} dbotMirrorId. The incident is:\n' f" {incident} "
+            f'Failed to get "CustomFields" of incident with {incident_id} dbotMirrorId. The incident is:\n {incident} '
         )
     if not (chosen_transition := custom_fields.get("jiratransitions")):
         raise DemistoException(f'Failed to get "jiratransitions" incident field from incident with {incident_id} dbotMirrorId.')

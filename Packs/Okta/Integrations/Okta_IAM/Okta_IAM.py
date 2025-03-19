@@ -273,7 +273,7 @@ def should_drop_event(log_entry, email_to_user_profile):
     """
     username = get_event_username(log_entry)
     if username is not None and email_to_user_profile.get(username) is None:
-        demisto.info(f"Dropping incident for user with username {username} - " f"User Profile does not exist in XSOAR.")
+        demisto.info(f"Dropping incident for user with username {username} - User Profile does not exist in XSOAR.")
         return True
     return False
 
@@ -292,7 +292,7 @@ def get_query_filter(context):
 
     application_ids = [row["ApplicationID"] for row in iam_configuration]
 
-    query_filter = '(eventType eq "application.user_membership.add" ' 'or eventType eq "application.user_membership.remove") and'
+    query_filter = '(eventType eq "application.user_membership.add" or eventType eq "application.user_membership.remove") and'
 
     query_filter += "(" + " or ".join([f'target.id co "{app_id}"' for app_id in application_ids]) + ")"
 

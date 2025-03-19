@@ -21,7 +21,7 @@ if __name__ in ("__main__", "__builtin__", "builtins"):
 
     output = {"value": value, "begin_time": begin_time, "end_time": end_time, "result": result}
     human_readable = (
-        f'# BetweenHours\n' f'The time *{value}* {"*IS*" if result else "*IS NOT*"} between *{begin_time}* and *{end_time}*'
+        f'# BetweenHours\nThe time *{value}* {"*IS*" if result else "*IS NOT*"} between *{begin_time}* and *{end_time}*'
     )
 
     return_results(CommandResults(outputs_prefix="BetweenHours", readable_output=human_readable, outputs=result))

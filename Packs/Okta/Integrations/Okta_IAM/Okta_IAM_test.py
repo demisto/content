@@ -54,11 +54,11 @@ def get_outputs_from_user_profile(user_profile):
     [
         (
             {"user-profile": {"email": "testdemisto2@paloaltonetworks.com"}},
-            f"{BASE_URL}/users?filter=" 'profile.email eq "testdemisto2@paloaltonetworks.com"',
+            f'{BASE_URL}/users?filter=profile.email eq "testdemisto2@paloaltonetworks.com"',
         ),
         (
             {"user-profile": {"email": "testdemisto2@paloaltonetworks.com", "login": "testdemisto2@paloaltonetworks.com"}},
-            f"{BASE_URL}/users?filter=" 'profile.login eq "testdemisto2@paloaltonetworks.com"',
+            f'{BASE_URL}/users?filter=profile.login eq "testdemisto2@paloaltonetworks.com"',
         ),
         (
             {
@@ -329,7 +329,7 @@ def test_update_user_command__rate_limit_error(mocker):
     bad_response = Response()
     bad_response.status_code = 429
     bad_response._content = (
-        b'{"errorCode": "E0000047", ' b'"errorSummary": "API call exceeded rate limit due to too many requests."}'
+        b'{"errorCode": "E0000047", "errorSummary": "API call exceeded rate limit due to too many requests."}'
     )
 
     mocker.patch.object(demisto, "error")

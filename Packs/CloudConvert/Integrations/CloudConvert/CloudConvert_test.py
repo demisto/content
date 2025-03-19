@@ -63,7 +63,7 @@ def test_upload_invalid_url(mocker):
     with pytest.raises(ValueError) as e:
         upload_command(client, {"url": MOCK_URL})
         if not e:
-            assert False
+            pytest.fail()
 
 
 def test_upload_valid_entry(mocker):
@@ -111,7 +111,7 @@ def test_upload_invalid_entry(mocker):
     with pytest.raises(ValueError) as e:
         upload_command(client, {"entry_id": MOCK_ENTRY_ID})
         if not e:
-            assert False
+            pytest.fail()
 
 
 def test_convert_valid_format_and_id(mocker):
@@ -130,7 +130,7 @@ def test_convert_valid_format_and_id(mocker):
     results = convert_command(client, {"task_id": "id", "output_format": "pdf"})
     readable_output = tableToMarkdown(
         "Convert Results",
-        remove_empty_elements(util_load_json("test_data/convert_val" "id_format_and_id_response." "json").get("data")),
+        remove_empty_elements(util_load_json("test_data/convert_valid_format_and_id_response.json").get("data")),
         headers=("id", "operation", "created_at", "status", "depends_on_task_ids"),
         headerTransform=string_to_table_header,
     )
@@ -152,11 +152,11 @@ def test_convert_invalid_format_or_id(mocker):
 
     """
     client = create_client()
-    mocker.patch.object(client, "convert", return_value=util_load_json("test_data/convert_invalid_format_or_id" "_response.json"))
+    mocker.patch.object(client, "convert", return_value=util_load_json("test_data/convert_invalid_format_or_id_response.json"))
     with pytest.raises(ValueError) as e:
         convert_command(client, {"task_id": "ff", "output_format": "ff"})
         if not e:
-            assert False
+            pytest.fail()
 
 
 def test_check_status_invalid_id(mocker):
@@ -171,11 +171,11 @@ def test_check_status_invalid_id(mocker):
 
     """
     client = create_client()
-    mocker.patch.object(client, "check_status", return_value=util_load_json("test_data/" "check_status_bad_id_response.json"))
+    mocker.patch.object(client, "check_status", return_value=util_load_json("test_data/check_status_bad_id_response.json"))
     with pytest.raises(ValueError) as e:
         check_status_command(client, {"task_id": "ff"})
         if not e:
-            assert False
+            pytest.fail()
 
 
 @pytest.mark.parametrize("create_war_room_entry", [True, False])
@@ -267,7 +267,7 @@ def test_download_invalid_id(mocker, download_as):
     with pytest.raises(ValueError) as e:
         download_command(client, {"task_id": "id", "download_as": download_as})
         if not e:
-            assert False
+            pytest.fail()
 
 
 @pytest.mark.parametrize("download_as", ["war_room_entry", "url"])

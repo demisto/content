@@ -293,7 +293,7 @@ def ImpactMD(upgradePacks, integinstances, types, custypes, subplaybooks, upgrad
                 md += f"| {c['id']} | Layout   | {c['layout']}   |\n"
 
     md += "#### Integration_Instances:\n"
-    for key, i in integinstances.items():
+    for _key, i in integinstances.items():
         if i["instance"] != "":
             md += f"{INDENT}Instance: {i['instance']}\n"
             if i["classifier"] != "":

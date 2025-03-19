@@ -514,7 +514,7 @@ class Client(BaseClient):
                             upload_time_parsed = dateparser.parse(data[i].get("uploadTime"))
                             assert upload_time_parsed is not None, f'could not parse {data[i].get("uploadTime")}'
                             date_to = (upload_time_parsed - timedelta(seconds=1)).strftime(DATE_FORMAT)
-                            data = data[: i + 1 :]
+                            data = data[: i + 1:]
                             break
 
             last_fetch = {
@@ -593,7 +593,7 @@ class Client(BaseClient):
             date_from = dateparser.parse(kwargs.get("first_fetch_time"))  # type: ignore
             if date_from is None:
                 raise DemistoException(
-                    "Inappropriate first_fetch format, " "please use something like this: 2020-01-01 or January 1 2020 or 3 days"
+                    "Inappropriate first_fetch format, please use something like this: 2020-01-01 or January 1 2020 or 3 days"
                 )
             date_from = date_from.strftime("%Y-%m-%d")  # type: ignore
 
@@ -955,7 +955,7 @@ def transform_some_fields_into_markdown(collection_name, feed: dict) -> dict:
                 for value in sub_list:
                     buffer += f"| {type_} | {sub_type} | {value} |\n"
         if buffer:
-            buffer = "| Type | Sub Type | Value |\n" "| ---- | -------- | ----- |\n" + buffer
+            buffer = "| Type | Sub Type | Value |\n| ---- | -------- | ----- |\n" + buffer
             feed["matches"] = buffer
         else:
             del feed["matches"]
@@ -1054,7 +1054,7 @@ def fetch_incidents_command(
         portions = client.create_poll_generator(
             collection_name=collection_name, max_requests=requests_count, last_fetch=last_fetch, first_fetch_time=first_fetch_time
         )
-        for portion, last_fetch in portions:
+        for portion, _last_fetch in portions:
             for feed in portion:
                 mapping = MAPPING.get(collection_name, {})
                 if collection_name == "compromised/breached":
@@ -1233,7 +1233,7 @@ def local_search_command(client: Client, args: dict):
         date_from_parsed = dateparser.parse(date_from)
         if date_from_parsed is None:
             raise DemistoException(
-                "Inappropriate date_from format, " "please use something like this: 2020-01-01 or January 1 2020"
+                "Inappropriate date_from format, please use something like this: 2020-01-01 or January 1 2020"
             )
         date_from_parsed = date_from_parsed.strftime("%Y-%m-%dT%H:%M:%SZ")
     else:
@@ -1242,7 +1242,7 @@ def local_search_command(client: Client, args: dict):
         date_to_parsed = dateparser.parse(date_to)
         if date_to_parsed is None:
             raise DemistoException(
-                "Inappropriate date_to format, " "please use something like this: 2020-01-01 or January 1 2020"
+                "Inappropriate date_to format, please use something like this: 2020-01-01 or January 1 2020"
             )
         date_to_parsed = date_to_parsed.strftime("%Y-%m-%dT%H:%M:%SZ")
     else:

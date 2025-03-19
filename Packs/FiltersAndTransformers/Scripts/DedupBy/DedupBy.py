@@ -96,7 +96,7 @@ class Key:
 
     def __hash__(self) -> int:
         def __get_hash_base(value: Any) -> Any:
-            if value is None or isinstance(value, (bool, int, float, str)):
+            if value is None or isinstance(value, bool | int | float | str):
                 return value
             elif isinstance(value, dict):
                 return tuple((k, __get_hash_base(value[k])) for k in sorted(value.keys()))

@@ -35,5 +35,4 @@ class TestTimeComponents:
             rstr = json.dumps(r)
             tstr = json.dumps(t)
             if rstr != tstr:
-                print(test_case.get("comments"))
                 assert rstr == tstr

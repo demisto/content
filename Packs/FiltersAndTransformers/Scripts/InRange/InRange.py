@@ -33,7 +33,7 @@ def main():
     if INVALID_ARG in [left, fromRange, toRange]:
         demisto.error(
             "InRange - invalid arguments. left shuld be a number, right should be from,to (e.g. '1,8'). "
-            "got left - %s, right - %s" % (leftArg, rightArg)
+            f"got left - {leftArg}, right - {rightArg}"
         )
         demisto.results(False)
     else:

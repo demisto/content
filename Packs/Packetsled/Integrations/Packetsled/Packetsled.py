@@ -129,15 +129,15 @@ def format_flow(flow):
     if "time" in flow:
         flow["time"] = isoTime(flow["time"])
     if "family" in flow:
-        flow["family"] = list(map(lambda x: family_inv_map[x], flow["family"]))
+        flow["family"] = [family_inv_map[x] for x in flow["family"]]
     if "proto" in flow:
-        flow["proto"] = list(map(lambda x: proto_inv_map[x], flow["proto"]))
+        flow["proto"] = [proto_inv_map[x] for x in flow["proto"]]
     return flow
 
 
 def get_flows(result):
     data = result["data"] or []
-    return list(map(lambda x: format_flow(x), data))
+    return [format_flow(x) for x in data]
 
 
 def validate_response(response):
@@ -184,7 +184,7 @@ def make_context(dargs, apiserver, auth_token):
             verify=VERIFY,
         )
         result = validate_response(response)
-        return {"probes": result["rows"], "dbs": list(map(lambda x: "probe_{envid}_{probe}".format(**x), result["rows"]))}
+        return {"probes": result["rows"], "dbs": ["probe_{envid}_{probe}".format(**x) for x in result["rows"]]}
 
 
 def make_timerange(dargs):
@@ -212,23 +212,23 @@ def make_query(dargs):
 
     if "entity" in dargs:
         entity = coalesceToArray(dargs["entity"])
-        search["ip"] = {"=": {"scalars": list(map(lambda x: {"v1": ip_to_number(x)}, entity)), "ranges": []}}
+        search["ip"] = {"=": {"scalars": [{"v1": ip_to_number(x)} for x in entity], "ranges": []}}
 
     if "protocol" in dargs:
         protocol = coalesceToArray(dargs["protocol"])
-        search["proto"] = {"=": {"scalars": list(map(lambda x: {"v1": proto_map[x]}, protocol)), "ranges": []}}
+        search["proto"] = {"=": {"scalars": [{"v1": proto_map[x]} for x in protocol], "ranges": []}}
 
     if "family" in dargs:
         family = coalesceToArray(dargs["family"])
-        search["family"] = {"=": {"scalars": list(map(lambda x: {"v1": family_map[x]}, family)), "ranges": []}}
+        search["family"] = {"=": {"scalars": [{"v1": family_map[x]} for x in family], "ranges": []}}
 
     if "geo" in dargs:
         geo = coalesceToArray(dargs["geo"])
-        search["geo"] = {"=": {"scalars": list(map(lambda x: {"v1": x}, geo)), "ranges": []}}
+        search["geo"] = {"=": {"scalars": [{"v1": x} for x in geo], "ranges": []}}
 
     if "port" in dargs:
         port = coalesceToArray(dargs["port"])
-        search["port"] = {"=": {"scalars": list(map(lambda x: {"v1": x}, port)), "ranges": []}}
+        search["port"] = {"=": {"scalars": [{"v1": x} for x in port], "ranges": []}}
 
     return search
 
@@ -261,7 +261,8 @@ def main():
     elif demisto.command() == "packetsled-sensors":
         response = requests.get(
             urljoin(apiserver, "/admin/probes"),
-            params={"filterscount": 1, "filtercondition0": "NOT_EQUAL", "filterdatafield0": "deleted", "filtervalue0": 1},  # type: ignore[arg-type]
+            params={"filterscount": 1, "filtercondition0": "NOT_EQUAL",
+                    "filterdatafield0": "deleted", "filtervalue0": 1},  # type: ignore[arg-type]
             headers={"cache-control": "no-cache", "x-api-access-token": auth_token},
             verify=VERIFY,
         )
@@ -310,7 +311,7 @@ def main():
                         }
                     },
                 },
-                "search_text": "log = [intel notice psfile_analytics ] cluster src_ip on [log]",
+                "search_text": "log = [intel notice psfile_analytics ] cluster src_ip on [log]",    # noqa: RUF001
             }
 
             response = requests.post(
@@ -322,7 +323,7 @@ def main():
 
             # validate the response
             result = validate_response(response)
-            entitys = list(map(lambda x: number_to_ip(x["name"]), result["data"] or []))
+            entitys = [number_to_ip(x["name"]) for x in result["data"] or []]
 
             flows_query = {
                 "limit": 50000,
@@ -340,7 +341,7 @@ def main():
                         }
                     },
                 },
-                "search_text": "log = [intel notice psfile_analytics ] cluster dest_ip on [log]",
+                "search_text": "log = [intel notice psfile_analytics ] cluster dest_ip on [log]",   # noqa: RUF001
             }
 
             response = requests.post(
@@ -352,13 +353,11 @@ def main():
 
             # validate the response
             result = validate_response(response)
-            entitys += list(map(lambda x: number_to_ip(x["name"]), result["data"] or []))
+            entitys += [number_to_ip(x["name"]) for x in (result["data"] or [])]
             entitys = list(set(entitys))
 
         if demisto.command() == "fetch-incidents":
-            incidents += list(
-                map(
-                    lambda x: {
+            incidents += [ {
                         "id": x + "-" + str(tmin) + "-" + str(tnow),
                         "name": "SOURCE: Packetsled SENSOR: " + sensor["label"] + " ENTITY: " + x,
                         "labels": [{"Provider": "packetsled"}, {"Sensor": sensor["label"]}, {"Entity": x}],
@@ -372,16 +371,10 @@ def main():
                                 "envid": sensor["envid"],
                                 "probe": sensor["probe"],
                             }
-                        ),
-                    },
-                    entitys,
-                )
-            )
+                        ),} for x in entitys]
             demisto.incidents(incidents)
         else:
-            incidents += list(
-                map(
-                    lambda x: {
+            incidents += [{
                         "id": x + "-" + str(tmin) + "-" + str(tnow),
                         "log": ["intel", "notice", "psfile_analytics"],
                         "entity": x,
@@ -389,10 +382,8 @@ def main():
                         "stop_time": tnow,
                         "envid": sensor["envid"],
                         "probe": sensor["probe"],
-                    },
-                    entitys,
-                )
-            )
+                    } for x in entitys
+                ]
             demisto.results(
                 {
                     "HumanReadable": humanReadable("Incidents", incidents),
@@ -516,14 +507,14 @@ def main():
         if "protocol" in dargs:
             protocol = coalesceToArray(dargs["protocol"])
             if len(protocol) > 1:
-                query = query + " and (" + " or ".join(list(map(lambda x: x, protocol))) + ")"
+                query = query + " and (" + " or ".join(protocol) + ")"
             else:
                 query = query + " and " + protocol[0]
 
         if "port" in dargs:
             port = coalesceToArray(dargs["port"])
             if len(port) > 1:
-                query = query + " and (" + " or ".join(list(map(lambda x: "port " + x, port))) + ")"
+                query = query + " and (" + " or ".join(["port " + x for x in port]) + ")"
             else:
                 query = query + " and port " + port[0]
 

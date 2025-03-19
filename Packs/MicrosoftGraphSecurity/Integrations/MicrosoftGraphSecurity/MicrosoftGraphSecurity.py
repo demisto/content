@@ -489,7 +489,7 @@ def create_search_alerts_filters(args, is_fetch=False):
         page = page * page_size
         if API_VER == API_V1 and page > API_V1_PAGE_LIMIT:
             raise DemistoException(
-                f"Please note that the maximum amount of alerts you can skip in {API_VER} is" f" {API_V1_PAGE_LIMIT}"
+                f"Please note that the maximum amount of alerts you can skip in {API_VER} is {API_V1_PAGE_LIMIT}"
             )
         params["$skip"] = page
     if API_VER == API_V2:
@@ -1560,7 +1560,7 @@ def test_auth_code_command(client: MsGraphClient, args):
                     list_threat_assessment_requests_command(client, {})
         except Exception as e:
             raise DemistoException(
-                f"Authorization was not successful for permission {permission} " "Check that you have the required permissions"
+                f"Authorization was not successful for permission {permission} Check that you have the required permissions"
             ) from e
     return CommandResults(readable_output="Authentication was successful.")
 
@@ -1713,7 +1713,7 @@ def test_function(client: MsGraphClient, args, has_access_to_context=False):  # 
         and client.ms_client.grant_type == AUTHORIZATION_CODE
     ):
         raise DemistoException(
-            "Test module is not available for the authorization code flow." " Use the msg-auth-test command instead."
+            "Test module is not available for the authorization code flow. Use the msg-auth-test command instead."
         )
 
     response = client.ms_client.http_request(method="GET", url_suffix=CMD_URL, params={"$top": 1}, resp_type="response")
@@ -1744,7 +1744,7 @@ def test_function(client: MsGraphClient, args, has_access_to_context=False):  # 
             except Exception as e:
                 if "Invalid ODATA query filter" in e.args[0]:
                     raise DemistoException(
-                        "Wrong filter format, correct usage: {property} eq '{property-value}'" "\n\n" + e.args[0]
+                        "Wrong filter format, correct usage: {property} eq '{property-value}'\n\n" + e.args[0]
                     )
                 raise e
 

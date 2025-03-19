@@ -783,11 +783,11 @@ def test_fetch_incidents_command(mocker):
     assert last_run == {
         "Alerts": {
             "lastRun": "2021-11-26T00:00:00Z",
-            "next_page": "https://api.opsgenie.com/v2/alerts?limit=1&sort=" "createdAt&offset=1&order=desc",
+            "next_page": "https://api.opsgenie.com/v2/alerts?limit=1&sort=createdAt&offset=1&order=desc",
         },
         "Incidents": {
             "lastRun": "2021-11-26T00:00:00Z",
-            "next_page": "https://api.opsgenie.com/v1/incidents?limit=1&" "sort=insertedAt&offset=1&order=desc",
+            "next_page": "https://api.opsgenie.com/v1/incidents?limit=1&sort=insertedAt&offset=1&order=desc",
         },
     }
 
@@ -875,7 +875,7 @@ def test_fetch_with_paging_only_incidents(mocker):
     assert last_run == {
         "Incidents": {
             "lastRun": "2021-11-26T00:00:00Z",
-            "next_page": "https://api.opsgenie.com/v1/incidents?limit=" "1&sort=insertedAt&offset=1&order=desc",
+            "next_page": "https://api.opsgenie.com/v1/incidents?limit=1&sort=insertedAt&offset=1&order=desc",
         },
         "Alerts": {"lastRun": None, "next_page": None},
     }

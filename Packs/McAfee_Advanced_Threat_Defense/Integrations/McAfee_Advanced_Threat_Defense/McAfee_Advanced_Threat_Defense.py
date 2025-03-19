@@ -76,7 +76,7 @@ def http_request(uri, method, headers=None, body=None, params=None, files=None):
     """
     Makes an API call with the supplied uri, method, headers, body
     """
-    LOG("running request with url=%s" % uri)
+    LOG(f"running request with url={uri}")
     url = f"{BASE_URL}/{uri}"
     res = requests.request(method, url, headers=headers, data=body, verify=USE_SSL, params=params, files=files)
     if res.status_code < 200 or res.status_code >= 300:
@@ -93,11 +93,10 @@ def http_request(uri, method, headers=None, body=None, params=None, files=None):
         try:
             result = json.loads(result, parse_int=str)
         except ValueError:
-            LOG("result is: %r" % result)
+            LOG(f"result is: {result}")
             return_error("Response Parsing failed")
-        if "success" in result:  # type: ignore
-            if result["success"] == "false":  # type: ignore
-                return_error("ATD Api call to " + uri + " failed. Reason is: " + str(res.reason))
+        if "success" in result and result["success"] == "false":  # type: ignore
+            return_error("ATD Api call to " + uri + " failed. Reason is: " + str(res.reason))
     return result
 
 
@@ -516,11 +515,11 @@ def file_upload_command():
     analyze_again = int(args["analyzeAgain"]) if "analyzeAgain" in args else None
     skip_task_id = int(args["skipTaskId"]) if "skipTaskId" in args else 0
     x_mode = int(args["xMode"]) if "xMode" in args else None
-    message_id = args["messageId"] if "messageId" in args else None
-    file_priority_q = args["filePriorityQ"] if "filePriorityQ" in args else None
-    src_ip = args["srcIp"] if "srcIp" in args else None
-    dest_ip = args["dstIp"] if "dstIp" in args else None
-    file_name = args["fileName"] if "fileName" in args else None
+    message_id = args.get("messageId", None)
+    file_priority_q = args.get("filePriorityQ", None)
+    src_ip = args.get("srcIp", None)
+    dest_ip = args.get("dstIp", None)
+    file_name = args.get("fileName", None)
 
     result = file_upload(
         int(args["submitType"]),
@@ -634,7 +633,7 @@ def build_report_context(report_summary, upload_data, status, threshold, task_id
             context["ATD"]["Task(val.taskId == obj.taskId)"] = {
                 "status": status,
                 "taskId": upload_data["taskId"],
-                "jobId": upload_data["subId"] if "subId" in upload_data else None,
+                "jobId": upload_data.get("subId", None),
                 "messageId": upload_data["messageId"],
                 "url": upload_data["url"],
                 "srcIp": upload_data["srcIp"],
@@ -643,12 +642,12 @@ def build_report_context(report_summary, upload_data, status, threshold, task_id
                 "SHA1": upload_data["sha1"],
                 "SHA256": upload_data["sha256"],
                 "Report": {
-                    "Attachments": report_summary["Attachments"] if "Attachment" in report_summary else None,
-                    "Environment": report_summary["Environment"] if "Environment" in report_summary else None,
-                    "Ips": report_summary["Ips"] if "Ips" in report_summary else None,
-                    "Verdict": report_summary["Verdict"] if "Verdict" in report_summary else None,
-                    "Data": report_summary["Data"] if "Data" in report_summary else None,
-                    "Selectors": report_summary["Selectors"] if "Selectors" in report_summary else None,
+                    "Attachments": report_summary.get("Attachment", None),
+                    "Environment": report_summary.get("Environment", None),
+                    "Ips": report_summary.get("Ips", None),
+                    "Verdict": report_summary.get("Verdict", None),
+                    "Data": report_summary.get("Data", None),
+                    "Selectors": report_summary.get("Selectors", None),
                 },
             }
     return context
@@ -688,7 +687,7 @@ def get_report(uri_suffix, task_id, report_type, upload_data, status, threshold)
 def get_report_command():
     uri_suffix = job_or_task_id()
     args = demisto.args()
-    report_type = args["type"] if "type" in args else "pdf"
+    report_type = args.get("type", "pdf")
     threshold = args["threshold"]
 
     filename = args["jobId"] if "jobId" in args else args["taskId"]

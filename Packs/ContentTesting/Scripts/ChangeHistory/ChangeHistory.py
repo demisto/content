@@ -56,7 +56,7 @@ def main():
         output = "## Current Local Changes History\n"
         for typekey, value in itypes.items():
             output += f"### {typekey}\n"
-            for key, value in value.items():
+            for key, _value in value.items():
                 output += f"#### {key}:\n"
                 # If no commit history found (that includes the most recent action), use the most recent action
                 if len(itypes[typekey][key]["history"]) == 0:
