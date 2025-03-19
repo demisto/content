@@ -1502,7 +1502,7 @@ def external_reference_create_command(client: OpenCTIApiClient, args: Dict[str, 
 
     if external_reference_id := result.get("id"):
         readable_output = (
-            f"Reference {external_references_source_name} was created successfully with id: " f"{external_reference_id}."
+            f"Reference {external_references_source_name} was created successfully with id: {external_reference_id}."
         )
         return CommandResults(
             outputs_prefix="OpenCTI.externalReference",

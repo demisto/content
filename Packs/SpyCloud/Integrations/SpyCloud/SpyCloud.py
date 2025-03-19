@@ -32,7 +32,7 @@ def get_breach_data():
 
     breachdata = []
     for r in jdata["results"]:
-        t = dict()
+        t = {}
         t["uuid"] = transform(r, "uuid")
         t["spycloud_publish_date"] = transform(r, "spycloud_publish_date")
         t["num_records"] = transform(r, "num_records")
@@ -64,7 +64,7 @@ def list_breaches():
 
     breachdata = []
     for r in jdata["results"]:
-        t = dict()
+        t = {}
         t["uuid"] = transform(r, "uuid")
         t["spycloud_publish_date"] = transform(r, "spycloud_publish_date")
         t["num_records"] = transform(r, "num_records")
@@ -94,7 +94,7 @@ def get_domain_data():
     total_records = download_data(URL_SUFFIX)["hits"]
     total_queries = -(-total_records // 1000)
 
-    for i in range(total_queries):
+    for _i in range(total_queries):
         data = download_data(URL_SUFFIX, cursor=cursor)
         cursor = data["cursor"]
         if "hits" in data and "results" in data:
@@ -103,7 +103,7 @@ def get_domain_data():
 
     spydata = []
     for r in sc_data:
-        t = dict()
+        t = {}
         t["document_id"] = transform(r, "document_id")
         t["spycloud_publish_date"] = transform(r, "spycloud_publish_date")
         t["username"] = transform(r, "username")
@@ -141,7 +141,7 @@ def get_email_data():
     total_queries = -(-total_records // 1000)
 
     while cursor:
-        for i in range(total_queries):
+        for _i in range(total_queries):
             data = download_data(URL_SUFFIX, cursor=cursor)
             cursor = data["cursor"]
             if "hits" in data and "results" in data:
@@ -149,7 +149,7 @@ def get_email_data():
 
     spydata = []
     for r in sc_data:
-        t = dict()
+        t = {}
         t["document_id"] = transform(r, "document_id")
         t["spycloud_publish_date"] = transform(r, "spycloud_publish_date")
         t["username"] = transform(r, "username")
@@ -185,7 +185,7 @@ def get_watchlist_data():
     total_queries = -(-total_records // 1000)
 
     while cursor:
-        for i in range(total_queries):
+        for _i in range(total_queries):
             data = download_data(URL_SUFFIX, cursor=cursor)
             cursor = data["cursor"]
             if "hits" in data and "results" in data:
@@ -193,7 +193,7 @@ def get_watchlist_data():
 
     spydata = []
     for r in sc_data:
-        t = dict()
+        t = {}
         t["document_id"] = transform(r, "document_id")
         t["spycloud_publish_date"] = transform(r, "spycloud_publish_date")
         t["username"] = transform(r, "username")
@@ -210,7 +210,7 @@ def get_watchlist_data():
 
 
 def transform(spydata, key):
-    if key in spydata.keys():
+    if key in spydata:
         transformed_data = spydata[key]
     else:
         transformed_data = "empty"

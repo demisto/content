@@ -217,7 +217,7 @@ def test_query_result(whois_result, domain, reliability, expected):
     assert standard_ec["Whois"]["QueryResult"] == expected
     assert (
         dbot_score.get(
-            "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && " "val.Type == obj.Type)"
+            "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)"
         ).get("Reliability")
         == "B - Usually reliable"
     )
@@ -252,7 +252,7 @@ def test_ip_command(mocker: MockerFixture):
                 "ASN": "3356",
                 "Address": "4.4.4.4",
             },
-            "DBotScore(" "val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
+            "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
                 "Reliability": "B - Usually reliable",
                 "Vendor": "Whois",
                 "Indicator": "4.4.4.4",

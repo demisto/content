@@ -275,7 +275,7 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int | N
             raise ValueError(f"Invalid date: {arg_name}")
 
         return int(date.timestamp())
-    if isinstance(arg, (int, float)):
+    if isinstance(arg, int | float):
         return int(arg)
     raise ValueError(f'Invalid date: "{arg_name}"')
 
@@ -283,10 +283,7 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int | N
 def flatten_event_file_items(event: dict[str, Any]):
     if not event or not event["items"]:
         return []
-
-    return list(
-        map(
-            lambda item: {
+    return [{
                 "eventId": event.get("eventId"),
                 "fileName": item.get("name"),
                 "fileId": item.get("itemId"),
@@ -296,10 +293,7 @@ def flatten_event_file_items(event: dict[str, Any]):
                 "date": event.get("date"),
                 "severity": event.get("severity"),
                 "sourceApplication": event.get("sourceApplication"),
-            },
-            event["items"],
-        )
-    )
+            } for item in event["items"]]
 
 
 def convert_file_event_to_incident(file_event: dict[str, Any]):
@@ -434,7 +428,7 @@ def fetch_incidents(
 
     if not events:
         next_run = {"last_fetch": latest_created_time, "offset": offset, "is_initial_run": False}
-        return next_run, list()
+        return next_run, []
 
     latest_event = find_latest_event(events)
     if latest_event:

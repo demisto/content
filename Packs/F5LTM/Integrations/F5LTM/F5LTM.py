@@ -110,7 +110,7 @@ class Client(BaseClient):
         url_suffix = f"ltm/pool/~{partition_name}~{pool}/members/~{partition_name}~{member}/stats"
         response = self._http_request(method="GET", url_suffix=url_suffix, headers=self.headers, params={})
         member_stats = response.get("entries")[
-            f"https://localhost/mgmt/tm/ltm/pool/~{partition_name}~{pool}/members/" f"~{partition_name}~{member}/stats"
+            f"https://localhost/mgmt/tm/ltm/pool/~{partition_name}~{pool}/members/~{partition_name}~{member}/stats"
         ]["nestedStats"]["entries"]
 
         for key, value in response.get("entries").items():
@@ -123,7 +123,7 @@ class Client(BaseClient):
         url_suffix = f"ltm/node/~{partition if partition else self.partition}~{node}/stats"
         response = self._http_request(method="GET", url_suffix=url_suffix, headers=self.headers, params={})
         node_stats = response.get("entries")[
-            f"https://localhost/mgmt/tm/ltm/node/~" f"{partition if partition else self.partition}~{node}/" f"stats"
+            f"https://localhost/mgmt/tm/ltm/node/~{partition if partition else self.partition}~{node}/stats"
         ]["nestedStats"]["entries"]
         return {"name": node, "stats": node_stats}
 

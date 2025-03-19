@@ -79,7 +79,7 @@ def login(host=HOST, cov_id=None, username=USERNAME, password=PASSWORD, verify_s
     r = s.post(host + "/rest/login", data=p, verify=verify_ssl)
 
     if r.status_code != 200:
-        raise Exception("Failed to login to %s - %d" % (host, r.status_code))
+        raise Exception(f"Failed to login to {host} - {r.status_code}")
 
     if not s.cookies:
         raise Exception("Failed to retrieve cookie")
@@ -114,7 +114,7 @@ def send_request(method, api_endpoint, target_org=None, host=HOST, headers=None,
             resp = s.send(prepped, stream=None, verify=VERIFY_SSL, proxies=PROXY, cert=None, timeout=TIMEOUT)
             resp.raise_for_status()
         except Exception:
-            return_error("Error in API call [%d] - %s" % (resp.status_code, resp.reason))
+            return_error(f"Error in API call [{resp.status_code}] - {resp.reason}")
         else:
             # when having several covs
             # merging each response from each covs into one

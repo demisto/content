@@ -286,7 +286,7 @@ class Client(BaseClient):
                 response = self._http_request("POST", full_url=upload_url, files={"file": file}, resp_type="response")
             else:
                 response = self._http_request("POST", url_suffix="/files", files={"file": file}, resp_type="response")
-        demisto.debug(f"scan_file response:\n" f"{response.status_code=!s}, {response.headers=!s}, {response.content!s}")
+        demisto.debug(f"scan_file response:\n{response.status_code=!s}, {response.headers=!s}, {response.content!s}")
         return response.json()
 
     def private_file_scan(self, file_path: str) -> dict:
@@ -302,7 +302,7 @@ class Client(BaseClient):
                 response = self._http_request("POST", full_url=upload_url, files={"file": file}, resp_type="response")
             else:
                 response = self._http_request("POST", url_suffix="/private/files", files={"file": file}, resp_type="response")
-        demisto.debug(f"scan_private_file response:\n" f"{response.status_code=!s}, {response.headers=!s}, {response.content!s}")
+        demisto.debug(f"scan_private_file response:\n{response.status_code=!s}, {response.headers=!s}, {response.content!s}")
         return response.json()
 
     def get_upload_url(self) -> dict:
@@ -514,7 +514,7 @@ class ScoreCalculator:
         if suspicious:
             total += analysis_stats.get("suspicious", 0)
         verdict = "suspicious" if suspicious else "malicious"
-        self.logs.append(f"{total} vendors found {verdict}.\n" f"The {verdict} threshold is {threshold}.")
+        self.logs.append(f"{total} vendors found {verdict}.\nThe {verdict} threshold is {threshold}.")
         if total >= threshold:
             self.logs.append(f"Found as {verdict}: {total} >= {threshold}.")
             return True
@@ -728,7 +728,7 @@ class ScoreCalculator:
         suspicious_by_rules = self.is_suspicious_by_rules(raw_response)
         if score == Common.DBotScore.SUSPICIOUS and suspicious_by_rules:
             self.logs.append(
-                f'Hash: "{given_hash}" was found malicious as the ' "hash is suspicious both by threshold and rules analysis."
+                f'Hash: "{given_hash}" was found malicious as the hash is suspicious both by threshold and rules analysis.'
             )
             return Common.DBotScore.BAD
         elif suspicious_by_rules:
@@ -2468,10 +2468,10 @@ def private_get_analysis_command(client: Client, args: dict) -> CommandResults:
             stats["threat_verdict"] = VERDICTS.get(verdict, verdict)
 
         # URL attributes
-        if last_analysis_stats := item_attributes.get("last_analysis_stats"):
-            if detection_engines := sum(last_analysis_stats.values()):
-                positive_detections = last_analysis_stats.get("malicious", 0)
-                stats["positives"] = f"{positive_detections}/{detection_engines}"
+        if ((last_analysis_stats := item_attributes.get("last_analysis_stats"))
+            and (detection_engines := sum(last_analysis_stats.values()))):
+            positive_detections = last_analysis_stats.get("malicious", 0)
+            stats["positives"] = f"{positive_detections}/{detection_engines}"
 
         attributes.update(stats)
         for field in ["title", "last_http_response_content_sha256"]:
@@ -2489,7 +2489,7 @@ def private_get_analysis_command(client: Client, args: dict) -> CommandResults:
                 "id",
                 "status",
                 # File attributes
-                "sha256" "threat_severity_level",
+                "sha256threat_severity_level",
                 "popular_threat_category",
                 "threat_verdict",
                 # URL attributes

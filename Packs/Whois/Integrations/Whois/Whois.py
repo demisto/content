@@ -3037,7 +3037,7 @@ def get_domain_from_query(query: str):
         domain = query
         # checks if query includes subdomain
         if suffixless_query.count(".") > 0:
-            domain = query[suffixless_query.rindex(".") + 1 :]
+            domain = query[suffixless_query.rindex(".") + 1:]
 
         demisto.debug(f"Found domain '{domain}' from query")
         return domain

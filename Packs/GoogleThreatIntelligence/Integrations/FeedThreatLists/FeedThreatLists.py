@@ -61,9 +61,8 @@ class Client(BaseClient):
         package = package or _get_current_package()
         filter_query = filter_query or ""
 
-        if fetch_command:
-            if self.get_last_run() == package:
-                return []
+        if fetch_command and self.get_last_run() == package:
+            return []
 
         response = self.get_threat_list(feed_type, package, filter_query.strip(), limit)
 

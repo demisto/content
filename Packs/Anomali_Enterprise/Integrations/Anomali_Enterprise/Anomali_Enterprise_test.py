@@ -28,7 +28,7 @@ def test_domain_command_benign(mocker):
     mocker.patch.object(client, "domain_request", return_value=return_data)
     command_results = domain_command(client, args={"domain": "test.com"})
     output = command_results[0].to_context().get("EntryContext", {})
-    dbot_key = "DBotScore(val.Indicator && val.Indicator == obj.Indicator &&" " val.Vendor == obj.Vendor && val.Type == obj.Type)"
+    dbot_key = "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)"
     expected_result = {
         "Domain": [{"Name": "test.com"}],
         "DBotScore": [{"Indicator": "test.com", "Type": "domain", "Vendor": "Anomali Enterprise", "Score": 0}],
@@ -55,7 +55,7 @@ def test_domain_command_suspicious(mocker):
     mocker.patch.object(client, "domain_request", return_value=return_data)
     command_results = domain_command(client, args={"domain": "suspicious.com"})
     output = command_results[0].to_context().get("EntryContext", {})
-    dbot_key = "DBotScore(val.Indicator && val.Indicator == obj.Indicator &&" " val.Vendor == obj.Vendor && val.Type == obj.Type)"
+    dbot_key = "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)"
     expected_result = {
         "Domain": [{"Name": "suspicious.com", "Tags": "DGA"}],
         "DBotScore": [{"Indicator": "suspicious.com", "Type": "domain", "Vendor": "Anomali Enterprise", "Score": 2}],
@@ -83,7 +83,7 @@ def test_domain_command_malicious(mocker):
     mocker.patch.object(client, "domain_request", return_value=return_data)
     command_results = domain_command(client, args={"domain": "malicious.com"})
     output = command_results[0].to_context().get("EntryContext", {})
-    dbot_key = "DBotScore(val.Indicator && val.Indicator == obj.Indicator &&" " val.Vendor == obj.Vendor && val.Type == obj.Type)"
+    dbot_key = "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)"
     expected_result = {
         "Domain": [
             {"Malicious": {"Description": "my_malware", "Vendor": "Anomali Enterprise"}, "Name": "malicious.com", "Tags": "DGA"}

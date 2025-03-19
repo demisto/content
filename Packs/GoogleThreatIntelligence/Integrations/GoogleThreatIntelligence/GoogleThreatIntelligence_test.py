@@ -498,7 +498,7 @@ def test_ip_command_private_ip_lookup(mocker):
     assert results[1].execution_metrics == [{"APICallsCount": 1, "Type": "Successful"}]
     assert results[0].execution_metrics is None
     assert results[0].readable_output == (
-        'IP "192.168.0.1" was not enriched. ' "Reputation lookups have been disabled for private IP addresses."
+        'IP "192.168.0.1" was not enriched. Reputation lookups have been disabled for private IP addresses.'
     )
     assert results[0].indicator.dbot_score.score == 0
 
@@ -625,7 +625,7 @@ def test_url_command(mocker, requests_mock):
     mock_response = util_load_json("test_data/url.json")
     expected_results = util_load_json("test_data/url_results.json")
     requests_mock.get(
-        f"https://www.virustotal.com/api/v3/urls/{encode_url_to_base64(testing_url)}" f"?relationships={url_relationships}",
+        f"https://www.virustotal.com/api/v3/urls/{encode_url_to_base64(testing_url)}?relationships={url_relationships}",
         json=mock_response,
     )
 
@@ -668,7 +668,7 @@ def test_not_found_url_command(mocker, requests_mock):
 
     mock_response = {"error": {"code": "NotFoundError"}}
     requests_mock.get(
-        f"https://www.virustotal.com/api/v3/urls/{encode_url_to_base64(testing_url)}" f"?relationships={url_relationships}",
+        f"https://www.virustotal.com/api/v3/urls/{encode_url_to_base64(testing_url)}?relationships={url_relationships}",
         json=mock_response,
     )
 
@@ -1509,7 +1509,7 @@ def test_gti_curated_collections_commands(mocker, requests_mock):
             else:
                 filter_query += f"collection_type%3A{collection_type}"
             requests_mock.get(
-                f"https://www.virustotal.com/api/v3/{endpoint}/{endpoint_resource}/collections" f"?filter={filter_query}",
+                f"https://www.virustotal.com/api/v3/{endpoint}/{endpoint_resource}/collections?filter={filter_query}",
                 json=data_json,
             )
 

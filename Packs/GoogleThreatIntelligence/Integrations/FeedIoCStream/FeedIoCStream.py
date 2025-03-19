@@ -51,9 +51,8 @@ class Client(BaseClient):
         """
         filter_query = filter_query or ""
 
-        if fetch_command:
-            if last_run := self.get_last_run():
-                filter_query += f" {last_run}"
+        if fetch_command and (last_run := self.get_last_run()):
+            filter_query += f" {last_run}"
 
         response = self.get_api_indicators(filter_query.strip(), limit)
 

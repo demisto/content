@@ -104,10 +104,10 @@ def impartner_get_account_id_command(client: Client, args: dict[str, Any]) -> Co
             "recordLink": parsed_result.get("recordLink"),
             "website": parsed_result.get("website"),
             "mainProductToIntegrate": parsed_result.get(
-                "what_is_your_main_product_you_are_looking_to_integrate" "_with_Palo_Alto_Networks__cf"
+                "what_is_your_main_product_you_are_looking_to_integrate_with_Palo_Alto_Networks__cf"
             ),
             "mutualCustomer": parsed_result.get(
-                "if_yes_please_share_at_least_1_mutual_customer_that_will_use_and" "_test_the_integration__cf"
+                "if_yes_please_share_at_least_1_mutual_customer_that_will_use_and_test_the_integration__cf"
             ),
             "tpA_Product_s__cf": parsed_result.get("tpA_Product_s__cf"),
             "integration_Status__cf": parsed_result.get("integration_Status__cf"),
@@ -116,7 +116,7 @@ def impartner_get_account_id_command(client: Client, args: dict[str, Any]) -> Co
             "panW_Integration_Product__cf": parsed_result.get("panW_Integration_Product__cf"),
             "account_Integration_Status__cf": parsed_result.get("account_Integration_Status__cf"),
             "accountTimeline": parsed_result.get(
-                "if_there_is_a_timeline_to_complete_the_integration_please_enter" "_the_date__cf"
+                "if_there_is_a_timeline_to_complete_the_integration_please_enter_the_date__cf"
             ),
         }
     else:

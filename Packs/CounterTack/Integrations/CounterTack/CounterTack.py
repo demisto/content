@@ -1016,7 +1016,7 @@ def search_events():
     events = search_events_request(exp)
     if events.get("results"):
         results = events.get("results")
-        results_lst = list()
+        results_lst = []
         for i in range(len(results)):
             results_lst.append({k.replace("events.", ""): v for k, v in results[i].items()})
         events["results"] = results_lst
@@ -1076,7 +1076,7 @@ def search_endpoints():
     endpoints = search_endpoints_request(exp)
     if endpoints.get("results"):
         results = endpoints.get("results")
-        results_lst = list()
+        results_lst = []
         for i in range(len(results)):
             results_lst.append({k.replace("endpoints.", ""): v for k, v in results[i].items()})
         endpoints["results"] = results_lst
@@ -1138,7 +1138,7 @@ def search_behaviors():
     behaviors = search_behaviors_request(exp)
     if behaviors.get("results"):
         results = behaviors.get("results")
-        results_lst = list()
+        results_lst = []
         for i in range(len(results)):
             results_lst.append({k.replace("behaviors.", ""): v for k, v in results[i].items()})
         behaviors["results"] = results_lst
@@ -1197,7 +1197,7 @@ def search_hashes():
     hashes = hashes_search_request(exp)
     if hashes.get("results"):
         results = hashes.get("results")
-        results_lst = list()
+        results_lst = []
         for i in range(len(results)):
             results_lst.append({k.replace("hashes.", ""): v for k, v in results[i].items()})
         hashes["results"] = results_lst

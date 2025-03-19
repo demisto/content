@@ -170,7 +170,7 @@ def test_bad_get_access_token_request(mocker):
 
     assert (
         str(error_info.value).startswith(
-            "Error occurred while creating an access token. " "Please check the instance configuration."
+            "Error occurred while creating an access token. Please check the instance configuration."
         )
         is True
     )

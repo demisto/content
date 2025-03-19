@@ -629,7 +629,7 @@ def get_dbot_score(amount_of_detections):
         return 0
     if amount_of_detections > 0 and amount_of_detections < malicious_threshold:
         return 2
-    if amount_of_detections >= malicious_threshold:
+    if amount_of_detections >= malicious_threshold: # noqa: RET503
         return 3
 
 
@@ -692,7 +692,7 @@ def main():
 
         params = {
             "threat_miner_url": demisto_params.get("threatminer_url"),
-            "verify_certificates": False if demisto_params.get("insecure") else True,
+            "verify_certificates": not demisto_params.get("insecure"),
         }
 
         reliability = demisto_params.get("integrationReliability")

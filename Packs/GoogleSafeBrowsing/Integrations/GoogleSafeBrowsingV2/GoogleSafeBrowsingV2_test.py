@@ -161,7 +161,7 @@ def test_command_url(mocker):
 
     # validate score
     output = url_command[0].to_context().get("EntryContext", {})
-    dbot_key = "DBotScore(val.Indicator && val.Indicator == obj.Indicator &&" " val.Vendor == obj.Vendor && val.Type == obj.Type)"
+    dbot_key = "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)"
     assert output.get(dbot_key, [])[0].get("Score") == 3
     assert output.get(dbot_key, [])[0].get("Reliability") == DBotScoreReliability.B
     assert url_command[0].to_context().get("Contents") == URL_CONTENTS
@@ -188,7 +188,7 @@ def test_url_not_found(mocker):
     url_command = url_command(client, {"url": ["test.com"]})
     # print(url_command.to_context())
     output = url_command.to_context().get("EntryContext", {})
-    dbot_key = "DBotScore(val.Indicator && val.Indicator == obj.Indicator && " "val.Vendor == obj.Vendor && val.Type == obj.Type)"
+    dbot_key = "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)"
     assert output.get(dbot_key, [])[0].get("Score") == 0
     assert output.get(dbot_key, [])[0].get("Reliability") == DBotScoreReliability.B
     assert url_command.readable_output == "No information was found for url ['test.com']"

@@ -140,7 +140,7 @@ class Client(BaseClient):
         headers = self._headers
         response = self._http_request(
             method="GET",
-            url_suffix=f"/ProtectManager/webservices/" f"v2/incidents/{incident_id}/staticAttributes",
+            url_suffix=f"/ProtectManager/webservices/v2/incidents/{incident_id}/staticAttributes",
             headers=headers,
         )
 
@@ -156,7 +156,7 @@ class Client(BaseClient):
         headers = self._headers
         response = self._http_request(
             method="GET",
-            url_suffix=f"/ProtectManager/webservices/" f"v2/incidents/{incident_id}/editableAttributes",
+            url_suffix=f"/ProtectManager/webservices/v2/incidents/{incident_id}/editableAttributes",
             headers=headers,
         )
 
@@ -181,7 +181,7 @@ class Client(BaseClient):
 
         headers = self._headers
         response = self._http_request(
-            method="GET", url_suffix=f"/ProtectManager/webservices/v2/incidents/" f"{incident_id}/history", headers=headers
+            method="GET", url_suffix=f"/ProtectManager/webservices/v2/incidents/{incident_id}/history", headers=headers
         )
 
         return response
@@ -191,7 +191,7 @@ class Client(BaseClient):
 
         headers = self._headers
         response = self._http_request(
-            method="GET", url_suffix="/ProtectManager/webservices/v2/incidents/" "protectOrPreventStatuses", headers=headers
+            method="GET", url_suffix="/ProtectManager/webservices/v2/incidents/protectOrPreventStatuses", headers=headers
         )
 
         return response
@@ -204,7 +204,7 @@ class Client(BaseClient):
         headers = self._headers
         response = self._http_request(
             method="GET",
-            url_suffix=f"/ProtectManager/webservices/" f"v2/incidents/{incident_id}/originalMessage",
+            url_suffix=f"/ProtectManager/webservices/v2/incidents/{incident_id}/originalMessage",
             headers=headers,
             resp_type="bytes",
         )
@@ -219,7 +219,7 @@ class Client(BaseClient):
 
         headers = self._headers
         response = self._http_request(
-            method="GET", url_suffix=f"/ProtectManager/webservices/" f"v2/savedReport/{report_id}", headers=headers
+            method="GET", url_suffix=f"/ProtectManager/webservices/v2/savedReport/{report_id}", headers=headers
         )
 
         return response
@@ -241,7 +241,7 @@ class Client(BaseClient):
 
         headers = self._headers
         response = self._http_request(
-            method="GET", url_suffix=f"/ProtectManager/webservices/" f"v2/senderRecipientPattern/{pattern_id}", headers=headers
+            method="GET", url_suffix=f"/ProtectManager/webservices/v2/senderRecipientPattern/{pattern_id}", headers=headers
         )
 
         return response
@@ -373,7 +373,7 @@ def get_severity_name_by_id(severity: Optional[int]):
     :param severity: The severity ID.
 
     """
-    for severity_name, severity_num in INCIDENT_SEVERITY_MAPPING.items():
+    for severity_name, severity_num in INCIDENT_SEVERITY_MAPPING.items():   # noqa: RET503
         if severity_num == severity:
             return severity_name
 
@@ -821,7 +821,7 @@ def get_incident_details_command(client: Client, args: dict[str, Any]):
 
         if custom_attributes in ["specific_attributes", "custom_attribute_group_name"] and not custom_data:
             raise DemistoException(
-                "Error: custom_data argument must be provided if you chose specific_attributes or" " custom_attribute_group_name."
+                "Error: custom_data argument must be provided if you chose specific_attributes or custom_attribute_group_name."
             )
 
         static_attributes = client.get_incident_static_attributes_request(incident_id)

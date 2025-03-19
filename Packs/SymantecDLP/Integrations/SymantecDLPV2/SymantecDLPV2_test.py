@@ -3,7 +3,7 @@ import copy
 import pytest
 from CommonServerPython import *
 from freezegun import freeze_time
-from pytest import raises
+from pytest import raises   # noqa: PT013
 
 
 def util_load_json(path):
@@ -181,7 +181,7 @@ def test_parse_custom_attribute():
     ]
     assert custom_attribute_all_list_output == parse_custom_attribute(custom_attribute_group_list, args_all)
     args_none = {"custom_attributes": "none"}
-    assert [] == parse_custom_attribute(custom_attribute_group_list, args_none)
+    assert parse_custom_attribute(custom_attribute_group_list, args_none) == []
     args_custom = {"custom_attributes": "specific attributes"}
     with raises(
         DemistoException,
@@ -197,7 +197,7 @@ def test_parse_custom_attribute():
     ]
     assert custom_attribute_custom_list_output == parse_custom_attribute(custom_attribute_group_list, args_custom)
     args_custom["custom_data"] = "aaa"
-    assert [] == parse_custom_attribute(custom_attribute_group_list, args_custom)
+    assert parse_custom_attribute(custom_attribute_group_list, args_custom) == []
     args_group = {"custom_attributes": "custom attribute group name"}
     with raises(
         DemistoException,

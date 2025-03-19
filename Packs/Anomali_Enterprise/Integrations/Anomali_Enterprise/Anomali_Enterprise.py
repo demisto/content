@@ -290,7 +290,7 @@ def main() -> None:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 
     except Exception as err:
-        return_error(f"Failed to execute {command} command. Error: {err!s} \n " f"tracback: {traceback.format_exc()}")
+        return_error(f"Failed to execute {command} command. Error: {err!s} \n tracback: {traceback.format_exc()}")
 
 
 """ ENTRY POINT """

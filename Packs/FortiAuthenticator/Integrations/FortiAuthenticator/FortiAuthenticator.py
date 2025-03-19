@@ -41,10 +41,7 @@ def test_module():
     Perform basic login and logout operation, validate connection.
     """
     r = requests.get(BASE_URL, auth=(USER_NAME, PASSWORD), verify=USE_SSL)
-    if r.status_code == 200:
-        return True
-    else:
-        return False
+    return r.status_code == 200
 
 
 @logger
@@ -154,7 +151,7 @@ def update_user_command():
 
 """ COMMANDS MANAGER / SWITCH PANEL """
 
-LOG("command is %s" % (demisto.command(),))
+LOG(f"command is {demisto.command()}")
 
 try:
     if demisto.command() == "test-module":

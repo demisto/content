@@ -237,9 +237,7 @@ def create_human_readable_ip(ip_object: dict, ip_value: str):
 def get_range_by_ip_command(client: Client):
     ip = demisto.getArg("ip")
     try:
-        if isinstance(ipaddress.ip_address(ip), ipaddress.IPv6Address) or isinstance(
-            ipaddress.ip_address(ip), ipaddress.IPv4Address
-        ):
+        if isinstance(ipaddress.ip_address(ip), ipaddress.IPv6Address | ipaddress.IPv4Address):
             range_raw_res = get_range_by_ip(client, ip)
 
             if range_raw_res.get("id") in (None, 0, client.conf):
@@ -312,7 +310,7 @@ def add_domain_response_policy_command(client: Client):
     domain = demisto.getArg("domain")
     raw_response = add_domain_response_policy(client, policy_id, domain)
     error_msg = (
-        f"Failed to add {domain} to response policy {policy_id}, " f"possibly the domain already exists in the response policy."
+        f"Failed to add {domain} to response policy {policy_id}, possibly the domain already exists in the response policy."
     )
     if raw_response:
         return_outputs(f"Successfully added {domain} to response policy {policy_id}", {}, raw_response)
