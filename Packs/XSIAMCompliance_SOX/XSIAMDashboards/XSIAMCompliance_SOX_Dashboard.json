@@ -1,0 +1,858 @@
+{
+    "fromVersion": "8.4.0",
+    "dashboards_data": [
+        {
+            "name": "SOX Compliance Dashboard",
+            "description": "Monitor SOX controls and produce evidence for audits.",
+            "status": "ENABLED",
+            "layout": [
+                {
+                    "id": "row-5542",
+                    "data": [
+                        {
+                            "key": "title",
+                            "data": {
+                                "text": "SOX Compliance",
+                                "type": "Text",
+                                "style": {
+                                    "bgColor": "#ffffff",
+                                    "textColor": "#333",
+                                    "bgColorDark": "#1a1a1a",
+                                    "textColorDark": "#a9a9aa"
+                                },
+                                "width": 100,
+                                "height": 54
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-2225",
+                    "data": [
+                        {
+                            "key": "title",
+                            "data": {
+                                "text": "SOX 302: Access Control",
+                                "type": "Text",
+                                "style": {
+                                    "bgColor": "#ffffff",
+                                    "textColor": "#333",
+                                    "bgColorDark": "#1a1a1a",
+                                    "textColorDark": "#a9a9aa"
+                                },
+                                "width": 100,
+                                "height": 55
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-8994",
+                    "data": [
+                        {
+                            "key": "xql_1692974494975",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 400,
+                                "params": [
+                                    {
+                                        "name": "host",
+                                        "value": "*"
+                                    }
+                                ],
+                                "phrase": "preset = xdr_login_events \n| filter array_length(assigned_privileges ) > 0 or elevated_token != null\n| filter agent_hostname in($host)\n| comp count() as login_count by agent_hostname, agent_ip_addresses, agent_os_type  \n| sort desc login_count\n| fields agent_hostname, agent_ip_addresses, agent_os_type, login_count\n| limit 100",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-4137",
+                    "data": [
+                        {
+                            "key": "title",
+                            "data": {
+                                "text": "SOX 302: Configuration Management",
+                                "type": "Text",
+                                "style": {
+                                    "bgColor": "#ffffff",
+                                    "textColor": "#333",
+                                    "bgColorDark": "#1a1a1a",
+                                    "textColorDark": "#a9a9aa"
+                                },
+                                "width": 100,
+                                "height": 50
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-8034",
+                    "data": [
+                        {
+                            "key": "xql_1692974738919",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 400,
+                                "params": [
+                                    {
+                                        "name": "policy",
+                                        "value": "*"
+                                    }
+                                ],
+                                "phrase": "dataset = endpoints \n| fields endpoint_name, assigned_prevention_policy, assigned_extensions_policy\n| filter assigned_prevention_policy in($policy)\n| dedup endpoint_name \n| comp count(endpoint_name) as PreventionPolicyCount by assigned_prevention_policy\n|\n view graph type = bubble subtype = packed header = \"Prevention policy grouped by endpoint count\" xaxis = assigned_prevention_policy yaxis = PreventionPolicyCount ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "bubble",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "packed"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Prevention policy grouped by endpoint count\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "assigned_prevention_policy"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "PreventionPolicyCount"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-6750",
+                    "data": [
+                        {
+                            "key": "title",
+                            "data": {
+                                "text": "SOX 302: Incident Response",
+                                "type": "Text",
+                                "style": {
+                                    "bgColor": "#ffffff",
+                                    "textColor": "#333",
+                                    "bgColorDark": "#1a1a1a",
+                                    "textColorDark": "#a9a9aa"
+                                },
+                                "width": 100,
+                                "height": 50
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-9509",
+                    "data": [
+                        {
+                            "key": "xql_1692974916216",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 400,
+                                "phrase": "dataset = incidents \n| comp count() as the_count by severity \n| sort desc the_count\n| view graph type = column subtype = grouped header = \"Incident count by severity\" xaxis = severity yaxis = the_count legend = `false` xaxistitle = \"Severity\" yaxistitle = \"# of incidents\" ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "column",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "grouped"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Incident count by severity\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "severity"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "the_count"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legend",
+                                                "value": "`false`"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxistitle",
+                                                "value": "\"Severity\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxistitle",
+                                                "value": "\"# of incidents\""
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-9230",
+                    "data": [
+                        {
+                            "key": "title",
+                            "data": {
+                                "text": "SOX 302.5.A - 302.5.B: Detect Security Breaches",
+                                "type": "Text",
+                                "style": {
+                                    "bgColor": "#ffffff",
+                                    "textColor": "#333",
+                                    "bgColorDark": "#1a1a1a",
+                                    "textColorDark": "#a9a9aa"
+                                },
+                                "width": 100,
+                                "height": 50
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-5746",
+                    "data": [
+                        {
+                            "key": "xql_1692974975196",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 400,
+                                "params": [
+                                    {
+                                        "name": "host",
+                                        "value": "*"
+                                    }
+                                ],
+                                "phrase": "preset = xdr_login_events \n| filter agent_hostname in($host)\n| filter (action_local_port in (22, 23, 445, 3389)) ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": null,
+                                    "columnWidth": null
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-3203",
+                    "data": [
+                        {
+                            "key": "title",
+                            "data": {
+                                "text": "SOX 302: Audit and Accountability",
+                                "type": "Text",
+                                "style": {
+                                    "bgColor": "#ffffff",
+                                    "textColor": "#333",
+                                    "bgColorDark": "#1a1a1a",
+                                    "textColorDark": "#a9a9aa"
+                                },
+                                "width": 100,
+                                "height": 50
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-5155",
+                    "data": [
+                        {
+                            "key": "xql_1692975177230",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 400,
+                                "params": [
+                                    {
+                                        "name": "domain",
+                                        "value": "*"
+                                    }
+                                ],
+                                "phrase": "preset = ad_users \n| filter member_of contains \"Domain Admins\"\n| filter netbios_domain in($domain)\n| comp count() as admins\n| alter x=\"x\"\n| join conflict_strategy = both( preset = ad_users \n| comp count() as total\n| alter y=\"x\") as a a.y =x \n| fields - x,y\n|\n view graph type = column subtype = grouped layout = horizontal header = \"Domain Admins vs Total AD Users\" xaxis = total yaxis = admins,total xaxistitle = \"Number of users\" yaxistitle = \"User Type\" seriestitle(\"admins\",\"Admin User\") seriestitle(\"total\",\"AD User\") ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "column",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "grouped"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "layout",
+                                                "value": "horizontal"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Domain Admins vs Total AD Users\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "total"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "admins,total"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxistitle",
+                                                "value": "\"Number of users\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxistitle",
+                                                "value": "\"User Type\""
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "admins",
+                                                    "Admin User"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "total",
+                                                    "AD User"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-1090",
+                    "data": [
+                        {
+                            "key": "title",
+                            "data": {
+                                "text": "SOX Section 302: Track Data Access",
+                                "type": "Text",
+                                "style": {
+                                    "bgColor": "#ffffff",
+                                    "textColor": "#333",
+                                    "bgColorDark": "#1a1a1a",
+                                    "textColorDark": "#a9a9aa"
+                                },
+                                "width": 100,
+                                "height": 55
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-6353",
+                    "data": [
+                        {
+                            "key": "xql_1692975277002",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 400,
+                                "phrase": "dataset = panw_ngfw_traffic_raw \n| filter ((app not contains \"\"\"palo\"\"\" and app not contains \"\"\"xdr\"\"\" and app not contains \"\"\"traps\"\"\"))\n| alter in_range = if(incidr(dest_ip,\"10.0.0.0/8\") = true, \"Inbound\",\n  if(incidr(dest_ip,\"172.16.0.0/12\") = true, \"Inbound\",\n  if(incidr(dest_ip,\"192.168.0.0/16\") = true, \"Inbound\",\n  if(incidr(dest_ip,\"169.254.0.0/16\") = true, \"Inbound\",\n  if(incidr(dest_ip,\"127.0.0.0/8\") = true, \"Inbound\",\n  if(incidr(dest_ip,\"100.64.0.0/10\") = true, \"Inbound\",\n  if(dest_ip contains \"fd00::\") = true, \"Inbound\",\n  if(dest_ip contains \"fe80::\") = true, \"Inbound\", \"Outbound\"))))))\n| filter in_range = \"Outbound\"\n| filter action = \"allow\"\n| comp values(source_ip) as source_ips, values(dest_ip) as dest_ips, values(dest_location) as dest_locations, count(_id) as event_count, sum(to_integer(bytes_total)) as TotalBytes by _time, app, app_category\n| sort desc TotalBytes ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                }
+                            }
+                        }
+                    ]
+                }
+            ],
+            "default_dashboard_id": 1,
+            "global_id": "297aa40038c943c38b65e2213aa66031",
+            "metadata": {
+                "params": [
+                    {
+                        "name": "host",
+                        "type": "DYNAMIC",
+                        "title": "Host",
+                        "value": [],
+                        "executionID": "17648c6445724f_414377_inv",
+                        "valueOptions": [],
+                        "investigation": {
+                            "ttl": "0",
+                            "source": "investigation",
+                            "timeframe": {
+                                "relativeTime": 86400000
+                            },
+                            "input_dict": {
+                                "xql": "preset = xdr_login_events \n| filter agent_hostname contains \"*\"\n| fields agent_hostname",
+                                "tenants": [],
+                                "schedule": null,
+                                "query_editor": "xql",
+                                "notification_link": "xql/xql-search/_EXECUTION_ID_",
+                                "run_in_background": false,
+                                "query_definition_name": "XQL-QUERY-89299"
+                            },
+                            "dashboard_id": null
+                        },
+                        "investigationError": null,
+                        "filterComponentType": "MULTI_SELECT",
+                        "investigationColumn": "agent_hostname"
+                    },
+                    {
+                        "name": "domain",
+                        "type": "DYNAMIC",
+                        "title": "Domain",
+                        "value": [],
+                        "executionID": "c2bb83c086b448_414374_inv",
+                        "valueOptions": [],
+                        "investigation": {
+                            "ttl": "0",
+                            "source": "investigation",
+                            "timeframe": {
+                                "relativeTime": 86400000
+                            },
+                            "input_dict": {
+                                "xql": "dataset = endpoints\n| filter domain contains \"*\"\n| fields domain",
+                                "tenants": [],
+                                "schedule": null,
+                                "query_editor": "xql",
+                                "notification_link": "xql/xql-search/_EXECUTION_ID_",
+                                "run_in_background": false,
+                                "query_definition_name": "XQL-QUERY-89300"
+                            },
+                            "dashboard_id": null
+                        },
+                        "investigationError": null,
+                        "filterComponentType": "MULTI_SELECT",
+                        "investigationColumn": "domain"
+                    }
+                ]
+            }
+        }
+    ],
+    "widgets_data": [
+        {
+            "widget_key": "xql_1692974494975",
+            "title": "Compliance: Access Control",
+            "creation_time": 1696525542609,
+            "description": "Implement policies and procedures to monitor access to systems. Use this widget to query XDR login events.",
+            "data": {
+                "params": [
+                    {
+                        "name": "host",
+                        "value": "*"
+                    }
+                ],
+                "phrase": "preset = xdr_login_events \n| filter array_length(assigned_privileges ) > 0 or elevated_token != null\n| filter agent_hostname in($host)\n| comp count() as login_count by agent_hostname, agent_ip_addresses, agent_os_type  \n| sort desc login_count\n| fields agent_hostname, agent_ip_addresses, agent_os_type, login_count\n| limit 100",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "xdr_data"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1692974738919",
+            "title": "Compliance: Policy/Configuration Management",
+            "creation_time": 1696525543917,
+            "description": "Implement policies and procedures to monitor and maintain secure configurations. Use this widget to query prevention policy information.",
+            "data": {
+                "params": [
+                    {
+                        "name": "policy",
+                        "value": "*"
+                    }
+                ],
+                "phrase": "dataset = endpoints \n| fields endpoint_name, assigned_prevention_policy, assigned_extensions_policy\n| filter assigned_prevention_policy in($policy)\n| dedup endpoint_name \n| comp count(endpoint_name) as PreventionPolicyCount by assigned_prevention_policy\n|\n view graph type = bubble subtype = packed header = \"Prevention policy grouped by endpoint count\" xaxis = assigned_prevention_policy yaxis = PreventionPolicyCount ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "bubble",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "packed"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Prevention policy grouped by endpoint count\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "assigned_prevention_policy"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "PreventionPolicyCount"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "endpoints"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1692974916216",
+            "title": "Compliance: Threat Protection/Incident Response",
+            "creation_time": 1696525544635,
+            "description": "Implement policies and procedures to detect, respond to, and recover from security incidents. Use this widget to query incidents by severity.",
+            "data": {
+                "phrase": "dataset = incidents \n| comp count() as the_count by severity \n| sort desc the_count\n| view graph type = column subtype = grouped header = \"Incident count by severity\" xaxis = severity yaxis = the_count legend = `false` xaxistitle = \"Severity\" yaxistitle = \"# of incidents\" ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "column",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "grouped"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Incident count by severity\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "severity"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "the_count"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legend",
+                                "value": "`false`"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxistitle",
+                                "value": "\"Severity\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxistitle",
+                                "value": "\"# of incidents\""
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "incidents"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1692974975196",
+            "title": "Compliance: Continuous Monitoring",
+            "creation_time": 1696525546240,
+            "description": "Implement policies and procedures to assess, authorize, and monitor systems. Use this widget to query XDR login events.",
+            "data": {
+                "params": [
+                    {
+                        "name": "host",
+                        "value": "*"
+                    }
+                ],
+                "phrase": "preset = xdr_login_events \n| filter agent_hostname in($host)\n| filter (action_local_port in (22, 23, 445, 3389)) ",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": null,
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "xdr_data"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1692975177230",
+            "title": "Compliance: Audit Controls",
+            "creation_time": 1696525547913,
+            "description": "Implement policies and procedures to monitor, record, and review system activities. Use this widget to query Active Directory domain administrators.",
+            "data": {
+                "params": [
+                    {
+                        "name": "domain",
+                        "value": "*"
+                    }
+                ],
+                "phrase": "preset = ad_users \n| filter member_of contains \"Domain Admins\"\n| filter netbios_domain in($domain)\n| comp count() as admins\n| alter x=\"x\"\n| join conflict_strategy = both( preset = ad_users \n| comp count() as total\n| alter y=\"x\") as a a.y =x \n| fields - x,y\n|\n view graph type = column subtype = grouped layout = horizontal header = \"Domain Admins vs Total AD Users\" xaxis = total yaxis = admins,total xaxistitle = \"Number of users\" yaxistitle = \"User Type\" seriestitle(\"admins\",\"Admin User\") seriestitle(\"total\",\"AD User\") ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "column",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "grouped"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "layout",
+                                "value": "horizontal"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Domain Admins vs Total AD Users\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "total"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "admins,total"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxistitle",
+                                "value": "\"Number of users\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxistitle",
+                                "value": "\"User Type\""
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "admins",
+                                    "Admin User"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "total",
+                                    "AD User"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "pan_dss_raw"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1692975277002",
+            "title": "Compliance: PII/PHI/Data Access",
+            "creation_time": 1696525550559,
+            "description": "Implement policies and procedures to limit access to PII. Use this widget to query allowed outbound connections.",
+            "data": {
+                "phrase": "dataset = panw_ngfw_traffic_raw \n| filter ((app not contains \"\"\"palo\"\"\" and app not contains \"\"\"xdr\"\"\" and app not contains \"\"\"traps\"\"\"))\n| alter in_range = if(incidr(dest_ip,\"10.0.0.0/8\") = true, \"Inbound\",\n  if(incidr(dest_ip,\"172.16.0.0/12\") = true, \"Inbound\",\n  if(incidr(dest_ip,\"192.168.0.0/16\") = true, \"Inbound\",\n  if(incidr(dest_ip,\"169.254.0.0/16\") = true, \"Inbound\",\n  if(incidr(dest_ip,\"127.0.0.0/8\") = true, \"Inbound\",\n  if(incidr(dest_ip,\"100.64.0.0/10\") = true, \"Inbound\",\n  if(dest_ip contains \"fd00::\") = true, \"Inbound\",\n  if(dest_ip contains \"fe80::\") = true, \"Inbound\", \"Outbound\"))))))\n| filter in_range = \"Outbound\"\n| filter action = \"allow\"\n| comp values(source_ip) as source_ips, values(dest_ip) as dest_ips, values(dest_location) as dest_locations, count(_id) as event_count, sum(to_integer(bytes_total)) as TotalBytes by _time, app, app_category\n| sort desc TotalBytes ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "panw_ngfw_traffic_raw"
+                ],
+                "query_uses_library": false
+            }
+        }
+    ]
+}
