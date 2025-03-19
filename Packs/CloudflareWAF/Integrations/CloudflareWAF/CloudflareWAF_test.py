@@ -30,7 +30,7 @@ def load_mock_response(file_name: str) -> str:
 def mock_client():
     return Client(account_id=ACCOUNT_ID,
                   zone_id=ZONE_ID,
-                  credentials=CREDENTIALS,
+                  headers=CREDENTIALS,
                   base_url=BASE_URL,
                   proxy=False,
                   insecure=True)

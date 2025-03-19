@@ -12,10 +12,10 @@ MAX_PAGE_SIZE = 100
 class Client(BaseClient):
     """Client class to interact with CloudFlare WAF API."""
 
-    def __init__(self, headers: str, account_id: str, proxy: bool, insecure: bool, base_url: str, zone_id: str = None):
+    def __init__(self, credentials: str, account_id: str, proxy: bool, insecure: bool, base_url: str, zone_id: str = None):
         self.account_id = account_id
         self.zone_id = zone_id
-        super().__init__(base_url=base_url, headers=headers, proxy=proxy, verify=insecure)
+        super().__init__(base_url=base_url, headers=credentials, proxy=proxy, verify=insecure)
 
     def cloudflare_waf_firewall_rule_create_request(self, action: str, zone_id: str, description: str = None,
                                                     products: List[str] = None, paused: bool = None, priority: int = None,
@@ -1249,7 +1249,7 @@ def get_headers(params: dict) -> dict:
 
     try:
         if auth_method == 'API Token':
-            api_token = params.get('api_token', {}).get('password') or params.get('api_token')
+            api_token = params.get('credentials', {}).get('password') or params.get('credentials')
             if not api_token:
                 raise ValueError('API Token must be provided when using API Token authentication method.')
             headers = {
@@ -1283,7 +1283,7 @@ def main() -> None:
     params: dict[str, Any] = demisto.params()
     args: dict[str, Any] = demisto.args()
 
-    headers = get_headers(params)
+    credentials = get_headers(params)
     base_url = params.get('server')
     account_id = params.get('account_id')
     zone_id = params.get('zone_id')
@@ -1311,7 +1311,7 @@ def main() -> None:
         'cloudflare-waf-ip-list-item-list': cloudflare_waf_ip_list_item_list_command
     }
     try:
-        client: Client = Client(headers, account_id, proxy, insecure, base_url, zone_id)  # type: ignore
+        client: Client = Client(credentials, account_id, proxy, insecure, base_url, zone_id)  # type: ignore
 
         if command == 'test-module':
             return_results(test_module(client))

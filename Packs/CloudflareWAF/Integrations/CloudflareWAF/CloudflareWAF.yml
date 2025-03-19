@@ -16,7 +16,7 @@ configuration:
     - Global API Key
   default: API Token
   required: true
-- name: api_token
+- name: credentials
   display: API Token
   type: 9
   required: false
