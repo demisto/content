@@ -73,15 +73,6 @@ repos:
 
 - repo: local
   hooks:
-  - id: mdx-validation
-    name: Validate README.md files with MDX
-    entry: node .hooks/validate-mdx.js
-    language: node
-    files: "^(.*/)?README\\.md$"
-    require_serial: true
-    additional_dependencies:
-      - "@mdx-js/mdx@1.6.22"  #match package-lock of content docs
-      - "fs-extra"
   - id: xsoar-lint
     name: xsoar-lint
     description: Run xsoar-linter on the code in content packs
@@ -381,12 +372,3 @@ repos:
     - --diff
     - git diff HEAD
     skip: true
-
-- repo: https://github.com/igorshubovych/markdownlint-cli
-  rev: v0.44.0
-  hooks:
-    - id: markdownlint
-      files: "^(.*/)?README\\.md$"
-      args: ["--config", ".markdownlint.json","--fix"]
-
-

@@ -13,7 +13,7 @@ The pack contains a playbook named **3CXDesktopApp Supply Chain Attack** which h
 
 #### Playbook Flow
 
-**The playbook includes the following tasks: dummy change**
+**The playbook includes the following tasks:**
 
 **Hunting:**
 - Cortex XDR
