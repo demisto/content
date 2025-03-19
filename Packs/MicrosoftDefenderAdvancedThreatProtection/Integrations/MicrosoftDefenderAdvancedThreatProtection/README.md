@@ -7350,7 +7350,7 @@ Run this command to get the vulnerabilities from a specific machine.
 | MicrosoftATP.PublicVulnerability.id | String | Software ID. |
 | MicrosoftATP.PublicVulnerability.name | String | Software name. |
 | MicrosoftATP.PublicVulnerability.vendor | String | Vendor name. |
-| MicrosoftATP.PublicVulnerability.weakness | Number | Amount of weaknesses |
+| MicrosoftATP.PublicVulnerability.weakness | Number | Amount of weaknesses. |
 | MicrosoftATP.PublicVulnerability.publicExploit | Boolean | Does this have a public exploit? |
 | MicrosoftATP.PublicVulnerability.activeAlert | Boolean | Does this software have an active alert? |
 | MicrosoftATP.PublicVulnerability.exposedMachines | Number | The amount of machines exposed to this software. |
@@ -7474,11 +7474,11 @@ Run this command to get the missing security updates (KBs) from a specific machi
 | --- | --- | --- |
 | MicrosoftATP.PublicProductFix.id | String | Software ID. |
 | MicrosoftATP.PublicProductFix.name | String | Software name. |
-| MicrosoftATP.PublicProductFix.productsNames | String | The product names |
+| MicrosoftATP.PublicProductFix.productsNames | String | The product names. |
 | MicrosoftATP.PublicProductFix.url | String | URL. |
 | MicrosoftATP.PublicProductFix.machineMissedOn | Number | Machine missed on. |
 | MicrosoftATP.PublicProductFix.cveAddressed | Number | CVE addressed. |
-| MicrosoftATP.PublicProductFix.osBuild | String | The OS Build version |
+| MicrosoftATP.PublicProductFix.osBuild | String | The OS Build version. |
 
 #### Command example
 ```!microsoft-atp-get-machine-missing-kbs machine_id="12342c13fef,12342c13fef8f06606```
