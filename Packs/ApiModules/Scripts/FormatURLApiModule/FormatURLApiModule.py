@@ -671,6 +671,7 @@ class ProofPointFormatter(object):
         else:
             raise ValueError('Unrecognized v3 version in: ', self.url)
 
+
 class URLFormatter:
 
     # URL Security Wrappers
@@ -773,7 +774,7 @@ class URLFormatter:
             try:
                 result = ProofPointFormatter(original_url).decode_v3()
                 return result
-            except Exception as e:
+            except Exception:
                 return urllib.parse.unquote(url[1])
 
     @staticmethod
