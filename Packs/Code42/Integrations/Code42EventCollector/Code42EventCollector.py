@@ -110,10 +110,13 @@ class Client:
         query = EventQuery(
             start_date=start_time,
             end_date=end_time,
-            pgSize=page_size,
-            srtDir="asc",
-            sort_key=EventSearchTerm.EVENT_INSERTED
+            page_size=page_size,
+            sort_dir="asc",
+            sort_key=EventSearchTerm.EVENT_INSERTED,
         )
+        for filter in query.groups[0].filters:
+            filter.term = EventSearchTerm.EVENT_INSERTED
+
         response = self.code42_client.file_events.v2.search(query)
 
         if response.total_count == 0:
