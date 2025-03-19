@@ -872,8 +872,9 @@ class Client(BaseClient):
             Dict: Response from the API.
         """
         notes = self.http_request(
-            # type: ignore[union-attr]
-            method="GET", url_suffix=ENDPOINTS[f"ADD_AND_LIST_{entity_type.upper()}_NOTE_ENDPOINT"].format(entity_id)
+            method="GET",
+            url_suffix=ENDPOINTS[f"ADD_AND_LIST_{entity_type.upper()}_NOTE_ENDPOINT"].format(  # type: ignore[union-attr]
+                entity_id)
         )
         return notes
 

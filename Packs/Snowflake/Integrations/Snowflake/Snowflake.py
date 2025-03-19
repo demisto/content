@@ -1,5 +1,5 @@
-import demistomock as demisto
-from CommonServerPython import *
+import demistomock as demisto   # pylint: disable=W9005
+from CommonServerPython import *       # pylint: disable=W9011
 
 from CommonServerUserPython import *
 
@@ -9,13 +9,13 @@ from datetime import date, datetime, timedelta
 from datetime import time as dttime
 from decimal import Decimal
 
-import snowflake.connector
+import snowflake.connector  # pylint: disable=E0401,E0611
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 
 """GLOBAL VARS"""
 
-PARAMS = demisto.params()
+PARAMS = demisto.params()      # pylint: disable=W9016
 CREDENTIALS = PARAMS.get("credentials")
 USER = CREDENTIALS.get("identifier")
 PASSWORD = CREDENTIALS.get("password")
@@ -69,7 +69,7 @@ if IS_FETCH and not (FETCH_QUERY and DATETIME_COLUMN):
 """HELPER FUNCTIONS"""
 
 
-def convert_datetime_to_string(v):
+def convert_datetime_to_string(v):   # pylint: disable=W9014
     """
     Parses date, time, timedelta, or datetime object into string
 
@@ -88,7 +88,7 @@ def convert_datetime_to_string(v):
     return v
 
 
-def error_message_from_snowflake_error(e):
+def error_message_from_snowflake_error(e):   # pylint: disable=W9014
     """
     Return formatted error message from contents of a Snowflake error
 
@@ -116,7 +116,7 @@ def error_message_from_snowflake_error(e):
     return err_msg
 
 
-def set_provided(params, key, val1, val2=None):
+def set_provided(params, key, val1, val2=None):   # pylint: disable=W9014
     """
     If value is provided, set it in the dict
     """
@@ -126,7 +126,7 @@ def set_provided(params, key, val1, val2=None):
         params[key] = val2
 
 
-def process_table_row(row, checks):
+def process_table_row(row, checks):   # pylint: disable=W9014
     """
     Check row data and reformat if necessary
 
@@ -156,7 +156,7 @@ def process_table_row(row, checks):
     return row
 
 
-def format_to_json_serializable(column_descriptions, results):
+def format_to_json_serializable(column_descriptions, results):   # pylint: disable=W9014
     """
     Screen and reformat any data in 'results' argument that is
     not json serializable, and return 'results'. 'results' can
@@ -198,7 +198,7 @@ def format_to_json_serializable(column_descriptions, results):
     return results
 
 
-def get_connection_params(args):
+def get_connection_params(args):   # pylint: disable=W9014
     """
     Construct and return the connection parameters
 
@@ -230,7 +230,7 @@ def get_connection_params(args):
     return params
 
 
-def row_to_incident(column_descriptions, row):
+def row_to_incident(column_descriptions, row):     # pylint: disable=W9014
     """
     Create incident from data returned by queried database in fetch_incidents
 
@@ -286,8 +286,8 @@ def test_module():
         An 'ok' message if valid, otherwise an error message
     """
     params = get_connection_params({})
-    with snowflake.connector.connect(**params):
-        demisto.results("ok")
+    with snowflake.connector.connect(**params):  # pylint: disable=E1101
+        demisto.results("ok")      # pylint: disable=W9008
 
 
 def fetch_incidents():
@@ -328,7 +328,7 @@ def fetch_incidents():
     demisto.incidents(incidents)
 
 
-def snowflake_query(args):
+def snowflake_query(args):   # pylint: disable=W9014
     params = get_connection_params(args)
     query = args.get("query")
     limit = args.get("limit", "100")
@@ -338,7 +338,7 @@ def snowflake_query(args):
         raise ValueError("The value for limit must be an integer.")
     if limit > MAX_ROWS:
         limit = MAX_ROWS
-    with snowflake.connector.connect(**params) as connection, connection.cursor(snowflake.connector.DictCursor) as cur:
+    with snowflake.connector.connect(**params) as connection, connection.cursor(snowflake.connector.DictCursor) as cur:  # pylint: disable=E1101
         cur.execute(query)
         results = cur.fetchmany(limit)
         if results:
@@ -348,13 +348,13 @@ def snowflake_query(args):
 
 
 def snowflake_query_command():
-    args = demisto.args()
+    args = demisto.args()   # pylint: disable=W9017
     query = args.get("query")
     db = args.get("database") if args.get("database") else DATABASE
     schema = args.get("schema") if args.get("schema") else SCHEMA
     col_descriptions, results = snowflake_query(args)
     if not results:
-        demisto.results("No data found matching the query")
+        demisto.results("No data found matching the query")    # pylint: disable=W9008
     else:
         results = format_to_json_serializable(col_descriptions, results)
 
@@ -366,16 +366,16 @@ def snowflake_query_command():
         demisto_transform += " && val.Schema && val.Schema === obj.Schema)"
         outputs = {demisto_transform: entry_context}
 
-        return_outputs(outputs=outputs, readable_output=human_readable, raw_response=results)
+        return_outputs(outputs=outputs, readable_output=human_readable, raw_response=results)   # pylint: disable=W9009
 
 
 def snowflake_update_command():
-    args = demisto.args()
+    args = demisto.args()   # pylint: disable=W9017
     db_operation = args.get("db_operation")
     params = get_connection_params(args)
-    with snowflake.connector.connect(**params) as connection, connection.cursor() as cursor:
+    with snowflake.connector.connect(**params) as connection, connection.cursor() as cursor:    # pylint: disable=E1101
         cursor.execute(db_operation)
-        demisto.results("Operation executed successfully.")
+        demisto.results("Operation executed successfully.")    # pylint: disable=W9008
 
 
 """COMMAND SWITCHBOARD"""
@@ -390,17 +390,27 @@ commands = {
 
 """EXECUTION"""
 
-try:
-    handle_proxy()
-    if demisto.command() in commands:
-        commands[demisto.command()]()
-except snowflake.connector.errors.Error as e:
-    return_error(error_message_from_snowflake_error(e))
-except Exception as e:
-    if IS_FETCH:
-        raise e
-    else:
-        if isinstance(e, snowflake.connector.errors.Error):
-            return_error(error_message_from_snowflake_error(e))
+
+def main() -> None:
+    error = ''
+    try:
+        handle_proxy()
+        if demisto.command() in commands:
+            commands[demisto.command()]()
+    except snowflake.connector.errors.Error as e:  # pylint: disable=E1101
+        error = error_message_from_snowflake_error(e)
+    except Exception as e:
+        if IS_FETCH:
+            raise e
         else:
-            return_error(str(e))
+            if isinstance(e, snowflake.connector.errors.Error):  # pylint: disable=E1101
+                error = error_message_from_snowflake_error(e)
+            else:
+                error = str(e)
+    finally:
+        if error:
+            return_error(error)
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
