@@ -1208,8 +1208,4 @@ outputs:
 tests:
 - Phishing - Core - Test - Incident Starter
 fromversion: 6.0.0
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
+

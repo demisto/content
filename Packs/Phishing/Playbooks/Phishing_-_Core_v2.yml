@@ -1315,8 +1315,4 @@ outputs: []
 fromversion: 6.0.0
 tests:
 - Phishing - Core - Test - Incident Starter
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
+
