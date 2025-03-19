@@ -7347,18 +7347,25 @@ Run this command to get the vulnerabilities from a specific machine.
  
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.PublicVulnerability.id | String | Software ID. |
-| MicrosoftATP.PublicVulnerability.name | String | Software name. |
-| MicrosoftATP.PublicVulnerability.vendor | String | Vendor name. |
-| MicrosoftATP.PublicVulnerability.weakness | Number | Amount of weaknesses. |
-| MicrosoftATP.PublicVulnerability.publicExploit | Boolean | Does this have a public exploit? |
-| MicrosoftATP.PublicVulnerability.activeAlert | Boolean | Does this software have an active alert? |
-| MicrosoftATP.PublicVulnerability.exposedMachines | Number | The amount of machines exposed to this software. |
-| MicrosoftATP.PublicVulnerability.installedMachines | Number | The amount of machines with this software installed. |
-| MicrosoftATP.PublicVulnerability.impactScore | Number | The impact score of the software. |
-| MicrosoftATP.PublicVulnerability.isNormalized | Number | Is the software value normalized? |
-| MicrosoftATP.PublicVulnerability.category | String | The software category. |
-| MicrosoftATP.PublicVulnerability.distributions | String | The distributions on which this software is present. |
+| MicrosoftATP.PublicVulnerability.id | String | The vulnerability ID. |
+| MicrosoftATP.PublicVulnerability.name | String | The vulnerability name. |
+| MicrosoftATP.PublicVulnerability.cveSupportability | String | The CVE supportability. |
+| MicrosoftATP.PublicVulnerability.cvssV3 | Number | The CVSS V3. |
+| MicrosoftATP.PublicVulnerability.cvssVector | String | The CVSS vector. |
+| MicrosoftATP.PublicVulnerability.description | String | A description of this vulnerability. |
+| MicrosoftATP.PublicVulnerability.epss | Number | The EPSS. |
+| MicrosoftATP.PublicVulnerability.exploitInKit | Boolean | Is this vulnerability in an exploit kit? |
+| MicrosoftATP.PublicVulnerability.exploitTypes | String | The type(s) of exploit(s). |
+| MicrosoftATP.PublicVulnerability.exploitUris | String | The exploit URIs. |
+| MicrosoftATP.PublicVulnerability.exploitVerified | Boolean | Is this exploit verified? |
+| MicrosoftATP.PublicVulnerability.exposedMachines | Number | The amount of machines exposed to this vulnerability. |
+| MicrosoftATP.PublicVulnerability.firstDetected | String | The date and time when this vulnerability was first detected. |
+| MicrosoftATP.PublicVulnerability.publicExploit | Boolean | Does this vulnerability have a public exploit? |
+| MicrosoftATP.PublicVulnerability.publishedOn | String | The date and time when this vulnerability was published. |
+| MicrosoftATP.PublicVulnerability.severity | String | The severity of this vulnerability. |
+| MicrosoftATP.PublicVulnerability.tags | String | The tags associated with this vulnerability. |
+| MicrosoftATP.PublicVulnerability.updatedOn | String | The date and time when this vulnerability was last updated. |
+
 
 #### Command example
 ```!microsoft-atp-get-machine-vulnerabilities machine_id="12342c13fef```
