@@ -1,7 +1,16 @@
 {
 	"aliasTo": "",
-	"associatedToAll": true,
-	"associatedTypes": null,
+	"associatedToAll": false,
+	"associatedTypes": [
+        "Doppel Alert Crypto",
+		"Doppel Alert Domains",
+		"Doppel Alert Crypto",
+		"Doppel Alert Ecommerce",
+		"Doppel Alert Email",
+		"Doppel Alert Mobile_Apps",
+		"Doppel Alert Paid_Ads",
+		"Doppel Alert Social_Media"
+    ],
 	"breachScript": "",
 	"caseInsensitive": true,
 	"cliName": "doppelnotes",

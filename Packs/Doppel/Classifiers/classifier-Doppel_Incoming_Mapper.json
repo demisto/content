@@ -1,11 +1,9 @@
 {
-	"defaultIncidentType": "",
-	"definitionId": "",
 	"description": "",
 	"feed": false,
 	"id": "Doppel Incoming_Mapper",
 	"mapping": {
-		"Doppel Alert": {
+		"Doppel Alert Crypto": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
 				"Additional Indicators": {
@@ -20,26 +18,41 @@
 				"Alert tags": {
 					"simple": "tags"
 				},
-				"Audit Log History": {
-					"simple": "audit_logs"
+				"Audit Logs": {
+					"simple": "audit_logs.[]."
 				},
 				"Block Indicators Status": {
 					"simple": "entity_state"
 				},
-				"External Link": {
+				"Doppel Brand": {
+					"simple": "brand"
+				},
+				"Doppel Entity": {
+					"simple": "entity"
+				},
+				"Doppel Entity Content": {
+					"simple": "entity_content"
+				},
+				"Doppel Link": {
 					"simple": "doppel_link"
 				},
-				"External Severity": {
-					"simple": "severity"
+				"Doppel Notes": {
+					"simple": "notes"
+				},
+				"Doppel Platform": {
+					"simple": "platform"
+				},
+				"Doppel Product": {
+					"simple": "product"
+				},
+				"Doppel Queue State": {
+					"simple": "queue_state"
+				},
+				"Doppel Uploaded By": {
+					"simple": "uploaded_by"
 				},
 				"Selected Indicators": {
 					"simple": "entity"
-				},
-				"Source Created By": {
-					"simple": "uploaded_by"
-				},
-				"State": {
-					"simple": "queue_state"
 				},
 				"Vulnerable Product": {
 					"simple": "brand"
@@ -80,6 +93,9 @@
 				"notes": {
 					"simple": "notes"
 				},
+				"occurred": {
+					"simple": "created_at"
+				},
 				"platform": {
 					"simple": "platform"
 				},
@@ -92,18 +108,21 @@
 				"severity": {
 					"simple": "severity"
 				},
-				"source": {
-					"simple": "source"
-				},
-				"sourceBrand": {
-					"simple": "brand"
-				},
 				"uploaded_by": {
 					"simple": "uploaded_by"
+				},
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
 				}
 			}
 		},
-		"Doppel Alert Test": {
+		"Doppel Alert Domains": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
 				"Additional Indicators": {
@@ -118,26 +137,70 @@
 				"Alert tags": {
 					"simple": "tags"
 				},
-				"Audit Log History": {
-					"simple": "audit_logs"
+				"Audit Logs": {
+					"simple": "audit_logs.[]."
 				},
 				"Block Indicators Status": {
 					"simple": "entity_state"
 				},
-				"External Link": {
+				"Changed": {
+					"complex": {
+						"accessor": "[0].changed_by",
+						"filters": [],
+						"root": "audit_logs",
+						"transformers": []
+					}
+				},
+				"Doppel Brand": {
+					"simple": "brand"
+				},
+				"Doppel Entity": {
+					"simple": "entity"
+				},
+				"Doppel Entity Content": {
+					"simple": "entity_content"
+				},
+				"Doppel Link": {
 					"simple": "doppel_link"
 				},
-				"External Severity": {
-					"simple": "severity"
+				"Doppel Notes": {
+					"simple": "notes"
+				},
+				"Doppel Platform": {
+					"simple": "platform"
+				},
+				"Doppel Product": {
+					"simple": "product"
+				},
+				"Doppel Queue State": {
+					"simple": "queue_state"
+				},
+				"Doppel Uploaded By": {
+					"simple": "uploaded_by"
+				},
+				"Entity": {
+					"complex": {
+						"filters": [],
+						"root": "entity_state",
+						"transformers": []
+					}
+				},
+				"Notes": {
+					"complex": {
+						"filters": [],
+						"root": "notes",
+						"transformers": []
+					}
 				},
 				"Selected Indicators": {
 					"simple": "entity"
 				},
-				"Source Created By": {
-					"simple": "uploaded_by"
-				},
 				"State": {
-					"simple": "queue_state"
+					"complex": {
+						"filters": [],
+						"root": "queue_state",
+						"transformers": []
+					}
 				},
 				"Vulnerable Product": {
 					"simple": "brand"
@@ -178,6 +241,9 @@
 				"notes": {
 					"simple": "notes"
 				},
+				"occurred": {
+					"simple": "created_at"
+				},
 				"platform": {
 					"simple": "platform"
 				},
@@ -191,13 +257,690 @@
 					"simple": "severity"
 				},
 				"source": {
-					"simple": "source"
-				},
-				"sourceBrand": {
-					"simple": "brand"
+					"complex": {
+						"filters": [],
+						"root": "source",
+						"transformers": []
+					}
 				},
 				"uploaded_by": {
 					"simple": "uploaded_by"
+				},
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				}
+			}
+		},
+		"Doppel Alert Ecommerce": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Additional Indicators": {
+					"simple": "entity"
+				},
+				"Alert ID": {
+					"simple": "id"
+				},
+				"Alert Source": {
+					"simple": "source"
+				},
+				"Alert tags": {
+					"simple": "tags"
+				},
+				"Audit Logs": {
+					"simple": "audit_logs.[]."
+				},
+				"Block Indicators Status": {
+					"simple": "entity_state"
+				},
+				"Doppel Brand": {
+					"simple": "brand"
+				},
+				"Doppel Entity": {
+					"simple": "entity"
+				},
+				"Doppel Entity Content": {
+					"simple": "entity_content"
+				},
+				"Doppel Link": {
+					"simple": "doppel_link"
+				},
+				"Doppel Notes": {
+					"simple": "notes"
+				},
+				"Doppel Platform": {
+					"simple": "platform"
+				},
+				"Doppel Product": {
+					"simple": "product"
+				},
+				"Doppel Queue State": {
+					"simple": "queue_state"
+				},
+				"Doppel Uploaded By": {
+					"simple": "uploaded_by"
+				},
+				"Selected Indicators": {
+					"simple": "entity"
+				},
+				"Vulnerable Product": {
+					"simple": "brand"
+				},
+				"created_at": {
+					"simple": "created_at"
+				},
+				"entity": {
+					"simple": "entity"
+				},
+				"entity_content.root_domain.contact_email": {
+					"simple": "entity_content.root_domain.contact_email"
+				},
+				"entity_content.root_domain.country_code": {
+					"simple": "entity_content.root_domain.country_code"
+				},
+				"entity_content.root_domain.domain": {
+					"simple": "entity_content.root_domain.domain"
+				},
+				"entity_content.root_domain.hosting_provider": {
+					"simple": "entity_content.root_domain.hosting_provider"
+				},
+				"entity_content.root_domain.ip_address": {
+					"simple": "entity_content.root_domain.ip_address"
+				},
+				"entity_content.root_domain.mx_records": {
+					"simple": "mx_records"
+				},
+				"entity_content.root_domain.nameservers\t": {
+					"simple": "nameservers"
+				},
+				"entity_content.root_domain.registrar\t": {
+					"simple": "entity_content.root_domain.registrar"
+				},
+				"entity_state": {
+					"simple": "entity_state"
+				},
+				"notes": {
+					"simple": "notes"
+				},
+				"occurred": {
+					"simple": "created_at"
+				},
+				"platform": {
+					"simple": "platform"
+				},
+				"product": {
+					"simple": "product"
+				},
+				"queue_state": {
+					"simple": "queue_state"
+				},
+				"severity": {
+					"simple": "severity"
+				},
+				"uploaded_by": {
+					"simple": "uploaded_by"
+				},
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				}
+			}
+		},
+		"Doppel Alert Email": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Additional Indicators": {
+					"simple": "entity"
+				},
+				"Alert ID": {
+					"simple": "id"
+				},
+				"Alert Source": {
+					"simple": "source"
+				},
+				"Alert tags": {
+					"simple": "tags"
+				},
+				"Audit Logs": {
+					"simple": "audit_logs.[]."
+				},
+				"Block Indicators Status": {
+					"simple": "entity_state"
+				},
+				"Changed": {
+					"complex": {
+						"accessor": "[0].changed_by",
+						"filters": [],
+						"root": "audit_logs",
+						"transformers": []
+					}
+				},
+				"Doppel Brand": {
+					"simple": "brand"
+				},
+				"Doppel Entity": {
+					"simple": "entity"
+				},
+				"Doppel Entity Content": {
+					"simple": "entity_content"
+				},
+				"Doppel Link": {
+					"simple": "doppel_link"
+				},
+				"Doppel Notes": {
+					"simple": "notes"
+				},
+				"Doppel Platform": {
+					"simple": "platform"
+				},
+				"Doppel Product": {
+					"simple": "product"
+				},
+				"Doppel Queue State": {
+					"simple": "queue_state"
+				},
+				"Doppel Uploaded By": {
+					"simple": "uploaded_by"
+				},
+				"Entity": {
+					"complex": {
+						"filters": [],
+						"root": "entity_state",
+						"transformers": []
+					}
+				},
+				"Notes": {
+					"complex": {
+						"filters": [],
+						"root": "notes",
+						"transformers": []
+					}
+				},
+				"Selected Indicators": {
+					"simple": "entity"
+				},
+				"State": {
+					"complex": {
+						"filters": [],
+						"root": "queue_state",
+						"transformers": []
+					}
+				},
+				"Vulnerable Product": {
+					"simple": "brand"
+				},
+				"created_at": {
+					"simple": "created_at"
+				},
+				"entity": {
+					"simple": "entity"
+				},
+				"entity_content.root_domain.contact_email": {
+					"simple": "entity_content.root_domain.contact_email"
+				},
+				"entity_content.root_domain.country_code": {
+					"simple": "entity_content.root_domain.country_code"
+				},
+				"entity_content.root_domain.domain": {
+					"simple": "entity_content.root_domain.domain"
+				},
+				"entity_content.root_domain.hosting_provider": {
+					"simple": "entity_content.root_domain.hosting_provider"
+				},
+				"entity_content.root_domain.ip_address": {
+					"simple": "entity_content.root_domain.ip_address"
+				},
+				"entity_content.root_domain.mx_records": {
+					"simple": "mx_records"
+				},
+				"entity_content.root_domain.nameservers\t": {
+					"simple": "nameservers"
+				},
+				"entity_content.root_domain.registrar\t": {
+					"simple": "entity_content.root_domain.registrar"
+				},
+				"entity_state": {
+					"simple": "entity_state"
+				},
+				"notes": {
+					"simple": "notes"
+				},
+				"occurred": {
+					"simple": "created_at"
+				},
+				"platform": {
+					"simple": "platform"
+				},
+				"product": {
+					"simple": "product"
+				},
+				"queue_state": {
+					"simple": "queue_state"
+				},
+				"severity": {
+					"simple": "severity"
+				},
+				"source": {
+					"complex": {
+						"filters": [],
+						"root": "source",
+						"transformers": []
+					}
+				},
+				"uploaded_by": {
+					"simple": "uploaded_by"
+				},
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				}
+			}
+		},
+		"Doppel Alert Mobile_Apps": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Additional Indicators": {
+					"simple": "entity"
+				},
+				"Alert ID": {
+					"simple": "id"
+				},
+				"Alert Source": {
+					"simple": "source"
+				},
+				"Alert tags": {
+					"simple": "tags"
+				},
+				"Audit Logs": {
+					"simple": "audit_logs.[]."
+				},
+				"Block Indicators Status": {
+					"simple": "entity_state"
+				},
+				"Doppel Brand": {
+					"simple": "brand"
+				},
+				"Doppel Entity": {
+					"simple": "entity"
+				},
+				"Doppel Entity Content": {
+					"simple": "entity_content"
+				},
+				"Doppel Link": {
+					"simple": "doppel_link"
+				},
+				"Doppel Notes": {
+					"simple": "notes"
+				},
+				"Doppel Platform": {
+					"simple": "platform"
+				},
+				"Doppel Product": {
+					"simple": "product"
+				},
+				"Doppel Queue State": {
+					"simple": "queue_state"
+				},
+				"Doppel Uploaded By": {
+					"simple": "uploaded_by"
+				},
+				"Selected Indicators": {
+					"simple": "entity"
+				},
+				"Vulnerable Product": {
+					"simple": "brand"
+				},
+				"created_at": {
+					"simple": "created_at"
+				},
+				"entity": {
+					"simple": "entity"
+				},
+				"entity_content.root_domain.contact_email": {
+					"simple": "entity_content.root_domain.contact_email"
+				},
+				"entity_content.root_domain.country_code": {
+					"simple": "entity_content.root_domain.country_code"
+				},
+				"entity_content.root_domain.domain": {
+					"simple": "entity_content.root_domain.domain"
+				},
+				"entity_content.root_domain.hosting_provider": {
+					"simple": "entity_content.root_domain.hosting_provider"
+				},
+				"entity_content.root_domain.ip_address": {
+					"simple": "entity_content.root_domain.ip_address"
+				},
+				"entity_content.root_domain.mx_records": {
+					"simple": "mx_records"
+				},
+				"entity_content.root_domain.nameservers\t": {
+					"simple": "nameservers"
+				},
+				"entity_content.root_domain.registrar\t": {
+					"simple": "entity_content.root_domain.registrar"
+				},
+				"entity_state": {
+					"simple": "entity_state"
+				},
+				"notes": {
+					"simple": "notes"
+				},
+				"occurred": {
+					"simple": "created_at"
+				},
+				"platform": {
+					"simple": "platform"
+				},
+				"product": {
+					"simple": "product"
+				},
+				"queue_state": {
+					"simple": "queue_state"
+				},
+				"severity": {
+					"simple": "severity"
+				},
+				"uploaded_by": {
+					"simple": "uploaded_by"
+				},
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				}
+			}
+		},
+		"Doppel Alert Paid_Ads": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Additional Indicators": {
+					"simple": "entity"
+				},
+				"Alert ID": {
+					"simple": "id"
+				},
+				"Alert Source": {
+					"simple": "source"
+				},
+				"Alert tags": {
+					"simple": "tags"
+				},
+				"Audit Logs": {
+					"simple": "audit_logs.[]."
+				},
+				"Block Indicators Status": {
+					"simple": "entity_state"
+				},
+				"Changed": {
+					"complex": {
+						"accessor": "[0].changed_by",
+						"filters": [],
+						"root": "audit_logs",
+						"transformers": []
+					}
+				},
+				"Doppel Brand": {
+					"simple": "brand"
+				},
+				"Doppel Entity": {
+					"simple": "entity"
+				},
+				"Doppel Entity Content": {
+					"simple": "entity_content"
+				},
+				"Doppel Link": {
+					"simple": "doppel_link"
+				},
+				"Doppel Notes": {
+					"simple": "notes"
+				},
+				"Doppel Platform": {
+					"simple": "platform"
+				},
+				"Doppel Product": {
+					"simple": "product"
+				},
+				"Doppel Queue State": {
+					"simple": "queue_state"
+				},
+				"Doppel Uploaded By": {
+					"simple": "uploaded_by"
+				},
+				"Entity": {
+					"complex": {
+						"filters": [],
+						"root": "entity_state",
+						"transformers": []
+					}
+				},
+				"Notes": {
+					"complex": {
+						"filters": [],
+						"root": "notes",
+						"transformers": []
+					}
+				},
+				"Selected Indicators": {
+					"simple": "entity"
+				},
+				"State": {
+					"complex": {
+						"filters": [],
+						"root": "queue_state",
+						"transformers": []
+					}
+				},
+				"Vulnerable Product": {
+					"simple": "brand"
+				},
+				"created_at": {
+					"simple": "created_at"
+				},
+				"entity": {
+					"simple": "entity"
+				},
+				"entity_content.root_domain.contact_email": {
+					"simple": "entity_content.root_domain.contact_email"
+				},
+				"entity_content.root_domain.country_code": {
+					"simple": "entity_content.root_domain.country_code"
+				},
+				"entity_content.root_domain.domain": {
+					"simple": "entity_content.root_domain.domain"
+				},
+				"entity_content.root_domain.hosting_provider": {
+					"simple": "entity_content.root_domain.hosting_provider"
+				},
+				"entity_content.root_domain.ip_address": {
+					"simple": "entity_content.root_domain.ip_address"
+				},
+				"entity_content.root_domain.mx_records": {
+					"simple": "mx_records"
+				},
+				"entity_content.root_domain.nameservers\t": {
+					"simple": "nameservers"
+				},
+				"entity_content.root_domain.registrar\t": {
+					"simple": "entity_content.root_domain.registrar"
+				},
+				"entity_state": {
+					"simple": "entity_state"
+				},
+				"notes": {
+					"simple": "notes"
+				},
+				"occurred": {
+					"simple": "created_at"
+				},
+				"platform": {
+					"simple": "platform"
+				},
+				"product": {
+					"simple": "product"
+				},
+				"queue_state": {
+					"simple": "queue_state"
+				},
+				"severity": {
+					"simple": "severity"
+				},
+				"source": {
+					"complex": {
+						"filters": [],
+						"root": "source",
+						"transformers": []
+					}
+				},
+				"uploaded_by": {
+					"simple": "uploaded_by"
+				},
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				}
+			}
+		},
+		"Doppel Alert Social_Media": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Additional Indicators": {
+					"simple": "entity"
+				},
+				"Alert ID": {
+					"simple": "id"
+				},
+				"Alert Source": {
+					"simple": "source"
+				},
+				"Alert tags": {
+					"simple": "tags"
+				},
+				"Audit Logs": {
+					"simple": "audit_logs.[]."
+				},
+				"Block Indicators Status": {
+					"simple": "entity_state"
+				},
+				"Doppel Brand": {
+					"simple": "brand"
+				},
+				"Doppel Entity": {
+					"simple": "entity"
+				},
+				"Doppel Entity Content": {
+					"simple": "entity_content"
+				},
+				"Doppel Link": {
+					"simple": "doppel_link"
+				},
+				"Doppel Notes": {
+					"simple": "notes"
+				},
+				"Doppel Platform": {
+					"simple": "platform"
+				},
+				"Doppel Product": {
+					"simple": "product"
+				},
+				"Doppel Queue State": {
+					"simple": "queue_state"
+				},
+				"Doppel Uploaded By": {
+					"simple": "uploaded_by"
+				},
+				"Selected Indicators": {
+					"simple": "entity"
+				},
+				"Vulnerable Product": {
+					"simple": "brand"
+				},
+				"created_at": {
+					"simple": "created_at"
+				},
+				"entity": {
+					"simple": "entity"
+				},
+				"entity_content.root_domain.contact_email": {
+					"simple": "entity_content.root_domain.contact_email"
+				},
+				"entity_content.root_domain.country_code": {
+					"simple": "entity_content.root_domain.country_code"
+				},
+				"entity_content.root_domain.domain": {
+					"simple": "entity_content.root_domain.domain"
+				},
+				"entity_content.root_domain.hosting_provider": {
+					"simple": "entity_content.root_domain.hosting_provider"
+				},
+				"entity_content.root_domain.ip_address": {
+					"simple": "entity_content.root_domain.ip_address"
+				},
+				"entity_content.root_domain.mx_records": {
+					"simple": "mx_records"
+				},
+				"entity_content.root_domain.nameservers\t": {
+					"simple": "nameservers"
+				},
+				"entity_content.root_domain.registrar\t": {
+					"simple": "entity_content.root_domain.registrar"
+				},
+				"entity_state": {
+					"simple": "entity_state"
+				},
+				"notes": {
+					"simple": "notes"
+				},
+				"occurred": {
+					"simple": "created_at"
+				},
+				"platform": {
+					"simple": "platform"
+				},
+				"product": {
+					"simple": "product"
+				},
+				"queue_state": {
+					"simple": "queue_state"
+				},
+				"severity": {
+					"simple": "severity"
+				},
+				"uploaded_by": {
+					"simple": "uploaded_by"
+				},
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
 				}
 			}
 		},
@@ -216,12 +959,6 @@
 				"Audit Logs": {
 					"simple": "audit_logs.[]."
 				},
-				"Audit_logs_History": {
-					"simple": "audit_logs.[]"
-				},
-				"Audit_logs_info": {
-					"simple": "audit_logs.[]"
-				},
 				"Block Indicators Status": {
 					"simple": "entity_state"
 				},
@@ -233,9 +970,6 @@
 				},
 				"Doppel Brand": {
 					"simple": "brand"
-				},
-				"Doppel Created At": {
-					"simple": "created_at"
 				},
 				"Doppel Entity": {
 					"simple": "entity"
@@ -285,59 +1019,17 @@
 				"Doppel Queue State": {
 					"simple": "queue_state"
 				},
-				"Doppel Severity": {
-					"simple": "severity"
-				},
 				"Doppel Uploaded By": {
 					"simple": "uploaded_by"
 				},
 				"Entity": {
 					"simple": "entity"
 				},
-				"Entity Content": {
-					"simple": "entity_content"
-				},
-				"Entity State": {
-					"simple": "entity_state"
-				},
-				"External Link": {
-					"simple": "doppel_link"
-				},
-				"External Severity": {
-					"simple": "severity"
-				},
 				"Notes": {
 					"simple": "notes"
 				},
-				"Platform": {
-					"simple": "platform"
-				},
-				"Product": {
-					"simple": "product"
-				},
-				"Queue State": {
-					"simple": "queue_state"
-				},
-				"Selected Indicators": {
-					"simple": "entity"
-				},
-				"Source Created By": {
-					"simple": "uploaded_by"
-				},
 				"State": {
 					"simple": "queue_state"
-				},
-				"Tags": {
-					"simple": "tags"
-				},
-				"Test Entity Content": {
-					"simple": "entity_content.root_domain"
-				},
-				"Uploaded By": {
-					"simple": "uploaded_by"
-				},
-				"Vulnerable Product": {
-					"simple": "brand"
 				},
 				"created_at": {
 					"simple": "created_at"

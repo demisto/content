@@ -1,5 +1,5 @@
 # Overview
-Doppel is a Modern Digital Risk Protection Solution, that detects the phishing and brand cyber attacks on the emerging channels. Doppel scans millions of channels online which includes, social media, domains, paid ads, dark web, emerging channels, etc. Doppel can identify the malicious content and cyber threats, and enables their customers to take down the digital risks proactively. The XSOAR pack for Doppel mirrors the alerts created by Doppel as XSOAR incidents. The pack also contains the commands to perform different operations on Doppel alerts.
+Doppel is a Modern Digital Risk Protection Solution, that detects the phishing and brand cyber attacks on the emerging channels. Doppel scans millions of channels online which includes, social media, domains, paid ads, dark web, emerging channels, etc. Doppel can identify the malicious content and cyber threats, and enables their customers to take down the digital risks proactively. The Cortex XSOAR pack for Doppel mirrors the alerts created by Doppel as Cortex XSOAR incidents. The pack also contains the commands to perform different operations on Doppel alerts.
 
 
 ## Configure Doppel on Cortex XSOAR
@@ -10,7 +10,7 @@ Doppel is a Modern Digital Risk Protection Solution, that detects the phishing a
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Doppel Tenant URL | The tenant URL of the Doppel | True |
+    | Doppel Tenant URL | The tenant URL of the Doppel. | True |
     | API Key | API key to use for the connection. | True |
     | Fetch incidents |  | False |
     | Incident type |  | False |
@@ -34,7 +34,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ***
 
-Retrieves the alert details by ID or entity. Must include exactly one of either ID or entity.
+Retrieves the alert details by ID or entity. Must include either ID or entity.
 
 #### Base Command
 
@@ -189,8 +189,8 @@ Updates an alert in the Doppel platform. Either `alert_id` or `entity` must be s
 
 | **Argument Name** | **Description** | **Required** |  
 | --- | --- | --- |  
-| alert_id | The ID of the alert to update. Only one of `alert_id` or `entity` can be specified, not both. | Optional |  
-| entity | The entity of the alert to update. Only one of `alert_id` or `entity` can be specified, not both. | Optional |  
+| alert_id | The ID of the alert to update. Either `alert_id` or `entity` should be specified, not both. | Optional |  
+| entity | The entity of the alert to update. Either `alert_id` or `entity` should be specified, not both. | Optional |  
 | queue_state | Status of which queue the alert is in. Possible values are: `doppel_review`, `actioned`, `needs_confirmation`, `monitoring`, `taken_down`, `archived`. | Optional |  
 | entity_state | State of the alert. Possible values are: `active`, `down`, `parked`. | Optional |  
 | comment | A comment to add while updating the alert. | Optional |  
@@ -337,10 +337,10 @@ Retrieves a list of alerts. The result can be filtered by provided parameters.
 | **Argument Name** | **Description** | **Required** |  
 | --- | --- | --- |  
 | search_key | Currently only supports search by URL. | Optional |  
-| queue_state | New queue status to update alert with (id required). Possible values: actioned, needs_confirmation, doppel_review, monitoring, taken_down, archived. | Optional |  
+| queue_state | New queue status to update alert with (ID required). Possible values: actioned, needs_confirmation, doppel_review, monitoring, taken_down, archived. | Optional |  
 | product | Product category the report belongs to. Possible values: domains, social_media, mobile_apps, ecommerce, crypto, emails, paid_adds. | Optional |  
 | created_before | Filter alerts created before a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'. | Optional |  
-| created_after | Filter alerts created before a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'. | Optional |  
+| created_after | Filter alerts created after a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'. | Optional |  
 | sort_type | The field to sort the reports by. Defaults to date_sourced. Possible values: date_sourced, date_last_actioned. | Optional |  
 | sort_order | The order to sort the reports by. Defaults to desc. Possible values: asc, desc. | Optional |  
 | page | Page number for pagination; defaults to 0. | Optional |  
@@ -517,3 +517,22 @@ Gets the list of incidents that were modified since the last update time. Note t
 #### Context Output
 
 There is no context output for this command.
+
+### Incident Mirroring
+
+You can enable incident mirroring between Cortex XSOAR incidents and Doppel corresponding events (available from Cortex XSOAR version 6.0.0).
+To set up the mirroring:
+1. Enable *Fetching incidents* in your instance configuration.
+2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
+
+    | **Option** | **Description** |
+    | --- | --- |
+    | None | Turns off incident mirroring. |
+    | Incoming | Any changes in Doppel alerts (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
+    | Outgoing | Mirroring out will only update queue state and comments in Doppel alerts (outgoing mirrored fields). |
+    | Incoming And Outgoing | Changes in Cortex XSOAR incidents and Doppel alerts will be reflected in both directions. |
+
+
+Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+
+**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Doppel.

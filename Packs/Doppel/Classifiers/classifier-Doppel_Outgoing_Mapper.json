@@ -5,11 +5,87 @@
 	"feed": false,
 	"id": "Doppel Outgoing_Mapper",
 	"mapping": {
-		"dbot_classification_incident_type_all": {
+		"Doppel Alert Crypto": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Queue State": {
-					"simple": "labels.queue_state"
+				"queue_state": {
+					"complex": {
+						"filters": [],
+						"root": "doppelqueuestate",
+						"transformers": []
+					}
+				}
+			}
+		},
+		"Doppel Alert Domains": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {			
+				"queue_state": {
+					"complex": {
+						"filters": [],
+						"root": "doppelqueuestate",
+						"transformers": []
+					}
+				}
+			}
+		},
+		"Doppel Alert Ecommerce": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {			
+				"queue_state": {
+					"complex": {
+						"filters": [],
+						"root": "doppelqueuestate",
+						"transformers": []
+					}
+				}
+			}
+		},
+		"Doppel Alert Email": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {			
+				"queue_state": {
+					"complex": {
+						"filters": [],
+						"root": "doppelqueuestate",
+						"transformers": []
+					}
+				}
+			}
+		},
+		"Doppel Alert Mobile_Apps": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"queue_state": {
+					"complex": {
+						"filters": [],
+						"root": "doppelqueuestate",
+						"transformers": []
+					}
+				}
+			}
+		},
+		"Doppel Alert Paid_Ads": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {		
+				"queue_state": {
+					"complex": {
+						"filters": [],
+						"root": "doppelqueuestate",
+						"transformers": []
+					}
+				}
+			}
+		},
+		"Doppel Alert Social_Media": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"queue_state": {
+					"complex": {
+						"filters": [],
+						"root": "doppelqueuestate",
+						"transformers": []
+					}
 				}
 			}
 		}

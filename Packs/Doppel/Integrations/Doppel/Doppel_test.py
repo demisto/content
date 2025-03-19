@@ -148,7 +148,6 @@ def test_fetch_incidents_command(mocker):
     incident = incidents_pushed[0]
     assert "name" in incident
     assert "type" in incident
-    assert "dbotMirrorId" in incident
     assert "rawJSON" in incident
     assert incident["name"].startswith("Doppel Incident"), "Incident name format mismatch"
     assert incident["occurred"] != "", "Occurred timestamp should not be empty"
@@ -203,7 +202,6 @@ def test_fetch_incidents_timeout(mocker):
     incident = incidents_pushed[0]
     assert "name" in incident
     assert "type" in incident
-    assert "dbotMirrorId" in incident
     assert "rawJSON" in incident
     assert incident["name"].startswith("Doppel Incident"), "Incident name format mismatch"
     assert incident["occurred"] != "", "Occurred timestamp should not be empty"
@@ -258,7 +256,6 @@ def test_fetch_incidents_max_fetch(mocker):
     incident = incidents_pushed[0]
     assert "name" in incident
     assert "type" in incident
-    assert "dbotMirrorId" in incident
     assert "rawJSON" in incident
     assert incident["name"].startswith("Doppel Incident"), "Incident name format mismatch"
     assert incident["occurred"] != "", "Occurred timestamp should not be empty"
