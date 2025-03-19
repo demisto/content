@@ -1244,24 +1244,6 @@ def main():  # pragma: no cover
                                                               last_run=demisto.getLastRun().get('lastRun'))
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
-        # elif command == "fetch-events":
-            # data_size = 0
-            # support_multithreading()
-            # futures = []
-            # executor = concurrent.futures.ThreadPoolExecutor(max_workers=NUM_OF_WORKERS)
-            # for i in range(2):
-            #     future = executor.submit(my_test_func, i)
-            #     futures.append(future)
-            # for future in concurrent.futures.as_completed(futures):
-            #     try:
-            #         data_size += future.result()
-            #     except Exception as e:
-            #         demisto.info(f"[test] {e}")
-            # e = "failure."
-            # err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
-            # demisto.info("[test] returning an error.")
-            # return_error(err_msg, error=e)
-            # demisto.info("[test] finished returning an error.")
         elif command == "fetch-events":
             if params.get("longRunning", False):
                 raise DemistoException("Cannot run both fetch events and long-running command simultaneously.\n"
