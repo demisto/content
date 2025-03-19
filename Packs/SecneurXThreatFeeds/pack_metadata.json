@@ -2,7 +2,7 @@
     "name": "Secneurx Threat Feeds",
     "description": "This pack contains integration to fetch indicators from SecneurX Threat Intelligence Feeds",
     "support": "partner",
-    "currentVersion": "1.0.10",
+    "currentVersion": "1.0.11",
     "author": "SecneurX Technologies",
     "url": "https://www.secneurx.com/products",
     "email": "support@secneurx.com",

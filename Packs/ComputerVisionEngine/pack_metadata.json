@@ -2,7 +2,7 @@
     "name": "ComputerVisionEngine",
     "description": "The ComputerVision Integration by using the Deep-learning library yolo-coco and OpenCV is able to recognize objects on photographs, i.e. planes, luggage, people, dogs, cats, etc.\nThe integration can be used in playbooks to extract objects on rasterized websites in phishing campaigns and making IOCs out of them.\nAdditionally, the integration is useful in CCTV systems significantly reducing the number of false - positives and creating custom workflows in XSOAR playbooks for on-prem physical security!",
     "support": "community",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.5",
     "author": "Maciej Drobniuch",
     "url": "drobniuch.pl",
     "email": "maciej@drobniuch.pl",

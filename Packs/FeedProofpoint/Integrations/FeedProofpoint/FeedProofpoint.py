@@ -1,11 +1,13 @@
 import demistomock as demisto
 from CommonServerPython import *
+
 from CommonServerUserPython import *
 
 """ IMPORTS """
-import urllib3
 import csv
-from typing import Generator, Tuple, Optional, List
+from collections.abc import Generator
+
+import urllib3
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -14,7 +16,7 @@ SOURCE_NAME = "Proofpoint Feed"
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, auth_code, tags: list = None, tlp_color: Optional[str] = None, **kwargs):
+    def __init__(self, base_url, auth_code, tags: list = None, tlp_color: str | None = None, **kwargs):
         if tags is None:
             tags = []
         self._tags: list = tags
@@ -66,17 +68,13 @@ class Client(BaseClient):
         "Mobile_Spyware_CnC",
         "Skype_SuperNode",
         "Bitcoin_Related",
-        "DDoSAttacker"
+        "DDoSAttacker",
     ]
 
-    def _build_iterator(
-            self, indicator_type: str = ALL_TYPE
-    ) -> Generator[dict, None, None]:
+    def _build_iterator(self, indicator_type: str = ALL_TYPE) -> Generator[dict, None, None]:
         endpoints = self.indicator_types_to_endpoint[indicator_type]
         for endpoint in endpoints:
-            resp = self._http_request(
-                "GET", endpoint, resp_type="text", timeout=(30, 60)
-            )
+            resp = self._http_request("GET", endpoint, resp_type="text", timeout=(30, 60))
             resp = resp.splitlines()
             csv_repr = csv.reader(resp)
             headers: list = next(csv_repr)
@@ -95,7 +93,7 @@ class Client(BaseClient):
                     indicator_value = item.get("domain", "")
                     # As part of the domain feed, also DomainGlob indicators will be returned, so we are checking if the
                     # domain has '*' in their value
-                    if indicator_value and '*' in indicator_value:
+                    if indicator_value and "*" in indicator_value:
                         item["type"] = FeedIndicatorType.DomainGlob
                 elif "ip" in item:
                     item["type"] = FeedIndicatorType.IP
@@ -108,7 +106,7 @@ class Client(BaseClient):
                 yield item
 
     @staticmethod
-    def _process_item(item: dict, tags: list, tlp_color: Optional[str] = None) -> dict:
+    def _process_item(item: dict, tags: list, tlp_color: str | None = None) -> dict:
         indicator_obj = {
             "value": item["value"],
             "type": item["type"],
@@ -120,13 +118,13 @@ class Client(BaseClient):
                 "lastseenbysource": item.get("last_seen", ""),
                 "threattypes": {
                     "threatcategory": item.get("category_name", ""),
-                    "threatcategoryconfidence": item.get("score", "")
-                }
-            }
+                    "threatcategoryconfidence": item.get("score", ""),
+                },
+            },
         }
 
         if tlp_color:
-            indicator_obj['fields']['trafficlightprotocol'] = tlp_color
+            indicator_obj["fields"]["trafficlightprotocol"] = tlp_color
 
         return indicator_obj
 
@@ -148,30 +146,24 @@ class Client(BaseClient):
         """
         return self._build_iterator(self.IP_TYPE)
 
-    def get_indicators_domain(self) -> List[dict]:
-        """ Gets indicator's dict of domains
+    def get_indicators_domain(self) -> list[dict]:
+        """Gets indicator's dict of domains
 
         Returns:
             list of indicators
         """
-        return [
-            self._process_item(item, self._tags, self.tlp_color)
-            for item in self._build_iterator_domain()
-        ]
+        return [self._process_item(item, self._tags, self.tlp_color) for item in self._build_iterator_domain()]
 
-    def get_indicators_ip(self) -> List[dict]:
-        """ Gets indicator's dict of ips
+    def get_indicators_ip(self) -> list[dict]:
+        """Gets indicator's dict of ips
 
         Returns:
             list of indicators
         """
-        return [
-            self._process_item(item, self._tags, self.tlp_color)
-            for item in self._build_iterator_ip()
-        ]
+        return [self._process_item(item, self._tags, self.tlp_color) for item in self._build_iterator_ip()]
 
-    def get_indicators(self) -> List[dict]:
-        """ Gets indicator's dict of domains and ips
+    def get_indicators(self) -> list[dict]:
+        """Gets indicator's dict of domains and ips
 
         Returns:
             list of indicators
@@ -180,7 +172,7 @@ class Client(BaseClient):
 
 
 def url_concat(*args: str) -> str:
-    """ Joining arguments into a url
+    """Joining arguments into a url
 
     Examples:
         >>> url_concat("https://example.com", "apitoken/", "/path_to_thing/", "file.exe")
@@ -199,7 +191,7 @@ def url_concat(*args: str) -> str:
 
 
 def module_test_command(client: Client, indicator_type: str) -> str:
-    """ Simple command that checks if the api is working
+    """Simple command that checks if the api is working
 
     Args:
         client: Client object
@@ -212,8 +204,8 @@ def module_test_command(client: Client, indicator_type: str) -> str:
     return "ok"
 
 
-def fetch_indicators_command(client: Client, indicator_type: Optional[str]):
-    """ Retrieving indicators from the API
+def fetch_indicators_command(client: Client, indicator_type: str | None):
+    """Retrieving indicators from the API
 
     Args:
         client: Client object
@@ -230,8 +222,8 @@ def fetch_indicators_command(client: Client, indicator_type: Optional[str]):
         return client.get_indicators()
 
 
-def get_indicators_command(client: Client, args: dict) -> Tuple[str, dict, list]:
-    """ Gets indicator to context
+def get_indicators_command(client: Client, args: dict) -> tuple[str, dict, list]:
+    """Gets indicator to context
 
     Args:
         client: Client object
@@ -242,10 +234,7 @@ def get_indicators_command(client: Client, args: dict) -> Tuple[str, dict, list]
     """
     indicator_type = args.get("indicator_type")
     if indicator_type not in client.TYPES:
-        return_error(
-            f"{SOURCE_NAME}: Got indicator_type {indicator_type} but expected "
-            f"one of {client.TYPES}"
-        )
+        return_error(f"{SOURCE_NAME}: Got indicator_type {indicator_type} but expected one of {client.TYPES}")
     limit = int(args.get("limit", 50))
     if limit < 1:
         limit = 1
@@ -262,19 +251,19 @@ def main():
     params = demisto.params()
     args = demisto.args()
     base_url = "https://rules.emergingthreats.net/"
-    auth_code = params.get('credentials_auth_code', {}).get('password') or params.get("auth_code")
+    auth_code = params.get("credentials_auth_code", {}).get("password") or params.get("auth_code")
     if not auth_code:
-        raise DemistoException('Authorization code must be provided.')
+        raise DemistoException("Authorization code must be provided.")
     client = Client(
         base_url,
         auth_code=auth_code,
         verify=not params.get("insecure", False),
         proxy=params.get("proxy"),
         tags=argToList(params.get("feedTags")),
-        tlp_color=params.get('tlp_color')
+        tlp_color=params.get("tlp_color"),
     )
     command = demisto.command()
-    demisto.info("Command being called is {}".format(command))
+    demisto.info(f"Command being called is {command}")
     # Switch case
     try:
         if command == "fetch-indicators":
@@ -285,9 +274,7 @@ def main():
         elif command == "test-module":
             return_outputs(module_test_command(client, params.get("indicator_type")))
         elif command == "proofpoint-get-indicators":
-            readable_output, outputs, raw_response = get_indicators_command(
-                client, args
-            )
+            readable_output, outputs, raw_response = get_indicators_command(client, args)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
         return_error(

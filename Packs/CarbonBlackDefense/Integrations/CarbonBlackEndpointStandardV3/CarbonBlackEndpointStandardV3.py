@@ -1,9 +1,8 @@
 import demistomock as demisto  # noqa: F401
+import urllib3
 from CommonServerPython import *  # noqa: F401
 
 from CommonServerUserPython import *  # noqa
-
-import urllib3
 
 urllib3.disable_warnings()  # Disable insecure warnings
 
@@ -11,7 +10,7 @@ urllib3.disable_warnings()  # Disable insecure warnings
 INTERVAL_FOR_POLLING_DEFAULT = 30
 TIMEOUT_FOR_POLLING_DEFAULT = 600
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
@@ -24,8 +23,9 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def __init__(self, base_url, verify, proxies, api_key, api_secret_key, policy_api_key, policy_api_secret_key,
-                 organization_key):
+    def __init__(
+        self, base_url, verify, proxies, api_key, api_secret_key, policy_api_key, policy_api_secret_key, organization_key
+    ):
         self.base_url = base_url
         self.verify = verify
         self.proxies = proxies
@@ -34,9 +34,8 @@ class Client(BaseClient):
         self.policy_api_key = policy_api_key
         self.policy_api_secret_key = policy_api_secret_key
         self.organization_key = organization_key
-        self.headers = {'X-Auth-Token': f'{api_secret_key}/{api_key}', 'Content-Type': 'application/json'}
-        self.policy_headers = {'X-Auth-Token': f'{policy_api_secret_key}/{policy_api_key}',
-                               'Content-Type': 'application/json'}
+        self.headers = {"X-Auth-Token": f"{api_secret_key}/{api_key}", "Content-Type": "application/json"}
+        self.policy_headers = {"X-Auth-Token": f"{policy_api_secret_key}/{policy_api_key}", "Content-Type": "application/json"}
         super().__init__(base_url, verify, proxies)
 
     def module_test_request(self) -> dict:
@@ -45,8 +44,8 @@ class Client(BaseClient):
         :return: A dictionary containing the response.
         :rtype: dict
         """
-        suffix_url = f'api/alerts/v7/orgs/{self.organization_key}/alerts/_search'
-        return self._http_request('POST', url_suffix=suffix_url, headers=self.headers, json_data={})
+        suffix_url = f"api/alerts/v7/orgs/{self.organization_key}/alerts/_search"
+        return self._http_request("POST", url_suffix=suffix_url, headers=self.headers, json_data={})
 
     def policy_test_module_request(self) -> dict:
         """Tests connectivity with the application for the Policy API.
@@ -54,8 +53,8 @@ class Client(BaseClient):
         :return: A dictionary containing the response.
         :rtype: dict
         """
-        suffix_url = f'policyservice/v1/orgs/{self.organization_key}/policies/summary'
-        return self._http_request(method='GET', url_suffix=suffix_url, headers=self.policy_headers)
+        suffix_url = f"policyservice/v1/orgs/{self.organization_key}/policies/summary"
+        return self._http_request(method="GET", url_suffix=suffix_url, headers=self.policy_headers)
 
     def search_alerts_request(self, body: dict) -> dict:
         """Searches for alerts using the provided request body.
@@ -66,9 +65,9 @@ class Client(BaseClient):
         :return: A dictionary containing the search results.
         :rtype: dict
         """
-        suffix_url = f'api/alerts/v7/orgs/{self.organization_key}/alerts/_search'
+        suffix_url = f"api/alerts/v7/orgs/{self.organization_key}/alerts/_search"
         demisto.debug(f"Fetch query: {suffix_url} with the request body: {body}")
-        return self._http_request('POST', suffix_url, headers=self.headers, json_data=body)
+        return self._http_request("POST", suffix_url, headers=self.headers, json_data=body)
 
     def get_alert_by_id(self, alert_id: str) -> dict:
         """Retrieves an alert by its ID.
@@ -79,8 +78,8 @@ class Client(BaseClient):
         :return: A dictionary containing the alert details.
         :rtype: dict
         """
-        url_suffix = f'api/alerts/v7/orgs/{self.organization_key}/alerts/{alert_id}'
-        return self._http_request(method='GET', url_suffix=url_suffix, headers=self.headers)
+        url_suffix = f"api/alerts/v7/orgs/{self.organization_key}/alerts/{alert_id}"
+        return self._http_request(method="GET", url_suffix=url_suffix, headers=self.headers)
 
     def get_alerts(self, body: dict) -> dict:
         """Retrieves alerts based on the provided request body.
@@ -91,8 +90,8 @@ class Client(BaseClient):
         :return: A dictionary containing the alerts.
         :rtype: dict
         """
-        suffix_url = f'api/alerts/v7/orgs/{self.organization_key}/alerts/_search'
-        return self._http_request(method='POST', url_suffix=suffix_url, headers=self.headers, json_data=body)
+        suffix_url = f"api/alerts/v7/orgs/{self.organization_key}/alerts/_search"
+        return self._http_request(method="POST", url_suffix=suffix_url, headers=self.headers, json_data=body)
 
     def get_policy_by_id(self, policy_id: int) -> dict:
         """Returns a Carbon Black policy by its ID.
@@ -103,8 +102,8 @@ class Client(BaseClient):
         :return: A dictionary containing the policy data.
         :rtype: dict
         """
-        suffix_url = f'policyservice/v1/orgs/{self.organization_key}/policies/{policy_id}'
-        return self._http_request(method='GET', url_suffix=suffix_url, headers=self.policy_headers)
+        suffix_url = f"policyservice/v1/orgs/{self.organization_key}/policies/{policy_id}"
+        return self._http_request(method="GET", url_suffix=suffix_url, headers=self.policy_headers)
 
     def get_policies_summary(self) -> dict:
         """Retrieves a summary of all policies.
@@ -112,8 +111,8 @@ class Client(BaseClient):
         :return: A dictionary containing the policies summary.
         :rtype: dict
         """
-        suffix_url = f'policyservice/v1/orgs/{self.organization_key}/policies/summary'
-        return self._http_request(method='GET', url_suffix=suffix_url, headers=self.policy_headers)
+        suffix_url = f"policyservice/v1/orgs/{self.organization_key}/policies/summary"
+        return self._http_request(method="GET", url_suffix=suffix_url, headers=self.policy_headers)
 
     def create_new_policy(self, body: dict) -> dict:
         """Creates a new policy with the provided request body.
@@ -124,9 +123,9 @@ class Client(BaseClient):
         :return: A dictionary containing the created policy data.
         :rtype: dict
         """
-        body['org_key'] = self.organization_key
-        suffix_url = f'policyservice/v1/orgs/{self.organization_key}/policies'
-        return self._http_request(method='POST', url_suffix=suffix_url, headers=self.policy_headers, json_data=body)
+        body["org_key"] = self.organization_key
+        suffix_url = f"policyservice/v1/orgs/{self.organization_key}/policies"
+        return self._http_request(method="POST", url_suffix=suffix_url, headers=self.policy_headers, json_data=body)
 
     def delete_policy(self, policy_id: int) -> None:
         """Deletes a Carbon Black policy by its ID.
@@ -134,9 +133,10 @@ class Client(BaseClient):
         :type policy_id: int
         :param policy_id: The ID of the policy.
         """
-        suffix_url = f'policyservice/v1/orgs/{self.organization_key}/policies/{policy_id}'
-        return self._http_request(method='DELETE', url_suffix=suffix_url, headers=self.policy_headers,
-                                  return_empty_response=True)  # Carbon black api return 204 for a successfully request
+        suffix_url = f"policyservice/v1/orgs/{self.organization_key}/policies/{policy_id}"
+        return self._http_request(
+            method="DELETE", url_suffix=suffix_url, headers=self.policy_headers, return_empty_response=True
+        )  # Carbon black api return 204 for a successfully request
 
     def update_policy(self, policy_id: int, body: dict) -> dict:
         """Updates a Carbon Black policy by its ID with the provided request body.
@@ -150,9 +150,9 @@ class Client(BaseClient):
         :return: A dictionary containing the updated policy data.
         :rtype: dict
         """
-        body['org_key'] = self.organization_key
-        suffix_url = f'policyservice/v1/orgs/{self.organization_key}/policies/{policy_id}'
-        return self._http_request(method='PUT', url_suffix=suffix_url, headers=self.policy_headers, json_data=body)
+        body["org_key"] = self.organization_key
+        suffix_url = f"policyservice/v1/orgs/{self.organization_key}/policies/{policy_id}"
+        return self._http_request(method="PUT", url_suffix=suffix_url, headers=self.policy_headers, json_data=body)
 
     def add_rule_to_policy(self, policy_id: int, body: dict) -> dict:
         """Adds a rule to a Carbon Black policy by its ID with the provided request body.
@@ -166,8 +166,8 @@ class Client(BaseClient):
         :return: A dictionary containing the added rule data.
         :rtype: dict
         """
-        suffix_url = f'policyservice/v1/orgs/{self.organization_key}/policies/{policy_id}/rules'
-        return self._http_request(method='POST', url_suffix=suffix_url, headers=self.policy_headers, json_data=body)
+        suffix_url = f"policyservice/v1/orgs/{self.organization_key}/policies/{policy_id}/rules"
+        return self._http_request(method="POST", url_suffix=suffix_url, headers=self.policy_headers, json_data=body)
 
     def update_rule_in_policy(self, policy_id: int, rule_id: int, body: dict) -> dict:
         """Updates a rule in a Carbon Black policy by its ID with the provided request body.
@@ -184,8 +184,8 @@ class Client(BaseClient):
         :return: A dictionary containing the updated rule data.
         :rtype: dict
         """
-        suffix_url = f'policyservice/v1/orgs/{self.organization_key}/policies/{policy_id}/rules/{rule_id}'
-        return self._http_request(method='PUT', url_suffix=suffix_url, headers=self.policy_headers, json_data=body)
+        suffix_url = f"policyservice/v1/orgs/{self.organization_key}/policies/{policy_id}/rules/{rule_id}"
+        return self._http_request(method="PUT", url_suffix=suffix_url, headers=self.policy_headers, json_data=body)
 
     def delete_rule_from_policy(self, policy_id: int, rule_id: int) -> None:
         """Deletes a rule from a Carbon Black policy by its ID.
@@ -196,9 +196,10 @@ class Client(BaseClient):
         :type rule_id: int
         :param rule_id: The ID of the rule.
         """
-        suffix_url = f'policyservice/v1/orgs/{self.organization_key}/policies/{policy_id}/rules/{rule_id}'
-        return self._http_request(method='DELETE', url_suffix=suffix_url, headers=self.policy_headers,
-                                  return_empty_response=True)  # Carbon black api return 204 for a successfully request
+        suffix_url = f"policyservice/v1/orgs/{self.organization_key}/policies/{policy_id}/rules/{rule_id}"
+        return self._http_request(
+            method="DELETE", url_suffix=suffix_url, headers=self.policy_headers, return_empty_response=True
+        )  # Carbon black api return 204 for a successfully request
 
     def get_processes(self, body: dict) -> dict:
         """Retrieves processes based on the provided request body.
@@ -209,8 +210,8 @@ class Client(BaseClient):
         :return: A dictionary containing the processes job ID.
         :rtype: dict
         """
-        suffix_url = f'api/investigate/v2/orgs/{self.organization_key}/processes/search_jobs'
-        return self._http_request(method='POST', url_suffix=suffix_url, headers=self.headers, json_data=body)
+        suffix_url = f"api/investigate/v2/orgs/{self.organization_key}/processes/search_jobs"
+        return self._http_request(method="POST", url_suffix=suffix_url, headers=self.headers, json_data=body)
 
     def get_process_results(self, job_id: str, rows: int = 10) -> dict:
         """Returns Carbon Black processes by job_id.
@@ -224,8 +225,8 @@ class Client(BaseClient):
         :return: A dictionary containing the results data.
         :rtype: dict
         """
-        suffix_url = f'api/investigate/v2/orgs/{self.organization_key}/processes/search_jobs/{job_id}/results?rows={rows}'
-        return self._http_request(method='GET', url_suffix=suffix_url, headers=self.headers)
+        suffix_url = f"api/investigate/v2/orgs/{self.organization_key}/processes/search_jobs/{job_id}/results?rows={rows}"
+        return self._http_request(method="GET", url_suffix=suffix_url, headers=self.headers)
 
     def get_observation_details(self, body: dict) -> dict:
         """Retrieves observation details based on the provided request body.
@@ -236,8 +237,8 @@ class Client(BaseClient):
         :return: A dictionary containing the observation details job ID..
         :rtype: dict
         """
-        suffix_url = f'api/investigate/v2/orgs/{self.organization_key}/observations/detail_jobs'
-        return self._http_request(method='POST', url_suffix=suffix_url, headers=self.headers, json_data=body)
+        suffix_url = f"api/investigate/v2/orgs/{self.organization_key}/observations/detail_jobs"
+        return self._http_request(method="POST", url_suffix=suffix_url, headers=self.headers, json_data=body)
 
     def get_observation_details_results(self, job_id: str, rows: int = 10) -> dict:
         """Returns Carbon Black observation details by job_id.
@@ -251,8 +252,8 @@ class Client(BaseClient):
         :return: A dictionary containing the observation details.
         :rtype: dict
         """
-        suffix_url = f'api/investigate/v2/orgs/{self.organization_key}/observations/detail_jobs/{job_id}/results?rows={rows}'
-        return self._http_request(method='GET', url_suffix=suffix_url, headers=self.headers)
+        suffix_url = f"api/investigate/v2/orgs/{self.organization_key}/observations/detail_jobs/{job_id}/results?rows={rows}"
+        return self._http_request(method="GET", url_suffix=suffix_url, headers=self.headers)
 
     def get_observation(self, body: dict) -> dict:
         """Retrieves observations based on the provided request body.
@@ -263,8 +264,8 @@ class Client(BaseClient):
         :return: A dictionary containing the observations.
         :rtype: dict
         """
-        suffix_url = f'api/investigate/v2/orgs/{self.organization_key}/observations/search_jobs'
-        return self._http_request(method='POST', url_suffix=suffix_url, headers=self.headers, json_data=body)
+        suffix_url = f"api/investigate/v2/orgs/{self.organization_key}/observations/search_jobs"
+        return self._http_request(method="POST", url_suffix=suffix_url, headers=self.headers, json_data=body)
 
     def get_observation_results(self, job_id: str, rows: int = 10) -> dict:
         """Returns Carbon Black observation by job_id.
@@ -278,8 +279,8 @@ class Client(BaseClient):
         :return: A dictionary containing the results data.
         :rtype: dict
         """
-        suffix_url = f'api/investigate/v2/orgs/{self.organization_key}/observations/search_jobs/{job_id}/results?rows={rows}'
-        return self._http_request(method='GET', url_suffix=suffix_url, headers=self.headers)
+        suffix_url = f"api/investigate/v2/orgs/{self.organization_key}/observations/search_jobs/{job_id}/results?rows={rows}"
+        return self._http_request(method="GET", url_suffix=suffix_url, headers=self.headers)
 
     def get_devices(self, body: dict) -> dict:
         """Retrieves devices based on the provided request body.
@@ -290,8 +291,8 @@ class Client(BaseClient):
         :return: A dictionary containing the devices.
         :rtype: dict
         """
-        suffix_url = f'appservices/v6/orgs/{self.organization_key}/devices/_search'
-        return self._http_request(method='POST', url_suffix=suffix_url, headers=self.headers, json_data=body)
+        suffix_url = f"appservices/v6/orgs/{self.organization_key}/devices/_search"
+        return self._http_request(method="POST", url_suffix=suffix_url, headers=self.headers, json_data=body)
 
     def execute_an_action_on_the_device(self, device_id: List[int], action_type: str, options: dict):
         """Executes actions on devices using the specified parameters.
@@ -305,16 +306,12 @@ class Client(BaseClient):
         :type options: dict
         :param options: A dictionary containing action options, e.g., {"toggle": "ON/OFF"}.
         """
-        suffix_url = f'appservices/v6/orgs/{self.organization_key}/device_actions'
-        body = assign_params(
-            action_type=action_type,
-            device_id=device_id,
-            options=options
-        )
-        return self._http_request(method='POST', url_suffix=suffix_url, headers=self.headers, json_data=body, resp_type='text')
+        suffix_url = f"appservices/v6/orgs/{self.organization_key}/device_actions"
+        body = assign_params(action_type=action_type, device_id=device_id, options=options)
+        return self._http_request(method="POST", url_suffix=suffix_url, headers=self.headers, json_data=body, resp_type="text")
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def module_test_command(client: Client, params: dict) -> str:
@@ -344,15 +341,19 @@ def module_test_command(client: Client, params: dict) -> str:
     Fetch uses the general api_key.
     """
 
-    is_fetch = params.get('isFetch')
+    is_fetch = params.get("isFetch")
 
     # if is_fetch = true and custom API key's is no provided
     if is_fetch and not (client.api_key and client.api_secret_key):
-        return 'To fetch incidents you must fill the following parameters: ' \
-               'Custom API key, Custom API secret key and Organization key.'
+        return (
+            "To fetch incidents you must fill the following parameters: "
+            "Custom API key, Custom API secret key and Organization key."
+        )
 
-    message = "Missing parameters Error: At least one complete set of API keys " \
-              "(Custom API keys or Api/Live-Response API keys) is required."
+    message = (
+        "Missing parameters Error: At least one complete set of API keys "
+        "(Custom API keys or Api/Live-Response API keys) is required."
+    )
 
     # If all the custom API keys are provided.
     if client.api_key and client.api_secret_key:
@@ -363,41 +364,43 @@ def module_test_command(client: Client, params: dict) -> str:
             if is_fetch:
                 body = assign_params(
                     criteria=assign_params(
-                        minimum_severity=arg_to_number(params.get('min_severity')),
-                        device_policy_id=argToList(params.get('policy_id')),
-                        device_username=argToList(params.get('device_username')),
-                        device_id=argToList(params.get('device_id')),
-                        type=argToList(map_alert_type(params.get('type')))
+                        minimum_severity=arg_to_number(params.get("min_severity")),
+                        device_policy_id=argToList(params.get("policy_id")),
+                        device_username=argToList(params.get("device_username")),
+                        device_id=argToList(params.get("device_id")),
+                        type=argToList(map_alert_type(params.get("type"))),
                     ),
-                    sort=[assign_params(field='backend_timestamp', order='ASC')],
-                    query=params.get('query'),
+                    sort=[assign_params(field="backend_timestamp", order="ASC")],
+                    query=params.get("query"),
                 )
                 client.search_alerts_request(body)
 
-            message = 'ok'
+            message = "ok"
         except Exception as e:
-            if 'authenticated' in str(e) or 'Forbidden' in str(e):
-                return 'Authorization Error: make sure Custom API Key is correctly set.'
+            if "authenticated" in str(e) or "Forbidden" in str(e):
+                return "Authorization Error: make sure Custom API Key is correctly set."
             else:
                 raise e
     # if one or more of the custom API keys are provided
     elif client.api_key or client.api_secret_key:
-        return 'Missing custom API parameters. Please fill all the relevant parameters: ' \
-               'Custom API key, Custom API secret key and Organization key.'
+        return (
+            "Missing custom API parameters. Please fill all the relevant parameters: "
+            "Custom API key, Custom API secret key and Organization key."
+        )
 
     # if all of the api/live-response API key's is provided
     if client.policy_api_key and client.policy_api_secret_key:
         try:
             client.policy_test_module_request()
-            message = 'ok'
+            message = "ok"
         except Exception as e:
-            if 'Authentication' in str(e) or 'authenticated' in str(e):
-                return 'Authorization Error: make sure API Key is correctly set.'
+            if "Authentication" in str(e) or "authenticated" in str(e):
+                return "Authorization Error: make sure API Key is correctly set."
             else:
                 raise e
     # if only one of the api/live-response API keys are provided
     elif client.policy_api_key or client.policy_api_secret_key:
-        return 'Missing API parameters. Please fill all the relevant parameters: API key, API secret key and Organization key.'
+        return "Missing API parameters. Please fill all the relevant parameters: API key, API secret key and Organization key."
 
     return message
 
@@ -431,14 +434,14 @@ def fetch_incidents(client: Client, params: dict):
         incidents (``list``): List of incidents that will be created in XSOAR.
     :rtype: ``tuple``
     """
-    fetch_time = params.get('first_fetch', '7 days')
-    fetch_limit = int(params.get('max_fetch', 50))
+    fetch_time = params.get("first_fetch", "7 days")
+    fetch_limit = int(params.get("max_fetch", 50))
 
     last_run = demisto.getLastRun()
-    last_fetched_alert_create_time = last_run.get('last_fetched_alert_create_time')
-    last_fetched_alert_ids = last_run.get('last_fetched_alert_id', [])
+    last_fetched_alert_create_time = last_run.get("last_fetched_alert_create_time")
+    last_fetched_alert_ids = last_run.get("last_fetched_alert_id", [])
     if not last_fetched_alert_create_time:
-        last_fetched_alert_create_time = arg_to_datetime(fetch_time).strftime('%Y-%m-%dT%H:%M:%S.000Z')  # type: ignore
+        last_fetched_alert_create_time = arg_to_datetime(fetch_time).strftime("%Y-%m-%dT%H:%M:%S.000Z")  # type: ignore
     else:
         fetch_limit += 1  # We skip the first alert
 
@@ -447,38 +450,37 @@ def fetch_incidents(client: Client, params: dict):
 
     body = assign_params(
         criteria=assign_params(
-            minimum_severity=arg_to_number(params.get('min_severity')),
-            device_policy_id=argToList(params.get('policy_id')),
-            device_username=argToList(params.get('device_username')),
-            device_id=argToList(params.get('device_id')),
-            type=argToList(map_alert_type(params.get('type')))
+            minimum_severity=arg_to_number(params.get("min_severity")),
+            device_policy_id=argToList(params.get("policy_id")),
+            device_username=argToList(params.get("device_username")),
+            device_id=argToList(params.get("device_id")),
+            type=argToList(map_alert_type(params.get("type"))),
         ),
-        time_range=assign_params(
-            start=last_fetched_alert_create_time,
-            end=datetime.now().strftime('%Y-%m-%dT%H:%M:%S.000Z')
-        ),
-        sort=[assign_params(
-            field='backend_timestamp',
-            order='ASC',
-        )],
+        time_range=assign_params(start=last_fetched_alert_create_time, end=datetime.now().strftime("%Y-%m-%dT%H:%M:%S.000Z")),
+        sort=[
+            assign_params(
+                field="backend_timestamp",
+                order="ASC",
+            )
+        ],
         rows=fetch_limit,
-        query=params.get('query'),
+        query=params.get("query"),
     )
-    if body.get('criteria') and body.get('query'):
+    if body.get("criteria") and body.get("query"):
         raise DemistoException("The 'query' parameter should be used without additional parameters to fetch incidents.")
 
     response = client.search_alerts_request(body)
     demisto.debug(f"Fetch server response: {response}")
 
-    alerts = response.get('results', [])
+    alerts = response.get("results", [])
     demisto.debug(f"Number of incidents before filtering: {len(alerts)}")
 
     incidents = []
     new_last_fetched_alert_ids = last_fetched_alert_ids
 
     for alert in alerts:
-        alert_create_date = alert.get('backend_timestamp')
-        alert_id = alert.get('id')
+        alert_create_date = alert.get("backend_timestamp")
+        alert_id = alert.get("id")
 
         if alert_id in last_fetched_alert_ids:
             demisto.debug(f"Incident with ID: {alert_id} filtered out. Reason: duplicate from the last fetch, skipping")
@@ -493,18 +495,20 @@ def fetch_incidents(client: Client, params: dict):
         last_fetched_alert_create_time = alert_create_date
 
         incident = {
-            'type': 'Carbon Black Endpoint Standard',
-            'name': f'Carbon Black Defense alert {alert_id}',
-            'occurred': alert_create_date,
-            'rawJSON': json.dumps(alert),
-            'severity': convert_to_demisto_severity(alert.get('severity', 1)),
+            "type": "Carbon Black Endpoint Standard",
+            "name": f"Carbon Black Defense alert {alert_id}",
+            "occurred": alert_create_date,
+            "rawJSON": json.dumps(alert),
+            "severity": convert_to_demisto_severity(alert.get("severity", 1)),
         }
         incidents.append(incident)
 
     demisto.debug(f"Number of Incidents after filtering: {len(incidents)}")
 
-    next_run = {'last_fetched_alert_create_time': last_fetched_alert_create_time,
-                'last_fetched_alert_id': new_last_fetched_alert_ids}
+    next_run = {
+        "last_fetched_alert_create_time": last_fetched_alert_create_time,
+        "last_fetched_alert_id": new_last_fetched_alert_ids,
+    }
     demisto.debug(f"New last run: {next_run}")
 
     demisto.incidents(incidents)
@@ -526,20 +530,31 @@ def get_alert_details_command(client: Client, args: dict):
     :return: CommandResults with the alert details.
     :rtype: ``CommandResults``
     """
-    res = client.get_alert_by_id(args['alertId'])
+    res = client.get_alert_by_id(args["alertId"])
 
-    headers = ['id', 'device_id', 'device_name', 'device_username', 'ioc_hit', 'reason', 'type',
-               'threat_id', 'device_policy', 'severity']
+    headers = [
+        "id",
+        "device_id",
+        "device_name",
+        "device_username",
+        "ioc_hit",
+        "reason",
+        "type",
+        "threat_id",
+        "device_policy",
+        "severity",
+    ]
 
-    readable_output = tableToMarkdown('Carbon Black Defense Get Alert Details', res, headers,
-                                      headerTransform=string_to_table_header, removeNull=True)
+    readable_output = tableToMarkdown(
+        "Carbon Black Defense Get Alert Details", res, headers, headerTransform=string_to_table_header, removeNull=True
+    )
 
     return CommandResults(
-        outputs_prefix='CarbonBlackDefense.Alert',
-        outputs_key_field='id',
+        outputs_prefix="CarbonBlackDefense.Alert",
+        outputs_key_field="id",
         outputs=res,
         readable_output=readable_output,
-        raw_response=res
+        raw_response=res,
     )
 
 
@@ -566,38 +581,39 @@ def alerts_search_command(client: Client, args: dict):
     :return: CommandResults with the search results.
     :rtype: ``CommandResults``
     """
-    first_event_time = args.get('first_event_time')
+    first_event_time = args.get("first_event_time")
     first_event_time_json = json.loads(first_event_time) if first_event_time else None
 
     body = assign_params(
         criteria=assign_params(
-            device_id=argToList(args.get('device_id')),
+            device_id=argToList(args.get("device_id")),
             first_event_timestamp=first_event_time_json,
-            device_policy_id=argToList(args.get('policy_id')),
-            process_sha256=argToList(args.get('process_sha256')),
-            process_reputation=argToList(args.get('reputation')),
-            tags=argToList(args.get('tags')),
-            device_username=argToList(args.get('device_username')),
-            type=argToList(map_alert_type(args.get('type')))
+            device_policy_id=argToList(args.get("policy_id")),
+            process_sha256=argToList(args.get("process_sha256")),
+            process_reputation=argToList(args.get("reputation")),
+            tags=argToList(args.get("tags")),
+            device_username=argToList(args.get("device_username")),
+            type=argToList(map_alert_type(args.get("type"))),
         ),
-        query=args.get('query'),
-        rows=arg_to_number(args.get('rows')),
-        start=arg_to_number(args.get('start'))
+        query=args.get("query"),
+        rows=arg_to_number(args.get("rows")),
+        start=arg_to_number(args.get("start")),
     )
 
     res = client.get_alerts(body)
-    alerts = res.get('results', [])
+    alerts = res.get("results", [])
 
-    headers = ['id', 'device_id', 'device_name', 'device_username', 'backend_timestamp']
+    headers = ["id", "device_id", "device_name", "device_username", "backend_timestamp"]
 
-    readable_output = tableToMarkdown('Carbon Black Defense Alerts List Results', alerts, headers,
-                                      headerTransform=string_to_table_header, removeNull=True)
+    readable_output = tableToMarkdown(
+        "Carbon Black Defense Alerts List Results", alerts, headers, headerTransform=string_to_table_header, removeNull=True
+    )
     return CommandResults(
-        outputs_prefix='CarbonBlackDefense.Alert',
-        outputs_key_field='id',
+        outputs_prefix="CarbonBlackDefense.Alert",
+        outputs_key_field="id",
         outputs=alerts,
         readable_output=readable_output,
-        raw_response=res
+        raw_response=res,
     )
 
 
@@ -614,22 +630,23 @@ def get_policy_command(client: Client, args: dict):
     :return: CommandResults with the policy details.
     :rtype: ``CommandResults``
     """
-    policy_id_int = arg_to_number(args['policyId'], required=True)
+    policy_id_int = arg_to_number(args["policyId"], required=True)
 
     res = client.get_policy_by_id(policy_id_int)  # type: ignore[arg-type]
 
     headers = ["id", "name", "priority_level", "is_system", "description"]
-    readable_output = tableToMarkdown('Carbon Black Defense Policy', res, headers=headers,
-                                      headerTransform=string_to_table_header, removeNull=True)
+    readable_output = tableToMarkdown(
+        "Carbon Black Defense Policy", res, headers=headers, headerTransform=string_to_table_header, removeNull=True
+    )
 
     formatted_res = format_policy_response(res)
 
     return CommandResults(
-        outputs_prefix='CarbonBlackDefense.Policy',
-        outputs_key_field='id',
+        outputs_prefix="CarbonBlackDefense.Policy",
+        outputs_key_field="id",
         outputs=formatted_res,
         readable_output=readable_output,
-        raw_response=formatted_res
+        raw_response=formatted_res,
     )
 
 
@@ -644,14 +661,15 @@ def get_policies_summary_command(client: Client):
     """
     res = client.get_policies_summary()
 
-    headers = ['id', 'name', 'priority_level', 'is_system']
+    headers = ["id", "name", "priority_level", "is_system"]
     return CommandResults(
-        outputs_prefix='CarbonBlackDefense.PolicySummary',
-        outputs_key_field='id',
-        outputs=res.get('policies'),
-        readable_output=tableToMarkdown('Policies summaries', res.get('policies'),
-                                        headers=headers, headerTransform=string_to_table_header),
-        raw_response=res
+        outputs_prefix="CarbonBlackDefense.PolicySummary",
+        outputs_key_field="id",
+        outputs=res.get("policies"),
+        readable_output=tableToMarkdown(
+            "Policies summaries", res.get("policies"), headers=headers, headerTransform=string_to_table_header
+        ),
+        raw_response=res,
     )
 
 
@@ -666,9 +684,9 @@ def create_policy_command(client: Client, args: dict):
     :return: CommandResults with the created policy details.
     :rtype: ``CommandResults``
     """
-    policy = json.loads(args['policy'])
+    policy = json.loads(args["policy"])
 
-    for field in ['name', 'priority_level', 'description']:
+    for field in ["name", "priority_level", "description"]:
         if not policy.get(field):
             camelcase_field = underscoreToCamelCase(field, upper_camel=False)
             if not args.get(camelcase_field):
@@ -678,17 +696,18 @@ def create_policy_command(client: Client, args: dict):
     res = client.create_new_policy(policy)
 
     headers = ["id", "description", "name", "priority_level", "is_system"]
-    readable_output = tableToMarkdown('Policy created successfully', res, headers=headers,
-                                      headerTransform=string_to_table_header, removeNull=True)
+    readable_output = tableToMarkdown(
+        "Policy created successfully", res, headers=headers, headerTransform=string_to_table_header, removeNull=True
+    )
 
     formatted_res = format_policy_response(res)
 
     return CommandResults(
-        outputs_prefix='CarbonBlackDefense.Policy',
-        outputs_key_field='id',
+        outputs_prefix="CarbonBlackDefense.Policy",
+        outputs_key_field="id",
         outputs=formatted_res,
         readable_output=readable_output,
-        raw_response=formatted_res
+        raw_response=formatted_res,
     )
 
 
@@ -703,13 +722,13 @@ def update_policy_command(client: Client, args: dict):
     :return: CommandResults with the updated policy details.
     :rtype: ``CommandResults``
     """
-    policy_id = arg_to_number(args['id'], required=True)
+    policy_id = arg_to_number(args["id"], required=True)
 
-    policy = json.loads(args['policy'])
+    policy = json.loads(args["policy"])
 
     policy["id"] = policy_id
 
-    for field in ['name', 'priority_level', 'description']:
+    for field in ["name", "priority_level", "description"]:
         if not policy.get(field):
             camelcase_field = underscoreToCamelCase(field, upper_camel=False)
             if not args.get(camelcase_field):
@@ -719,17 +738,22 @@ def update_policy_command(client: Client, args: dict):
     res = client.update_policy(policy_id, policy)  # type: ignore[arg-type]
 
     headers = ["id", "description", "name", "priority_level", "is_system"]
-    readable_output = tableToMarkdown(f'Policy with ID: {policy_id} updated successfully', res, headers=headers,
-                                      headerTransform=string_to_table_header, removeNull=True)
+    readable_output = tableToMarkdown(
+        f"Policy with ID: {policy_id} updated successfully",
+        res,
+        headers=headers,
+        headerTransform=string_to_table_header,
+        removeNull=True,
+    )
 
     formatted_res = format_policy_response(res)
 
     return CommandResults(
-        outputs_prefix='CarbonBlackDefense.Policy',
-        outputs_key_field='id',
+        outputs_prefix="CarbonBlackDefense.Policy",
+        outputs_key_field="id",
         outputs=formatted_res,
         readable_output=readable_output,
-        raw_response=formatted_res
+        raw_response=formatted_res,
     )
 
 
@@ -744,26 +768,31 @@ def set_policy_command(client: Client, args: dict):
     :return: CommandResults with the set policy details.
     :rtype: ``CommandResults``
     """
-    policy_id = arg_to_number(args['policy'], required=True)
+    policy_id = arg_to_number(args["policy"], required=True)
 
-    body = json.loads(args['keyValue'])
+    body = json.loads(args["keyValue"])
 
     body["id"] = policy_id
 
     res = client.update_policy(policy_id, body)  # type: ignore[arg-type]
 
     headers = ["id", "description", "name", "priority_level", "is_system"]
-    readable_output = tableToMarkdown(f'Policy with ID: {policy_id} set successfully', res, headers=headers,
-                                      headerTransform=string_to_table_header, removeNull=True)
+    readable_output = tableToMarkdown(
+        f"Policy with ID: {policy_id} set successfully",
+        res,
+        headers=headers,
+        headerTransform=string_to_table_header,
+        removeNull=True,
+    )
 
     formatted_res = format_policy_response(res)
 
     return CommandResults(
-        outputs_prefix='CarbonBlackDefense.Policy',
-        outputs_key_field='id',
+        outputs_prefix="CarbonBlackDefense.Policy",
+        outputs_key_field="id",
         outputs=formatted_res,
         readable_output=readable_output,
-        raw_response=formatted_res
+        raw_response=formatted_res,
     )
 
 
@@ -782,7 +811,7 @@ def delete_policy_command(client: Client, args: dict):
     :return: CommandResults indicating successful deletion.
     :rtype: CommandResults
     """
-    policy_id_int = arg_to_number(args['policyId'], required=True)
+    policy_id_int = arg_to_number(args["policyId"], required=True)
 
     client.delete_policy(policy_id_int)  # type: ignore[arg-type]
     return CommandResults(readable_output=f"Policy with ID {policy_id_int} was deleted successfully")
@@ -808,21 +837,18 @@ def add_rule_to_policy_command(client: Client, args: dict):
     :return: CommandResults containing the new rule details.
     :rtype: CommandResults
     """
-    policy_id_int = arg_to_number(args['policyId'], required=True)
+    policy_id_int = arg_to_number(args["policyId"], required=True)
 
     body = assign_params(
-        action=args['action'],
-        operation=args['operation'],
-        required=argToBoolean(args['required']),
-        application=assign_params(
-            type=args['type'],
-            value=args['value']
-        )
+        action=args["action"],
+        operation=args["operation"],
+        required=argToBoolean(args["required"]),
+        application=assign_params(type=args["type"], value=args["value"]),
     )
 
     client.add_rule_to_policy(policy_id_int, body)  # type: ignore[arg-type]
 
-    return get_policy_command(client, {'policyId': policy_id_int})
+    return get_policy_command(client, {"policyId": policy_id_int})
 
 
 def update_rule_in_policy_command(client: Client, args: dict):
@@ -846,22 +872,19 @@ def update_rule_in_policy_command(client: Client, args: dict):
     :return: CommandResults containing the updated rule details.
     :rtype: CommandResults
     """
-    policy_id_int = arg_to_number(args['policyId'], required=True)
-    rule_id_int = arg_to_number(args['id'], required=True)
+    policy_id_int = arg_to_number(args["policyId"], required=True)
+    rule_id_int = arg_to_number(args["id"], required=True)
 
     body = assign_params(
-        action=args['action'],
-        operation=args['operation'],
-        required=argToBoolean(args['required']),
+        action=args["action"],
+        operation=args["operation"],
+        required=argToBoolean(args["required"]),
         id=rule_id_int,
-        application=assign_params(
-            type=args['type'],
-            value=args['value']
-        )
+        application=assign_params(type=args["type"], value=args["value"]),
     )
     client.update_rule_in_policy(policy_id_int, rule_id_int, body)  # type: ignore[arg-type]
 
-    return get_policy_command(client, {'policyId': policy_id_int})
+    return get_policy_command(client, {"policyId": policy_id_int})
 
 
 def delete_rule_from_policy_command(client: Client, args: dict):
@@ -880,8 +903,8 @@ def delete_rule_from_policy_command(client: Client, args: dict):
     :return: CommandResults indicating successful deletion of the rule.
     :rtype: CommandResults
     """
-    policy_id_int = arg_to_number(args['policyId'], required=True)
-    rule_id_int = arg_to_number(args['ruleId'], required=True)
+    policy_id_int = arg_to_number(args["policyId"], required=True)
+    rule_id_int = arg_to_number(args["ruleId"], required=True)
 
     client.delete_rule_from_policy(policy_id_int, rule_id_int)  # type: ignore[arg-type]
 
@@ -889,11 +912,11 @@ def delete_rule_from_policy_command(client: Client, args: dict):
 
 
 @polling_function(
-    name='cbd-find-processes',
+    name="cbd-find-processes",
     interval=arg_to_number(demisto.args().get("interval_in_seconds", INTERVAL_FOR_POLLING_DEFAULT)),  # type: ignore
     timeout=arg_to_number(demisto.args().get("timeout", TIMEOUT_FOR_POLLING_DEFAULT)),  # type: ignore
-    poll_message='search jobs in process',
-    requires_polling_arg=False
+    poll_message="search jobs in process",
+    requires_polling_arg=False,
 )
 def find_processes_command(args: dict, client: Client):
     """Finds processes based on the provided arguments using polling function.
@@ -938,76 +961,66 @@ def find_processes_command(args: dict, client: Client):
     """
     rows = arg_to_number(args.get("rows", 10))
 
-    if 'job_id' not in args:  # first polling iteration
+    if "job_id" not in args:  # first polling iteration
         fixe_winds_path(args)
         request_body = format_request_body(args)
 
-        if not request_body.get('criteria') and not request_body.get('query'):
+        if not request_body.get("criteria") and not request_body.get("query"):
             raise DemistoException("At least one criteria filter or query must be provided.")
 
         res = client.get_processes(request_body)
-        job_id = res['job_id']
+        job_id = res["job_id"]
 
-        if not argToBoolean(args.get('polling')):
+        if not argToBoolean(args.get("polling")):
             return PollResult(
                 continue_to_poll=False,
-                response=CommandResults(
-                    outputs_prefix='CarbonBlackDefense.Process',
-                    outputs=res,
-                    raw_response=res
-                )
+                response=CommandResults(outputs_prefix="CarbonBlackDefense.Process", outputs=res, raw_response=res),
             )
 
-        return PollResult(
-            continue_to_poll=True,
-            args_for_next_run={"job_id": job_id, "rows": rows},
-            response=res
-        )
+        return PollResult(continue_to_poll=True, args_for_next_run={"job_id": job_id, "rows": rows}, response=res)
 
-    job_id = args['job_id']
+    job_id = args["job_id"]
     res = client.get_process_results(job_id=job_id, rows=rows)  # type: ignore[arg-type]
 
-    if res.get('contacted') == res.get('completed'):  # contacted == completed means done processing
+    if res.get("contacted") == res.get("completed"):  # contacted == completed means done processing
         readable_output = tableToMarkdown(
-            'The Results For The Process Search', res.get('results', []),
-            headers=['device_id', 'device_name', 'process_name', 'device_policy_id', 'enriched_event_type'],
-            removeNull=True, headerTransform=string_to_table_header
+            "The Results For The Process Search",
+            res.get("results", []),
+            headers=["device_id", "device_name", "process_name", "device_policy_id", "enriched_event_type"],
+            removeNull=True,
+            headerTransform=string_to_table_header,
         )
 
         return PollResult(
             continue_to_poll=False,
             response=CommandResults(
-                outputs_prefix='CarbonBlackDefense.Process.Results',
-                outputs_key_field='job_id',
-                outputs=res.get('results', []),
+                outputs_prefix="CarbonBlackDefense.Process.Results",
+                outputs_key_field="job_id",
+                outputs=res.get("results", []),
                 readable_output=readable_output,
-                raw_response=res
-            )
+                raw_response=res,
+            ),
         )
 
-    if not argToBoolean(args.get('polling')):
+    if not argToBoolean(args.get("polling")):
         return PollResult(
             continue_to_poll=False,
             response=CommandResults(
                 readable_output=f"search in progress, completed: {res.get('contacted')}/{res.get('completed')}",
                 outputs=res,
-                raw_response=res
-            )
+                raw_response=res,
+            ),
         )
 
-    return PollResult(
-        continue_to_poll=True,
-        args_for_next_run={"job_id": job_id, "rows": rows},
-        response=res
-    )
+    return PollResult(continue_to_poll=True, args_for_next_run={"job_id": job_id, "rows": rows}, response=res)
 
 
 @polling_function(
-    name='cbd-find-observation-details',
+    name="cbd-find-observation-details",
     interval=arg_to_number(demisto.args().get("interval_in_seconds", INTERVAL_FOR_POLLING_DEFAULT)),  # type: ignore
     timeout=arg_to_number(demisto.args().get("timeout", TIMEOUT_FOR_POLLING_DEFAULT)),  # type: ignore
-    poll_message='search jobs in process',
-    requires_polling_arg=False
+    poll_message="search jobs in process",
+    requires_polling_arg=False,
 )
 def find_observation_details_command(args: dict, client: Client):
     """Finds observation details based on the provided arguments using polling function.
@@ -1037,82 +1050,77 @@ def find_observation_details_command(args: dict, client: Client):
     """
     rows = arg_to_number(args.get("rows", 10))
 
-    if 'job_id' not in args:  # first polling iteration
-        count_unique_devices = args.get('count_unique_devices', False)
+    if "job_id" not in args:  # first polling iteration
+        count_unique_devices = args.get("count_unique_devices", False)
         body = assign_params(
-            alert_id=args.get('alert_id'),
-            observation_ids=argToList(args.get('observation_ids')) or argToList(args.get('event_ids')),
-            process_hash=args.get('process_hash'),
-            device_id=arg_to_number(args.get('device_id')),
+            alert_id=args.get("alert_id"),
+            observation_ids=argToList(args.get("observation_ids")) or argToList(args.get("event_ids")),
+            process_hash=args.get("process_hash"),
+            device_id=arg_to_number(args.get("device_id")),
             count_unique_devices=argToBoolean(count_unique_devices) if count_unique_devices else None,
-            max_rows=arg_to_number(args.get("rows"))
+            max_rows=arg_to_number(args.get("rows")),
         )
         validate_observation_details_request_body(body)
         res = client.get_observation_details(body)
-        job_id = res['job_id']
+        job_id = res["job_id"]
 
-        if not argToBoolean(args.get('polling')):
+        if not argToBoolean(args.get("polling")):
             return PollResult(
                 continue_to_poll=False,
-                response=CommandResults(
-                    outputs_prefix='CarbonBlackDefense.EventDetails',
-                    outputs=res,
-                    raw_response=res
-                )
+                response=CommandResults(outputs_prefix="CarbonBlackDefense.EventDetails", outputs=res, raw_response=res),
             )
 
-        return PollResult(
-            continue_to_poll=True,
-            args_for_next_run={"job_id": job_id, "rows": rows},
-            response=res
-        )
+        return PollResult(continue_to_poll=True, args_for_next_run={"job_id": job_id, "rows": rows}, response=res)
 
-    job_id = args['job_id']
+    job_id = args["job_id"]
     res = client.get_observation_details_results(job_id=job_id, rows=rows)  # type: ignore[arg-type]
 
-    if res.get('contacted') == res.get('completed'):  # contacted == completed means done processing
+    if res.get("contacted") == res.get("completed"):  # contacted == completed means done processing
         readable_output = tableToMarkdown(
-            'Defense Event Details Results', res.get('results', []),
+            "Defense Event Details Results",
+            res.get("results", []),
             headers=[
-                'observation_id', 'event_id', 'device_id', 'device_external_ip', 'device_internal_ip', 'enriched_event_type'
+                "observation_id",
+                "event_id",
+                "device_id",
+                "device_external_ip",
+                "device_internal_ip",
+                "enriched_event_type",
             ],
-            removeNull=True, headerTransform=string_to_table_header
+            removeNull=True,
+            headerTransform=string_to_table_header,
         )
 
         return PollResult(
             continue_to_poll=False,
             response=CommandResults(
-                outputs_prefix='CarbonBlackDefense.EventDetails.Results',
-                outputs_key_field='job_id',
-                outputs=res.get('results', []),
+                outputs_prefix="CarbonBlackDefense.EventDetails.Results",
+                outputs_key_field="job_id",
+                outputs=res.get("results", []),
                 readable_output=readable_output,
-                raw_response=res
-            )
+                raw_response=res,
+            ),
         )
 
-    if not argToBoolean(args.get('polling')):
+    if not argToBoolean(args.get("polling")):
         return PollResult(
             continue_to_poll=False,
             response=CommandResults(
                 readable_output=f"search in progress, completed: {res.get('contacted')}/{res.get('completed')}",
                 outputs=res,
-                raw_response=res
-            )
+                raw_response=res,
+            ),
         )
 
-    return PollResult(
-        continue_to_poll=True,
-        args_for_next_run={"job_id": job_id, "rows": rows},
-        response=res
-    )
+    return PollResult(continue_to_poll=True, args_for_next_run={"job_id": job_id, "rows": rows}, response=res)
 
 
 @polling_function(
-    name='cbd-find-observation',
+    name="cbd-find-observation",
     interval=arg_to_number(demisto.args().get("interval_in_seconds", INTERVAL_FOR_POLLING_DEFAULT)),  # type: ignore
     timeout=arg_to_number(demisto.args().get("timeout", TIMEOUT_FOR_POLLING_DEFAULT)),  # type: ignore
-    poll_message='search jobs in process',
-    requires_polling_arg=False
+    poll_message="search jobs in process",
+    requires_polling_arg=False,
 )
 def find_observation_command(args: dict, client: Client):
     """Finds observations based on the provided arguments using polling function.
@@ -1157,68 +1165,58 @@ def find_observation_command(args: dict, client: Client):
     """
     rows = arg_to_number(args.get("rows", 10))
 
-    if 'job_id' not in args:  # first polling iteration
+    if "job_id" not in args:  # first polling iteration
         fixe_winds_path(args)
         request_body = format_request_body(args)
 
-        if not request_body.get('criteria') and not request_body.get('query'):
+        if not request_body.get("criteria") and not request_body.get("query"):
             raise DemistoException("At least one criteria filter or query must be provided.")
 
         res = client.get_observation(request_body)
-        job_id = res['job_id']
+        job_id = res["job_id"]
 
-        if not argToBoolean(args.get('polling')):
+        if not argToBoolean(args.get("polling")):
             return PollResult(
                 continue_to_poll=False,
-                response=CommandResults(
-                    outputs_prefix='CarbonBlackDefense.Events',
-                    outputs=res,
-                    raw_response=res
-                )
+                response=CommandResults(outputs_prefix="CarbonBlackDefense.Events", outputs=res, raw_response=res),
             )
 
-        return PollResult(
-            continue_to_poll=True,
-            args_for_next_run={"job_id": job_id, "rows": rows},
-            response=res
-        )
+        return PollResult(continue_to_poll=True, args_for_next_run={"job_id": job_id, "rows": rows}, response=res)
 
-    job_id = args['job_id']
+    job_id = args["job_id"]
     res = client.get_observation_results(job_id=job_id, rows=rows)  # type: ignore[arg-type]
 
-    if res.get('contacted') == res.get('completed'):  # contacted == completed means done processing
+    if res.get("contacted") == res.get("completed"):  # contacted == completed means done processing
         readable_output = tableToMarkdown(
-            'Defense Event Results', res.get('results', []),
-            headers=['observation_id', 'event_id', 'device_id', 'netconn_ipv4', 'netconn_local_ipv4', 'enriched_event_type'],
-            removeNull=True, headerTransform=string_to_table_header
+            "Defense Event Results",
+            res.get("results", []),
+            headers=["observation_id", "event_id", "device_id", "netconn_ipv4", "netconn_local_ipv4", "enriched_event_type"],
+            removeNull=True,
+            headerTransform=string_to_table_header,
         )
 
         return PollResult(
             continue_to_poll=False,
             response=CommandResults(
-                outputs_prefix='CarbonBlackDefense.Events.Results',
-                outputs_key_field='job_id',
-                outputs=res.get('results', []),
+                outputs_prefix="CarbonBlackDefense.Events.Results",
+                outputs_key_field="job_id",
+                outputs=res.get("results", []),
                 readable_output=readable_output,
-                raw_response=res
-            )
+                raw_response=res,
+            ),
         )
 
-    if not argToBoolean(args.get('polling')):
+    if not argToBoolean(args.get("polling")):
         return PollResult(
             continue_to_poll=False,
             response=CommandResults(
                 readable_output=f"search in progress, completed: {res.get('contacted')}/{res.get('completed')}",
                 outputs=res,
-                raw_response=res
-            )
+                raw_response=res,
+            ),
         )
 
-    return PollResult(
-        continue_to_poll=True,
-        args_for_next_run={"job_id": job_id, "rows": rows},
-        response=res
-    )
+    return PollResult(continue_to_poll=True, args_for_next_run={"job_id": job_id, "rows": rows}, response=res)
 
 
 def device_search_command(client: Client, args: dict):
@@ -1240,34 +1238,46 @@ def device_search_command(client: Client, args: dict):
     if (not start_time and end_time) or (start_time and not end_time):
         raise ValueError("both start_time and end_time must be set")
 
-    last_location = {'start': start_time, 'end': end_time} if start_time and end_time else None
+    last_location = {"start": start_time, "end": end_time} if start_time and end_time else None
 
     body = assign_params(
         criteria=assign_params(
-            id=argToList(args.get('device_id')),
-            status=argToList(args.get('status')),
-            os=argToList(args.get('os')),
+            id=argToList(args.get("device_id")),
+            status=argToList(args.get("status")),
+            os=argToList(args.get("os")),
             last_contact_time=last_location,
-            target_priority=argToList(args.get('target_priority'))
+            target_priority=argToList(args.get("target_priority")),
         ),
-        query=args.get('query'),
-        rows=arg_to_number(args.get('rows'))
+        query=args.get("query"),
+        rows=arg_to_number(args.get("rows")),
     )
 
     result = client.get_devices(body)
 
-    devices = result.get('results', [])
+    devices = result.get("results", [])
 
-    headers = ['id', 'name', 'os', 'policy_name', 'quarantined', 'status', 'target_priority',
-               'last_internal_ip_address', 'last_external_ip_address', 'last_contact_time', 'last_location']
+    headers = [
+        "id",
+        "name",
+        "os",
+        "policy_name",
+        "quarantined",
+        "status",
+        "target_priority",
+        "last_internal_ip_address",
+        "last_external_ip_address",
+        "last_contact_time",
+        "last_location",
+    ]
 
     return CommandResults(
-        outputs_prefix='CarbonBlackDefense.Device',
-        outputs_key_field='id',
+        outputs_prefix="CarbonBlackDefense.Device",
+        outputs_key_field="id",
         outputs=devices,
-        readable_output=tableToMarkdown('Carbon Black Defense Devices List Results', devices, headers,
-                                        headerTransform=string_to_table_header, removeNull=True),
-        raw_response=result
+        readable_output=tableToMarkdown(
+            "Carbon Black Defense Devices List Results", devices, headers, headerTransform=string_to_table_header, removeNull=True
+        ),
+        raw_response=result,
     )
 
 
@@ -1283,9 +1293,9 @@ def device_quarantine_command(client: Client, args: dict):
     :return: CommandResults indicating successful quarantine.
     :rtype: CommandResults
     """
-    device_id = argToList(args['device_id'])
+    device_id = argToList(args["device_id"])
 
-    client.execute_an_action_on_the_device(device_id, 'QUARANTINE', {"toggle": "ON"})
+    client.execute_an_action_on_the_device(device_id, "QUARANTINE", {"toggle": "ON"})
 
     return CommandResults(readable_output="Device quarantine successfully")
 
@@ -1302,9 +1312,9 @@ def device_unquarantine_command(client: Client, args: dict):
     :return: CommandResults indicating successful unquarantine.
     :rtype: CommandResults
     """
-    device_id = argToList(args['device_id'])
+    device_id = argToList(args["device_id"])
 
-    client.execute_an_action_on_the_device(device_id, 'QUARANTINE', {"toggle": "OFF"})
+    client.execute_an_action_on_the_device(device_id, "QUARANTINE", {"toggle": "OFF"})
 
     return CommandResults(readable_output="Device unquarantine successfully")
 
@@ -1321,9 +1331,9 @@ def device_background_scan_command(client: Client, args: dict):
     :return: CommandResults indicating successful start of the background scan.
     :rtype: CommandResults
     """
-    device_id = argToList(args['device_id'])
+    device_id = argToList(args["device_id"])
 
-    client.execute_an_action_on_the_device(device_id, 'BACKGROUND_SCAN', {"toggle": "ON"})
+    client.execute_an_action_on_the_device(device_id, "BACKGROUND_SCAN", {"toggle": "ON"})
 
     return CommandResults(readable_output="Background scan started successfully")
 
@@ -1340,9 +1350,9 @@ def device_background_scan_stop_command(client: Client, args: dict):
     :return: CommandResults indicating successful stop of the background scan.
     :rtype: CommandResults
     """
-    device_id = argToList(args['device_id'])
+    device_id = argToList(args["device_id"])
 
-    client.execute_an_action_on_the_device(device_id, 'BACKGROUND_SCAN', {"toggle": "OFF"})
+    client.execute_an_action_on_the_device(device_id, "BACKGROUND_SCAN", {"toggle": "OFF"})
 
     return CommandResults(readable_output="Background scan stopped successfully")
 
@@ -1359,9 +1369,9 @@ def device_bypass_command(client: Client, args: dict):
     :return: CommandResults indicating successful bypass.
     :rtype: CommandResults
     """
-    device_id = argToList(args['device_id'])
+    device_id = argToList(args["device_id"])
 
-    client.execute_an_action_on_the_device(device_id, 'BYPASS', {"toggle": "ON"})
+    client.execute_an_action_on_the_device(device_id, "BYPASS", {"toggle": "ON"})
 
     return CommandResults(readable_output="Device bypass successfully")
 
@@ -1378,9 +1388,9 @@ def device_unbypass_command(client: Client, args: dict):
     :return: CommandResults indicating successful unbypass.
     :rtype: CommandResults
     """
-    device_id = argToList(args['device_id'])
+    device_id = argToList(args["device_id"])
 
-    client.execute_an_action_on_the_device(device_id, 'BYPASS', {"toggle": "OFF"})
+    client.execute_an_action_on_the_device(device_id, "BYPASS", {"toggle": "OFF"})
 
     return CommandResults(readable_output="Device unbypass successfully")
 
@@ -1397,10 +1407,10 @@ def device_policy_update_command(client: Client, args: dict):
     :return: CommandResults indicating successful policy update.
     :rtype: CommandResults
     """
-    device_id = argToList(args['device_id'])
-    policy_id = args['policy_id']
+    device_id = argToList(args["device_id"])
+    policy_id = args["policy_id"]
 
-    client.execute_an_action_on_the_device(device_id, 'UPDATE_POLICY', {"policy_id": policy_id})
+    client.execute_an_action_on_the_device(device_id, "UPDATE_POLICY", {"policy_id": policy_id})
 
     return CommandResults(readable_output="Policy updated successfully")
 
@@ -1417,27 +1427,27 @@ def device_update_sensor_version_command(client: Client, args: dict):
     :return: CommandResults indicating successful sensor version update.
     :rtype: CommandResults
     """
-    device_id = argToList(args['device_id'])
-    sensor_version = args['sensor_version']
+    device_id = argToList(args["device_id"])
+    sensor_version = args["sensor_version"]
 
     sensor_version = json.loads(sensor_version)
-    client.execute_an_action_on_the_device(device_id, 'UPDATE_SENSOR_VERSION', {"sensor_version": sensor_version})
+    client.execute_an_action_on_the_device(device_id, "UPDATE_SENSOR_VERSION", {"sensor_version": sensor_version})
 
     return CommandResults(readable_output=f"Version update to {sensor_version} was successful")
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def map_alert_type(old_type: str | None):
     alert_type_mapping = {
-        'cbanalytics': 'CB_ANALYTICS',
-        'containerruntime': 'CONTAINER_RUNTIME',
-        'devicecontrol': 'DEVICE_CONTROL',
-        'hostnasedfirewall': 'HOST_BASED_FIREWALL',
-        'intrusiondetectionsystem': 'INTRUSION_DETECTION_SYSTEM',
-        'watchlist': 'WATCHLIST',
-        'all': None
+        "cbanalytics": "CB_ANALYTICS",
+        "containerruntime": "CONTAINER_RUNTIME",
+        "devicecontrol": "DEVICE_CONTROL",
+        "hostnasedfirewall": "HOST_BASED_FIREWALL",
+        "intrusiondetectionsystem": "INTRUSION_DETECTION_SYSTEM",
+        "watchlist": "WATCHLIST",
+        "all": None,
     }
     return alert_type_mapping.get(old_type, None) if old_type else None
 
@@ -1465,7 +1475,7 @@ def convert_to_demisto_severity(severity: int) -> int:
         7: IncidentSeverity.HIGH,
         8: IncidentSeverity.HIGH,
         9: IncidentSeverity.CRITICAL,
-        10: IncidentSeverity.CRITICAL
+        10: IncidentSeverity.CRITICAL,
     }[severity]
 
 
@@ -1508,31 +1518,31 @@ def format_request_body(args: dict):
     """
     body = assign_params(
         criteria=assign_params(  # one of the arguments (query or criteria) is required
-            alert_category=argToList(args.get('alert_category')),
-            hash=argToList(args.get('hash')),
-            device_external_ip=argToList(args.get('device_external_ip')),
-            device_id=argToList(args.get('device_id')),
-            device_internal_ip=argToList(args.get('device_internal_ip')),
-            device_name=argToList(args.get('device_name')),
-            device_os=argToList(args.get('device_os')),
-            backend_timestamp=argToList(args.get('device_timestamp')),
-            event_type=argToList(args.get('event_type')),
-            parent_name=argToList(args.get('parent_name')),
-            parent_reputation=argToList(args.get('parent_reputation')),
-            process_cmdline=argToList(args.get('process_cmdline')),
-            process_guid=argToList(args.get('process_guid')),
-            process_name=argToList(args.get('process_name')),
-            process_pid=argToList(args.get('process_pid')),
-            process_reputation=argToList(args.get('process_reputation')),
-            process_start_time=argToList(args.get('process_start_time')),
-            process_terminated=argToList(args.get('process_terminated')),
-            process_username=argToList(args.get('process_username')),
-            sensor_action=argToList(args.get('sensor_action'))
+            alert_category=argToList(args.get("alert_category")),
+            hash=argToList(args.get("hash")),
+            device_external_ip=argToList(args.get("device_external_ip")),
+            device_id=argToList(args.get("device_id")),
+            device_internal_ip=argToList(args.get("device_internal_ip")),
+            device_name=argToList(args.get("device_name")),
+            device_os=argToList(args.get("device_os")),
+            backend_timestamp=argToList(args.get("device_timestamp")),
+            event_type=argToList(args.get("event_type")),
+            parent_name=argToList(args.get("parent_name")),
+            parent_reputation=argToList(args.get("parent_reputation")),
+            process_cmdline=argToList(args.get("process_cmdline")),
+            process_guid=argToList(args.get("process_guid")),
+            process_name=argToList(args.get("process_name")),
+            process_pid=argToList(args.get("process_pid")),
+            process_reputation=argToList(args.get("process_reputation")),
+            process_start_time=argToList(args.get("process_start_time")),
+            process_terminated=argToList(args.get("process_terminated")),
+            process_username=argToList(args.get("process_username")),
+            sensor_action=argToList(args.get("sensor_action")),
         ),
-        query=args.get('query'),  # one of the arguments (query or criteria) is required
-        rows=arg_to_number(args.get('rows')),
-        start=arg_to_number(args.get('start')),
-        time_range=json.loads(args.get('time_range', '{}'))
+        query=args.get("query"),  # one of the arguments (query or criteria) is required
+        rows=arg_to_number(args.get("rows")),
+        start=arg_to_number(args.get("start")),
+        time_range=json.loads(args.get("time_range", "{}")),
     )
 
     return body
@@ -1558,12 +1568,12 @@ def validate_observation_details_request_body(request_body: dict):
 
     :raises ValueError: If the request body does not meet the validation rules.
     """
-    alert_id = request_body.get('alert_id')
-    observation_ids = request_body.get('observation_ids')
-    process_hash = request_body.get('process_hash')
-    device_id = request_body.get('device_id')
-    count_unique_devices = request_body.get('count_unique_devices')
-    max_rows = request_body.get('max_rows')
+    alert_id = request_body.get("alert_id")
+    observation_ids = request_body.get("observation_ids")
+    process_hash = request_body.get("process_hash")
+    device_id = request_body.get("device_id")
+    count_unique_devices = request_body.get("count_unique_devices")
+    max_rows = request_body.get("max_rows")
 
     if alert_id:
         # If alert_id is provided, nothing else should be present
@@ -1577,16 +1587,15 @@ def validate_observation_details_request_body(request_body: dict):
         # If process_hash is provided, it can be alone, with device_id, or with count_unique_devices
         if device_id and count_unique_devices:
             raise ValueError(
-                "Invalid request body: 'process_hash' can only be combined with 'device_id' or 'count_unique_devices', not both.")
+                "Invalid request body: 'process_hash' can only be combined with 'device_id' or 'count_unique_devices', not both."
+            )
     else:
         raise ValueError("Invalid request body: 'alert_id', 'observation_ids', or 'process_hash' must be specified.")
 
 
 def fixe_winds_path(args):
     """Sanitizes the specified fields in args by escaping backslashes."""
-    fields_to_sanitize = [
-        'process_name', 'parent_name', 'device_name', 'process_cmdline', 'process_username'
-    ]
+    fields_to_sanitize = ["process_name", "parent_name", "device_name", "process_cmdline", "process_username"]
 
     for field in fields_to_sanitize:
         if field in args:
@@ -1597,15 +1606,15 @@ def format_policy_response(response: dict) -> dict:
     """Translates the response format to the old structure."""
     return assign_params(
         id=response.pop("id"),
-        name=response.pop("name") if response.get('name') else None,
-        description=response.pop('description') if response.get('description') else None,
-        priorityLevel=response.pop('priority_level') if response.get('priority_level') else None,
-        version=response.pop('version') if response.get('version') else None,
-        policy=response
+        name=response.pop("name") if response.get("name") else None,
+        description=response.pop("description") if response.get("description") else None,
+        priorityLevel=response.pop("priority_level") if response.get("priority_level") else None,
+        version=response.pop("version") if response.get("version") else None,
+        policy=response,
     )
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:  # pragma: no cover
@@ -1613,17 +1622,17 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
 
     params = demisto.params()
-    base_url = params.get('url')
-    api_key = params.get('custom_credentials', {}).get('identifier')
-    api_secret_key = params.get('custom_credentials', {}).get('password')
-    policy_api_key = params.get('live_response_credentials', {}).get('identifier')
-    policy_api_secret_key = params.get('live_response_credentials', {}).get('password')
-    organization_key = params.get('organization_key')
+    base_url = params.get("url")
+    api_key = params.get("custom_credentials", {}).get("identifier")
+    api_secret_key = params.get("custom_credentials", {}).get("password")
+    policy_api_key = params.get("live_response_credentials", {}).get("identifier")
+    policy_api_secret_key = params.get("live_response_credentials", {}).get("password")
+    organization_key = params.get("organization_key")
 
-    verify_certificate = not params.get('insecure', False)
+    verify_certificate = not params.get("insecure", False)
 
-    demisto.info(f'Command being called is {command}')
-    results = ''
+    demisto.info(f"Command being called is {command}")
+    results = ""
     try:
         client = Client(
             base_url=base_url,
@@ -1633,63 +1642,63 @@ def main() -> None:  # pragma: no cover
             api_secret_key=api_secret_key,
             policy_api_key=policy_api_key,
             policy_api_secret_key=policy_api_secret_key,
-            organization_key=organization_key
+            organization_key=organization_key,
         )
-        if command == 'test-module':
+        if command == "test-module":
             results = module_test_command(client, params)
-        elif command == 'fetch-incidents':
+        elif command == "fetch-incidents":
             fetch_incidents(client=client, params=params)
-        elif command == 'cbd-get-alert-details':
+        elif command == "cbd-get-alert-details":
             results = get_alert_details_command(client=client, args=args)
-        elif command == 'cbd-alerts-search':
+        elif command == "cbd-alerts-search":
             results = alerts_search_command(client=client, args=args)
-        elif command == 'cbd-get-policy':
+        elif command == "cbd-get-policy":
             results = get_policy_command(client=client, args=args)
-        elif command == 'cbd-get-policies-summary':
+        elif command == "cbd-get-policies-summary":
             results = get_policies_summary_command(client=client)
-        elif command == 'cbd-create-policy':
+        elif command == "cbd-create-policy":
             results = create_policy_command(client=client, args=args)
-        elif command == 'cbd-update-policy':
+        elif command == "cbd-update-policy":
             results = update_policy_command(client=client, args=args)
-        elif command == 'cbd-set-policy':
+        elif command == "cbd-set-policy":
             results = set_policy_command(client=client, args=args)
-        elif command == 'cbd-delete-policy':
+        elif command == "cbd-delete-policy":
             results = delete_policy_command(client=client, args=args)
-        elif command == 'cbd-add-rule-to-policy':
+        elif command == "cbd-add-rule-to-policy":
             results = add_rule_to_policy_command(client=client, args=args)
-        elif command == 'cbd-update-rule-in-policy':
+        elif command == "cbd-update-rule-in-policy":
             results = update_rule_in_policy_command(client=client, args=args)
-        elif command == 'cbd-delete-rule-from-policy':
+        elif command == "cbd-delete-rule-from-policy":
             results = delete_rule_from_policy_command(client=client, args=args)
-        elif command == 'cbd-find-processes':
+        elif command == "cbd-find-processes":
             results = find_processes_command(client=client, args=args)
-        elif command == 'cbd-find-observation-details':
+        elif command == "cbd-find-observation-details":
             results = find_observation_details_command(client=client, args=args)
-        elif command == 'cbd-find-observation':
+        elif command == "cbd-find-observation":
             results = find_observation_command(client=client, args=args)
-        elif command == 'cbd-find-processes-results':
+        elif command == "cbd-find-processes-results":
             results = find_processes_command(client=client, args=args)
-        elif command == 'cbd-find-observation-details-results':
+        elif command == "cbd-find-observation-details-results":
             results = find_observation_details_command(client=client, args=args)
-        elif command == 'cbd-find-observation-results':
+        elif command == "cbd-find-observation-results":
             results = find_observation_command(client=client, args=args)
-        elif command == 'cbd-device-search':
+        elif command == "cbd-device-search":
             results = device_search_command(client=client, args=args)
-        elif command == 'cbd-device-quarantine':
+        elif command == "cbd-device-quarantine":
             results = device_quarantine_command(client=client, args=args)
-        elif command == 'cbd-device-unquarantine':
+        elif command == "cbd-device-unquarantine":
             results = device_unquarantine_command(client=client, args=args)
-        elif command == 'cbd-device-background-scan':
+        elif command == "cbd-device-background-scan":
             results = device_background_scan_command(client=client, args=args)
-        elif command == 'cbd-device-background-scan-stop':
+        elif command == "cbd-device-background-scan-stop":
             results = device_background_scan_stop_command(client=client, args=args)
-        elif command == 'cbd-device-bypass':
+        elif command == "cbd-device-bypass":
             results = device_bypass_command(client=client, args=args)
-        elif command == 'cbd-device-unbypass':
+        elif command == "cbd-device-unbypass":
             results = device_unbypass_command(client=client, args=args)
-        elif command == 'cbd-device-policy-update':
+        elif command == "cbd-device-policy-update":
             results = device_policy_update_command(client=client, args=args)
-        elif command == 'cbd-device-update-sensor-version':
+        elif command == "cbd-device-update-sensor-version":
             results = device_update_sensor_version_command(client=client, args=args)
         else:
             raise NotImplementedError(f"Command {command} not implemented.")
@@ -1697,11 +1706,11 @@ def main() -> None:  # pragma: no cover
         return_results(results)
 
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

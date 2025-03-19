@@ -11,16 +11,15 @@ def test_main_success(mocker):
     Then:
         - Make sure that the correct message and date are in the returned value of the script.
     """
-    mocker.patch.object(demisto, 'incident', return_value={
-        'CustomFields': {
-            'lastmirroredtimestamp': '2023-02-15T13:30:00Z',
-            'incomingmirrorerror': ''
-        }
-    })
+    mocker.patch.object(
+        demisto,
+        "incident",
+        return_value={"CustomFields": {"lastmirroredtimestamp": "2023-02-15T13:30:00Z", "incomingmirrorerror": ""}},
+    )
     result = main()
 
-    assert 'Not Started' in result['Contents']
-    assert '2023-02-15T13:30:00Z' in result['Contents']
+    assert "Not Started" in result["Contents"]
+    assert "2023-02-15T13:30:00Z" in result["Contents"]
 
 
 def test_main_in_progress(mocker):
@@ -32,15 +31,11 @@ def test_main_in_progress(mocker):
     Then:
         - Make sure that the correct message is in the returned value of the script.
     """
-    mocker.patch.object(demisto, 'incident', return_value={
-        'CustomFields': {
-            'incomingmirrorerror': 'In queue.'
-        }
-    })
+    mocker.patch.object(demisto, "incident", return_value={"CustomFields": {"incomingmirrorerror": "In queue."}})
 
     result = main()
 
-    assert 'In Progress' in result['Contents']
+    assert "In Progress" in result["Contents"]
 
 
 def test_main_error(mocker):
@@ -52,14 +47,10 @@ def test_main_error(mocker):
     Then:
         - Make sure that the correct message is in the returned value of the script.
     """
-    mocker.patch.object(demisto, 'incident', return_value={
-        'CustomFields': {
-            'incomingmirrorerror': 'Error message'
-        }
-    })
+    mocker.patch.object(demisto, "incident", return_value={"CustomFields": {"incomingmirrorerror": "Error message"}})
     result = main()
 
-    assert 'Failure' in result['Contents']
+    assert "Failure" in result["Contents"]
 
 
 def test_main_completed_stopped(mocker):
@@ -71,14 +62,14 @@ def test_main_completed_stopped(mocker):
     Then:
         - Make sure that the correct message is in the returned value of the script.
     """
-    mocker.patch.object(demisto, 'incident', return_value={
-        'CustomFields': {
-            'incomingmirrorerror': 'Fetching events has reached events limit in this incident.'
-        }
-    })
+    mocker.patch.object(
+        demisto,
+        "incident",
+        return_value={"CustomFields": {"incomingmirrorerror": "Fetching events has reached events limit in this incident."}},
+    )
     result = main()
 
-    assert 'Completed and Stopped' in result['Contents']
+    assert "Completed and Stopped" in result["Contents"]
 
 
 def test_main_completed(mocker):
@@ -90,11 +81,11 @@ def test_main_completed(mocker):
     Then:
         - Make sure that the correct message is in the returned value of the script.
     """
-    mocker.patch.object(demisto, 'incident', return_value={
-        'CustomFields': {
-            'incomingmirrorerror': 'All available events in the offense were fetched.'
-        }
-    })
+    mocker.patch.object(
+        demisto,
+        "incident",
+        return_value={"CustomFields": {"incomingmirrorerror": "All available events in the offense were fetched."}},
+    )
     result = main()
 
-    assert 'Completed' in result['Contents']
+    assert "Completed" in result["Contents"]
