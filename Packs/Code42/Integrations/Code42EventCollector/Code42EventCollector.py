@@ -2,6 +2,7 @@ import hashlib
 
 import incydr
 from incydr import EventQuery
+from incydr.enums.file_events import EventSearchTerm
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -106,10 +107,14 @@ class Client:
             page_size: the page size per single request
         """
         demisto.debug(f'File Events: {start_time=}, {end_time=}, {limit=}')
-        query = EventQuery(start_date=start_time, end_date=end_time, srtDir="asc", pgSize=page_size)
-        response = self.code42_client.file_events.v2.search(
-            query
+        query = EventQuery(
+            start_date=start_time,
+            end_date=end_time,
+            pgSize=page_size,
+            srtDir="asc",
+            sort_key=EventSearchTerm.EVENT_INSERTED
         )
+        response = self.code42_client.file_events.v2.search(query)
 
         if response.total_count == 0:
             return []
@@ -123,7 +128,7 @@ class Client:
 
         for event in file_events:
             event.eventType = EventType.FILE
-            event._time = event.timestamp
+            event._time = event.event.inserted
 
         return [event.dict() for event in file_events]
 

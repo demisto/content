@@ -21,8 +21,8 @@ def create_file_events(start_id: int, start_date: str, num_of_file_events: int) 
         {
             "event": {
                 "id": f'{i}',
-            },
-            "@timestamp": (dateparser.parse(start_date) + timedelta(seconds=i)).strftime(DATE_FORMAT)
+                "inserted": (dateparser.parse(start_date) + timedelta(seconds=i)).strftime(DATE_FORMAT)
+            }
         } for i in range(start_id, start_id + num_of_file_events)
     ]
 
