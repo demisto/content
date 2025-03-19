@@ -1,7 +1,7 @@
 {
-    "rule_id": "Identity_Analytics_Alerts_layout_rule",
-    "layout_id": "Identity Analytics Alerts",
-    "rule_name": "Identity Analytics Alerts Layout Rule",
+    "rule_id": "Identity_Analytics_Issues_layout_rule",
+    "layout_id": "Identity Analytics Issues",
+    "rule_name": "Identity Analytics Issues Layout Rule",
     "alerts_filter": {
         "filter": {
             "AND": [
@@ -15,6 +15,6 @@
     },
     "fromVersion": "6.10.0",
     "marketplaces":[
-        "marketplacev2"
+        "platform"
     ]
 }
