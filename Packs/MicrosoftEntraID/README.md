@@ -34,6 +34,8 @@ See the table below that lists these additional log types, along the relevant ma
   | :------------------------------------------------------------------------------------------------------------------------ | :-------------------------------------------------------------------------------------- |
   | [Azure Firewall Resource Logs](https://learn.microsoft.com/en-us/azure/firewall/monitor-firewall-reference#resource-logs) | [Azure Firewall](https://cortex.marketplace.pan.dev/marketplace/details/AzureFirewall/) |
   | [Azure WAF Resource Logs](https://learn.microsoft.com/en-us/azure/application-gateway/monitor-application-gateway-reference#resource-logs) | [Azure WAF](https://cortex.marketplace.pan.dev/marketplace/details/AzureWAF/) |
+  | [Azure AKS Resource Logs](https://learn.microsoft.com/en-us/azure/aks/monitor-aks-reference#resource-logs) | [Azure Kubernetes Services](https://cortex.marketplace.pan.dev/marketplace/details/AzureKubernetesServices/) |
+  | [Azure App Service Resource Logs](https://learn.microsoft.com/en-us/azure/app-service/troubleshoot-diagnostic-logs#overview-of-logging-types) | [Azure App Service](https://cortex.marketplace.pan.dev/marketplace/details/AzureAppService/) |
 
 ***
 
