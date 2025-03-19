@@ -128,7 +128,14 @@ class Client(BaseClient):
                 demisto.debug(f"An exception was caught, raising an error. {str(e)}")
             except Exception:
                 demisto.debug("An exception was caught, raising an error.")
-            raise e
+            if self.should_error:
+                demisto.debug("raising an error for general exception")
+                raise e
+            demisto.debug("not raising an error for general exception")
+            try:
+                return_warning(f"An exception was caught, raising a warning {str(e)}", exit=True)
+            except Exception:
+                return_warning("An exception was caught, raising a warning", exit=True)
         return result
 
 
