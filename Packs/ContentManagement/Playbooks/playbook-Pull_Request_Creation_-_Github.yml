@@ -128,7 +128,8 @@ tasks:
       - "20"
     scriptarguments:
       keep_placeholders_in_files:
-        simple: ${inputs.KeepPlaceholdersInFiles}
+        complex:
+          root: inputs.KeepPlaceholdersInFiles
       branch:
         complex:
           root: BranchName

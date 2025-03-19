@@ -1674,8 +1674,7 @@ def commit_file_command():
     file_text = args.get('file_text')
     file_sha = args.get('file_sha')
     placeholders_escaped = argToBoolean(args.get('placeholders_escaped') or False)
-    if placeholders_escaped:
-        demisto.debug(f"Github-commit-file command got {placeholders_escaped=} and will decode them.")
+       
     if not entry_id and not file_text:
         raise DemistoException('You must specify either the "file_text" or the "entry_id" of the file.')
     elif entry_id:
@@ -1683,6 +1682,7 @@ def commit_file_command():
         with open(file_path, 'rb') as f:
             content = f.read()
     elif  placeholders_escaped:
+        demisto.debug(f"Github-commit-file command got {placeholders_escaped=} and will decode them.")
         content = bytes(remove_slashes(file_text), encoding='utf8')
     else:
         content = bytes(file_text, encoding='utf8')

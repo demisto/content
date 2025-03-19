@@ -94,7 +94,7 @@ def commit_content_item(branch_name: str, content_file: ContentFile, new_files: 
     commit_args = {'commit_message': f'Added {content_file.file_name}',
                    'path_to_file': f'{content_file.path_to_file}/{content_file.file_name}',
                    'branch_name': branch_name, 'file_text': content_file.file_text}
-    return_results(f"###### CommitFiles script got {keep_placeholders_in_files=}")
+
     file_sha = get_file_sha(branch_name, content_file, 'Github-list-files')
 
     # dont commit pack_metadata.json if already exists in the branch
