@@ -51,7 +51,7 @@ def create_new_incident_event(
     """Send incident related event to iLert."""
 
     if integrationKey is None:
-        raise Exception("You must enter an integrationKey as integration " "parameters or in the command to process this action.")
+        raise Exception("You must enter an integrationKey as integration parameters or in the command to process this action.")
 
     if event_type == "ALERT" and not summary:
         raise Exception("You must enter a summary in the command to process this action.")
@@ -101,7 +101,7 @@ def submit_resolve_event_command(summary, incident_key=None, integrationKey=INTE
 
 
 def main():
-    LOG("command is %s" % (demisto.command(),))
+    LOG(f"command is {demisto.command()}")
     try:
         if demisto.command() == "test-module":
             test_module()

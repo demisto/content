@@ -234,7 +234,7 @@ def get_indicators_command(client: Client, args: dict) -> tuple[str, dict, list]
     """
     indicator_type = args.get("indicator_type")
     if indicator_type not in client.TYPES:
-        return_error(f"{SOURCE_NAME}: Got indicator_type {indicator_type} but expected " f"one of {client.TYPES}")
+        return_error(f"{SOURCE_NAME}: Got indicator_type {indicator_type} but expected one of {client.TYPES}")
     limit = int(args.get("limit", 50))
     if limit < 1:
         limit = 1

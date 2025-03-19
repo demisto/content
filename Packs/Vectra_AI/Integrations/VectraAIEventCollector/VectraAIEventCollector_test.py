@@ -64,8 +64,8 @@ def test_create_headers(token: str):
     actual = client._create_headers()
     expected = {"Content-Type": "application/json", "Authorization": f"Token {token}"}
 
-    assert "Content-Type" in actual.keys()
-    assert "Authorization" in actual.keys()
+    assert "Content-Type" in actual
+    assert "Authorization" in actual
 
     assert actual == expected
 

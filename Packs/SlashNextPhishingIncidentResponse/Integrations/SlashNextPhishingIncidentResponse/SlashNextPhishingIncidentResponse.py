@@ -62,7 +62,7 @@ def http_request(endpoint, data, method="POST"):
             return_error(f"Response JSON decoding failed due to {e!s}")
 
     else:
-        return_error(f"API Returned, {response.status_code}:{response.reason}")
+        return_error(f"API Returned, {response.status_code}:{response.reason}") # noqa: RET503
 
 
 def get_dbot_score(verdict):
@@ -372,7 +372,7 @@ def ip_command():
 
     ec = {"SlashNext.IP(val.Value === obj.Value)": snx_ioc_cont, "DBotScore": dbot_score_cont, "IP": ip_cont}
 
-    title = "SlashNext Phishing Incident Response - IP Lookup\n" f"##### ip = {ip}"
+    title = f"SlashNext Phishing Incident Response - IP Lookup\n##### ip = {ip}"
 
     md = tableToMarkdown(
         title, snx_ioc_cont, ["Value", "Type", "Verdict", "ThreatStatus", "ThreatName", "ThreatType", "FirstSeen", "LastSeen"]
@@ -419,7 +419,7 @@ def domain_command():
 
     domain = domain.encode("idna")
 
-    title = "SlashNext Phishing Incident Response - Domain Lookup\n" f"##### domain = {domain.decode()}"
+    title = f"SlashNext Phishing Incident Response - Domain Lookup\n##### domain = {domain.decode()}"
 
     md = tableToMarkdown(
         title, snx_ioc_cont, ["Value", "Type", "Verdict", "ThreatStatus", "ThreatName", "ThreatType", "FirstSeen", "LastSeen"]
@@ -462,7 +462,7 @@ def url_command():
 
     ec = {"SlashNext.URL(val.Value === obj.Value)": snx_ioc_cont[0], "DBotScore": dbot_score_cont, "URL": url_cont}
 
-    title = "SlashNext Phishing Incident Response - URL Lookup\n" "##### url = {}".format(url_data.get("url"))
+    title = "SlashNext Phishing Incident Response - URL Lookup\n##### url = {}".format(url_data.get("url"))
 
     if response.get("normalizeData").get("normalizeStatus") == 1:
         title += " *\n*" + response.get("normalizeData").get("normalizeMessage")
@@ -514,7 +514,7 @@ def host_reputation_command():
 
     host = host.encode("idna")
 
-    title = "SlashNext Phishing Incident Response - Host Reputation\n" f"##### host = {host.decode()}"
+    title = f"SlashNext Phishing Incident Response - Host Reputation\n##### host = {host.decode()}"
 
     md = tableToMarkdown(
         title, snx_ioc_cont, ["Value", "Type", "Verdict", "ThreatStatus", "ThreatName", "ThreatType", "FirstSeen", "LastSeen"]
@@ -548,7 +548,7 @@ def host_report_command():
 
     enc_host = host.encode("idna")
 
-    title = "SlashNext Phishing Incident Response - Host Report\n" f"##### host = {enc_host.decode()}"
+    title = f"SlashNext Phishing Incident Response - Host Report\n##### host = {enc_host.decode()}"
 
     md = tableToMarkdown(
         title, snx_ioc_cont, ["Value", "Type", "Verdict", "ThreatStatus", "ThreatName", "ThreatType", "FirstSeen", "LastSeen"]
@@ -585,7 +585,7 @@ def host_report_command():
 
     enc_host = host.encode("idna")
 
-    title = "SlashNext Phishing Incident Response - Latest Scanned URL\n" f"##### host = {enc_host.decode()}"
+    title = f"SlashNext Phishing Incident Response - Latest Scanned URL\n##### host = {enc_host.decode()}"
 
     md = tableToMarkdown(
         title,
@@ -656,7 +656,7 @@ def host_urls_command():
 
     host = host.encode("idna")
 
-    title = "SlashNext Phishing Incident Response - Host URLs\n" f"##### host = {host.decode()}"
+    title = f"SlashNext Phishing Incident Response - Host URLs\n##### host = {host.decode()}"
 
     md = tableToMarkdown(
         title,
@@ -701,7 +701,7 @@ def url_reputation_command():
 
     ec = {"SlashNext.URL(val.Value === obj.Value)": snx_ioc_cont[0], "DBotScore": dbot_score_cont, "URL": url_cont}
 
-    title = "SlashNext Phishing Incident Response - URL Reputation\n" "##### url = {}".format(url_data.get("url"))
+    title = "SlashNext Phishing Incident Response - URL Reputation\n##### url = {}".format(url_data.get("url"))
 
     if response.get("normalizeData").get("normalizeStatus") == 1:
         title += " *\n*" + response.get("normalizeData").get("normalizeMessage")
@@ -771,7 +771,7 @@ def url_scan_command():
 
     ec = {"SlashNext.URL(val.Value === obj.Value)": snx_ioc_cont[0], "DBotScore": dbot_score_cont, "URL": url_cont}
 
-    title = "SlashNext Phishing Incident Response - URL Scan\n" "##### url = {}".format(url_data.get("url"))
+    title = "SlashNext Phishing Incident Response - URL Scan\n##### url = {}".format(url_data.get("url"))
 
     if response.get("normalizeData").get("normalizeStatus") == 1:
         title += " *\n*" + response.get("normalizeData").get("normalizeMessage")
@@ -857,7 +857,7 @@ def url_scan_sync_command():
 
     ec = {"SlashNext.URL(val.Value === obj.Value)": snx_ioc_cont[0], "DBotScore": dbot_score_cont, "URL": url_cont}
 
-    title = "SlashNext Phishing Incident Response - URL Scan Sync\n" "##### url = {}".format(url_data.get("url"))
+    title = "SlashNext Phishing Incident Response - URL Scan Sync\n##### url = {}".format(url_data.get("url"))
 
     if response.get("normalizeData").get("normalizeStatus") == 1:
         title += " *\n*" + response.get("normalizeData").get("normalizeMessage")
@@ -936,7 +936,7 @@ def scan_report_command():
 
     ec = {"SlashNext.URL(val.Value === obj.Value)": snx_ioc_cont[0], "DBotScore": dbot_score_cont, "URL": url_cont}
 
-    title = "SlashNext Phishing Incident Response - Scan Report\n" "##### url = {}".format(url_data.get("url"))
+    title = "SlashNext Phishing Incident Response - Scan Report\n##### url = {}".format(url_data.get("url"))
 
     if response.get("normalizeData").get("normalizeStatus") == 1:
         title += " *\n*" + response.get("normalizeData").get("normalizeMessage")
@@ -1139,7 +1139,7 @@ def api_quota_command():
     # 3. Parse and format the response
     quota_data = response.get("quotaDetails")
 
-    title = "SlashNext Phishing Incident Response - API Quota\n" "##### Note: {}".format(quota_data.get("note"))
+    title = "SlashNext Phishing Incident Response - API Quota\n##### Note: {}".format(quota_data.get("note"))
 
     snx_ioc_cont = {
         "LicensedQuota": quota_data.get("licensedQuota"),

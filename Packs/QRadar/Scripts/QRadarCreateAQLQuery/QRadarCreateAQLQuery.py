@@ -31,7 +31,7 @@ def fields_section(
     fields_list: list[str], values_list: list[str], operator: Operators = Operators.OR, match_rule: MatchRule = MatchRule.EQUAL
 ) -> str:
     condition_list: list[str] = []
-    for field in map(lambda x: x if " " not in x else f"'{x}'", fields_list):
+    for field in (x if " " not in x else f"'{x}'" for x in fields_list):
         for value in values_list:
             condition_list.append(match_rule.value.format(field, value))
 

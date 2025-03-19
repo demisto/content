@@ -41,7 +41,7 @@ def check_response(raw_response):
     if status and status.get("code") != 200 and status.get("error"):
         demisto.error(f"Failed to get events from OneLogin API. Error message: {status.get('message')}")
         raise Exception(
-            f"Error code: {status.get('code')}. Error type: {status.get('type')}.\n" f"Error message: {status.get('message')}"
+            f"Error code: {status.get('code')}. Error type: {status.get('type')}.\nError message: {status.get('message')}"
         )
 
 
@@ -126,7 +126,7 @@ class Client(BaseClient):
             return event_type_name
 
         demisto.info(
-            f"Could not find the event type id {event['event_type_id']!s}. " f"Trying to request the event types from OneLogin."
+            f"Could not find the event type id {event['event_type_id']!s}. Trying to request the event types from OneLogin."
         )
         event_types_res = self.get_event_types_request()
         event_types = {str(event_type["id"]): event_type["name"] for event_type in event_types_res}

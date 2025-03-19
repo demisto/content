@@ -76,11 +76,11 @@ class Client(BaseClient):
 
     def build_query(self) -> str:
         """Builds a google query in the format of "filetype:...allintext:...site:... after:... " """
-        query = " OR ".join(list(map(lambda x: f"filetype:{x}", self._search_file_types)))
+        query = " OR ".join([f"filetype:{x}" for x in self._search_file_types])
         if self._keywords:
-            query += " " + " OR ".join(list(map(lambda x: f"allintext:{x}", self._keywords)))
+            query += " " + " OR ".join([f"allintext:{x}" for x in self._keywords])
         if self._urls:
-            query += " " + " OR ".join(list(map(lambda x: f"site:{x}", self._urls)))
+            query += " " + " OR ".join([f"site:{x}" for x in self._urls])
         if self.after:
             query += f" after:{self.after}"
         return query
@@ -167,9 +167,8 @@ def google_search_command(
 def fetch_incidents(client: Client, last_run: dict | None) -> list:
     now = datetime.now()
     last_run_date = last_run.get(LAST_RUN_TIME_KEY) if last_run else None
-    if last_run_date:
-        if (now - dateparser.parse(last_run_date)).days > 0:  # type: ignore
-            client.after = last_run_date
+    if last_run_date and (now - dateparser.parse(last_run_date)).days > 0:   # type: ignore
+        client.after = last_run_date
     incidents = get_search_results(client, item_to_incident)
     if not isinstance(incidents, list):
         demisto.debug(f"Skipping incident creation. Received: {incidents}, expected list.")

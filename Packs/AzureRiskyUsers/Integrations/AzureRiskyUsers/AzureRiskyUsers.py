@@ -491,8 +491,8 @@ def risk_detections_list_command(client: Client, args: dict[str, Any]) -> Comman
             return skip_token
 
     raw_response = client.risk_detections_list_request(
-        risk_state, risk_level, detected_date_time_before, detected_date_time_after, limit, order_by, skip_token
-    )  # type: ignore[arg-type]
+        risk_state, risk_level, detected_date_time_before, detected_date_time_after, limit, order_by, skip_token  # type: ignore[arg-type]
+    )
 
     table_headers = [
         "id",
@@ -561,7 +561,7 @@ def risk_detection_get_command(client: Client, args: dict[str, Any]) -> CommandR
     outputs = {key: raw_response.get(key) for key in raw_response if key in table_headers}
 
     readable_output = tableToMarkdown(
-        name=f'Found Risk Detection with ID: ' f'{raw_response.get("id")}',
+        name=f'Found Risk Detection with ID: {raw_response.get("id")}',
         t=outputs,
         headers=table_headers,
         removeNull=True,

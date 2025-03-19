@@ -17,12 +17,12 @@ def create_md_table(headers, certList):
     md += "|\n"
 
     # Close out markdown header
-    for arg in headers:
+    for _arg in headers:
         md += "|--------------"
     md += "|\n"
 
     # Fill in tabular data
-    for cert in certList:
+    for _cert in certList:
         md += "|" + certList[counter]["Domain"]
         md += "|" + certList[counter]["ExpirationDate"]
         md += "|" + str(certList[counter]["TimeToExpiration"]) + " days"

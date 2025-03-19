@@ -343,12 +343,10 @@ def check_arg_type(arg_name: str, arg_value: str):
     try:
         isinstance(int(arg_value), int)
         value = int(arg_value)
-        if "threshold" in arg_name:
-            if value < 0 or value > 100:
-                output = str(arg_name) + ": the value must be between 0 and 100; "
-        if "indicator_expiration" in arg_name:
-            if value < 0:
-                output = str(arg_name) + ": the value must be positive (>0); "
+        if "threshold" in arg_name and value < 0 or value > 100:
+            output = str(arg_name) + ": the value must be between 0 and 100; "
+        if "indicator_expiration" in arg_name and value < 0:
+            output = str(arg_name) + ": the value must be positive (>0); "
     except Exception:
         return str(arg_name) + ": bad format, must be a number; "
     return output
@@ -532,7 +530,7 @@ def ip_command(client: Client, args: dict[str, str]) -> tuple[list, list, list]:
                 continue
             else:
                 raise Exception(
-                    f"RST Threat Feed API error while getting a response " f"for {indicator['ioc_value']}: {indicator['error']}\n"
+                    f"RST Threat Feed API error while getting a response for {indicator['ioc_value']}: {indicator['error']}\n"
                 )
         else:
             total_score = int(indicator.get("score", {}).get("total"))
@@ -621,7 +619,7 @@ def domain_command(client: Client, args: dict[str, str]) -> tuple[list, list, li
                 continue
             else:
                 raise Exception(
-                    f"RST Threat Feed API error while getting a response " f"for {indicator['ioc_value']}: {indicator['error']}\n"
+                    f"RST Threat Feed API error while getting a response for {indicator['ioc_value']}: {indicator['error']}\n"
                 )
         else:
             total_score = int(indicator.get("score", {}).get("total"))
@@ -713,7 +711,7 @@ def url_command(client: Client, args: dict[str, str]) -> tuple[list, list, list]
                 continue
             else:
                 raise Exception(
-                    f"RST Threat Feed API error while getting a response " f"for {indicator['ioc_value']}: {indicator['error']}\n"
+                    f"RST Threat Feed API error while getting a response for {indicator['ioc_value']}: {indicator['error']}\n"
                 )
         else:
             total_score = int(indicator.get("score", {}).get("total"))
@@ -805,7 +803,7 @@ def file_command(client: Client, args: dict[str, str]) -> tuple[list, list, list
                 continue
             else:
                 raise Exception(
-                    f"RST Threat Feed API error while getting a response " f"for {indicator['ioc_value']}: {indicator['error']}\n"
+                    f"RST Threat Feed API error while getting a response for {indicator['ioc_value']}: {indicator['error']}\n"
                 )
         else:
             total_score = int(indicator.get("score", {}).get("total"))
@@ -857,11 +855,11 @@ def submit_command(client: Client, args: dict[str, str]) -> list:
     markdown = []
     for i in range(len(iocs)):
         indicator = client.submit_indicator(iocs[i], description[i])
-        if "status" in indicator.keys():
+        if "status" in indicator:
             markdown.append(f"Indicator: {iocs[i]} was submitted as a potential threat indicator to RST Cloud\n")
-        elif "error" in indicator.keys():
+        elif "error" in indicator:
             raise Exception(
-                f"Indicator: {iocs[i]} was not submitted successfully " f"due to the following error: {indicator['error']}\n"
+                f"Indicator: {iocs[i]} was not submitted successfully due to the following error: {indicator['error']}\n"
             )
     return markdown
 
@@ -885,7 +883,7 @@ def submitfp_command(client: Client, args: dict[str, str]) -> list:
             markdown.append(f"Indicator: {iocs[i]} was submitted as False Positive to RST Cloud\n")
         elif indicator["error"]:
             raise Exception(
-                f"Indicator: {iocs[i]} was not submitted successfully due " f"to the following error: {indicator['error']}\n"
+                f"Indicator: {iocs[i]} was not submitted successfully due to the following error: {indicator['error']}\n"
             )
     return markdown
 

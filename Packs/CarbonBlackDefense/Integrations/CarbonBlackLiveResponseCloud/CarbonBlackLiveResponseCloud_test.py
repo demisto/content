@@ -5,7 +5,13 @@ import pytest
 from CarbonBlackLiveResponseCloud import *
 from cbc_sdk.live_response_api import LiveResponseMemdump, LiveResponseSessionManager
 
-CREDENTIALS = dict(url="https://test.test", ssl_verify=False, token="test_key/test_id", org_key="test_org_key")
+CREDENTIALS = {
+    'url': "https://test.test",
+    'ssl_verify': False,
+    'token': "test_key/test_id",
+    'org_key': "test_org_key"
+}
+
 api_client = CBCloudAPI(**CREDENTIALS)
 
 commands_with_args = {
@@ -69,26 +75,36 @@ commands_with_args = {
 }
 
 TEST_REG_VALUES = [
-    dict(registry_type=f"test_pbREG_SZ_{i}", registry_name=f"test_val_{i}", registry_data=f"value_data_{i}") for i in range(10)
+    {
+        'registry_type': f"test_pbREG_SZ_{i}",
+        'registry_name': f"test_val_{i}",
+        'registry_data': f"value_data_{i}"
+    }
+    for i in range(10)
 ]
 
 TEST_DIR_LIST = [
-    dict(
-        size=25600,
-        attributes=["TEST_ARCHIVE"],
-        create_time=123,
-        last_access_time=123,
-        last_write_time="1970-01-02T03:46:40.000Z",
-        filename=f"test_{i}.xls",
-        alternate_name="test_$9EE1B~1.XLS",
-    )
+    {
+        'size': 25600,
+        'attributes': ["TEST_ARCHIVE"],
+        'create_time': 123,
+        'last_access_time': 123,
+        'last_write_time': "1970-01-02T03:46:40.000Z",
+        'filename': f"test_{i}.xls",
+        'alternate_name': "test_$9EE1B~1.XLS"
+    }
+
     for i in range(10)
 ]
 
 TEST_PROCESSES = [
-    dict(
-        process_path=f"test_path_{i}", process_pid=i, process_cmdline=f"test_command_line_{i}", process_username=f"test_user_{i}"
-    )
+    {
+        'process_path': f"test_path_{i}",
+        'process_pid': i,
+        'process_cmdline': f"test_command_line_{i}",
+        'process_username': f"test_user_{i}"
+    }
+
     for i in range(10)
 ]
 
@@ -99,7 +115,7 @@ HAPPY_PATH_ARGS = [
     (
         "put_file",
         put_file_command,
-        "File: test_file_id is successfully put to the remote destination " "test_destination_path",
+        "File: test_file_id is successfully put to the remote destination test_destination_path",
         {},
         None,
     ),
@@ -107,7 +123,7 @@ HAPPY_PATH_ARGS = [
         "delete_file",
         delete_file_command,
         "The file: test_source_path was deleted successfully.",
-        dict(filename="test_source_path"),
+        {'filename': 'test_source_path'},
         None,
     ),
     ("create_registry_key", create_reg_key_command, "Reg key: test_reg_path, was created successfully.", {}, None),
@@ -124,17 +140,17 @@ HAPPY_PATH_ARGS = [
 ]
 
 WRONG_ARGS = [
-    ("set_registry_value", set_reg_value_command, dict(overwrite="f")),
-    ("create_process", create_process_command, dict(wait_for_completion="f")),
-    ("create_process", create_process_command, dict(wait_for_output="f")),
-    ("create_process", create_process_command, dict(wait_timeout="wrong_val")),
-    ("get_file", get_file_command, dict(timeout="wrong_val")),
-    ("delete_registry_key", delete_reg_key_command, dict(force="wrong_val")),
-    ("list_directory", list_directory_command, dict(limit="wrong_val")),
+    ("set_registry_value", set_reg_value_command, {'overwrite': 'f'}),
+    ("create_process", create_process_command, {'wait_for_completion': 'f'}),
+    ("create_process", create_process_command, {'wait_for_output': 'f'}),
+    ("create_process", create_process_command, {'wait_timeout': 'wrong_val'}),
+    ("get_file", get_file_command, {'timeout': 'wrong_val'}),
+    ("delete_registry_key", delete_reg_key_command, {'force': 'wrong_val'}),
+    ("list_directory", list_directory_command, {'limit': 'wrong_val'}),
 ]
 
 DIR_LIST_EXPECTED_OUTPUT = (
-    "Name|Type|Date Modified|Size|\n|---|---|---|---|\n| test_0.xls | File | " "1970-01-02T03:46:40.000Z | 25600"
+    "Name|Type|Date Modified|Size|\n|---|---|---|---|\n| test_0.xls | File | 1970-01-02T03:46:40.000Z | 25600"
 )
 #
 
@@ -147,7 +163,13 @@ HAPPY_PATH_ARGS_FOR_COMMAND_RESULTS = [
         "create_process",
         create_process_command,
         "פלט בעברית",
-        dict(command_string="test_cmd_line_path", wait_timeout=30, wait_for_output=True, wait_for_completion=True),
+        {
+            'command_string': 'test_cmd_line_path',
+            'wait_timeout': 30,
+            'wait_for_output': True,
+            'wait_for_completion': True
+        }
+        ,
         "פלט בעברית".encode(),
     ),
 ]
@@ -192,7 +214,7 @@ def mock_method_in_lr_session(mocker, method_name, mocked_results=None):
     test_mocker = mocker.patch("cbc_sdk.CBCloudAPI.select", return_value=MOCKED_LR_SESSION)
 
     def mock_method():
-        lambda *args, **kwargs: None
+        lambda *args, **kwargs: None    # noqa: B018
 
     setattr(MOCKED_LR_SESSION, method_name, mock_method)  # Just defined method in the object
     test_mocker = mocker.patch.object(MOCKED_LR_SESSION, method_name, return_value=mocked_results)
@@ -307,7 +329,7 @@ class TestCommands:
         res = memdump_command(**kwargs)
 
         # assert
-        assert "Memory was successfully dumped to test_target_path." == res
+        assert res == "Memory was successfully dumped to test_target_path."
 
     @pytest.mark.parametrize("force, expected_call_count", [(False, 1), (True, 11)])
     def test_delete_reg_key_force(self, mocker, force, expected_call_count):
@@ -355,7 +377,7 @@ class TestCommands:
         res = command_test_module(**kwargs)
 
         # assert
-        res == "ok"
+        assert res == "ok"
 
     RAISE_EXCEPTION_PARAMS = [
         (errors.UnauthorizedError(""), AUTHORIZATION_ERROR_MSG),

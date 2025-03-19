@@ -94,10 +94,10 @@ def get_detector(client: "GuardDutyClient", args: dict) -> CommandResults:
         "S3LogsStatus": demisto.get(response, "DataSources.S3Logs.Status"),
         "KubernetesAuditLogsStatus": demisto.get(response, "DataSources.Kubernetes.AuditLogs.Status"),
         "MalwareProtectionStatus": demisto.get(
-            response, "DataSources.MalwareProtection.ScanEc2InstanceWithFindings" ".EbsVolumes.Status"
+            response, "DataSources.MalwareProtection.ScanEc2InstanceWithFindings.EbsVolumes.Status"
         ),
         "MalwareProtectionReason": demisto.get(
-            response, "DataSources.MalwareProtection.ScanEc2InstanceWithFindings" ".EbsVolumes.Reason"
+            response, "DataSources.MalwareProtection.ScanEc2InstanceWithFindings.EbsVolumes.Reason"
         ),
         "Tags": response.get("Tags"),
     }
@@ -353,7 +353,7 @@ def update_threat_intel_set(client: "GuardDutyClient", args: dict):
     if response == {} or response.get("ResponseMetadata", {}).get("HTTPStatusCode") == 200:
         return f"The ThreatIntel set {args.get('threatIntelSetId')} has been updated"
     else:
-        raise Exception(f"Failed updating ThreatIntel set {args.get('threatIntelSetId')}. " f"Response was: {response}")
+        raise Exception(f"Failed updating ThreatIntel set {args.get('threatIntelSetId')}. Response was: {response}")
 
 
 def severity_mapping(severity: Optional[float]) -> Optional[int]:
@@ -548,7 +548,8 @@ def fetch_incidents(
 
     # Handle first time fetch
     if latest_created_time is None:
-        latest_created_time = dateparser.parse(dateparser.parse(first_fetch_time).strftime(DATE_FORMAT))  # type: ignore[union-attr]
+        latest_created_time = dateparser.parse(dateparser.parse(
+            first_fetch_time).strftime(DATE_FORMAT))  # type: ignore[union-attr]
     else:
         latest_created_time = dateparser.parse(latest_created_time)
 

@@ -489,7 +489,7 @@ class Client(BaseClient):
             error_entry = res.json()
             message = error_entry.get("message", "")
             if "items=x-y" in message:
-                message = "Failed to parse Range argument. The syntax of the Range argument must follow this pattern:" " x-y"
+                message = "Failed to parse Range argument. The syntax of the Range argument must follow this pattern: x-y"
             elif "unauthorized to access" in err_msg or "No SEC header present in request" in err_msg:
                 message = "Authorization Error: make sure credentials are correct."
             elif "The specified encryption strength is not available" in err_msg:
@@ -780,7 +780,8 @@ class Client(BaseClient):
         return self.http_request(
             method="PATCH",
             url_suffix="/reference_data_collections/set_entries",
-            json_data=[{"collection_id": set_id, "value": str(indicator), "source": source} for indicator in indicators],  # type: ignore[arg-type]
+            json_data=[{"collection_id": set_id, "value": str(indicator), "source": source}
+                       for indicator in indicators],  # type: ignore[arg-type]
             additional_headers=headers,
             timeout=timeout,
         )
@@ -1267,7 +1268,7 @@ def safely_update_context_data(
         except Exception as e:
             # if someone else is updating the context, we will get a conflict error
             print_debug_msg(
-                f"Could not set integration context in retry {retry + 1}. " f"Error: {e}. Trying to resolve conflicts"
+                f"Could not set integration context in retry {retry + 1}. Error: {e}. Trying to resolve conflicts"
             )
     else:
         raise DemistoException(f"Could not update integration context with version {new_version}.")
@@ -1599,7 +1600,7 @@ def enrich_offenses_result(
 
     def create_enriched_offense(offense: dict) -> dict:
         link_to_offense_suffix = (
-            '/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId' f'''={offense.get('id')}'''
+            f'''/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId={offense.get('id')}'''
         )
         offense_type = offense.get("offense_type")
         closing_reason_id = offense.get("closing_reason_id")
@@ -2070,7 +2071,7 @@ def validate_long_running_params(params: dict) -> None:
     for param_field, param_display in LONG_RUNNING_REQUIRED_PARAMS.items():
         if param_field not in params:
             raise DemistoException(
-                f"Parameter {param_display} is required when enabling long running execution." " Please set a value for it."
+                f"Parameter {param_display} is required when enabling long running execution. Please set a value for it."
             )
 
 
@@ -2218,7 +2219,7 @@ def create_search_with_retry(
     for i in range(max_retries):
         search_id = create_events_search(client, fetch_mode, event_columns, events_limit, offense_id, offense["start_time"])
         if search_id == QueryStatus.ERROR.value:
-            print_debug_msg(f"Failed to create search for offense ID: {offense_id}. " f"Retry number {i+1}/{max_retries}.")
+            print_debug_msg(f"Failed to create search for offense ID: {offense_id}. Retry number {i+1}/{max_retries}.")
             print_debug_msg(traceback.format_exc())
         else:
             return search_id
@@ -2553,7 +2554,7 @@ def print_context_data_stats(context_data: dict, stage: str) -> set[str]:
     """
     if MIRRORED_OFFENSES_QUERIED_CTX_KEY not in context_data or MIRRORED_OFFENSES_FINISHED_CTX_KEY not in context_data:
         raise ValueError(
-            f"Context data is missing keys: {MIRRORED_OFFENSES_QUERIED_CTX_KEY} or " f"{MIRRORED_OFFENSES_FINISHED_CTX_KEY}"
+            f"Context data is missing keys: {MIRRORED_OFFENSES_QUERIED_CTX_KEY} or {MIRRORED_OFFENSES_FINISHED_CTX_KEY}"
         )
 
     if not context_data:
@@ -4032,7 +4033,7 @@ def get_remote_data_command(client: Client, params: dict[str, Any], args: dict) 
     events_columns = params.get("events_columns") or DEFAULT_EVENTS_COLUMNS
     events_limit = int(params.get("events_limit") or DEFAULT_EVENTS_LIMIT)
     fetch_mode = params.get("fetch_mode", "")
-    print_context_data_stats(context_data, f"Starting Get Remote Data For " f"Offense {offense.get('id')!s}")
+    print_context_data_stats(context_data, f"Starting Get Remote Data For Offense {offense.get('id')!s}")
 
     demisto.debug(f"Updating offense. Offense last update was {offense_last_update}")
     entries = []
@@ -4228,7 +4229,7 @@ def create_events_search(
             f"SELECT {events_columns} FROM events WHERE INOFFENSE({offense_id}) {additional_where} limit {events_limit} "  # noqa: S608, E501
             f"START {offense_start_time}"
         )
-        print_debug_msg(f"Creating search for offense ID: {offense_id}, " f"query_expression: {query_expression}")
+        print_debug_msg(f"Creating search for offense ID: {offense_id}, query_expression: {query_expression}")
         search_response = client.search_create(query_expression)
         print_debug_msg(
             f"Created search for offense ID: {offense_id}, "

@@ -133,30 +133,30 @@ def parseIndicators(feedJson: dict) -> Any:
                     descriptionValue = None
                     reportByValue = SNXIocParse.SNX_FEED_KEY
                     verdictScore = DemistoScore.MALICIOUS
-                    if SNXIocParse.SNX_INDICATOR_KEY == ioc_data[SNXIocParse.SNX_TYPE_KEY]:
-                        if SNXIocParse.SNX_ID_KEY in ioc_data.keys():
+                    if ioc_data[SNXIocParse.SNX_TYPE_KEY] == SNXIocParse.SNX_INDICATOR_KEY:
+                        if SNXIocParse.SNX_ID_KEY in ioc_data:
                             indicatorIdValue = ioc_data[SNXIocParse.SNX_ID_KEY]
-                        if SNXIocParse.SNX_PATTERN_KEY in ioc_data.keys():
+                        if SNXIocParse.SNX_PATTERN_KEY in ioc_data:
                             patternKey, patternValue = parse_ioc_values(ioc_data)
                             if patternKey and patternValue:
                                 indicatorType = patternKey
                                 indicatorValue = patternValue
                             else:
                                 continue
-                        if SNXIocParse.SNX_CREATED_KEY in ioc_data.keys():
+                        if SNXIocParse.SNX_CREATED_KEY in ioc_data:
                             timeData = ioc_data[SNXIocParse.SNX_CREATED_KEY]
                             createdValue = datetime.strptime(timeData, "%Y-%m-%dT%H:%M:%S.%fZ").strftime(DEMISO_DATE_FORMAT)
-                        if SNXIocParse.SNX_MODIFIED_KEY in ioc_data.keys():
+                        if SNXIocParse.SNX_MODIFIED_KEY in ioc_data:
                             timeData = ioc_data[SNXIocParse.SNX_MODIFIED_KEY]
                             modifiedValue = datetime.strptime(timeData, "%Y-%m-%dT%H:%M:%S.%fZ").strftime(DEMISO_DATE_FORMAT)
-                        if SNXIocParse.SNX_DESCRIPTIONS_KEY in ioc_data.keys():
+                        if SNXIocParse.SNX_DESCRIPTIONS_KEY in ioc_data:
                             tagsInfo = ioc_data[SNXIocParse.SNX_DESCRIPTIONS_KEY]
                             tagList = tagsInfo.split(",")
-                        if SNXIocParse.SNX_CONFIDENCE_KEY in ioc_data.keys():
+                        if SNXIocParse.SNX_CONFIDENCE_KEY in ioc_data:
                             confidenceValue = ioc_data[SNXIocParse.SNX_CONFIDENCE_KEY]
-                        if SNXIocParse.SNX_VALID_UNTIL_KEY in ioc_data.keys():
+                        if SNXIocParse.SNX_VALID_UNTIL_KEY in ioc_data:
                             expirationValue = ioc_data[SNXIocParse.SNX_VALID_UNTIL_KEY]
-                        if SNXIocParse.SNX_INDICATORS_TYPE_KEY in ioc_data.keys():
+                        if SNXIocParse.SNX_INDICATORS_TYPE_KEY in ioc_data:
                             verdictInfo = ioc_data[SNXIocParse.SNX_INDICATORS_TYPE_KEY]
                             if len(verdictInfo) >= 1:
                                 verdictInfo = verdictInfo[0]
@@ -175,49 +175,49 @@ def parseIndicators(feedJson: dict) -> Any:
                                 indicatorType = SNXIocParse.DEMISTO_ONION_ADDRESS_TYPE
                         ioc_contents[indicatorIdValue] = {"type": indicatorType, "value": indicatorValue}
 
-                    elif SNXIocParse.SNX_MALWARE_KEY == ioc_data[SNXIocParse.SNX_TYPE_KEY]:
+                    elif ioc_data[SNXIocParse.SNX_TYPE_KEY] == SNXIocParse.SNX_MALWARE_KEY:
                         indicatorType = STIX_INTEL_TYPE_TO_DEMISTO_TYPES[SNXIocParse.SNX_MALWARE_KEY]
-                        if SNXIocParse.SNX_ID_KEY in ioc_data.keys():
+                        if SNXIocParse.SNX_ID_KEY in ioc_data:
                             indicatorIdValue = ioc_data[SNXIocParse.SNX_ID_KEY]
-                        if SNXIocParse.SNX_NAME_KEY in ioc_data.keys():
+                        if SNXIocParse.SNX_NAME_KEY in ioc_data:
                             indicatorValue = ioc_data[SNXIocParse.SNX_NAME_KEY]
-                        if SNXIocParse.SNX_CREATED_KEY in ioc_data.keys():
+                        if SNXIocParse.SNX_CREATED_KEY in ioc_data:
                             timeData = ioc_data[SNXIocParse.SNX_CREATED_KEY]
                             createdValue = datetime.strptime(timeData, "%Y-%m-%dT%H:%M:%S.%fZ").strftime(DEMISO_DATE_FORMAT)
-                        if SNXIocParse.SNX_MODIFIED_KEY in ioc_data.keys():
+                        if SNXIocParse.SNX_MODIFIED_KEY in ioc_data:
                             timeData = ioc_data[SNXIocParse.SNX_MODIFIED_KEY]
                             modifiedValue = datetime.strptime(timeData, "%Y-%m-%dT%H:%M:%S.%fZ").strftime(DEMISO_DATE_FORMAT)
-                        if SNXIocParse.SNX_MALWARE_TYPE_KEY in ioc_data.keys():
+                        if SNXIocParse.SNX_MALWARE_TYPE_KEY in ioc_data:
                             tagList = ioc_data[SNXIocParse.SNX_MALWARE_TYPE_KEY]
                             if SNXIocParse.SNX_UNKNOWN_TYPE in tagList:
                                 tagList.clear()
                                 tagList.append(indicatorValue)
-                        if SNXIocParse.SNX_DESCRIPTIONS_KEY in ioc_data.keys():
+                        if SNXIocParse.SNX_DESCRIPTIONS_KEY in ioc_data:
                             descriptionValue = ioc_data[SNXIocParse.SNX_DESCRIPTIONS_KEY]
                         verdictScore = ThreatIntel.ObjectsScore.MALWARE
                         ioc_contents[indicatorIdValue] = {"type": indicatorType, "value": indicatorValue}
 
-                    elif SNXIocParse.SNX_RELATIONSHIP_KEY == ioc_data[SNXIocParse.SNX_TYPE_KEY]:
+                    elif ioc_data[SNXIocParse.SNX_TYPE_KEY] == SNXIocParse.SNX_RELATIONSHIP_KEY:
                         relationship_iocs.append(ioc_data)
 
-                    elif SNXIocParse.SNX_ATTACK_PATTERN_KEY == ioc_data[SNXIocParse.SNX_TYPE_KEY]:
+                    elif ioc_data[SNXIocParse.SNX_TYPE_KEY] == SNXIocParse.SNX_ATTACK_PATTERN_KEY:
                         indicatorType = STIX_INTEL_TYPE_TO_DEMISTO_TYPES[SNXIocParse.SNX_ATTACK_PATTERN_KEY]
-                        if SNXIocParse.SNX_ID_KEY in ioc_data.keys():
+                        if SNXIocParse.SNX_ID_KEY in ioc_data:
                             indicatorIdValue = ioc_data[SNXIocParse.SNX_ID_KEY]
-                        if SNXIocParse.SNX_NAME_KEY in ioc_data.keys():
+                        if SNXIocParse.SNX_NAME_KEY in ioc_data:
                             indicatorValue = ioc_data[SNXIocParse.SNX_NAME_KEY]
-                        if SNXIocParse.SNX_CREATED_KEY in ioc_data.keys():
+                        if SNXIocParse.SNX_CREATED_KEY in ioc_data:
                             timeData = ioc_data[SNXIocParse.SNX_CREATED_KEY]
                             createdValue = datetime.strptime(timeData, "%Y-%m-%dT%H:%M:%S.%fZ").strftime(DEMISO_DATE_FORMAT)
-                        if SNXIocParse.SNX_MODIFIED_KEY in ioc_data.keys():
+                        if SNXIocParse.SNX_MODIFIED_KEY in ioc_data:
                             timeData = ioc_data[SNXIocParse.SNX_MODIFIED_KEY]
                             modifiedValue = datetime.strptime(timeData, "%Y-%m-%dT%H:%M:%S.%fZ").strftime(DEMISO_DATE_FORMAT)
-                        if SNXIocParse.SNX_DESCRIPTIONS_KEY in ioc_data.keys():
+                        if SNXIocParse.SNX_DESCRIPTIONS_KEY in ioc_data:
                             descriptionValue = ioc_data[SNXIocParse.SNX_DESCRIPTIONS_KEY]
-                        if SNXIocParse.SNX_EXTERNAL_REF_KEY in ioc_data.keys():
+                        if SNXIocParse.SNX_EXTERNAL_REF_KEY in ioc_data:
                             externalRefList = ioc_data[SNXIocParse.SNX_EXTERNAL_REF_KEY]
                             for externalRef in externalRefList:
-                                if SNXIocParse.SNX_EXTERNAL_ID_KEY in externalRef.keys():
+                                if SNXIocParse.SNX_EXTERNAL_ID_KEY in externalRef:
                                     mitreIdValue = externalRef[SNXIocParse.SNX_EXTERNAL_ID_KEY]
                                     tagList = mitreIdValue
                         verdictScore = ThreatIntel.ObjectsScore.ATTACK_PATTERN
@@ -280,7 +280,7 @@ def parse_ioc_values(ioc_data):
             ioc_type = patternKey
         else:
             ioc_type = patternKey.lower()
-        if ioc_type in SNX_TYPES_TO_DEMISTO_TYPES.keys():
+        if ioc_type in SNX_TYPES_TO_DEMISTO_TYPES:
             patternKey = SNX_TYPES_TO_DEMISTO_TYPES[ioc_type]
             return patternKey, patternValue
         else:
@@ -302,7 +302,7 @@ def parse_ioc_relationships(relationshipIocs, ioc_contents):
                 targetRefIocType = None
                 relationshipType = None
                 reverseRelationshipType = None
-                if SNXIocParse.SNX_RELATIONSHIP_TYPE_KEY in relation_obj.keys():
+                if SNXIocParse.SNX_RELATIONSHIP_TYPE_KEY in relation_obj:
                     iocRelationType = relation_obj[SNXIocParse.SNX_RELATIONSHIP_TYPE_KEY]
                     if iocRelationType.lower() == SNXIocParse.SNX_INDICATES_KEY:
                         relationshipType = EntityRelationship.Relationships.INDICATOR_OF
@@ -311,7 +311,7 @@ def parse_ioc_relationships(relationshipIocs, ioc_contents):
                         demisto.debug(f"Invalid relation type: {relationshipType}")
                         continue
 
-                if SNXIocParse.SNX_SOURCE_REF_KEY in relation_obj.keys():
+                if SNXIocParse.SNX_SOURCE_REF_KEY in relation_obj:
                     try:
                         sourceRefId = relation_obj[SNXIocParse.SNX_SOURCE_REF_KEY]
                         sourceRefIocType = ioc_contents[sourceRefId]["type"]
@@ -319,7 +319,7 @@ def parse_ioc_relationships(relationshipIocs, ioc_contents):
                     except Exception:
                         continue
 
-                if SNXIocParse.SNX_TARGET_REF_KEY in relation_obj.keys():
+                if SNXIocParse.SNX_TARGET_REF_KEY in relation_obj:
                     try:
                         targetRefId = relation_obj[SNXIocParse.SNX_TARGET_REF_KEY]
                         targetRefIocType = ioc_contents[targetRefId]["type"]
@@ -405,7 +405,7 @@ def getListOfDays(startDate, endDate) -> List:
             daysList.append(endDate.strftime("%Y%m%d"))
             return daysList
         else:
-            for i in range(daysCount):
+            for _i in range(daysCount):
                 day = startDate + timedelta(days=1)
                 daysList.append(day.strftime("%Y%m%d"))
                 startDate = day
@@ -452,7 +452,7 @@ def main():
         firstFetchDate = None
         firstFetchValue = demisto.params().get("first_fetch")
         integrationCache = demisto.getIntegrationContext()
-        if "first_fetch_date" in integrationCache.keys():
+        if "first_fetch_date" in integrationCache:
             firstFetchDate = integrationCache.get("first_fetch_date")
 
         if demisto.command() == "test-module":

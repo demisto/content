@@ -1324,7 +1324,7 @@ def test_enrich_threat(
         requests_mock.get(
             _full_url(
                 path="data/endpoint/Agent/",
-                query="offset=0" "&threat_id=1" "&fields=id,hostname,domainname,osproducttype,ostype" "&limit=10000",
+                query="offset=0&threat_id=1&fields=id,hostname,domainname,osproducttype,ostype&limit=10000",
             ),
             status_code=200,
             json=load_json("data_endpoint_Agent"),
@@ -1364,7 +1364,7 @@ def test_search_whitelist(
     requests_mock.get(
         _full_url(
             path="data/threat_intelligence/WhitelistRule/",
-            query="offset=0" "&limit=100" f"&search={args['keyword']}" "&ordering=-last_update" "&provided_by_hlab=False",
+            query=f"offset=0&limit=100&search={args['keyword']}&ordering=-last_update&provided_by_hlab=False",
         ),
         status_code=200,
         json=load_json("data_threat_intelligence_WhitelistRule"),

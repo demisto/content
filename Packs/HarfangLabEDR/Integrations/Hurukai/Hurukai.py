@@ -656,7 +656,7 @@ def _adjust_max_fetch_value(max_fetch: int, already_fetched_count: int) -> int:
 
 def _get_fetching_cursor(fetch_history: FetchHistory) -> datetime:
     if not isinstance(fetch_history.last_fetch, int | float):
-        raise ValueError(f"Expected an integer value for 'fetch_history.last_fetch', " f"get '{fetch_history.last_fetch}'")
+        raise ValueError(f"Expected an integer value for 'fetch_history.last_fetch', get '{fetch_history.last_fetch}'")
 
     return datetime.fromtimestamp(
         # minus 1sec to overlap with previous fetch and ensure to miss nothing
@@ -709,7 +709,7 @@ def _incident_should_be_fetched(
     # by a simple raise error.
     if incident_id in fetched_from_last_fetch:
         demisto.error(
-            f"'{incident_id}' was already fetched from a previous fetch: " f"this {incident_type} shouldn't have been re-fetched"
+            f"'{incident_id}' was already fetched from a previous fetch: this {incident_type} shouldn't have been re-fetched"
         )
         return False
 
@@ -776,7 +776,7 @@ def _generate_xsoar_incident(
             additional_data["incident_link"] = f"{integration_base_url}/threat/{incident_id}/summary"
         case _:
             raise ValueError(
-                f"Invalid value for 'incident_type' argument: " f"expected 'alert' or 'threat', get '{incident_type}'"
+                f"Invalid value for 'incident_type' argument: expected 'alert' or 'threat', get '{incident_type}'"
             )
 
     additional_data["mirror_instance"] = mirror_instance
@@ -1131,11 +1131,11 @@ def fetch_incidents(client: Client, args: dict[str, Any]) -> tuple[dict, list[XS
     for value in fetch_types:
         if value not in typing.get_args(FetchType):
             raise ValueError(
-                f"Invalid value for 'fetch_types' argument: " f"expected one of {typing.get_args(FetchType)}, get '{value}'"
+                f"Invalid value for 'fetch_types' argument: expected one of {typing.get_args(FetchType)}, get '{value}'"
             )
 
     if min_severity not in SEVERITIES:
-        raise ValueError(f"Invalid value for 'min_severity' argument: " f"expected one of {SEVERITIES}, get '{min_severity}'")
+        raise ValueError(f"Invalid value for 'min_severity' argument: expected one of {SEVERITIES}, get '{min_severity}'")
 
     if mirror_direction not in MIRROR_DIRECTION_MAPPING:
         raise ValueError(
@@ -1145,11 +1145,11 @@ def fetch_incidents(client: Client, args: dict[str, Any]) -> tuple[dict, list[XS
 
     if alert_status and alert_status not in typing.get_args(AlertStatus):
         raise ValueError(
-            f"Invalid value for 'alert_status' argument: " f"expected one of {typing.get_args(AlertStatus)}, get '{alert_status}'"
+            f"Invalid value for 'alert_status' argument: expected one of {typing.get_args(AlertStatus)}, get '{alert_status}'"
         )
 
     if max_fetch <= 0:
-        raise ValueError(f"Invalid value for 'max_fetch' argument: " f"expected a strict positive integer, get '{max_fetch}'")
+        raise ValueError(f"Invalid value for 'max_fetch' argument: expected a strict positive integer, get '{max_fetch}'")
 
     # how many past days should be fetched (on first fetch only)
     past_days_to_fetch = int(first_fetch or 0)
@@ -1167,7 +1167,7 @@ def fetch_incidents(client: Client, args: dict[str, Any]) -> tuple[dict, list[XS
             status_to_fetch = None
         case _:
             # unreachable code - only here for semantic purpose
-            raise ValueError(f"Invalid value for 'alert_status': " f"expected 'ACTIVE', 'CLOSED' or None, get '{alert_status}'")
+            raise ValueError(f"Invalid value for 'alert_status': expected 'ACTIVE', 'CLOSED' or None, get '{alert_status}'")
 
     incidents: list[XSOARIncident] = []
 
@@ -3206,7 +3206,7 @@ def get_security_events(
 
     args = {
         "ordering": ordering,
-        "level": ",".join(SEVERITIES[SEVERITIES.index(min_severity) :]).lower(),
+        "level": ",".join(SEVERITIES[SEVERITIES.index(min_severity):]).lower(),
         "limit": limit,
         "offset": 0,
     }  # type: Dict[str,Any]
@@ -3326,7 +3326,7 @@ def get_threats(
         threat_ids = []
         args = {
             "ordering": ordering,
-            "level": ",".join(SEVERITIES[SEVERITIES.index(min_severity) :]).lower(),
+            "level": ",".join(SEVERITIES[SEVERITIES.index(min_severity):]).lower(),
             "limit": limit,
             "offset": 0,
         }  # type: Dict[str,Any]
@@ -3740,10 +3740,10 @@ def update_remote_incident(
     if new_remote_status:
         if new_remote_status not in SECURITY_EVENT_STATUS:
             raise ValueError(
-                f"Invalid value for 'new_remote_status': " f"expected one of {SECURITY_EVENT_STATUS}, get '{new_remote_status}'"
+                f"Invalid value for 'new_remote_status': expected one of {SECURITY_EVENT_STATUS}, get '{new_remote_status}'"
             )
 
-        demisto.debug(f"Incident '{incident_type}:{incident_id}', will have its status " f"changed to '{new_remote_status}'")
+        demisto.debug(f"Incident '{incident_type}:{incident_id}', will have its status changed to '{new_remote_status}'")
 
         change_incident_status_fn(incident_id, new_remote_status)
 
@@ -3827,7 +3827,7 @@ def update_remote_system(client: Client, args: dict[str, Any]) -> str:
 
     if incident_has_changed:
         if delta:
-            demisto.debug(f"The following fields has been changed for incident " f"'{remote_incident_id}': {delta.items()}")
+            demisto.debug(f"The following fields has been changed for incident '{remote_incident_id}': {delta.items()}")
 
             _update_remote_incident(
                 client,
@@ -3840,7 +3840,7 @@ def update_remote_system(client: Client, args: dict[str, Any]) -> str:
             demisto.debug(f"Incident '{remote_incident_id}' successfully updated")
 
         else:
-            demisto.error(f"Incident '{remote_incident_id}' is marked as changed, " f"but have no delta")
+            demisto.error(f"Incident '{remote_incident_id}' is marked as changed, but have no delta")
     else:
         demisto.debug(f"No change found for incident '{remote_incident_id}'")
 

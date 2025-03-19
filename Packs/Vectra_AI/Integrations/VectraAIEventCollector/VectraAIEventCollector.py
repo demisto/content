@@ -134,7 +134,7 @@ def add_parsing_rules(event: dict[str, Any]) -> Any:
         if DETECTION_TIMESTAMP_KEY in event:
             event["_time"] = timestamp_to_datestring(
                 datetime.strptime(
-                    event.get(DETECTION_TIMESTAMP_KEY),
+                    event.get(DETECTION_TIMESTAMP_KEY), # type: ignore[arg-type]
                     DETECTION_TIMESTAMP_FORMAT,  # type: ignore
                 ).timestamp()
                 * 1000,
@@ -343,7 +343,7 @@ def fetch_events(
     - `Dict[str, str]` of the next_fetch
     """
 
-    is_first_fetch: bool = False if demisto.getLastRun() else True
+    is_first_fetch: bool = not demisto.getLastRun()
 
     # The first fetch
     if is_first_fetch:
@@ -390,7 +390,7 @@ def fetch_events(
         # The filter for detections by first_timestamp is inclusive so we need to increase it by 1 minute
         next_run_detection_first_timestamp = datetime.strftime(
             datetime.strptime(
-                most_recent_detection.get(DETECTION_TIMESTAMP_KEY),
+                most_recent_detection.get(DETECTION_TIMESTAMP_KEY), # type: ignore
                 DETECTION_TIMESTAMP_FORMAT,  # type: ignore
             )
             + timedelta(minutes=1),

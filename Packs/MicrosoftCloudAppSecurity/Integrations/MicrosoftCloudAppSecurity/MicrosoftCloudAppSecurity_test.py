@@ -197,7 +197,7 @@ def test_list_users_accounts_command(requests_mock):
         "https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/entities/", json=users_accounts["ENTITIES_BY_USERNAME_DATA"]
     )
     res = list_users_accounts_command(
-        client_mocker, {"username": '{ "id": "7e14f6a3-185d-49e3-85e8-40a33d90dc90",' ' "saas": 11161, "inst": 0 }'}
+        client_mocker, {"username": '{ "id": "7e14f6a3-185d-49e3-85e8-40a33d90dc90", "saas": 11161, "inst": 0 }'}
     )
     assert users_accounts["ENTITIES_BY_USERNAME_DATA_CONTEXT"] == res.outputs[0]
 
@@ -347,7 +347,7 @@ class TestCloseBenign:
         from MicrosoftCloudAppSecurity import close_benign_command
 
         with pytest.raises(
-            DemistoException, match="Expecting at least one of the following arguments:" " alert_id, custom_filter."
+            DemistoException, match="Expecting at least one of the following arguments: alert_id, custom_filter."
         ):
             close_benign_command(client_mocker, {})
 

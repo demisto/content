@@ -50,7 +50,7 @@ ERRORS = {
     "POSITIVE_VALUE": 'The value of the "{}" must be greater than or equal to 0',
     "INVALID_MAX_FETCH": '"{}" is an invalid value for Max incidents per fetch. The value must be between 1 to 200.',
     "INVALID_COMMAND_ARG_VALUE": (
-        "Invalid '{}' value provided. Please ensure it is one of the values from the " "following options: {}."
+        "Invalid '{}' value provided. Please ensure it is one of the values from the following options: {}."
     ),
     "INVALID_SUPPORT_FOR_ARG": 'The argument "{}" must be set to "{}" when providing value for argument "{}".',
 }
@@ -801,7 +801,7 @@ class Client(BaseClient):
         notes = self.http_request(
             method="POST",
             json_data=data,
-            url_suffix=ENDPOINTS[f"ADD_AND_LIST_{entity_type.upper()}_NOTE_ENDPOINT"].format(entity_id),
+            url_suffix=ENDPOINTS[f"ADD_AND_LIST_{entity_type.upper()}_NOTE_ENDPOINT"].format(entity_id),    # type: ignore[union-attr]
         )  # type: ignore
         return notes
 
@@ -828,8 +828,8 @@ class Client(BaseClient):
         notes = self.http_request(
             method="PATCH",
             json_data=data,
-            url_suffix=ENDPOINTS[f"UPDATE_AND_REMOVE_{entity_type.upper()}_NOTE_ENDPOINT"].format(entity_id, note_id),
-        )  # type: ignore
+            url_suffix=ENDPOINTS[f"UPDATE_AND_REMOVE_{entity_type.upper()}_NOTE_ENDPOINT"].format(entity_id, note_id),  # type: ignore[union-attr]
+        )
 
         return notes
 
@@ -853,8 +853,8 @@ class Client(BaseClient):
         res = self.http_request(
             method="DELETE",
             resp_type="response",
-            url_suffix=ENDPOINTS[f"UPDATE_AND_REMOVE_{entity_type.upper()}_NOTE_ENDPOINT"].format(entity_id, note_id),
-        )  # type: ignore
+            url_suffix=ENDPOINTS[f"UPDATE_AND_REMOVE_{entity_type.upper()}_NOTE_ENDPOINT"].format(entity_id, note_id),  # type: ignore[union-attr]
+        )
         return res
 
     def list_note_request(self, entity_id: int = None, entity_type: str = None) -> dict:  # type: ignore
@@ -869,8 +869,8 @@ class Client(BaseClient):
             Dict: Response from the API.
         """
         notes = self.http_request(
-            method="GET", url_suffix=ENDPOINTS[f"ADD_AND_LIST_{entity_type.upper()}_NOTE_ENDPOINT"].format(entity_id)
-        )  # type: ignore
+            method="GET", url_suffix=ENDPOINTS[f"ADD_AND_LIST_{entity_type.upper()}_NOTE_ENDPOINT"].format(entity_id)  # type: ignore[union-attr]
+        )
         return notes
 
     def get_account_by_account_id(self, account_id: str | None = None):
@@ -2339,7 +2339,7 @@ def add_notes_to_new_entries(notes: list, command_last_run_dt: datetime | None) 
         note_date_modified = arg_to_datetime(note.get("date_modified"))
         if note_date_modified and note_date_modified <= command_last_run_dt:  # type: ignore
             demisto.debug(
-                f"Skipping the note {note.get('id')} as it was modified earlier than the command last run " 'timestamp.'
+                f"Skipping the note {note.get('id')} as it was modified earlier than the command last run timestamp."
             )
             continue
         else:
@@ -2469,7 +2469,7 @@ def fetch_incidents(client: Client, integration_params: dict, is_test: bool = Fa
         last_created_events = previous_last_run[entity_type].get("last_created_events", [])  # Retro-compat
 
         demisto.debug(
-            f"{entity_type} - Last fetched incident" f"last_timestamp : {last_fetched_timestamp} / ID : {last_fetched_id}"
+            f"{entity_type} - Last fetched incidentlast_timestamp : {last_fetched_timestamp} / ID : {last_fetched_id}"
         )
 
         start_time = iso_date_to_vectra_start_time(last_fetched_timestamp, look_back)
@@ -2584,7 +2584,8 @@ def get_modified_remote_data_command(client: Client) -> GetModifiedRemoteDataRes
     """
     args = demisto.args()
     command_args = GetModifiedRemoteDataArgs(args)
-    command_last_run_date = dateparser.parse(command_args.last_update, settings={"TIMEZONE": "UTC"}).strftime("%Y-%m-%dT%H%M")  # type: ignore
+    command_last_run_date = dateparser.parse(command_args.last_update, settings={
+                                             "TIMEZONE": "UTC"}).strftime("%Y-%m-%dT%H%M")  # type: ignore
     modified_entities_ids = []
 
     demisto.debug(f"Last update date of get-modified-remote-data command is {command_last_run_date}.")
@@ -2600,7 +2601,8 @@ def get_modified_remote_data_command(client: Client) -> GetModifiedRemoteDataRes
                 # Extract the query parameters
                 query_params = parse_qs(parsed_url.query)
                 page = arg_to_number(query_params.get("page", [""])[0], arg_name="page")  # type: ignore
-                page_size = arg_to_number(query_params.get("page_size", [""])[0], arg_name="page_size")  # type: ignore[assignment]
+                page_size = arg_to_number(query_params.get("page_size", [""])[
+                                          0], arg_name="page_size")  # type: ignore[assignment]
                 query_string = query_params.get("query_string", [""])[0]  # type: ignore
             else:
                 query_string = "_doc_modified_ts:>=" + command_last_run_date
@@ -2629,9 +2631,9 @@ def get_modified_remote_data_command(client: Client) -> GetModifiedRemoteDataRes
     # Filter out None values if there are any.
     modified_entities_ids: list[str] = list(filter(None, modified_entities_ids))  # type: ignore
     demisto.debug(
-        f"Performing get-modified-remote-data command. Numbers Entity IDs to update in XSOAR:" f" {len(modified_entities_ids)}"
+        f"Performing get-modified-remote-data command. Numbers Entity IDs to update in XSOAR: {len(modified_entities_ids)}"
     )
-    demisto.debug(f"Performing get-modified-remote-data command. Entity IDs to update in XSOAR:" f" {modified_entities_ids}")
+    demisto.debug(f"Performing get-modified-remote-data command. Entity IDs to update in XSOAR: {modified_entities_ids}")
 
     # Filter out any duplicate incident IDs.
     updated_incident_ids = list(set(modified_entities_ids))
@@ -2671,13 +2673,14 @@ def get_remote_data_command(client: Client, integration_params: dict = {}) -> Ge
     command_last_run_timestamp = command_last_run_dt.strftime(DATE_FORMAT)  # type: ignore
 
     demisto.debug(
-        f"The time when the last time get-remote-data command is called for current incident is " f"{command_last_run_timestamp}."
+        f"The time when the last time get-remote-data command is called for current incident is {command_last_run_timestamp}."
     )
 
     # Retrieve the latest entity data from the Vectra platform.
     if vectra_entity_type == "account":
         remote_incident_data = client.get_account_by_account_id(account_id=vectra_entity_id)
-        groups_response = client.list_group_request(group_type="account", account_names=[remote_incident_data.get("name")])  # type: ignore
+        groups_response = client.list_group_request(group_type="account", account_names=[
+                                                    remote_incident_data.get("name")])  # type: ignore
         remote_incident_data.update({"groups": groups_response.get("results", [])})
     else:
         remote_incident_data = client.get_host_by_host_id(host_id=vectra_entity_id)

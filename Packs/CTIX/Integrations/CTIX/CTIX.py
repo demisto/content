@@ -52,7 +52,7 @@ class Client(BaseClient):
         self.proxies = proxies
 
     def signature(self, expires: int) -> str:
-        to_sign = "%s\n%i" % (self.access_id, expires)
+        to_sign = f"{self.access_id}\n{expires}"
         return base64.b64encode(hmac.new(self.secret_key.encode("utf-8"), to_sign.encode("utf-8"), hashlib.sha1).digest()).decode(
             "utf-8"
         )

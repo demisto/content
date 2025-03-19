@@ -200,7 +200,7 @@ class Client(CrowdStrikeClient):
                 new_last_marker_time = demisto.getIntegrationContext().get("last_marker_time")
                 last_marker_time_for_debug = new_last_marker_time or "No data yet"
                 demisto.debug(
-                    "There are no indicators, " f"using last_marker_time={last_marker_time_for_debug} from Integration Context"
+                 f"There are no indicators, using last_marker_time={last_marker_time_for_debug} from Integration Context"
                 )
 
             if fetch_command:
@@ -516,7 +516,7 @@ def test_module(client: Client, args: dict) -> str:
     try:
         client.fetch_indicators(limit=client.limit, fetch_command=False)
     except Exception:
-        raise Exception("Could not fetch CrowdStrike Indicator Feed\n" "\nCheck your API key and your connection to CrowdStrike.")
+        raise Exception("Could not fetch CrowdStrike Indicator Feed\n\nCheck your API key and your connection to CrowdStrike.")
     return "ok"
 
 

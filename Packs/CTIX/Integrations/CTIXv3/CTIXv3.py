@@ -124,7 +124,7 @@ class Client(BaseClient):
         :param int expires: Epoch time in which time when signature will expire
         :return str signature : signature queryset
         """
-        to_sign = "%s\n%i" % (self.access_id, expires)
+        to_sign = f"{self.access_id}\n{expires}"
         return base64.b64encode(hmac.new(self.secret_key.encode("utf-8"), to_sign.encode("utf-8"), hashlib.sha1).digest()).decode(
             "utf-8"
         )
@@ -539,7 +539,7 @@ class Client(BaseClient):
         """
         tags_data = self.get_indicator_tags(object_type, object_id, {"page": page, "page_size": page_size})["data"]
         tags = [_["id"] for _ in tags_data["tags"]]
-        data = dict()
+        data = {}
         url_suffix = ""
         if operation == "add_tag_indicator":
             url_suffix = "ingestion/threat-data/action/add_tag/"

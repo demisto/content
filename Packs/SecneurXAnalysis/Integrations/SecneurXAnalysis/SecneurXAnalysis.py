@@ -168,33 +168,33 @@ def test_module(client: Client) -> Any:
 def create_request_json(argsDict: dict[str, str]) -> dict:
     params = {}
     try:
-        if SNXResponse.SNX_TASK_UUID_KEY in argsDict.keys():
+        if SNXResponse.SNX_TASK_UUID_KEY in argsDict:
             params[SNXResponse.SNX_TASK_UUID_KEY] = argsDict.get(SNXResponse.SNX_TASK_UUID_KEY)
-        if SNXResponse.SNX_LAST_COUNT_KEY in argsDict.keys():
+        if SNXResponse.SNX_LAST_COUNT_KEY in argsDict:
             params[SNXResponse.SNX_LAST_COUNT_KEY] = argsDict.get(SNXResponse.SNX_LAST_COUNT_KEY)
-        if SNXResponse.SNX_LAST_HOURS_KEY in argsDict.keys():
+        if SNXResponse.SNX_LAST_HOURS_KEY in argsDict:
             params[SNXResponse.SNX_LAST_HOURS_KEY] = argsDict.get(SNXResponse.SNX_LAST_HOURS_KEY)
-        if "Platform" in argsDict.keys():
+        if "Platform" in argsDict:
             platformValue = argsDict.get("Platform")
             params[SNXResponse.SNX_PLATFORM_KEY] = str(platformValue)
-        if "Priority" in argsDict.keys():
+        if "Priority" in argsDict:
             priorityValue = argsDict.get("Priority")
             params[SNXResponse.SNX_PRIORITY_KEY] = str(priorityValue)
-        if "Extension" in argsDict.keys():
+        if "Extension" in argsDict:
             extnValue = argsDict.get("Extension")
             if extnValue is not None and len(extnValue) != 0:
                 params[SNXResponse.SNX_EXTENSTION_KEY] = argsDict.get("Extension")
-        if "Duration" in argsDict.keys():
+        if "Duration" in argsDict:
             durationValue = argsDict.get("Duration")
             if durationValue is not None and len(durationValue) != 0:
                 params[SNXResponse.SNX_DURATION_KEY] = argsDict.get("Duration")
-        if "File Password" in argsDict.keys():
+        if "File Password" in argsDict:
             pwdValue = argsDict.get("File Password")
             if pwdValue is not None and len(pwdValue) != 0:
                 params[SNXResponse.SNX_FILE_PWD_KEY] = pwdValue
-        if "Reboot" in argsDict.keys():
+        if "Reboot" in argsDict:
             params[SNXResponse.SNX_REBOOT_KEY] = argsDict.get("Reboot")
-        if SNXResponse.SNX_REPORT_FORMAT_KEY in argsDict.keys():
+        if SNXResponse.SNX_REPORT_FORMAT_KEY in argsDict:
             params[SNXResponse.SNX_REPORT_FORMAT_KEY] = argsDict.get(SNXResponse.SNX_REPORT_FORMAT_KEY)
 
     except Exception as e:
@@ -223,43 +223,43 @@ def error_response(err_msg) -> str:
 def parse_response(response):
     try:
         jsonContent = OrderedDict()
-        if SNXReportParser.JSON_SHA256 in response.keys():
+        if SNXReportParser.JSON_SHA256 in response:
             jsonContent[JsonTableParser.SNX_SHA256] = response[SNXReportParser.JSON_SHA256]
-        if SNXReportParser.JSON_PLATFORM in response.keys():
+        if SNXReportParser.JSON_PLATFORM in response:
             jsonContent[JsonTableParser.SNX_PLATFORM_KEY] = response[SNXReportParser.JSON_PLATFORM]
-        if SNXReportParser.JSON_ANALYSIS_TIME in response.keys():
+        if SNXReportParser.JSON_ANALYSIS_TIME in response:
             jsonContent[JsonTableParser.SNX_ANALYSIS_TIME] = response[SNXReportParser.JSON_ANALYSIS_TIME]
-        if SNXReportParser.JSON_VERDICTS in response.keys():
+        if SNXReportParser.JSON_VERDICTS in response:
             verdictResult = None
             verdictValue = response[SNXReportParser.JSON_VERDICTS]
             verdictResult = verdictValue.lower().capitalize()
             jsonContent[JsonTableParser.SNX_VERDICT] = verdictResult
-        if SNXReportParser.JSON_TAGS in response.keys():
+        if SNXReportParser.JSON_TAGS in response:
             jsonContent[JsonTableParser.SNX_TAGS] = response[SNXReportParser.JSON_TAGS]
-        if SNXReportParser.JSON_DNS_REQ in response.keys():
+        if SNXReportParser.JSON_DNS_REQ in response:
             dnsList = []
             for dnsData in response[SNXReportParser.JSON_DNS_REQ]:
                 dnsReq = []
-                if SNXReportParser.JSON_HOSTNAME in dnsData.keys():
+                if SNXReportParser.JSON_HOSTNAME in dnsData:
                     dnsReq.append(dnsData[SNXReportParser.JSON_HOSTNAME])
-                if SNXReportParser.JSON_RESOLVEDIPS in dnsData.keys():
+                if SNXReportParser.JSON_RESOLVEDIPS in dnsData:
                     dnsReq.append(dnsData[SNXReportParser.JSON_RESOLVEDIPS])
                 data = formatCell(dnsReq)
                 dnsList.append(data)
             if dnsList:
                 jsonContent[JsonTableParser.SNX_DNS_REQ] = dnsList
-        if SNXReportParser.JSON_HTTP_REQ in response.keys():
+        if SNXReportParser.JSON_HTTP_REQ in response:
             httpList = []
             split_line = ""
             for httpData in response[SNXReportParser.JSON_HTTP_REQ]:
                 methodValue = None
                 requestValue = None
                 statusCodeValue = None
-                if SNXReportParser.JSON_METHOD in httpData.keys():
+                if SNXReportParser.JSON_METHOD in httpData:
                     methodValue = httpData[SNXReportParser.JSON_METHOD]
-                if SNXReportParser.JSON_URL in httpData.keys():
+                if SNXReportParser.JSON_URL in httpData:
                     requestValue = httpData[SNXReportParser.JSON_URL]
-                if SNXReportParser.JSON_STATUS_CODE in httpData.keys():
+                if SNXReportParser.JSON_STATUS_CODE in httpData:
                     statusCodeValue = httpData[SNXReportParser.JSON_STATUS_CODE]
                 if methodValue and requestValue and statusCodeValue:
                     httpList.append(
@@ -268,12 +268,12 @@ def parse_response(response):
                     split_line = "\n"
             if httpList:
                 jsonContent[JsonTableParser.SNX_HTTP_REQ] = httpList
-        if SNXReportParser.JSON_JA3_LIST in response.keys():
+        if SNXReportParser.JSON_JA3_LIST in response:
             jsonContent[JsonTableParser.SNX_JA3_LIST] = response[SNXReportParser.JSON_JA3_LIST]
-        if SNXReportParser.JSON_PROCESS_CREATED in response.keys():
+        if SNXReportParser.JSON_PROCESS_CREATED in response:
             creationList = convert_json_to_str(response[SNXReportParser.JSON_PROCESS_CREATED])
             jsonContent[JsonTableParser.SNX_PROCESS_CREATED] = creationList
-        if SNXReportParser.JSON_REGISTRY_SET in response.keys():
+        if SNXReportParser.JSON_REGISTRY_SET in response:
             registrySetList = []
             split_line = ""
             for registry_data in response[SNXReportParser.JSON_REGISTRY_SET]:
@@ -282,12 +282,12 @@ def parse_response(response):
                 split_line = "\n"
             if registrySetList:
                 jsonContent[JsonTableParser.SNX_REGISTRY_SET] = registrySetList
-        if SNXReportParser.JSON_REGISTRY_DELETED in response.keys():
+        if SNXReportParser.JSON_REGISTRY_DELETED in response:
             jsonContent[JsonTableParser.SNX_REGISTRY_DELETED] = response[SNXReportParser.JSON_REGISTRY_DELETED]
-        if SNXReportParser.JSON_FILE_WRITTEN in response.keys():
+        if SNXReportParser.JSON_FILE_WRITTEN in response:
             fileCreatedList = convert_json_to_str(response[SNXReportParser.JSON_FILE_WRITTEN])
             jsonContent[JsonTableParser.SNX_FILE_WRITTEN] = fileCreatedList
-        if SNXReportParser.JSON_FILE_DROPPED in response.keys():
+        if SNXReportParser.JSON_FILE_DROPPED in response:
             file_drop_list = []
             for file_drop in response[SNXReportParser.JSON_FILE_DROPPED]:
                 sha256Value = file_drop[SNXReportParser.JSON_FILE_SHA256]
@@ -295,13 +295,13 @@ def parse_response(response):
                 file_drop_list.append(typeValue + " : " + sha256Value)
             if file_drop_list:
                 jsonContent[JsonTableParser.SNX_FILE_DROPPED] = file_drop_list
-        if SNXReportParser.JSON_FILE_DELETED in response.keys():
+        if SNXReportParser.JSON_FILE_DELETED in response:
             fileDeletedList = convert_json_to_str(response[SNXReportParser.JSON_FILE_DELETED])
             jsonContent[JsonTableParser.SNX_FILE_DELETED] = fileDeletedList
-        if SNXReportParser.JSON_FILE_MODIFIED in response.keys():
+        if SNXReportParser.JSON_FILE_MODIFIED in response:
             fileModifiedList = convert_json_to_str(response[SNXReportParser.JSON_FILE_MODIFIED])
             jsonContent[JsonTableParser.SNX_FILE_MODIFIED] = fileModifiedList
-        if SNXReportParser.JSON_IOC in response.keys() and SNXReportParser.JSON_DATA in response[SNXReportParser.JSON_IOC].keys():
+        if SNXReportParser.JSON_IOC in response and SNXReportParser.JSON_DATA in response[SNXReportParser.JSON_IOC]:
             iocList = parse_report_iocs(response[SNXReportParser.JSON_IOC][SNXReportParser.JSON_DATA])
             jsonContent[SNXResponse.SNX_IOC_KEY] = iocList
         return jsonContent
@@ -327,15 +327,15 @@ def convert_json_to_str(data_list):
 def parse_report_iocs(ioc_json):
     parsed_ioc_list = []
     try:
-        if SNXReportParser.JSON_OBJECTS in ioc_json.keys():
+        if SNXReportParser.JSON_OBJECTS in ioc_json:
             ioc_list = ioc_json[SNXReportParser.JSON_OBJECTS]
             for ioc_data in ioc_list:
-                if SNXReportParser.JSON_PATTERN in ioc_data.keys():
+                if SNXReportParser.JSON_PATTERN in ioc_data:
                     patternData = ioc_data[SNXReportParser.JSON_PATTERN]
                     patternData = patternData.replace("[", "").replace("]", "")
                     patternKey = patternData.split(":")[0]
                     patternValue = patternData.split(" = ")[1].replace("'", "")
-                    if patternKey.lower() in SNX_IOC_TYPES_TO_DEMISTO_TYPES.keys():
+                    if patternKey.lower() in SNX_IOC_TYPES_TO_DEMISTO_TYPES:
                         patternKey = SNX_IOC_TYPES_TO_DEMISTO_TYPES[patternKey]
                     parsed_ioc_list.append(patternKey + " : " + str(patternValue))
 
@@ -376,7 +376,7 @@ def parse_dbot_score(reportJson):
             submissionType = reportJson.get(SNXReportParser.SNX_SUBMISSION_TYPE_KEY, None)
             verdictValue = reportJson.get(SNXReportParser.JSON_VERDICTS, None)
             verdictScore = 0
-            if verdictValue is not None and verdictValue in SNX_VERDICT_TO_DBOTSCORE.keys():
+            if verdictValue is not None and verdictValue in SNX_VERDICT_TO_DBOTSCORE:
                 verdictScore = SNX_VERDICT_TO_DBOTSCORE[verdictValue]
             if submissionType == SNXResponse.SNX_FILE_KEY:
                 indicatorValue = reportJson.get(SNXReportParser.JSON_SHA256, None)
@@ -418,7 +418,8 @@ def parse_report_entity(reportJson):
                         name=subjectName, dbot_score=dbot_score, sha256=sha256Value, tags=tagList, description=verdictValue
                     )
                 elif submissionType == SNXResponse.SNX_URL_KEY:
-                    indicator = Common.URL(url=subjectName, dbot_score=dbot_score, tags=tagList, description=verdictValue)  # type: ignore
+                    indicator = Common.URL(url=subjectName, dbot_score=dbot_score, tags=tagList,
+                                           description=verdictValue)  # type: ignore
 
     except Exception as e:
         raise DemistoException(e)
@@ -432,7 +433,7 @@ def post_submit_file(client: Client, args: dict[str, str]) -> CommandResults:
         raise DemistoException("Entry ID Not Found")
     platformValue = args.get("platform") or SNXResponse.SNX_WINDOWS_KEY
     params = create_request_json(args)
-    if "platform" not in params.keys():
+    if "platform" not in params:
         params["platform"] = platformValue
     fileEntry = demisto.getFilePath(entryId)
     fileName = fileEntry["name"]
@@ -440,7 +441,7 @@ def post_submit_file(client: Client, args: dict[str, str]) -> CommandResults:
     fileData = {"file": (fileName, open(filePath, "rb"))}
     response, err_msg = client.submit_file(urlSuffix, fileData, params)
     if response:
-        if SNXResponse.SNX_SUCCESS_KEY in response.keys() and SNXResponse.SNX_RESULT_KEY in response.keys():
+        if SNXResponse.SNX_SUCCESS_KEY in response.keys() and SNXResponse.SNX_RESULT_KEY in response:
             finalJson = response[SNXResponse.SNX_RESULT_KEY]
             readableOutput = tableToMarkdown(f"File Submitted Successfully: {fileName}", finalJson)
             return CommandResults(readable_output=readableOutput, outputs_prefix="SecneurXAnalysis.SubmitFile", outputs=finalJson)
@@ -463,7 +464,7 @@ def post_submit_url(client: Client, args: dict[str, str]) -> CommandResults:
     urlParams = {SNXReportParser.JSON_URL: urlValue}
     response, err_msg = client.submit_url(urlSuffix, params, urlParams)
     if response:
-        if SNXResponse.SNX_SUCCESS_KEY in response.keys() and SNXResponse.SNX_RESULT_KEY in response.keys():
+        if SNXResponse.SNX_SUCCESS_KEY in response and SNXResponse.SNX_RESULT_KEY in response:
             finalJson = response[SNXResponse.SNX_RESULT_KEY]
             readableOutput = tableToMarkdown("URL Submitted Successfuly", finalJson)
             return CommandResults(readable_output=readableOutput, outputs_prefix="SecneurXAnalysis.SubmitURL", outputs=finalJson)
@@ -486,7 +487,7 @@ def get_verdict_cmd(client: Client, args: dict[str, str]) -> CommandResults:
         params = {SNXResponse.SNX_TASK_UUID_KEY: taskUuid}
         response, err_msg = client.get_response(urlSuffix, params)
         if response:
-            if SNXResponse.SNX_SUCCESS_KEY in response.keys() and response[SNXResponse.SNX_SUCCESS_KEY] == SNXResponse.SUCCESS:
+            if SNXResponse.SNX_SUCCESS_KEY in response and response[SNXResponse.SNX_SUCCESS_KEY] == SNXResponse.SUCCESS:
                 dataResult = response[SNXResponse.SNX_RESULT_KEY]
                 readableOutput = tableToMarkdown(f"SecneurX Analysis - Verdict Result: {taskUuid}", t=dataResult)
                 return CommandResults(
@@ -522,7 +523,7 @@ def get_completed_cmd(client: Client, args: dict[str, str]) -> CommandResults:
     params = create_request_json(args)
     response, err_msg = client.get_response(urlSuffix, params)
     if response:
-        if SNXResponse.SNX_SUCCESS_KEY in response.keys() and response[SNXResponse.SNX_SUCCESS_KEY] == SNXResponse.SUCCESS:
+        if SNXResponse.SNX_SUCCESS_KEY in response and response[SNXResponse.SNX_SUCCESS_KEY] == SNXResponse.SUCCESS:
             reportList = response.get(SNXResponse.SNX_RESULT_KEY, SNXResponse.SNX_NULL_KEY)
             if reportList != SNXResponse.SNX_NULL_KEY and len(reportList) > 0:
                 readableOutput = tableToMarkdown(
@@ -557,13 +558,13 @@ def get_pending_cmd(client: Client, args: dict[str, str]) -> CommandResults:
     params = create_request_json(args)
     response, err_msg = client.get_response(urlSuffix, params)
     if response:
-        if SNXResponse.SNX_SUCCESS_KEY in response.keys() and response[SNXResponse.SNX_SUCCESS_KEY] == SNXResponse.SUCCESS:
+        if SNXResponse.SNX_SUCCESS_KEY in response and response[SNXResponse.SNX_SUCCESS_KEY] == SNXResponse.SUCCESS:
             reportList = response.get(SNXResponse.SNX_RESULT_KEY, SNXResponse.SNX_NULL_KEY)
             if reportList != SNXResponse.SNX_NULL_KEY and len(reportList) > 0:
                 for report in reportList:
-                    if SNXResponse.SNX_FILENAME_KEY in report.keys():
+                    if SNXResponse.SNX_FILENAME_KEY in report:
                         report[SNXResponse.SAMPLE_KEY] = report[SNXResponse.SNX_FILENAME_KEY]
-                    elif SNXReportParser.JSON_URL in report.keys():
+                    elif SNXReportParser.JSON_URL in report:
                         report[SNXResponse.SAMPLE_KEY] = report[SNXReportParser.JSON_URL]
                     else:
                         continue
@@ -597,13 +598,13 @@ def get_status_cmd(client: Client, args: dict[str, str]) -> CommandResults:
     params = create_request_json(args)
     response, err_msg = client.get_response(urlSuffix, params)
     if response:
-        if SNXResponse.SNX_SUCCESS_KEY in response.keys() and response[SNXResponse.SNX_SUCCESS_KEY] == SNXResponse.SUCCESS:
+        if SNXResponse.SNX_SUCCESS_KEY in response and response[SNXResponse.SNX_SUCCESS_KEY] == SNXResponse.SUCCESS:
             reportList = response.get(SNXResponse.SNX_RESULT_KEY, SNXResponse.SNX_NULL_KEY)
             if reportList != SNXResponse.SNX_NULL_KEY and len(reportList) > 0:
                 for report in reportList:
-                    if SNXResponse.SNX_FILENAME_KEY in report.keys():
+                    if SNXResponse.SNX_FILENAME_KEY in report:
                         report[SNXResponse.SAMPLE_KEY] = report[SNXResponse.SNX_FILENAME_KEY]
-                    elif SNXReportParser.JSON_URL in report.keys():
+                    elif SNXReportParser.JSON_URL in report:
                         report[SNXResponse.SAMPLE_KEY] = report[SNXReportParser.JSON_URL]
                     else:
                         continue
@@ -655,7 +656,7 @@ def get_report_cmd(client: Client, args: dict[str, str]):
                 title = None
                 headerList = []
                 readableContents = None
-                for header in contents.keys():
+                for header in contents:
                     headerList.append(header)
                 title = f"SecneurX Analysis - Detailed Report of the Analyzed Sample: {taskUuid}"
                 readableContents = format_report_contents(contents)
@@ -673,7 +674,7 @@ def get_report_cmd(client: Client, args: dict[str, str]):
             else:
                 reportFileName = taskUuid + reportExtn
                 fileContent = fileResult(reportFileName, response)
-                demisto.results(fileContent)
+                demisto.results(fileContent)    # noqa: RET503
         else:
             msg = error_response(err_msg)
             result = {SNXResponse.SNX_ERROR_MSG_KEY: msg, "Status": SNXResponse.SNX_FAILED_KEY}

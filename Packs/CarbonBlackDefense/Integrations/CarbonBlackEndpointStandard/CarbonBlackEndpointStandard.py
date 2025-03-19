@@ -553,7 +553,7 @@ class Client(BaseClient):
         :rtype: ``dict``
         """
         suffix_url = (
-            f"api/investigate/v2/orgs/{self.organization_key}/enriched_events/search_jobs/{job_id}/results" f"?rows={rows}"
+            f"api/investigate/v2/orgs/{self.organization_key}/enriched_events/search_jobs/{job_id}/results?rows={rows}"
         )
         return self._http_request(method="GET", url_suffix=suffix_url, headers=self.headers)
 
@@ -764,7 +764,7 @@ class Client(BaseClient):
         :return: dict containing the results data'.
         :rtype: ``dict``
         """
-        suffix_url = f"api/investigate/v2/orgs/{self.organization_key}/processes/search_jobs/{job_id}/results?rows=" f"{rows}"
+        suffix_url = f"api/investigate/v2/orgs/{self.organization_key}/processes/search_jobs/{job_id}/results?rows={rows}"
         return self._http_request(method="GET", url_suffix=suffix_url, headers=self.headers)
 
     # Alerts API
@@ -1523,7 +1523,7 @@ def get_alert_details_command(client: Client, args: dict):
 
     res = client.get_alert_by_id(alert_id)
 
-    if "id" not in res.keys():
+    if "id" not in res:
         return f"The alert id: {alert_id} was not found"
 
     headers = [

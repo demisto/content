@@ -429,7 +429,7 @@ def format_sort(sort_str: str) -> list:
         if ":" not in field:
             raise ValueError("`sort` is not in the correct format.")
         field, type = field.split(":", 1)
-        if type not in SORT_TYPE_DICT.keys():
+        if type not in SORT_TYPE_DICT:
             raise ValueError("`sort` is not in the correct format. Please make sure it's either 'asc' or 'desc'")
         sort_list.append((field, SORT_TYPE_DICT[type]))
     return sort_list
@@ -526,7 +526,7 @@ def pipeline_query_command(
         raise DemistoException("The `pipeline` argument is not a valid json.")
 
     if raw_response:
-        raw_response = raw_response[offset : (offset + limit)]  # type: ignore
+        raw_response = raw_response[offset: (offset + limit)]  # type: ignore
         readable_outputs = tableToMarkdown(
             f"Total of {len(raw_response)} entries were found in MongoDB collection: `{collection}` "
             f"with pipeline: {pipeline}:",

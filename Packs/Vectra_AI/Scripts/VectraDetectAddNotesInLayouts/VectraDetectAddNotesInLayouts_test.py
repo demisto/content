@@ -116,9 +116,8 @@ def test_main_with_exception(mock_execute_command, mock_return_results, mocker, 
     mock_execute_command.side_effect = Exception("Some error message")
 
     # Act and Assert
-    with capfd.disabled():
-        with pytest.raises(SystemExit) as err:
-            main()
+    with capfd.disabled(), pytest.raises(SystemExit) as err:
+        main()
 
     assert err.value.code == 0
     mock_execute_command.assert_called_once_with("vectra-account-note-list", args={"account_id": "123"})

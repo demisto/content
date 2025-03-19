@@ -444,7 +444,7 @@ def fetchIncidents():
 
 
 """ EXECUTION """
-LOG("command is %s" % (command))
+LOG(f"command is {command}")
 
 try:
     if command == "test-module":

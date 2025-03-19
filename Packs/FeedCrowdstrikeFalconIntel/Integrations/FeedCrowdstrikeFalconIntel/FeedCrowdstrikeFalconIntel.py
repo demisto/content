@@ -191,7 +191,7 @@ def test_module(client: Client, args: dict, feed_tags: list, tlp_color: str | No
         tags = argToList(demisto.params().get("feedTags"))
         client.get_indicators(tags, tlp_color, limit=1, offset=0)
     except Exception:
-        raise Exception("Could not fetch CrowdStrike Feed\n" "\nCheck your API key and your connection to CrowdStrike.")
+        raise Exception("Could not fetch CrowdStrike Feed\n\nCheck your API key and your connection to CrowdStrike.")
     return "ok", {}, {}
 
 
@@ -321,7 +321,8 @@ def main():
 
             demisto.setLastRun(last_run_data)
         else:
-            readable_output, outputs, raw_response = commands[command](client, demisto.args(), feed_tags, tlp_color)  # type: ignore
+            readable_output, outputs, raw_response = commands[command](
+                client, demisto.args(), feed_tags, tlp_color)  # type: ignore
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
         raise Exception(f"Error in CrowdStrike falcon intel Integration [{e}]")

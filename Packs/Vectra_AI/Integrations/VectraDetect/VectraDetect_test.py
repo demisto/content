@@ -886,7 +886,7 @@ def test_vectra_search_assignments_command(requests_mock, query_args, expected_o
 
     # Specific answers
     requests_mock.get(
-        f"{API_URL}{API_ENDPOINT_ASSIGNMENTS}" f"?resolved=false",
+        f"{API_URL}{API_ENDPOINT_ASSIGNMENTS}?resolved=false",
         complete_qs=True,
         json={"count": 1, "results": [load_test_data("single_assignment.json")]},
     )
@@ -912,7 +912,7 @@ def test_vectra_search_outcomes_command(requests_mock, query_args, expected_outp
 
     # Specific answers
     requests_mock.get(
-        f"{API_URL}{API_ENDPOINT_OUTCOMES}" f"?page=1&page_size=200",
+        f"{API_URL}{API_ENDPOINT_OUTCOMES}?page=1&page_size=200",
         complete_qs=True,
         json={"count": 1, "results": [load_test_data("single_outcome.json")]},
     )
@@ -1303,7 +1303,7 @@ def test_vectra_get_assignment_by_id_command(requests_mock, id, expected_outputs
     requests_mock.get(f"{API_URL}{API_ENDPOINT_ASSIGNMENTS}", json={})
     # Specific answers
     requests_mock.get(
-        f"{API_URL}{API_ENDPOINT_ASSIGNMENTS}" f"/25",
+        f"{API_URL}{API_ENDPOINT_ASSIGNMENTS}/25",
         complete_qs=True,
         json={"assignment": load_test_data("single_assignment.json")},
     )
@@ -1437,7 +1437,7 @@ def test_vectra_assignment_assign_command(
     # Test answer, useless to check XSOAR inner exceptions (none API call raised)
     # Need to create inner checks based on post query body to have a better coverage
     requests_mock.put(
-        f"{API_URL}{API_ENDPOINT_ASSIGNMENTS}" "/25",
+        f"{API_URL}{API_ENDPOINT_ASSIGNMENTS}/25",
         complete_qs=True,
         json={"assignment": load_test_data("single_assignment.json")},
     )
@@ -1576,7 +1576,7 @@ def test_vectra_assignment_resolve_command(
     # Default answer, useless to check XSOAR inner exceptions (none API call raised)
     # Need to create inner checks based on post query body to have a better coverage
     requests_mock.put(
-        f"{API_URL}{API_ENDPOINT_ASSIGNMENTS}" "/25/resolve",
+        f"{API_URL}{API_ENDPOINT_ASSIGNMENTS}/25/resolve",
         complete_qs=True,
         json={"assignment": load_test_data("single_assignment.json")},
     )
@@ -1615,7 +1615,7 @@ def test_vectra_get_outcome_by_id_command(requests_mock, id, expected_outputs, e
     requests_mock.get(f"{API_URL}{API_ENDPOINT_OUTCOMES}", json={})
     # Specific answers
     requests_mock.get(
-        f"{API_URL}{API_ENDPOINT_OUTCOMES}" f"/4" f"?page=1&page_size=200",
+        f"{API_URL}{API_ENDPOINT_OUTCOMES}/4?page=1&page_size=200",
         complete_qs=True,
         json=load_test_data("single_outcome.json"),
     )
@@ -1716,7 +1716,7 @@ def test_vectra_get_user_by_id_command(requests_mock, id, expected_outputs, expe
     # Default answer
     requests_mock.get(f"{API_URL}{API_ENDPOINT_USERS}", json={})
     # Specific answers
-    requests_mock.get(f"{API_URL}{API_ENDPOINT_USERS}" f"/123", complete_qs=True, json=load_test_data("single_user.json"))
+    requests_mock.get(f"{API_URL}{API_ENDPOINT_USERS}/123", complete_qs=True, json=load_test_data("single_user.json"))
 
     client = Client(base_url=f"{API_URL}", headers={})
 

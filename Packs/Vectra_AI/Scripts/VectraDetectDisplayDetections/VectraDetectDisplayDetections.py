@@ -65,7 +65,7 @@ def get_detections_list_hr(detections) -> CommandResults:
     """
     hr_dict = []
     if not detections or not json.loads(detections[0]):
-        return CommandResults(readable_output="##### Couldn't find any matching entity detections for " "provided filters.")
+        return CommandResults(readable_output="##### Couldn't find any matching entity detections for provided filters.")
     # Process detection_set and create detection_ids field
     for detection in detections:  # type: ignore
         # Trim API version from url

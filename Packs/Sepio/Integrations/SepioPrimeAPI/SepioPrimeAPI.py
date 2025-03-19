@@ -414,7 +414,7 @@ class Client(BaseClient):
 
     def __prime_get_from_api_retries(self, url_suffix, search_params, sort_by, max_size, retries=2, results_key="data"):
         i = 1
-        while i <= retries:
+        while i <= retries: # noqa: RET503
             i += 1
             try:
                 res = self.__prime_get_from_api(url_suffix, search_params, sort_by, max_size)
@@ -439,7 +439,7 @@ class Client(BaseClient):
 
     def __prime_post_to_api_retries(self, url_suffix, json_data, retries=2):
         i = 1
-        while i <= retries:
+        while i <= retries: # noqa: RET503
             i += 1
             try:
                 res = self.__prime_post_to_api(url_suffix, json_data)
@@ -498,7 +498,7 @@ class Client(BaseClient):
             raise Exception(http_res.text)
 
         if http_res.status_code == 403:  # forbbiden for users with this type of user
-            raise Exception("This command can be used only by Sepio Prime " "users with higher user profile")
+            raise Exception("This command can be used only by Sepio Prime users with higher user profile")
 
         if not http_res.ok:
             raise Exception(
@@ -605,7 +605,7 @@ def arg_to_timestamp(arg, arg_name, required):
             raise ValueError(f"Invalid date: {arg_name}")
 
         return int(date.timestamp())
-    if isinstance(arg, (int, float)):
+    if isinstance(arg, int|  float):
         # Convert to int if the input is a float
         return int(arg)
     raise ValueError(f'Invalid date: "{arg_name}"')

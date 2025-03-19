@@ -342,7 +342,7 @@ def build_filter_and_url_to_search_with(
     else:
         request_data = args_to_filter(arguments)
 
-    request_data = {"filters": request_data} if "filters" not in request_data.keys() else request_data
+    request_data = {"filters": request_data} if "filters" not in request_data else request_data
     if is_scan:
         request_data["isScan"] = True  # type: ignore[assignment]
     return request_data, url_suffix
@@ -396,7 +396,7 @@ def args_to_filter_for_dismiss_and_resolve_alerts(alert_ids: Any, custom_filter:
         request_data = json.loads(custom_filter)
     else:
         raise DemistoException("Error: You must enter at least one of these arguments: alert ID, custom filter.")
-    request_data = {"filters": request_data} if "filters" not in request_data.keys() else request_data
+    request_data = {"filters": request_data} if "filters" not in request_data else request_data
     return request_data
 
 
@@ -711,7 +711,7 @@ def arrange_alerts_by_incident_type(alerts: List[dict]):
     for alert in alerts:
         incident_types: Dict[str, Any] = {}
         for entity in alert["entities"]:
-            if entity["type"] not in incident_types.keys():
+            if entity["type"] not in incident_types:
                 incident_types[entity["type"]] = []
             incident_types[entity["type"]].append(entity)
         alert.update(incident_types)

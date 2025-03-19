@@ -11,7 +11,7 @@ CONNECTION_ERROR_MSG = "Connection Error - check your server URL"
 AUTHORIZATION_ERROR_MSG = "Authorization Error - check your API Credentials"
 ORG_ID_ERROR_MSG = "Authorization Error - check your Organization Key"
 PROXY_ERROR_MSG = (
-    "Proxy Error - if the 'Use system proxy' checkbox in the integration configuration is" " selected, try clearing the checkbox."
+    "Proxy Error - if the 'Use system proxy' checkbox in the integration configuration is selected, try clearing the checkbox."
 )
 urllib3.disable_warnings()  # pylint: disable=no-member
 
@@ -85,7 +85,7 @@ def list_directory_command(api_client: CBCloudAPI, device_id: str, directory_pat
             }
         )
 
-    context_entry = dict(content=context_entry_items, device_id=device_id, directory_path=directory_path)
+    context_entry = {'content': context_entry_items, 'device_id': device_id, 'directory_path': directory_path}
 
     readable_output = tableToMarkdown(
         f"Directory of {directory_path}{partial_res_msg}",
@@ -129,7 +129,7 @@ def list_reg_sub_keys_command(api_client: CBCloudAPI, device_id: str, reg_path: 
 
     sub_keys, partial_res_msg = get_limited_results(original_results=sub_keys, limit=limit)
 
-    context_entry = dict(sub_keys=sub_keys, device_id=device_id, key=reg_path)
+    context_entry = {'sub_keys': sub_keys, 'device_id': device_id, 'key': reg_path}
     human_readable = tableToMarkdown(
         name=f"Carbon Black Defense Live Response Registry sub keys{partial_res_msg}", t=sub_keys, headers=["Sub keys"]
     )
@@ -152,8 +152,8 @@ def get_reg_values_command(api_client: CBCloudAPI, device_id: str, reg_path: str
 
     values, partial_res_msg = get_limited_results(original_results=values, limit=limit)
 
-    context_entry = dict(key=reg_path, values=values, device_id=device_id)
-    human_readable = [dict(name=val["registry_name"], type=val["registry_type"], data=val["registry_data"]) for val in values]
+    context_entry = {'key': reg_path, 'values': values, 'device_id': device_id}
+    human_readable = [{'name': val["registry_name"], 'type': val["registry_type"], 'data': val["registry_data"]} for val in values]
 
     readable_output = tableToMarkdown(
         f"Carbon Black Defense Live Response Registry key values{partial_res_msg}",
@@ -203,15 +203,16 @@ def list_processes_command(api_client: CBCloudAPI, device_id: str, limit: Union[
 
     headers = ["path", "pid", "command_line", "username"]
     processes_readable = [
-        dict(
-            path=process["process_path"],
-            pid=process["process_pid"],
-            command_line=process["process_cmdline"],
-            user_name=process["process_username"],
-        )
+        {
+            'path': process["process_path"],
+            'pid': process["process_pid"],
+            'command_line': process["process_cmdline"],
+            'user_name': process["process_username"]
+        }
+
         for process in processes
     ]
-    context_entry = dict(device_id=device_id, processes=processes)
+    context_entry = {'device_id': device_id, 'processes': processes}
 
     readable_output = tableToMarkdown(
         f"Carbon Black Defense Live Response Processes{partial_res_msg}",
@@ -266,11 +267,12 @@ def create_process_command(
     else:
         human_readable = f"Process: {command_string} was successfully executed."
 
-    context_output = dict(
-        return_value=process_results_str,
-        device_id=device_id,
-        command_string=command_string,
-    )
+    context_output = {
+    'return_value': process_results_str,
+    'device_id': device_id,
+    'command_string': command_string
+}
+
 
     return CommandResults(
         outputs_prefix="CarbonBlackDefenseLR.ExecuteProcess",
@@ -358,7 +360,13 @@ def main():
         raise NotImplementedError(f"Command: {command} not implemented")
     demisto.debug(f"Command being called is {command}")
     try:
-        credentials = dict(url=url, ssl_verify=verify_certificate, token=f"{cb_custom_key}/{cb_custom_id}", org_key=cb_org_key)
+        credentials = {
+            'url': url,
+            'ssl_verify': verify_certificate,
+            'token': f"{cb_custom_key}/{cb_custom_id}",
+            'org_key': cb_org_key
+        }
+
         api = CBCloudAPI(**credentials)
         result = commands[command](api_client=api, **demisto.args())  # type: ignore
         return_results(result)

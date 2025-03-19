@@ -3080,7 +3080,7 @@ def update_remote_system(
         demisto.info(f"remote data of {ticket_id}: {parsed_args.data}")
     except Exception as error:
         demisto.info(
-            f"Error in Freshservice outgoing mirror for incident {ticket_id} - {ticket_type} \n" f"Error message: {error}"
+            f"Error in Freshservice outgoing mirror for incident {ticket_id} - {ticket_type} \nError message: {error}"
         )
 
     finally:

@@ -12,7 +12,7 @@ DEFAULT_INCIDENT_TYPE = ["Vectra Account", "Vectra Host"]
 
 def remove_space_from_args(args):
     """Remove space from args."""
-    for key in args.keys():
+    for key in args:
         if isinstance(args[key], str):
             args[key] = args[key].strip()
     return args
