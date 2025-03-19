@@ -284,16 +284,16 @@ def flatten_event_file_items(event: dict[str, Any]):
     if not event or not event["items"]:
         return []
     return [{
-                "eventId": event.get("eventId"),
-                "fileName": item.get("name"),
-                "fileId": item.get("itemId"),
-                "name": item.get("name"),
-                "eventType": item.get("type"),
-                "description": event.get("description"),
-                "date": event.get("date"),
-                "severity": event.get("severity"),
-                "sourceApplication": event.get("sourceApplication"),
-            } for item in event["items"]]
+        "eventId": event.get("eventId"),
+        "fileName": item.get("name"),
+        "fileId": item.get("itemId"),
+        "name": item.get("name"),
+        "eventType": item.get("type"),
+        "description": event.get("description"),
+        "date": event.get("date"),
+        "severity": event.get("severity"),
+        "sourceApplication": event.get("sourceApplication"),
+    } for item in event["items"]]
 
 
 def convert_file_event_to_incident(file_event: dict[str, Any]):

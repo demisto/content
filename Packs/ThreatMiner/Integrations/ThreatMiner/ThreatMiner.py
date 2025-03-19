@@ -629,7 +629,7 @@ def get_dbot_score(amount_of_detections):
         return 0
     if amount_of_detections > 0 and amount_of_detections < malicious_threshold:
         return 2
-    if amount_of_detections >= malicious_threshold: # noqa: RET503
+    if amount_of_detections >= malicious_threshold:  # noqa: RET503
         return 3
 
 

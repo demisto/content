@@ -210,10 +210,7 @@ def get_watchlist_data():
 
 
 def transform(spydata, key):
-    if key in spydata:
-        transformed_data = spydata[key]
-    else:
-        transformed_data = "empty"
+    transformed_data = spydata.get(key, "empty")
 
     return transformed_data
 

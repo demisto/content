@@ -2469,7 +2469,7 @@ def private_get_analysis_command(client: Client, args: dict) -> CommandResults:
 
         # URL attributes
         if ((last_analysis_stats := item_attributes.get("last_analysis_stats"))
-            and (detection_engines := sum(last_analysis_stats.values()))):
+                and (detection_engines := sum(last_analysis_stats.values()))):
             positive_detections = last_analysis_stats.get("malicious", 0)
             stats["positives"] = f"{positive_detections}/{detection_engines}"
 

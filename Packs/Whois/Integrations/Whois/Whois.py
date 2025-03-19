@@ -9,7 +9,7 @@ import ipwhois
 from typing import Dict, List, Optional, Type
 import urllib
 import whois
-from whois.parser import PywhoisError
+from whois.parser import PywhoisError     # pylint: disable=E0401,E0611
 import dateparser.search
 
 RATE_LIMIT_RETRY_COUNT_DEFAULT: int = 0
@@ -2367,7 +2367,7 @@ organization_regexes = (
 grammar["_data"]["id"] = precompile_regexes(grammar["_data"]["id"], re.IGNORECASE)  # type: ignore
 grammar["_data"]["status"] = precompile_regexes(grammar["_data"]["status"], re.IGNORECASE)  # type: ignore
 grammar["_data"]["creation_date"] = precompile_regexes(grammar["_data"]["creation_date"], re.IGNORECASE)  # type: ignore
-grammar["_data"]["expiration_date"] = precompile_regexes(
+grammar["_data"]["expiration_date"] = precompile_regexes(  # type: ignore
     grammar["_data"]["expiration_date"],  # type: ignore
     re.IGNORECASE,
 )
@@ -3683,7 +3683,7 @@ def whois_and_domain_command(command: str, reliability: str) -> list[CommandResu
     for domain in domains:
         demisto.debug(f"Getting whois for a single {domain=}")
         try:
-            domain_data = whois.whois(domain)
+            domain_data = whois.whois(domain)   # pylint: disable=E1102
             demisto.debug(f"'python-whois' lib return raw_data for {domain=} is: {domain_data=}")
             execution_metrics.success += 1
             whois_res = {}
@@ -3757,7 +3757,7 @@ def whois_and_domain_command(command: str, reliability: str) -> list[CommandResu
 def new_test_command():
     test_domain = "google.com"
     demisto.debug(f"Testing module using domain '{test_domain}'...")
-    whois_result = arrange_raw_whois_data_to_context(whois.whois(test_domain), test_domain)
+    whois_result = arrange_raw_whois_data_to_context(whois.whois(test_domain), test_domain)  # pylint: disable=E1102
     try:
         if whois_result["WHOIS"]["NameServers"][0] == "ns1.google.com":
             return "ok"
