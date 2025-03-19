@@ -2,7 +2,7 @@
     "name": "IRIS DFIR",
     "description": "IRIS is a collaborative platform aiming to help incident responders to share technical details during investigations.",
     "support": "community",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "Fabio Dias",
     "url": "",
     "email": "fabio.dias@ext.ec.europa.eu",
