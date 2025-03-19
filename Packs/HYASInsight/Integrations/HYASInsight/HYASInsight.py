@@ -292,7 +292,7 @@ def get_flatten_json_response(raw_api_response: list[Dict], endpoint: str) -> li
 def passive_dns_lookup_to_markdown(results: list[Dict], title: str) -> str:
     out = []
 
-    keys = [
+    keys = [  # type: ignore[name-defined]
         ("Count", "count", str),
         ("Domain", "domain", str),
         ("First seen", "first_seen", str),
@@ -328,7 +328,7 @@ def passive_dns_lookup_to_markdown(results: list[Dict], title: str) -> str:
 def dynamic_dns_lookup_to_markdown(results: list[Dict], title: str) -> str:
     out = []
 
-    keys = [
+    keys = [  # type: ignore[name-defined]
         ("A Record", "a_record", str),
         ("Account", "account", str),
         ("Created Date", "created", str),
@@ -353,7 +353,7 @@ def dynamic_dns_lookup_to_markdown(results: list[Dict], title: str) -> str:
 def whois_historic_lookup_to_markdown(results: list[Dict], title: str) -> str:
     out = []
 
-    keys = [
+    keys = [  # type: ignore[name-defined]
         ("Address", "address", list),
         ("City", "city", list),
         ("Country", "country", list),
@@ -385,7 +385,7 @@ def whois_historic_lookup_to_markdown(results: list[Dict], title: str) -> str:
 def whois_current_lookup_to_markdown(results: list[Dict], title: str) -> str:
     out = []
 
-    keys = [
+    keys = [  # type: ignore[name-defined]
         ("Abuse Emails", "abuse_emails", list),
         ("Address", "address", list),
         ("City", "city", list),
@@ -419,7 +419,7 @@ def whois_current_lookup_to_markdown(results: list[Dict], title: str) -> str:
 def malware_samples_lookup_to_markdown(results: list[Dict], title: str) -> str:
     out = []
 
-    keys = [
+    keys = [  # type: ignore[name-defined]
         ("Datetime", "datetime", str),
         ("Domain", "domain", str),
         ("IPV4 Address", "ipv4", str),
@@ -458,7 +458,7 @@ def associated_domains_lookup_to_markdown(results: list[Dict], title: str) -> st
 def c2_attribution_lookup_to_markdown(results: list[Dict], title: str) -> str:
     out = []
 
-    keys = [
+    keys = [  # type: ignore[name-defined]
         ("Actor IPv4", "actor_ipv4", str),
         ("C2 Domain", "c2_domain", str),
         ("C2 IP", "c2_ip", str),
@@ -487,7 +487,8 @@ def c2_attribution_lookup_to_markdown(results: list[Dict], title: str) -> str:
 def passive_hash_lookup_to_markdown(results: list[Dict], title: str) -> str:
     out = []
 
-    keys = [("Domain", "domain", str), ("MD5 Count", "md5_count", str)]  # type: List[Tuple[str, str, Callable]]
+    # type: list[tuple[str, str, Callable]]
+    keys = [("Domain", "domain", str), ("MD5 Count", "md5_count", str)]
 
     headers = [k[0] for k in keys]
     for result in results:
@@ -504,7 +505,7 @@ def passive_hash_lookup_to_markdown(results: list[Dict], title: str) -> str:
 def ssl_certificate_lookup_to_markdown(results: list[Dict], title: str) -> str:
     out = []
 
-    keys = [
+    keys = [  # type: ignore[name-defined]
         ("Geo City Name", "geo_geo_city_name", str),
         ("Geo Country ISO code", "geo_geo_country_iso_code", str),
         ("Geo Country Name", "geo_geo_country_name", str),
@@ -555,7 +556,7 @@ def ssl_certificate_lookup_to_markdown(results: list[Dict], title: str) -> str:
 def open_source_indicators_lookup_to_markdown(results: list[Dict], title: str) -> str:
     out = []
     # print(results)
-    keys = [
+    keys = [  # type: ignore[name-defined]
         ("Correlation Score", "map_correlation_score", float),
         ("Host IP", "map_host_ips_myArrayList", list),
         ("Nameserver", "map_nameservers_myArrayList", list),
@@ -619,7 +620,7 @@ def device_geo_indicators_lookup_to_markdown(results: list[Dict], title: str) ->
 def sinkhole_indicators_lookup_to_markdown(results: list[Dict], title: str) -> str:
     out = []
 
-    keys = [
+    keys = [  # type: ignore[name-defined]
         ("Count", "count", str),
         ("Country Name", "country_name", str),
         ("Data Port", "data_port", str),

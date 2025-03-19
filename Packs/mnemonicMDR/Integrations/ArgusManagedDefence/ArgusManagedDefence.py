@@ -129,19 +129,19 @@ def str_to_dict(string: str) -> dict:
     return {lst[i]: lst[i + 1] for i in range(0, len(lst), 2)}
 
 
-def date_time_to_epoch_milliseconds(date_time: datetime | str = None) -> int:
+def date_time_to_epoch_milliseconds(date_time: datetime | str = None) -> int:  # type: ignore[assignment]
     if isinstance(date_time, datetime):
         return int(date_time.timestamp() * 1000)
     if isinstance(date_time, str):
-        return date_time_to_epoch_milliseconds(dateparser.parse(date_time))
+        return date_time_to_epoch_milliseconds(dateparser.parse(date_time))  # type: ignore[arg-type]
     return int(datetime.now().timestamp() * 1000)
 
 
-def pretty_print_date(date_time: datetime | str = None) -> str:
+def pretty_print_date(date_time: datetime | str = None) -> str:  # type: ignore[assignment]
     if isinstance(date_time, datetime):
         return date_time.strftime(PRETTY_DATE_FORMAT)
     if isinstance(date_time, str):
-        return pretty_print_date(dateparser.parse(date_time))
+        return pretty_print_date(dateparser.parse(date_time))  # type: ignore[arg-type]
     return datetime.now().strftime(PRETTY_DATE_FORMAT)
 
 
@@ -473,7 +473,8 @@ def append_demisto_entry_to_argus_case(case_id: int, entry: dict[str, Any]) -> N
     demisto.debug(f"Appending entry to case {case_id}: {entry!s}")
     if entry.get("type") == 1:  # type note / chat
         comment = "<h3>Note mirrored from XSOAR</h3>"
-        comment += f"<i>Added by {entry.get('user')} at {pretty_print_date(entry.get('created'))}</i><br><br>"
+        comment += (f"<i>Added by {entry.get('user')} at"   # type: ignore[arg-type]
+                    f" {pretty_print_date(entry.get('created'))}</i><br><br>")
         comment += str(entry.get("contents"))
         add_comment(caseID=case_id, comment=comment)
     elif entry.get("type") == 3:  # type file

@@ -805,8 +805,8 @@ def search_group_members(default_base_dn, page_size):
     if member_type == "group":
         query = f"(&(objectCategory={member_type})(memberOf{nested_search}={group_dn})(sAMAccountName={account_name}))"
     else:
-        query = f"(&(objectCategory={member_type})(objectClass=user)(memberOf{nested_search}={
-        group_dn})(sAMAccountName={account_name}))"
+        query = (f"( & (objectCategory={member_type})(objectClass=user)"
+                 f"(memberOf{nested_search}={group_dn})(sAMAccountName={account_name}))")
 
     size_limit = int(args.get("limit", "0"))
     page_cookie = args.get("page-cookie")

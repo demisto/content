@@ -140,7 +140,7 @@ class Client(BaseClient):
     def get_status_and_time_from_get_history_response(self, tasks) -> list:
         task_list: list[list] = []
         filtered_tasks: list = []
-        uuid_set: set = set([x.get("task_uuid") for x in tasks])
+        uuid_set: set = {[x.get("task_uuid") for x in tasks]}
 
         for uuid in uuid_set:
             tasks_same_uuid = [x for x in tasks if x.get("task_uuid") == uuid]
