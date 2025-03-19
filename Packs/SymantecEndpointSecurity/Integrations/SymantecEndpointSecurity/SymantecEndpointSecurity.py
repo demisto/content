@@ -208,12 +208,9 @@ def calculate_next_fetch(
     """
 
     if filtered_events:
-        events_suspected_duplicates = extract_events_suspected_duplicates(
+        events_suspected_duplicates, latest_event_time = extract_events_suspected_duplicates(
             filtered_events
         )
-
-        # Determine the latest event time: Extract the last time of the filtered event,
-        latest_event_time = max(filtered_events, key=parse_event_time_to_date_time)["log_time"]
     else:
         events_suspected_duplicates = []
         latest_event_time = last_integration_context.get("latest_event_time", "")
@@ -255,6 +252,10 @@ def parse_event_time_to_date_time(event: dict = {}, event_time: str = "") -> dat
     Parse the event time from the given event dict to datetime object.
     """
     event_time = event["log_time"] if event else event_time
+    if "." in event_time:
+        event_time = event_time.strip("Z")
+        seconds, micro_z = event_time.split(".")
+        event_time = seconds + "." + micro_z[:6] + "Z"
     try:
         event_date_time = datetime.strptime(event_time, DATE_FORMAT_WITH_MILLISECOND)
     except Exception as e:
@@ -267,7 +268,7 @@ def parse_event_time_to_date_time(event: dict = {}, event_time: str = "") -> dat
     return event_date_time
 
 
-def extract_events_suspected_duplicates(events: list[dict]) -> list[str]:
+def extract_events_suspected_duplicates(events: list[dict]) -> tuple[list[str], str]:
     """
     Extract event IDs of potentially duplicate events.
 
@@ -276,16 +277,17 @@ def extract_events_suspected_duplicates(events: list[dict]) -> list[str]:
     """
 
     # Find the maximum event time
-    latest_event_time = parse_event_time_to_date_time(max(events, key=parse_event_time_to_date_time))
+    latest_event_time: str = max(events, key=parse_event_time_to_date_time)["log_time"]
+    latest_event_time_obj = parse_event_time_to_date_time(event_time=latest_event_time)
 
     # Filter all JSONs with the maximum event time
     filtered_events = filter(
-        lambda event: parse_event_time_to_date_time(event) == latest_event_time,
+        lambda event: parse_event_time_to_date_time(event) == latest_event_time_obj,
         events,
     )
 
     # Extract the event_ids from the filtered events
-    return [event["uuid"] for event in filtered_events]
+    return [event["uuid"] for event in filtered_events], latest_event_time
 
 
 def is_duplicate(
@@ -341,6 +343,8 @@ def filter_duplicate_events(
     latest_event_time = parse_event_time_to_date_time(event_time=latest_event_time)
 
     filtered_events: list[dict[str, str]] = []
+
+    demisto.debug(f"The number of events before filtering for the current iteration: {len(events)}")
 
     for event in events:
         if not is_duplicate(
