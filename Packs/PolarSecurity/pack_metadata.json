@@ -2,7 +2,7 @@
     "name": "Polar Security",
     "description": "Polar Security, an IBM company, is an innovator in technology that helps companies discover, continuously monitor and secure cloud and software-as-a-service (SaaS) application data – and addresses the growing shadow data problem.\n\n***\n \nTo use Polar Security on Cortex XSOAR, retrieve your user account's API credentials and enter them in the integration's configuration.\n\n#### Configure an API account with Polar Security\n\n- [Login](https://dashboard.polar-security.com) / [Register](https://www.polar.security/sign-up)\n\n---\n",
     "support": "community",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "macoirc",
     "url": "",
     "email": "",
