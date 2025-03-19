@@ -219,11 +219,11 @@ manage_system
 ### mattermost-list-private-channels-for-user
 
 ***
-Get all private channel memberships for a user on a specific team.
+Get all the private channels on a team for a user.
 
 #### Required Permissions
 
-Must have manage_system permission.
+Logged in as the user, or have edit_other_users permission, and view_team permission for the team.
 
 #### Base Command
 

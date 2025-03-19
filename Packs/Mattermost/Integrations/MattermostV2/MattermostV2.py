@@ -214,8 +214,7 @@ class HTTPClient(BaseClient):
 
     def list_channels_for_user_request(self, team_id: str, user: str) -> list[dict[str, Any]]:
         """lists channels by user in a specific team"""
-        response = self._http_request(method='GET', url_suffix=f'/api/v4/users/{user}/teams/{team_id}/channels/members')
-
+        response = self._http_request(method='GET', url_suffix=f'/api/v4/users/{user}/teams/{team_id}/channels')
         return response
 
     def create_channel_request(self, params: dict) -> dict[str, str]:
@@ -1249,18 +1248,12 @@ def list_private_channels_for_user_command(client: HTTPClient, args: dict[str, A
     """
     team_name = args.get('team_name', client.team_name)
     user_id = args.get('user_id', '')
-    list_private_channels = []
 
     team_details = client.get_team_request(team_name)
 
-    all_user_channels = client.list_channels_for_user_request(team_details.get('id', ''), user_id)
-
-    params: dict[Any, Any] = {'per_page': 100000}
-    list_private_channels = client.list_channel_request(team_details.get('id', ''), params, get_private=True)
-    channels = [
-        private_channel for private_channel in list_private_channels
-        if private_channel['id'] in [channel['channel_id'] for channel in all_user_channels]
-    ]
+    channels = client.list_channels_for_user_request(team_details.get('id', ''), user_id)
+    # filter for private channels only
+    channels = list(filter(lambda x: x.get("type", "O") == 'P', channels))
 
     user_details = client.get_user_request(user_id)
 
@@ -1273,7 +1266,7 @@ def list_private_channels_for_user_command(client: HTTPClient, args: dict[str, A
             'id': user_id,
             'channels': channels
         },
-        raw_response=all_user_channels,
+        raw_response=channels,
         readable_output=hr,
     )
 

@@ -220,7 +220,7 @@ script:
     - contextPath: Mattermost.User.id
       description: The ID of the user.
       type: String
-    description: Get all private channel memberships for a user on a specific team.
+    description: Get all the private channels on a team for a user.
     name: mattermost-list-private-channels-for-user
   - arguments:
     - description: The display name of the channel to create.
