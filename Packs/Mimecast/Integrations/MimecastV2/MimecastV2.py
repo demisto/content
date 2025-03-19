@@ -159,7 +159,7 @@ def fetch_held_messages_with_pagination(api_endpoint: str, data: list, limit: in
         pagination = {'pageSize': limit}
         if next_page:
             demisto.debug(f"next_page exists with value {next_page}")
-            pagination = {'pageSize': limit, 'pageToken': next_page} # type: ignore
+            pagination = {'pageSize': limit, 'pageToken': next_page}  # type: ignore
         payload['meta']['pagination'] = pagination
         response = http_request('POST', api_endpoint, payload, headers={})
         if failure_response := response.get('fail'):
@@ -3612,7 +3612,7 @@ def list_policies_command(args: dict) -> CommandResults:
     }
     api_endpoint = f'/api/policy/{api_endpoints[policy_type]}'
 
-    policies_list, _ = request_with_pagination(api_endpoint, data=[], limit=limit, # type: ignore
+    policies_list, _ = request_with_pagination(api_endpoint, data=[], limit=limit,  # type: ignore
                                                page=page, page_size=page_size)  # type: ignore
 
     contents = []
