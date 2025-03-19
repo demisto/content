@@ -3297,7 +3297,7 @@ The query logs in Panorama.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | log-type          | The log type. Can be "threat", "traffic", "wildfire", "url", or "data". Possible values are: threat, traffic, wildfire, url, data.                                | Required |
-| query             | The query string by which to match criteria for the logs. This is similar to the query provided in the web interface under the Monitor tab when viewing the logs. You can use the query argument for a custom query or use a set of the pre-defiend command arguemnts (but not both) - time-generated, time-generated-after, addr-src, addr-dst, zone-src, zone-dst, action, port-dst, rule, url, filedigest. | Optional |
+| query             | The query string by which to match criteria for the logs. This is similar to the query provided in the web interface under the Monitor tab when viewing the logs. Do not use the query arguemnt in combination with the following arugments: time-generated, time-generated-after, addr-src, addr-dst, zone-src, zone-dst, action, port-dst, rule, url, filedigest. | Optional |
 | time-generated    | The time the log was generated from the timestamp and prior to it.<br/>For example "2019/08/11 01:10:44", 3 days ago.                                             | Optional |
 | time-generated-after| The time the log was generated from the timestamp and later then it.<br/>For example "2019/08/11 01:10:44", 3 days ago.                                           | Optional |
 | addr-src          | The source address.                                                                                                                                               | Optional |
