@@ -616,7 +616,8 @@ def test_create_incidents_from_offenses():
         'name': f'''{offense.get('id')} {offense.get('description', '')}''',
         'rawJSON': json.dumps(offense),
         'occurred': get_time_parameter(offense.get('start_time'), iso_format=True),
-        'type': 'QRadar Incident'
+        'type': 'QRadar Incident',
+        'haIntegrationEventID': str(offense.get('id'))
     } for offense in offenses]
 
 
