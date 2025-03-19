@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 THRESHOLDS = {
     "numberofincidentsIObiggerthan10mb": 1,
     "numberofincidentsIObiggerthan1mb": 10,
