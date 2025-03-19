@@ -6677,7 +6677,7 @@ def new_datastream_command(client: Client,
                            endpoint: str = "",
                            event_collector_token: str = "",
                            tls_hostname: str = "",
-                           notification_emails: str = [],
+                           notification_emails: str = "",
                            collect_midgress: bool = False,
                            activate: bool = True
                            ) -> tuple[str, dict, Union[list, dict]]:
