@@ -107,10 +107,10 @@ def commit_content_item(branch_name: str, content_file: ContentFile, new_files: 
         modified_files.append(content_file.file_name)
     else:
         # new file added
-        #if keep_placeholders_in_files:
-        demisto.debug(f"Got {keep_placeholders_in_files=}, escaping placeholders with \\")
-        commit_args['file_text'] = escape_placeholders(content_file.file_text)
-        commit_args['placeholders_escaped'] = "True"
+        if keep_placeholders_in_files:
+            demisto.debug(f"Got {keep_placeholders_in_files=}, escaping placeholders with \\")
+            commit_args['file_text'] = escape_placeholders(content_file.file_text)
+            commit_args['placeholders_escaped'] = "True"
         new_files.append(content_file.file_name)
 
     status, commit_res = execute_command('Github-commit-file', commit_args, fail_on_error=False)
