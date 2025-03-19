@@ -513,8 +513,6 @@ script:
       name: channel
       prettyname: Channel
       required: true
-    - description: A JSON string of Slack blocks to send in the message.
-      name: blocks
     description: Sends a message to a user, group, or channel.
     name: send-notification-quick-action
     prettyname: Send Slack Message

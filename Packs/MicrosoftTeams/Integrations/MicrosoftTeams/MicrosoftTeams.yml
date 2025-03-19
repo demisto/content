@@ -776,9 +776,6 @@ script:
       name: message
       prettyname: Message
       required: true
-    - description: The header of an external form hyperlink.
-      defaultValue: "Microsoft Teams Form"
-      name: external_form_url_header
     description: |-
       Sends a message to the specified teams.
       To mention a user in the message, add a semicolon ";" at the end of the user mention. For example: @Bruce Willis;.

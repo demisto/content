@@ -1689,7 +1689,6 @@ script:
       prettyname: Short Description
       required: true
     - auto: PREDEFINED
-      description: Ticket type. 
       name: ticket_type
       prettyname: Ticket Type
       predefined:
