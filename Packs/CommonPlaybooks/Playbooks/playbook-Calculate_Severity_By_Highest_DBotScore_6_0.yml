@@ -520,4 +520,3 @@ tests:
 - Calculate Severity - Standard - Test
 fromversion: 6.0.0
 system: true
-

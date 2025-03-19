@@ -337,4 +337,3 @@ view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n
 tests:
 - Isolate and unisolate endpoint - test
 fromversion: 5.5.0
-

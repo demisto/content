@@ -671,4 +671,3 @@ tests:
 - Get endpoint details - Generic - test
 fromversion: 5.5.0
 deprecated: true
-

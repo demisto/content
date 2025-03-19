@@ -382,4 +382,3 @@ inputs:
 outputs: []
 tests:
 - Send Investigation Summary Reports - Test
-

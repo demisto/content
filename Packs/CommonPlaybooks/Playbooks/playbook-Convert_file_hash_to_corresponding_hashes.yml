@@ -846,4 +846,3 @@ outputs:
   description: Output for detected hashes.
 tests:
 - Test Convert file hash to corresponding hashes
-

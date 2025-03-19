@@ -1026,4 +1026,3 @@ outputs:
 tests:
 - Calculate Severity - Generic v2 - Test
 fromversion: 5.0.0
-
