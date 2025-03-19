@@ -1,7 +1,6 @@
 import hashlib
 
 import incydr
-from incydr import EventQuery
 from incydr.enums.file_events import EventSearchTerm
 
 import demistomock as demisto  # noqa: F401
@@ -107,7 +106,7 @@ class Client:
             page_size: the page size per single request
         """
         demisto.debug(f'File Events: {start_time=}, {end_time=}, {limit=}')
-        query = EventQuery(
+        query = incydr.EventQuery(
             start_date=start_time,
             end_date=end_time,
             page_size=page_size,
