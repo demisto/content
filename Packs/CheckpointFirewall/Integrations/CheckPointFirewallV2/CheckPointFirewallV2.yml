@@ -934,6 +934,58 @@ script:
       description: Collection of group identifiers.
       type: Unknown
   - arguments:
+      - description: Object unique identifier (UID) or name.
+        name: identifier
+        required: true
+      - description: Layer that the rule belongs to identified by the name or UID.
+        name: layer
+        required: true
+      - defaultValue: '50'
+        description: The maximum number of results to return. Default is 50.
+        name: limit
+      - defaultValue: '0'
+        description: Number of results to initially skip. Default is 0.
+        name: offset
+      - defaultValue: None
+        description: Executes the command with the specified session ID.
+        name: session_id
+    description: Returns the data about a specific Access Rule.
+    name: checkpoint-access-rule-show
+    outputs:
+      - contextPath: CheckPoint.AccessRule.name
+        description: Object name.
+        type: String
+      - contextPath: CheckPoint.AccessRule.uid
+        description: Object UID.
+        type: String
+      - contextPath: CheckPoint.AccessRule.type
+        description: Object type.
+        type: String
+      - contextPath: CheckPoint.AccessRule.ipv4-address
+        description: IPv4 address of the specified object.
+        type: String
+      - contextPath: CheckPoint.AccessRule.ipv6-address
+        description: IPv6 address of the specified object.
+        type: String
+      - contextPath: CheckPoint.AccessRule.domain-name
+        description: Domain name.
+        type: String
+      - contextPath: CheckPoint.AccessRule.domain-uid
+        description: Domain UID.
+        type: String
+      - contextPath: CheckPoint.AccessRule.creator
+        description: The creator of the object.
+        type: String
+      - contextPath: CheckPoint.AccessRule.last-modifier
+        description: The user that last modified the object.
+        type: String
+      - contextPath: CheckPoint.AccessRule.read-only
+        description: Indicates if the object is read-only.
+        type: Boolean
+      - contextPath: CheckPoint.AccessRule.groups
+        description: Collection of group identifiers.
+        type: Unknown
+  - arguments:
     - description: Layer to which to assign the rule, identified by the name or UID.
       name: layer
       required: true

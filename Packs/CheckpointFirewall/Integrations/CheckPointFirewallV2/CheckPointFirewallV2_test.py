@@ -439,6 +439,23 @@ def test_checkpoint_list_access_rule_command(mocker):
     assert len(result[0]) == 11
 
 
+def test_checkpoint_show_access_rule_command(mocker):
+    from CheckPointFirewallV2 import checkpoint_access_rule_show_command
+    mock_response = util_load_json('test_data/show_access_rule.json')
+    mocked_client = mocker.Mock()
+    mocked_client.show_access_rule.return_value = mock_response
+    result = checkpoint_access_rule_show_command(
+        mocked_client,
+        '48604d56-b4ae-45e4-8757-29510f693a33',
+        '7f7308f0-7540-4631-832c-503de7b27c3d',
+        1,
+        0
+    ).outputs
+    assert result.get('name') == 'Rule 1'
+    assert result.get('uid') == '48604d56-b4ae-45e4-8757-29510f693a33'
+    assert result.get('type') == 'access-rule'
+
+
 def test_checkpoint_add_access_rule_command(mocker):
     from CheckPointFirewallV2 import checkpoint_add_access_rule_command
     mocked_client = mocker.Mock()

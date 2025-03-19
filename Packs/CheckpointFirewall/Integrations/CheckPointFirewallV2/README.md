@@ -1571,6 +1571,128 @@ Shows the entire Access Rules layer. This layer is divided into sections. An Acc
 >| est_access_rule | e5bc5918-7155-493e-89ce-5562586d3acc | access-rule |
 
 
+### checkpoint-access-rule-show
+***
+Shows the complete Access Rule on a given layer. An Access Rule may be within a section, or independent of a section.
+
+
+#### Base Command
+
+`checkpoint-access-rule-show`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+|-------------------| --- | --- |
+| identifier        | object name or uid | Required | 
+| layer             | Layer that the rule belongs to identified by the name or UID. | Required | 
+| limit             | The maximal number of returned results. | Optional | 
+| offset            | Number of the results to initially skip. | Optional | 
+| session_id        | Execute command with a specific session ID | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPoint.AccessRule.name | String | Object name. | 
+| CheckPoint.AccessRule.uid | String | Object UID. | 
+| CheckPoint.AccessRule.type | String | Object type. | 
+| CheckPoint.AccessRule.ipv4-address | String | IPv4 address of the specified object. | 
+| CheckPoint.AccessRule.ipv6-address | String | IPv6 address of the specified object. | 
+| CheckPoint.AccessRule.domain-name | String | Domain name. | 
+| CheckPoint.AccessRule.domain-uid | String | Domain UID. | 
+| CheckPoint.AccessRule.creator | String | The creator of the object. | 
+| CheckPoint.AccessRule.last-modifier | String | The user that last modified the object. | 
+| CheckPoint.AccessRule.read-only | Boolean | Indicates if the object is read-only. | 
+| CheckPoint.AccessRule.groups | Unknown | Collection of group identifiers. | 
+
+#### Command Example
+```!checkpoint-access-rule-show identifier=7867e584-0e68-42b4-ba18-2dd16cdbd436 layer=Network limit=1```
+
+#### Context Example
+## TODO: Change for actual example. No instance so making assumptions about design.
+```
+{
+    "CheckPoint": {
+        "AccessRule": [
+            {
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
+                "name": null,
+                "read-only": null,
+                "type": "access-rule",
+                "uid": "6521b7b9-d340-44ec-a104-17d5ea669bc0"
+            },
+            {
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
+                "name": null,
+                "read-only": null,
+                "type": "access-rule",
+                "uid": "bb6016e3-36e8-4214-b17f-89623160dd10"
+            },
+            {
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
+                "name": "test_access_rule_8",
+                "read-only": null,
+                "type": "access-rule",
+                "uid": "0c71cc44-a5ad-43cd-9af0-79e5f153f62f"
+            },
+            {
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
+                "name": "None",
+                "read-only": null,
+                "type": "access-rule",
+                "uid": "c44add02-0f02-4b29-8ab3-d5ac687d31f7"
+            },
+            {
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
+                "name": "est_access_rule",
+                "read-only": null,
+                "type": "access-rule",
+                "uid": "e5bc5918-7155-493e-89ce-5562586d3acc"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CheckPoint data for all access rule bases:
+>|name|uid|type|
+>|---|---|---|
+>|  | 6521b7b9-d340-44ec-a104-17d5ea669bc0 | access-rule |
+>|  | bb6016e3-36e8-4214-b17f-89623160dd10 | access-rule |
+>| test_access_rule_8 | 0c71cc44-a5ad-43cd-9af0-79e5f153f62f | access-rule |
+>| None | c44add02-0f02-4b29-8ab3-d5ac687d31f7 | access-rule |
+>| est_access_rule | e5bc5918-7155-493e-89ce-5562586d3acc | access-rule |
+
+
+
 ### checkpoint-access-rule-add
 ***
 Create new access rule

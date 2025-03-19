@@ -239,6 +239,14 @@ class Client(BaseClient):
         return self._http_request(method='POST', url_suffix='show-access-rulebase',
                                   headers=self.headers, json_data=body)
 
+    def show_access_rule(self, identifier: str, layer: str, limit: int, offset: int):
+        body = {'name': identifier,
+                'layer': layer,
+                'limit': limit,
+                'offset': offset}
+        return self._http_request(method='POST', url_suffix='show-access-rule',
+                                  headers=self.headers, json_data=body)
+
     def add_rule(self, layer: str, position, action: str, name: Optional[str],
                  vpn: Optional[str], destination, service, source):
         body = {'layer': layer, 'position': position, 'name': name, 'action': action,
@@ -1094,6 +1102,35 @@ def checkpoint_list_access_rule_command(client: Client, identifier: str, limit: 
         outputs_key_field='uid',
         readable_output=readable_output,
         outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_access_rule_show_command(client: Client, identifier: str, layer: str, limit: int,
+                                        offset: int) -> CommandResults:
+    """
+    Show existing access rule base objects using object name or uid.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier(str): uid or name.
+        layer (str): Layer that the rule belongs to identified by the name or UID.
+        limit (int): The maximal number of returned results.
+        offset (int): Number of the results to initially skip.
+    """
+    printable_result = []
+    readable_output = ''
+
+    result = client.show_access_rule(identifier, layer, limit, offset)
+
+    readable_output = tableToMarkdown(f'CheckPoint data for access rule {identifier} in layer {layer}:',
+                                          result, removeNull=True)
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.AccessRule',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=result,
         raw_response=result
     )
     return command_results
@@ -2162,6 +2199,9 @@ def main():  # pragma: no cover
 
         elif command == 'checkpoint-access-rule-list':
             return_results(checkpoint_list_access_rule_command(client, **args))
+
+        elif command == 'checkpoint-access-rule-show':
+            return_results(checkpoint_access_rule_show_command(client, **args))
 
         elif command == 'checkpoint-access-rule-add':
             return_results(checkpoint_add_access_rule_command(client, **args))

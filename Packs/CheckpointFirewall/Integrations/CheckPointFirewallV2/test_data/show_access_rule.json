@@ -1,0 +1,136 @@
+{
+  "uid" : "48604d56-b4ae-45e4-8757-29510f693a33",
+  "name" : "Rule 1",
+  "type" : "access-rule",
+  "domain" : {
+    "uid" : "41e821a0-3720-11e3-aa6e-0800200c9fde",
+    "name" : "SMC User",
+    "domain-type" : "domain"
+  },
+  "enabled" : true,
+  "comments" : "",
+  "meta-info" : {
+    "lock" : "unlocked",
+    "validation-state" : "ok",
+    "last-modify-time" : {
+      "posix" : 1527405615018,
+      "iso-8601" : "2018-05-27T10:20+0300"
+    },
+    "last-modifier" : "aa",
+    "creation-time" : {
+      "posix" : 1527405614880,
+      "iso-8601" : "2018-05-27T10:20+0300"
+    },
+    "creator" : "aa"
+  },
+  "install-on" : [ {
+    "uid" : "6c488338-8eec-4103-ad21-cd461ac2c476",
+    "name" : "Policy Targets",
+    "type" : "Global",
+    "domain" : {
+      "uid" : "a0bbbc99-adef-4ef8-bb6d-defdefdefdef",
+      "name" : "Check Point Data",
+      "domain-type" : "data domain"
+    }
+  } ],
+  "source-negate" : false,
+  "source-ranges" : {
+    "ipv4" : [ {
+      "start" : "192.168.1.11",
+      "end" : "192.168.1.11"
+    }, {
+      "start" : "192.168.1.213",
+      "end" : "192.168.1.213"
+    } ],
+    "ipv6" : [ ],
+    "others" : [ ],
+    "excluded-others" : [ ]
+  },
+  "destination-negate" : false,
+  "destination-ranges" : {
+    "ipv4" : [ {
+      "start" : "192.168.200.131",
+      "end" : "192.168.200.131"
+    } ],
+    "ipv6" : [ ],
+    "others" : [ ],
+    "excluded-others" : [ ]
+  },
+  "service-negate" : false,
+  "service-ranges" : {
+    "tcp" : [ {
+      "start" : "443",
+      "end" : "443"
+    } ],
+    "udp" : [ ],
+    "others" : [ ],
+    "excluded-others" : [ ]
+  },
+  "vpn" : [ {
+    "uid" : "97aeb369-9aea-11d5-bd16-0090272ccb30",
+    "name" : "Any",
+    "type" : "CpmiAnyObject",
+    "domain" : {
+      "uid" : "a0bbbc99-adef-4ef8-bb6d-defdefdefdef",
+      "name" : "Check Point Data",
+      "domain-type" : "data domain"
+    }
+  } ],
+  "action" : {
+    "uid" : "6c488338-8eec-4103-ad21-cd461ac2c472",
+    "name" : "Accept",
+    "type" : "RulebaseAction",
+    "domain" : {
+      "uid" : "a0bbbc99-adef-4ef8-bb6d-defdefdefdef",
+      "name" : "Check Point Data",
+      "domain-type" : "data domain"
+    }
+  },
+  "action-settings" : {
+    "enable-identity-captive-portal" : false
+  },
+  "content" : [ {
+    "uid" : "97aeb369-9aea-11d5-bd16-0090272ccb30",
+    "name" : "Any",
+    "type" : "CpmiAnyObject",
+    "domain" : {
+      "uid" : "a0bbbc99-adef-4ef8-bb6d-defdefdefdef",
+      "name" : "Check Point Data",
+      "domain-type" : "data domain"
+    }
+  } ],
+  "content-negate" : false,
+  "content-direction" : "any",
+  "time" : [ {
+    "uid" : "97aeb369-9aea-11d5-bd16-0090272ccb30",
+    "name" : "Any",
+    "type" : "CpmiAnyObject",
+    "domain" : {
+      "uid" : "a0bbbc99-adef-4ef8-bb6d-defdefdefdef",
+      "name" : "Check Point Data",
+      "domain-type" : "data domain"
+    }
+  } ],
+  "custom-fields" : {
+    "field-1" : "",
+    "field-2" : "",
+    "field-3" : ""
+  },
+  "track" : {
+    "type" : {
+      "uid" : "598ead32-aa42-4615-90ed-f51a5928d41d",
+      "name" : "Log",
+      "type" : "Track",
+      "domain" : {
+        "uid" : "a0bbbc99-adef-4ef8-bb6d-defdefdefdef",
+        "name" : "Check Point Data",
+        "domain-type" : "data domain"
+      }
+    },
+    "per-session" : false,
+    "per-connection" : true,
+    "accounting" : false,
+    "alert" : "none"
+  },
+  "layer" : "7f7308f0-7540-4631-832c-503de7b27c3d"
+}
