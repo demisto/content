@@ -71,7 +71,7 @@ XPATH_OBJECTS = ''
 
 XPATH_RULEBASE = ''
 
-# pan-os-python device timeout value, in seconds
+# pan-os-python device timeout value, in seconds test
 DEVICE_TIMEOUT = 120
 DEFAULT_LIMIT_PAGE_SIZE = 50
 
