@@ -175,7 +175,7 @@ def create_context_data_get_user(response: dict, pinned_tweets: str) -> list[dic
 def test_module(client: Client) -> str:
     """Tests API connectivity and authentication'
 
-    Returning 'ok' indicates that the integration works like it is supposed to.
+    Returning 'ok' indicates that the integration test works like it is supposed to.
     Connection to the service is successful.
     Raises exceptions if something goes wrong.
 

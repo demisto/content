@@ -30,7 +30,7 @@ INTEGRATION_NAME = 'TAXII1'
 
 class AddressObject:
     """
-    Implements address object indicator decoding
+    Implements address object indicator decoding test
     based on: https://stixproject.github.io/data-model/1.2/AddressObj/AddressObjectType/
     """
 

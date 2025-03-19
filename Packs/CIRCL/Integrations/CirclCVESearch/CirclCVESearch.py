@@ -11,7 +11,7 @@ urllib3.disable_warnings()
 
 class Client(BaseClient):
     """
-    Client will implement the service API, and should not contain any Demisto logic.
+    Client will implement the service API, and should not contain any Demisto logic test.
     Should only do requests and return data.
     """
 

@@ -17,7 +17,7 @@ API_VERSION = '2021-11-01'
 
 
 class Client:
-    """Client class to interact with the service API
+    """Client class to interact with the service API test
     """
 
     @logger

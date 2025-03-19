@@ -22,7 +22,7 @@ EXCLUDE_LIST = ["eTag", "cTag", "quota"]
 
 
 def parse_key_to_context(obj: dict) -> dict:
-    """Parse graph api data as received from Microsoft Graph API into Demisto's conventions
+    """Parse graph api data as received from Microsoft Graph API into Demisto's conventions test
 
     Args:
         item object: a dictionary containing the item data
