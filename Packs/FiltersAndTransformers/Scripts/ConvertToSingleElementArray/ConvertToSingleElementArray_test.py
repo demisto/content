@@ -1,13 +1,16 @@
-import pytest
 import demistomock as demisto
+import pytest
 from ConvertToSingleElementArray import main
 
 
-@pytest.mark.parametrize('args,expected_result', [
-    ({'value': ''}, []),
-    ({'value': ['1', '2']}, ['1', '2']),
-    ({'value': '1'}, ['1']),
-])
+@pytest.mark.parametrize(
+    "args,expected_result",
+    [
+        ({"value": ""}, []),
+        ({"value": ["1", "2"]}, ["1", "2"]),
+        ({"value": "1"}, ["1"]),
+    ],
+)
 def test_main(mocker, args, expected_result):
     """
     Given:
@@ -21,8 +24,8 @@ def test_main(mocker, args, expected_result):
         Case 2: Ensure ['1', '2'] is returned
         Case 3: Ensure ['1'] is returned
     """
-    mocker.patch.object(demisto, 'args', return_value=args)
-    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, "args", return_value=args)
+    mocker.patch.object(demisto, "results")
     main()
     results = demisto.results.call_args[0][0]
     assert demisto.results.call_count == 1

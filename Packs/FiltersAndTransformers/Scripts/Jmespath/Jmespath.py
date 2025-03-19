@@ -1,10 +1,9 @@
 import demistomock as demisto
-from CommonServerPython import *
-from typing import Union
 import jmespath
+from CommonServerPython import *
 
 
-def jmespath_search(expression: str, value: Union[dict, list]) -> dict:
+def jmespath_search(expression: str, value: dict | list) -> dict:
     try:
         expression_compiled = jmespath.compile(expression)
     except Exception as err:
@@ -26,5 +25,5 @@ def main():
     return_results(result)
 
 
-if __name__ in ['__builtin__', 'builtins']:
+if __name__ in ["__builtin__", "builtins"]:
     main()
