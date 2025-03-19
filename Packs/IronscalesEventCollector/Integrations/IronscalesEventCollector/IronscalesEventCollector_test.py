@@ -1,13 +1,13 @@
 import demistomock as demisto
 import pytest
 from IronscalesEventCollector import (
+    DATEPARSER_SETTINGS,
+    Client,
     arg_to_datetime,
     fetch_events_command,
     get_events_command,
     incident_to_events,
     main,
-    Client,
-    DATEPARSER_SETTINGS,
 )
 
 
@@ -21,8 +21,9 @@ def client(mocker):
                 {
                     "name": "first_name",
                 }
-            ]
+            ],
         }
+
     mocked_client = mocker.Mock()
     mocked_client.get_open_incident_ids.return_value = [0, 1, 3, 4]
     mocked_client.get_incident.side_effect = mock_get_incident
@@ -55,7 +56,7 @@ def test_fetch_events_by_last_id(client):
         client,
         first_fetch=arg_to_datetime("2 days ago", settings=DATEPARSER_SETTINGS),  # type: ignore
         max_fetch=10,
-        last_id=1
+        last_id=1,
     )
     assert res[0]["incident_id"] == 3
     assert res[-1]["incident_id"] == 4
@@ -87,36 +88,21 @@ def test_incident_to_events():
                 "name": "dummy name 1",
                 "email": "test@paloaltonetworks.com",
                 "headers": [
-                    {
-                        "name": "header1",
-                        "value": "value1"
-                    },
-                ]
+                    {"name": "header1", "value": "value1"},
+                ],
             },
             {
                 "name": "dummy name 2",
                 "email": "test2@paloaltonetworks.com",
                 "headers": [
-                    {
-                        "name": "header2",
-                        "value": "value2"
-                    },
-                ]
-            }
-        ],
-        "links": [
-            {
-                "url": "http://www.ironscales.com/",
-                "name": "tests"
+                    {"name": "header2", "value": "value2"},
+                ],
             },
         ],
-        "attachments": [
-            {
-                "file_name": "dummy file",
-                "file_size": 1024,
-                "md5": "a36544c75d1253d8dd32070908adebd0"
-            }
-        ]
+        "links": [
+            {"url": "http://www.ironscales.com/", "name": "tests"},
+        ],
+        "attachments": [{"file_name": "dummy file", "file_size": 1024, "md5": "a36544c75d1253d8dd32070908adebd0"}],
     }
     events = incident_to_events(dummy_incident)
     assert len(events) == 2
@@ -134,22 +120,10 @@ def test_incident_to_events():
 @pytest.mark.parametrize(
     "params, is_valid, result_msg",
     [
-        (
-            {"max_fetch": "1", "first_fetch": "", "url": ""},
-            True,
-            "ok"
-        ),
-        (
-            {"max_fetch": "not a number", "first_fetch": "3 days", "url": ""},
-            False,
-            "\"not a number\" is not a valid number"
-        ),
-        (
-            {"max_fetch": "1", "first_fetch": "not a date", "url": ""},
-            False,
-            "\"not a date\" is not a valid date"
-        ),
-    ]
+        ({"max_fetch": "1", "first_fetch": "", "url": ""}, True, "ok"),
+        ({"max_fetch": "not a number", "first_fetch": "3 days", "url": ""}, False, '"not a number" is not a valid number'),
+        ({"max_fetch": "1", "first_fetch": "not a date", "url": ""}, False, '"not a date" is not a valid date'),
+    ],
 )
 def test_test_module(mocker, params, is_valid, result_msg):
     """
@@ -163,7 +137,7 @@ def test_test_module(mocker, params, is_valid, result_msg):
     mocker.patch.object(demisto, "command", return_value="test-module")
     mocker.patch.object(demisto, "params", return_value=params)
     demisto_result = mocker.patch.object(demisto, "results")
-    return_error = mocker.patch('IronscalesEventCollector.return_error')
+    return_error = mocker.patch("IronscalesEventCollector.return_error")
     main()
     result = (demisto_result if is_valid else return_error).call_args[0][0]
     assert result_msg in result
