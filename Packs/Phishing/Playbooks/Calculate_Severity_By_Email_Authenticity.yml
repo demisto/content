@@ -389,4 +389,3 @@ outputs:
   type: number
 tests:
 - Calculate Severity - Generic v2 - Test
-

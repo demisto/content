@@ -1208,4 +1208,3 @@ outputs:
 tests:
 - Phishing - Core - Test - Incident Starter
 fromversion: 6.0.0
-

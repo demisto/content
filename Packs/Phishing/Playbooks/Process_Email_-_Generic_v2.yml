@@ -1473,7 +1473,7 @@ tasks:
                   simple: Email.HeadersMap
                 iscontext: true
           transformers:
-          - operator: FirstArrayElement
+            - operator: FirstArrayElement
     separatecontext: false
     view: |-
       {
@@ -3276,4 +3276,3 @@ outputSections:
   - QRCodeReader.IP
   name: General (Outputs group)
   description: Generic group for outputs
-
