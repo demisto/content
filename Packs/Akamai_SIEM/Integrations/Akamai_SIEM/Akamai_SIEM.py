@@ -1130,18 +1130,6 @@ def send_events_to_xsiam_akamai(events, vendor, product, data_format=None, url_k
         counter=counter
     )
 
-def my_test_func(i):
-    import requests
-    demisto.info(f"[test] in thread number {i}.")
-
-    # A POST request to the API
-    response = requests.post("https://jsonplaceholder.typicode.com/posts", json={})
-    demisto.info(f"[test] [test] Response status code: {response.status_code}")
-    # demisto.info("[test] [test] Response content:")
-    # Print the response
-    raise DemistoException("test test test", DemistoException)
-    return i
-
 
 ############################################## end of CSP copy-paste part ##############################################
 
@@ -1226,7 +1214,8 @@ def main():  # pragma: no cover
                             demisto.info(f"Got an error when executing send_events_to_xsiam: {e}")
                             should_fail = True
                     if should_fail:
-                        raise DemistoException("Encountered an error during sending events to xsiam, will attempt to send all events to xsiam again.")
+                        raise DemistoException(
+                            "Encountered an error during sending events to xsiam, will attempt to send all events to xsiam again.")
                     demisto.info(f"Done sending {data_size} events to xsiam."
                                  f"sent {total_events_count} events to xsiam in total during this interval.")
                 set_integration_context({"offset": offset})
