@@ -136,9 +136,7 @@ def get_and_reorganize_events(client: Client, start: str, end: str, ids: set) ->
     events: list = client.get_events(start, end).get('data', [])
     demisto.debug(f'Raw events from Proofpoint Isolation api: {events}')
     events = sort_events_by_date(events)
-    demisto.debug(f'Sorted events by their date: {events}')
     remove_duplicate_events(start, ids, events)
-    demisto.debug(f'Removed duplicated events: {events}')
     return events
 
 
@@ -202,13 +200,11 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
             ids.add(hashed_id)
 
             if len(output) >= fetch_limit:
-                demisto.debug(f'Reached fetch limit, outputs {len(output)} events in total.')
+                demisto.debug(f'Reached fetch limit, sending {len(output)} events in total.')
                 new_last_run = {'start_date': event_date, 'ids': list(ids)}
-                demisto.debug(f'Returning from fetch-events because fetch limit has reached, with {new_last_run=}.')
                 return output, new_last_run
 
     new_last_run = {'start_date': event_date, 'ids': list(ids)}
-    demisto.debug(f'Returning from fetch-events because no more events, with {new_last_run=}.')
     return output, new_last_run
 
 
@@ -274,7 +270,6 @@ def main() -> None:  # pragma: no cover
             return_results(result)
         elif command == 'fetch-events':
             events, new_last_run_dict = fetch_events(client, fetch_limit)
-            demisto.debug('Successfully run fetch events with Proofpoint Isolation integration.')
             if events:
                 demisto.debug(f'Sending {len(events)} events.')
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
