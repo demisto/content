@@ -354,7 +354,7 @@ script:
     - contextPath: HPEArubaClearPass.Sessions.Response_message
       description: Describes the result of the disconnected operation.
       type: String
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   script: '-'
   subtype: python3
   type: python
