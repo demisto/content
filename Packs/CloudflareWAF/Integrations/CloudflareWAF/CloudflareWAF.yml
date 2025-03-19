@@ -8,12 +8,30 @@ configuration:
   defaultvalue: https://api.cloudflare.com/client/v4/
   type: 0
   required: false
-- name: credentials
-  display: The API user Token.
-  displaypassword: User Token
+- name: auth_method
+  display: Authentication Method
+  type: 15
+  options:
+    - API Token
+    - Global API Key
+  default: API Token
   required: true
+- name: api_token
+  display: API Token
   type: 9
+  required: false
+  displaypassword: API Token
   hiddenusername: true
+- name: global_api_key
+  display: Global API Key
+  type: 9
+  required: false
+  hiddenusername: true
+  displaypassword: Global API Key
+- name: email
+  display: Email
+  type: 0
+  required: false
 - name: account_id
   display: Account ID
   required: true
