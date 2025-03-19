@@ -28,7 +28,7 @@ def test_bad(mocker):
     mocker.patch.object(demisto, 'args', return_value={'input': 1})
     return_error = mocker.patch.object(FormatURL, 'return_error')
     FormatURL.main()
-    assert return_error.called_once()
+    assert return_error.assert_called_once()
 
 
 def test_proofpoint_v3(mocker):
