@@ -1,56 +1,63 @@
 from CommonServerPython import *
 
-''' COMMAND FUNCTION '''
+""" COMMAND FUNCTION """
 
 
 def get_identity_info() -> List[Dict]:
     context = demisto.context()
-    alerts = demisto.get(context, 'PaloAltoNetworksXDR.OriginalAlert')
+    alerts = demisto.get(context, "PaloAltoNetworksXDR.OriginalAlert")
     if not alerts:
-        raise DemistoException('PaloAltoNetworksXDR.OriginalAlert is not in the context')
-    users = demisto.get(context, 'AWS.IAM.Users')
+        raise DemistoException("PaloAltoNetworksXDR.OriginalAlert is not in the context")
+    users = demisto.get(context, "AWS.IAM.Users")
     if not users:
-        raise DemistoException('AWS users are not in context')
+        raise DemistoException("AWS users are not in context")
     if isinstance(users, dict):
-        access_keys = users.get('AccessKeys', [])
+        access_keys = users.get("AccessKeys", [])
     else:
-        access_keys = users[0].get('AccessKeys', [])
+        access_keys = users[0].get("AccessKeys", [])
     if not isinstance(access_keys, list):
         access_keys = [access_keys]
     if not isinstance(alerts, list):
         alerts = [alerts]
     results = []
     for alert in alerts:
-        alert_event = alert.get('event')
-        username = demisto.get(alert_event, 'identity_orig.userName')
-        access_keys_ids = list({access_key.get('AccessKeyId') for access_key in access_keys
-                                if isinstance(access_key, dict) and access_key.get('UserName') == username})
-        res = {'Name': alert_event.get('identity_name'),
-               'Type': alert_event.get('identity_type'),
-               'Sub Type': alert_event.get('identity_sub_type'),
-               'Uuid': alert_event.get('identity_uuid'),
-               'Provider': alert_event.get('cloud_provider'),
-               'Access Keys': access_keys_ids}
+        alert_event = alert.get("event")
+        username = demisto.get(alert_event, "identity_orig.userName")
+        access_keys_ids = list(
+            {
+                access_key.get("AccessKeyId")
+                for access_key in access_keys
+                if isinstance(access_key, dict) and access_key.get("UserName") == username
+            }
+        )
+        res = {
+            "Name": alert_event.get("identity_name"),
+            "Type": alert_event.get("identity_type"),
+            "Sub Type": alert_event.get("identity_sub_type"),
+            "Uuid": alert_event.get("identity_uuid"),
+            "Provider": alert_event.get("cloud_provider"),
+            "Access Keys": access_keys_ids,
+        }
         if res not in results:
             results.append(res)
     return results
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main():
     try:
         results = get_identity_info()
         command_results = CommandResults(
-            readable_output=tableToMarkdown('Identity Information', results,
-                                            headers=list(results[0].keys()) if results else None))
+            readable_output=tableToMarkdown("Identity Information", results, headers=list(results[0].keys()) if results else None)
+        )
         return_results(command_results)
     except Exception as ex:
-        return_error(f'Failed to execute IdentityInformationWidget. Error: {str(ex)}')
+        return_error(f"Failed to execute IdentityInformationWidget. Error: {ex!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
