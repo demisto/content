@@ -66,23 +66,28 @@ class Client(BaseClient):
         # Send a request using our http_request wrapper
         try:
             if sub_section == 'passive_dns':
-                return self._http_request('GET',
+                result = self._http_request('GET',
                                         url_suffix=suffix,
                                         params=params,
                                         timeout=30)
+                demisto.debug("Succeeded querying")
+                return result
             result = self._http_request('GET',
                                         url_suffix=suffix,
                                         params=params)
             demisto.debug("Succeeded querying")
         except DemistoException as e:
-            demisto.info("DemistoException was raised")
+            demisto.debug("DemistoException was raised")
             if hasattr(e.res, 'status_code'):
                 if e.res.status_code == 404:
                     demisto.debug("The status code is 404")
                     result = 404
                 elif e.res.status_code == 400:
                     demisto.debug("The status code is 400")
-                    demisto.debug(f'{e.res.text} response received from server when trying to get api:{e.res.url}')
+                    try:
+                        demisto.debug(f'{e.res.text} response received from server when trying to get api:{e.res.url}')
+                    except Exception:
+                        demisto.debug('An 400 status error was raised.')
                     if not self.should_error:
                         return_warning(f'The command could not be execute: {argument} is invalid.', exit=True)
                     raise Exception(f'The command could not be execute: {argument} is invalid.')
@@ -95,21 +100,34 @@ class Client(BaseClient):
                     except Exception as e:
                         return_warning("Could not handle e.res.text", exit=True)
                 else:
-                    demisto.debug("The DemistoException status code is not handled, raising an error")
+                    try:
+                        demisto.debug(f"The DemistoException status code is not handled, raising an error {str(e)}")
+                    except Exception:
+                        demisto.debug("The DemistoException status code is not handled, raising an error")
                     raise
             else:
-                demisto.debug("The DemistoException does not have a status_code attribute, raising an error")
+                try:
+                    demisto.debug(f"The DemistoException does not have a status_code attribute, raising an error {str(e)}")
+                except Exception:
+                    demisto.debug("The DemistoException does not have a status_code attribute, raising an error")
                 raise
         except requests.exceptions.ReadTimeout as e:
+            demisto.debug("A ReadTimeout error was raised.")
             if self.should_error:
                 raise e
-            demisto.debug("A ReadTimeout error was raised but should be handled as a warning")
-            return_warning(f"{e}")
+            demisto.debug("A ReadTimeout error was raised but should be handled as a warning.")
+            try:
+                return_warning(f"{e}")
+            except Exception:
+                return_warning("A ReadTimeout was raised.")
             result = {}
             if section == 'url':
                 result =  404
         except Exception as e:
-            demisto.debug("An exception was caught, raising an error.")
+            try:
+                demisto.debug(f"An exception was caught, raising an error. {str(e)}")
+            except Exception:
+                demisto.debug("An exception was caught, raising an error.")
             raise e
         return result
 
