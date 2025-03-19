@@ -17,6 +17,7 @@
         "platform"
     ],
     "supportedModules": [
+        "identity_threat",
         "X1",
         "X3",
         "X5",
