@@ -23,7 +23,7 @@ def main():  # pragma: no cover
         return_results("yes" if is_pdf_encrypted(file_path) else "no")
     except Exception as e:
         demisto.error(traceback.format_exc())
-        return_error(str(e)+"\nVerify the PDF file is readable.")
+        return_error("An error occurred, Verify the PDF file is readable. Error: " +  str(e))
 
 
 if __name__ in ["__main__", "__builtin__", "builtins"]:
