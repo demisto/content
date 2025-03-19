@@ -78,7 +78,6 @@ repos:
     entry: node .hooks/validate-mdx.js
     language: node
     files: "^(.*/)?README\\.md$"
-    require_serial: true
     additional_dependencies:
       - "@mdx-js/mdx@1.6.22"  #match package-lock of content docs
       - "fs-extra"
