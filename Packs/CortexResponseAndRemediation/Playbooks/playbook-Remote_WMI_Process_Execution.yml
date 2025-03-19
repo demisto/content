@@ -85,6 +85,7 @@ tasks:
       ip:
         simple: ${Core.OriginalAlert.event.actor_remote_ip}
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
