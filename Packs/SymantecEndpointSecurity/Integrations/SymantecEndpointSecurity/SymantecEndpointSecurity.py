@@ -1,10 +1,11 @@
-from requests import Response
+import time
+from datetime import datetime
+
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
-from datetime import datetime
-import time
+from requests import Response
 
+from CommonServerUserPython import *  # noqa
 
 # CONSTANTS
 VENDOR = "symantec"
@@ -103,7 +104,6 @@ class Client(BaseClient):
         verify: bool,
         proxy: bool,
     ) -> None:
-
         self.headers: dict[str, str] = {}
         self.token = token
         self.stream_id = stream_id
@@ -161,7 +161,7 @@ class Client(BaseClient):
             resp_type="response",
             headers=self.headers,
             stream=True,
-            ok_codes=[200, 201, 204]
+            ok_codes=[200, 201, 204],
         )
 
 
@@ -208,9 +208,7 @@ def calculate_next_fetch(
     """
 
     if filtered_events:
-        events_suspected_duplicates, latest_event_time = extract_events_suspected_duplicates(
-            filtered_events
-        )
+        events_suspected_duplicates, latest_event_time = extract_events_suspected_duplicates(filtered_events)
     else:
         events_suspected_duplicates = []
         latest_event_time = last_integration_context.get("latest_event_time", "")
@@ -223,9 +221,7 @@ def calculate_next_fetch(
             "The latest event time equals the latest event time from the previous fetch,"
             " adding the suspect duplicates from last time"
         )
-        events_suspected_duplicates.extend(
-            last_integration_context.get("events_suspected_duplicates", [])
-        )
+        events_suspected_duplicates.extend(last_integration_context.get("events_suspected_duplicates", []))
 
     integration_context = {
         "latest_event_time": latest_event_time,
@@ -321,9 +317,7 @@ def is_duplicate(
     return False
 
 
-def filter_duplicate_events(
-    events: list[dict[str, str]], integration_context: dict
-) -> list[dict[str, str]]:
+def filter_duplicate_events(events: list[dict[str, str]], integration_context: dict) -> list[dict[str, str]]:
     """
     Filter out duplicate events from the given list of events.
 
@@ -333,12 +327,8 @@ def filter_duplicate_events(
     Returns:
         list[dict[str, str]]: A list of event dicts without fear of duplication.
     """
-    events_suspected_duplicates = set(
-        integration_context.get("events_suspected_duplicates", [])
-    )
-    latest_event_time = integration_context.get(
-        "latest_event_time"
-    ) or datetime.min.strftime(DATE_FORMAT_WITH_MILLISECOND)
+    events_suspected_duplicates = set(integration_context.get("events_suspected_duplicates", []))
+    latest_event_time = integration_context.get("latest_event_time") or datetime.min.strftime(DATE_FORMAT_WITH_MILLISECOND)
 
     latest_event_time = parse_event_time_to_date_time(event_time=latest_event_time)
 
@@ -370,9 +360,7 @@ def get_events(client: Client, next_fetch: dict[str, str], counter: EventCounter
             raise NoEventsReceived
 
         demisto.debug(f"Completed API call with status_code {res.status_code}, proceeding with row iterations.")
-        for line in res.iter_lines(
-            chunk_size=MAX_CHUNK_SIZE_TO_READ, delimiter=DELIMITER
-        ):
+        for line in res.iter_lines(chunk_size=MAX_CHUNK_SIZE_TO_READ, delimiter=DELIMITER):
             if not line:
                 continue  # Skip empty lines
 
@@ -396,7 +384,6 @@ def get_events(client: Client, next_fetch: dict[str, str], counter: EventCounter
 
 
 def filtering_and_push_events(events: list[dict], next_hash: str, integration_context: dict, counter: EventCounter):
-
     counter.events = len(events)
     filtered_events = filter_duplicate_events(events, integration_context)
     counter.filtered_events = len(filtered_events)
@@ -410,9 +397,7 @@ def filtering_and_push_events(events: list[dict], next_hash: str, integration_co
         # The current `integration_context` (before the update) is saved
         # so that the next fetch will retrieve based on the current `fetch_next`.
         set_integration_context(integration_context)
-        raise DemistoException(
-            "Failed to push events to XSIAM, The integration_context updated"
-        ) from e
+        raise DemistoException("Failed to push events to XSIAM, The integration_context updated") from e
 
     return calculate_next_fetch(
         filtered_events=filtered_events,
@@ -440,9 +425,7 @@ def get_events_command(client: Client, integration_context: dict[str, Any]) -> d
     except DemistoException as e:
         if e.res is not None:
             if e.res.status_code == 401:
-                demisto.info(
-                    "Unauthorized access token, trying to obtain a new access token"
-                )
+                demisto.info("Unauthorized access token, trying to obtain a new access token")
                 raise UnauthorizedToken
             if e.res.status_code == 410:
                 raise NextPointingNotAvailable
@@ -525,9 +508,7 @@ def calculate_fetch_failure_count():
     If the count exceeds MAX, it resets the integration context
     """
     integration_context = get_integration_context()
-    if (
-        fetch_failure_count := integration_context.get("fetch_failure_count", 0)
-    ) > MAX_FETCH_FAILURES_ALLOWED:
+    if (fetch_failure_count := integration_context.get("fetch_failure_count", 0)) > MAX_FETCH_FAILURES_ALLOWED:
         reset_integration_context({})
     else:
         integration_context["fetch_failure_count"] = fetch_failure_count + 1
@@ -544,9 +525,7 @@ def reset_integration_context(args: dict[str, str]) -> CommandResults:
         integration_context.pop("next_fetch", None)
         integration_context.pop("fetch_failure_count", None)
         set_integration_context(integration_context)
-        readable_output = (
-            "The `next_fetch` in integration context was reset successfully."
-        )
+        readable_output = "The `next_fetch` in integration context was reset successfully."
     return CommandResults(readable_output=readable_output)
 
 
@@ -592,9 +571,7 @@ def main() -> None:  # pragma: no cover
             raise NotImplementedError(f"Command {command} is not implemented.")
 
     except Exception as e:
-        return_error(
-            f"Failed to execute {command} command. Error in Symantec Endpoint Security Integration [{e}]."
-        )
+        return_error(f"Failed to execute {command} command. Error in Symantec Endpoint Security Integration [{e}].")
 
 
 """ ENTRY POINT """
