@@ -801,8 +801,9 @@ class Client(BaseClient):
         notes = self.http_request(
             method="POST",
             json_data=data,
-            url_suffix=ENDPOINTS[f"ADD_AND_LIST_{entity_type.upper()}_NOTE_ENDPOINT"].format(entity_id),    # type: ignore[union-attr]
-        )  # type: ignore
+            url_suffix=ENDPOINTS[f"ADD_AND_LIST_{entity_type.upper()}_NOTE_ENDPOINT"].format(    # type: ignore[union-attr]
+                entity_id),  # type: ignore
+        )
         return notes
 
     def update_note_request(
@@ -828,7 +829,8 @@ class Client(BaseClient):
         notes = self.http_request(
             method="PATCH",
             json_data=data,
-            url_suffix=ENDPOINTS[f"UPDATE_AND_REMOVE_{entity_type.upper()}_NOTE_ENDPOINT"].format(entity_id, note_id),  # type: ignore[union-attr]
+            url_suffix=ENDPOINTS[f"UPDATE_AND_REMOVE_{entity_type.upper()}_NOTE_ENDPOINT"].format(  # type: ignore[union-attr]
+                entity_id, note_id),
         )
 
         return notes
@@ -853,7 +855,8 @@ class Client(BaseClient):
         res = self.http_request(
             method="DELETE",
             resp_type="response",
-            url_suffix=ENDPOINTS[f"UPDATE_AND_REMOVE_{entity_type.upper()}_NOTE_ENDPOINT"].format(entity_id, note_id),  # type: ignore[union-attr]
+            url_suffix=ENDPOINTS[f"UPDATE_AND_REMOVE_{entity_type.upper()}_NOTE_ENDPOINT"].format(  # type: ignore[union-attr]
+                entity_id, note_id),
         )
         return res
 
@@ -869,7 +872,8 @@ class Client(BaseClient):
             Dict: Response from the API.
         """
         notes = self.http_request(
-            method="GET", url_suffix=ENDPOINTS[f"ADD_AND_LIST_{entity_type.upper()}_NOTE_ENDPOINT"].format(entity_id)  # type: ignore[union-attr]
+            # type: ignore[union-attr]
+            method="GET", url_suffix=ENDPOINTS[f"ADD_AND_LIST_{entity_type.upper()}_NOTE_ENDPOINT"].format(entity_id)
         )
         return notes
 

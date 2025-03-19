@@ -62,7 +62,7 @@ def http_request(endpoint, data, method="POST"):
             return_error(f"Response JSON decoding failed due to {e!s}")
 
     else:
-        return_error(f"API Returned, {response.status_code}:{response.reason}") # noqa: RET503
+        return_error(f"API Returned, {response.status_code}:{response.reason}")  # noqa: RET503
 
 
 def get_dbot_score(verdict):

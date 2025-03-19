@@ -168,8 +168,7 @@ HAPPY_PATH_ARGS_FOR_COMMAND_RESULTS = [
             'wait_timeout': 30,
             'wait_for_output': True,
             'wait_for_completion': True
-        }
-        ,
+        },
         "פלט בעברית".encode(),
     ),
 ]

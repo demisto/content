@@ -170,9 +170,8 @@ def parseIndicators(feedJson: dict) -> Any:
                                     verdictScore = DemistoScore.UNKNOWN
                                 else:
                                     verdictScore = DemistoScore.MALICIOUS
-                        if indicatorType == SNXIocParse.SNX_URL_KEY:
-                            if SNXIocParse.SNX_ONION_ADDR_KEY in tagList:
-                                indicatorType = SNXIocParse.DEMISTO_ONION_ADDRESS_TYPE
+                        if indicatorType == SNXIocParse.SNX_URL_KEY and SNXIocParse.SNX_ONION_ADDR_KEY in tagList:
+                            indicatorType = SNXIocParse.DEMISTO_ONION_ADDRESS_TYPE
                         ioc_contents[indicatorIdValue] = {"type": indicatorType, "value": indicatorValue}
 
                     elif ioc_data[SNXIocParse.SNX_TYPE_KEY] == SNXIocParse.SNX_MALWARE_KEY:

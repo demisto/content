@@ -441,7 +441,7 @@ def post_submit_file(client: Client, args: dict[str, str]) -> CommandResults:
     fileData = {"file": (fileName, open(filePath, "rb"))}
     response, err_msg = client.submit_file(urlSuffix, fileData, params)
     if response:
-        if SNXResponse.SNX_SUCCESS_KEY in response.keys() and SNXResponse.SNX_RESULT_KEY in response:
+        if SNXResponse.SNX_SUCCESS_KEY in response and SNXResponse.SNX_RESULT_KEY in response:
             finalJson = response[SNXResponse.SNX_RESULT_KEY]
             readableOutput = tableToMarkdown(f"File Submitted Successfully: {fileName}", finalJson)
             return CommandResults(readable_output=readableOutput, outputs_prefix="SecneurXAnalysis.SubmitFile", outputs=finalJson)

@@ -153,7 +153,8 @@ def get_reg_values_command(api_client: CBCloudAPI, device_id: str, reg_path: str
     values, partial_res_msg = get_limited_results(original_results=values, limit=limit)
 
     context_entry = {'key': reg_path, 'values': values, 'device_id': device_id}
-    human_readable = [{'name': val["registry_name"], 'type': val["registry_type"], 'data': val["registry_data"]} for val in values]
+    human_readable = [{'name': val["registry_name"], 'type': val["registry_type"], 'data': val["registry_data"]}
+                      for val in values]
 
     readable_output = tableToMarkdown(
         f"Carbon Black Defense Live Response Registry key values{partial_res_msg}",
@@ -268,11 +269,10 @@ def create_process_command(
         human_readable = f"Process: {command_string} was successfully executed."
 
     context_output = {
-    'return_value': process_results_str,
-    'device_id': device_id,
-    'command_string': command_string
-}
-
+        'return_value': process_results_str,
+        'device_id': device_id,
+        'command_string': command_string
+    }
 
     return CommandResults(
         outputs_prefix="CarbonBlackDefenseLR.ExecuteProcess",
