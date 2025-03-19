@@ -1215,7 +1215,7 @@ def main():  # pragma: no cover
                             should_fail = True
                     if should_fail:
                         raise DemistoException(
-                            "Encountered an error during sending events to xsiam, will attempt to send all events to xsiam again.")
+                            "Encountered an error while sending events to xsiam, will attempt to send all events to xsiam again.")
                     demisto.info(f"Done sending {data_size} events to xsiam."
                                  f"sent {total_events_count} events to xsiam in total during this interval.")
                 set_integration_context({"offset": offset})
