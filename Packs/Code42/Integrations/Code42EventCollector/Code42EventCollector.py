@@ -116,7 +116,9 @@ class Client:
         for filter in query.groups[0].filters:
             filter.term = EventSearchTerm.EVENT_INSERTED
 
-        response = self.code42_client.file_events.v2.search(query)
+        response = self.code42_client.file_events.v2.search(
+            query
+        )
 
         if response.total_count == 0:
             return []
